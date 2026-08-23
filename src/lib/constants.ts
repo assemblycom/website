@@ -358,7 +358,9 @@ export const FOOTER_COLUMNS: FooterGroup[][] = [
     {
       label: "Partners",
       links: [
-        { label: "Experts program", href: "/experts-program" },
+        // Experts program is hidden from the footer for now; the page is still
+        // live at /experts-program.
+        // { label: "Experts program", href: "/experts-program" },
         { label: "Affiliates program", href: "/affiliates-program" },
       ],
     },
