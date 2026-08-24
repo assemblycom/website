@@ -60,17 +60,17 @@ export const STATUS_URL = "https://status.assembly.com";
 /** A link with a line of explanation, for the nav's dropdown panels. */
 export interface NavItem extends NavLink {
   description?: string;
+  /**
+   * Which labelled column of the dropdown panel this link sits in. Items with a
+   * section are grouped under it, in the order they appear here; a group whose
+   * items carry none renders as one column under the group's own label instead.
+   */
+  section?: string;
 }
 
 export interface NavGroup {
   label: string;
   items: NavItem[];
-  /**
-   * Close the panel on a strip naming the latest featured article. Only earns
-   * its place under a panel of reading — under Product it would be a non
-   * sequitur.
-   */
-  showFeatured?: boolean;
 }
 
 export type NavEntry = NavItem | NavGroup;
@@ -89,30 +89,24 @@ export const NAV_ENTRIES: NavEntry[] = [
   { label: "Security", href: "/security" },
   {
     label: "Resources",
-    showFeatured: true,
+    // Two columns rather than one list of five: the reference product navs all
+    // split theirs, and the split says what each link is before you read it —
+    // the things we publish on one side, the two reference manuals on the other.
+    //
+    // Order is load-bearing twice over. It sets the columns left to right, and
+    // the mobile sheet renders these flat — so Blog leads, which is what a
+    // Resources menu is opened for, rather than the docs leading on a phone.
     items: [
       {
         label: "Blog",
         href: "/blog",
+        section: "Read",
         description: "Product news, and guides for service firms",
       },
-      // External docs, but opening in the same tab (newTab omitted) — a new tab
-      // read as a jarring context switch from a primary nav item.
       {
-        label: "Assembly Guide",
-        href: GUIDE_URL,
-        external: true,
-        description: "How to set up and run your workspace",
-      },
-      {
-        label: "API reference",
-        href: API_REFERENCE_URL,
-        external: true,
-        description: "Endpoints, parameters and examples",
-      },
-      {
-        label: "What's New",
+        label: "What's new",
         href: "/updates",
+        section: "Read",
         description: "Everything we ship, as we ship it",
       },
       // A forum someone will keep open beside the site, unlike the docs, which
@@ -122,7 +116,24 @@ export const NAV_ENTRIES: NavEntry[] = [
         href: COMMUNITY_URL,
         external: true,
         newTab: true,
+        section: "Read",
         description: "Ask questions and compare notes with other firms",
+      },
+      // External docs, but opening in the same tab (newTab omitted) — a new tab
+      // read as a jarring context switch from a primary nav item.
+      {
+        label: "Assembly Guide",
+        href: GUIDE_URL,
+        external: true,
+        section: "Docs",
+        description: "How to set up and run your workspace",
+      },
+      {
+        label: "API reference",
+        href: API_REFERENCE_URL,
+        external: true,
+        section: "Docs",
+        description: "Endpoints, parameters and examples",
       },
     ],
   },
@@ -355,7 +366,7 @@ export const FOOTER_COLUMNS: FooterGroup[][] = [
         { label: "Blog", href: "/blog" },
         { label: "Guide", href: GUIDE_URL, external: true },
         { label: "API reference", href: API_REFERENCE_URL, external: true },
-        { label: "What's New", href: "/updates" },
+        { label: "What's new", href: "/updates" },
         { label: "Community", href: COMMUNITY_URL, external: true, newTab: true },
         { label: "Status", href: STATUS_URL, external: true, newTab: true },
         { label: "LLM info", href: "/llm-info" },

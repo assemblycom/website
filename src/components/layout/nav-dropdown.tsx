@@ -10,8 +10,15 @@ import {
 } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { isNavGroup, type NavEntry, type NavGroup } from "@/lib/constants";
-import { useFeaturedPost } from "@/components/layout/featured-post";
+import {
+  isNavGroup,
+  type NavEntry,
+  type NavGroup,
+  type NavItem,
+} from "@/lib/constants";
+// The site's arrow-up-right — the real product glyph, shared with the home
+// page's mocks. A stroked one drawn here read thin and light beside the type.
+import { IconArrowUpRight } from "@/components/home/mock-icons";
 
 // Pointer intent: leaving the trigger on the way to the panel shouldn't close
 // it, and neither should crossing a neighbouring trigger at speed.
@@ -191,6 +198,77 @@ export function NavDropdown({
   );
 }
 
+// The small grey heading over each column. One constant so the group columns and
+// the Latest column can never drift apart.
+const COLUMN_LABEL = "type-caption text-muted-foreground";
+
+/**
+ * The panel's links, grouped into the labelled columns their `section` names.
+ *
+ * Order comes from the items themselves — the first item of a section fixes that
+ * column's position — so the nav data reads top-to-bottom as it renders
+ * left-to-right. A group whose items declare no section stays one column, headed
+ * by the group's own label.
+ */
+function columnsOf(group: NavGroup): { label?: string; items: NavItem[] }[] {
+  const columns: { label?: string; items: NavItem[] }[] = [];
+  for (const item of group.items) {
+    const existing = columns.find((column) => column.label === item.section);
+    if (existing) existing.items.push(item);
+    else columns.push({ label: item.section, items: [item] });
+  }
+  return columns;
+}
+
+/**
+ * One link in a panel column.
+ *
+ * At reading size rather than heading size. These were 30px, which gave five
+ * links the height of a hero and left the sheet's right two thirds empty; the
+ * references all set theirs at reading size and win the emphasis back with
+ * columns. Full ink at rest, dimming on hover — muted-at-rest read as a menu of
+ * things that were unavailable.
+ */
+function PanelLink({
+  item,
+  onNavigate,
+}: {
+  item: NavItem;
+  onNavigate: () => void;
+}) {
+  const cls =
+    "type-h4 flex items-center gap-1.5 rounded px-1 py-1 text-foreground transition-colors hover:text-muted-foreground";
+  // The arrow marks the links that leave the site in a new tab, and inherits the
+  // link's ink so it dims with it. The docs are external too but open in place,
+  // so they behave like any other nav item and an arrow on them would be a
+  // promise of a new tab the click doesn't keep.
+  const body = (
+    <>
+      {item.label}
+      {item.newTab && <IconArrowUpRight className="size-3 shrink-0" />}
+    </>
+  );
+
+  if (item.external) {
+    return (
+      <a
+        href={item.href}
+        target={item.newTab ? "_blank" : undefined}
+        rel={item.newTab ? "noopener noreferrer" : undefined}
+        className={cls}
+        onClick={onNavigate}
+      >
+        {body}
+      </a>
+    );
+  }
+  return (
+    <Link href={item.href} className={cls} onClick={onNavigate}>
+      {body}
+    </Link>
+  );
+}
+
 /**
  * The open group's panel: a full-bleed sheet dropping from under the bar, in the
  * shape Square and OpenAI use for theirs.
@@ -213,7 +291,6 @@ export function NavMegaPanel({
   railClassName: string;
 }) {
   const menu = useMenu("NavMegaPanel");
-  const featured = useFeaturedPost();
   const openLabel = menu.state.label;
 
   const openGroup =
@@ -256,63 +333,19 @@ export function NavMegaPanel({
           : `pointer-events-none opacity-0 ${instant ? "" : "-translate-y-1"}`
       } [[data-theme=dark]_&]:border-white/10`}
     >
-      <div className={`mx-auto flex gap-20 ${railClassName} py-10`}>
-        <div className="min-w-0">
-          <p className="type-caption text-muted-foreground">{shown.label}</p>
-          {/* Heading-size links on their own rows, the references' whole idea:
-              at 15px in a card these were a list to scan, and at this size they
-              are the four places you can go. No descriptions — a 13px line under
-              36px type reads as a caption hung off a title. */}
-          <ul className="mt-5 space-y-1">
-            {shown.items.map((item) => {
-              // Full ink at rest, dimming on hover — the way both references
-              // treat theirs. Muted-at-rest read as a menu of things that were
-              // unavailable once the type was this size.
-              const cls =
-                "type-h3 block text-foreground transition-colors hover:text-muted-foreground";
-              return (
+      <div className={`mx-auto flex gap-16 ${railClassName} py-8`}>
+        {columnsOf(shown).map((column) => (
+          <div key={column.label ?? shown.label} className="min-w-0 basis-44">
+            <p className={COLUMN_LABEL}>{column.label ?? shown.label}</p>
+            <ul className="mt-3 -ml-1">
+              {column.items.map((item) => (
                 <li key={item.href}>
-                  {item.external ? (
-                    <a
-                      href={item.href}
-                      target={item.newTab ? "_blank" : undefined}
-                      rel={item.newTab ? "noopener noreferrer" : undefined}
-                      className={cls}
-                      onClick={() => menu.close()}
-                    >
-                      {item.label}
-                    </a>
-                  ) : (
-                    <Link
-                      href={item.href}
-                      className={cls}
-                      onClick={() => menu.close()}
-                    >
-                      {item.label}
-                    </Link>
-                  )}
+                  <PanelLink item={item} onNavigate={menu.close} />
                 </li>
-              );
-            })}
-          </ul>
-        </div>
-
-        {/* What is new, as its own column under its own label — the shape
-            OpenAI's "Latest Advancements" takes beside its research links. Small
-            type against the big column: it is the newest thing, not the most
-            important one. */}
-        {shown.showFeatured && featured && (
-          <div className="min-w-0 max-w-xs">
-            <p className="type-caption text-muted-foreground">Latest</p>
-            <Link
-              href={`/blog/${featured.slug}`}
-              onClick={() => menu.close()}
-              className="type-body mt-5 block text-foreground transition-colors hover:text-muted-foreground"
-            >
-              {featured.title}
-            </Link>
+              ))}
+            </ul>
           </div>
-        )}
+        ))}
       </div>
     </div>
   );
