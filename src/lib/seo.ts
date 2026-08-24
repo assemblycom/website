@@ -89,12 +89,6 @@ export const PAGE_SEO = {
       "Refer Assembly to your audience and earn 20% of all referred payments for a year, with no cap on what you can earn.",
     path: "/affiliates-program",
   },
-  expertsProgram: {
-    title: "Experts Program",
-    description:
-      "Agencies and freelancers who set up Assembly workspaces and build custom apps earn recurring revenue share and a listing in our Experts directory.",
-    path: "/experts-program",
-  },
   demoVideo: {
     title: "Demo Video",
     description:

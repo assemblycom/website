@@ -17,6 +17,7 @@ import { pageMetadata } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 import { CustomersCta } from "@/components/customers/customers-cta";
 import { AuthorAvatar } from "@/components/blog/post-byline";
+import { PostCta } from "@/components/blog/post-cta";
 import { PostLightbox } from "@/components/blog/post-lightbox";
 import { TocMobile } from "@/components/ui/toc-mobile";
 
@@ -78,10 +79,10 @@ export default async function BlogPostPage({
   // rail — the announcements, in practice; short posts have nothing to list
   // either way.
   const showToc = post.showToc && contents.length > 1;
-  // Without a contents list the rail holds only the way back, which doesn't earn
-  // a column of its own — so the announcements read as a centred page instead of
-  // an article pushed off to one side.
-  const showRail = showToc;
+  // With neither a contents list nor a card, the rail holds only the way back,
+  // which doesn't earn a column of its own — so the announcements read as a
+  // centred page instead of an article pushed off to one side.
+  const showRail = showToc || Boolean(post.cta);
   // What the page actually gives an image, so the browser picks the right file
   // off Ghost's srcset: the reading measure beside a rail, the wider breakout on
   // the announcements.
@@ -124,6 +125,11 @@ export default async function BlogPostPage({
             <span aria-hidden>&larr;</span>
             All posts
           </Link>
+
+          {/* The card the post's own writer authored in Ghost, drawn where it
+              was drawn before: in the rail, above the contents. It says
+              something about THIS post, which the site's closing CTA can't. */}
+          {post.cta && <PostCta cta={post.cta} />}
 
           {showToc && (
             // Anchors only, no scroll tracking: on a post the list is a map
@@ -238,9 +244,21 @@ export default async function BlogPostPage({
           {post.image && (
             <div
               className={cn(
-                "relative mt-10 aspect-[16/9] w-full overflow-hidden rounded-2xl border border-border bg-muted [[data-theme=dark]_&]:border-[#383838]",
+                "relative mt-8 aspect-[16/9] w-full overflow-hidden rounded-2xl border border-border bg-muted [[data-theme=dark]_&]:border-[#383838]",
+                // Capped against the WINDOW, not given a shorter ratio of its
+                // own: 16:9 at the reading measure is 365px, which put the first
+                // line of the article below the fold on a laptop — you landed on
+                // a headline and a photograph and had to scroll to reach a word
+                // of the piece. A vh cap keeps the cover to a fixed share of
+                // whatever screen it opens on, so the body clears the fold on a
+                // short screen and the artwork still gets its full height on a
+                // tall one, instead of one hard-coded crop guessing at both.
+                showRail && "max-h-[30vh]",
                 // On the announcements the cover leads the same visuals the body
-                // runs wide, so it breaks out of the reading column with them.
+                // runs wide, so it breaks out of the reading column with them —
+                // and keeps its full height. Those covers are artwork carrying
+                // the product wordmark rather than stock photography above a
+                // listicle, and they are the page, not an ornament on it.
                 !showRail &&
                   "ml-[50%] w-[min(100vw-3rem,64rem)] max-w-none -translate-x-1/2",
               )}
@@ -268,7 +286,7 @@ export default async function BlogPostPage({
           {/* Ghost's own markup, restyled by .post-body in globals.css. The
               source is our CMS, not user input. */}
           <div
-            className={cn("post-body mt-12", !showRail && "post-body-wide")}
+            className={cn("post-body mt-10", !showRail && "post-body-wide")}
             dangerouslySetInnerHTML={{
               __html: withImageSizes(body, imageSizes),
             }}
@@ -304,10 +322,10 @@ export default async function BlogPostPage({
       </div>
 
       {/* Every post closes on the site's own CTA, the same block behind the same
-          divider that every other page ends on. Ghost's writers author their own
-          card per post; those are still parsed out of the body (so the markup
-          never lands mid-article) but they are not drawn — a bespoke promo box
-          inside the reading column was a second, off-system call to action. */}
+          divider that every other page ends on — including the posts carrying a
+          writer's card in the rail, since the two sit in different places rather
+          than one under the other. The rail is gone below lg, so on a phone this
+          is the only call to action either kind of post has. */}
       {/* Out of the page's gutters, so the rule runs edge to edge — and out of
           its bottom padding too, which would otherwise sit under the CTA's own
           and leave the button stranded in half a screen of white. */}

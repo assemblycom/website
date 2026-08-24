@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import { OPTIMIZED_IMAGE_HOSTS } from "./src/lib/image-hosts";
+import { LEGACY_REDIRECTS } from "./src/lib/redirects";
 
 // Mintlify docs are hosted at assembly-ff8b9417.mintlify.site and proxied
 // under /docs so they appear to live on this domain (Mintlify's
@@ -52,6 +53,10 @@ const nextConfig: NextConfig = {
         destination: "/embed/:slug",
         permanent: true,
       },
+      // Everything the previous assembly.com site published. Listed last so the
+      // two rules above keep precedence if the table ever grows a row that
+      // overlaps them.
+      ...LEGACY_REDIRECTS,
     ];
   },
   async rewrites() {

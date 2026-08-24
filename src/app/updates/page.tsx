@@ -1,16 +1,13 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { PrevNextPager } from "@/components/ui/pager";
 import { X_URL } from "@/lib/constants";
-import { UPDATES_PER_PAGE, updatesPath } from "@/lib/updates";
 import {
-  dropEmptyParagraphs,
-  dropUnservableFigures,
-  getUpdates,
-  markStandaloneLinks,
-  normalizeEntryHeadings,
-  relinkDeadDocs,
-  withCroppedScreenshots,
-} from "@/lib/ghost";
+  UPDATES_PER_PAGE,
+  formatEntryDate,
+  updatesPath,
+} from "@/lib/updates";
+import { getUpdates, updateEntryHtml } from "@/lib/ghost";
 import { PAGE_SEO, pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata(PAGE_SEO.updates);
@@ -21,17 +18,8 @@ export const metadata: Metadata = pageMetadata(PAGE_SEO.updates);
 // in 2021 — one page ran to four entries and another to thirty. A fixed count
 // pages evenly, and it reads the way the archive is actually read: newest first,
 // straight down, back through time.
-// The size itself lives in lib/updates.ts, because sitemap-updates.xml lists one
-// URL per page of entries and has to slice them the same way.
-
-function formatEntryDate(date: string): string {
-  return new Date(date).toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-    timeZone: "UTC",
-  });
-}
+// Each entry also has a page of its own at /updates/<slug>, which is what the
+// sitemap lists; this is the stream, not the only way to reach one.
 
 export default async function UpdatesPage({
   searchParams,
@@ -79,8 +67,6 @@ export default async function UpdatesPage({
 
         <ol className="mt-14 md:mt-20">
           {entries.map((entry) => (
-            // The slug is the anchor, so a single update can be linked to even
-            // though it has no page of its own.
             // Entries are separated by space alone — no rule between them, the
             // way Notion's releases and Framer's updates both read. The date in
             // the left rail already opens each one, so the line was a second
@@ -98,12 +84,21 @@ export default async function UpdatesPage({
                     with, in the mono face the site sets every date and figure
                     in. w-fit rather than inline-block: sticky needs a block-level
                     box, so the chip hugs its text without leaving the flow. */}
-                <time
-                  dateTime={entry.date}
-                  className="mb-3 block w-fit whitespace-nowrap rounded-md bg-muted px-2.5 py-1.5 font-mono text-[13px] uppercase tracking-wide text-muted-foreground lg:sticky lg:top-28 lg:mb-0 lg:self-start [[data-theme=dark]_&]:bg-white/[0.08]"
+                {/* The date is the entry's link as well as its stamp: it is
+                    the one piece of chrome every entry has, and each of these
+                    now has a page of its own for a reader to share and for a
+                    crawler to reach from here. */}
+                <Link
+                  href={`/updates/${entry.slug}`}
+                  className="mb-3 block w-fit lg:sticky lg:top-28 lg:mb-0 lg:self-start"
                 >
-                  {formatEntryDate(entry.date)}
-                </time>
+                  <time
+                    dateTime={entry.date}
+                    className="block whitespace-nowrap rounded-md bg-muted px-2.5 py-1.5 font-mono text-[13px] uppercase tracking-wide text-muted-foreground transition-colors hover:bg-border hover:text-foreground [[data-theme=dark]_&]:bg-white/[0.08]"
+                  >
+                    {formatEntryDate(entry.date)}
+                  </time>
+                </Link>
 
                 {/* Ghost's own markup, restyled by .post-body in globals.css.
                     The entry titles in Ghost are internal labels ("Changelog -
@@ -112,17 +107,7 @@ export default async function UpdatesPage({
                 <div
                   className="post-body updates-entry"
                   dangerouslySetInnerHTML={{
-                    __html: markStandaloneLinks(
-                      dropEmptyParagraphs(
-                        dropUnservableFigures(
-                          relinkDeadDocs(
-                            withCroppedScreenshots(
-                              normalizeEntryHeadings(entry.html),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                    __html: updateEntryHtml(entry.html),
                   }}
                 />
               </div>

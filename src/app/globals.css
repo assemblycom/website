@@ -667,7 +667,7 @@ html[data-theme="dark"] body {
   }
   /* Small labels / meta (section kickers, secondary UI copy). */
   .type-caption {
-    font-size: 0.8125rem; /* 13px */
+    font-size: 0.875rem; /* 14px, the small register */
     line-height: 1.5;
     font-weight: 400;
   }
@@ -2440,18 +2440,38 @@ html[data-theme="dark"] .v63-ring-solid::before {
        jump from the contents list doesn't land the heading behind them. */
     scroll-margin-top: 7rem;
     color: var(--foreground);
-    /* type-h3's steps (22px, 30px from md): a post's section head is the same
-       rank as an H3 anywhere else on the site. */
-    font-size: 1.375rem; /* 22px */
+    /* 24px, stepping to 30 at md. It sat at 22 while h3 sat at 18, and pulling
+       h3 up to 20 left the two ranks two pixels apart on a phone — the head of
+       a section and the head of a subsection reading as the same thing. */
+    font-size: 1.5rem; /* 24px */
     line-height: 1.25;
     letter-spacing: -0.015em;
   }
-  /* type-h4, which does not step: it is already the size the body grows into. */
-  .post-body h3,
+  /* h3 and h4 used to share this rule at 18px, so a post's two sub-levels were
+     the same size as each other and one pixel off the body they sat in: three
+     ranks of heading rendered as two, and the middle one barely a rank at all.
+     They are separate steps now, and the ladder is even at both breakpoints. */
+  /* h3 is the rank this blog actually leans on: the average post carries ten
+     h2s and SEVENTEEN h3s, where the reference article we set this against
+     (OpenAI's) carries four h2s and no h3 at all. A rank that appears every few
+     hundred words has to be restrained or the page becomes a column of
+     headings, so h3 sits one clear step over the body and nowhere near the h2,
+     and it does not grow at md — the body coming up to meet it is the step. */
+  .post-body h3 {
+    margin-top: 2.5rem;
+    color: var(--foreground);
+    font-size: 1.25rem; /* 20px */
+    line-height: 1.3;
+    letter-spacing: -0.012em;
+  }
+  /* h4 takes the body's own size and is set apart by ink and by the air above
+     it. It is a lead-in rather than a rank: two posts in eleven use one at all,
+     and giving it a size of its own bought a fourth heading step that was only
+     ever a pixel or two from the ones either side of it. */
   .post-body h4 {
     margin-top: 2.5rem;
     color: var(--foreground);
-    font-size: 1.125rem; /* 18px */
+    font-size: 1em;
     line-height: 1.4;
     letter-spacing: -0.006em;
   }
@@ -2465,6 +2485,18 @@ html[data-theme="dark"] .v63-ring-solid::before {
   .post-body strong {
     font-weight: 400;
     color: var(--foreground);
+  }
+  /* A paragraph bolded from end to end (see markLeadInParagraphs) is a line
+     introducing a list, not a phrase being emphasised inside a sentence. Ink
+     alone cannot say "emphasis" over a whole line — it just reads as a stray
+     colour — so the line takes the body's colour and the list it introduces
+     comes up to meet it. The colon at the end of the line was always the part
+     doing the work. */
+  .post-body p.lead-in > strong {
+    color: inherit;
+  }
+  .post-body > p.lead-in + :is(ul, ol) {
+    margin-top: 1rem;
   }
   /* Set the way Notion and OpenAI set a body link: no accent colour, a hairline
      rule at the text's own weight, and a hover that lightens the whole link
@@ -2492,13 +2524,19 @@ html[data-theme="dark"] .v63-ring-solid::before {
   }
   /* Lists hang off an inset rather than starting at the measure, so the items
      read as a set and the marker column doesn't sit in the text's left edge. */
+  /* No lead-in on a phone: the item's own 1.5rem hanging indent is the whole
+     inset there. The extra 0.75rem the wide measure carries cost 36px of a
+     327px line, which is a ninth of it — the bullets sat adrift of the
+     paragraphs above them and every item wrapped a word early. It comes back
+     at md, where the measure can spare it. */
   .post-body ul {
     list-style: none;
-    padding-left: 0.75rem;
+    padding-left: 0;
   }
+  /* Enough for the number and its stop at the body's size, and no more. */
   .post-body ol {
     list-style: decimal;
-    padding-left: 2.25rem;
+    padding-left: 1.75rem;
   }
   /* Items sit further apart than the lines inside them, so a wrapped item still
      reads as one item rather than the list reading as a block of broken lines. */
@@ -2681,9 +2719,12 @@ html[data-theme="dark"] .v63-ring-solid::before {
     color: var(--foreground);
     font-size: 0.9em;
   }
+  /* The small register: one size for every aside to the copy — captions, table
+     cells, the note under a table. They used to sit at 13px, 14px and 15px,
+     three values doing one job. */
   .post-body figcaption {
     margin-top: 0.75rem;
-    font-size: 0.875rem;
+    font-size: 0.875rem; /* 14px */
     letter-spacing: normal;
   }
   /* A pull quote, not an indented paragraph: at body size behind a hairline it
@@ -2695,7 +2736,7 @@ html[data-theme="dark"] .v63-ring-solid::before {
        stray block of large text. */
     padding-left: 1.75rem;
     border-left: 2px solid color-mix(in srgb, var(--foreground) 18%, transparent);
-    font-size: 1.1875rem; /* 19px, stepping to 22px with the body below */
+    font-size: 1.25rem; /* 20px, the sub-head's step, at both breakpoints */
     line-height: 1.45;
     letter-spacing: -0.014em;
     color: var(--foreground);
@@ -2718,11 +2759,6 @@ html[data-theme="dark"] .v63-ring-solid::before {
   .post-body blockquote cite {
     color: var(--foreground);
     font-style: normal;
-  }
-  @media (max-width: 47.99rem) {
-    .post-body blockquote {
-      font-size: 1.1875rem;
-    }
   }
   .post-body hr {
     margin-top: 3rem;
@@ -2811,13 +2847,14 @@ html[data-theme="dark"] .v63-ring-solid::before {
     margin-top: 2.5rem;
     margin-bottom: 2.5rem;
     border-collapse: collapse;
-    /* A step under the body copy. Four columns of prose in a 40.5rem measure is
-       about 150px each; at body size that is three words to a line. The smaller
-       face fits roughly a fifth more per line, which is the difference between a
-       cell that wraps four times and one that wraps twice — and a table set
-       tighter than its surrounding copy reads as a table, not as a paragraph
-       someone ruled. */
-    font-size: 0.875rem;
+    /* A step under the body copy, and it steps WITH it: four columns of prose in
+       a 40.5rem measure is about 150px each, and at body size that is three
+       words to a line, so the smaller face is what keeps a cell wrapping twice
+       instead of four times. What matters is the ratio, not the number — held
+       one step down, a table reads as a table rather than as a paragraph
+       someone ruled. Left at a flat 14px while the body grew to 18 it stopped
+       reading as a register and started reading as small. */
+    font-size: 0.875rem; /* 14px */
     line-height: 1.5;
     letter-spacing: normal;
     /* The covers scroll with the content and the shadows are pinned to the box,
@@ -2848,7 +2885,7 @@ html[data-theme="dark"] .v63-ring-solid::before {
     margin-top: -1.75rem;
     margin-bottom: 2.5rem;
     color: var(--muted-foreground);
-    font-size: 0.8125rem;
+    font-size: 0.875rem; /* 14px, the small register */
     letter-spacing: normal;
   }
   /* Rules between the rows and nothing else: a grid of boxes reads as a form,
@@ -2861,18 +2898,24 @@ html[data-theme="dark"] .v63-ring-solid::before {
     /* Below this a comparison column shreds to one word a line, which is worse
        to read than reaching for the column by scrolling. */
     min-width: 7rem;
-    padding: 0.875rem 1.5rem 0.875rem 0;
+    /* Inset on both sides rather than run to the measure's own edges: the
+       header now carries a fill, and a column name flush against the end of
+       that band reads as a crop. The body rows take the same inset so every
+       column still lines up with its heading. 14px a side rather than 20: the
+       cells used to carry 24px on the right and nothing on the left, and
+       widening that to 40 took 64px of column width out of a four-column table,
+       which the cells paid for in extra wrapped lines. */
+    padding: 0.875rem 0.875rem;
     text-align: left;
     vertical-align: top;
   }
-  .post-body :is(th, td):last-child {
-    padding-right: 0;
-  }
-  /* The header row says "table" by sitting quieter than the rows it labels — no
-     fill, just the muted ink the rest of the site uses for labels over a firmer
-     rule. A grey band read as chrome bolted onto the copy. tbody:first-child
-     only matches a table that shipped without a thead, so a body row never picks
-     up the header's treatment. */
+  /* The header row carries no fill: a grey band read as chrome bolted onto the
+     copy. It is separated by ink and by a firmer rule instead — but at FULL
+     foreground, where it used to take the muted grey the site labels UI with.
+     Muted put the header lighter than the data underneath it, so on a long
+     comparison table the column names receded exactly where a reader scanning
+     back up the page needed them. tbody:first-child only matches a table that
+     shipped without a thead, so a body row never picks up this treatment. */
   .post-body thead th,
   .post-body tbody:first-child tr:first-child th {
     /* Set as a label, not as a line of the table's copy: a step down in size on
@@ -2881,48 +2924,79 @@ html[data-theme="dark"] .v63-ring-solid::before {
        size. Balanced so the second line is not one orphaned word, and hung from
        the bottom so every column's name sits on the rule whether it took one
        line or two. */
-    padding-top: 0;
-    padding-bottom: 0.625rem;
-    color: var(--muted-foreground);
-    /* The cells' own size. A step down as well as a shade lighter made the
-       header of a two-column pros-and-cons table look like a caption for the
-       table rather than the name of its column; the muted ink and the rule
-       under it are enough to set it apart. */
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    color: var(--foreground);
+    /* The cells' own size. A step down in size as well made the header of a
+       two-column pros-and-cons table look like a caption for the table rather
+       than the name of its column; the ink and the rule under it set it apart
+       without shrinking it. */
     font-size: 0.875rem;
     line-height: 1.35;
     font-weight: 400;
     text-wrap: balance;
-    vertical-align: bottom;
+    vertical-align: middle;
   }
-  .post-body thead tr,
-  .post-body tbody:first-child tr:first-child {
-    border-bottom-color: color-mix(in srgb, var(--foreground) 24%, transparent);
+  /* The site's own subtle fill, the one the CTA card and the changelog's date
+     chip already sit on — a shade, not a grey band bolted onto the copy. It
+     inverts with the theme on its own. */
+  /* The header takes the same hairline every other row does. It used to carry a
+     firmer one because the rule was the only thing marking it; the fill does
+     that now, and a darker rule on top read as a line drawn under the table's
+     first row rather than as the edge of its header. */
+  /* The fill goes on the CELLS, not on the row. Under border-collapse a row's
+     background stops short of the collapsed border, which left a hairline of
+     page showing between the band and the rule beneath it. Square corners: the
+     rules above and below the band are square, and rounding only these read as
+     a chip sitting on the table rather than as its first row. */
+  .post-body thead th,
+  .post-body tbody:first-child tr:first-child th {
+    background: var(--muted);
   }
   /* The first body row sits off the header rule rather than against it. */
   .post-body thead + tbody tr:first-child :is(th, td) {
     padding-top: 1rem;
   }
+
   /* The post's own scale steps where the site's does. */
   @media (min-width: 48rem) {
+    /* 17px on a 1.65 leading, which is the reference article's body exactly. It
+       had been pushed to 18 to answer a request for "18 or 19px"; at that size
+       every heading rank had to grow to stay clear of it, and a page carrying
+       twenty-seven headings turned into a page of headings. The reading size is
+       the thing the rest of the ladder is measured from, so it is the last
+       thing that should move. */
     .post-body {
       font-size: 1.0625rem; /* 17px */
     }
     .post-body h2 {
       font-size: 1.875rem; /* 30px */
     }
-    .post-body blockquote {
-      font-size: 1.375rem; /* 22px */
+    /* h3, h4 and the blockquote hold their size here: the body steps up to
+       them instead. */
+    .post-body ul {
+      padding-left: 0.75rem;
+    }
+    .post-body ol {
+      padding-left: 2.25rem;
+    }
+    /* One small register at both breakpoints, a step under the body. */
+    .post-body table,
+    .post-body thead th,
+    .post-body tbody:first-child tr:first-child th,
+    .post-body .table-note,
+    .post-body figcaption {
+      font-size: 0.9375rem; /* 15px */
     }
     /* The changelog's own head, a clear step over the 17px body without
-       reaching the blog's 30px display size. The sub-head needs nothing here:
-       it is set in em and follows the body up on its own. */
+       reaching the blog's 30px display size. */
     .updates-entry h2 {
       margin-top: 4.5rem;
       font-size: 1.5rem; /* 24px */
     }
     .updates-entry :is(h3, h4) {
       margin-top: 3.5rem;
-      font-size: 1.1875rem; /* 19px */
+      font-size: 1.25rem; /* 20px, the same sub-head step the blog uses */
     }
   }
   /* On a phone the reading measure is the page's gutters, and a table is the one

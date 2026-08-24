@@ -9,6 +9,7 @@ import {
   getPostsByAuthor,
   toCard,
 } from "@/lib/ghost";
+import { pageCount, pageFromParam, pagedSeo } from "@/lib/blog";
 import { isOptimizedHost } from "@/lib/image-hosts";
 import { pageMetadata } from "@/lib/seo";
 
@@ -18,31 +19,52 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ page?: string }>;
 }): Promise<Metadata> {
-  const { slug } = await params;
+  const [{ slug }, { page: requested }] = await Promise.all([
+    params,
+    searchParams,
+  ]);
   const author = await getAuthor(slug);
   if (!author) return {};
-  return pageMetadata({
-    title: author.name,
-    description:
-      author.bio ?? `Posts written by ${author.name} on the Assembly blog.`,
-    path: `/blog/author/${author.slug}`,
-  });
+  const page = pageFromParam(
+    requested,
+    pageCount((await getPostsByAuthor(slug)).length),
+  );
+  return pageMetadata(
+    pagedSeo(
+      {
+        title: author.name,
+        description:
+          author.bio ?? `Posts written by ${author.name} on the Assembly blog.`,
+        path: `/blog/author/${author.slug}`,
+      },
+      page,
+    ),
+  );
 }
 
 export default async function AuthorPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ page?: string }>;
 }) {
-  const { slug } = await params;
+  const [{ slug }, { page: requested }] = await Promise.all([
+    params,
+    searchParams,
+  ]);
   const [author, posts] = await Promise.all([
     getAuthor(slug),
     getPostsByAuthor(slug),
   ]);
   if (!author) notFound();
+
+  const page = pageFromParam(requested, pageCount(posts.length));
 
   return (
     <div className="mx-auto max-w-[1200px] px-6 pb-24 pt-16 md:px-10 md:pb-32 md:pt-24">
@@ -93,7 +115,11 @@ export default async function AuthorPage({
       </header>
 
       <div className="mt-14 md:mt-20">
-        <BlogBrowser posts={posts.map(toCard)} />
+        <BlogBrowser
+          posts={posts.map(toCard)}
+          basePath={`/blog/author/${author.slug}`}
+          page={page}
+        />
       </div>
     </div>
   );

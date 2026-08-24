@@ -10,15 +10,46 @@ import {
   standfirst,
   toCard,
 } from "@/lib/ghost";
+import { pageCount, pageFromParam, pagedSeo } from "@/lib/blog";
 import { PAGE_SEO, pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = pageMetadata(PAGE_SEO.blog);
-
-export default async function BlogPage() {
-  const [posts, categories] = await Promise.all([getPosts(), getCategories()]);
-  // Ghost's own featured flag decides the lead, falling back to the newest post
-  // when nothing is flagged.
+/**
+ * The archive as this page pages it: Ghost's own featured flag decides the
+ * lead, falling back to the newest post when nothing is flagged, and the lead
+ * is drawn above the grid rather than repeated inside it. Which page a ?page=
+ * asks for has to be resolved against that same list, so the metadata and the
+ * page agree on how many there are.
+ */
+async function archive(requested: string | undefined) {
+  const posts = await getPosts();
   const featured = posts.find((post) => post.featured) ?? posts[0];
+  const inGrid = posts.filter((post) => post.slug !== featured?.slug);
+  return {
+    posts,
+    featured,
+    page: pageFromParam(requested, pageCount(inGrid.length)),
+  };
+}
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}): Promise<Metadata> {
+  const { page } = await archive((await searchParams).page);
+  return pageMetadata(pagedSeo(PAGE_SEO.blog, page));
+}
+
+export default async function BlogPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
+  const [{ page: requested }, categories] = await Promise.all([
+    searchParams,
+    getCategories(),
+  ]);
+  const { posts, featured, page } = await archive(requested);
 
   return (
     // The same rail the nav and the demo page run on, so the page's left edge
@@ -26,7 +57,10 @@ export default async function BlogPage() {
     <div className="mx-auto max-w-[1600px] px-6 pb-20 pt-12 md:px-10 md:pb-24 md:pt-16">
       <h1 className="type-display text-foreground">Blog</h1>
 
-      {featured && (
+      {/* Page one only. The lead is the front of the archive, not a masthead
+          repeated over every page of it, and on page two it would also be the
+          first thing a reader landing from the paginator had to scroll past. */}
+      {featured && page === 1 && (
         // The lead runs the page's full width: the cover on one side, the post's
         // own words on the other, closing on who wrote it.
         <Link
@@ -95,6 +129,8 @@ export default async function BlogPage() {
         <BlogBrowser
           posts={posts.map(toCard)}
           categories={categories}
+          basePath="/blog"
+          page={page}
           featuredSlug={featured?.slug}
         />
       </div>

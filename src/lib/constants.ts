@@ -37,8 +37,15 @@ export interface NavLink {
 export const DOCS_URL = `${SITE_URL}/docs`;
 // The footer splits docs into its two halves, where the nav keeps one "Docs"
 // entry. Both live on assembly.com, not the studio subdomain DOCS_URL uses.
-export const GUIDE_URL = "https://assembly.com/docs";
-export const API_REFERENCE_URL = "https://assembly.com/docs/api-reference";
+//
+// Linked at the page each section actually opens on, not at its root: /docs and
+// /docs/api-reference are themselves redirects to these two, so linking the
+// short form spends a hop on every visit — and on every crawl of every page
+// carrying the link.
+export const DOCS_WELCOME_PATH = "/getting-started/welcome";
+export const API_REFERENCE_PATH = "/api-reference/introduction";
+export const GUIDE_URL = `https://assembly.com/docs${DOCS_WELCOME_PATH}`;
+export const API_REFERENCE_URL = `https://assembly.com/docs${API_REFERENCE_PATH}`;
 
 // Shared because the footer's socials and the changelog's follow link are the
 // same account, and the two drifting apart is the failure mode a second copy
@@ -358,9 +365,6 @@ export const FOOTER_COLUMNS: FooterGroup[][] = [
     {
       label: "Partners",
       links: [
-        // Experts program is hidden from the footer for now; the page is still
-        // live at /experts-program.
-        // { label: "Experts program", href: "/experts-program" },
         { label: "Affiliates program", href: "/affiliates-program" },
       ],
     },

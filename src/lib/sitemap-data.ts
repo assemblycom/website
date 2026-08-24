@@ -13,11 +13,18 @@ import { getComparisons } from "@/lib/comparisons";
 import { getAppTemplates, getListedEmbeds } from "@/lib/contentful";
 import { getDefinitions } from "@/lib/definitions";
 import { getFeaturePages } from "@/lib/features";
-import { getAuthors, getPosts, getUpdates } from "@/lib/ghost";
+import {
+  entryHeadline,
+  getAuthors,
+  getCategories,
+  getPosts,
+  getUpdates,
+} from "@/lib/ghost";
 import { getOpenRoles } from "@/lib/careers";
 import { getSolutions } from "@/lib/solutions";
 import { getVisibleTemplates } from "@/lib/visible-templates";
-import { UPDATES_PER_PAGE, updatesPath } from "@/lib/updates";
+import { updatesPath } from "@/lib/updates";
+import { tagPath } from "@/lib/blog";
 
 /**
  * One source of truth for every URL this site publishes, grouped the way the
@@ -56,9 +63,14 @@ const EXCLUDED = new Set<string>([
   // An internal contact sheet of the template cover mocks. Unlisted and
   // noindex; it exists to look at while designing, not to be found.
   "/covers",
-  // The XML sitemaps' own HTML twin. Listing the index of the site inside the
-  // index of the site is noise, and Google asks for sitemaps not to self-list.
-  "/sitemap",
+]);
+
+// Static routes that a content sitemap already owns. They are real, indexable
+// pages — they just belong in one sitemap rather than two, and findStaticRoutes
+// would otherwise hand them to sitemap-main.xml as well.
+const OWNED_BY_CONTENT_SITEMAP = new Set<string>([
+  // updatesUrls() lists the changelog, page one included.
+  "/updates",
 ]);
 
 // Set at BUILD time by next.config.ts, not read at request time: it stands in as
@@ -135,7 +147,7 @@ export async function mainUrls(): Promise<SitemapUrl[]> {
   });
 
   const pages = findStaticRoutes()
-    .filter((path) => !EXCLUDED.has(path))
+    .filter((path) => !EXCLUDED.has(path) && !OWNED_BY_CONTENT_SITEMAP.has(path))
     .sort();
 
   return [
@@ -198,15 +210,27 @@ export async function embedUrls(): Promise<SitemapUrl[]> {
   }));
 }
 
-/** Ghost /blog posts, plus the author pages they generate. */
+/** Ghost /blog posts, plus the author and tag pages they generate. */
 export async function blogUrls(): Promise<SitemapUrl[]> {
-  const [posts, authors] = await Promise.all([getPosts(), getAuthors()]);
+  const [posts, authors, categories] = await Promise.all([
+    getPosts(),
+    getAuthors(),
+    getCategories(),
+  ]);
   const newestByAuthor = new Map<string, string>();
+  const newestByTag = new Map<string, string>();
   for (const post of posts) {
-    if (!post.authorSlug) continue;
-    const held = newestByAuthor.get(post.authorSlug);
-    if (!held || post.updatedAt > held) {
-      newestByAuthor.set(post.authorSlug, post.updatedAt);
+    if (post.authorSlug) {
+      const held = newestByAuthor.get(post.authorSlug);
+      if (!held || post.updatedAt > held) {
+        newestByAuthor.set(post.authorSlug, post.updatedAt);
+      }
+    }
+    if (post.categorySlug) {
+      const held = newestByTag.get(post.categorySlug);
+      if (!held || post.updatedAt > held) {
+        newestByTag.set(post.categorySlug, post.updatedAt);
+      }
     }
   }
   return [
@@ -222,32 +246,52 @@ export async function blogUrls(): Promise<SitemapUrl[]> {
       lastModified: newestByAuthor.get(author.slug) ?? BUILD_TIME,
       title: author.name,
     })),
+    // A tag's shelf is a page of its own now rather than a filter held in the
+    // browser, so it is a URL a crawler can be told about. Same rule as an
+    // author page: it changes when its newest post does.
+    ...categories.map((category) => ({
+      path: tagPath(category.slug),
+      lastModified: newestByTag.get(category.slug) ?? BUILD_TIME,
+      title: category.name,
+    })),
   ];
 }
 
 /**
- * The changelog.
+ * The changelog: the listing, then one URL per entry.
  *
- * A changelog entry has no page of its own — every entry is rendered inline on
- * /updates, ten to a page — so what there is to list is the paged listing, not
- * one URL per release. Each page's lastmod is the newest entry printed on it.
+ * It used to list /updates?page=2 … ?page=17, which told a crawler where the
+ * pagination was rather than where the content was — seventeen URLs standing in
+ * for a hundred and seventy releases, none of them addressable. Every entry has
+ * a page of its own now, so every entry is listed.
+ *
+ * The listing itself stays, dated by its newest entry, and is deliberately the
+ * only /updates URL in any sitemap: it is left out of sitemap-main.xml so it
+ * isn't claimed twice. The remaining pages of it are reachable from its own
+ * paginator, which is a run of real links.
  */
 export async function updatesUrls(): Promise<SitemapUrl[]> {
-  const posts = await getUpdates();
-  const pageCount = Math.max(1, Math.ceil(posts.length / UPDATES_PER_PAGE));
-  return Array.from({ length: pageCount }, (_, i) => {
-    const page = i + 1;
-    const onPage = posts.slice((page - 1) * UPDATES_PER_PAGE, page * UPDATES_PER_PAGE);
-    const newest = onPage.reduce(
-      (latest, post) => (post.updatedAt > latest ? post.updatedAt : latest),
-      onPage[0]?.updatedAt ?? BUILD_TIME,
-    );
-    return {
-      path: updatesPath(page),
-      lastModified: newest,
-      title: page === 1 ? "Updates" : `Updates, page ${page}`,
-    };
-  });
+  const entries = await getUpdates();
+  return [
+    {
+      path: updatesPath(1),
+      lastModified: newestOf(entries),
+      title: "Updates",
+    },
+    ...entries.map((entry) => ({
+      path: `/updates/${entry.slug}`,
+      lastModified: entry.updatedAt,
+      title: entryHeadline(entry),
+    })),
+  ];
+}
+
+/** The newest edit date in a set of entries. */
+function newestOf(entries: { updatedAt: string }[]): string {
+  return entries.reduce(
+    (latest, entry) => (entry.updatedAt > latest ? entry.updatedAt : latest),
+    entries[0]?.updatedAt ?? BUILD_TIME,
+  );
 }
 
 /** /definitions/[slug] — the glossary. */

@@ -58,6 +58,8 @@ export interface GhostPost {
   excerpt: string;
   /** The post's primary tag, e.g. "Announcements". Some posts carry none. */
   category?: string;
+  /** That tag's slug, which is the /blog/tag/<slug> shelf the post sits on. */
+  categorySlug?: string;
   author: string;
   /** Only the Content API knows the author's slug; RSS carries just a name. */
   authorSlug?: string;
@@ -75,6 +77,23 @@ export interface GhostPost {
   image?: string;
   /** The post body, as Ghost renders it. */
   html: string;
+}
+
+/**
+ * Ghost's own slug rule, for the RSS path: the feed carries a tag's NAME and
+ * nothing else, and a tag needs a slug to have a URL. The Content API hands the
+ * real slug over, so this only stands in when the key is missing.
+ */
+function slugifyTag(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+/** The pair a card needs to name its shelf and link to it. */
+function withCategory(name: string | undefined) {
+  return name ? { category: name, categorySlug: slugifyTag(name) } : {};
 }
 
 function unwrap(value: string | undefined): string {
@@ -270,9 +289,11 @@ function withBody(
   hasFeatureImage: boolean,
 ): { html: string; cta?: PostCta } {
   let cta: PostCta | undefined;
-  const cleaned = unboldPunctuation(
-    markQuoteAttribution(
-      trimLinkEdges(dropLeadingFigure(rawHtml, hasFeatureImage)),
+  const cleaned = markLeadInParagraphs(
+    unboldPunctuation(
+      markQuoteAttribution(
+        trimLinkEdges(dropLeadingFigure(rawHtml, hasFeatureImage)),
+      ),
     ),
   );
 
@@ -305,7 +326,7 @@ function parseItems(xml: string): GhostPost[] {
         slug,
         title: withoutTitleEmoji(title),
         excerpt: tag(item, "description") ?? "",
-        category: tag(item, "category"),
+        ...withCategory(tag(item, "category")),
         author: tag(item, "dc:creator") ?? "Assembly",
         date: published
           ? new Date(published).toISOString()
@@ -377,7 +398,7 @@ interface ContentApiPost {
   updated_at?: string;
   featured?: boolean;
   custom_template?: string | null;
-  primary_tag?: { name: string } | null;
+  primary_tag?: { name: string; slug: string } | null;
   primary_author?: {
     name: string;
     slug: string;
@@ -403,7 +424,11 @@ async function fetchFromContentApi(
     const url =
       `${source.url}/ghost/api/content/posts/` +
       `?key=${key}&limit=${API_PAGE_SIZE}&page=${page}` +
-      `&include=tags,authors&order=published_at%20desc`;
+      // The id is a tiebreaker, not a preference. Paging an unstable sort is
+      // lossy: two posts published in the same second sat either side of a page
+      // boundary, and the archive came back with one of them twice and the
+      // other not at all.
+      `&include=tags,authors&order=published_at%20desc%2Cid%20desc`;
 
     const response = await fetch(url, {
       next: { revalidate: REVALIDATE_SECONDS },
@@ -430,6 +455,7 @@ async function fetchFromContentApi(
         title: withoutTitleEmoji(post.title),
         excerpt: post.custom_excerpt ?? post.excerpt ?? "",
         category: post.primary_tag?.name,
+        categorySlug: post.primary_tag?.slug,
         author: post.primary_author?.name ?? "Assembly",
         authorSlug: post.primary_author?.slug,
         authorImage: post.primary_author?.profile_image ?? undefined,
@@ -450,12 +476,30 @@ async function fetchFromContentApi(
 // One fetch per instance per render pass, however many pages ask for the list.
 const cached = new Map<string, Promise<GhostPost[]>>();
 
+/**
+ * One post per slug, keeping the first.
+ *
+ * The Content API is ordered so it can't repeat itself, but the RSS fallback
+ * has no order parameter to fix, and a repeated slug is not a cosmetic fault:
+ * it duplicates a <loc> in the sitemap and collides with itself as a React key.
+ */
+function bySlug(posts: GhostPost[]): GhostPost[] {
+  const seen = new Set<string>();
+  return posts.filter((post) => {
+    if (seen.has(post.slug)) return false;
+    seen.add(post.slug);
+    return true;
+  });
+}
+
 function getFrom(source: GhostSource): Promise<GhostPost[]> {
   let pending = cached.get(source.url);
   if (!pending) {
-    pending = source.key
-      ? fetchFromContentApi(source, source.key)
-      : fetchFromRss(source);
+    pending = (
+      source.key
+        ? fetchFromContentApi(source, source.key)
+        : fetchFromRss(source)
+    ).then(bySlug);
     cached.set(source.url, pending);
   }
   return pending;
@@ -472,6 +516,10 @@ export function getUpdates(): Promise<GhostPost[]> {
 
 export async function getPost(slug: string): Promise<GhostPost | undefined> {
   return (await getPosts()).find((post) => post.slug === slug);
+}
+
+export async function getUpdate(slug: string): Promise<GhostPost | undefined> {
+  return (await getUpdates()).find((post) => post.slug === slug);
 }
 
 /** Just enough of a post to name it and link to it. */
@@ -493,10 +541,31 @@ export async function getFeaturedPost(): Promise<PostRef | null> {
   return post ? { slug: post.slug, title: post.title } : null;
 }
 
+/** A tag as the filter strip and the /blog/tag/<slug> route both need it. */
+export interface Category {
+  name: string;
+  slug: string;
+}
+
 /** Every tag in use, in the order the newest post carrying it appears. */
-export async function getCategories(): Promise<string[]> {
+export async function getCategories(): Promise<Category[]> {
   const posts = await getPosts();
-  return [...new Set(posts.flatMap((post) => post.category ?? []))];
+  const bySlug = new Map<string, Category>();
+  for (const post of posts) {
+    if (!post.category || !post.categorySlug) continue;
+    if (!bySlug.has(post.categorySlug)) {
+      bySlug.set(post.categorySlug, {
+        name: post.category,
+        slug: post.categorySlug,
+      });
+    }
+  }
+  return [...bySlug.values()];
+}
+
+/** The posts on one tag's shelf, newest first like every other list here. */
+export async function getPostsByCategory(slug: string): Promise<GhostPost[]> {
+  return (await getPosts()).filter((post) => post.categorySlug === slug);
 }
 
 /**
@@ -812,7 +881,9 @@ export function quotesAboveFigures(html: string): string {
 const DEAD_DOC_HOSTS = ["docs.assembly.com", "docs.joinportal.com"];
 const DOCS_ROOT = "https://assembly.com/docs";
 const DOC_PATHS: Record<string, string> = {
-  "/": "",
+  // The welcome page rather than "", which would point at /docs and take the
+  // redirect the deep links here exist to avoid.
+  "/": "/getting-started/welcome",
   "/reference/introduction": "/api-reference/introduction",
   "/reference/getting-started-introduction": "/api-reference/introduction",
   "/reference/pagination": "/api-reference/pagination",
@@ -845,7 +916,9 @@ export function relinkDeadDocs(html: string): string {
     const path = url.pathname.replace(/\/$/, "") || "/";
     const target =
       DOC_PATHS[path] ??
-      (path.startsWith("/reference/") ? REFERENCE_FALLBACK : "");
+      (path.startsWith("/reference/")
+        ? REFERENCE_FALLBACK
+        : DOC_PATHS["/"]);
     // Ghost's own ?ref= tracking param goes with the dead URL it was on.
     return `href="${DOCS_ROOT}${target}"`;
   });
@@ -1150,4 +1223,82 @@ export function withHeadingIds(html: string): {
   );
 
   return { html: out, headings };
+}
+
+// "Changelog - MCP", "June 30 2026: Changelog" — the boilerplate an editor types
+// to find an entry again, which is not part of its name.
+const ENTRY_LABEL = /^\s*changelog\s*[-–—:]\s*|\s*[-–—:]\s*changelog\s*$/gi;
+
+// Only a heading the body OPENS on. A heading further down is a section of the
+// entry, not its name.
+const LEADING_HEADING = /^\s*<h[23][^>]*>([\s\S]*?)<\/h[23]>/i;
+
+/**
+ * The changelog's render pipeline, in the order the transforms have to run.
+ *
+ * Shared because /updates prints every entry inline and /updates/<slug> prints
+ * one of them: two copies of this chain would drift, and the drift would show
+ * as the same entry rendering differently on two pages.
+ */
+export function updateEntryHtml(html: string): string {
+  return markStandaloneLinks(
+    dropEmptyParagraphs(
+      dropUnservableFigures(
+        relinkDeadDocs(withCroppedScreenshots(normalizeEntryHeadings(html))),
+      ),
+    ),
+  );
+}
+
+/**
+ * What to call one changelog entry.
+ *
+ * Ghost's titles here are internal labels rather than headlines, and every entry
+ * whose body opens on a heading is already carrying the name readers should see.
+ * The title is the fallback for the few that open on a paragraph, with the label
+ * boilerplate taken off.
+ */
+export function entryHeadline(post: GhostPost): string {
+  const heading = LEADING_HEADING.exec(post.html)?.[1];
+  const text = heading
+    ? decodeEntities(heading.replace(/<[^>]+>/g, "")).trim()
+    : "";
+  if (text) return text;
+  return decodeEntities(post.title.replace(ENTRY_LABEL, "")).trim() || post.title;
+}
+
+/**
+ * The body with its opening heading removed, for the page that has already
+ * printed that heading as its <h1>. Leaving it in would put the same line on the
+ * page twice, once at each of two levels.
+ */
+export function entryBodyHtml(post: GhostPost): string {
+  const html = updateEntryHtml(post.html);
+  return LEADING_HEADING.test(html) ? html.replace(LEADING_HEADING, "") : html;
+}
+
+// A paragraph whose entire content is one <strong> — "Here's what I looked at:"
+// over a list, which writers reach for in more than half the archive. Trailing
+// whitespace and Ghost's &nbsp; are allowed inside the closing tag; anything
+// else after the strong means the bold is a lead-in to a sentence and the
+// paragraph is ordinary copy.
+const ALL_BOLD_PARAGRAPH =
+  /<p\b([^>]*)>\s*<(strong|b)\b[^>]*>([\s\S]*?)<\/\2>(?:&nbsp;|\s)*<\/p>/gi;
+
+/**
+ * Flags the paragraphs that are bold from end to end.
+ *
+ * Emphasis on this site is carried by ink rather than weight, because PP Mori's
+ * 500 is a semibold. That works on a phrase inside a sentence and fails on a
+ * whole line: the paragraph lifts from the body's 78% to full foreground and
+ * reads as a colour that arrived by accident, not as emphasis. Marked here and
+ * set back to the body's colour in CSS, so the line these writers use to
+ * introduce a list is a line of the article again.
+ */
+export function markLeadInParagraphs(html: string): string {
+  return html.replace(
+    ALL_BOLD_PARAGRAPH,
+    (_match, attrs: string, _tag: string, inner: string) =>
+      `<p${attrs} class="lead-in"><strong>${inner}</strong></p>`,
+  );
 }

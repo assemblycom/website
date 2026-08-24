@@ -1,49 +1,51 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
-import { formatPostDate, type PostCard } from "@/lib/ghost";
+import { formatPostDate, type Category, type PostCard } from "@/lib/ghost";
 import { FIELD_CLS } from "@/components/ui/select-menu";
 import { Pager } from "@/components/ui/pager";
+import { POSTS_PER_PAGE, pageCount, pagePath, tagPath } from "@/lib/blog";
 import { PostByline } from "./post-byline";
 
-const ALL = "All";
-// The archive runs to hundreds of posts, so the grid pages rather than showing
-// every card at once. Twelve made 31 pages of a 370-post archive, which put the
-// paginator to work for anyone browsing rather than searching; sixty is five
-// pages, which is a run you can actually walk.
-const PAGE_SIZE = 60;
 /**
- * The card grid, with a search box and tag filters where there is more than one
- * shelf to choose between. The author pages reuse it without `categories`,
- * since every post on one is by the same person and the pills would filter
- * nothing.
+ * The card grid, with tag filters where there is more than one shelf to choose
+ * between and a search box over whichever shelf you are on. The author pages
+ * reuse it without `categories`, since every post on one is by the same person
+ * and the pills would filter nothing.
+ *
+ * Which page and which shelf are URL state, not component state: both render as
+ * real links to real URLs, so they survive a share, a middle-click and a reader
+ * with JavaScript off. This is still a client component — the search box below
+ * filters as you type — but the links are in the server-rendered HTML either
+ * way, which is the part that had to change.
  */
 export function BlogBrowser({
   posts,
   categories,
+  /** The shelf being shown, as a tag slug. Absent on /blog and on an author. */
+  activeSlug,
+  /** What page links are relative to: "/blog", a tag's path, an author's. */
+  basePath,
+  /** Which page of `posts` to show, already clamped by the page component. */
+  page,
   /** Shown above the grid, so it is left out of it until a search narrows things. */
   featuredSlug,
 }: {
   posts: PostCard[];
-  categories?: string[];
+  categories?: Category[];
+  activeSlug?: string;
+  basePath: string;
+  page: number;
   featuredSlug?: string;
 }) {
-  const [active, setActive] = useState<string>(ALL);
   const [query, setQuery] = useState("");
-  const [current, setCurrent] = useState(1);
-  const gridTop = useRef<HTMLDivElement>(null);
-  // Set once the reader changes page, so the first render never scrolls.
-  const paged = useRef(false);
-
-  const narrowed = query.trim().length > 0 || active !== ALL;
+  const searching = query.trim().length > 0;
 
   const visible = useMemo(() => {
     const needle = query.trim().toLowerCase();
     return posts.filter((post) => {
-      if (!narrowed && post.slug === featuredSlug) return false;
-      if (active !== ALL && post.category !== active) return false;
-      if (!needle) return true;
+      if (!needle) return post.slug !== featuredSlug;
       // Title and summary only: searching the bodies would mean shipping every
       // article to the browser, and a hit deep in one post's text is rarely
       // what someone typing two words is after.
@@ -52,36 +54,18 @@ export function BlogBrowser({
         post.excerpt.toLowerCase().includes(needle)
       );
     });
-  }, [posts, active, query, narrowed, featuredSlug]);
+  }, [posts, query, featuredSlug]);
 
-  const total = Math.max(1, Math.ceil(visible.length / PAGE_SIZE));
-  // A filter can shrink the archive under the page you were on.
-  const currentPage = Math.min(current, total);
-  const page = visible.slice(
-    (currentPage - 1) * PAGE_SIZE,
-    currentPage * PAGE_SIZE,
-  );
+  const total = pageCount(visible.length);
+  // A search is answered whole rather than paged: the matches for two words are
+  // a short list, and paging them would put the reader back where they started.
+  const shown = searching
+    ? visible
+    : visible.slice((page - 1) * POSTS_PER_PAGE, page * POSTS_PER_PAGE);
   const showFilters = categories && categories.length > 1;
-
-  useEffect(() => {
-    if (!paged.current) return;
-    gridTop.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }, [currentPage]);
-
-  function goTo(page: number) {
-    paged.current = true;
-    setCurrent(Math.min(Math.max(page, 1), total));
-  }
-
-  function select(filter: string) {
-    setActive(filter);
-    setCurrent(1);
-  }
 
   return (
     <>
-      <div ref={gridTop} className="scroll-mt-28" />
-
       {showFilters && (
         <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           {/* The templates gallery's own filter strip, chip for chip. Selection
@@ -98,24 +82,26 @@ export function BlogBrowser({
               below start from rather than its box. The scrollbar is hidden
               because the row is short enough to swipe. */}
           <div className="-ml-6 -mr-6 flex items-center gap-2 overflow-x-auto pl-3 pr-6 [-ms-overflow-style:none] [scrollbar-width:none] sm:-ml-3 sm:mr-0 sm:pl-0 sm:pr-0 [&::-webkit-scrollbar]:hidden">
-            {[ALL, ...categories].map((filter) => (
-              <button
-                key={filter}
-                type="button"
-                aria-pressed={active === filter}
-                onClick={() => select(filter)}
-                // Inset ring, like the gallery's: this is an overflow scroller,
-                // and an offset ring is drawn outside the chip where the
-                // scroller crops it.
-                className={`type-body inline-flex h-9 shrink-0 items-center whitespace-nowrap rounded-lg px-3.5 leading-none outline-none transition-colors focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-foreground/40 ${
-                  active === filter
-                    ? "bg-border text-foreground"
-                    : "bg-transparent text-muted-foreground active:bg-border [@media(hover:hover)]:hover:bg-muted [@media(hover:hover)]:hover:text-foreground"
-                }`}
-              >
-                {filter}
-              </button>
-            ))}
+            {[{ name: "All", slug: "" }, ...categories].map((filter) => {
+              const active = (filter.slug || undefined) === activeSlug;
+              return (
+                <Link
+                  key={filter.slug || "all"}
+                  href={filter.slug ? tagPath(filter.slug) : "/blog"}
+                  aria-current={active ? "page" : undefined}
+                  // Inset ring, like the gallery's: this is an overflow scroller,
+                  // and an offset ring is drawn outside the chip where the
+                  // scroller crops it.
+                  className={`type-body inline-flex h-9 shrink-0 items-center whitespace-nowrap rounded-lg px-3.5 leading-none outline-none transition-colors focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-foreground/40 ${
+                    active
+                      ? "bg-border text-foreground"
+                      : "bg-transparent text-muted-foreground active:bg-border [@media(hover:hover)]:hover:bg-muted [@media(hover:hover)]:hover:text-foreground"
+                  }`}
+                >
+                  {filter.name}
+                </Link>
+              );
+            })}
           </div>
 
           <label className="relative sm:w-64">
@@ -137,10 +123,7 @@ export function BlogBrowser({
             <input
               type="search"
               value={query}
-              onChange={(e) => {
-                setQuery(e.target.value);
-                setCurrent(1);
-              }}
+              onChange={(e) => setQuery(e.target.value)}
               placeholder="Search posts"
               // The row is a filter bar, not a form: the field keeps the site's
               // field styling but sits at the height of the keys beside it.
@@ -152,10 +135,7 @@ export function BlogBrowser({
             {query && (
               <button
                 type="button"
-                onClick={() => {
-                  setQuery("");
-                  setCurrent(1);
-                }}
+                onClick={() => setQuery("")}
                 aria-label="Clear search"
                 className="absolute right-2.5 top-1/2 flex size-6 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-foreground/[0.06] hover:text-foreground [[data-theme=dark]_&]:hover:bg-white/[0.06]"
               >
@@ -177,7 +157,7 @@ export function BlogBrowser({
         </div>
       )}
 
-      {visible.length === 0 ? (
+      {shown.length === 0 ? (
         <p className="type-body py-10 text-muted-foreground">
           No posts match {query.trim() ? `“${query.trim()}”` : "that filter"}.
         </p>
@@ -190,7 +170,7 @@ export function BlogBrowser({
         // cover art here — at three across the covers repeated the same few
         // stock photographs down the page and said nothing the titles didn't.
         <div className="grid overflow-hidden rounded-2xl ring-1 ring-inset ring-border sm:grid-cols-2 lg:grid-cols-3 [[data-theme=dark]_&]:ring-[#383838]">
-          {page.map((post) => (
+          {shown.map((post) => (
             <Link
               key={post.slug}
               href={`/blog/${post.slug}`}
@@ -214,13 +194,14 @@ export function BlogBrowser({
         </div>
       )}
 
-      <Pager
-        current={currentPage}
-        total={total}
-        label="Blog pages"
-        onSelect={goTo}
-      />
+      {!searching && (
+        <Pager
+          current={page}
+          total={total}
+          label="Blog pages"
+          hrefFor={(to) => pagePath(basePath, to)}
+        />
+      )}
     </>
   );
 }
-

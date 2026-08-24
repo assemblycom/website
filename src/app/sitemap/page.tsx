@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { DOCS_URL } from "@/lib/constants";
+import { DOCS_URL, DOCS_WELCOME_PATH } from "@/lib/constants";
 import {
   blogUrls,
   definitionUrls,
@@ -68,7 +68,7 @@ function Section({
 }
 
 export default async function SitemapPage() {
-  const [main, templates, embeds, blog, updates, definitions] =
+  const [allMain, templates, embeds, blog, updates, definitions] =
     await Promise.all([
       mainUrls(),
       templateUrls(),
@@ -77,6 +77,10 @@ export default async function SitemapPage() {
       updatesUrls(),
       definitionUrls(),
     ]);
+
+  // This page is in sitemap-main.xml so crawlers can find it, but it doesn't
+  // link to itself: the index of the site inside the index of the site is noise.
+  const main = allMain.filter((url) => url.path !== "/sitemap");
 
   return (
     <div className="mx-auto max-w-[1200px] px-6 pb-24 pt-16 md:px-10 md:pb-32 md:pt-24">
@@ -96,7 +100,7 @@ export default async function SitemapPage() {
         <Section heading="Docs">
           <li>
             <a
-              href={DOCS_URL}
+              href={`${DOCS_URL}${DOCS_WELCOME_PATH}`}
               className="type-body text-muted-foreground transition-colors hover:text-foreground"
             >
               Assembly documentation
