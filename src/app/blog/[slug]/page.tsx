@@ -37,7 +37,10 @@ export async function generateMetadata({
   const post = await getPost(slug);
   if (!post) return {};
   return pageMetadata({
-    title: post.title,
+    // The SEO title Ghost carries, not the editorial one: it is the title-cased
+    // version written for the search result. The <h1> keeps `title`, which is
+    // what that field is for — the two are allowed to differ.
+    title: post.seoTitle ?? post.title,
     description: post.excerpt,
     path: `/blog/${post.slug}`,
   });

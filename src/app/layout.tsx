@@ -55,7 +55,10 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     default: PAGE_SEO.home.title,
-    template: `${SITE_NAME} | %s`,
+    // Page first, brand second. A search result and a browser tab are both
+    // truncated from the right, so leading with the brand spends the readable
+    // part of every title on the one word that is the same on every page.
+    template: `%s | ${SITE_NAME}`,
   },
   description: SITE_DESCRIPTION,
   // Self-referencing canonical (relative to metadataBase) consolidates UTM and

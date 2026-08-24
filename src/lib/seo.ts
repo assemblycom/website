@@ -151,8 +151,8 @@ export function pageMetadata(
   image: typeof OG_IMAGE = OG_IMAGE,
 ): Metadata {
   // The homepage title already carries the brand; every other page gets it via
-  // the "Assembly | %s" template, which openGraph does not apply itself.
-  const socialTitle = path === "/" ? title : `${SITE_NAME} | ${title}`;
+  // the "%s | Assembly" template, which openGraph does not apply itself.
+  const socialTitle = path === "/" ? title : `${title} | ${SITE_NAME}`;
   return {
     title,
     description,
