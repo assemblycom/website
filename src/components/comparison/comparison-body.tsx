@@ -277,7 +277,7 @@ function StackedValue({
 }) {
   return (
     <div
-      className={`flex items-baseline gap-3 px-3 py-2.5 ${own ? OWN_COLUMN : ""}`}
+      className={`flex items-baseline gap-4 px-4 py-2.5 ${own ? OWN_COLUMN : ""}`}
     >
       <span
         className={`type-eyebrow w-24 shrink-0 ${
@@ -286,8 +286,16 @@ function StackedValue({
       >
         {name}
       </span>
+      {/* A mark goes to the far edge of the row, not up against the name: the
+          two names are the same width, so a mark next to them had a card's worth
+          of empty space to its right and read as unplaced. At the edge the two
+          marks line up under each other with the row's width between them and
+          their labels, which is what makes the pair scannable. Prose still fills
+          the row from the name onward — it needs the measure. */}
       {typeof value === "boolean" ? (
-        <Mark value={value} />
+        <span className="ml-auto">
+          <Mark value={value} />
+        </span>
       ) : (
         <p className="type-caption min-w-0 flex-1 text-muted-foreground">
           {value}
@@ -402,11 +410,13 @@ function CriterionBar({
 
 function G2Section({ page }: { page: ComparisonPage }) {
   const { g2 } = page;
+  const hasScores = Boolean(g2.assembly && g2.competitor);
+
   return (
     <Band>
       {/* Stacked, not two halves: in a 768px column each side came to ~330px,
           which left the score bars shorter than their own labels. */}
-      <div className="flex flex-col gap-10">
+      <div className="flex flex-col gap-8">
         <div>
           {/* The same rank the feature sections take — every section heading on
               the page is one level, as it is in a post. */}
@@ -420,95 +430,91 @@ function G2Section({ page }: { page: ComparisonPage }) {
               <p>{g2.description}</p>
             </div>
           )}
-          {/* The site's secondary button, matching the way back at the foot of
-              the page. An underlined line of grey under a paragraph read as part
-              of the paragraph rather than as the way off to the source. */}
-          {g2.link && (
+        </div>
+
+        {/* The headline pair sits on the page, not in the panel. It is the claim
+            the section makes — two entries carry no scores at all, hence the
+            guard — where the per-criterion bars are the working behind it, so
+            boxing both together gave the panel two zones divided by a rule and
+            no hierarchy between them. Out here the number leads and the panel
+            reads as its evidence.
+
+            Name then figure, side by side and close. Spread to the two edges
+            with justify-between, an eight-character name sat most of a 768px
+            column from the number it belongs to and the pairing was gone. A
+            fixed name column keeps the two together AND keeps the two figures
+            stacked in one column, which is the comparison. */}
+        {hasScores && (
+          <div>
+            {g2.label && (
+              <p className="type-caption text-muted-foreground">{g2.label}</p>
+            )}
+            <dl className="mt-3 space-y-1">
+              {[
+                { name: "Assembly", value: g2.assembly, strong: true },
+                {
+                  name: page.competitor,
+                  value: g2.competitor,
+                  strong: false,
+                },
+              ].map((side) => (
+                <div key={side.name} className="flex items-baseline gap-5">
+                  <dt
+                    className={`type-body w-28 shrink-0 ${
+                      side.strong ? "text-foreground" : "text-muted-foreground"
+                    }`}
+                  >
+                    {side.name}
+                  </dt>
+                  <dd
+                    className={`font-mono text-[1.75rem] leading-tight tracking-tight ${
+                      side.strong ? "text-foreground" : "text-muted-foreground"
+                    }`}
+                  >
+                    {side.value}
+                    <span className="ml-1 text-sm text-muted-foreground">
+                      /5
+                    </span>
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        )}
+
+        {/* The per-criterion breakdown in a bordered panel: quoted figures from
+            someone else's site, and the outline says where the evidence starts
+            and stops. */}
+        {g2.criteria.length > 0 && (
+          <div
+            className={`space-y-6 rounded-xl border p-6 md:p-8 ${GRID_LINE}`}
+          >
+            {g2.criteria.map((criterion) => (
+              <CriterionBar
+                key={criterion.label}
+                criterion={criterion}
+                competitor={page.competitor}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* The site's secondary button, matching the way back at the foot of the
+            page. Last, so it follows the evidence rather than interrupting it —
+            an underlined line of grey under the paragraph read as part of the
+            paragraph rather than as the way off to the source. */}
+        {g2.link && (
+          <div>
             <a
               href={g2.link}
               target="_blank"
               rel="noopener noreferrer"
-              className={`mt-6 inline-block ${SECONDARY_BUTTON}`}
+              className={`inline-block ${SECONDARY_BUTTON}`}
             >
               See the full comparison on G2
             </a>
-          )}
-        </div>
-
-        {/* The scores in a bordered panel: they are quoted figures from someone
-            else's site, not our own prose, and an outline says where the
-            evidence starts and stops. Loose on the page the pair of numbers and
-            the run of bars read as more page furniture. */}
-        <div className={`rounded-xl border p-6 md:p-8 ${GRID_LINE}`}>
-          {/* The headline pair, out of 5. Two entries carry no scores at all, so
-              the whole block is conditional rather than printing an empty gauge.
-
-              Name on the left, figure on the right — the same shape the
-              criterion bars below take, so the panel reads as one thing. It was
-              two eyebrow-and-number stacks in a half-and-half grid with the
-              caption stranded underneath, which put three ranks of label around
-              two numbers and left the competitor's score floating at the middle
-              of the panel for no reason. The caption leads now, because it says
-              what both numbers are. */}
-          {g2.assembly && g2.competitor && (
-            <div className={`border-b pb-6 ${GRID_LINE}`}>
-              {g2.label && (
-                <p className="type-caption text-muted-foreground">{g2.label}</p>
-              )}
-              {/* Name then figure, side by side and close. Spread to the two edges
-                  of the panel with justify-between, an eight-character name sat most
-                  of a 768px column away from the number it belongs to and the pairing
-                  was gone. A fixed name column keeps the two together AND keeps the
-                  two figures stacked in one column, which is the comparison. */}
-              <dl className="mt-3 space-y-1">
-                {[
-                  { name: "Assembly", value: g2.assembly, strong: true },
-                  {
-                    name: page.competitor,
-                    value: g2.competitor,
-                    strong: false,
-                  },
-                ].map((side) => (
-                  <div key={side.name} className="flex items-baseline gap-5">
-                    <dt
-                      className={`type-body w-28 shrink-0 ${
-                        side.strong
-                          ? "text-foreground"
-                          : "text-muted-foreground"
-                      }`}
-                    >
-                      {side.name}
-                    </dt>
-                    <dd
-                      className={`font-mono text-[1.75rem] leading-tight tracking-tight ${
-                        side.strong
-                          ? "text-foreground"
-                          : "text-muted-foreground"
-                      }`}
-                    >
-                      {side.value}
-                      <span className="ml-1 text-sm text-muted-foreground">
-                        /5
-                      </span>
-                    </dd>
-                  </div>
-                ))}
-              </dl>
-            </div>
-          )}
-
-          {g2.criteria.length > 0 && (
-            <div className="mt-8 space-y-6 first:mt-0">
-              {g2.criteria.map((criterion) => (
-                <CriterionBar
-                  key={criterion.label}
-                  criterion={criterion}
-                  competitor={page.competitor}
-                />
-              ))}
-            </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </Band>
   );
