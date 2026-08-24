@@ -47,7 +47,7 @@ const OPTIONS = {
         children.every((child) => typeof child === "string" && !child.trim());
       if (empty) return null;
       return (
-        <p className="type-body mt-5 text-muted-foreground first:mt-0">
+        <p className="type-body mt-5 text-foreground/80 first:mt-0">
           {children}
         </p>
       );
@@ -62,7 +62,7 @@ const OPTIONS = {
     // Rich text wraps each item's text in a paragraph, so that paragraph's top
     // margin is cleared or it pushes the text off its marker.
     [BLOCKS.LIST_ITEM]: (_node: Block | Inline, children: ReactNode) => (
-      <li className="type-body relative pl-5 text-muted-foreground [&>p]:mt-0 before:absolute before:left-0 before:top-[0.7em] before:h-px before:w-2.5 before:bg-foreground/25">
+      <li className="type-body relative pl-5 text-foreground/80 [&>p]:mt-0 before:absolute before:left-0 before:top-[0.7em] before:h-px before:w-2.5 before:bg-foreground/25">
         {children}
       </li>
     ),

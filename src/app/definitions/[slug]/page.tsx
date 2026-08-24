@@ -67,7 +67,7 @@ const RENDER_OPTIONS = {
         Array.isArray(children) &&
         children.every((child) => typeof child === "string" && !child.trim());
       if (empty) return null;
-      return <p className="type-body mt-5 text-muted-foreground first:mt-0">{children}</p>;
+      return <p className="type-body mt-5 text-foreground/80 first:mt-0">{children}</p>;
     },
     [BLOCKS.HEADING_2]: (_node: Block | Inline, children: ReactNode) => (
       <h3 className="type-h4 mt-10 text-foreground first:mt-0">{children}</h3>
@@ -83,7 +83,7 @@ const RENDER_OPTIONS = {
     ),
     [BLOCKS.LIST_ITEM]: (_node: Block | Inline, children: ReactNode) => (
       // The site's list marker is a hairline, not a bullet — see ui/prose.tsx.
-      <li className="type-body relative pl-5 text-muted-foreground [&>p]:mt-0 before:absolute before:left-0 before:top-[0.7em] before:h-px before:w-2.5 before:bg-foreground/25">
+      <li className="type-body relative pl-5 text-foreground/80 [&>p]:mt-0 before:absolute before:left-0 before:top-[0.7em] before:h-px before:w-2.5 before:bg-foreground/25">
         {children}
       </li>
     ),
@@ -134,7 +134,9 @@ export default async function DefinitionPage({
             open this column only restated the title above it; it still earns its
             keep as the page's meta title, where the question is what someone
             actually searched for. */}
-        <div className="mx-auto max-w-3xl">
+        {/* A reading measure, not the page's max-w-3xl: at 768px these lines
+            ran to ~93 characters, well past the 65-75 a reader tracks. */}
+        <div className="mx-auto max-w-[40rem]">
           {documentToReactComponents(definition.body, RENDER_OPTIONS)}
         </div>
       </article>

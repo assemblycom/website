@@ -15,7 +15,7 @@ export function TemplatesCta() {
           instead of the wrap landing mid-clause on "Run and / build". Only from
           sm — at the narrow measure below that the copy wraps several times and a
           forced break would strand a short line. */}
-      <p className="type-lead mx-auto mt-5 max-w-sm text-pretty text-muted-foreground sm:max-w-xl">
+      <p className="type-lead mx-auto mt-5 max-w-sm text-balance text-muted-foreground sm:max-w-xl">
         Stop stitching together tools that were never meant to fit.{" "}
         <br className="hidden sm:inline" />
         Run and build everything in one place.

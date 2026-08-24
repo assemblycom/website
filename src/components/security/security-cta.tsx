@@ -9,7 +9,7 @@ export function SecurityCta() {
       <h2 className="type-display mx-auto max-w-md text-balance text-foreground md:max-w-2xl">
         Build fearlessly
       </h2>
-      <p className="type-lead mx-auto mt-5 max-w-sm text-pretty text-muted-foreground sm:max-w-xl">
+      <p className="type-lead mx-auto mt-5 max-w-sm text-balance text-muted-foreground sm:max-w-xl">
         Every workspace and every app you build inherits the platform&apos;s
         security from day one. See how in our Trust Center.
       </p>

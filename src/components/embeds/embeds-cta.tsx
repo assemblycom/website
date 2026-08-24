@@ -10,7 +10,7 @@ export function EmbedsCta() {
       <h2 className="type-display mx-auto max-w-md text-balance text-foreground md:max-w-2xl">
         Build the firm only you can build
       </h2>
-      <p className="type-lead mx-auto mt-5 max-w-sm text-pretty text-muted-foreground sm:max-w-xl">
+      <p className="type-lead mx-auto mt-5 max-w-sm text-balance text-muted-foreground sm:max-w-xl">
         Stop stitching together tools that were never meant to fit. Run and
         build everything in one place.
       </p>
