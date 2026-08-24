@@ -13,6 +13,7 @@ import { AUTH_INIT_SCRIPT } from "@/lib/auth-script";
 import { SITE_NAME, SITE_URL } from "@/lib/constants";
 import { getFeaturedPost } from "@/lib/ghost";
 import { PUBLISHER } from "@/lib/blog-schema";
+import { serializeJsonLd } from "@/lib/json-ld";
 import { OG_IMAGE, PAGE_SEO } from "@/lib/seo";
 import "./globals.css";
 
@@ -195,7 +196,7 @@ export default async function RootLayout({
         <link rel="preconnect" href="https://images.ctfassets.net" />
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(STRUCTURED_DATA) }}
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(STRUCTURED_DATA) }}
         />
       </head>
       <body className="min-h-full overflow-x-clip font-sans">
@@ -205,6 +206,9 @@ export default async function RootLayout({
             <RootShell>{children}</RootShell>
           </FeaturedPostProvider>
         </ThemeProvider>
+        {/* No gate needed: it calls window.analytics?.page(), and off the
+            production host the Segment snippet never runs, so there is no
+            window.analytics for it to call. */}
         <PageTracker />
       </body>
     </html>

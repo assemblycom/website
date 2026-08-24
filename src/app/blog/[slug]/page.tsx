@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { articleSchema } from "@/lib/blog-schema";
+import { serializeJsonLd } from "@/lib/json-ld";
 import {
   formatPostDate,
   postContents,
@@ -83,10 +84,13 @@ export default async function BlogPostPage({
     // a phone it is just a second thing to scroll past.
     <article className="mx-auto max-w-[1600px] px-6 pb-24 pt-12 md:px-10 md:pb-32 md:pt-16">
       {/* Article schema. Next exposes no metadata field for JSON-LD, so it is a
-          script in the body, which Google reads as readily as one in the head. */}
+          script in the body, which Google reads as readily as one in the head.
+          Serialized through serializeJsonLd, not JSON.stringify: these values
+          are Ghost's, and a title containing "</script>" would otherwise close
+          this element and have the rest of itself parsed as markup. */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema(post)) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(articleSchema(post)) }}
       />
       <div
         className={
