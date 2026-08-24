@@ -73,13 +73,22 @@ export default async function BlogPage({
               height is nine sixteenths of its column and the copy's is however
               tall the title, standfirst and byline come out; below lg the copy is
               much the taller of the two, which either left a gap under the cover
-              or, filling, cropped the artwork to close it. */}
-          <div className="grid lg:grid-cols-2">
+              or, filling, cropped the artwork to close it.
+              Three fifths to the cover rather than half. At an even split the
+              copy ran taller than a 16:9 cover anywhere under about 1200px, and
+              the difference showed as a band of matte above and below the
+              artwork — 40px a side at the narrowest two-column width. Widening
+              the column raises the cover's own height to meet the copy instead
+              of padding it: the matte is gone from 1100px up and down to 13px at
+              1024. Cropping to close the same gap was the alternative and it
+              took 8% off each side, straight through the wordmark these covers
+              carry. */}
+          <div className="grid lg:grid-cols-[1.5fr_1fr]">
             <PostCover
               title={featured.title}
               image={featured.image}
               large
-              sizes="(min-width: 1024px) 50vw, 100vw"
+              sizes="(min-width: 1024px) 60vw, 100vw"
               // Fitted, not filled. The frame is 16:9 because that is what Ghost
               // authors covers at, but not every cover obeys it, and these carry
               // the product's wordmark — filling cropped straight through it on

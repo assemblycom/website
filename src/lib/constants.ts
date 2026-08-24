@@ -52,6 +52,11 @@ export const API_REFERENCE_URL = `https://assembly.com/docs${API_REFERENCE_PATH}
 // invites.
 export const X_URL = "https://x.com/assemblycom";
 
+// Off-site, and referenced from the nav — which is built at module load, so
+// these have to be declared above it.
+export const COMMUNITY_URL = "https://community.assembly.com";
+export const STATUS_URL = "https://status.assembly.com";
+
 /** A link with a line of explanation, for the nav's dropdown panels. */
 export interface NavItem extends NavLink {
   description?: string;
@@ -74,12 +79,13 @@ export function isNavGroup(entry: NavEntry): entry is NavGroup {
   return "items" in entry;
 }
 
-// One grouped panel and four direct links. Templates and Security are their
-// own links rather than a Product panel: two items behind a trigger is a panel
-// that costs a hover to read what it could have just said. Resources stays a
-// group because one of its two is off-site docs.
+// One grouped panel and four direct links. Templates, Customers and Security
+// are their own links rather than a Product panel: two items behind a trigger
+// is a panel that costs a hover to read what it could have just said. Resources
+// stays a group because most of what is in it lives off-site.
 export const NAV_ENTRIES: NavEntry[] = [
   { label: "Templates", href: "/templates" },
+  { label: "Customers", href: "/customers" },
   { label: "Security", href: "/security" },
   {
     label: "Resources",
@@ -90,11 +96,6 @@ export const NAV_ENTRIES: NavEntry[] = [
         href: "/blog",
         description: "Product news, and guides for service firms",
       },
-      {
-        label: "Updates",
-        href: "/updates",
-        description: "Everything we ship, as we ship it",
-      },
       // External docs, but opening in the same tab (newTab omitted) — a new tab
       // read as a jarring context switch from a primary nav item.
       {
@@ -103,9 +104,28 @@ export const NAV_ENTRIES: NavEntry[] = [
         external: true,
         description: "How to set up and run your workspace",
       },
+      {
+        label: "API reference",
+        href: API_REFERENCE_URL,
+        external: true,
+        description: "Endpoints, parameters and examples",
+      },
+      {
+        label: "What's New",
+        href: "/updates",
+        description: "Everything we ship, as we ship it",
+      },
+      // A forum someone will keep open beside the site, unlike the docs, which
+      // are read in place of it.
+      {
+        label: "Community",
+        href: COMMUNITY_URL,
+        external: true,
+        newTab: true,
+        description: "Ask questions and compare notes with other firms",
+      },
     ],
   },
-  { label: "Customers", href: "/customers" },
   { label: "Pricing", href: "/pricing" },
 ];
 // The app lives at dashboard.assembly.com (app.assembly.com does not resolve).
@@ -299,13 +319,11 @@ export const LEGAL_LINKS: NavLink[] = [
 /**
  * The footer, as columns of labelled groups.
  *
- * A column can hold more than one group, which is the whole point of the shape:
- * Resources had grown to ten links and stopped reading as a column at all — it
- * ran to twice the height of its neighbours and turned the row into a ladder
- * with three stubs beside it. Splitting the overflow into its own sub-heading
- * (Developers under Resources, Partners under Company) keeps every column a
- * similar height AND says what each run of links is, which one long list of ten
- * never did.
+ * A column is typed to hold more than one group, which is how Developers and
+ * Partners used to hang under Resources and Company. The columns are evenly
+ * matched again — seven, seven, five, three and four — so nothing needs a
+ * sub-heading to stop it running to twice its neighbours' height, and the shape
+ * stays available for the next time one of them grows.
  *
  * Kept here rather than in the footer component so the nav and the footer cannot
  * drift apart the way the old hand-maintained pair did.
@@ -323,8 +341,10 @@ export const FOOTER_COLUMNS: FooterGroup[][] = [
         { label: "Templates", href: "/templates" },
         { label: "Security", href: "/security" },
         { label: "Pricing", href: "/pricing" },
-        { label: "Book a demo", href: DEMO_URL },
         { label: "Desktop app", href: "/download" },
+        { label: "Compare", href: "/comparison" },
+        { label: "Sign up", href: SIGNUP_URL, external: true },
+        { label: "Book a demo", href: DEMO_URL },
       ],
     },
   ],
@@ -333,16 +353,12 @@ export const FOOTER_COLUMNS: FooterGroup[][] = [
       label: "Resources",
       links: [
         { label: "Blog", href: "/blog" },
-        { label: "Updates", href: "/updates" },
-        { label: "Customers", href: "/customers" },
-        { label: "Definitions", href: "/definitions" },
-      ],
-    },
-    {
-      label: "Developers",
-      links: [
-        { label: "Assembly Guide", href: GUIDE_URL, external: true },
+        { label: "Guide", href: GUIDE_URL, external: true },
         { label: "API reference", href: API_REFERENCE_URL, external: true },
+        { label: "What's New", href: "/updates" },
+        { label: "Community", href: COMMUNITY_URL, external: true, newTab: true },
+        { label: "Status", href: STATUS_URL, external: true, newTab: true },
+        { label: "LLM info", href: "/llm-info" },
       ],
     },
   ],
@@ -350,11 +366,9 @@ export const FOOTER_COLUMNS: FooterGroup[][] = [
     {
       label: "Company",
       links: [
+        { label: "Customers", href: "/customers" },
+        { label: "Careers", href: "/jobs" },
         { label: "Brand", href: "/brand" },
-        // About and Careers are hidden from the footer for now; both pages are
-        // still live at /about and /jobs.
-        // { label: "About", href: "/about" },
-        // { label: "Careers", href: "/jobs" },
         { label: "Trust center", href: TRUST_CENTER_URL, external: true, newTab: true },
         // The HTML sitemap. Its own reason to exist is a crawler following links
         // rather than the XML index, so it has to be linked from somewhere on
@@ -362,24 +376,6 @@ export const FOOTER_COLUMNS: FooterGroup[][] = [
         { label: "Sitemap", href: "/sitemap" },
       ],
     },
-    {
-      label: "Partners",
-      links: [
-        { label: "Affiliates program", href: "/affiliates-program" },
-      ],
-    },
   ],
-  // Compare is hidden from the footer for now. The pages themselves are still
-  // live and linked from /comparison; put the column back by uncommenting it.
-  // {
-  //   label: "Compare",
-  //   links: [
-  //     { label: "Compare all", href: "/comparison" },
-  //     { label: "vs Moxo", href: "/comparison/assembly-vs-moxo-alternative" },
-  //     { label: "vs SuiteDash", href: "/comparison/assembly-vs-suitedash-alternative" },
-  //     { label: "vs HoneyBook", href: "/comparison/assembly-vs-honeybook-alternative" },
-  //     { label: "vs SmartVault", href: "/comparison/assembly-vs-smartvault-alternative" },
-  //   ],
-  // },
   [{ label: "Legal", links: LEGAL_LINKS }],
 ];

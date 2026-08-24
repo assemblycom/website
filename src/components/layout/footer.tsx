@@ -72,6 +72,7 @@ export function FooterAurora() {
 
 // Social links point off-site, so they keep opening in a new tab (newTab).
 const CONNECT: NavLink[] = [
+  { label: "YouTube", href: "https://www.youtube.com/@assembly", external: true, newTab: true },
   { label: "X", href: X_URL, external: true, newTab: true },
   {
     label: "LinkedIn",
@@ -80,7 +81,6 @@ const CONNECT: NavLink[] = [
     newTab: true,
   },
   { label: "Instagram", href: "https://instagram.com/assembly", external: true, newTab: true },
-  { label: "YouTube", href: "https://www.youtube.com/@assembly", external: true, newTab: true },
 ];
 
 // The socials are the last column. They live here rather than in constants
