@@ -1,4 +1,7 @@
+"use client";
+
 import Image from "next/image";
+import { useEffect, useRef } from "react";
 
 /**
  * The chat mock beside the demo form. Drawn once at its Figma size and scaled
@@ -20,7 +23,44 @@ const STACK_GAP = 42;
 // Figma frame (675 of an 860-wide card).
 const PANEL_FILL = 0.785;
 
-const FIT = `translate(-50%, -50%) scale(calc(min(tan(atan2(100cqw, ${PANEL_W}px)), tan(atan2(100cqh, ${PANEL_H}px))) * ${PANEL_FILL}))`;
+// Pre-hydration scale, in CSS. calc() can't divide two lengths, so atan2 + tan
+// turns the container's own size into the unitless ratio `scale` wants — the
+// same hack .template-mock-fit uses, and it carries the same caveat: Safari
+// won't resolve a container-query unit inside atan2, so the whole expression
+// comes back unusable there. Clamped, because Safari resolved it NEGATIVE, and
+// a negative scale is a 180° rotation — the panel came out mirrored and upside
+// down rather than merely mis-sized. `useFitScale` overwrites this on mount, so
+// it only ever governs the first paint.
+const CSS_FIT_SCALE = `max(0.05, min(tan(atan2(100cqw, ${PANEL_W}px)), tan(atan2(100cqh, ${PANEL_H}px))) * ${PANEL_FILL})`;
+
+/**
+ * Measures the card and sets the fit scale outright, the way MockFit does for
+ * the template covers. Measuring sidesteps atan2 entirely, so the scale is
+ * exact in every browser rather than only the ones that can resolve it.
+ */
+function useFitScale() {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const apply = () => {
+      // The content box, which is what 100cqw/100cqh resolve against.
+      const { clientWidth: w, clientHeight: h } = el;
+      if (!w || !h) return;
+      const scale = Math.min(w / PANEL_W, h / PANEL_H) * PANEL_FILL;
+      el.style.setProperty("--demo-chat-scale", String(scale));
+    };
+
+    apply();
+    const observer = new ResizeObserver(apply);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  return ref;
+}
 
 function MessageHeader({ name, dark }: { name: string; dark?: boolean }) {
   return (
@@ -32,14 +72,25 @@ function MessageHeader({ name, dark }: { name: string; dark?: boolean }) {
 }
 
 export function DemoChatVisual({ className = "" }: { className?: string }) {
+  const ref = useFitScale();
+
   return (
     <div
+      ref={ref}
       // aria-hidden: decorative. The page's copy already says what it shows.
       aria-hidden
       className={`relative overflow-hidden rounded-2xl bg-[#7da4ff] [container-type:size] ${className}`}
     >
       <div
-        style={{ width: PANEL_W, gap: STACK_GAP, transform: FIT }}
+        style={{
+          width: PANEL_W,
+          gap: STACK_GAP,
+          // Centring and scale as SEPARATE properties, not one `transform`
+          // shorthand: a browser that can't resolve the scale drops only the
+          // scale, so the panel still sits centred and merely off-size.
+          translate: "-50% -50%",
+          scale: `var(--demo-chat-scale, ${CSS_FIT_SCALE})`,
+        }}
         className="absolute left-1/2 top-1/2 flex flex-col items-end rounded-[40px] border border-white bg-white/40 px-[31px] py-[34.5px] backdrop-blur-[15.7px]"
       >
         {/* Client message — square corner on the side the avatar sits. */}

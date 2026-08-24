@@ -189,7 +189,8 @@ export default async function JobsPage() {
           </>
         )}
 
-        <GridDivider />
+        {/* Nothing closes the grid here: the footer opens on a full-bleed rule,
+            and a rail-capped GridDivider on top of it read as two lines. */}
       </div>
     </>
   );
