@@ -228,6 +228,35 @@ All of it runs off `src/lib/seo.ts` and `src/lib/og.tsx`.
   `src/app/sitemap.ts` with a reason, and give the page `robots: { index: false }`
   so the two can't disagree.
 
+### The canonical host is `assembly.com`
+
+`SITE_URL` in `src/lib/constants.ts` is the single source for it, and everything
+indexable is built from it: canonicals, `og:url`, `og:image`, the JSON-LD URLs,
+every sitemap `<loc>`, the `Sitemap:` line in `robots.txt`, and the origin check
+in `/api/shorten`. Change it in one place or not at all — a host that only
+*mostly* matches is worse than either host, because the sitemap and the canonical
+start naming different sites.
+
+It used to name `studio.assembly.com`, which now only redirects. Everything the
+crawler read pointed a hop away from the page it was already on, and
+`/api/shorten` rejected proposals whose origin no longer matched.
+
+**The `studio.assembly.com` redirect is not in this repo.** It's a Vercel domain
+redirect on the project (Settings → Domains), path-preserving, `301`. Grepping
+`next.config.ts` for it finds nothing, so look there before concluding it doesn't
+exist. It's `301` and not `307` deliberately: a temporary redirect tells Google
+the move might be reverted, so the old host keeps its ranking signals instead of
+passing them on.
+
+`studio.assembly-staging.com` still redirects `307` to the staging apex. Left
+temporary on purpose — a `301` is cached hard by the browser, and a stale one on
+a host we may want to serve from again is a bad trade for a host no crawler is
+allowed to index anyway.
+
+`www.assembly.com` currently serves the site rather than redirecting to the apex.
+The canonical points at the apex, so the duplicate is declared, but a redirect
+would be the stronger setup if anyone touches domains next.
+
 ## Page copy: frozen, not fetched
 
 Every marketing family except the templates gallery used to be read live from
