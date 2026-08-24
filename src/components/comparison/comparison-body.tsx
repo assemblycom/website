@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { FAQ } from "@/components/home/faq";
 import { CompetitorMark } from "@/components/comparison/competitor-mark";
+import { unbreakable } from "@/components/ui/unbreakable";
 import { GRID_LINE } from "@/components/ui/grid-lines";
 import type {
   ComparisonCriterion,
@@ -164,23 +165,24 @@ function FeatureMatrix({
           in half and the competitor's off-screen entirely, behind a horizontal
           scroll with nothing to say it was there. Stacked, both sides of every
           row are on screen and nothing scrolls sideways. */}
-      <ul className="mt-10 md:hidden">
-        {rows.map((row, i) => (
-          <li
-            key={row.label}
-            className={
-              i === rows.length - 1 ? "" : `mb-6 border-b pb-6 ${GRID_LINE}`
-            }
-          >
+      <ul className="mt-10 space-y-7 md:hidden">
+        {rows.map((row) => (
+          <li key={row.label}>
             <p className="type-body text-foreground">{row.label}</p>
             {row.detail && (
               <p className="type-caption mt-1 text-muted-foreground">
                 {row.detail}
               </p>
             )}
-            {/* Label-then-value rows, the shape the G2 criterion bars below
-                already use, so the two read as one page. */}
-            <div className="mt-3 space-y-px overflow-hidden rounded-lg">
+            {/* The two sides in one outlined card, split by a hairline. The wash
+                alone did not hold them together: only the Assembly row carried
+                it, so it read as a loose grey bar floating over an unstyled row
+                rather than as our side of a pair — and at --muted on white the
+                bar was faint enough to look like a rendering artefact. The
+                outline is what says "these two belong to the label above". */}
+            <div
+              className={`mt-3 divide-y overflow-hidden rounded-lg border ${GRID_LINE} divide-border [[data-theme=dark]_&]:divide-[#383838]`}
+            >
               <StackedValue name="Assembly" value={row.assembly} own />
               <StackedValue name={competitor} value={row.competitor} />
             </div>
@@ -313,18 +315,23 @@ function FeatureSection({
 }) {
   return (
     <Band>
-      {/* The claim on a reading measure, not the full 1200px rail: at rail width
-          a heading runs to a single very long line and the paragraph past 100
-          characters. */}
-      <div className="max-w-3xl">
-        <p className="type-eyebrow text-muted-foreground">{section.title}</p>
+      {/* Heading then prose, the way a section of a post is set. No mono eyebrow
+          over it: the section titles ("Platform flexibility") only restate the
+          heading beneath them in fewer words, and a kicker on every one of five
+          sections is a label the reader has to skip. The title still names the
+          matrix for a screen reader, in its caption below. */}
+      <div>
         {section.heading && (
-          <h2 className="type-h2 mt-3 text-balance">{section.heading}</h2>
+          <h2 className="type-h3 text-balance leading-[1.15] tracking-[-0.02em] text-foreground">
+            {unbreakable(section.heading)}
+          </h2>
         )}
+        {/* The same `post-body` reading text the hero's lead takes, so a section
+            of one of these pages and a section of a post are the same type. */}
         {section.description && (
-          <p className="type-lead mt-5 text-pretty text-muted-foreground">
-            {section.description}
-          </p>
+          <div className="post-body mt-4">
+            <p>{section.description}</p>
+          </div>
         )}
       </div>
       {section.rows.length > 0 && (
@@ -401,56 +408,92 @@ function G2Section({ page }: { page: ComparisonPage }) {
           which left the score bars shorter than their own labels. */}
       <div className="flex flex-col gap-10">
         <div>
-          {g2.title && <h2 className="type-h2 text-balance">{g2.title}</h2>}
-          {g2.description && (
-            <p className="type-lead mt-5 text-pretty text-muted-foreground">
-              {g2.description}
-            </p>
+          {/* The same rank the feature sections take — every section heading on
+              the page is one level, as it is in a post. */}
+          {g2.title && (
+            <h2 className="type-h3 text-balance leading-[1.15] tracking-[-0.02em] text-foreground">
+              {g2.title}
+            </h2>
           )}
+          {g2.description && (
+            <div className="post-body mt-4">
+              <p>{g2.description}</p>
+            </div>
+          )}
+          {/* The site's secondary button, matching the way back at the foot of
+              the page. An underlined line of grey under a paragraph read as part
+              of the paragraph rather than as the way off to the source. */}
           {g2.link && (
             <a
               href={g2.link}
               target="_blank"
               rel="noopener noreferrer"
-              className="type-body mt-6 inline-block text-muted-foreground underline underline-offset-4 transition-colors hover:text-foreground"
+              className={`mt-6 inline-block ${SECONDARY_BUTTON}`}
             >
               See the full comparison on G2
             </a>
           )}
         </div>
 
-        <div>
+        {/* The scores in a bordered panel: they are quoted figures from someone
+            else's site, not our own prose, and an outline says where the
+            evidence starts and stops. Loose on the page the pair of numbers and
+            the run of bars read as more page furniture. */}
+        <div className={`rounded-xl border p-6 md:p-8 ${GRID_LINE}`}>
           {/* The headline pair, out of 5. Two entries carry no scores at all, so
-              the whole block is conditional rather than printing an empty gauge. */}
+              the whole block is conditional rather than printing an empty gauge.
+
+              Name on the left, figure on the right — the same shape the
+              criterion bars below take, so the panel reads as one thing. It was
+              two eyebrow-and-number stacks in a half-and-half grid with the
+              caption stranded underneath, which put three ranks of label around
+              two numbers and left the competitor's score floating at the middle
+              of the panel for no reason. The caption leads now, because it says
+              what both numbers are. */}
           {g2.assembly && g2.competitor && (
-            <div
-              className={`grid grid-cols-2 gap-6 border-b pb-8 ${GRID_LINE}`}
-            >
-              {[
-                { name: "Assembly", value: g2.assembly, strong: true },
-                { name: page.competitor, value: g2.competitor, strong: false },
-              ].map((side) => (
-                <div key={side.name}>
-                  <p className="type-eyebrow text-muted-foreground">
-                    {side.name}
-                  </p>
-                  <p
-                    className={`mt-2 font-mono text-4xl ${
-                      side.strong ? "text-foreground" : "text-muted-foreground"
-                    }`}
-                  >
-                    {side.value}
-                    <span className="type-caption text-muted-foreground">
-                      /5
-                    </span>
-                  </p>
-                </div>
-              ))}
+            <div className={`border-b pb-6 ${GRID_LINE}`}>
               {g2.label && (
-                <p className="type-caption col-span-2 text-muted-foreground">
-                  {g2.label}
-                </p>
+                <p className="type-caption text-muted-foreground">{g2.label}</p>
               )}
+              {/* Name then figure, side by side and close. Spread to the two edges
+                  of the panel with justify-between, an eight-character name sat most
+                  of a 768px column away from the number it belongs to and the pairing
+                  was gone. A fixed name column keeps the two together AND keeps the
+                  two figures stacked in one column, which is the comparison. */}
+              <dl className="mt-3 space-y-1">
+                {[
+                  { name: "Assembly", value: g2.assembly, strong: true },
+                  {
+                    name: page.competitor,
+                    value: g2.competitor,
+                    strong: false,
+                  },
+                ].map((side) => (
+                  <div key={side.name} className="flex items-baseline gap-5">
+                    <dt
+                      className={`type-body w-28 shrink-0 ${
+                        side.strong
+                          ? "text-foreground"
+                          : "text-muted-foreground"
+                      }`}
+                    >
+                      {side.name}
+                    </dt>
+                    <dd
+                      className={`font-mono text-[1.75rem] leading-tight tracking-tight ${
+                        side.strong
+                          ? "text-foreground"
+                          : "text-muted-foreground"
+                      }`}
+                    >
+                      {side.value}
+                      <span className="ml-1 text-sm text-muted-foreground">
+                        /5
+                      </span>
+                    </dd>
+                  </div>
+                ))}
+              </dl>
             </div>
           )}
 
@@ -485,53 +528,93 @@ function G2Section({ page }: { page: ComparisonPage }) {
  * the statement and the right is what backs it, and neither is longer than a
  * screen.
  */
+const MONTHS = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
+/**
+ * The freshness stamp as a dateline: "Updated December, 2025".
+ *
+ * The CMS wrote these two ways — eight as "updated 12/2025" and one already
+ * worded as "Updated February 2026" — so a numeric month is spelled out and an
+ * already-spelled one just gains the comma. Anything else is passed through
+ * rather than mangled: the string is copy, and a format we did not anticipate
+ * should still print.
+ */
+function formatUpdated(raw: string): string {
+  const numeric = raw.match(/(\d{1,2})\/(\d{4})/);
+  if (numeric) {
+    const month = MONTHS[Number(numeric[1]) - 1];
+    if (month) return `Updated ${month}, ${numeric[2]}`;
+  }
+  const worded = raw.match(/^updated\s+([A-Za-z]+)\s+(\d{4})$/i);
+  if (worded) return `Updated ${worded[1]}, ${worded[2]}`;
+  return raw;
+}
+
+/**
+ * The page's opening, set as an article masthead: the mark, the title, the
+ * dateline and the action, all centred — then the argument below it, ranged left
+ * at the blog's own reading size.
+ *
+ * The centred block is the same shape a post without a contents rail takes, and
+ * it does the job the CMS hero image used to: it gives the top of the page
+ * something to look at that is not a paragraph. The body stays left, because
+ * centred prose is unreadable past a line or two.
+ */
 function Hero({ page }: { page: ComparisonPage }) {
-  const hasPoints = page.points.length > 0;
-
-  const copy = (
-    <div>
-      <CompetitorMark page={page} size="lg" />
-      <h1 className="type-display text-balance">{page.name}</h1>
-      {/* A dateline under the headline, where a reader looks for one. Freshness
-          matters more on a comparison than on a feature page — the claims are
-          about someone else's product at a point in time — but trailing the CTA
-          it read as a footnote hung off a button. */}
-      {page.updated && (
-        <p className="type-caption mt-4 text-muted-foreground">
-          {page.updated}
-        </p>
-      )}
-      {page.description && (
-        <p className="type-lead mt-6 text-pretty text-muted-foreground">
-          {page.description}
-        </p>
-      )}
-    </div>
-  );
-
-  // The CMS writes these as "- " lines under the lead. The hairline marker is
-  // the site's list style, from the glossary and rich text — not a bullet.
-  const points = hasPoints && (
-    <ul className="space-y-4">
-      {page.points.map((point) => (
-        <li
-          key={point}
-          className="type-body relative pl-5 text-foreground before:absolute before:left-0 before:top-[0.7em] before:h-px before:w-2.5 before:bg-foreground/30"
-        >
-          {point}
-        </li>
-      ))}
-    </ul>
-  );
-
   return (
     <section className="px-6 pb-14 pt-20 md:pb-16 md:pt-28">
       <div className={COLUMN}>
-        {copy}
-        {/* Under the lead, where the CMS wrote them — the claims are the rest of
-            the opening argument, not a sidebar to it. */}
-        {points && <div className="mt-8">{points}</div>}
-        <CtaRow ctas={page.ctas} className="mt-10" />
+        <header className="text-center">
+          <div className="flex justify-center">
+            <CompetitorMark page={page} size="lg" />
+          </div>
+          {/* Leading and tracking set here rather than on type-display, which
+              nine other pages share — the same step the post titles take, so a
+              comparison and a post look like one publication. */}
+          <h1 className="type-display mt-5 text-balance leading-[1.02] tracking-[-0.03em]">
+            {unbreakable(page.name)}
+          </h1>
+          {page.updated && (
+            <p className="type-body mt-4 text-muted-foreground">
+              {formatUpdated(page.updated)}
+            </p>
+          )}
+          <CtaRow ctas={page.ctas} className="mx-auto mt-7 sm:justify-center" />
+        </header>
+
+        {/* The lead and the claims in `post-body`, so they are literally the
+            blog's reading text and the blog's own list — 17px on a 1.65 leading,
+            bulleted with its 5px dot — rather than a second set of numbers and a
+            second marker that both have to be kept in step with it.
+
+            The CMS writes the claims as "- " lines, and they were drawn with the
+            site's hairline marker to match. In a page that now reads as a post,
+            the post's bullet is the one that belongs. */}
+        {(page.description || page.points.length > 0) && (
+          <div className="post-body mt-12">
+            {page.description && <p>{page.description}</p>}
+            {page.points.length > 0 && (
+              <ul>
+                {page.points.map((point) => (
+                  <li key={point}>{point}</li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
       </div>
     </section>
   );
@@ -616,9 +699,14 @@ export function ComparisonBody({ page }: { page: ComparisonPage }) {
           only thing in its own band, and at link weight it read as a stray line
           of copy in an empty strip rather than as somewhere to go. */}
       <Band className="!pb-16 !pt-0">
-        <Link href="/comparison" className={`inline-block ${SECONDARY_BUTTON}`}>
-          See all comparisons
-        </Link>
+        <div className="text-center">
+          <Link
+            href="/comparison"
+            className={`inline-block ${SECONDARY_BUTTON}`}
+          >
+            See all comparisons
+          </Link>
+        </div>
       </Band>
 
       {page.closing && <ComparisonClosing closing={page.closing} />}

@@ -21,6 +21,7 @@ import { PostCta } from "@/components/blog/post-cta";
 import { PostLightbox } from "@/components/blog/post-lightbox";
 import { TocMobile } from "@/components/ui/toc-mobile";
 import { PostToc } from "@/components/blog/post-toc";
+import { unbreakable } from "@/components/ui/unbreakable";
 
 export async function generateStaticParams() {
   return (await getPosts()).map((post) => ({ slug: post.slug }));
@@ -41,23 +42,6 @@ export async function generateMetadata({
   });
 }
 
-
-// A short hyphenated word is one word: balancing broke "AI-powered" across two
-// lines at the hyphen, which reads as a typo in a headline. Long compounds still
-// break — holding one whole would push it past the measure.
-const UNBREAKABLE_MAX = 14;
-
-function unbreakable(title: string) {
-  return title.split(/(\s+)/).map((part, i) =>
-    part.includes("-") && part.length <= UNBREAKABLE_MAX ? (
-      <span key={i} className="whitespace-nowrap">
-        {part}
-      </span>
-    ) : (
-      part
-    ),
-  );
-}
 
 export default async function BlogPostPage({
   params,
