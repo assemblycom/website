@@ -6,7 +6,6 @@ import { ThemeProvider } from "@/components/theme/theme-provider";
 import { SegmentScript } from "@/components/analytics/segment-script";
 import { GtmScript, GtmNoScript } from "@/components/analytics/gtm-script";
 import { PageTracker } from "@/components/analytics/page-tracker";
-import { ANALYTICS_ENABLED } from "@/components/analytics/enabled";
 // Imported from the plain module, never from the "use client" provider — a
 // server importer of a client export gets a throwing proxy, not the string.
 import { THEME_INIT_SCRIPT } from "@/components/theme/theme-script";
@@ -207,9 +206,10 @@ export default async function RootLayout({
             <RootShell>{children}</RootShell>
           </FeaturedPostProvider>
         </ThemeProvider>
-        {/* Gated here rather than inside: PageTracker is a client component,
-            so it cannot read VERCEL_ENV — that is a server-side build value. */}
-        {ANALYTICS_ENABLED && <PageTracker />}
+        {/* No gate needed: it calls window.analytics?.page(), and off the
+            production host the Segment snippet never runs, so there is no
+            window.analytics for it to call. */}
+        <PageTracker />
       </body>
     </html>
   );
