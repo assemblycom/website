@@ -4,21 +4,14 @@
 // error rather than the script.
 
 /**
- * Whether the visitor is signed in to Assembly. The app
- * (dashboard.assembly.com) and this site (assembly.com) are different
- * origins, so the app's session can't be read directly. Instead the app sets a
- * non-httpOnly cookie on the shared `.assembly.com` parent domain, which any
- * page under that domain can read client-side.
+ * Whether the visitor is signed in to Assembly. The dashboard sets a cookie on
+ * the shared `.assembly.com` parent domain, which any page under that domain
+ * can read client-side.
  *
- * KNOWN GAP: nothing sets this cookie yet. The dashboard's only cookie is
- * written host-only (no `domain` attribute), so it is invisible here and every
- * visitor currently resolves to signed-out. SESSION_COOKIE must be matched to
- * whatever the app team ships before any of this does anything in production.
- *
- * A Vercel preview URL is not under `.assembly.com` either, so the cookie is
- * never visible there — use the demo override below to see both states.
+ * A Vercel preview URL is not under `.assembly.com`, so the cookie is never
+ * visible there — use the demo override below to see both states.
  */
-export const SESSION_COOKIE = "assembly_session";
+export const SESSION_COOKIE = "current-portal-session";
 
 /**
  * Demo override so both states can be shown on a preview URL: add `?authed=1`
