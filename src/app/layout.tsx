@@ -12,6 +12,7 @@ import { THEME_INIT_SCRIPT } from "@/components/theme/theme-script";
 import { AUTH_INIT_SCRIPT } from "@/lib/auth-script";
 import { SITE_NAME, SITE_URL } from "@/lib/constants";
 import { getFeaturedPost } from "@/lib/ghost";
+import { PUBLISHER } from "@/lib/blog-schema";
 import { OG_IMAGE, PAGE_SEO } from "@/lib/seo";
 import "./globals.css";
 
@@ -92,17 +93,15 @@ export const metadata: Metadata = {
 };
 
 // Site-wide structured data: who publishes the site (Organization), the site
-// itself (WebSite), and the product (SoftwareApplication). Per-page schema
-// (FAQPage, Article, ItemList) is a separate follow-up.
+// itself (WebSite), and the product (SoftwareApplication). Blog posts add their
+// own Article on top of this; FAQPage and ItemList are still to come.
 const STRUCTURED_DATA = {
   "@context": "https://schema.org",
   "@graph": [
-    {
-      "@type": "Organization",
-      name: SITE_NAME,
-      url: SITE_URL,
-      logo: `${SITE_URL}/favicon.svg`,
-    },
+    // Shared with the publisher on each post's Article schema. Both describe the
+    // same organization at the same url, so a different logo in one would be a
+    // contradiction rather than a second opinion.
+    PUBLISHER,
     {
       "@type": "WebSite",
       name: SITE_NAME,
