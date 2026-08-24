@@ -42,8 +42,10 @@ export function RootShell({ children }: { children: React.ReactNode }) {
     document.documentElement.setAttribute("data-footer", "dark");
   }, []);
 
-  // The shared nav never shows "Book a demo" (it's a demo-page/pricing-hero
-  // CTA, not a nav item). The theme toggle now lives in the footer instead of
+  // The shared nav's SIGNED-OUT side never shows "Book a demo" (it's a
+  // demo-page/pricing-hero CTA, not a nav item). The signed-in side carries one
+  // regardless — see the auth-only branch in studio-nav.
+  // The theme toggle now lives in the footer instead of
   // the nav. Contents ride light over the dark theme and dark over the light.
   // The home hero renders its own sticky nav, so the global header is omitted
   // there to avoid a duplicate bar.
