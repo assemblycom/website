@@ -2,15 +2,22 @@ import type { MetadataRoute } from "next";
 import { PROPOSAL_CREATOR_PATH, PROPOSAL_PATH, SITE_URL } from "@/lib/constants";
 
 // Anything that is not the production alias — previews, and the staging host —
-// is closed to crawlers outright. next.config.ts already bakes an
-// X-Robots-Tag: noindex, nofollow header into those builds; this is the second
-// half of the same rule, and both are keyed off VERCEL_ENV at BUILD time, so a
-// staging artifact cannot be promoted into production carrying either one.
+// is kept OUT of the index by the X-Robots-Tag: noindex, nofollow header that
+// next.config.ts bakes into those builds. Keyed off VERCEL_ENV at BUILD time, so
+// a staging artifact cannot be promoted into production carrying it.
+//
+// robots.txt deliberately does NOT also disallow them. Disallow and noindex
+// pull against each other: a crawler that is refused the page never reads the
+// header telling it not to index the page, and a blocked URL can still be
+// listed from links alone — url only, no description, and no way to remove it.
+// Letting the crawl through is what lets the header be seen and obeyed. No
+// sitemap line here either, though: allowing a crawl is not the same as
+// advertising these hosts.
 const isProduction = process.env.VERCEL_ENV === "production";
 
 export default function robots(): MetadataRoute.Robots {
   if (!isProduction) {
-    return { rules: { userAgent: "*", disallow: "/" } };
+    return { rules: { userAgent: "*", allow: "/" } };
   }
 
   return {

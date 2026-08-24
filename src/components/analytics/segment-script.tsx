@@ -1,9 +1,10 @@
 import Script from "next/script";
+import { ANALYTICS_ENABLED } from "./enabled";
 
 const WRITE_KEY = process.env.NEXT_PUBLIC_SEGMENT_WRITE_KEY;
 
 export function SegmentScript() {
-  if (!WRITE_KEY) return null;
+  if (!ANALYTICS_ENABLED || !WRITE_KEY) return null;
 
   return (
     <Script

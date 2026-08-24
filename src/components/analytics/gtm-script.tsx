@@ -1,9 +1,10 @@
 import Script from "next/script";
+import { ANALYTICS_ENABLED } from "./enabled";
 
 const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID;
 
 export function GtmScript() {
-  if (!GTM_ID) return null;
+  if (!ANALYTICS_ENABLED || !GTM_ID) return null;
 
   return (
     <Script
@@ -17,7 +18,7 @@ export function GtmScript() {
 }
 
 export function GtmNoScript() {
-  if (!GTM_ID) return null;
+  if (!ANALYTICS_ENABLED || !GTM_ID) return null;
 
   return (
     <noscript>

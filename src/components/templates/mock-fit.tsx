@@ -58,25 +58,44 @@ export function MockFit({ className = "", cap = false, children }: Props) {
       const width = el.clientWidth;
       if (!width) return;
       const cs = getComputedStyle(el);
-      const designW =
+      const declaredW =
         parseFloat(cs.getPropertyValue("--template-mock-w")) ||
         DEFAULT_DESIGN_SIZE;
-      let scale = width / designW;
+      const declaredH = parseFloat(cs.getPropertyValue("--template-mock-h"));
 
-      // Fit the height too where there is a height to fit to. Scaling on width
-      // alone assumes the cover is exactly as tall as its design says, and a
-      // browser that sets the type a little taller — different font metrics, or
-      // the fallback face while the webfont loads — grows the cover past the
-      // frame, which then crops it. The crop lands on the type at the top and
-      // bottom edges, so it reads as letters sliced in half.
+      // Measure what the cover ACTUALLY occupies, not what its design says it
+      // should. The two diverge exactly when this is worth fixing: a fallback
+      // face while the webfont loads, or a browser setting the same type a
+      // little taller, grows the cover past its declared box and the frame's
+      // hidden overflow slices the lettering. Fitting the declared box cannot
+      // see that, because the declared box is the thing that was wrong.
       //
-      // Guarded on both being present: a frame whose height is auto measures 0
-      // here (the mock inside it is absolutely positioned and adds nothing), and
-      // dividing by that would scale the cover away to nothing.
-      const designH = parseFloat(cs.getPropertyValue("--template-mock-h"));
+      // offset*/scroll* are pre-transform layout values, so reading them back
+      // while a scale is applied is safe, and scaling changes no layout — there
+      // is no feedback loop between this measurement and the scale it sets.
+      // Fits the DECLARED design box, not what the cover actually draws.
+      //
+      // Greptile is right that this cannot catch type rendering taller than the
+      // design assumed: .template-mock-fit > * gives the mock a fixed width and
+      // height from the design vars, so overflowing content changes neither
+      // offsetHeight nor scrollHeight — both keep reporting the number that was
+      // wrong. Measuring the drawn extent instead was tried and is worse: these
+      // covers deliberately contain elements far outside the box and clipped by
+      // it, and the odometer cover's digit strip — ten rows tall by design —
+      // measured 1044px against a declared 210 and shrank that cover to a fifth
+      // of its size. Left as the declared box until the covers themselves can
+      // say which parts are meant to be measured.
+      const naturalW = declaredW;
+      const naturalH = declaredH || 0;
+
+      let scale = width / naturalW;
+
+      // Only when the frame has a height of its own. A frame sized by its
+      // content measures 0 here (the mock inside is absolutely positioned and
+      // contributes nothing), and dividing by that would scale the cover away.
       const height = el.clientHeight;
-      if (designH > 0 && height > 0) {
-        scale = Math.min(scale, height / designH);
+      if (naturalH > 0 && height > 0) {
+        scale = Math.min(scale, height / naturalH);
       }
 
       el.style.setProperty(
@@ -88,7 +107,16 @@ export function MockFit({ className = "", cap = false, children }: Props) {
     apply();
     const observer = new ResizeObserver(apply);
     observer.observe(el);
-    return () => observer.disconnect();
+    // The frame's size does not change when a webfont swaps in, so the observer
+    // never hears about it — but the cover's height does. Without this the
+    // measurement taken against the fallback face is the one that sticks.
+    const fonts = document.fonts;
+    fonts?.ready.then(apply).catch(() => {});
+    fonts?.addEventListener("loadingdone", apply);
+    return () => {
+      observer.disconnect();
+      fonts?.removeEventListener("loadingdone", apply);
+    };
   }, [cap]);
 
   return (

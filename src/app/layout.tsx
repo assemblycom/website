@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/theme/theme-provider";
 import { SegmentScript } from "@/components/analytics/segment-script";
 import { GtmScript, GtmNoScript } from "@/components/analytics/gtm-script";
 import { PageTracker } from "@/components/analytics/page-tracker";
+import { ANALYTICS_ENABLED } from "@/components/analytics/enabled";
 // Imported from the plain module, never from the "use client" provider — a
 // server importer of a client export gets a throwing proxy, not the string.
 import { THEME_INIT_SCRIPT } from "@/components/theme/theme-script";
@@ -13,6 +14,7 @@ import { AUTH_INIT_SCRIPT } from "@/lib/auth-script";
 import { SITE_NAME, SITE_URL } from "@/lib/constants";
 import { getFeaturedPost } from "@/lib/ghost";
 import { PUBLISHER } from "@/lib/blog-schema";
+import { serializeJsonLd } from "@/lib/json-ld";
 import { OG_IMAGE, PAGE_SEO } from "@/lib/seo";
 import "./globals.css";
 
@@ -195,7 +197,7 @@ export default async function RootLayout({
         <link rel="preconnect" href="https://images.ctfassets.net" />
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(STRUCTURED_DATA) }}
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(STRUCTURED_DATA) }}
         />
       </head>
       <body className="min-h-full overflow-x-clip font-sans">
@@ -205,7 +207,9 @@ export default async function RootLayout({
             <RootShell>{children}</RootShell>
           </FeaturedPostProvider>
         </ThemeProvider>
-        <PageTracker />
+        {/* Gated here rather than inside: PageTracker is a client component,
+            so it cannot read VERCEL_ENV — that is a server-side build value. */}
+        {ANALYTICS_ENABLED && <PageTracker />}
       </body>
     </html>
   );
