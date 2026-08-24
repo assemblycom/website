@@ -12,6 +12,7 @@ import {
   SIGNUP_URL,
   LOGIN_URL,
   DEMO_URL,
+  DEMO_CTA_LABEL,
   type NavGroup,
   type NavItem,
 } from "@/lib/constants";
@@ -411,16 +412,6 @@ export function StudioNav({
         ? "bg-white text-neutral-900"
         : "bg-foreground text-background"
   }`;
-  // The outlined companion to ctaCls, on the same three colour branches. Its
-  // vertical padding is a pixel short of the primary's so the 1px border buys
-  // back the height instead of adding it, and the pair sits on one baseline.
-  const ctaSecondaryCls = `whitespace-nowrap rounded-lg border px-4 py-[calc(0.375rem-1px)] text-sm transition-colors ${
-    theme === "light"
-      ? "border-neutral-900/20 text-neutral-900 hover:bg-neutral-900/[0.06]"
-      : lightContent
-        ? "border-white/20 text-white hover:bg-white/10"
-        : "border-foreground/20 text-foreground hover:bg-foreground/[0.06]"
-  }`;
   const logoInvert = lightContent ? "brightness-0 invert" : "";
 
   // Over a dark surface the full-screen mobile menu stays dark rather than
@@ -685,8 +676,8 @@ export function StudioNav({
                       the bar. Suppressed only on the demo page itself, where it
                       would point at the page you are already reading. */}
                     {pathname !== DEMO_URL && (
-                      <Link href={DEMO_URL} className={ctaSecondaryCls}>
-                        Book a demo
+                      <Link href={DEMO_URL} className={linkCls}>
+                        {DEMO_CTA_LABEL}
                       </Link>
                     )}
                     <a href={APP_URL} className={ctaCls}>
@@ -696,7 +687,7 @@ export function StudioNav({
                   <span className="contents unauth-only">
                     {!hideDemo && (
                       <Link href={DEMO_URL} className={linkCls}>
-                        Book a demo
+                        {DEMO_CTA_LABEL}
                       </Link>
                     )}
                     <a href={LOGIN_URL} className={linkCls}>

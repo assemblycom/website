@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { GridDivider, GridRails } from "@/components/ui/grid-lines";
-import { DEMO_URL, SIGNUP_URL } from "@/lib/constants";
+import { DEMO_URL, SIGNUP_URL, DEMO_CTA_LABEL } from "@/lib/constants";
 import { PAGE_SEO, pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata(PAGE_SEO.copilotRebrand);
@@ -68,7 +68,7 @@ export default function CopilotRebrandPage() {
               Get started
             </a>
             <a href={DEMO_URL} className={SECONDARY_BUTTON}>
-              Book demo
+              {DEMO_CTA_LABEL}
             </a>
           </div>
         </div>
