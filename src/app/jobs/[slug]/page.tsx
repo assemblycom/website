@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { GridDivider, GridRails } from "@/components/ui/grid-lines";
+import { GridRails } from "@/components/ui/grid-lines";
 import { RichText } from "@/components/ui/rich-text";
 import { SITE_NAME, SITE_URL } from "@/lib/constants";
 import { OG_IMAGE } from "@/lib/seo";
@@ -163,7 +163,8 @@ export default async function JobPage({
           </div>
         </article>
 
-        <GridDivider />
+        {/* Nothing closes the grid here: the footer opens on a full-bleed rule,
+            and a rail-capped GridDivider on top of it read as two lines. */}
       </div>
     </>
   );
