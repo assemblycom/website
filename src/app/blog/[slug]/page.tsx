@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { articleSchema } from "@/lib/blog-schema";
 import {
   formatPostDate,
   postContents,
@@ -81,6 +82,12 @@ export default async function BlogPostPage({
     // lg — a contents list is a desktop affordance, and stacked above a post on
     // a phone it is just a second thing to scroll past.
     <article className="mx-auto max-w-[1600px] px-6 pb-24 pt-12 md:px-10 md:pb-32 md:pt-16">
+      {/* Article schema. Next exposes no metadata field for JSON-LD, so it is a
+          script in the body, which Google reads as readily as one in the head. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema(post)) }}
+      />
       <div
         className={
           showRail
