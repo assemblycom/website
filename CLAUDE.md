@@ -253,9 +253,10 @@ temporary on purpose — a `301` is cached hard by the browser, and a stale one 
 a host we may want to serve from again is a bad trade for a host no crawler is
 allowed to index anyway.
 
-`www.assembly.com` currently serves the site rather than redirecting to the apex.
-The canonical points at the apex, so the duplicate is declared, but a redirect
-would be the stronger setup if anyone touches domains next.
+`www.assembly.com` redirects to the apex the same way, also `301` and
+path-preserving. It used to serve the site outright, which put the whole thing on
+two hosts at once; the canonicals named the apex, so the duplicate was at least
+declared, but a redirect settles it rather than describing it.
 
 ## Page copy: frozen, not fetched
 
