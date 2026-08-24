@@ -19,7 +19,7 @@ import { GridDivider, GridRails } from "@/components/ui/grid-lines";
 // re-running the query on every hit.
 // Only the canonical, deliberately: the layout already sets this page's title,
 // description and card, and routing home through pageMetadata() would push its
-// title through the "Assembly | %s" template and brand it twice.
+// title through the "%s | Assembly" template and brand it twice.
 //
 // Written out rather than left to the layout's relative "./". Relative resolves
 // against the route, and for the root route that came out as /index — a URL that
