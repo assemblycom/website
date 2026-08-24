@@ -4,12 +4,9 @@
 // error rather than the script.
 
 /**
- * Whether the visitor is signed in to Assembly. The dashboard sets a cookie on
- * the shared `.assembly.com` parent domain, which any page under that domain
- * can read client-side.
- *
- * A Vercel preview URL is not under `.assembly.com`, so the cookie is never
- * visible there — use the demo override below to see both states.
+ * The dashboard's session cookie. HttpOnly, so it can only be read server-side
+ * — the root layout reads it with `cookies()` and stamps `data-authed` on
+ * `<html>` at render time.
  */
 export const SESSION_COOKIE = "current-portal-session";
 
@@ -23,16 +20,10 @@ export const DEMO_KEY = "studio:demo-authed";
 export const AUTH_ATTRIBUTE = "authed";
 
 /**
- * Runs before paint so the right variant is on <html> before React hydrates.
- *
- * This is what makes the auth-aware UI flash-free. The markup is prerendered
- * without knowing who is visiting, so every auth-dependent surface ships BOTH
- * variants and the stylesheet picks one off this attribute (see `.auth-only` /
- * `.unauth-only` in globals.css). Deciding in an effect instead meant a
- * signed-in visitor watched the nav, the pricing grid and the comparison table
- * render signed-out and then rearrange.
- *
- * Failing closed to "0" matters: signed-out is the state the markup is written
- * for, so a thrown script leaves a correct page rather than a blank one.
+ * Client-side script that handles only the demo override. The real auth state
+ * is set server-side on `<html data-authed>` by the root layout (which can
+ * read the HttpOnly session cookie). This script checks for `?authed=1|0` in
+ * the URL or a persisted override in localStorage and, if found, overwrites
+ * the server-set value. If no override is active it leaves the attribute alone.
  */
-export const AUTH_INIT_SCRIPT = `try{var a=null;var q=new URLSearchParams(window.location.search).get('authed');if(q==='clear'){localStorage.removeItem('${DEMO_KEY}');}else if(q==='1'||q==='0'){localStorage.setItem('${DEMO_KEY}',q);a=q==='1';}if(a===null){var s=localStorage.getItem('${DEMO_KEY}');if(s==='1'||s==='0')a=s==='1';}if(a===null)a=document.cookie.split('; ').some(function(c){return c.indexOf('${SESSION_COOKIE}=')===0&&c.length>${SESSION_COOKIE.length + 1};});document.documentElement.dataset.${AUTH_ATTRIBUTE}=a?'1':'0';}catch(e){document.documentElement.dataset.${AUTH_ATTRIBUTE}='0';}`;
+export const AUTH_INIT_SCRIPT = `try{var a=null;var q=new URLSearchParams(window.location.search).get('authed');if(q==='clear'){localStorage.removeItem('${DEMO_KEY}');}else if(q==='1'||q==='0'){localStorage.setItem('${DEMO_KEY}',q);a=q==='1';}if(a===null){var s=localStorage.getItem('${DEMO_KEY}');if(s==='1'||s==='0')a=s==='1';}if(a!==null)document.documentElement.dataset.${AUTH_ATTRIBUTE}=a?'1':'0';}catch(e){}`;

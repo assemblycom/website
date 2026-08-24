@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { Inter, La_Belle_Aurore } from "next/font/google";
 import { RootShell } from "@/components/layout/root-shell";
 import { FeaturedPostProvider } from "@/components/layout/featured-post";
@@ -9,7 +10,7 @@ import { PageTracker } from "@/components/analytics/page-tracker";
 // Imported from the plain module, never from the "use client" provider — a
 // server importer of a client export gets a throwing proxy, not the string.
 import { THEME_INIT_SCRIPT } from "@/components/theme/theme-script";
-import { AUTH_INIT_SCRIPT } from "@/lib/auth-script";
+import { AUTH_INIT_SCRIPT, SESSION_COOKIE, AUTH_ATTRIBUTE } from "@/lib/auth-script";
 import { SITE_NAME, SITE_URL } from "@/lib/constants";
 import { getFeaturedPost } from "@/lib/ghost";
 import { PUBLISHER } from "@/lib/blog-schema";
@@ -127,6 +128,9 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const isAuthed = !!cookieStore.get(SESSION_COOKIE)?.value;
+
   // Read here rather than in the nav so the strip is server-rendered with the
   // page instead of popping in. Ghost's fetches are revalidate-cached and deduped
   // per request, so this costs the layout nothing after the first hit.
@@ -136,10 +140,12 @@ export default async function RootLayout({
     <html
       lang="en"
       className={`h-full antialiased ${inter.variable} ${laBelleAurore.variable}`}
-      // The pre-paint scripts set data-theme and data-authed on <html> before
-      // hydration, so the server markup (no attributes) and client differ by
-      // design.
+      // data-theme is set by the pre-paint script before hydration; data-authed
+      // is set here server-side (the session cookie is HttpOnly). The demo
+      // override script may change data-authed client-side, so both attributes
+      // can differ from the server markup by design.
       suppressHydrationWarning
+      {...{ [`data-${AUTH_ATTRIBUTE}`]: isAuthed ? "1" : "0" }}
     >
       <head>
         <meta name="facebook-domain-verification" content="73ez73pudx2usus1si5il3vmxyvh5p" />
