@@ -51,6 +51,35 @@ Add `ANTHROPIC_API_KEY` under **Project → Settings → Environment Variables**
 The key is only ever read server-side in the API route — it is never sent to the
 browser.
 
+## Analytics — Segment and GTM
+
+Tracking scripts load only when their env vars are set, so preview/local
+builds are clean by default.
+
+| Variable | Scope | Notes |
+| --- | --- | --- |
+| `NEXT_PUBLIC_SEGMENT_WRITE_KEY` | Production | Segment analytics.js write key. Loaded in `<head>` via `next/script`. `NEXT_PUBLIC_` because the snippet runs in the browser. |
+| `NEXT_PUBLIC_GTM_ID` | Production | Google Tag Manager container ID (e.g. `GTM-WXDPBKL`). GA4, Facebook Pixel, LinkedIn, and other tags are managed inside the GTM container. |
+
+Both are `NEXT_PUBLIC_` because the scripts that use them run client-side.
+Set them on **Production only** so staging and preview deployments don't
+send traffic to the production analytics stream. If you need analytics on
+staging, create separate Segment sources / GTM containers with their own
+keys.
+
+## Customer.io (optional) — newsletter subscriptions
+
+Server-side integration for the email subscribe API route.
+
+| Variable | Scope | Notes |
+| --- | --- | --- |
+| `CUSTOMER_IO_SITE_ID` | Production | From Customer.io → Settings → Workspace |
+| `CUSTOMER_IO_API_KEY` | Production | Track API key |
+| `CUSTOMER_IO_APP_KEY` | Production | App API key |
+
+These are server-side only (no `NEXT_PUBLIC_` prefix) and never reach the
+browser.
+
 ## Ghost (optional) — the `/blog` archive
 
 Where the blog's posts come from. **Not set** → the site reads Ghost's public

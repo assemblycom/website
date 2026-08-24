@@ -9,13 +9,33 @@ const MINTLIFY_SITE = "https://assembly-ff8b9417.mintlify.site";
 
 const isProduction = process.env.VERCEL_ENV === "production";
 
-// Safe, non-CSP security headers applied site-wide. CSP is intentionally left
-// out until inline scripts and third-party origins are inventoried.
+// Third-party origins inventoried during the analytics migration from
+// web-presence-js (Aug 2026). Deployed as Report-Only first — switch to the
+// enforcing header once staging shows no violations.
+const cspDirectives = [
+  "default-src 'self'",
+  // 'unsafe-inline' covers the theme-init, auth-init, and font-swap scripts
+  // in layout.tsx that run as dangerouslySetInnerHTML. Segment and GTM are
+  // loaded via next/script which adds its own <script> elements at runtime.
+  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://*.googletagmanager.com https://*.google-analytics.com https://cdn.segment.com https://*.segment.io https://copilotplatforms.chilipiper.com",
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+  "img-src 'self' data: blob: https://images.ctfassets.net https://storage.ghost.io https://images.unsplash.com https://www.googletagmanager.com https://*.google-analytics.com",
+  "font-src 'self' data: https://fonts.gstatic.com",
+  "connect-src 'self' https://*.google-analytics.com https://*.googletagmanager.com https://cdn.segment.com https://api.segment.io https://*.customer.io https://copilotplatforms.chilipiper.com https://graphql.contentful.com https://storage.ghost.io",
+  "frame-src 'self' https://www.youtube.com https://copilotplatforms.chilipiper.com",
+  "media-src 'self' data:",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self' https://copilotplatforms.chilipiper.com",
+  "frame-ancestors 'none'",
+].join("; ");
+
 const securityHeaders = [
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   { key: "X-Frame-Options", value: "SAMEORIGIN" },
   { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+  { key: "Content-Security-Policy-Report-Only", value: cspDirectives },
 ];
 
 const nextConfig: NextConfig = {

@@ -3,6 +3,9 @@ import { Inter, La_Belle_Aurore } from "next/font/google";
 import { RootShell } from "@/components/layout/root-shell";
 import { FeaturedPostProvider } from "@/components/layout/featured-post";
 import { ThemeProvider } from "@/components/theme/theme-provider";
+import { SegmentScript } from "@/components/analytics/segment-script";
+import { GtmScript, GtmNoScript } from "@/components/analytics/gtm-script";
+import { PageTracker } from "@/components/analytics/page-tracker";
 // Imported from the plain module, never from the "use client" provider — a
 // server importer of a client export gets a throwing proxy, not the string.
 import { THEME_INIT_SCRIPT } from "@/components/theme/theme-script";
@@ -128,6 +131,9 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        <meta name="facebook-domain-verification" content="73ez73pudx2usus1si5il3vmxyvh5p" />
+        <SegmentScript />
+        <GtmScript />
         {/* Applies the persisted theme to <html> before paint to avoid a flash of
             the wrong theme; defaults to light. A parser-inserted inline script
             can't execute until every stylesheet declared above it has loaded, and
@@ -186,11 +192,13 @@ export default async function RootLayout({
         />
       </head>
       <body className="min-h-full overflow-x-clip font-sans">
+        <GtmNoScript />
         <ThemeProvider>
           <FeaturedPostProvider post={featured}>
             <RootShell>{children}</RootShell>
           </FeaturedPostProvider>
         </ThemeProvider>
+        <PageTracker />
       </body>
     </html>
   );
