@@ -64,17 +64,29 @@ function RollingDigit({
       <span aria-hidden className="invisible">
         {digit}
       </span>
+      {/* The strip is ten rows tall and every measurement on it is a percentage
+          OF THAT HEIGHT — row 10%, travel 10% per digit. Sized in em instead,
+          the row heights and the travel came from two different numbers: the
+          figure is a fluid clamp, so 1em is fractional (40.96px at 1280), the
+          browser snapped each laid-out row to its own grid (40.9531px), and the
+          transform used the exact em. The gap between the two multiplied by the
+          digit's value, so a 5 sat five times further off its baseline than a 1
+          — visible in Safari, which snaps more coarsely than Chromium. As
+          percentages both sides resolve against the same box, so they agree
+          however the engine rounds it. */}
       <span
-        className="absolute inset-0 flex flex-col motion-reduce:!transition-none"
+        className="absolute left-0 top-0 flex h-[1000%] w-full flex-col motion-reduce:!transition-none"
         style={{
-          transform: `translateY(-${play ? digit : 0}em)`,
+          transform: `translateY(-${(play ? digit : 0) * 10}%)`,
           transition: `transform ${ROLL_MS}ms cubic-bezier(0.16,1,0.3,1) ${delayMs}ms`,
         }}
       >
         {Array.from({ length: 10 }, (_, n) => (
           <span
             key={n}
-            className="flex h-[1em] items-center justify-center leading-none"
+            // shrink-0 so the row keeps its tenth outright, rather than leaning
+            // on min-height:auto to floor it against the content.
+            className="flex h-[10%] shrink-0 items-center justify-center leading-none"
           >
             {n}
           </span>

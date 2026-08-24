@@ -10,7 +10,7 @@ completions. Set them on all three unless a value is genuinely production-only.
 
 The canonical host, read by `SITE_URL` in `src/lib/constants.ts`. Unset — on
 production, previews, and locally — it falls back to
-`https://studio.assembly.com`.
+`https://assembly.com`.
 
 Set it on the **Staging** scope only:
 

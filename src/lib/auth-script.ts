@@ -5,7 +5,7 @@
 
 /**
  * Whether the visitor is signed in to Assembly. The app
- * (dashboard.assembly.com) and this site (studio.assembly.com) are different
+ * (dashboard.assembly.com) and this site (assembly.com) are different
  * origins, so the app's session can't be read directly. Instead the app sets a
  * non-httpOnly cookie on the shared `.assembly.com` parent domain, which any
  * page under that domain can read client-side.

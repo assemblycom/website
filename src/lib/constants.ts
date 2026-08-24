@@ -11,6 +11,12 @@ export const INVALID_EMAIL_ERROR =
 // Vercel host still serves the site and always will; this is the address we want
 // indexed and linked, so it names the domain rather than the deployment.
 //
+// assembly.com, not the studio subdomain: the consolidation is done, and
+// studio.assembly.com now 307s here. Naming it meant every canonical, og:url and
+// sitemap <loc> pointed at a host that only redirects, so each crawl spent a hop
+// to reach the page it was already on — and /api/shorten rejected proposals the
+// creator built, because their origin no longer matched this one.
+//
 // Staging overrides it with its own host. Left hardcoded, every canonical,
 // og:url, and proposal link built on staging would name production instead —
 // and /api/shorten, which only accepts URLs whose origin matches this one, would
@@ -19,7 +25,7 @@ export const INVALID_EMAIL_ERROR =
 // undefined in the browser bundle. Unset — production, previews, local — falls
 // back to the canonical host.
 export const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://studio.assembly.com";
+  process.env.NEXT_PUBLIC_SITE_URL || "https://assembly.com";
 
 export interface NavLink {
   label: string;
