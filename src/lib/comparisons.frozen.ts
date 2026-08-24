@@ -380,7 +380,7 @@ export const FROZEN_COMPARISONS: ComparisonPage[] = [
     },
     "noIndex": false,
     "closing": {
-      "title": "Your clients deserve better than Canopy.",
+      "title": "Your clients deserve better than Canopy",
       "description": "Try for free, no credit card required.",
       "ctas": [
         {
@@ -793,7 +793,7 @@ export const FROZEN_COMPARISONS: ComparisonPage[] = [
     },
     "noIndex": false,
     "closing": {
-      "title": "Grow beyond Dubsado.",
+      "title": "Grow beyond Dubsado",
       "description": "Try Assembly free, no credit card required.",
       "ctas": [
         {
@@ -1316,7 +1316,7 @@ export const FROZEN_COMPARISONS: ComparisonPage[] = [
     },
     "noIndex": false,
     "closing": {
-      "title": "Your clients deserve better than Karbon.",
+      "title": "Your clients deserve better than Karbon",
       "description": "Try Assembly for free, no credit card required.",
       "ctas": [
         {

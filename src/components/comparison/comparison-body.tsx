@@ -1,7 +1,7 @@
-import Image from "next/image";
 import Link from "next/link";
 import { FAQ } from "@/components/home/faq";
-import { GridDivider, GridRails, GRID_LINE } from "@/components/ui/grid-lines";
+import { CompetitorMark } from "@/components/comparison/competitor-mark";
+import { GRID_LINE } from "@/components/ui/grid-lines";
 import type {
   ComparisonCriterion,
   ComparisonCta,
@@ -16,8 +16,18 @@ const PRIMARY_BUTTON =
 const SECONDARY_BUTTON =
   "rounded-lg border border-foreground/20 bg-transparent px-5 py-2.5 text-center text-sm text-foreground transition-colors hover:bg-foreground/5";
 
-// Every section sits in the 1200px column the grid rails frame — the same Band
-// the Contentful feature and solutions pages use.
+/**
+ * One centred reading column, the way a post is set — not the 1200px rail the
+ * feature and solutions pages frame with grid lines.
+ *
+ * These pages are read rather than scanned: an argument, its evidence, then the
+ * next argument. At rail width every section was a short heading over a very
+ * wide table with ruled lines between, which read as a spec sheet. Narrowed and
+ * centred, with space rather than rules doing the separating, it reads as an
+ * article — and the tables sit inside the same column as everything else.
+ */
+const COLUMN = "mx-auto max-w-3xl";
+
 function Band({
   children,
   className = "",
@@ -26,8 +36,8 @@ function Band({
   className?: string;
 }) {
   return (
-    <section className={`px-6 py-16 md:py-24 ${className}`}>
-      <div className="mx-auto max-w-[1200px] md:px-10">{children}</div>
+    <section className={`px-6 py-14 md:py-16 ${className}`}>
+      <div className={COLUMN}>{children}</div>
     </section>
   );
 }
@@ -50,7 +60,9 @@ function CtaRow({
           <a
             key={cta.href}
             href={cta.href}
-            {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+            {...(external
+              ? { target: "_blank", rel: "noopener noreferrer" }
+              : {})}
             className={i === 0 ? PRIMARY_BUTTON : SECONDARY_BUTTON}
           >
             {cta.label}
@@ -62,40 +74,54 @@ function CtaRow({
 }
 
 /**
- * The tick and cross in a matrix cell. Drawn as strokes rather than set as text
- * so they hold their weight next to the type, and both stay neutral: a green
- * tick against a red cross turns a feature list into a scorecard, which is
- * louder than this site's palette goes anywhere else.
+ * The tick and cross in a matrix cell, each set in a disc so a row scans as a
+ * verdict rather than as two hairlines of type. Both stay neutral — a green
+ * tick against a red cross is louder than this site's palette goes anywhere
+ * else — so the contrast is weight, not hue: a solid disc for what a product
+ * does, a faint one for what it doesn't.
  */
 function Mark({ value }: { value: boolean }) {
   const label = value ? "Included" : "Not included";
-  return value ? (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      role="img"
-      aria-label={label}
-      className="text-foreground"
-    >
-      <path d="M20 6 9 17l-5-5" />
-    </svg>
-  ) : (
-    // A dash, not a cross: the absence of a feature is a blank in the table, and
-    // an X reads as a mark against the competitor rather than a fact about it.
+  return (
     <span
       role="img"
       aria-label={label}
-      className="block h-px w-3 bg-foreground/25"
-    />
+      className={`flex h-5 w-5 items-center justify-center rounded-full ${
+        value
+          ? "bg-foreground text-background"
+          : "bg-foreground/10 text-muted-foreground"
+      }`}
+    >
+      <svg
+        width="12"
+        height="12"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.75"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden
+      >
+        {value ? (
+          <path d="M20 6 9 17l-5-5" />
+        ) : (
+          <>
+            <path d="M18 6 6 18" />
+            <path d="m6 6 12 12" />
+          </>
+        )}
+      </svg>
+    </span>
   );
 }
 
+/**
+ * A mark sits centred in its column, the way a tick in a table always has. Prose
+ * does not: centred, the free-text cells gave every column two ragged edges and
+ * no line started where the one above it did, which was the hardest thing in the
+ * table to read. So the glyphs centre and the sentences range left.
+ */
 function Cell({ value }: { value: ComparisonRow["assembly"] }) {
   if (typeof value === "boolean") {
     return (
@@ -104,10 +130,14 @@ function Cell({ value }: { value: ComparisonRow["assembly"] }) {
       </div>
     );
   }
-  return (
-    <p className="type-caption text-center text-muted-foreground">{value}</p>
-  );
+  return <p className="type-caption text-muted-foreground">{value}</p>;
 }
+
+// The Assembly column carries a wash the length of the table so the page's own
+// side reads as the answer and the competitor's as the reference. `--muted` is
+// the site's existing surface step rather than a tint invented for this table,
+// so it flips with the theme like every other surface.
+const OWN_COLUMN = "bg-muted";
 
 /**
  * A feature matrix: the capability, then what each side offers.
@@ -127,50 +157,153 @@ function FeatureMatrix({
   caption: string;
 }) {
   return (
-    <div className="mt-8 overflow-x-auto">
-      <table className="w-full min-w-[34rem] border-collapse text-left">
-        <caption className="sr-only">{caption}</caption>
-        <thead>
-          <tr className={`border-b ${GRID_LINE}`}>
-            <th scope="col" className="w-1/2 pb-3 pr-4">
-              <span className="sr-only">Capability</span>
-            </th>
-            <th scope="col" className="type-eyebrow pb-3 text-center text-foreground">
-              Assembly
-            </th>
-            <th
-              scope="col"
-              className="type-eyebrow pb-3 text-center text-muted-foreground"
-            >
-              {competitor}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row) => (
-            <tr key={row.label} className={`border-b ${GRID_LINE}`}>
-              <th scope="row" className="py-4 pr-4 font-normal align-top">
-                <span className="type-body block text-foreground">{row.label}</span>
-                {row.detail && (
-                  <span className="type-caption mt-1 block text-muted-foreground">
-                    {row.detail}
-                  </span>
-                )}
+    <>
+      {/* Below md the same rows as a stack, one capability at a time.
+          Three columns will not fit a phone: at 375px the label column alone
+          took 240 of the 327 available, which left the Assembly column clipped
+          in half and the competitor's off-screen entirely, behind a horizontal
+          scroll with nothing to say it was there. Stacked, both sides of every
+          row are on screen and nothing scrolls sideways. */}
+      <ul className="mt-10 md:hidden">
+        {rows.map((row, i) => (
+          <li
+            key={row.label}
+            className={
+              i === rows.length - 1 ? "" : `mb-6 border-b pb-6 ${GRID_LINE}`
+            }
+          >
+            <p className="type-body text-foreground">{row.label}</p>
+            {row.detail && (
+              <p className="type-caption mt-1 text-muted-foreground">
+                {row.detail}
+              </p>
+            )}
+            {/* Label-then-value rows, the shape the G2 criterion bars below
+                already use, so the two read as one page. */}
+            <div className="mt-3 space-y-px overflow-hidden rounded-lg">
+              <StackedValue name="Assembly" value={row.assembly} own />
+              <StackedValue name={competitor} value={row.competitor} />
+            </div>
+          </li>
+        ))}
+      </ul>
+
+      <div className="mt-10 hidden overflow-x-auto md:block">
+        {/* table-fixed with declared columns, so the two product columns are the
+            same width in every section. Auto layout sized each table to its own
+            content, and scrolling the page stepped through five tables whose
+            columns never lined up with each other. */}
+        <table className="w-full table-fixed border-collapse text-left">
+          <caption className="sr-only">{caption}</caption>
+          <colgroup>
+            <col className="w-[44%]" />
+            <col className="w-[28%]" />
+            <col className="w-[28%]" />
+          </colgroup>
+          <thead>
+            <tr className={`border-b ${GRID_LINE}`}>
+              <th scope="col" className="pb-3 pr-4">
+                <span className="sr-only">Capability</span>
               </th>
-              <td className="px-3 py-4 align-middle">
-                <Cell value={row.assembly} />
-              </td>
-              <td className="px-3 py-4 align-middle">
-                <Cell value={row.competitor} />
-              </td>
+              <th
+                scope="col"
+                className={`type-eyebrow rounded-t-lg px-4 pb-3 pt-3 text-center text-foreground ${OWN_COLUMN}`}
+              >
+                Assembly
+              </th>
+              <th
+                scope="col"
+                className="type-eyebrow px-4 pb-3 pt-3 text-center text-muted-foreground"
+              >
+                {competitor}
+              </th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {rows.map((row, i) => (
+              // No rule under the last row: it would cut across the rounded foot
+              // of the wash, and the section divider already closes the block.
+              <tr
+                key={row.label}
+                className={i === rows.length - 1 ? "" : `border-b ${GRID_LINE}`}
+              >
+                <th scope="row" className="py-4 pr-4 font-normal align-top">
+                  <span className="type-body block text-foreground">
+                    {row.label}
+                  </span>
+                  {row.detail && (
+                    <span className="type-caption mt-1 block text-muted-foreground">
+                      {row.detail}
+                    </span>
+                  )}
+                </th>
+                {/* The wash closes on the last row, so the column reads as one
+                  panel rather than as a fill that runs off the bottom. */}
+                <td
+                  className={`px-4 py-4 align-middle ${OWN_COLUMN} ${
+                    i === rows.length - 1 ? "rounded-b-lg" : ""
+                  }`}
+                >
+                  <Cell value={row.assembly} />
+                </td>
+                <td className="px-4 py-4 align-middle">
+                  <Cell value={row.competitor} />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
+  );
+}
+
+/**
+ * One side of one capability, on a phone: who it is, then what they offer.
+ *
+ * The Assembly side keeps the wash it has in the table, so the highlight
+ * survives the change of shape rather than being a desktop-only flourish.
+ */
+function StackedValue({
+  name,
+  value,
+  own = false,
+}: {
+  name: string;
+  value: ComparisonRow["assembly"];
+  own?: boolean;
+}) {
+  return (
+    <div
+      className={`flex items-baseline gap-3 px-3 py-2.5 ${own ? OWN_COLUMN : ""}`}
+    >
+      <span
+        className={`type-eyebrow w-24 shrink-0 ${
+          own ? "text-foreground" : "text-muted-foreground"
+        }`}
+      >
+        {name}
+      </span>
+      {typeof value === "boolean" ? (
+        <Mark value={value} />
+      ) : (
+        <p className="type-caption min-w-0 flex-1 text-muted-foreground">
+          {value}
+        </p>
+      )}
     </div>
   );
 }
 
+/**
+ * One themed section: the claim, then the matrix that backs it.
+ *
+ * Stacked, not side by side. Beside each other the copy was squeezed into a
+ * ~450px column and eight lines deep, which read as more text rather than less,
+ * and it took the matrix's free-text cells down to ~130px — five and six line
+ * wraps in every cell. Full width, the heading holds two or three lines and the
+ * table gets the room those cells need.
+ */
 function FeatureSection({
   section,
   competitor,
@@ -180,6 +313,9 @@ function FeatureSection({
 }) {
   return (
     <Band>
+      {/* The claim on a reading measure, not the full 1200px rail: at rail width
+          a heading runs to a single very long line and the paragraph past 100
+          characters. */}
       <div className="max-w-3xl">
         <p className="type-eyebrow text-muted-foreground">{section.title}</p>
         {section.heading && (
@@ -261,7 +397,9 @@ function G2Section({ page }: { page: ComparisonPage }) {
   const { g2 } = page;
   return (
     <Band>
-      <div className="grid gap-10 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:gap-16">
+      {/* Stacked, not two halves: in a 768px column each side came to ~330px,
+          which left the score bars shorter than their own labels. */}
+      <div className="flex flex-col gap-10">
         <div>
           {g2.title && <h2 className="type-h2 text-balance">{g2.title}</h2>}
           {g2.description && (
@@ -285,20 +423,26 @@ function G2Section({ page }: { page: ComparisonPage }) {
           {/* The headline pair, out of 5. Two entries carry no scores at all, so
               the whole block is conditional rather than printing an empty gauge. */}
           {g2.assembly && g2.competitor && (
-            <div className={`grid grid-cols-2 gap-6 border-b pb-8 ${GRID_LINE}`}>
+            <div
+              className={`grid grid-cols-2 gap-6 border-b pb-8 ${GRID_LINE}`}
+            >
               {[
                 { name: "Assembly", value: g2.assembly, strong: true },
                 { name: page.competitor, value: g2.competitor, strong: false },
               ].map((side) => (
                 <div key={side.name}>
-                  <p className="type-eyebrow text-muted-foreground">{side.name}</p>
+                  <p className="type-eyebrow text-muted-foreground">
+                    {side.name}
+                  </p>
                   <p
                     className={`mt-2 font-mono text-4xl ${
                       side.strong ? "text-foreground" : "text-muted-foreground"
                     }`}
                   >
                     {side.value}
-                    <span className="type-caption text-muted-foreground">/5</span>
+                    <span className="type-caption text-muted-foreground">
+                      /5
+                    </span>
                   </p>
                 </div>
               ))}
@@ -327,77 +471,67 @@ function G2Section({ page }: { page: ComparisonPage }) {
   );
 }
 
+/**
+ * The page's opening: what this compares, the claim, and the claims list.
+ *
+ * The CMS art-directed a hero image for every entry — a collage of blurred app
+ * marks — and it is not drawn. Four of the nine pointed at the HoneyBook
+ * collage whatever the competitor was, and none of them said anything the
+ * headline doesn't. What fills that half instead is the page's own claims, so
+ * the space carries the argument rather than decoration.
+ *
+ * Two columns because one was a wall: heading, then a paragraph, then five
+ * stacked claims, then a button, all down the same measure. Split, the left is
+ * the statement and the right is what backs it, and neither is longer than a
+ * screen.
+ */
 function Hero({ page }: { page: ComparisonPage }) {
+  const hasPoints = page.points.length > 0;
+
   const copy = (
     <div>
-      {/* The competitor's own mark, so the page identifies what it is comparing
-          before the headline does. A plain <img>: most of these are SVG, and
-          next/image refuses SVG unless dangerouslyAllowSVG is on, which it is
-          not. */}
-      {page.logo && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={page.logo.url}
-          alt={page.logo.alt}
-          className="mb-6 h-6 w-auto max-w-[9rem] object-contain object-left"
-        />
-      )}
+      <CompetitorMark page={page} size="lg" />
       <h1 className="type-display text-balance">{page.name}</h1>
-      {page.description && (
-        <p className="type-lead mt-6 max-w-2xl text-pretty text-muted-foreground">
-          {page.description}
+      {/* A dateline under the headline, where a reader looks for one. Freshness
+          matters more on a comparison than on a feature page — the claims are
+          about someone else's product at a point in time — but trailing the CTA
+          it read as a footnote hung off a button. */}
+      {page.updated && (
+        <p className="type-caption mt-4 text-muted-foreground">
+          {page.updated}
         </p>
       )}
-      {/* The CMS follows the lead with its headline claims as "- " lines. The
-          hairline marker is the site's list style, from the glossary and rich
-          text — not a bullet. */}
-      {page.points.length > 0 && (
-        <ul className="mt-6 max-w-2xl space-y-3">
-          {page.points.map((point) => (
-            <li
-              key={point}
-              className="type-body relative pl-5 text-muted-foreground before:absolute before:left-0 before:top-[0.7em] before:h-px before:w-2.5 before:bg-foreground/25"
-            >
-              {point}
-            </li>
-          ))}
-        </ul>
-      )}
-      <CtaRow ctas={page.ctas} className="mt-8" />
-      {/* Freshness matters on a comparison more than on a feature page: the
-          claims are about someone else's product at a point in time. */}
-      {page.updated && (
-        <p className="type-caption mt-6 text-muted-foreground">{page.updated}</p>
+      {page.description && (
+        <p className="type-lead mt-6 text-pretty text-muted-foreground">
+          {page.description}
+        </p>
       )}
     </div>
   );
 
-  if (!page.image) {
-    return (
-      <section className="px-6 pb-16 pt-24 md:pb-24 md:pt-32">
-        <div className="mx-auto max-w-[1200px] md:px-10">
-          <div className="max-w-3xl">{copy}</div>
-        </div>
-      </section>
-    );
-  }
+  // The CMS writes these as "- " lines under the lead. The hairline marker is
+  // the site's list style, from the glossary and rich text — not a bullet.
+  const points = hasPoints && (
+    <ul className="space-y-4">
+      {page.points.map((point) => (
+        <li
+          key={point}
+          className="type-body relative pl-5 text-foreground before:absolute before:left-0 before:top-[0.7em] before:h-px before:w-2.5 before:bg-foreground/30"
+        >
+          {point}
+        </li>
+      ))}
+    </ul>
+  );
 
   return (
-    <section className="px-6 pb-16 pt-20 md:pb-24 md:pt-28">
-      <div className="mx-auto grid max-w-[1200px] items-center gap-10 md:grid-cols-[minmax(0,1fr)_minmax(0,0.85fr)] md:gap-14 md:px-10">
+    <section className="px-6 pb-14 pt-20 md:pb-16 md:pt-28">
+      <div className={COLUMN}>
         {copy}
-        {/* Already art-directed in the CMS — its own ground and corners — so it
-            takes the same bare treatment the CMS pages' Shot gives. */}
-        <Image
-          src={page.image.url}
-          alt={page.image.alt}
-          width={page.image.width}
-          height={page.image.height}
-          quality={90}
-          sizes="(min-width: 768px) 520px, 100vw"
-          priority
-          className="w-full rounded-xl"
-        />
+        {/* Under the lead, where the CMS wrote them — the claims are the rest of
+            the opening argument, not a sidebar to it. */}
+        {points && <div className="mt-8">{points}</div>}
+        <CtaRow ctas={page.ctas} className="mt-10" />
       </div>
     </section>
   );
@@ -413,17 +547,25 @@ export function ComparisonClosing({
   closing: NonNullable<ComparisonPage["closing"]>;
 }) {
   return (
-    <section className="px-6 py-16 text-center md:py-24">
-      <h2 className="type-display mx-auto max-w-md text-balance text-foreground md:max-w-2xl">
-        {closing.title}
-      </h2>
-      {closing.description && (
-        <p className="type-lead mx-auto mt-5 max-w-sm text-pretty text-muted-foreground sm:max-w-xl">
-          {closing.description}
-        </p>
-      )}
-      <CtaRow ctas={closing.ctas} className="mx-auto mt-8 sm:justify-center" />
-    </section>
+    <>
+      {/* The page's one rule, full bleed: it marks the end of the reading and the
+          start of the ask. Everything above it is separated by space alone. */}
+      <div className={`border-t ${GRID_LINE}`} />
+      <section className="px-6 py-16 text-center md:py-24">
+        <h2 className="type-display mx-auto max-w-md text-balance text-foreground md:max-w-2xl">
+          {closing.title}
+        </h2>
+        {closing.description && (
+          <p className="type-lead mx-auto mt-5 max-w-sm text-balance text-muted-foreground sm:max-w-xl">
+            {closing.description}
+          </p>
+        )}
+        <CtaRow
+          ctas={closing.ctas}
+          className="mx-auto mt-8 sm:justify-center"
+        />
+      </section>
+    </>
   );
 }
 
@@ -449,7 +591,12 @@ export function ComparisonBody({ page }: { page: ComparisonPage }) {
   }
   if (page.faqs.length) {
     sections.push(
-      <FAQ key="faq" heading="Frequently asked questions" items={page.faqs} twoColumn />,
+      <FAQ
+        key="faq"
+        heading="Frequently asked questions"
+        items={page.faqs}
+        twoColumn
+      />,
     );
   }
 
@@ -457,29 +604,22 @@ export function ComparisonBody({ page }: { page: ComparisonPage }) {
     <>
       <Hero page={page} />
 
-      <div className="relative">
-        <GridRails />
-        <div className={`border-t ${GRID_LINE}`} />
+      {/* No rails and no rules between sections. The space above each heading is
+          what separates them, as it is in a post — a rule every 600px through a
+          page of eight sections was the loudest thing on it. */}
+      {sections.map((section, i) => (
+        <div key={i}>{section}</div>
+      ))}
 
-        {sections.map((section, i) => (
-          <div key={i}>
-            {i > 0 && <GridDivider />}
-            {section}
-          </div>
-        ))}
-
-        <GridDivider />
-
-        {/* Back to the full set, so a page reached from search isn't a dead end. */}
-        <Band className="!py-10">
-          <Link
-            href="/comparison"
-            className="type-body text-muted-foreground underline underline-offset-4 transition-colors hover:text-foreground"
-          >
-            See all comparisons
-          </Link>
-        </Band>
-      </div>
+      {/* Back to the full set, so a page reached from search isn't a dead end.
+          The site's secondary button rather than an underlined link: it is the
+          only thing in its own band, and at link weight it read as a stray line
+          of copy in an empty strip rather than as somewhere to go. */}
+      <Band className="!pb-16 !pt-0">
+        <Link href="/comparison" className={`inline-block ${SECONDARY_BUTTON}`}>
+          See all comparisons
+        </Link>
+      </Band>
 
       {page.closing && <ComparisonClosing closing={page.closing} />}
     </>

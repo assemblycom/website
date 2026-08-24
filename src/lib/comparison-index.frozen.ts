@@ -26,7 +26,7 @@ export const FROZEN_COMPARISON_INDEX: ComparisonIndex = {
   },
   "noIndex": false,
   "closing": {
-    "title": "The alternative for modern firms.",
+    "title": "The alternative for modern firms",
     "description": "Try for free, no credit card required",
     "ctas": [
       {
