@@ -57,12 +57,32 @@ export function MockFit({ className = "", cap = false, children }: Props) {
       // clientWidth is the content box, the same box 100cqw resolves against.
       const width = el.clientWidth;
       if (!width) return;
-      const design =
-        parseFloat(
-          getComputedStyle(el).getPropertyValue("--template-mock-w"),
-        ) || DEFAULT_DESIGN_SIZE;
-      const scale = cap ? Math.min(1, width / design) : width / design;
-      el.style.setProperty("--template-mock-scale", String(scale));
+      const cs = getComputedStyle(el);
+      const designW =
+        parseFloat(cs.getPropertyValue("--template-mock-w")) ||
+        DEFAULT_DESIGN_SIZE;
+      let scale = width / designW;
+
+      // Fit the height too where there is a height to fit to. Scaling on width
+      // alone assumes the cover is exactly as tall as its design says, and a
+      // browser that sets the type a little taller — different font metrics, or
+      // the fallback face while the webfont loads — grows the cover past the
+      // frame, which then crops it. The crop lands on the type at the top and
+      // bottom edges, so it reads as letters sliced in half.
+      //
+      // Guarded on both being present: a frame whose height is auto measures 0
+      // here (the mock inside it is absolutely positioned and adds nothing), and
+      // dividing by that would scale the cover away to nothing.
+      const designH = parseFloat(cs.getPropertyValue("--template-mock-h"));
+      const height = el.clientHeight;
+      if (designH > 0 && height > 0) {
+        scale = Math.min(scale, height / designH);
+      }
+
+      el.style.setProperty(
+        "--template-mock-scale",
+        String(cap ? Math.min(1, scale) : scale),
+      );
     };
 
     apply();

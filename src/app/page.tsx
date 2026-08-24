@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { HeroV76 } from "@/components/home/hero-v76";
 import { getVisibleTemplates } from "@/lib/visible-templates";
 import { HowItWorks } from "@/components/home/how-it-works";
@@ -16,6 +17,17 @@ import { GridDivider, GridRails } from "@/components/ui/grid-lines";
 // mean in practice. Five minutes is short enough that a change lands while the
 // person who made it is still looking, and long enough that crawlers aren't
 // re-running the query on every hit.
+// Only the canonical, deliberately: the layout already sets this page's title,
+// description and card, and routing home through pageMetadata() would push its
+// title through the "Assembly | %s" template and brand it twice.
+//
+// Written out rather than left to the layout's relative "./". Relative resolves
+// against the route, and for the root route that came out as /index — a URL that
+// does not exist, offered to crawlers as the canonical one.
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
+
 export const revalidate = 300;
 
 export default async function HomePage() {

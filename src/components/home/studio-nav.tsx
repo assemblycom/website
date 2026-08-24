@@ -500,7 +500,7 @@ export function StudioNav({
           style={navStripStyle}
         />
         <div
-          className={`relative z-10 flex items-center justify-between px-5 transition-[height] ${ease} ${scrolled ? "h-12" : "h-14"}`}
+          className={`relative z-10 flex items-center justify-between px-6 transition-[height] ${ease} ${scrolled ? "h-12" : "h-14"}`}
         >
           <Link
             href="/"
@@ -715,13 +715,13 @@ export function StudioNav({
             className={`fixed inset-x-0 bottom-0 z-[60] flex flex-col outline-none lg:hidden ${menuSurface}`}
             style={{ top: menuTop }}
           >
-            {/* Match the mobile header's padding (px-5) and height exactly so the
+            {/* Match the mobile header's padding (px-6) and height exactly so the
               logo stays put when the menu opens — it must not shift.
               No hairline under this row: the sheet is one white surface, and a
               rule there split it into a header and a body that nothing else in
               the menu echoed. */}
             <div
-              className={`flex shrink-0 items-center justify-between px-5 ${scrolled ? "h-12" : "h-14"}`}
+              className={`flex shrink-0 items-center justify-between px-6 ${scrolled ? "h-12" : "h-14"}`}
             >
               {/* No logo here — the header's own one shows through from above (see
                 the header comment). This just reserves its 22px so the close
@@ -745,7 +745,7 @@ export function StudioNav({
 
             <div
               ref={menuScrollRef}
-              className="flex flex-1 flex-col overflow-y-auto overscroll-contain px-5 pt-6"
+              className="flex flex-1 flex-col overflow-y-auto overscroll-contain px-6 pt-6"
             >
               {/* A group opens in place rather than being flattened into the
                 list around it. Flattening was right while Resources held two
@@ -889,8 +889,13 @@ export function StudioNav({
                 })()}
             </div>
 
-            {/* Bottom actions — stacked full-width so both read the same size. */}
-            <div className="flex flex-col gap-3 px-5 pb-8 pt-4">
+            {/* Bottom actions — stacked full-width so both read the same size.
+              The bottom padding carries the phone's safe-area inset on top of
+              its own, so the buttons clear the home indicator instead of
+              sitting under it. Without it the sheet pays no attention to the
+              inset at all, and the gap under the last button reads as arbitrary
+              rather than as the sheet's own margin. */}
+            <div className="flex flex-col gap-3 px-6 pt-4 pb-[calc(2rem+env(safe-area-inset-bottom))]">
               <span className="contents auth-only">
                 <a
                   href={APP_URL}
