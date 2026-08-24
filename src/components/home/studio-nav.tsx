@@ -85,8 +85,8 @@ export function StudioNav({
   // Override the at-rest horizontal padding so the nav clears a rounded hero
   // panel's edge on narrower layouts (V63).
   restPaddingClass?: string;
-  // Hide the "Book a demo" CTA (both desktop and the mobile menu) — dropped for
-  // launch on some heroes.
+  // Hide the signed-out desktop bar's "Book a demo" link — dropped for launch on
+  // some heroes. The signed-in side keeps its own, in both the bar and the sheet.
   hideDemo?: boolean;
   // Internal pages (the proposal creator): the same bar, same scroll behaviour
   // and same sizes, but the marketing links and account actions collapse to a
@@ -914,6 +914,16 @@ export function StudioNav({
                 >
                   Open Assembly
                 </a>
+                {/* Same pairing the signed-out side uses below: the primary
+                  action, then the outlined secondary under it. */}
+                {pathname !== DEMO_URL && (
+                  <Link
+                    href={DEMO_URL}
+                    className={`flex w-full items-center justify-center rounded-lg border px-4 py-3 text-sm ${menuDemo}`}
+                  >
+                    {DEMO_CTA_LABEL}
+                  </Link>
+                )}
               </span>
               <span className="contents unauth-only">
                 <a
