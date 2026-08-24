@@ -16,9 +16,6 @@ import {
   type NavGroup,
   type NavItem,
 } from "@/lib/constants";
-// The site's arrow-up-right — the real product glyph, shared with the home
-// page's mocks. A stroked one drawn here read thin and light beside the type.
-import { IconArrowUpRight } from "@/components/home/mock-icons";
 
 // Pointer intent: leaving the trigger on the way to the panel shouldn't close
 // it, and neither should crossing a neighbouring trigger at speed.
@@ -228,6 +225,11 @@ function columnsOf(group: NavGroup): { label?: string; items: NavItem[] }[] {
  * references all set theirs at reading size and win the emphasis back with
  * columns. Full ink at rest, dimming on hover — muted-at-rest read as a menu of
  * things that were unavailable.
+ *
+ * No mark on the links that open a new tab. One arrow against four plain links
+ * drew the eye to Community over everything else in the panel, which is the
+ * opposite of what a nav should do, and the target attribute still tells a
+ * screen reader.
  */
 function PanelLink({
   item,
@@ -237,18 +239,7 @@ function PanelLink({
   onNavigate: () => void;
 }) {
   const cls =
-    "type-h4 flex items-center gap-1.5 rounded px-1 py-1 text-foreground transition-colors hover:text-muted-foreground";
-  // The arrow marks the links that leave the site in a new tab, and inherits the
-  // link's ink so it dims with it. The docs are external too but open in place,
-  // so they behave like any other nav item and an arrow on them would be a
-  // promise of a new tab the click doesn't keep.
-  const body = (
-    <>
-      {item.label}
-      {item.newTab && <IconArrowUpRight className="size-3 shrink-0" />}
-    </>
-  );
-
+    "type-h4 block rounded px-1 py-1 text-foreground transition-colors hover:text-muted-foreground";
   if (item.external) {
     return (
       <a
@@ -258,13 +249,13 @@ function PanelLink({
         className={cls}
         onClick={onNavigate}
       >
-        {body}
+        {item.label}
       </a>
     );
   }
   return (
     <Link href={item.href} className={cls} onClick={onNavigate}>
-      {body}
+      {item.label}
     </Link>
   );
 }

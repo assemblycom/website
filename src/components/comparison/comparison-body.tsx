@@ -365,9 +365,18 @@ function FeatureSection({
 function CriterionBar({
   criterion,
   competitor,
+  max = 10,
 }: {
   criterion: ComparisonCriterion;
   competitor: string;
+  /**
+   * What the scores are out of. The per-criterion figures are out of 10 and the
+   * overall G2 score is out of 5, and both now sit in the same panel — so the
+   * bar is filled against its own scale, and every row prints the denominator.
+   * Without it a 4.8 out of 5 draws a longer bar than a 9.4 out of 10 and the
+   * panel contradicts itself.
+   */
+  max?: number;
 }) {
   const sides = [
     { name: "Assembly", value: criterion.assembly, strong: true },
@@ -391,15 +400,18 @@ function CriterionBar({
                 className={`h-full rounded-full ${
                   side.strong ? "bg-foreground" : "bg-foreground/25"
                 }`}
-                style={{ width: `${Math.min(side.value, 10) * 10}%` }}
+                style={{
+                  width: `${(Math.min(side.value, max) / max) * 100}%`,
+                }}
               />
             </div>
             <span
-              className={`type-caption w-8 shrink-0 text-right font-mono ${
+              className={`type-caption w-14 shrink-0 text-right font-mono ${
                 side.strong ? "text-foreground" : "text-muted-foreground"
               }`}
             >
               {side.value.toFixed(1)}
+              <span className="text-muted-foreground">/{max}</span>
             </span>
           </div>
         ))}
@@ -430,65 +442,45 @@ function G2Section({ page }: { page: ComparisonPage }) {
               <p>{g2.description}</p>
             </div>
           )}
+          {/* Under the copy it belongs to. The site's secondary button, matching
+              the way back at the foot of the page — an underlined line of grey
+              read as part of the paragraph above it rather than as the way off
+              to the source. */}
+          {g2.link && (
+            <a
+              href={g2.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`mt-6 inline-block ${SECONDARY_BUTTON}`}
+            >
+              See the full comparison on G2
+            </a>
+          )}
         </div>
 
-        {/* The headline pair sits on the page, not in the panel. It is the claim
-            the section makes — two entries carry no scores at all, hence the
-            guard — where the per-criterion bars are the working behind it, so
-            boxing both together gave the panel two zones divided by a rule and
-            no hierarchy between them. Out here the number leads and the panel
-            reads as its evidence.
+        {/* The scores in a bordered panel: quoted figures from someone else's
+            site, and the outline says where the evidence starts and stops.
 
-            Name then figure, side by side and close. Spread to the two edges
-            with justify-between, an eight-character name sat most of a 768px
-            column from the number it belongs to and the pairing was gone. A
-            fixed name column keeps the two together AND keeps the two figures
-            stacked in one column, which is the comparison. */}
-        {hasScores && (
-          <div>
-            {g2.label && (
-              <p className="type-caption text-muted-foreground">{g2.label}</p>
-            )}
-            <dl className="mt-3 space-y-1">
-              {[
-                { name: "Assembly", value: g2.assembly, strong: true },
-                {
-                  name: page.competitor,
-                  value: g2.competitor,
-                  strong: false,
-                },
-              ].map((side) => (
-                <div key={side.name} className="flex items-baseline gap-5">
-                  <dt
-                    className={`type-body w-28 shrink-0 ${
-                      side.strong ? "text-foreground" : "text-muted-foreground"
-                    }`}
-                  >
-                    {side.name}
-                  </dt>
-                  <dd
-                    className={`font-mono text-[1.75rem] leading-tight tracking-tight ${
-                      side.strong ? "text-foreground" : "text-muted-foreground"
-                    }`}
-                  >
-                    {side.value}
-                    <span className="ml-1 text-sm text-muted-foreground">
-                      /5
-                    </span>
-                  </dd>
-                </div>
-              ))}
-            </dl>
-          </div>
-        )}
-
-        {/* The per-criterion breakdown in a bordered panel: quoted figures from
-            someone else's site, and the outline says where the evidence starts
-            and stops. */}
-        {g2.criteria.length > 0 && (
+            The overall score leads, drawn as one more row in the same shape as
+            the criteria below it rather than as a separate pair of large
+            numerals above the panel. It is out of 5 where they are out of 10, so
+            each row fills its bar against its own scale and prints its own
+            denominator — see CriterionBar. */}
+        {(hasScores || g2.criteria.length > 0) && (
           <div
             className={`space-y-6 rounded-xl border p-6 md:p-8 ${GRID_LINE}`}
           >
+            {hasScores && (
+              <CriterionBar
+                criterion={{
+                  label: g2.label ?? "G2 score",
+                  assembly: Number(g2.assembly),
+                  competitor: Number(g2.competitor),
+                }}
+                competitor={page.competitor}
+                max={5}
+              />
+            )}
             {g2.criteria.map((criterion) => (
               <CriterionBar
                 key={criterion.label}
@@ -496,23 +488,6 @@ function G2Section({ page }: { page: ComparisonPage }) {
                 competitor={page.competitor}
               />
             ))}
-          </div>
-        )}
-
-        {/* The site's secondary button, matching the way back at the foot of the
-            page. Last, so it follows the evidence rather than interrupting it —
-            an underlined line of grey under the paragraph read as part of the
-            paragraph rather than as the way off to the source. */}
-        {g2.link && (
-          <div>
-            <a
-              href={g2.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`inline-block ${SECONDARY_BUTTON}`}
-            >
-              See the full comparison on G2
-            </a>
           </div>
         )}
       </div>
