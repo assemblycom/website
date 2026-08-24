@@ -77,11 +77,14 @@ export function BlogBrowser({
           {/* One line at every width. Wrapped, the shelves broke to a second row
               on a phone and the selected key sat alone above the rest, which
               read as two groups; scrolling keeps them one row of options. The
-              gutters are negative-margined back out, less the chip's own 12px of
-              padding, so the first chip's LABEL lands on the rail the cards
-              below start from rather than its box. The scrollbar is hidden
-              because the row is short enough to swipe. */}
-          <div className="-ml-6 -mr-6 flex items-center gap-2 overflow-x-auto pl-3 pr-6 [-ms-overflow-style:none] [scrollbar-width:none] sm:-ml-3 sm:mr-0 sm:pl-0 sm:pr-0 [&::-webkit-scrollbar]:hidden">
+              gutters are negative-margined back out and then paid back in
+              full, so the first chip's BOX lands on the rail the cards below
+              start from — the way the templates gallery's strip does it.
+              Aligning the label instead left the selected chip's fill jutting
+              into the gutter, which on a phone is the only thing on the page
+              that does. The bleed stays so the row can still be swiped to the
+              screen edge; the scrollbar is hidden because it is short. */}
+          <div className="-ml-6 -mr-6 flex items-center gap-2 overflow-x-auto pl-6 pr-6 [-ms-overflow-style:none] [scrollbar-width:none] sm:ml-0 sm:mr-0 sm:pl-0 sm:pr-0 [&::-webkit-scrollbar]:hidden">
             {[{ name: "All", slug: "" }, ...categories].map((filter) => {
               const active = (filter.slug || undefined) === activeSlug;
               return (
