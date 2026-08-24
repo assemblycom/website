@@ -94,6 +94,17 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
+        // The icons are immutable in practice and change only when the brand
+        // does. Out of public/ they otherwise carry max-age=0, so every
+        // navigation revalidates the favicon and the swap gets a window to be
+        // seen in. A day, not a year: a stale favicon is unusually annoying to
+        // flush, since browsers cache it outside the normal HTTP cache.
+        source: "/favicon.:ext(ico|svg)",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=86400, stale-while-revalidate=604800" },
+        ],
+      },
+      {
         source: "/:path*",
         headers: [
           ...securityHeaders,

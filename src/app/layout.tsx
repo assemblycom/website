@@ -62,8 +62,16 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "./",
   },
+  // Both, in this order. Browsers ask for /favicon.ico by convention before
+  // they have parsed any of this, so leaving that path empty meant a 404 and a
+  // fall back to whatever icon the browser still had cached for the origin —
+  // the previous site's, which showed for a beat before the SVG replaced it.
+  // The .ico answers that first request; modern browsers still prefer the SVG.
   icons: {
-    icon: "/favicon.svg",
+    icon: [
+      { url: "/favicon.ico", sizes: "48x48", type: "image/x-icon" },
+      { url: "/favicon.svg", type: "image/svg+xml" },
+    ],
   },
   // Baseline social card. Every page overrides title/description/url via
   // pageMetadata(); the image is the same one site-wide.
