@@ -20,6 +20,7 @@ import { AuthorAvatar } from "@/components/blog/post-byline";
 import { PostCta } from "@/components/blog/post-cta";
 import { PostLightbox } from "@/components/blog/post-lightbox";
 import { TocMobile } from "@/components/ui/toc-mobile";
+import { PostToc } from "@/components/blog/post-toc";
 
 export async function generateStaticParams() {
   return (await getPosts()).map((post) => ({ slug: post.slug }));
@@ -131,30 +132,7 @@ export default async function BlogPostPage({
               something about THIS post, which the site's closing CTA can't. */}
           {post.cta && <PostCta cta={post.cta} />}
 
-          {showToc && (
-            // Anchors only, no scroll tracking: on a post the list is a map
-            // rather than a position indicator.
-            <nav
-              aria-label="Jump to section"
-              className="sticky top-28 max-h-[calc(100vh-9rem)] overflow-y-auto"
-            >
-              {/* No "On this page" label: a list of the post's own headings in
-                  the margin beside it says what it is. The nav keeps its
-                  accessible name above. */}
-              <ul className="border-l border-border [[data-theme=dark]_&]:border-[#383838]">
-                {contents.map((heading) => (
-                  <li key={heading.id}>
-                    <a
-                      href={`#${heading.id}`}
-                      className="-ml-px block border-l border-transparent py-1 pl-4 text-sm leading-6 text-muted-foreground transition-colors hover:border-foreground hover:text-foreground"
-                    >
-                      {heading.text}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          )}
+          {showToc && <PostToc headings={contents} />}
         </div>
 
         <div>

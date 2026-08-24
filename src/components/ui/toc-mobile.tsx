@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import { useActiveHeading } from "@/components/ui/use-active-heading";
 
 /** Anything with an anchor and a label. Structural, so both callers fit it. */
 export interface TocHeading {
@@ -15,12 +16,6 @@ export interface TocHeading {
 // through. A heading has to clear both bars before it counts as the current one.
 const HEADER_HEIGHT = 48;
 const BAR_HEIGHT = 48;
-// A heading jumped to from the list lands 16px below both bars, on the
-// scroll-margin-top the stylesheet gives it. Without that 16px in the test, the
-// heading you just tapped is not yet "passed" and the bar keeps naming the
-// section above it — the one you left.
-const LANDING_GAP = 16;
-const PASSED_AT = HEADER_HEIGHT + BAR_HEIGHT + LANDING_GAP;
 
 /**
  * The contents rail for a phone. There's no room for a list beside the body, so
@@ -58,25 +53,13 @@ export function TocMobile({
 }) {
   const [open, setOpen] = useState(false);
   const [shown, setShown] = useState(false);
-  const [activeId, setActiveId] = useState(headings[0]?.id);
+  // Which section is being read — shared with the desktop rail, see the hook.
+  const [activeId, setActiveId] = useActiveHeading(headings);
 
   useEffect(() => {
-    // The current section is the last heading to have passed under the two bars.
-    // An intersection observer would only speak up while a heading sits inside
-    // its band, which leaves the label stale through any section longer than the
-    // screen — and these posts have several.
+    // Whether the bar belongs on screen at all: it has nothing to say until the
+    // reader is inside the body, and nothing once they are past it.
     const update = () => {
-      const passed = headings.filter((heading) => {
-        const element = document.getElementById(heading.id);
-        return element
-          ? // Floored: a heading jumped to lands on a fractional pixel
-            // (112.1875 where the line is 112), and comparing the raw value
-            // leaves it one thousandth short of counting.
-            Math.floor(element.getBoundingClientRect().top) <= PASSED_AT
-          : false;
-      });
-      setActiveId(passed.at(-1)?.id ?? headings[0]?.id);
-
       const body = document.querySelector(bodySelector);
       if (!body) return;
       const { top, bottom } = body.getBoundingClientRect();
@@ -97,7 +80,7 @@ export function TocMobile({
       window.removeEventListener("scroll", update);
       window.removeEventListener("resize", update);
     };
-  }, [headings, bodySelector]);
+  }, [bodySelector]);
 
   // Tells the nav that a bar is drawn directly under it. The nav's own chrome is
   // a blur that fades out over the content below, which has nothing to fade into
