@@ -282,6 +282,11 @@ export function buildProposalUrl(input: ProposalInput, origin = ""): string {
 // Its form now hands off to the same ChiliPiper Concierge router marketing uses,
 // so a submit here books a real call rather than showing a mock confirmation.
 export const DEMO_URL = "/demo";
+// One label for the one action. The site had reached "Book a demo", "Book demo"
+// and "Contact sales" for buttons that all open the same form, so every CTA
+// pointing at DEMO_URL reads from here. Prose and the frozen content data keep
+// writing it out longhand; this is for controls.
+export const DEMO_CTA_LABEL = "Book a demo";
 // The "Watch the demo" walkthrough video — points at the YouTube channel for
 // now; swap for the specific video URL when it's up.
 export const DEMO_VIDEO_URL = "https://www.youtube.com/@assembly";

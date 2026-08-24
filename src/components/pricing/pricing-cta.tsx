@@ -1,4 +1,4 @@
-import { SIGNUP_URL, DEMO_URL } from "@/lib/constants";
+import { SIGNUP_URL, DEMO_URL, DEMO_CTA_LABEL } from "@/lib/constants";
 
 // Plain closing CTA for the pricing page — no floating chips, just the pitch
 // and the two actions. Moderate vertical padding so it doesn't leave a big
@@ -26,7 +26,7 @@ export function PricingCta() {
           href={DEMO_URL}
           className="rounded-lg border border-foreground/20 bg-transparent px-5 py-2.5 text-center text-sm text-foreground transition-colors hover:bg-foreground/5"
         >
-          Book demo
+          {DEMO_CTA_LABEL}
         </a>
       </div>
     </section>

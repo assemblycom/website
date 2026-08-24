@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { APP_URL, DEMO_URL } from "@/lib/constants";
+import { APP_URL, DEMO_URL, DEMO_CTA_LABEL } from "@/lib/constants";
 
 interface PlanFeatureGroup {
   label: string;
@@ -146,7 +146,7 @@ const PLANS: Plan[] = [
         ],
       },
     ],
-    cta: "Book demo",
+    cta: DEMO_CTA_LABEL,
     highlighted: false,
   },
 ];
@@ -211,7 +211,7 @@ function EnterpriseCard() {
             href={DEMO_URL}
             className="block w-full rounded-lg bg-foreground px-5 py-2 text-center text-sm text-background transition-opacity hover:opacity-90 min-[560px]:inline-block min-[560px]:w-auto min-[560px]:px-8 lg:block lg:w-full lg:px-5"
           >
-            Contact sales
+            {DEMO_CTA_LABEL}
           </a>
         </div>
       </div>
@@ -388,10 +388,10 @@ function PlanGrid({
                 </div>
               </div>
 
-              {/* Detached CTA — our standard rounded-lg button. "Book demo"
-                  plans route to the demo page; the rest to signup. */}
+              {/* Detached CTA — our standard rounded-lg button. Demo plans route
+                  to the demo page; the rest to signup. */}
               <a
-                href={plan.cta === "Book demo" ? DEMO_URL : APP_URL}
+                href={plan.cta === DEMO_CTA_LABEL ? DEMO_URL : APP_URL}
                 className="mt-3 rounded-lg bg-foreground px-5 py-2 text-center text-sm text-background transition-opacity hover:opacity-90"
               >
                 {plan.cta}
