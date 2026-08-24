@@ -54,6 +54,13 @@ export interface GhostPost {
   cta?: PostCta;
   slug: string;
   title: string;
+  /**
+   * Ghost's meta title, which is the SEO title an editor writes for the search
+   * result — title-cased, where the editorial `title` is sentence case. Absent
+   * on the couple of posts nobody set one for, and on anything read off the RSS
+   * fallback, so every use of it falls back to `title`.
+   */
+  seoTitle?: string;
   /** Ghost's excerpt, used as the standfirst and the card summary. */
   excerpt: string;
   /** The post's primary tag, e.g. "Announcements". Some posts carry none. */
@@ -392,6 +399,7 @@ interface ContentApiPost {
   title: string;
   excerpt?: string;
   custom_excerpt?: string;
+  meta_title?: string | null;
   html?: string;
   feature_image?: string | null;
   published_at?: string;
@@ -453,6 +461,9 @@ async function fetchFromContentApi(
         showToc: !NO_TOC_TEMPLATE.test(post.custom_template ?? ""),
         slug: post.slug,
         title: withoutTitleEmoji(post.title),
+        seoTitle: post.meta_title
+          ? withoutTitleEmoji(post.meta_title)
+          : undefined,
         excerpt: post.custom_excerpt ?? post.excerpt ?? "",
         category: post.primary_tag?.name,
         categorySlug: post.primary_tag?.slug,
