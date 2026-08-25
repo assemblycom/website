@@ -179,6 +179,44 @@ function parseCta(inner: string): PostCta | undefined {
 const EMOJI =
   /\p{Extended_Pictographic}(?:\uFE0F|\u200D\p{Extended_Pictographic})*\uFE0F?/gu;
 
+/**
+ * Colours a paste brought with it, dropped so the text follows the theme.
+ *
+ * Copying a table out of Google Docs writes `color:#000000` onto every run of
+ * text. An inline style outranks the stylesheet, so that black survives into
+ * dark mode and the cell goes black-on-black — the reader sees empty rows where
+ * a comparison should be. The same paste pins a few cells to white, which is
+ * the identical bug facing the other way and is unreadable in light mode today.
+ *
+ * Only `color` and `background-color` go. Everything else the paste carried —
+ * its font, its size, its weight — is left exactly as it is: those are wrong in
+ * their own way, but they are legible, and changing them would redraw twenty
+ * posts in both themes rather than fix the one thing that is broken.
+ *
+ * Declarations are matched by name after splitting, not by pattern, so
+ * `border-color` and `text-decoration-color` are not caught by their endings.
+ */
+const PINNED_COLOUR = new Set(["color", "background-color"]);
+
+function dropPastedColours(html: string): string {
+  return html.replace(
+    /(\s)style="([^"]*)"/gi,
+    (match, space: string, declarations: string) => {
+      const kept = declarations
+        .split(";")
+        .filter((declaration) => {
+          const name = declaration.slice(0, declaration.indexOf(":"));
+          return !PINNED_COLOUR.has(name.trim().toLowerCase());
+        })
+        .join(";");
+      if (kept === declarations) return match;
+      // A style attribute holding nothing but colours goes with them, rather
+      // than staying behind as style="" on every span in the table.
+      return kept.replace(/^[\s;]+|[\s;]+$/g, "") ? `${space}style="${kept}"` : "";
+    },
+  );
+}
+
 function stripEmoji(html: string): string {
   return html.replace(/>([^<]+)</g, (match, text: string) => {
     const stripped = text.replace(EMOJI, "");
@@ -304,7 +342,9 @@ function withBody(
     ),
   );
 
-  const html = nativeVideoControls(liftHeaderNotes(stripEmoji(cleaned)))
+  const html = nativeVideoControls(
+    liftHeaderNotes(stripEmoji(dropPastedColours(cleaned))),
+  )
     .replace(HTML_CARD_WRAPPER, "")
     // A post authored with two cards still gets one; the first is the one the
     // writer led with.
