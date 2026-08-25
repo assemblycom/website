@@ -2704,6 +2704,12 @@ html[data-theme="dark"] .v63-ring-solid::before {
      consistently, since the filenames are UUIDs. */
   .post-body img[alt*="review" i] {
     border: 0;
+    /* And no radius either, for the same reason the border goes. The capture
+       includes the card's own rounded corner flush to the image edge, and the
+       page's 1rem is the wider arc of the two, so it cuts across that corner
+       and shaves the card's own outline either side of it. The card supplies
+       the corner; rounding the image rounds it twice. */
+    border-radius: 0;
   }
   .post-body figure img {
     margin-top: 0;
