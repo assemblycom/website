@@ -22,7 +22,7 @@ type Stat = {
 const STATS: Stat[] = [
   {
     label: "Businesses powered",
-    to: 1_000,
+    to: 1_200,
     format: (n) => `${Math.round(n).toLocaleString("en-US")}+`,
   },
   {
