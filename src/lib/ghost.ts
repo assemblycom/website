@@ -252,6 +252,67 @@ function stripEmoji(html: string): string {
 }
 
 /**
+ * The first row of a pasted table, promoted to a real header.
+ *
+ * A table pasted out of Google Docs carries no header: every cell in it is a
+ * `td` and there is no `thead`, so none of the header styling the blog's tables
+ * are designed around can reach the row naming the columns. The reader gets a
+ * "Pros / Cons" line set as ordinary copy, with no fill and no rule marking it
+ * as the header of anything, sitting above rows that look exactly like it. The
+ * same post's hand-authored tables get the fill and the alignment, so the two
+ * read as different components when they are the same table.
+ *
+ * The paste also centres its header text and sets it at 700, both inline on
+ * elements INSIDE the cell, which outrank the stylesheet's own alignment and
+ * weight because those target the cell itself. Those two declarations go, on
+ * the header row only. `dropPastedColours` takes a deliberately narrow view of
+ * a paste's styling — a font or a size is wrong but legible, and rewriting it
+ * would redraw every post — and this keeps to that: it is the two declarations
+ * that stop a header from reading as a header, in the one row that is a header.
+ *
+ * Only a table with no `th` of its own is touched, so a hand-authored table is
+ * never reinterpreted. Promotion assumes the first row names the columns, which
+ * is what a pasted table's first row is in every one on the blog today.
+ */
+const PASTED_HEADER_STYLES = new Set(["text-align", "font-weight"]);
+
+function promotePastedTableHeaders(html: string): string {
+  return html.replace(/<table\b[\s\S]*?<\/table>/gi, (table) => {
+    if (/<th[\s>]/i.test(table)) return table;
+
+    const firstRow = /<tr\b[^>]*>[\s\S]*?<\/tr>/i.exec(table);
+    if (!firstRow || !/<td[\s>]/i.test(firstRow[0])) return table;
+
+    const header = firstRow[0]
+      .replace(/<(\/?)td\b/gi, "<$1th")
+      .replace(/\sstyle="([^"]*)"/gi, (_match, decls: string) => {
+        const kept = decls
+          .split(";")
+          .filter((decl) => {
+            const name = decl.split(":")[0]?.trim().toLowerCase();
+            return name && !PASTED_HEADER_STYLES.has(name);
+          })
+          .join(";");
+        return kept.trim() ? ` style="${kept}"` : "";
+      });
+
+    const rest = table.replace(firstRow[0], "");
+    const thead = `<thead>${header}</thead>`;
+    // Before the body rather than inside it: a thead nested in a tbody is
+    // invalid, and the browser would hoist it back out on its own terms.
+    if (/<tbody\b/i.test(rest)) {
+      return rest.replace(/<tbody\b/i, `${thead}<tbody`);
+    }
+    // No tbody, so the rows are direct children — the header goes after the
+    // opening tag, and after a colgroup where the paste wrote one.
+    return rest.replace(
+      /<table\b[^>]*>(?:\s*<colgroup\b[\s\S]*?<\/colgroup>)?/i,
+      (open) => `${open}${thead}`,
+    );
+  });
+}
+
+/**
  * A qualifier a writer put in a column's name — "Starting price (billed
  * annually)" — moved out from under the header and set as a note beneath the
  * table. In a column about 150px wide the parenthetical is what forces the name
@@ -364,7 +425,11 @@ function withBody(
   );
 
   const html = nativeVideoControls(
-    liftHeaderNotes(stripEmoji(dropPastedColours(dropPastedStylesheets(cleaned)))),
+    liftHeaderNotes(
+      promotePastedTableHeaders(
+        stripEmoji(dropPastedColours(dropPastedStylesheets(cleaned))),
+      ),
+    ),
   )
     .replace(HTML_CARD_WRAPPER, "")
     // A post authored with two cards still gets one; the first is the one the
