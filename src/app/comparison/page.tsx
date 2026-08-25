@@ -24,9 +24,16 @@ export async function generateMetadata(): Promise<Metadata> {
   return cmsPageMetadata(index, "/comparison");
 }
 
-// The same muted-fill card and hover step the CMS pages' grid cards use.
-const CARD_HOVER =
-  "transition-colors hover:bg-[#EFF0F3] [[data-theme=dark]_&]:hover:bg-[#222222]";
+/**
+ * The card surface the customer stories' fact block uses, so the two pages read
+ * as one system: the lighter `--card` fill with a hairline `--border` around it,
+ * rather than the borderless muted fill the CMS pages' grid cards take.
+ *
+ * These cards are links, so they keep a hover step the fact block has no need
+ * for. It steps card -> muted, one notch of the same token pair in either theme.
+ */
+const CARD =
+  "rounded-lg border border-border bg-card transition-colors hover:bg-muted";
 
 export default async function ComparisonIndexPage() {
   const [index, comparisons] = await Promise.all([
@@ -70,7 +77,7 @@ export default async function ComparisonIndexPage() {
                 <Link
                   key={page.slug}
                   href={`/comparison/${page.slug}`}
-                  className={`rounded-[8px] bg-muted p-5 ${CARD_HOVER}`}
+                  className={`${CARD} p-5`}
                 >
                   <div className="mb-4">
                     <CompetitorMark page={page} />

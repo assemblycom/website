@@ -420,7 +420,7 @@ export const FROZEN_COMPARISONS: ComparisonPage[] = [
       "alt": "Dubsado Logo"
     },
     "smallLogo": {
-      "url": "/images/cms/3dF646Xh0Pax1173loZRjO-dubsado_icon_small.webp",
+      "url": "/images/cms/dubsado-icon-small.webp",
       "alt": "Dubsado Icon Small"
     },
     "image": {
@@ -1643,11 +1643,11 @@ export const FROZEN_COMPARISONS: ComparisonPage[] = [
       }
     ],
     "logo": {
-      "url": "/images/cms/5uZligEF2qeGmVwypdjfH3-smart.webp",
+      "url": "/images/cms/smartvault-logo.svg",
       "alt": "Logo - SmartVault"
     },
     "smallLogo": {
-      "url": "/images/cms/6BrWjqA6BY54aN0RLsgvIU-smartvault-smalllogo.svg",
+      "url": "/images/cms/smartvault-icon-small.svg",
       "alt": "Smartvault-smallLogo"
     },
     "image": {
