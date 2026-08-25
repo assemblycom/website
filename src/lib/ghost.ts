@@ -217,6 +217,27 @@ function dropPastedColours(html: string): string {
   );
 }
 
+/**
+ * A stylesheet pasted into a post, dropped so the post keeps the site's design.
+ *
+ * One post arrived with a `<style>` block styling its comparison table: a fixed
+ * white background, a navy header band, uppercase semibold column names, its
+ * own blue and green, a drop shadow, Inter. Every one of those is a decision
+ * the blog's table design already makes differently, and the fixed white meant
+ * the table stayed a bright panel in the middle of a dark page.
+ *
+ * Removing it is not only a design fix. A `<style>` element in a post body is
+ * unscoped CSS on our page: that one happened to use its own class names, but a
+ * paste written with `td` or `a` selectors would restyle the article around it.
+ * Editorial content should not be able to reach the stylesheet at all.
+ *
+ * The markup keeps its now-inert class names — harmless, and leaving them means
+ * the fix is one deletion rather than a rewrite of somebody's table.
+ */
+function dropPastedStylesheets(html: string): string {
+  return html.replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, "");
+}
+
 function stripEmoji(html: string): string {
   return html.replace(/>([^<]+)</g, (match, text: string) => {
     const stripped = text.replace(EMOJI, "");
@@ -343,7 +364,7 @@ function withBody(
   );
 
   const html = nativeVideoControls(
-    liftHeaderNotes(stripEmoji(dropPastedColours(cleaned))),
+    liftHeaderNotes(stripEmoji(dropPastedColours(dropPastedStylesheets(cleaned)))),
   )
     .replace(HTML_CARD_WRAPPER, "")
     // A post authored with two cards still gets one; the first is the one the
