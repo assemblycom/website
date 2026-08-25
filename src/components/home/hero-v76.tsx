@@ -408,9 +408,12 @@ export function HeroV76({
 
               <div className="mx-auto mt-8 max-w-xl md:mx-0">
                 {/* The submit pill's two fills, as a custom property the
-                    composer reads — near-black on the light page, the brand
-                    periwinkle on the dark one. */}
-                <div className="v63-gradient-border v63-ring-solid relative rounded-[18px] [--composer-submit:#171717] md:rounded-[22px] [[data-theme=dark]_&]:[--composer-submit:#7DA4FF]">
+                    composer reads. Deliberately the nav's primary in both
+                    themes — near-black on the light page, white on the dark
+                    one. It used to take the brand periwinkle on dark, which put
+                    two differently-coloured primaries in one view: this pill and
+                    "Open Assembly" a few hundred pixels above it. */}
+                <div className="v63-gradient-border v63-ring-solid relative rounded-[18px] [--composer-submit:var(--color-neutral-900)] md:rounded-[22px] [[data-theme=dark]_&]:[--composer-submit:#FFFFFF]">
                   <V66Composer
                     textareaRef={inputRef}
                     typewriter

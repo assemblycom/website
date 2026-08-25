@@ -710,7 +710,16 @@ export function V66Composer({ glow = true, surfaceClassName = "bg-white ring-1 r
                         }`}
                         style={
                           dark
-                            ? { backgroundColor: submitDark ? "#171717" : accent }
+                            ? {
+                                // Reads the caller's submit fill when it sets
+                                // one, so this button and the composer's own
+                                // submit cannot drift apart — that is the whole
+                                // point of the note above. Callers that set
+                                // nothing keep the accent exactly as before.
+                                backgroundColor: submitDark
+                                  ? "#171717"
+                                  : `var(--composer-submit, ${accent})`,
+                              }
                             : undefined
                         }
                       >
