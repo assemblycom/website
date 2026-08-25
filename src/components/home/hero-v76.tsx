@@ -437,6 +437,12 @@ export function HeroV76({
                     splitFooter
                     plusAsAttach
                     submitLabel="Get started"
+
+                    // Signed in, "Get started" is the wrong sentence to hand someone who
+
+                    // already has an account, and it sat next to a nav saying otherwise.
+
+                    authedSubmitLabel="Open Assembly"
                     // Light mode uses a solid black submit button; dark keeps
                     // the accent fill. Both are handed over as one custom
                     // property so the swap happens in CSS, on the first paint.
