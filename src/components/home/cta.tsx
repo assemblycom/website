@@ -45,8 +45,11 @@ export function CTA() {
           {/* Same animated gradient border as the hero composer up top. Every
               prop below must stay in step with hero-v76's composer — the two
               boxes are the same control and any drift shows immediately. */}
-          {/* The submit pill's two fills, matching the hero's composer. */}
-          <div className="v63-gradient-border v63-ring-solid relative rounded-[18px] [--composer-submit:#171717] md:rounded-[22px] [[data-theme=dark]_&]:[--composer-submit:#7DA4FF]">
+          {/* The submit pill's two fills, matching the hero's composer — which
+              means the nav's primary, near-black on light and white on dark.
+              These two boxes sit on the same page, so a fill changed in one and
+              not the other is visible by scrolling. */}
+          <div className="v63-gradient-border v63-ring-solid relative rounded-[18px] [--composer-submit:var(--color-neutral-900)] md:rounded-[22px] [[data-theme=dark]_&]:[--composer-submit:#FFFFFF]">
             <V66Composer
               textareaRef={inputRef}
               typewriter
