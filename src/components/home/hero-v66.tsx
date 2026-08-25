@@ -817,13 +817,13 @@ export function V66Composer({ glow = true, surfaceClassName = "bg-white ring-1 r
             <button
               type="button"
               onClick={() => {
-                // A typed prompt rides along to onboarding; an empty click just
-                // goes there with nothing to carry.
-                if (value.trim()) {
-                  openGetStarted(value);
-                  return;
-                }
-                window.location.href = buildSignupUrl();
+                // Empty clicks go through the same door as typed ones. They used
+                // to shortcut straight to signup, which was harmless while the
+                // button always said "Get started" and became a lie the moment
+                // it could say "Open Assembly": a signed-in visitor clicking an
+                // empty box was still sent to sign up. openGetStarted handles an
+                // empty value — nothing to stamp, nothing to carry.
+                openGetStarted(value);
               }}
               // With both labels in the markup the visible one names the button;
               // an aria-label would override it with whichever word is wrong for
