@@ -8,6 +8,7 @@ import {
   MAX_PROMPT_LENGTH,
   buildSignupUrl,
 } from "@/lib/constants";
+import { AUTH_ATTRIBUTE } from "@/lib/auth-script";
 import { TEMPLATES } from "@/lib/templates";
 import { IconArrow, IconFile, IconPaperclip, IconPlay, IconX } from "./icons";
 import { TemplateMock } from "./template-preview";
@@ -194,10 +195,25 @@ function openGetStarted(value: string) {
     window.history.replaceState(window.history.state, "", here);
   }
 
+  // Signed in, the signup flow is the wrong door: they already have an account.
+  // Read at click time rather than at render — the pre-paint script has long
+  // since resolved the attribute, and reading it during render would make the
+  // server's signed-out answer the one that ships.
+  if (document.documentElement.dataset[AUTH_ATTRIBUTE] === "1") {
+    const app = new URL(APP_URL);
+    // Carried on the chance the dashboard grows an entry point that reads it.
+    // Nothing there consumes it today, so a signed-in visitor lands in their
+    // workspace and retypes — which is still the right room, where signup was
+    // not. An unread query parameter costs nothing.
+    if (trimmed) app.searchParams.set("prompt", trimmed);
+    window.location.href = app.toString();
+    return;
+  }
+
   window.location.href = buildSignupUrl(trimmed || undefined);
 }
 
-export function V66Composer({ glow = true, surfaceClassName = "bg-white ring-1 ring-black/[0.06]", surfaceRadiusClass = "rounded-[22px]", minHeightClass = "min-h-[188px]", tone = "light", typewriter = false, mutedControls = false, submitLabel, submitDark = false, themeAuto = false, accent = LIME, hidePlus = false, hideHowTo = false, howToLabel = "How it works", howToSide = "left", promptPicker = false, promptPickerLabel = "Select a prompt", promptPickerSide = "left", promptPickerUp = false, promptItems, plusItems, compact = false, minimalControls = false, plusAsAttach = false, footerLeading, showSubmit = true, submitDisabled, textDimmed = false, splitFooter = false, value: valueProp, onValueChange, textareaRef }: { glow?: boolean; surfaceClassName?: string; surfaceRadiusClass?: string; minHeightClass?: string; tone?: "light" | "dark"; typewriter?: boolean; mutedControls?: boolean; submitLabel?: string; submitDark?: boolean; themeAuto?: boolean; accent?: string; hidePlus?: boolean; hideHowTo?: boolean; howToLabel?: string; howToSide?: "left" | "right"; promptPicker?: boolean; promptPickerLabel?: string; promptPickerSide?: "left" | "right"; promptPickerUp?: boolean; promptItems?: (string | { label: string; prompt: string })[]; plusItems?: { label: string; icon: "attach" | "transfer" }[]; compact?: boolean; minimalControls?: boolean; plusAsAttach?: boolean; footerLeading?: React.ReactNode; showSubmit?: boolean; submitDisabled?: boolean; textDimmed?: boolean; splitFooter?: boolean; value?: string; onValueChange?: (v: string) => void; textareaRef?: React.Ref<HTMLTextAreaElement> } = {}) {
+export function V66Composer({ glow = true, surfaceClassName = "bg-white ring-1 ring-black/[0.06]", surfaceRadiusClass = "rounded-[22px]", minHeightClass = "min-h-[188px]", tone = "light", typewriter = false, mutedControls = false, submitLabel, authedSubmitLabel, submitDark = false, themeAuto = false, accent = LIME, hidePlus = false, hideHowTo = false, howToLabel = "How it works", howToSide = "left", promptPicker = false, promptPickerLabel = "Select a prompt", promptPickerSide = "left", promptPickerUp = false, promptItems, plusItems, compact = false, minimalControls = false, plusAsAttach = false, footerLeading, showSubmit = true, submitDisabled, textDimmed = false, splitFooter = false, value: valueProp, onValueChange, textareaRef }: { glow?: boolean; surfaceClassName?: string; surfaceRadiusClass?: string; minHeightClass?: string; tone?: "light" | "dark"; typewriter?: boolean; mutedControls?: boolean; submitLabel?: string; authedSubmitLabel?: string; submitDark?: boolean; themeAuto?: boolean; accent?: string; hidePlus?: boolean; hideHowTo?: boolean; howToLabel?: string; howToSide?: "left" | "right"; promptPicker?: boolean; promptPickerLabel?: string; promptPickerSide?: "left" | "right"; promptPickerUp?: boolean; promptItems?: (string | { label: string; prompt: string })[]; plusItems?: { label: string; icon: "attach" | "transfer" }[]; compact?: boolean; minimalControls?: boolean; plusAsAttach?: boolean; footerLeading?: React.ReactNode; showSubmit?: boolean; submitDisabled?: boolean; textDimmed?: boolean; splitFooter?: boolean; value?: string; onValueChange?: (v: string) => void; textareaRef?: React.Ref<HTMLTextAreaElement> } = {}) {
 
   // Prompt-picker entries. Default: the shared "Build a …" examples. A hero can
   // pass `promptItems` as plain strings (shown and inserted verbatim) or as
@@ -801,15 +817,18 @@ export function V66Composer({ glow = true, surfaceClassName = "bg-white ring-1 r
             <button
               type="button"
               onClick={() => {
-                // A typed prompt rides along to onboarding; an empty click just
-                // goes there with nothing to carry.
-                if (value.trim()) {
-                  openGetStarted(value);
-                  return;
-                }
-                window.location.href = buildSignupUrl();
+                // Empty clicks go through the same door as typed ones. They used
+                // to shortcut straight to signup, which was harmless while the
+                // button always said "Get started" and became a lie the moment
+                // it could say "Open Assembly": a signed-in visitor clicking an
+                // empty box was still sent to sign up. openGetStarted handles an
+                // empty value — nothing to stamp, nothing to carry.
+                openGetStarted(value);
               }}
-              aria-label={submitLabel ?? "Build it"}
+              // With both labels in the markup the visible one names the button;
+              // an aria-label would override it with whichever word is wrong for
+              // this visitor.
+              aria-label={authedSubmitLabel ? undefined : (submitLabel ?? "Build it")}
               className={`flex ${submitH} items-center justify-center gap-1.5 rounded-lg ${pillText} font-normal transition-all duration-150 ease-out active:scale-[0.98] ${
                 submitActive
                   ? themeAuto
@@ -837,7 +856,21 @@ export function V66Composer({ glow = true, surfaceClassName = "bg-white ring-1 r
               {/* The words at every width. They used to appear from sm up only, so
                   on a phone the one action on the page was a bare arrow — the
                   composer read as a box with no way out of it. */}
-              {submitLabel && submitActive && <span className="whitespace-nowrap">{submitLabel}</span>}
+              {/* Both labels ship and the stylesheet picks one off `data-authed`
+                  before paint, the same way every other auth-aware control on
+                  the site works. Choosing in an effect instead would render the
+                  signed-out word first and swap it after hydration, in the one
+                  spot on the page a visitor is already looking. The hidden half
+                  is `display:none`, so it leaves the accessible name alone. */}
+              {submitLabel && submitActive &&
+                (authedSubmitLabel ? (
+                  <>
+                    <span className="auth-only whitespace-nowrap">{authedSubmitLabel}</span>
+                    <span className="unauth-only whitespace-nowrap">{submitLabel}</span>
+                  </>
+                ) : (
+                  <span className="whitespace-nowrap">{submitLabel}</span>
+                ))}
               <IconArrow className="size-4" />
             </button>
               );
