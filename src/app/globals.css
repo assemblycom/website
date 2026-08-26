@@ -2995,13 +2995,6 @@ html[data-theme="dark"] .v63-ring-solid::before {
     padding-top: 0.75rem;
     padding-bottom: 0.75rem;
     color: var(--foreground);
-    /* Two rungs wider than the 7rem the body cells settle for. A column name is
-       the one cell in its column that cannot be skimmed past, and at 7rem the
-       longer ones ("Credit/debit transaction fees") broke to three lines, which
-       set the height of the whole header band for the sake of one column. At
-       9rem every heading the blog currently uses fits in two, and a four-column
-       table still lands inside the measure without reaching for the scroll. */
-    min-width: 9rem;
     /* The cells' own size. A step down in size as well made the header of a
        two-column pros-and-cons table look like a caption for the table rather
        than the name of its column; the ink and the rule under it set it apart
