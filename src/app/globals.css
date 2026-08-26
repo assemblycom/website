@@ -156,6 +156,13 @@
 }
 
 @theme {
+  /* Where a blog post has room for two rails — the contents on the left, the
+     writer's card on the right — instead of stacking both in one. Below it the
+     third column would come out of the reading measure.
+     In rem, not the equivalent 1440px: Tailwind orders breakpoint variants by
+     their value, and a px one sorts ahead of the rem defaults rather than
+     between them — which put this block before lg's and let lg win. */
+  --breakpoint-wide: 90rem;
   --animate-marquee: marquee 32s linear infinite;
   --animate-fade-in: fade-in 0.4s ease both;
   /* Blinking caret for the typewriter placeholder in the hero prompt box. */
