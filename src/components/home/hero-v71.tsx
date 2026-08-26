@@ -149,7 +149,7 @@ function CardIntake() {
   return (
     // v69-cover-column is the phone treatment: the row is held to the width it
     // was drawn at and centred, instead of stretching across the wider frame.
-    <div className="v69-cover-column v69-plot-grid v69-plot-grid--dots v69-plot-grid--fade flex h-full items-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
+    <div className="v69-cover-column v69-plot-grid v69-plot-grid--dots v69-plot-grid--fade v69-plot-shimmer flex h-full items-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
       {/* Opaque, like every other record card in the set: the translucent pane
           let the dot field run straight through it, so the row read as printed
           into the paper rather than lying on it. */}

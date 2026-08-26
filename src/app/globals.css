@@ -1634,6 +1634,68 @@ html[data-theme="dark"] .v63-ring-solid::before {
   z-index: 1;
 }
 
+/* A band of light sweeping across a dotted ground while the cover is hovered.
+   Masked BY the dot pattern rather than drawn over it, so only the dots take the
+   light and the paper between them stays put — a wash across the whole face
+   would read as a highlight on the card, not as the field reacting.
+   ::before, because --fade already owns ::after for the edge vignette. Painted
+   first, so that vignette still softens the sweep into the card's corners. */
+.v69-plot-shimmer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 420ms ease-out;
+  /* A wide, soft band with shoulders either side of the peak. A narrow one read
+     as a flash: every dot went from nothing to full and back inside a few
+     frames, which is a blink, not a sweep. */
+  background: linear-gradient(
+    100deg,
+    transparent 12%,
+    color-mix(in srgb, var(--plot-shimmer) 35%, transparent) 30%,
+    var(--plot-shimmer) 50%,
+    color-mix(in srgb, var(--plot-shimmer) 35%, transparent) 70%,
+    transparent 88%
+  );
+  background-size: 300% 100%;
+  background-position: 130% 0;
+  /* Matched to .v69-plot-grid--dots exactly — same circle, same 14px tile, same
+     top-left origin. A mask a pixel out of step lights the gaps instead. */
+  -webkit-mask-image: radial-gradient(circle at 1px 1px, #000 1px, transparent 0);
+  mask-image: radial-gradient(circle at 1px 1px, #000 1px, transparent 0);
+  -webkit-mask-size: 14px 14px;
+  mask-size: 14px 14px;
+}
+.v69-plot-shimmer {
+  /* A lift on the base dot, not a second colour. Light's dots rest at 0.16, so
+     0.5 was three times the ink and read as the field being replaced. */
+  --plot-shimmer: rgba(16, 24, 40, 0.32);
+}
+[data-theme="dark"] .v69-plot-shimmer {
+  --plot-shimmer: rgba(255, 255, 255, 0.3);
+}
+.v69-plot-shimmer:hover::before {
+  opacity: 1;
+  /* Linear, deliberately: an eased sweep crosses the middle of the card fastest,
+     which is exactly where the eye is, so the band appeared to snap past. A
+     shimmer wants constant velocity. */
+  animation: v69-plot-shimmer 2.8s linear infinite;
+}
+@keyframes v69-plot-shimmer {
+  from {
+    background-position: 130% 0;
+  }
+  to {
+    background-position: -30% 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .v69-plot-shimmer:hover::before {
+    animation: none;
+  }
+}
+
 /* Milled well — a content area recessed into the card face rather than a panel
    sitting on it. Four soft inner shadows do the work (heaviest at the top, where
    the light would be occluded), a hairline rim catches the top edge, and a wide
