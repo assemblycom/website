@@ -122,18 +122,18 @@ export default async function BlogPostPage({
             All posts
           </Link>
 
-          {/* Capped to the viewport so a post with a dozen headings still
-              scrolls its list rather than pushing it past the fold. */}
-          <div className="sticky top-28 mt-10 flex max-h-[calc(100vh-9rem)] flex-col gap-10">
+          {/* Capped to the viewport, and the one thing that scrolls. A card that
+              scrolled its own overflow could cut off the button it exists for,
+              and a list squeezed by a tall card had nowhere to go — so neither
+              is clipped and the rail moves as a whole when it has to. */}
+          <div className="sticky top-28 mt-10 flex max-h-[calc(100vh-9rem)] flex-col gap-10 overflow-y-auto">
             {/* The card the post's own writer authored in Ghost, drawn where it
                 was drawn before: in the rail, above the contents. It says
                 something about THIS post, which the site's closing CTA can't. */}
-            {/* Scrolls rather than holding its full height: the description is
-                the writer's, and one long enough to fill the rail would
-                otherwise leave the contents list nothing to occupy. */}
-            {post.cta && (
-              <PostCta cta={post.cta} className="min-h-0 overflow-y-auto" />
-            )}
+            {/* Never compressed and never clipped: whatever the writer put in
+                it, the card keeps its full height so its button is always whole
+                and always reachable. */}
+            {post.cta && <PostCta cta={post.cta} className="shrink-0" />}
 
             {showToc && <PostToc headings={contents} />}
           </div>
