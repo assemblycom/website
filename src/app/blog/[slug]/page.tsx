@@ -161,35 +161,17 @@ export default async function BlogPostPage({
           {/* Only where a rail exists: the rail carries the way back on a wide
               screen and this stands in for it below one. The announcements are a
               centred column with nothing to hang a link off, so they lean on the
-              nav for the way out.
-
-              A breadcrumb, drawn exactly as the customer stories and the
-              template pages draw theirs — same size, same separator, same
-              muted-to-foreground step. It was an arrow reading "All posts",
-              which was the only back control on the site shaped that way, and
-              said where you could go without saying where you were. The section
-              is the second crumb rather than a chip of its own below, since
-              printing it twice a line apart is what the chip was doing. */}
+              nav for the way out. */}
           {showRail && (
-            <nav
-              aria-label="Breadcrumb"
-              className="mb-8 flex items-center gap-2 text-sm text-muted-foreground lg:hidden"
-            >
+            <div className="mb-8 lg:hidden">
               <Link
                 href="/blog"
-                className="transition-colors hover:text-foreground"
+                className="type-body inline-flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
               >
-                Blog
+                <span aria-hidden>&larr;</span>
+                All posts
               </Link>
-              {post.category && (
-                <>
-                  <span aria-hidden className="text-muted-foreground/50">
-                    /
-                  </span>
-                  <span className="text-foreground">{post.category}</span>
-                </>
-              )}
-            </nav>
+            </div>
           )}
 
           {/* Without a rail the page has no left edge to hang off, so the
@@ -198,10 +180,10 @@ export default async function BlogPostPage({
               hard to read at any length. */}
           <header className={cn(!showRail && "text-center")}>
             {/* The date, then the section as one of the site's mono tags — the
-                same chip the proposal pages draw. Below lg the breadcrumb above
-                already names the section, so the chip stands down there rather
-                than saying it twice; the announcements keep it at every width,
-                having no breadcrumb of their own. */}
+                same chip the proposal pages draw. No
+                breadcrumb: the way back to the blog is in the nav and at the
+                foot of the page, and there is no per-section archive to link a
+                name to. */}
             <div
               className={cn(
                 "flex flex-wrap items-center gap-3",
@@ -209,12 +191,7 @@ export default async function BlogPostPage({
               )}
             >
               {post.category && (
-                <span
-                  className={cn(
-                    "rounded-sm bg-muted px-2.5 py-1 text-xs uppercase leading-none tracking-[0.06em] text-muted-foreground [font-family:var(--font-diatype-mono),ui-monospace,monospace] [[data-theme=dark]_&]:bg-white/[0.06]",
-                    showRail && "hidden lg:inline-block",
-                  )}
-                >
+                <span className="rounded-sm bg-muted px-2.5 py-1 text-xs uppercase leading-none tracking-[0.06em] text-muted-foreground [font-family:var(--font-diatype-mono),ui-monospace,monospace] [[data-theme=dark]_&]:bg-white/[0.06]">
                   {post.category}
                 </span>
               )}
