@@ -77,7 +77,7 @@ export default async function BlogPostPage({
   // off Ghost's srcset: the reading measure beside a rail, the wider breakout on
   // the announcements.
   const imageSizes = showRail
-    ? "(min-width: 1024px) 648px, calc(100vw - 3rem)"
+    ? "(min-width: 1440px) 688px, (min-width: 1024px) 648px, calc(100vw - 3rem)"
     : "(min-width: 1088px) 1024px, calc(100vw - 3rem)";
 
   return (
@@ -98,19 +98,28 @@ export default async function BlogPostPage({
       <div
         className={
           showRail
-            ? "lg:grid lg:grid-cols-[16rem_minmax(0,40.5rem)] lg:gap-x-[10.5rem]"
+            ? // Two rails once there is room for them: the contents on the left, the
+              // card on the right, in the margin the article was leaving
+              // empty. Sharing one rail meant a long post's list had to scroll
+              // inside whatever the card left over. The `wide` breakpoint is
+              // where the third column fits without taking a pixel off the
+              // reading measure; below it the two stack in the
+              // left rail as before. The middle column is 43rem rather than the
+              // 40.5rem it takes on a narrow desktop: the widest comparison
+              // table runs to 662px, and at 40.5rem it was clipped and carrying
+              // a scroll shadow. Spread rather than centred: it puts the
+              // contents on the container's own left edge, in line with the
+              // wordmark above them, and leaves the spare width in the gaps.
+              "lg:grid lg:grid-cols-[16rem_minmax(0,40.5rem)] lg:gap-x-[10.5rem] wide:grid-cols-[16rem_43rem_16rem] wide:justify-between wide:gap-x-[4.5rem]"
             : "mx-auto max-w-[40.5rem]"
         }
       >
-        {/* The rail's top half rides with the page: the card scrolls away and
-            the contents list alone pins under the header once it reaches it.
-            The column is the grid's, so it stands as tall as the article —
-            which is the distance the list has to stick over. */}
-        <div
-          className={
-            showRail ? "hidden lg:flex lg:flex-col lg:gap-10" : "hidden"
-          }
-        >
+        {/* Only the way back rides with the page. The card and the contents
+            list pin together under the header, so the post's own CTA is still
+            on screen at the foot of a long read rather than scrolled off above
+            it. The column is the grid's, so it stands as tall as the article —
+            which is the distance the pair has to stick over. */}
+        <div className={showRail ? "hidden lg:block" : "hidden"}>
           {/* The way back, at the top of the rail where the reader starts. The
               header used to carry a Blog breadcrumb; the tag and date replaced
               it, which left a post with a rail no way back on a wide screen. */}
@@ -125,15 +134,30 @@ export default async function BlogPostPage({
             All posts
           </Link>
 
-          {/* The card the post's own writer authored in Ghost, drawn where it
-              was drawn before: in the rail, above the contents. It says
-              something about THIS post, which the site's closing CTA can't. */}
-          {post.cta && <PostCta cta={post.cta} />}
+          {/* Capped to the viewport, and the one thing that scrolls. A card that
+              scrolled its own overflow could cut off the button it exists for,
+              and a list squeezed by a tall card had nowhere to go — so neither
+              is clipped and the rail moves as a whole when it has to. */}
+          <div className="sticky top-28 mt-10 flex max-h-[calc(100vh-9rem)] flex-col gap-10 overflow-y-auto">
+            {/* The card the post's own writer authored in Ghost. It says
+                something about THIS post, which the site's closing CTA can't.
+                Only while the two share this rail: past `wide` it has a column
+                of its own on the other side and this copy stands down. Never
+                compressed and never clipped, so its button is always whole. */}
+            {post.cta && (
+              <PostCta cta={post.cta} className="shrink-0 wide:hidden" />
+            )}
 
-          {showToc && <PostToc headings={contents} />}
+            {showToc && (
+              <PostToc
+                headings={contents}
+                className="min-h-24 flex-1 overflow-y-auto"
+              />
+            )}
+          </div>
         </div>
 
-        <div>
+        <div className="wide:col-start-2 wide:row-start-1">
           {/* Only where a rail exists: the rail carries the way back on a wide
               screen and this stands in for it below one. The announcements are a
               centred column with nothing to hang a link off, so they lean on the
@@ -295,6 +319,16 @@ export default async function BlogPostPage({
           )}
 
         </div>
+
+        {/* The writer's card in the margin the article was leaving empty, pinned
+            on its own so the contents list no longer has to share height with
+            it. Last in the markup and placed by the grid, so the reading order
+            is contents, then post, then the offer. */}
+        {post.cta && (
+          <div className="hidden wide:col-start-3 wide:row-start-1 wide:block">
+            <PostCta cta={post.cta} className="sticky top-28" />
+          </div>
+        )}
       </div>
 
       {/* Every post closes on the site's own CTA, the same block behind the same

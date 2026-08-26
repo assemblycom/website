@@ -34,7 +34,9 @@ function StoryTableRow({ study }: { study: CaseStudy }) {
   return (
     <Link
       href={`/customers/${study.slug}`}
-      className="group flex items-center justify-between gap-4 rounded-lg border-t border-border px-6 py-4 transition-colors hover:bg-muted/[0.35] md:px-8 lg:grid lg:grid-cols-[minmax(0,200px)_minmax(0,1fr)_minmax(0,210px)_auto] lg:items-center lg:gap-x-8 lg:py-6"
+      // Square: the row's only edge is the rule along its top, and a radius bent
+      // that rule down at both ends into corners that had no sides to meet.
+      className="group flex items-center justify-between gap-4 border-t border-border px-6 py-4 transition-colors hover:bg-muted/[0.35] md:px-8 lg:grid lg:grid-cols-[minmax(0,200px)_minmax(0,1fr)_minmax(0,210px)_auto] lg:items-center lg:gap-x-8 lg:py-6"
     >
       <span className="text-[15px] text-foreground">{study.company}</span>
       {/* Story + tag show only at lg and up; mobile and tablet keep it to a

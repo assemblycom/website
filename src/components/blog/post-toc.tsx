@@ -15,14 +15,22 @@ import { useActiveHeading } from "@/components/ui/use-active-heading";
  * The active entry takes the same ink and rule the hover state already uses, so
  * the rail speaks one language — no new colour for "current".
  */
-export function PostToc({ headings }: { headings: TocHeading[] }) {
+export function PostToc({
+  headings,
+  className,
+}: {
+  headings: TocHeading[];
+  /**
+   * How the list is held, which differs by where it is drawn: sharing the left
+   * rail under the card on a narrow desktop, or standing in its own column on a
+   * wide one. The caller owns that, since only it knows which rail this is.
+   */
+  className?: string;
+}) {
   const [activeId, setActiveId] = useActiveHeading(headings);
 
   return (
-    <nav
-      aria-label="Jump to section"
-      className="sticky top-28 max-h-[calc(100vh-9rem)] overflow-y-auto"
-    >
+    <nav aria-label="Jump to section" className={cn(className)}>
       {/* No "On this page" label: a list of the post's own headings in the margin
           beside it says what it is. The nav keeps its accessible name above. */}
       <ul className="border-l border-border [[data-theme=dark]_&]:border-[#383838]">

@@ -572,7 +572,13 @@ export function V66Composer({ glow = true, surfaceClassName = "bg-white ring-1 r
                 <>
                   {PH_PREFIX}
                   {typedExample}
-                  <span className="ml-px inline-block w-px animate-pulse align-[-0.1em]">|</span>
+                  {/* Drawn as a rule rather than set as a "|": the glyph carries
+                      the font's own descender, which hung it below the baseline
+                      of the line it was meant to be typing on. */}
+                  <span
+                    className="ml-px inline-block h-[0.95em] w-px animate-pulse bg-current align-[-0.14em]"
+                    aria-hidden
+                  />
                 </>
               )}
             </div>

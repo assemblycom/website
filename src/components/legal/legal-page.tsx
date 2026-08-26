@@ -95,17 +95,15 @@ export function LegalPage({ document: doc }: { document: LegalDocument }) {
         </div>
       </div>
 
-      {/* Phone only. A position indicator, not a menu: expandable={false}, so it
-          names the part you are reading and cannot be opened. These documents run
-          to twenty-one parts, and a dropdown holding all of them was a scrolling
-          list inside a scrolling document. The blog keeps its expanding version,
-          where the lists are short. */}
+      {/* Phone only. A position indicator, not a menu: it names the part you are
+          reading and cannot be opened. These documents run to twenty-one parts,
+          and a dropdown holding all of them was a scrolling list inside a
+          scrolling document. */}
       {entries.length > 1 && (
         <TocMobile
           headings={entries.map((entry) => ({ id: entry.id, text: entry.label }))}
           bodySelector=".legal-body"
           id="legal-toc-mobile"
-          expandable={false}
         />
       )}
     </div>

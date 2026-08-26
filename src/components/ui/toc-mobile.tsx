@@ -19,9 +19,13 @@ const BAR_HEIGHT = 48;
 
 /**
  * The contents rail for a phone. There's no room for a list beside the body, so
- * the sections collapse into one line that names where you are and opens the full
- * list on tap — which makes this a position indicator rather than the map the
- * desktop rail is, so the current section tracks scroll.
+ * the sections collapse into one line that names where you are — a position
+ * indicator rather than the map the desktop rail is, so the current section
+ * tracks scroll.
+ *
+ * It does not open. A dropdown holding the whole list was a scrolling list
+ * inside a scrolling document, and the line already does the job the reader
+ * needs on a phone: telling them where they are.
  *
  * It rides above the page rather than sitting in it: nothing to say until the
  * reader is in the body, so it arrives when the body reaches the header and
@@ -35,26 +39,16 @@ export function TocMobile({
   headings,
   bodySelector,
   id = "toc-mobile",
-  expandable = true,
 }: {
   headings: TocHeading[];
   /** CSS selector for the body region this bar tracks, e.g. ".post-body". */
   bodySelector: string;
   /** Distinct per page, so two bars could never share an id. */
   id?: string;
-  /**
-   * Whether tapping the bar opens the full list. False on the legal pages, where
-   * the contents run to twenty-one entries — long enough that the panel became a
-   * scrolling list inside a scrolling document, which is worse than no panel. The
-   * bar still earns its place there as a position indicator: it says which of
-   * twenty-one parts you are currently reading.
-   */
-  expandable?: boolean;
 }) {
-  const [open, setOpen] = useState(false);
   const [shown, setShown] = useState(false);
   // Which section is being read — shared with the desktop rail, see the hook.
-  const [activeId, setActiveId] = useActiveHeading(headings);
+  const [activeId] = useActiveHeading(headings);
 
   useEffect(() => {
     // Whether the bar belongs on screen at all: it has nothing to say until the
@@ -66,8 +60,6 @@ export function TocMobile({
       const inArticle =
         top <= HEADER_HEIGHT && bottom > HEADER_HEIGHT + BAR_HEIGHT;
       setShown(inArticle);
-      // An open list can't outlive the bar it hangs from.
-      if (!inArticle) setOpen(false);
     };
 
     // Measured on the event rather than on the next frame: a dozen rects is
@@ -96,17 +88,6 @@ export function TocMobile({
     };
   }, [shown]);
 
-  // Escape closes, as it does for any menu; the list is long enough that
-  // scrolling past it is not a way out.
-  useEffect(() => {
-    if (!open || !expandable) return;
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOpen(false);
-    };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [open, expandable]);
-
   const active = headings.find((heading) => heading.id === activeId);
 
   return (
@@ -127,99 +108,19 @@ export function TocMobile({
         "transition-[opacity,transform] duration-200 ease-out motion-reduce:transition-none",
         shown ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0",
       )}
+      id={id}
       style={{ top: HEADER_HEIGHT }}
       aria-hidden={!shown}
       // Out of reach while it is out of sight, so a tap near the top of the
       // page hits the article and not a bar that isn't drawn.
       inert={!shown || undefined}
     >
-      {!expandable ? (
-        // Not a control: no chevron, nothing to press. Just the label.
-        // px-5, the nav's own gutter at every width this bar is drawn at, so the
-        // label starts on the same line as the wordmark above it.
-        <p className="flex h-12 w-full items-center px-5 text-sm text-foreground">
-          <span className="truncate">{active?.text ?? "On this page"}</span>
-        </p>
-      ) : (
-      <button
-        type="button"
-        onClick={() => setOpen((wasOpen) => !wasOpen)}
-        aria-expanded={open}
-        aria-controls={id}
-        // px-5 to start the label under the wordmark, as above.
-        className="flex h-12 w-full cursor-pointer items-center justify-between gap-4 px-5 text-left outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-foreground/40"
-      >
-        <span className="truncate text-sm text-foreground">
-          {active?.text ?? "On this page"}
-        </span>
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 20 20"
-          fill="none"
-          aria-hidden
-          className={cn(
-            // The menu button above sits in its own 36px hit area, so its icon
-            // stops 8px short of the gutter. The chevron follows it in rather
-            // than the gutter, which is what puts the two on one line.
-            "mr-2 shrink-0 text-muted-foreground transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
-            open && "rotate-180",
-          )}
-        >
-          <path
-            d="M5 8l5 5 5-5"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </button>
-      )}
-
-      {expandable && open && (
-        <>
-          {/* Tapping the article behind the open list closes it, the way
-              tapping outside any menu does. */}
-          <div
-            className="fixed inset-0 -z-10"
-            onClick={() => setOpen(false)}
-            aria-hidden
-          />
-          <nav
-            id={id}
-            aria-label="Jump to section"
-            // Drawn over the article rather than pushing it down: the list is a
-            // way out of the page, not part of it.
-            className="absolute inset-x-0 top-full max-h-[70vh] overflow-y-auto overscroll-contain border-b border-border bg-background pb-6 [[data-theme=dark]_&]:border-[#383838]"
-          >
-            <ul className="px-5">
-              {headings.map((heading) => (
-                <li key={heading.id}>
-                  <a
-                    href={`#${heading.id}`}
-                    // The tapped section is the current one from the moment it
-                    // is tapped, rather than after the jump lands and scroll
-                    // catches up.
-                    onClick={() => {
-                      setActiveId(heading.id);
-                      setOpen(false);
-                    }}
-                    className={cn(
-                      "block py-3 text-[0.9375rem] leading-6",
-                      heading.id === activeId
-                        ? "text-foreground"
-                        : "text-muted-foreground",
-                    )}
-                  >
-                    {heading.text}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        </>
-      )}
+      {/* Not a control: no chevron, nothing to press. Just the label.
+          px-5, the nav's own gutter at every width this bar is drawn at, so the
+          label starts on the same line as the wordmark above it. */}
+      <p className="flex h-12 w-full items-center px-5 text-sm text-foreground">
+        <span className="truncate">{active?.text ?? "On this page"}</span>
+      </p>
     </div>
   );
 }

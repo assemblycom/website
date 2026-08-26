@@ -149,7 +149,7 @@ function CardIntake() {
   return (
     // v69-cover-column is the phone treatment: the row is held to the width it
     // was drawn at and centred, instead of stretching across the wider frame.
-    <div className="v69-cover-column v69-plot-grid v69-plot-grid--dots v69-plot-grid--fade flex h-full items-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
+    <div className="v69-cover-column v69-plot-grid v69-plot-grid--dots v69-plot-grid--fade v69-plot-shimmer flex h-full items-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
       {/* Opaque, like every other record card in the set: the translucent pane
           let the dot field run straight through it, so the row read as printed
           into the paper rather than lying on it. */}
@@ -1600,7 +1600,11 @@ function CardSupport() {
           // In the gallery the rows take the same flat white block every other
           // cover's inner piece uses; the warm inner step only reads as a step
           // beside the hero's own face.
-          className="flex items-center gap-2.5 rounded-lg border border-black/[0.08] bg-[var(--v69-inner)] px-3 py-2.5 [[data-theme=light]_&]:bg-[var(--v69-inner)] [[data-theme=light]_.template-mock_&]:bg-[#FFFFFF] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.09)]"
+          // Light drops the edge on the hero: against the hero's own warm face
+          // the fill is already a legible step, and the hairline read as an
+          // outline drawn round each row. The gallery keeps it — its rows sit on
+          // flat white, where the fill alone is not a step. Dark is untouched.
+          className="flex items-center gap-2.5 rounded-lg border border-black/[0.08] bg-[var(--v69-inner)] px-3 py-2.5 [[data-theme=light]_&]:border-transparent [[data-theme=light]_&]:bg-[var(--v69-inner)] [[data-theme=light]_.template-mock_&]:border-black/[0.08] [[data-theme=light]_.template-mock_&]:bg-[#FFFFFF] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.09)]"
         >
           {/* One request resolves instead: the middle row's status crosses from in
               progress to done, which is the single thing this app does. It loads on
