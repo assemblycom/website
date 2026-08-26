@@ -128,7 +128,12 @@ export default async function BlogPostPage({
             {/* The card the post's own writer authored in Ghost, drawn where it
                 was drawn before: in the rail, above the contents. It says
                 something about THIS post, which the site's closing CTA can't. */}
-            {post.cta && <PostCta cta={post.cta} className="shrink-0" />}
+            {/* Scrolls rather than holding its full height: the description is
+                the writer's, and one long enough to fill the rail would
+                otherwise leave the contents list nothing to occupy. */}
+            {post.cta && (
+              <PostCta cta={post.cta} className="min-h-0 overflow-y-auto" />
+            )}
 
             {showToc && <PostToc headings={contents} />}
           </div>

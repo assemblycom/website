@@ -22,8 +22,9 @@ export function PostToc({ headings }: { headings: TocHeading[] }) {
     <nav
       aria-label="Jump to section"
       // The rail's sticky box is the parent's now, so the card above stays put
-      // too; the list takes what height is left and scrolls inside it.
-      className="min-h-0 flex-1 overflow-y-auto"
+      // too; the list takes what height is left and scrolls inside it. The
+      // floor is what stops a tall card from squeezing the list out entirely.
+      className="min-h-24 flex-1 overflow-y-auto"
     >
       {/* No "On this page" label: a list of the post's own headings in the margin
           beside it says what it is. The nav keeps its accessible name above. */}

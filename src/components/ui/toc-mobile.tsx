@@ -161,8 +161,10 @@ export function TocMobile({
           className={cn(
             // The menu button above sits in its own 36px hit area, so its icon
             // stops 8px short of the gutter. The chevron follows it in rather
-            // than the gutter, which is what puts the two on one line.
-            "mr-2 shrink-0 text-muted-foreground transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
+            // than the gutter, which is what puts the two on one line. 12px,
+            // not 8: the chevron is 20px wide against the menu's 22px, so
+            // matching the inset left their centres 4px apart.
+            "mr-3 shrink-0 text-muted-foreground transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
             open && "rotate-180",
           )}
         >
