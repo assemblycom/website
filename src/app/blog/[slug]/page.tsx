@@ -102,15 +102,12 @@ export default async function BlogPostPage({
             : "mx-auto max-w-[40.5rem]"
         }
       >
-        {/* The rail's top half rides with the page: the card scrolls away and
-            the contents list alone pins under the header once it reaches it.
-            The column is the grid's, so it stands as tall as the article —
-            which is the distance the list has to stick over. */}
-        <div
-          className={
-            showRail ? "hidden lg:flex lg:flex-col lg:gap-10" : "hidden"
-          }
-        >
+        {/* Only the way back rides with the page. The card and the contents
+            list pin together under the header, so the post's own CTA is still
+            on screen at the foot of a long read rather than scrolled off above
+            it. The column is the grid's, so it stands as tall as the article —
+            which is the distance the pair has to stick over. */}
+        <div className={showRail ? "hidden lg:block" : "hidden"}>
           {/* The way back, at the top of the rail where the reader starts. The
               header used to carry a Blog breadcrumb; the tag and date replaced
               it, which left a post with a rail no way back on a wide screen. */}
@@ -125,12 +122,16 @@ export default async function BlogPostPage({
             All posts
           </Link>
 
-          {/* The card the post's own writer authored in Ghost, drawn where it
-              was drawn before: in the rail, above the contents. It says
-              something about THIS post, which the site's closing CTA can't. */}
-          {post.cta && <PostCta cta={post.cta} />}
+          {/* Capped to the viewport so a post with a dozen headings still
+              scrolls its list rather than pushing it past the fold. */}
+          <div className="sticky top-28 mt-10 flex max-h-[calc(100vh-9rem)] flex-col gap-10">
+            {/* The card the post's own writer authored in Ghost, drawn where it
+                was drawn before: in the rail, above the contents. It says
+                something about THIS post, which the site's closing CTA can't. */}
+            {post.cta && <PostCta cta={post.cta} className="shrink-0" />}
 
-          {showToc && <PostToc headings={contents} />}
+            {showToc && <PostToc headings={contents} />}
+          </div>
         </div>
 
         <div>
