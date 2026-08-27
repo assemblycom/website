@@ -603,8 +603,12 @@ html[data-theme="dark"] body {
     outline-offset: 2px;
     /* An outline takes the element's own radius, and link/row wrappers rarely
        have one — so focus landed as a square box around rounded content. This
-       is the floor; anything with a radius utility keeps its own. */
-    border-radius: 8px;
+       is the floor; anything with a radius utility keeps its own.
+
+       4px, not 8: on a one-line text link the box is only ~24px tall, and the
+       2px offset grows the outline's own radius on top of it, so 8 came out as
+       a pill around the words. */
+    border-radius: 4px;
     box-shadow: 0 0 0 2px var(--background);
   }
 
