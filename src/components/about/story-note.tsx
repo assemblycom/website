@@ -86,7 +86,10 @@ export function StoryNote({
               : "bg-foreground/10 text-muted-foreground hover:bg-foreground/[0.16] hover:text-foreground"
           }`}
         >
-          *
+          {/* The asterisk is drawn up at the cap height, so centring the line
+              box leaves its ink 2.2px above the chip's middle. Nudged down by
+              that, measured, rather than centred and left looking off. */}
+          <span className="block translate-y-[2.15px]">*</span>
         </button>
 
         {open && (
