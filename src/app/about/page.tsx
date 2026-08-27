@@ -282,13 +282,18 @@ export default function AboutPage() {
           </P>
           <Link
             href="/customers"
-            className="type-body group inline-flex items-center gap-1.5 text-muted-foreground underline underline-offset-4 transition-colors hover:text-foreground"
+            className="type-body group inline-flex items-center gap-1.5 text-muted-foreground transition-colors hover:text-foreground"
           >
-            Read what firms have built
+            {/* The rule belongs to the words, not the link: text-decoration on
+                the anchor draws straight through the arrow, and `no-underline`
+                on a descendant can't lift it back off. */}
+            <span className="underline underline-offset-4">
+              Read what firms have built
+            </span>
             {/* PP Mori glyph arrow (the site's face) — not a drawn SVG. */}
             <span
               aria-hidden
-              className="shrink-0 no-underline leading-none transition-transform duration-200 group-hover:translate-x-0.5"
+              className="shrink-0 leading-none transition-transform duration-200 group-hover:translate-x-0.5"
             >
               &#8594;
             </span>

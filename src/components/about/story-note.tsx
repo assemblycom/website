@@ -66,23 +66,21 @@ export function StoryNote({
 
   return (
     <>
-      <button
-        type="button"
-        onClick={toggle}
-        aria-expanded={open}
-        aria-controls={open ? id : undefined}
-        className="cursor-pointer text-left underline decoration-foreground/25 decoration-dotted decoration-1 underline-offset-[3px] transition-colors hover:decoration-foreground/50 hover:text-foreground"
-      >
+      {/* Marked, not clickable. A <button> here can't wrap: Chrome blockifies
+          it, so `display: inline` computes back to inline-block and a
+          multi-word phrase is pushed whole onto the next line rather than
+          breaking. The marker beside it is the control. */}
+      <span className="underline decoration-foreground/25 decoration-dotted decoration-1 underline-offset-[3px]">
         {children}
-      </button>
-      <span ref={anchorRef} className="relative inline-block">
+      </span>
+      <span ref={anchorRef} className="relative inline">
         <button
           type="button"
           onClick={toggle}
           aria-expanded={open}
           aria-controls={open ? id : undefined}
           aria-label="Show the note on this"
-          className={`ml-1 inline-flex h-4 w-4 translate-y-[-0.35em] items-center justify-center rounded-[3px] text-[11px] leading-none transition-colors ${
+          className={`ml-1 inline-flex h-[15px] w-[15px] translate-y-[-0.08em] items-center justify-center rounded-[3px] text-[10px] leading-none transition-colors ${
             open
               ? "bg-foreground/20 text-foreground"
               : "bg-foreground/10 text-muted-foreground hover:bg-foreground/[0.16] hover:text-foreground"
