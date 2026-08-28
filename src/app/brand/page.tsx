@@ -16,9 +16,9 @@ const ASSETS_ZIP = "/images/brand/Assembly_Brand_Assets.zip";
 
 const ASSETS: BrandAssetProps[] = [
   {
-    title: "Logo wordmark",
+    title: "Wordmark",
     description:
-      "The logo serves as the primary brand signifier. It is the cornerstone of our brand identity and anchors our visual identity in all communications.",
+      "The primary way we represent Assembly.\nUse the light or dark version to suit the background, and give it clear space.",
     files: [
       {
         ground: "light",
@@ -39,7 +39,7 @@ const ASSETS: BrandAssetProps[] = [
   {
     title: "Logo",
     description:
-      "When referring to Assembly as a company, such as on social media, or where a chip design is required, it is acceptable to use this stylized icon with an appropriate corner radius.",
+      "The Assembly logo can be used on its own when the wordmark isn’t practical, such as in avatars, icons, and other compact spaces.",
     files: [
       {
         ground: "light",
@@ -93,8 +93,7 @@ export default function BrandPage() {
         <div className="mx-auto max-w-3xl">
           <h1 className="type-display text-balance">Brand guidelines</h1>
           <p className="type-lead mx-auto mt-6 max-w-2xl text-pretty text-muted-foreground">
-            Resources for presenting the Assembly brand consistently and
-            professionally.
+            Assets and guidance for using the Assembly brand.
           </p>
           <div className="mt-8">
             <a
@@ -112,43 +111,6 @@ export default function BrandPage() {
         <GridRails />
         <div className="border-t border-border [[data-theme=dark]_&]:border-[#383838]" />
 
-        {/* Introduction and naming share a section: both are prose, and a rule
-            between two short paragraphs read as more structure than they carry. */}
-        <section className="mx-auto max-w-[1200px] px-6 pb-20 pt-16 md:px-10 md:pb-28 md:pt-24">
-          <div className="grid gap-10 md:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] md:gap-16">
-            <h2 className="type-h3 md:self-start">Introduction</h2>
-            <div className="max-w-2xl">
-              <p className="type-body text-muted-foreground">
-                Our brand strategy guides everything we do. It clarifies our
-                purpose, who we serve, and how we stand apart, while reflecting
-                the essence of our brand.
-              </p>
-            </div>
-          </div>
-
-          <div className="mt-16 grid gap-10 md:mt-24 md:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] md:gap-16">
-            <h2 className="type-h3 md:self-start">Naming</h2>
-            <div className="max-w-2xl">
-              <p className="type-body text-muted-foreground">
-                &ldquo;Assembly&rdquo; is a single word that is always spelled
-                with a capital &ldquo;A&rdquo;, lowercase &ldquo;s&rdquo;, and
-                without a dash. It is the brand name of our company and product.
-                The company legal name is Assembly Platforms Inc. On social
-                media, you can refer to us with #Assembly.
-              </p>
-              <p className="type-body mt-4 text-muted-foreground">
-                We aim to maintain clear space around the logo to ensure
-                visibility and impact. This space prevents any elements from
-                crowding the logo, allowing it to stand out and be easily
-                recognisable. The clear space enhances legibility and preserves
-                the integrity of the design across different applications.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        <GridDivider />
-
         {/* Logo assets — one row per mark, each with its light and dark file. */}
         <section className="mx-auto max-w-[1200px] px-6 pb-20 pt-16 md:px-10 md:pb-28 md:pt-24">
           <div className="space-y-16 md:space-y-24">
@@ -165,8 +127,8 @@ export default function BrandPage() {
             <div className="md:self-start">
               <h2 className="type-h3">Colors</h2>
               <p className="type-body mt-4 text-muted-foreground">
-                Off-black carries the type and the interface. Zest and Haze are
-                accents, used sparingly for emphasis and never as a page ground.
+                Off-black is the foundation of our palette. Zest and Haze add
+                color and emphasis as accents, not as large backgrounds.
               </p>
             </div>
 

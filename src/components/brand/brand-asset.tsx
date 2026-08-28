@@ -12,6 +12,11 @@ export interface BrandAssetFile {
 
 export interface BrandAssetProps {
   title: string;
+  /**
+   * A newline forces a line break, so a description can break at its sentence
+   * boundary instead of leaving the next sentence's first word dangling at the
+   * end of a line. Each line still wraps on its own when the column is narrow.
+   */
   description: string;
   files: BrandAssetFile[];
 }
@@ -21,7 +26,9 @@ export function BrandAsset({ title, description, files }: BrandAssetProps) {
     <div className="grid gap-10 md:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] md:gap-16">
       <div>
         <h2 className="type-h3">{title}</h2>
-        <p className="type-body mt-4 text-muted-foreground">{description}</p>
+        <p className="type-body mt-4 whitespace-pre-line text-muted-foreground">
+          {description}
+        </p>
       </div>
 
       <div className="grid gap-6 sm:grid-cols-2">
