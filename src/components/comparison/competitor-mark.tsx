@@ -40,7 +40,13 @@ export function CompetitorMark({
 
   return (
     <div
-      className={`flex shrink-0 items-center justify-center bg-[#ffffff] ring-1 ring-[rgba(16,24,40,0.1)] ${tile}`}
+      // Light mode: a white plate, since most of these are dark glyphs.
+      // Dark mode follows the customer detail page — a near-black plate with a
+      // hairline, the mark reading light on it. The plate has to be this dark
+      // rather than a translucent wash: four of these files carry an opaque
+      // white background baked in, which the invert below turns to pure black,
+      // and on a lighter plate that black showed as a square layer of its own.
+      className={`flex shrink-0 items-center justify-center bg-[#ffffff] ring-1 ring-[rgba(16,24,40,0.1)] [[data-theme=dark]_&]:bg-[#050505] [[data-theme=dark]_&]:ring-white/10 ${tile}`}
     >
       {/* A plain <img>: several of these are SVG, and next/image refuses SVG
           unless dangerouslyAllowSVG is on, which it is not. */}
@@ -49,7 +55,9 @@ export function CompetitorMark({
         src={mark.url}
         alt=""
         aria-hidden
-        className={`${glyph} object-contain grayscale`}
+        // Inverted in dark mode, so a dark glyph reads light on the dark
+        // plate the way the mask-filled customer logos do.
+        className={`${glyph} object-contain grayscale [[data-theme=dark]_&]:invert`}
       />
     </div>
   );

@@ -13,7 +13,7 @@ import {
 
 export const FROZEN_COMPARISON_INDEX: ComparisonIndex = {
   "title": "Compare Assembly to alternatives",
-  "description": "Learn how Assembly stacks up against competing tools when it comes to pricing, features, support, security, and more.",
+  "description": "How Assembly compares on pricing, features, support, and security.",
   "image": {
     "url": "/images/cms/4xvDPvLoyWEpLr2tgXlp2G-comparison111.webp",
     "alt": "comparison111",
