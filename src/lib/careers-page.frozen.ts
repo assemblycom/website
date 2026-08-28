@@ -9,7 +9,7 @@ import type { CareersPage } from "./careers";
 
 export const FROZEN_CAREERS_PAGE: CareersPage = {
   "title": "Join us at Assembly",
-  "description": "We’re building the platform behind modern entrepreneurship. Our goal is to make it dramatically easier to start, run, and grow a professional service firm.",
+  "description": "We’re building the tools that power the next generation of professional services firms.",
   "banner": {
     "url": "/images/cms/2JK8XYUEnhcwvnoKMJST8Y-img_3615.webp",
     "alt": "Team pic from Colombia",
@@ -89,15 +89,15 @@ export const FROZEN_CAREERS_PAGE: CareersPage = {
       "answer": "We can sponsor visas in some cases, but it depends on the situation. We’re generally able to support straightforward work visas like TNs and other common employment-based visas. More complex or uncertain visa situations may not be a fit."
     },
     {
-      "question": "Do you have an in-person, hybrid, or remote culture?",
-      "answer": "For most roles, we have an in-person culture based in our NYC office. We’re in-office by default, with a hybrid option on Wednesdays. The team genuinely enjoys working together in person, and that shows up in how we collaborate day to day. If you need to work remotely for an occasional trip or short period, that’s totally fine — but the expectation and default is being in the office. To enjoy working here, you should be excited about an in-office environment. Many of us spend time together after work as well — playing chess, video games, or just hanging out — which is a real part of the culture, not a forced one."
+      "question": "Is the team in person or remote?",
+      "answer": "We’re primarily in person at our NYC office, with the option to work from home on Wednesdays. We’re flexible when you need to travel or work remotely, but most of the time, you’ll find us working together in the office. And often sticking around for a game of chess afterward."
     },
     {
       "question": "What benefits does Assembly provide?",
       "answer": "You get significant equity, so you participate in the upside you help create. We have flexible PTO and generally encourage people to take around 20 days per year, but we care more about doing good work than counting days. We do full-team international offsites twice a year and try to pick places that are genuinely interesting — recently that’s included Istanbul, Bali, Lisbon, Mexico City, and Puerto Rico. If you’re sick, take the time you need. From day one, we’ll set you up with an M4 MacBook, a 4K display, and any other equipment you need to do your best work. We also provide free lunch, unlimited snacks during the day, and regularly do team breakfasts and lunches."
     },
     {
-      "question": "What healthcare coverage does Assembly provide?",
+      "question": "What about healthcare?",
       "answer": "We offer a Tier 1 Blue Cross health insurance plan. Assembly covers 100% of the premium for employees and 50% of the premium for dependents."
     },
     {

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { FAQ } from "@/components/home/faq";
@@ -7,6 +6,52 @@ import { GridDivider, GridRails } from "@/components/ui/grid-lines";
 import { SITE_NAME, SITE_URL } from "@/lib/constants";
 import { OG_IMAGE } from "@/lib/seo";
 import { getCareersPage, getOpenRoles } from "@/lib/careers";
+
+/**
+ * The rule under a list row, drawn by the row itself so it lines up exactly with
+ * the row's hover fill. Linear insets the rule and lets the fill hang wider,
+ * which puts the two ends 32px out of agreement — the line above a hovered row
+ * reads as a fragment. Here they share an edge instead.
+ */
+const ROW_RULE =
+  "after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-border [[data-theme=dark]_&]:after:bg-[#383838]";
+
+const MONTHS = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
+/**
+ * "September, 2025" → "Sep 2025". Formatted rather than rewritten in the frozen
+ * copy so a date added later comes out the same way. Anything that isn't a
+ * month-and-year passes through untouched.
+ */
+function shortDate(date: string) {
+  const match = /^([A-Za-z]+),?\s+(\d{4})$/.exec(date.trim());
+  if (!match) return date;
+  const month = MONTHS.find((m) => m.toLowerCase() === match[1].toLowerCase());
+  return month ? `${month.slice(0, 3)} ${match[2]}` : date;
+}
+
+// The site's tag chip. A chip already reads as its own item, so the lists set
+// these side by side with a gap and no separator between them.
+function Tag({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="inline-flex items-center rounded-md bg-muted px-2.5 py-1 font-mono text-xs uppercase tracking-wide text-muted-foreground [word-spacing:-1.5px] [[data-theme=dark]_&]:bg-white/[0.08]">
+      {children}
+    </span>
+  );
+}
 
 // The open roles come from Ashby, so the page has to re-resolve rather than being
 // pinned at deploy — a role closing should take itself off the page.
@@ -63,18 +108,6 @@ export default async function JobsPage() {
               </p>
             )}
           </div>
-          {page.banner && (
-            <Image
-              src={page.banner.url}
-              alt={page.banner.alt}
-              width={page.banner.width}
-              height={page.banner.height}
-              quality={90}
-              sizes="(min-width: 1200px) 1120px, 100vw"
-              priority
-              className="mt-14 w-full rounded-xl"
-            />
-          )}
         </div>
       </section>
 
@@ -91,35 +124,57 @@ export default async function JobsPage() {
               No open roles right now. Check back soon.
             </p>
           ) : (
-            <ul className="mt-10">
+            // The rules belong to the rows, inset to the text — the list only
+            // draws the cap above the first one. See the row below.
+            <ul className="mt-10 border-t border-border [[data-theme=dark]_&]:border-[#383838]">
               {roles.map((role) => {
                 // Our own page when Contentful has written the role up;
                 // otherwise the Ashby posting, which always exists.
                 const href = role.slug ? `/jobs/${role.slug}` : role.jobUrl;
                 const external = !role.slug;
+                // Team and location only. Employment type and the salary band
+                // wrapped this column onto two lines and are on the role's own
+                // page anyway, where there is room to read them.
                 const meta = [
                   role.department,
                   role.isRemote ? `${role.location} · Remote` : role.location,
-                  role.employmentType,
-                  role.compensation,
                 ].filter(Boolean);
                 return (
-                  <li
-                    key={role.title}
-                    className="border-t border-border last:border-b [[data-theme=dark]_&]:border-[#383838]"
-                  >
+                  <li key={role.title}>
                     <Link
                       href={href}
                       {...(external
                         ? { target: "_blank", rel: "noopener noreferrer" }
                         : {})}
-                      className="group flex flex-col gap-2 py-6 transition-colors hover:bg-foreground/[0.02] sm:flex-row sm:items-center sm:justify-between sm:gap-6"
+                      // Linear's careers-list shape. The rule is the row's own
+                      // ::after, inset to the text, so the hover band can sit
+                      // 16px wider than it and read as a rounded plate lifting
+                      // off the list rather than a rectangle wedged between two
+                      // lines. The row hides its own rule while hovered, for the
+                      // same reason. Dark needs its own tint: a 2% ink wash is
+                      // invisible on the dark ground.
+                      className={`group relative flex flex-col gap-2 px-4 py-6 transition-colors hover:bg-foreground/[0.04] sm:grid sm:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)_auto] sm:items-center sm:gap-6 [[data-theme=dark]_&]:hover:bg-white/[0.05] ${ROW_RULE}`}
                     >
-                      <span className="type-h4 text-foreground">
+                      <span className="type-body text-foreground">
                         {role.title}
                       </span>
-                      <span className="type-caption text-muted-foreground">
-                        {meta.join(" · ")}
+                      {/* One chip per fact, the site's tag pattern — a chip
+                          already reads as a separate item, so the dots between
+                          them were doing a job the shapes do. Left-aligned in
+                          its own column so the facts line up down the list. */}
+                      <span className="flex flex-wrap items-center gap-2">
+                        {meta.map((item) => (
+                          <Tag key={item}>{item}</Tag>
+                        ))}
+                      </span>
+                      <span className="type-caption hidden shrink-0 items-center gap-1.5 text-muted-foreground transition-colors group-hover:text-foreground sm:flex">
+                        Learn more
+                        <span
+                          aria-hidden
+                          className="transition-transform duration-200 group-hover:translate-x-0.5"
+                        >
+                          &#8594;
+                        </span>
                       </span>
                     </Link>
                   </li>
@@ -134,23 +189,27 @@ export default async function JobsPage() {
             <GridDivider />
             <Band>
               <h2 className="type-h2">{page.sectionTitles.media}</h2>
-              <ul className="mt-10">
+              <ul className="mt-10 border-t border-border [[data-theme=dark]_&]:border-[#383838]">
                 {page.media.map((item) => (
-                  <li
-                    key={item.link}
-                    className="border-t border-border last:border-b [[data-theme=dark]_&]:border-[#383838]"
-                  >
+                  <li key={item.link}>
                     <a
                       href={item.link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex flex-col gap-1 py-5 transition-colors hover:bg-foreground/[0.02] sm:flex-row sm:items-center sm:justify-between sm:gap-6"
+                      className={`group relative flex flex-col gap-1 px-4 py-5 transition-colors hover:bg-foreground/[0.04] sm:grid sm:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] sm:items-center sm:gap-6 [[data-theme=dark]_&]:hover:bg-white/[0.05] ${ROW_RULE}`}
                     >
                       <span className="type-body text-foreground">
                         {item.name}
                       </span>
-                      <span className="type-caption text-muted-foreground">
-                        {[item.author, item.date].filter(Boolean).join(" · ")}
+                      {/* Right-aligned: with no third column to hold the row's
+                          right edge, left-aligning these left them stranded
+                          mid-row. */}
+                      <span className="flex flex-wrap items-center gap-2 sm:justify-end">
+                        {[item.author, item.date && shortDate(item.date)]
+                          .filter(Boolean)
+                          .map((v) => (
+                            <Tag key={v}>{v}</Tag>
+                          ))}
                       </span>
                     </a>
                   </li>
@@ -185,7 +244,11 @@ export default async function JobsPage() {
         {page.faqs.length > 0 && (
           <>
             <GridDivider />
-            <FAQ heading="Frequently asked questions" items={page.faqs} twoColumn />
+            <FAQ
+              heading="Frequently asked questions"
+              items={page.faqs}
+              twoColumn
+            />
           </>
         )}
 
