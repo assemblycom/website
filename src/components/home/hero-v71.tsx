@@ -662,7 +662,7 @@ function CardTimeTracker() {
       onMouseLeave={() => setPlay(0)}
       className="v69-accent-drift flex h-full items-center justify-center p-4"
     >
-      <div className="relative flex aspect-square h-full max-h-[230px] flex-col items-center justify-center gap-1.5 overflow-hidden rounded-full bg-[var(--v69-card)] px-3 [[data-theme=light]_&]:bg-[var(--v69-card)] [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2] [[data-theme=dark]_&]:bg-[#1B1B1B] [[data-theme=dark]_.template-mock_&]:bg-[var(--v69-well)]">
+      <div className="relative flex aspect-square h-full max-h-[230px] flex-col items-center justify-center gap-1.5 overflow-hidden rounded-full bg-[var(--v69-card)] px-3 [[data-theme=light]_&]:bg-[#FFFFFF] [[data-theme=light]_.template-mock_&]:bg-[#FFFFFF] [[data-theme=dark]_&]:bg-[#1B1B1B] [[data-theme=dark]_.template-mock_&]:bg-[var(--v69-well)]">
         {/* Dark-only: the watch face is so close in value to the card ground
             that it read as a flat cutout, so an inset ring carves it in — a
             hairline highlight along the top edge, a darker lower edge, and a
