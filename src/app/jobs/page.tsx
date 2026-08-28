@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { FAQ } from "@/components/home/faq";
@@ -108,21 +107,6 @@ export default async function JobsPage() {
                 {page.description}
               </p>
             )}
-          </div>
-          {/* Desktop only: at phone widths the group photo shrinks past the
-              point where anyone in it is legible, so the hero stays type-only. */}
-          <div className="relative mt-14 hidden aspect-[3200/1629] overflow-hidden rounded-lg bg-muted md:block [[data-theme=dark]_&]:bg-white/[0.04]">
-            <Image
-              src="/images/jobs-team-group.jpg"
-              alt="The Assembly team"
-              fill
-              sizes="(min-width: 1280px) 1200px, 100vw"
-              // A wide group shot at the default q75 smears the faces, which are
-              // the only reason the photo is here.
-              quality={90}
-              priority
-              className="object-cover"
-            />
           </div>
         </div>
       </section>
