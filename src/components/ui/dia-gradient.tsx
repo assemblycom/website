@@ -51,6 +51,68 @@ function bellHeights(n: number, peak: number, valley: number): number[] {
   return out
 }
 
+/**
+ * Milliseconds to wait before revealing without rAF. Long enough that the rAF
+ * pair (~2 frames) wins normally, short enough not to be seen.
+ */
+const RISE_FALLBACK_MS = 120
+
+/**
+ * Raises the field once it has mounted, and reports whether to animate the
+ * rise.
+ *
+ * A hidden document neither runs rAF nor ticks transitions. The old version
+ * flipped to scaleY(1) on a chained rAF and let a transition carry it — so a
+ * page that loaded in a background tab wrote the risen value inline while its
+ * transition stayed parked at currentTime 0, and the field kept rendering at
+ * its scaleY(0) start. That is the stuck gradient: the DOM says risen, the
+ * compositor never moved, and only a scroll or a reload knocked it loose.
+ *
+ * So the rise is only ever started while the page is actually visible. Mounted
+ * hidden, it waits for the tab to come forward and plays then — nobody was
+ * looking in the meantime. The timer is the belt-and-braces path for a visible
+ * page whose rAF never arrives; it reveals without the animation rather than
+ * leaving the field collapsed.
+ */
+function useRise(skip: boolean) {
+  const [risen, setRisen] = useState<{ shown: boolean; animate: boolean }>({
+    shown: false,
+    animate: true,
+  })
+
+  useEffect(() => {
+    if (skip) return
+    let done = false
+    const reveal = (animate: boolean) => {
+      if (done) return
+      done = true
+      setRisen({ shown: true, animate })
+    }
+    const start = () => requestAnimationFrame(() => requestAnimationFrame(() => reveal(true)))
+
+    if (document.visibilityState === "hidden") {
+      const onVisible = () => {
+        if (document.visibilityState !== "visible") return
+        document.removeEventListener("visibilitychange", onVisible)
+        start()
+      }
+      document.addEventListener("visibilitychange", onVisible)
+      return () => document.removeEventListener("visibilitychange", onVisible)
+    }
+
+    const raf = start()
+    const timer = window.setTimeout(() => reveal(false), RISE_FALLBACK_MS)
+    return () => {
+      cancelAnimationFrame(raf)
+      window.clearTimeout(timer)
+    }
+  }, [skip])
+
+  // Derived rather than set from the effect: skipping means shown outright,
+  // and un-animated.
+  return { shown: risen.shown || skip, animate: risen.animate && !skip }
+}
+
 export function DiaGradient({
   bars = 9,
   blur = 15,
@@ -76,20 +138,14 @@ export function DiaGradient({
   riseMs?: number
 }) {
   const uid = useId()
-  const [shown, setShown] = useState(false)
   // Reduced motion skips the rise instead of playing it un-transitioned: the
   // breathe is already switched off there, so the grow was the only motion left
   // and it read as the field lurching up once per page load.
   const [reduced, setReduced] = useState(false)
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setReduced(true)
-      setShown(true)
-      return
-    }
-    const id = requestAnimationFrame(() => requestAnimationFrame(() => setShown(true)))
-    return () => cancelAnimationFrame(id)
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) setReduced(true)
   }, [])
+  const { shown, animate } = useRise(reduced)
 
   const heights = bellHeights(bars, peak, valley)
   const colW = VBW / bars
@@ -104,7 +160,7 @@ export function DiaGradient({
         width: "100%",
         transformOrigin: "bottom",
         transform: shown ? "scaleY(1)" : "scaleY(0)",
-        transition: reduced ? undefined : `transform ${riseMs}ms cubic-bezier(0.16, 1, 0.3, 1)`,
+        transition: animate ? `transform ${riseMs}ms cubic-bezier(0.16, 1, 0.3, 1)` : undefined,
         willChange: "transform",
       }}
     >
@@ -265,6 +321,9 @@ export function PeakedGradient({
 }: PeakedGradientProps) {
   const wrapRef = useRef<HTMLDivElement>(null)
   const [scaleY, setScaleY] = useState(reveal === "none" ? 1 : 0)
+  // Cleared when the rise had to be revealed without rAF, so the transition
+  // isn't left to carry a jump it can't animate.
+  const [animate, setAnimate] = useState(true)
 
   useEffect(() => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches
@@ -274,8 +333,32 @@ export function PeakedGradient({
     }
     if (reveal === "mount") {
       setScaleY(0)
-      const id = requestAnimationFrame(() => requestAnimationFrame(() => setScaleY(1)))
-      return () => cancelAnimationFrame(id)
+      let done = false
+      const show = (animate: boolean) => {
+        if (done) return
+        done = true
+        setAnimate(animate)
+        setScaleY(1)
+      }
+      const start = () => requestAnimationFrame(() => requestAnimationFrame(() => show(true)))
+      // Same trap as useRise: a hidden document does not tick the transition,
+      // so a rise started there parks at scaleY(0) with the risen value already
+      // written inline. Wait for the tab to come forward.
+      if (document.visibilityState === "hidden") {
+        const onVisible = () => {
+          if (document.visibilityState !== "visible") return
+          document.removeEventListener("visibilitychange", onVisible)
+          start()
+        }
+        document.addEventListener("visibilitychange", onVisible)
+        return () => document.removeEventListener("visibilitychange", onVisible)
+      }
+      const raf = start()
+      const timer = window.setTimeout(() => show(false), RISE_FALLBACK_MS)
+      return () => {
+        cancelAnimationFrame(raf)
+        window.clearTimeout(timer)
+      }
     }
     let ticking = false
     const measure = () => {
@@ -320,7 +403,8 @@ export function PeakedGradient({
       style={{
         transformOrigin: "bottom",
         transform: `scaleY(${scaleY})`,
-        transition: reveal === "mount" ? `transform ${riseMs}ms cubic-bezier(0.16, 1, 0.3, 1)` : undefined,
+        transition:
+          reveal === "mount" && animate ? `transform ${riseMs}ms cubic-bezier(0.16, 1, 0.3, 1)` : undefined,
         willChange: "transform",
         ...style,
       }}
@@ -369,11 +453,7 @@ export function DodgeGradient({
     "linear-gradient(0deg, #000000 0%, #f7f7f7 100%), " + `linear-gradient(${angle}deg, ${band.join(", ")})`
   const mask = `radial-gradient(75% 170% at 50% 100%, #000 ${Math.round(fade * 100)}%, transparent 78%)`
 
-  const [shown, setShown] = useState(false)
-  useEffect(() => {
-    const id = requestAnimationFrame(() => requestAnimationFrame(() => setShown(true)))
-    return () => cancelAnimationFrame(id)
-  }, [])
+  const { shown, animate } = useRise(false)
 
   return (
     <div
@@ -383,7 +463,7 @@ export function DodgeGradient({
         width: "100%",
         transformOrigin: "bottom",
         transform: shown ? "scaleY(1)" : "scaleY(0)",
-        transition: `transform ${riseMs}ms cubic-bezier(0.16, 1, 0.3, 1)`,
+        transition: animate ? `transform ${riseMs}ms cubic-bezier(0.16, 1, 0.3, 1)` : undefined,
         willChange: "transform",
       }}
     >
