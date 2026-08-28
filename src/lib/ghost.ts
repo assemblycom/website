@@ -416,10 +416,12 @@ function withBody(
   hasFeatureImage: boolean,
 ): { html: string; cta?: PostCta } {
   let cta: PostCta | undefined;
-  const cleaned = markLeadInParagraphs(
-    unboldPunctuation(
-      markQuoteAttribution(
-        trimLinkEdges(dropLeadingFigure(rawHtml, hasFeatureImage)),
+  const cleaned = markSpecLines(
+    markLeadInParagraphs(
+      unboldPunctuation(
+        markQuoteAttribution(
+          trimLinkEdges(dropLeadingFigure(rawHtml, hasFeatureImage)),
+        ),
       ),
     ),
   );
@@ -1421,6 +1423,32 @@ export function entryBodyHtml(post: GhostPost): string {
 // paragraph is ordinary copy.
 const ALL_BOLD_PARAGRAPH =
   /<p\b([^>]*)>\s*<(strong|b)\b[^>]*>([\s\S]*?)<\/\2>(?:&nbsp;|\s)*<\/p>/gi;
+
+// A spec line — "Framework: Golang/Gin", "Libraries: AmplifyJS, … Deprecating:
+// MaterialUI". A bold label ending in a colon and then the value, which may run
+// to a couple of lines and carry its own emphasis or a link. The colon inside
+// the bold is what separates these from a paragraph that merely opens on a bold
+// phrase; the length cap is what separates them from a paragraph of prose that
+// happens to open on one — past about a line and a half it is a sentence.
+const SPEC_LINE =
+  /<p\b([^>]*)>\s*<(strong|b)\b[^>]*>([^<]{1,32}:)<\/\2>((?:(?!<\/p>)[\s\S]){0,160})<\/p>/gi;
+
+/**
+ * Flags the label-and-value lines that run under a heading.
+ *
+ * Ghost has no list for these, so writers set each one as its own paragraph and
+ * they come out a full paragraph apart — read as four unrelated sentences rather
+ * than as one small table. Marked here and closed up in CSS, which keeps them
+ * paragraphs for anything reading the document and a block for anyone reading
+ * the page.
+ */
+export function markSpecLines(html: string): string {
+  return html.replace(
+    SPEC_LINE,
+    (_match, attrs: string, _tag: string, label: string, value: string) =>
+      `<p${attrs} class="spec-line"><strong>${label}</strong>${value}</p>`,
+  );
+}
 
 /**
  * Flags the paragraphs that are bold from end to end.

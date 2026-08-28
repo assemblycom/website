@@ -2573,20 +2573,19 @@ html[data-theme="dark"] .v63-ring-solid::before {
   .post-body h4 + * {
     margin-top: 1rem;
   }
-  /* Emphasis stays at 400 like the rest of the site: PP Mori's 500 is a
-     semibold, so <strong> is carried by a step in colour against the body. */
+  /* Emphasis stays at 400 like the rest of the site — PP Mori's 500 is a
+     semibold — and takes the body's own colour rather than a step of ink above
+     it. Half a sentence at full foreground inside a muted paragraph reads as two
+     colours of text rather than as emphasis, which is what it looked like. A
+     paragraph is one colour. */
   .post-body strong {
     font-weight: 400;
-    color: var(--foreground);
-  }
-  /* A paragraph bolded from end to end (see markLeadInParagraphs) is a line
-     introducing a list, not a phrase being emphasised inside a sentence. Ink
-     alone cannot say "emphasis" over a whole line — it just reads as a stray
-     colour — so the line takes the body's colour and the list it introduces
-     comes up to meet it. The colon at the end of the line was always the part
-     doing the work. */
-  .post-body p.lead-in > strong {
     color: inherit;
+  }
+  /* The exception: a spec line's label is a column heading, not a phrase being
+     emphasised, and it is the ink that separates it from the value beside it. */
+  .post-body p.spec-line > strong {
+    color: var(--foreground);
   }
   .post-body > p.lead-in + :is(ul, ol) {
     margin-top: 1rem;
@@ -2633,6 +2632,14 @@ html[data-theme="dark"] .v63-ring-solid::before {
   }
   /* Items sit further apart than the lines inside them, so a wrapped item still
      reads as one item rather than the list reading as a block of broken lines. */
+  /* A run of spec lines under a heading — "Framework:", "Infrastructure:" — set
+     as paragraphs because Ghost has no list for them. A paragraph apart they read
+     as separate sentences; closed up they read as the small table they are. Only
+     the gap between two of them moves, so the first still sits a paragraph below
+     the heading. */
+  .post-body p.spec-line + p.spec-line {
+    margin-top: 0.375rem;
+  }
   .post-body li + li {
     margin-top: 1rem;
   }
@@ -2688,6 +2695,16 @@ html[data-theme="dark"] .v63-ring-solid::before {
   /* A figure has already been widened, so its own image just fills it. */
   .post-body-wide figure img {
     width: 100%;
+    margin-left: 0;
+    transform: none;
+  }
+  /* Except the poll, which is a figure only because it is a labelled block of
+     data. The break-out is for pictures — set on the measure, the poll's rows
+     line up with the sentences that introduce them; set at 64rem, its labels sit
+     a hand's width from their own numbers. */
+  .post-body-wide figure.poll {
+    width: auto;
+    max-width: 100%;
     margin-left: 0;
     transform: none;
   }
@@ -2900,17 +2917,142 @@ html[data-theme="dark"] .v63-ring-solid::before {
   [data-theme="dark"] .post-body :is(video, iframe) {
     border-color: #383838;
   }
-  /* Ghost ships galleries as rows of flexed images with intrinsic ratios. */
+  /* Except an Arcade demo, which draws its own rounded, outlined card inside the
+     frame — the page's outline lands a second contour a few pixels outside it,
+     and the page's radius cuts across the corners of the card's own. Same case
+     as the review screenshots above: the embed supplies the edge. */
+  .post-body iframe[src*="arcade.software"] {
+    border: 0;
+    border-radius: 0;
+  }
+  /* Ghost's gallery card. It ships each image in a bare wrapper that carries no
+     width and sizes the image to 100% of it, which is circular — the wrapper
+     waits on the image, the image waits on the wrapper — so the row collapses.
+     An even share is the width the wrapper is missing.
+
+     Even rather than weighted by each image's shape, which is what Ghost's own
+     front end does: these are screenshots captured at one width, and weighting
+     the widths renders their interfaces at different sizes. Equal widths mean
+     equal scale, and a ragged bottom edge is the cheaper price. */
   .post-body .kg-gallery-row {
     display: flex;
     gap: 0.5rem;
+    align-items: flex-start;
   }
   .post-body .kg-gallery-row + .kg-gallery-row {
     margin-top: 0.5rem;
   }
+  .post-body .kg-gallery-image {
+    flex: 1 1 0%;
+    /* A flex item's floor is its content, and a wide screenshot's is wider than
+       its share — without this one image pushes the row past the measure. */
+    min-width: 0;
+    /* Ignored while the row is a row, where flex-basis is the main size. It is
+       what sizes the item once the row stacks: down a column the basis applies
+       to height, and the width falls back to the image's own — which is 100% of
+       this box, so the two wait on each other and the image lands narrow. */
+    width: 100%;
+  }
   .post-body .kg-gallery-image img {
     margin-top: 0;
+    display: block;
     width: 100%;
+    height: auto;
+  }
+  /* On a phone a row is the measure divided by three, which is a thumbnail of a
+     screenshot rather than a screenshot. Stacked, each one gets the column. */
+  @media (width < 40rem) {
+    .post-body .kg-gallery-row {
+      flex-direction: column;
+      /* Stretch rather than the row's flex-start, which down a column is a
+         cross-axis rule and shrinks each image to its content. */
+      align-items: stretch;
+    }
+  }
+  /* A survey result, set as markup rather than pasted in as a screenshot of one:
+     a screenshot of a chart is unreadable on a phone, unselectable, and carries
+     the source tool's own colours into the article. Monochrome here, like the
+     rest of the body — the bar's length is the datum, not its hue. */
+  .post-body .poll {
+    margin-top: 2rem;
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    padding: 1.25rem;
+  }
+  [data-theme="dark"] .post-body .poll {
+    border-color: #383838;
+  }
+  /* The question is a figcaption, which the body sets at the small register — it
+     is the heading of this block, so it takes the body's own size back. */
+  .post-body .poll-question {
+    color: var(--foreground);
+    font-size: 1rem;
+    /* The body sets a caption below the thing it captions, with space above it.
+       This one opens the card, so that space was landing inside the padding and
+       the block sat 12px lower than it sat high. */
+    margin-top: 0;
+  }
+  .post-body .poll-meta {
+    margin-top: 0.25rem;
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
+  }
+  .post-body .poll-results {
+    margin-top: 1.5rem;
+    padding-left: 0;
+    list-style: none;
+  }
+  .post-body .poll-results li {
+    /* The label and its numbers share a line; the bar spans both columns under
+       them, so a long answer wraps in its own column rather than pushing the
+       percentage off the row. Holds at every width — the label has a column to
+       wrap in, so the numbers stay on the right on a phone too. */
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: baseline;
+    gap: 0.5rem 1rem;
+    /* The body draws a dot before every list item; these rows are a table, and
+       the answer is not a bullet point. */
+    padding-left: 0;
+  }
+  .post-body .poll-results li::before {
+    display: none;
+  }
+  .post-body .poll-results li + li {
+    margin-top: 1.25rem;
+  }
+  .post-body .poll-label {
+    color: var(--foreground);
+    font-size: 0.9375rem;
+  }
+  /* The share, and the only number on the row: full ink, and tabular so the
+     column of them lines up down the card. */
+  .post-body .poll-value {
+    color: var(--foreground);
+    font-size: 0.875rem;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .post-body .poll-bar {
+    grid-column: 1 / -1;
+    /* A rule, not a ribbon: at 8px the bar was the heaviest mark in the card and
+       read as a UI control rather than as the measure of the answer above it. */
+    height: 0.25rem;
+    border-radius: 9999px;
+    background: color-mix(in srgb, var(--foreground) 8%, transparent);
+  }
+  .post-body .poll-bar::before {
+    content: "";
+    display: block;
+    height: 100%;
+    width: var(--poll-fill, 0%);
+    border-radius: inherit;
+    background: color-mix(in srgb, var(--foreground) 55%, transparent);
+  }
+  @media (width < 40rem) {
+    .post-body .poll {
+      padding: 1rem;
+    }
   }
   .post-body .kg-button-card {
     display: flex;
