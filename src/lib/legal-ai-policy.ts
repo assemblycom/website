@@ -52,6 +52,7 @@ export const AI_POLICY: LegalDocument = {
     {
       id: "part-1-assembly-assistant",
       title: "Part 1 — Assembly Assistant",
+      shortTitle: "Assembly Assistant",
       sections: [
         {
           id: "part-1-assembly-assistant-how-it-works",
@@ -113,7 +114,7 @@ export const AI_POLICY: LegalDocument = {
     {
       id: "part-2-third-party-ai-assistant-connections-via-mcp",
       title: "Part 2 — Third-Party AI Assistant Connections via MCP",
-      shortTitle: "Part 2 — MCP Connections",
+      shortTitle: "MCP Connections",
       sections: [
         {
           id: "part-2-third-party-ai-assistant-connections-via-mcp-what-the-mcp-is",
@@ -325,6 +326,7 @@ export const AI_POLICY: LegalDocument = {
     {
       id: "part-3-ai-app-builder",
       title: "Part 3 — AI App Builder",
+      shortTitle: "AI App Builder",
       sections: [
         {
           id: "part-3-ai-app-builder-how-it-works",

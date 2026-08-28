@@ -17,6 +17,7 @@ export const PRIVACY_POLICY: LegalDocument = {
     {
       id: "1-introduction",
       title: "1. Introduction",
+      group: "Overview",
       sections: [
         {
           id: "1-introduction-intro",
@@ -33,6 +34,7 @@ export const PRIVACY_POLICY: LegalDocument = {
     {
       id: "2-definitions",
       title: "2. Definitions",
+      group: "Overview",
       sections: [
         {
           id: "2-definitions-intro",
@@ -52,6 +54,7 @@ export const PRIVACY_POLICY: LegalDocument = {
     {
       id: "3-information-collection-and-use",
       title: "3. Information Collection and Use",
+      group: "What we collect",
       shortTitle: "3. Collection and Use",
       sections: [
         {
@@ -66,6 +69,7 @@ export const PRIVACY_POLICY: LegalDocument = {
     {
       id: "4-types-of-data-collected",
       title: "4. Types of Data Collected",
+      group: "What we collect",
       sections: [
         {
           id: "4-types-of-data-collected-personal-data",
@@ -112,6 +116,7 @@ export const PRIVACY_POLICY: LegalDocument = {
     {
       id: "5-use-of-data",
       title: "5. Use of Data",
+      group: "How we use it",
       sections: [
         {
           id: "5-use-of-data-intro",
@@ -142,6 +147,7 @@ export const PRIVACY_POLICY: LegalDocument = {
     {
       id: "6-retention-of-data",
       title: "6. Retention of Data",
+      group: "How we use it",
       sections: [
         {
           id: "6-retention-of-data-intro",
@@ -155,6 +161,7 @@ export const PRIVACY_POLICY: LegalDocument = {
     {
       id: "7-transfer-of-data",
       title: "7. Transfer of Data",
+      group: "How we use it",
       sections: [
         {
           id: "7-transfer-of-data-intro",
@@ -168,6 +175,7 @@ export const PRIVACY_POLICY: LegalDocument = {
     {
       id: "8-disclosure-of-data-for-law-enforcement",
       title: "8. Disclosure of Data for Law Enforcement",
+      group: "How we use it",
       shortTitle: "8. Law Enforcement",
       sections: [
         {
@@ -211,6 +219,7 @@ export const PRIVACY_POLICY: LegalDocument = {
     {
       id: "9-your-data-protection-rights-under-general-data-protection-regulation-gdpr",
       title: "9. Your Data Protection Rights Under General Data Protection Regulation (GDPR)",
+      group: "Your rights",
       shortTitle: "9. GDPR Rights",
       sections: [
         {
@@ -240,6 +249,7 @@ export const PRIVACY_POLICY: LegalDocument = {
     {
       id: "10-your-data-protection-rights-under-the-california-privacy-protection-act-caloppa",
       title: "10. Your Data Protection Rights under the California Privacy Protection Act (CalOPPA)",
+      group: "Your rights",
       shortTitle: "10. CalOPPA Rights",
       sections: [
         {
@@ -267,6 +277,7 @@ export const PRIVACY_POLICY: LegalDocument = {
     {
       id: "11-your-data-protection-rights-under-the-california-consumer-privacy-act-ccpa",
       title: "11. Your Data Protection Rights under the California Consumer Privacy Act (CCPA)",
+      group: "Your rights",
       shortTitle: "11. CCPA Rights",
       sections: [
         {
@@ -306,6 +317,7 @@ export const PRIVACY_POLICY: LegalDocument = {
     {
       id: "12-service-providers",
       title: "12. Service Providers",
+      group: "Third parties and AI",
       sections: [
         {
           id: "12-service-providers-intro",
@@ -319,6 +331,7 @@ export const PRIVACY_POLICY: LegalDocument = {
     {
       id: "13-analytics",
       title: "13. Analytics",
+      group: "Third parties and AI",
       sections: [
         {
           id: "13-analytics-intro",
@@ -346,6 +359,7 @@ export const PRIVACY_POLICY: LegalDocument = {
     {
       id: "14-ci-cd-tools",
       title: "14. CI/CD tools",
+      group: "Third parties and AI",
       sections: [
         {
           id: "14-ci-cd-tools-intro",
@@ -366,6 +380,7 @@ export const PRIVACY_POLICY: LegalDocument = {
     {
       id: "15-behavioral-remarketing",
       title: "15. Behavioral Remarketing",
+      group: "Third parties and AI",
       shortTitle: "15. Remarketing",
       sections: [
         {
@@ -394,6 +409,7 @@ export const PRIVACY_POLICY: LegalDocument = {
     {
       id: "16-payments",
       title: "16. Payments",
+      group: "Third parties and AI",
       sections: [
         {
           id: "16-payments-intro",
@@ -414,6 +430,7 @@ export const PRIVACY_POLICY: LegalDocument = {
     {
       id: "17-ai-features-and-ai-connectors",
       title: "17. AI Features and AI Connectors",
+      group: "Third parties and AI",
       shortTitle: "17. AI Features",
       sections: [
         {
@@ -438,6 +455,7 @@ export const PRIVACY_POLICY: LegalDocument = {
     {
       id: "18-links-to-other-sites",
       title: "18. Links to Other Sites",
+      group: "Third parties and AI",
       sections: [
         {
           id: "18-links-to-other-sites-intro",
@@ -451,6 +469,7 @@ export const PRIVACY_POLICY: LegalDocument = {
     {
       id: "19-children-s-privacy",
       title: "19. Children's Privacy",
+      group: "Children, changes and contact",
       sections: [
         {
           id: "19-children-s-privacy-intro",
@@ -464,6 +483,7 @@ export const PRIVACY_POLICY: LegalDocument = {
     {
       id: "20-changes-to-this-privacy-policy",
       title: "20. Changes to This Privacy Policy",
+      group: "Children, changes and contact",
       shortTitle: "20. Policy Changes",
       sections: [
         {
@@ -478,6 +498,7 @@ export const PRIVACY_POLICY: LegalDocument = {
     {
       id: "21-contact-us",
       title: "21. Contact Us",
+      group: "Children, changes and contact",
       sections: [
         {
           id: "21-contact-us-intro",

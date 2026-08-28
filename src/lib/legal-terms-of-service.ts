@@ -16,6 +16,7 @@ export const TERMS_OF_SERVICE: LegalDocument = {
     {
       id: "1-account-terms",
       title: "1. Account Terms",
+      group: "Your account",
       sections: [
         {
           id: "1-account-terms-intro",
@@ -41,6 +42,7 @@ export const TERMS_OF_SERVICE: LegalDocument = {
     {
       id: "2-account-activation",
       title: "2. Account Activation",
+      group: "Your account",
       sections: [
         {
           id: "2-account-activation-2-1-portal-owner",
@@ -77,6 +79,7 @@ export const TERMS_OF_SERVICE: LegalDocument = {
     {
       id: "3-general-conditions",
       title: "3. General Conditions",
+      group: "Using the service",
       sections: [
         {
           id: "3-general-conditions-intro",
@@ -107,6 +110,7 @@ export const TERMS_OF_SERVICE: LegalDocument = {
     {
       id: "4-assembly-contracting-party",
       title: "4. Assembly Contracting Party",
+      group: "Using the service",
       shortTitle: "4. Contracting Party",
       sections: [
         {
@@ -127,6 +131,7 @@ export const TERMS_OF_SERVICE: LegalDocument = {
     {
       id: "5-assembly-rights",
       title: "5. Assembly Rights",
+      group: "Using the service",
       sections: [
         {
           id: "5-assembly-rights-intro",
@@ -153,6 +158,7 @@ export const TERMS_OF_SERVICE: LegalDocument = {
     {
       id: "6-confidentiality",
       title: "6. Confidentiality",
+      group: "Liability and IP",
       sections: [
         {
           id: "6-confidentiality-intro",
@@ -173,6 +179,7 @@ export const TERMS_OF_SERVICE: LegalDocument = {
     {
       id: "7-limitation-of-liability",
       title: "7. Limitation of Liability",
+      group: "Liability and IP",
       shortTitle: "7. Liability",
       sections: [
         {
@@ -198,6 +205,7 @@ export const TERMS_OF_SERVICE: LegalDocument = {
     {
       id: "8-waiver-and-complete-agreement",
       title: "8. Waiver and Complete Agreement",
+      group: "Liability and IP",
       shortTitle: "8. Waiver and Agreement",
       sections: [
         {
@@ -212,6 +220,7 @@ export const TERMS_OF_SERVICE: LegalDocument = {
     {
       id: "9-intellectual-property-and-customer-content",
       title: "9. Intellectual Property and Customer Content",
+      group: "Liability and IP",
       shortTitle: "9. IP and Content",
       sections: [
         {
@@ -235,6 +244,7 @@ export const TERMS_OF_SERVICE: LegalDocument = {
     {
       id: "10-payment-of-fees",
       title: "10. Payment of Fees",
+      group: "Money and cancellation",
       sections: [
         {
           id: "10-payment-of-fees-intro",
@@ -262,6 +272,7 @@ export const TERMS_OF_SERVICE: LegalDocument = {
     {
       id: "11-cancellation-and-termination",
       title: "11. Cancellation and Termination",
+      group: "Money and cancellation",
       shortTitle: "11. Cancellation",
       sections: [
         {
@@ -289,6 +300,7 @@ export const TERMS_OF_SERVICE: LegalDocument = {
     {
       id: "12-modifications-to-the-service-and-prices",
       title: "12. Modifications to the Service and Prices",
+      group: "Money and cancellation",
       shortTitle: "12. Service and Prices",
       sections: [
         {
@@ -311,6 +323,7 @@ export const TERMS_OF_SERVICE: LegalDocument = {
     {
       id: "13-rights-of-third-parties",
       title: "13. Rights of Third Parties",
+      group: "Third parties and privacy",
       shortTitle: "13. Third-Party Rights",
       sections: [
         {
@@ -325,6 +338,7 @@ export const TERMS_OF_SERVICE: LegalDocument = {
     {
       id: "14-privacy-and-data-protection",
       title: "14. Privacy & Data Protection",
+      group: "Third parties and privacy",
       shortTitle: "14. Privacy",
       sections: [
         {

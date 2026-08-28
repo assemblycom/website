@@ -66,6 +66,18 @@ export interface LegalPart {
    * has to still mean the same thing.
    */
   shortTitle?: string;
+  /**
+   * Contents-list grouping. The privacy policy runs to twenty-one parts, which
+   * as a flat list fills the whole sidebar and scrolls inside itself — a
+   * contents list you have to scroll is no longer an overview. Parts carrying
+   * the same group label collapse under it, and only the group you are reading
+   * opens.
+   *
+   * Groups must be contiguous in document order: the list is the document's
+   * order, and a group that reached backwards would jump the numbering. A
+   * document that leaves this off (the AI policy, at four parts) renders flat.
+   */
+  group?: string;
   sections: LegalSection[];
 }
 
@@ -109,6 +121,31 @@ export function entriesFor(doc: LegalDocument): TocEntry[] {
             label: section.shortHeading ?? (section.heading as string),
           })),
   );
+}
+
+export interface TocGroup {
+  label: string;
+  entries: TocEntry[];
+}
+
+/**
+ * The contents list as groups, or null when the document does not group — the
+ * caller renders a flat list then. Ungrouped parts in a grouped document stand
+ * alone, as a group of one, rather than being dropped.
+ */
+export function groupsFor(doc: LegalDocument): TocGroup[] | null {
+  if (!doc.parts.some((part) => part.group)) return null;
+
+  const groups: TocGroup[] = [];
+  for (const part of doc.parts) {
+    const entries = entriesFor({ ...doc, parts: [part] });
+    if (entries.length === 0) continue;
+    const label = part.group ?? entries[0].label;
+    const last = groups[groups.length - 1];
+    if (last && last.label === label) last.entries.push(...entries);
+    else groups.push({ label, entries });
+  }
+  return groups;
 }
 
 export function LegalDocumentBody({ document: doc }: { document: LegalDocument }) {

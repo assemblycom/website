@@ -2,15 +2,27 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
-import { entriesFor, type LegalDocument } from "./legal-document";
+import {
+  entriesFor,
+  groupsFor,
+  type LegalDocument,
+  type TocEntry,
+} from "./legal-document";
 
 /**
  * Sidebar contents for a legal page. These documents are long enough that
  * "where am I" is a real question, so the active entry tracks scroll position
  * rather than only the clicked anchor.
+ *
+ * Where a document groups its parts, the list collapses to those groups and
+ * opens the one you are reading: the privacy policy's twenty-one parts filled
+ * the sidebar top to bottom and scrolled inside themselves, which is a second
+ * document rather than a way around one. A document that does not group renders
+ * the flat list unchanged.
  */
 export function LegalToc({ document: doc }: { document: LegalDocument }) {
   const entries = useMemo(() => entriesFor(doc), [doc]);
+  const groups = useMemo(() => groupsFor(doc), [doc]);
   const [active, setActive] = useState(entries[0]?.id);
 
   useEffect(() => {
@@ -33,6 +45,10 @@ export function LegalToc({ document: doc }: { document: LegalDocument }) {
     return () => observer.disconnect();
   }, [entries]);
 
+  const activeGroup = groups?.find((group) =>
+    group.entries.some((entry) => entry.id === active),
+  )?.label;
+
   return (
     <nav
       aria-label="On this page"
@@ -43,28 +59,73 @@ export function LegalToc({ document: doc }: { document: LegalDocument }) {
           the landmark for a screen reader. */}
       {/* No rail and no marker line — the current entry is the one at full
           foreground against the rest at muted, and the list sits flush on the
-          left so it reads as the page's outer edge. Nested entries keep a small
-          indent, which is the only hierarchy left once the rule is gone. */}
-      <ul>
-        {entries.map((entry) => (
-          <li key={entry.id}>
-            <a
-              href={`#${entry.id}`}
-              className={cn(
-                // Generous pitch: ~13px of copy on a 32px rhythm, so a
-                // twenty-entry list still reads as a list of distinct places
-                // rather than a block of text.
-                "type-caption block py-[0.4375rem] transition-colors",
-                active === entry.id
-                  ? "text-foreground"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              {entry.label}
-            </a>
-          </li>
-        ))}
-      </ul>
+          left so it reads as the page's outer edge. */}
+      {groups ? (
+        <ul>
+          {groups.map((group) => {
+            const open = group.label === activeGroup;
+            return (
+              <li key={group.label}>
+                {/* The group opens as you reach it rather than on a control of
+                    its own. Six disclosure chevrons made a contents list read
+                    as a panel of switches; the label still jumps, to the first
+                    part in the group, which is what opens it. */}
+                <a
+                  href={`#${group.entries[0].id}`}
+                  className={cn(
+                    "type-caption block py-[0.4375rem] transition-colors",
+                    open
+                      ? "text-foreground"
+                      : "text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  {group.label}
+                </a>
+
+                {open && (
+                  <ul className="pb-1 pl-3">
+                    {group.entries.map((entry) => (
+                      <TocLink key={entry.id} entry={entry} active={active} />
+                    ))}
+                  </ul>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      ) : (
+        <ul>
+          {entries.map((entry) => (
+            <TocLink key={entry.id} entry={entry} active={active} />
+          ))}
+        </ul>
+      )}
     </nav>
+  );
+}
+
+function TocLink({
+  entry,
+  active,
+}: {
+  entry: TocEntry;
+  active: string | undefined;
+}) {
+  return (
+    <li>
+      <a
+        href={`#${entry.id}`}
+        className={cn(
+          // Generous pitch: ~13px of copy on a 32px rhythm, so the list reads as
+          // a list of distinct places rather than a block of text.
+          "type-caption block py-[0.4375rem] transition-colors",
+          active === entry.id
+            ? "text-foreground"
+            : "text-muted-foreground hover:text-foreground",
+        )}
+      >
+        {entry.label}
+      </a>
+    </li>
   );
 }
