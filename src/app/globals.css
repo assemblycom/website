@@ -1557,9 +1557,11 @@ html[data-theme="dark"] .v63-ring-solid::before {
 }
 /* Hatched ground — fine diagonal rules, the third of the plain grounds a cover
    can stand a single object on. Kept under a 4% ink so it reads as paper
-   texture, not as a pattern competing with what sits on it. */
+   texture, not as a pattern competing with what sits on it. A diagonal rule
+   crosses more of the cover than the dot field or the orthogonal grid does, so
+   it needs a lighter ink than they do to weigh the same. */
 .v69-hatch-ground {
-  --hatch-line: rgba(16, 24, 40, 0.05);
+  --hatch-line: rgba(16, 24, 40, 0.032);
   background-image: repeating-linear-gradient(
     45deg,
     var(--hatch-line) 0 1px,
@@ -1567,7 +1569,7 @@ html[data-theme="dark"] .v63-ring-solid::before {
   );
 }
 [data-theme="dark"] .v69-hatch-ground {
-  --hatch-line: rgba(255, 255, 255, 0.05);
+  --hatch-line: rgba(255, 255, 255, 0.035);
 }
 
 /* Ruled squares — graph paper. The third weight of the same ground: heavier than
@@ -1603,6 +1605,16 @@ html[data-theme="dark"] .v63-ring-solid::before {
   );
   background-size: 14px 14px;
 }
+/* A quieter ink for a cover that stands a small marker on bare paper rather than
+   an opaque panel. A panel cuts its own hole in the field; a marker doesn't, so
+   at the shared ink the dots ran right up to it. */
+.v69-plot-grid--quiet {
+  --plot-dot: rgba(16, 24, 40, 0.09);
+}
+[data-theme="dark"] .v69-plot-grid--quiet {
+  --plot-dot: rgba(255, 255, 255, 0.08);
+}
+
 /* The help-desk cover stands its rows on the same dotted ground the other record
    covers use — but only in the templates gallery. The home hero's rail renders
    this cover without .template-mock-gallery, and it keeps the plain face it was
@@ -2428,6 +2440,14 @@ html[data-theme="dark"] .v63-ring-solid::before {
   }
   .template-mock-gallery .v69-plot-grid--dots {
     background-size: 11px 11px;
+  }
+  /* --quiet again at the phone's own step: the rule above it here is scoped to
+     the gallery and would otherwise take the quiet cover back to full ink. */
+  .template-mock-gallery .v69-plot-grid--quiet {
+    --plot-dot: rgba(16, 24, 40, 0.12);
+  }
+  [data-theme="dark"] .template-mock-gallery .v69-plot-grid--quiet {
+    --plot-dot: rgba(255, 255, 255, 0.11);
   }
   .template-mock-gallery .v69-plot-grid--fade::after {
     background: radial-gradient(

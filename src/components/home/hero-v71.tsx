@@ -406,7 +406,7 @@ function EngagementBar({
       // The data-slot is the handle a host card uses to opt its bars out of the
       // outline (see CardDataRoom), rather than every caller re-declaring it.
       data-slot="engagement-bar"
-      className={`relative flex-1 overflow-hidden border bg-[var(--v69-inner)] [.template-mock_&]:border-black/15 [.template-mock_&]:bg-[var(--v69-card)] [[data-theme=dark]_.template-mock_&]:border-white/20 ${
+      className={`relative flex-1 overflow-hidden border bg-[var(--v69-inner)] [.template-mock_&]:border-black/15 [.template-mock_&]:bg-[var(--v69-card)] [[data-theme=dark]_.template-mock_&]:border-[rgba(255,255,255,0.20)] ${
         compact
           ? "rounded-[6px] border-[0.5px] border-[var(--mk-border)]"
           : "rounded-2xl border-black/[0.05]"
@@ -1404,7 +1404,7 @@ function CardTracker() {
     // as a hole. It takes the flat card face there, and drops the ring with it —
     // nothing else in that row carries an outline. The hero strip keeps the
     // gradient, where the tile stands alone against the page.
-    <div className="flex h-full flex-col rounded-[14px] bg-[linear-gradient(160deg,#ffffff_0%,#f4f6f9_58%,#eceff3_100%)] p-3.5 [--v69-tracker-empty:#00000008] [[data-theme=light]_&]:bg-none [[data-theme=light]_&]:bg-[var(--v69-card)] [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2] [[data-theme=light]_&]:[--v69-tracker-empty:#00000012] [[data-theme=dark]_&]:bg-[linear-gradient(160deg,#232323_0%,#1b1b1b_58%,#151515_100%)] [[data-theme=dark]_&]:ring-1 [[data-theme=dark]_&]:ring-white/[0.08] [[data-theme=dark]_&]:[--v69-tracker-empty:#ffffff1a] [[data-theme=dark]_.template-mock-gallery_&]:bg-none [[data-theme=dark]_.template-mock-gallery_&]:bg-[var(--v69-card)] [[data-theme=dark]_.template-mock-gallery_&]:ring-0">
+    <div className="flex h-full flex-col rounded-[14px] bg-[linear-gradient(160deg,#ffffff_0%,#f4f6f9_58%,#eceff3_100%)] p-3.5 [--v69-tracker-empty:#00000008] [[data-theme=light]_&]:bg-none [[data-theme=light]_&]:bg-[var(--v69-card)] [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2] [[data-theme=light]_&]:[--v69-tracker-empty:#00000012] [[data-theme=dark]_&]:bg-[linear-gradient(160deg,#232323_0%,#1b1b1b_58%,#151515_100%)] [[data-theme=dark]_&]:ring-1 [[data-theme=dark]_&]:ring-[rgba(255,255,255,0.08)] [[data-theme=dark]_&]:[--v69-tracker-empty:#ffffff1a] [[data-theme=dark]_.template-mock-gallery_&]:bg-none [[data-theme=dark]_.template-mock-gallery_&]:bg-[var(--v69-card)] [[data-theme=dark]_.template-mock-gallery_&]:ring-0">
       {/* Metric header: the count top-left, the unit pinned top-right. */}
       <div className="flex items-end gap-1 px-0.5">
         {/* Primary metric — clean, unstretched Inter (soft off-white, not pure).
@@ -1639,7 +1639,7 @@ function CardSupport() {
 // principle of framing tiles with a border (no drop shadow) and stays visible
 // in both themes.
 const MOCK_OUTLINE =
-  "border border-black/[0.08] [[data-theme=dark]_&]:border-white/[0.12] [.template-mock_&]:border-black/15 [[data-theme=dark]_.template-mock_&]:border-white/20";
+  "border border-black/[0.08] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.12)] [.template-mock_&]:border-black/15 [[data-theme=dark]_.template-mock_&]:border-[rgba(255,255,255,0.20)]";
 // Text that sits on an ink-filled surface: near-white in light mode, dark in
 // dark mode (the ink token inverts, so the label must invert with it).
 const ON_INK = "text-[var(--v69-well)]";
@@ -1691,7 +1691,7 @@ function CardCalendar() {
       {/* A hairline on the seam: the two zones are close in value, so without a
           rule between them the strip read as a shadow falling on the surface
           rather than as a band above it. */}
-      <div className="v69-plot-grid v69-plot-grid--dots h-[42%] w-full shrink-0 border-b border-black/[0.07] bg-[var(--v69-inner)] [[data-theme=light]_.template-mock_&]:bg-[#ebebeb] [[data-theme=dark]_&]:border-white/[0.09] [[data-theme=dark]_&]:bg-[rgba(255,255,255,0.04)]" />
+      <div className="v69-plot-grid v69-plot-grid--dots h-[42%] w-full shrink-0 border-b border-black/[0.07] bg-[var(--v69-inner)] [[data-theme=light]_.template-mock_&]:bg-[#ebebeb] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.16)] [[data-theme=dark]_&]:bg-[rgba(255,255,255,0.04)]" />
       {/* The surface the date is set on: a clear step lighter than the strip, so
           the two zones read as texture over paper rather than as one field. */}
       <div className="flex flex-1 flex-col justify-start bg-[#FFFFFF] px-4 pt-3.5 [[data-theme=light]_.template-mock_&]:bg-[#fafafa] [[data-theme=dark]_&]:bg-[#1F1F1F]">
@@ -1720,11 +1720,17 @@ function CardCaseStatus() {
   return (
     // v69-cover-column is the phone treatment: the marker keeps the size it was
     // drawn at and the frame scales up around it.
-    // Hatched rather than ruled: the ruled field is a surface you plot a thing
-    // at a position ON, which is what the booking cover next to it is doing. A
+    // Dotted rather than ruled: the ruled field is a surface you plot a thing at
+    // a position ON, which is what the booking cover next to it is doing. A
     // status isn't at a coordinate, and sharing that ground made the two covers
-    // read as one pair.
-    <div className="v69-cover-column v69-hatch-ground flex h-full items-center justify-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
+    // read as one pair. The even dot field is the ground the set uses for a
+    // cover carrying a single object, which is what this one is.
+    //
+    // The field is held lighter here than on the other dotted covers. Those
+    // stand an opaque white panel on it, which cuts its own hole in the ground;
+    // this one stands a small marker on bare paper, and at the shared ink the
+    // dots ran right up to it.
+    <div className="v69-cover-column v69-plot-grid v69-plot-grid--dots v69-plot-grid--quiet flex h-full items-center justify-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
       <span className="flex justify-center">
         <span className="relative inline-flex flex-col items-center">
           {/* Lime in light and periwinkle in dark, with the label on the dark ink
@@ -2348,9 +2354,9 @@ function CardFiles() {
 }
 
 // Forms — the form being built, not the form being filled in. The app's own
-// screen is a field list on a plotted canvas: a row per question, its type on
-// the left and the control that removes it alongside, which says the app makes
-// forms rather than merely holding one.
+// screen is a field list on a plotted canvas: a row per question with its answer
+// type on the left, which says the app makes forms rather than merely holding
+// one.
 const FORM_FIELDS = [
   {
     label: "Phone number",
@@ -2368,53 +2374,37 @@ function CardForms() {
     // v69-cover-column is the phone treatment: the rows are held to the width
     // they were drawn at rather than stretching across the wider frame.
     <div className="v69-cover-column v69-plot-grid v69-plot-grid--dots flex h-full items-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
+      {/* Opaque rows, like every other panel in the set: through a translucent
+          one the dot field ran straight across the row. */}
       <span className="block w-full space-y-2">
         {FORM_FIELDS.map((field) => (
-          <span key={field.label} className="flex items-stretch gap-2">
-            {/* Opaque, like every other panel in the set: through a translucent
-                one the dot field ran straight across the row. */}
-            <span className={`flex min-w-0 flex-1 items-center gap-2.5 ${FORM_PANEL} px-2.5 py-2`}>
-              {/* The type tile takes the covers' periwinkle — the one coloured
-                  mark here, since what the row says is which kind of answer it
-                  collects. */}
-              <span
-                className="flex size-[22px] shrink-0 items-center justify-center rounded-[7px] bg-[#7DA4FF]"
-                aria-hidden
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  className="size-[13px] text-[#1B1B1B]"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d={field.path} />
-                </svg>
-              </span>
-              <span className="min-w-0 flex-1 truncate text-[13px] leading-none text-[var(--v69-ink)] max-sm:[.template-mock-gallery_&]:text-[12px]">
-                {field.label}
-              </span>
-            </span>
-            {/* The remove control, as its own panel beside the row rather than a
-                glyph inside it — that separation is what makes the pair read as a
-                builder instead of a filled-in field. */}
+          <span
+            key={field.label}
+            className={`flex w-full items-center gap-2.5 ${FORM_PANEL} px-2.5 py-2`}
+          >
+            {/* The type tile carries the covers' one live colour, lime in light
+                and periwinkle in dark — the one coloured mark here, since what
+                the row says is which kind of answer it collects. */}
             <span
-              className={`flex w-[34px] shrink-0 items-center justify-center ${FORM_PANEL}`}
+              className="flex size-[22px] shrink-0 items-center justify-center rounded-[7px] bg-[#D9ED92] [[data-theme=dark]_&]:bg-[#7DA4FF]"
               aria-hidden
             >
+              {/* Ink on the fill, the way every lime mark in the set is set —
+                  white on a tile this light had almost no separation left. */}
               <svg
                 viewBox="0 0 24 24"
-                className="size-[14px] text-muted-foreground"
+                className="size-[13px] text-[#1B1B1B]"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="1.6"
+                strokeWidth="1.8"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               >
-                <path d="M4.5 7h15M9.5 7V4.5h5V7M6.5 7l1 12.5h9l1-12.5M10.5 10.5v6M13.5 10.5v6" />
+                <path d={field.path} />
               </svg>
+            </span>
+            <span className="min-w-0 flex-1 truncate text-[13px] leading-none text-[var(--v69-ink)] max-sm:[.template-mock-gallery_&]:text-[12px]">
+              {field.label}
             </span>
           </span>
         ))}
@@ -2434,7 +2424,7 @@ function CardHelpdesk() {
             Welcome to the portal
           </span>
         </span>
-        <span className="flex flex-1 items-start border-t border-black/[0.07] px-3 pt-2.5 [[data-theme=dark]_&]:border-white/[0.09]">
+        <span className="flex flex-1 items-start border-t border-black/[0.07] px-3 pt-2.5 [[data-theme=dark]_&]:border-[rgba(255,255,255,0.16)]">
           <span className="mr-px block h-3.5 w-px shrink-0 bg-[var(--v69-ink)]" aria-hidden />
           <span className="text-[12px] leading-none text-muted-foreground max-sm:[.template-mock-gallery_&]:text-[11px]">
             Add more information
@@ -2503,20 +2493,23 @@ function CardTasks() {
             key={row.title}
             className={`flex items-center gap-2.5 px-3 py-2.5 ${
               i > 0
-                ? "border-t border-black/[0.07] [[data-theme=dark]_&]:border-white/[0.09]"
+                ? "border-t border-black/[0.07] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.16)]"
                 : ""
             }`}
           >
             {/* An outline, not a tick: an open circle is the whole reason a task
                 is on this column rather than in a done one. */}
             <span
-              className="size-[14px] shrink-0 rounded-full border border-black/[0.18] [[data-theme=dark]_&]:border-white/[0.28]"
+              className="size-[14px] shrink-0 rounded-full border border-black/[0.18] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.45)]"
               aria-hidden
             />
             <span className="min-w-0 flex-1 truncate text-[13px] leading-none text-[var(--v69-ink)] max-sm:[.template-mock-gallery_&]:text-[12px]">
               {row.title}
             </span>
-            <span className="shrink-0 text-[11px] leading-none tabular-nums text-muted-foreground">
+            {/* The set's unit tag rather than loose type: a due date is a piece
+                of metadata on the row, which is the job that chip already does
+                across the covers. */}
+            <span className={`${MOCK_UNIT_TAG} tabular-nums`} style={MOCK_MONO}>
               {row.due}
             </span>
           </span>
@@ -2545,7 +2538,7 @@ function CardProfileManager() {
             key={person.name}
             className={`flex items-center gap-2.5 px-3 py-2.5 ${
               i > 0
-                ? "border-t border-black/[0.07] [[data-theme=dark]_&]:border-white/[0.09]"
+                ? "border-t border-black/[0.07] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.16)]"
                 : ""
             }`}
           >
@@ -2610,13 +2603,15 @@ const PAYMENT = {
   cents: ".00",
 };
 
+// Plain face, no plotted ground: the amount is the whole cover, and a field
+// behind it was competing with the one thing it has to say.
 function CardPayments() {
   return (
-    <div className="v69-plot-grid v69-plot-grid--dots flex h-full items-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
+    <div className="flex h-full items-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
       <span className="block w-full overflow-hidden rounded-xl border border-black/[0.08] bg-[#FFFFFF] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.09)] [[data-theme=dark]_&]:bg-[#303030]">
         <span className="flex items-center gap-2 px-3 py-2.5">
           <span
-            className={`min-w-0 flex-1 truncate text-[13px] leading-none text-[var(--v69-ink)] ${MOCK_UPSCALED_BODY} max-sm:[.template-mock-gallery_&]:text-[12px]`}
+            className="min-w-0 flex-1 truncate text-[13px] leading-none text-[var(--v69-ink)] max-sm:[.template-mock-gallery_&]:text-[12px]"
           >
             {PAYMENT.invoice}
           </span>
@@ -2633,7 +2628,7 @@ function CardPayments() {
         {/* The amount sits below the rule, the way the contract's signature does:
             the row above names the record, the panel below carries the thing that
             settled it. */}
-        <span className="block border-t border-black/[0.07] px-3 pb-3 pt-2 [[data-theme=dark]_&]:border-white/[0.09]">
+        <span className="block border-t border-black/[0.07] px-3 pb-3 pt-2 [[data-theme=dark]_&]:border-[rgba(255,255,255,0.16)]">
           <span
             className="flex items-baseline text-[26px] leading-none tracking-tight text-[var(--v69-ink)] max-sm:[.template-mock-gallery_&]:text-[22px]"
             style={MOCK_MONO}
@@ -2662,7 +2657,7 @@ function CardXero() {
       <span className="block w-full overflow-hidden rounded-xl border border-black/[0.08] bg-[#FFFFFF] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.09)] [[data-theme=dark]_&]:bg-[#303030]">
         {/* The caret in the empty field is the one mark that makes this a list
             being searched rather than a menu sitting open. */}
-        <span className="flex items-center border-b border-black/[0.07] px-3 py-2.5 [[data-theme=dark]_&]:border-white/[0.09]">
+        <span className="flex items-center border-b border-black/[0.07] px-3 py-2.5 [[data-theme=dark]_&]:border-[rgba(255,255,255,0.16)]">
           <span className="mr-px block h-3.5 w-px shrink-0 bg-[var(--v69-ink)]" aria-hidden />
           <span className="min-w-0 flex-1 truncate text-[13px] leading-none text-muted-foreground max-sm:[.template-mock-gallery_&]:text-[12px]">
             Search
@@ -2673,7 +2668,7 @@ function CardXero() {
             key={option}
             className={`block truncate px-3 py-2.5 text-[13px] leading-none text-[var(--v69-ink)] max-sm:[.template-mock-gallery_&]:text-[12px] ${
               i > 0
-                ? "border-t border-black/[0.07] [[data-theme=dark]_&]:border-white/[0.09]"
+                ? "border-t border-black/[0.07] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.16)]"
                 : ""
             }`}
           >
@@ -2694,12 +2689,14 @@ function CardQuickBooks() {
       <span className="flex size-[104px] items-center justify-center rounded-[26px] bg-[var(--v69-well)] [[data-theme=light]_&]:bg-[var(--v69-inner)] [[data-theme=light]_.template-mock_&]:bg-[#e6e6e6] [[data-theme=dark]_&]:bg-[rgba(255,255,255,0.09)]">
         {/* The approved mark, path for path, filled from one currentColor so it
             tracks the theme instead of carrying the file's own grey. Held back on
-            the templates page, where the warm covers put it on a lighter tile
+            the templates page, where the mark should name the integration rather
+            than announce it: in light the warm covers put it on a lighter tile
             than the hero does and full muted ink read as the darkest thing in the
-            rail — the mark should name the integration, not announce it. */}
+            rail; on the dark face the mark is the only lit shape in an otherwise
+            empty square, which does the same job from the other direction. */}
         <svg
           viewBox="0 0 34 34"
-          className="size-[58px] text-muted-foreground [[data-theme=light]_.template-mock_&]:text-muted-foreground/45"
+          className="size-[50px] text-muted-foreground [[data-theme=light]_.template-mock_&]:text-muted-foreground/45 [[data-theme=dark]_.template-mock_&]:text-muted-foreground/55"
           fill="currentColor"
           aria-hidden
         >
@@ -2720,7 +2717,10 @@ function CardAutoresponder() {
     // Hatched rather than ruled or plotted: the object here is a setting, not a
     // record at a position, which is what the plotted ground is for.
     <div className="v69-hatch-ground flex h-full items-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
-      <span className="block w-full">
+      {/* Held short of the frame rather than run to it: at full width the select
+          was the widest control in the set and the hatch was left as two thin
+          margins beside it. */}
+      <span className="mx-auto block w-[86%]">
         <span className="block text-[11px] leading-none text-muted-foreground max-sm:[.template-mock-gallery_&]:text-[10px]">
           Enable auto responses
         </span>
@@ -2752,7 +2752,7 @@ function CardAutoresponder() {
 // the whole point of the app, so it is the thing the cover draws.
 function CardContract() {
   return (
-    <div className="v69-plot-grid v69-plot-grid--dots flex h-full items-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
+    <div className="v69-plot-grid v69-plot-grid--lines flex h-full items-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
       <span className="block w-full overflow-hidden rounded-xl border border-black/[0.08] bg-[#FFFFFF] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.09)] [[data-theme=dark]_&]:bg-[#303030]">
         <span className="flex items-center gap-2 px-3 py-2.5">
           <span className="min-w-0 flex-1 truncate text-[13px] leading-none text-[var(--v69-ink)] max-sm:[.template-mock-gallery_&]:text-[12px]">
@@ -2770,10 +2770,16 @@ function CardContract() {
         </span>
         {/* The signing line, ruled the way the paper one is: the hand sits ON a
             rule rather than in a second box, which is what makes it read as a
-            signature rather than as another field. */}
-        <span className="block border-t border-black/[0.07] px-3 pb-3 pt-1.5 [[data-theme=dark]_&]:border-white/[0.09]">
+            signature rather than as another field. The well is taller than the
+            header row above it so the hand sits low in its own field instead of
+            crowding the divider. */}
+        <span className="block border-t border-black/[0.07] px-3 pb-2.5 pt-3.5 [[data-theme=dark]_&]:border-[rgba(255,255,255,0.16)]">
+          {/* Not `truncate`: the script face's loops overshoot its em box, and
+              the overflow clip that comes with the ellipsis sheared the tops and
+              tails off the hand. The name is fixed copy that fits, and the card
+              clips its own edge, so nowrap alone is enough. */}
           <span
-            className="block truncate border-b border-black/[0.16] text-[26px] leading-[0.95] text-[var(--v69-ink)] [[data-theme=dark]_&]:border-white/25 max-sm:[.template-mock-gallery_&]:text-[22px]"
+            className="block whitespace-nowrap border-b border-black/[0.16] text-[26px] leading-[1.15] text-[var(--v69-ink)] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.25)] max-sm:[.template-mock-gallery_&]:text-[22px]"
             style={MOCK_SIGNATURE}
           >
             Adrian Chen
@@ -2862,24 +2868,21 @@ function CardDataRoom() {
             key={row.name}
             className={`flex items-center gap-3 px-3 py-2.5 ${
               i > 0
-                ? "border-t border-black/[0.06] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.08)]"
+                ? "border-t border-black/[0.06] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.16)]"
                 : ""
             }`}
           >
             <span className="min-w-0 flex-1 truncate pb-[3px] -mb-[3px] text-[13px] leading-none text-[var(--v69-ink)]">
               {row.name}
             </span>
-            {/* Neutral in both themes, and the two states separate by weight
-                rather than by hue: live access is a filled chip, lapsed access is
-                the same chip drawn as an outline with quieter type. Even the
-                site's desaturated green/red tokens were the only colour in a
-                gallery of monotone covers. */}
+            {/* The set's mono status chip, the one the contract and invoice
+                covers wear, in the covers' neutral rather than their lime: this
+                cover carries two of them at once, and a live colour on both
+                would be the loudest thing in a gallery of monotone covers. Both
+                states take the same chip, so the word is what separates them. */}
             <span
-              className={`shrink-0 rounded-full px-2 py-1 text-[10px] leading-none ${
-                row.state === "active"
-                  ? "bg-[var(--v69-well)] text-[var(--v69-ink)] [[data-theme=light]_.template-mock_&]:bg-[#e6e6e6] [[data-theme=dark]_&]:bg-[rgba(255,255,255,0.14)] [[data-theme=dark]_&]:text-[#EDEDED]"
-                  : "text-muted-foreground ring-1 ring-inset ring-black/[0.10] [[data-theme=dark]_&]:ring-[rgba(255,255,255,0.16)]"
-              }`}
+              className="shrink-0 rounded-md bg-[var(--v69-well)] px-2 py-1 text-[10px] uppercase leading-none tracking-wide text-[var(--v69-ink)] [[data-theme=light]_.template-mock_&]:bg-[#e6e6e6] [[data-theme=dark]_&]:bg-[rgba(255,255,255,0.14)] [[data-theme=dark]_&]:text-[#EDEDED] max-sm:[.template-mock-gallery_&]:text-[9px]"
+              style={MOCK_MONO}
             >
               {row.state === "active" ? "Active" : "Expired"}
             </span>
@@ -3263,8 +3266,12 @@ function CardCommsApp() {
       {/* The bubble hugs its text and the receipt sits under that same width, so
           the pair reads as one message rather than as two stacked rows. Centred
           as a block: left-aligned, the message sat off to one side of a cover
-          that has nothing else on it. */}
-      <div className="flex w-fit max-w-full flex-col gap-1.5">
+          that has nothing else on it.
+          Capped short of the frame rather than filled to it: on one line the
+          bubble ran the full width and left the tapback and the tail with a few
+          pixels of air, which read as a message crammed into the cover. Wrapped
+          to two lines they each clear the edge. */}
+      <div className="flex w-fit max-w-[78%] flex-col gap-1.5">
       <div className="relative">
         {/* The reaction, hung off the bubble's top-left the way a tapback sits on
             the message it belongs to. Two trailing dots carry it back to the
@@ -3455,14 +3462,19 @@ function CardConditionalForms() {
         Oakwood
       </div>
 
-      {/* Ports last: they cap the edge where it meets each node. */}
+      {/* Ports last: they cap the edge where it meets each node. No knockout ring
+          on them: each port straddles a node's edge, so a ring in the canvas
+          colour paints a disc of canvas over the node it is sitting on. In light
+          the two surfaces are eight levels apart and it passes; on the dark face
+          they are twelve levels apart at a quarter the luminance, and the ring
+          read as a dark blot interrupting the edge. */}
       {[
         { x: NODE_PORT_X, y: NODE_ROW_Y },
         { x: NODE_TARGET_X, y: NODE_TARGET_Y },
       ].map((port) => (
         <span
           key={`${port.x}-${port.y}`}
-          className="absolute size-[7px] -translate-x-1/2 -translate-y-1/2 rounded-full ring-2 ring-[var(--v69-card)]"
+          className="absolute size-[7px] -translate-x-1/2 -translate-y-1/2 rounded-full"
           style={{
             left: `${port.x}%`,
             top: `${port.y}%`,
@@ -3694,7 +3706,7 @@ function CardEvents() {
         {/* The band. Ink on lime in both themes: it is the event's own colour,
             not a surface that inverts with the skin. */}
         <div
-          className="bg-[#D9ED92] px-3.5 py-2.5 text-[15px] leading-none tabular-nums text-[#262626]"
+          className="bg-[#D9ED92] px-3.5 py-2.5 text-[13px] leading-none tabular-nums text-[#262626]"
           style={MOCK_MONO}
         >
           {/* The meridiem is set as its own span rather than after a space: in a
@@ -3713,10 +3725,13 @@ function CardEvents() {
             className="w-[3px] shrink-0 rounded-full bg-[#7DA4FF]"
           />
           <div className="min-w-0">
-            <p className="truncate text-[15px] font-normal leading-tight text-[var(--v69-ink)]">
+            {/* 13 over 11, the record-row step the rest of the covers use. This
+                card was drawn a size up on both lines and read as a different
+                set beside them. */}
+            <p className="truncate text-[13px] font-normal leading-tight text-[var(--v69-ink)]">
               Client workshop
             </p>
-            <p className="mt-1 truncate text-[13px] font-normal leading-tight text-muted-foreground">
+            <p className="mt-1 truncate text-[11px] font-normal leading-tight text-muted-foreground">
               Studio, San Francisco
             </p>
           </div>
