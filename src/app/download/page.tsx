@@ -17,7 +17,7 @@ export default function DownloadPage() {
             not follow the site theme: an app icon is the same object on both. */}
         <span
           aria-hidden
-          className="relative mx-auto mb-7 flex size-20 items-center justify-center overflow-hidden rounded-[22.4%] bg-[linear-gradient(160deg,#2e2e2e_0%,#0b0b0b_75%)] shadow-[0_6px_18px_-12px_rgba(0,0,0,0.35)] ring-1 ring-inset ring-white/10 [[data-theme=dark]_&]:bg-[linear-gradient(160deg,#3d3d3d_0%,#171717_75%)] [[data-theme=dark]_&]:shadow-none [[data-theme=dark]_&]:ring-white/15"
+          className="relative mx-auto mb-7 flex size-20 items-center justify-center overflow-hidden rounded-[22.4%] bg-[linear-gradient(160deg,#2e2e2e_0%,#0b0b0b_75%)] shadow-[0_6px_18px_-12px_rgba(0,0,0,0.35)] ring-1 ring-inset ring-white/10 [[data-theme=dark]_&]:bg-[linear-gradient(160deg,#3d3d3d_0%,#171717_75%)] [[data-theme=dark]_&]:shadow-none [[data-theme=dark]_&]:ring-white/[0.07]"
         >
           {/* The vector mark, not the 128px PNG: at 68% of a 112px tile the
               raster was being upscaled on a retina screen, which is what read
