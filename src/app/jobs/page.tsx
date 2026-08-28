@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { FAQ } from "@/components/home/faq";
@@ -107,6 +108,22 @@ export default async function JobsPage() {
                 {page.description}
               </p>
             )}
+          </div>
+          {/* The photo keeps its own frame at every width. A tighter phone crop
+              would cut people out of the ends of the group rather than make the
+              faces any bigger. */}
+          <div className="relative mt-10 aspect-[2512/1680] overflow-hidden rounded-lg bg-muted md:mt-14 [[data-theme=dark]_&]:bg-white/[0.04]">
+            <Image
+              src="/images/jobs-team-hero.jpg"
+              alt="The Assembly team"
+              fill
+              sizes="(min-width: 1280px) 1200px, 100vw"
+              // A wide group shot at the default q75 smears the faces, which are
+              // the only reason the photo is here.
+              quality={90}
+              priority
+              className="object-cover"
+            />
           </div>
         </div>
       </section>
