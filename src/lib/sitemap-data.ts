@@ -7,6 +7,7 @@ import {
   PROPOSAL_CREATOR_PATH,
   PROPOSAL_PATH,
   SITE_URL,
+  IS_LIVE_SITE,
 } from "@/lib/constants";
 import { CASE_STUDIES } from "@/lib/case-studies";
 import { getComparisons } from "@/lib/comparisons";
@@ -64,6 +65,11 @@ const EXCLUDED = new Set<string>([
   // noindex; it exists to look at while designing, not to be found.
   "/covers",
 ]);
+
+// /about is finished but held on staging, where it redirects to the homepage in
+// production — listing a URL that only redirects is what Search Console reports
+// as a soft 404. Comes out of here when the page goes live.
+if (IS_LIVE_SITE) EXCLUDED.add("/about");
 
 // Static routes that a content sitemap already owns. They are real, indexable
 // pages — they just belong in one sitemap rather than two, and findStaticRoutes
@@ -147,7 +153,9 @@ export async function mainUrls(): Promise<SitemapUrl[]> {
   });
 
   const pages = findStaticRoutes()
-    .filter((path) => !EXCLUDED.has(path) && !OWNED_BY_CONTENT_SITEMAP.has(path))
+    .filter(
+      (path) => !EXCLUDED.has(path) && !OWNED_BY_CONTENT_SITEMAP.has(path),
+    )
     .sort();
 
   return [

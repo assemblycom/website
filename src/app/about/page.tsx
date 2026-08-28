@@ -1,13 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import {
-  NoteImagePlaceholder,
-  StoryNote,
-} from "@/components/about/story-note";
+import { redirect } from "next/navigation";
+import { NoteImagePlaceholder, StoryNote } from "@/components/about/story-note";
 import { StoryFigure } from "@/components/about/story-figures";
 import { GridDivider, GridRails, GRID_LINE } from "@/components/ui/grid-lines";
 import { Reveal } from "@/components/ui/reveal";
-import { SITE_NAME, SITE_URL } from "@/lib/constants";
+import { IS_LIVE_SITE, SITE_NAME, SITE_URL } from "@/lib/constants";
 import { OG_IMAGE } from "@/lib/seo";
 
 /**
@@ -145,6 +143,11 @@ function P({ children }: { children: React.ReactNode }) {
 }
 
 export default function AboutPage() {
+  // Held on staging while the rest of the site ships. assembly.com/about
+  // already redirects to the homepage, so this keeps production as it is.
+  // Delete these two lines and the page goes live with the next release.
+  if (IS_LIVE_SITE) redirect("/");
+
   return (
     <>
       <section className="px-6 pb-16 pt-24 text-center md:pb-24 md:pt-32">
@@ -216,8 +219,8 @@ export default function AboutPage() {
         >
           <P>
             The cost of turning an idea into working software collapsed. Not to
-            nothing, but far enough that the arithmetic is different. The thing a
-            firm would never have commissioned, because it only mattered to
+            nothing, but far enough that the arithmetic is different. The thing
+            a firm would never have commissioned, because it only mattered to
             eleven clients and one partner, is now worth describing out loud.
           </P>
           <P>
@@ -238,8 +241,8 @@ export default function AboutPage() {
         >
           <P>
             An app on its own does nothing for a firm. Client work needs clients
-            who can sign in, payments that clear, contracts that hold, files that
-            stay where you left them, and{" "}
+            who can sign in, payments that clear, contracts that hold, files
+            that stay where you left them, and{" "}
             <StoryNote
               note={
                 <>
@@ -252,8 +255,8 @@ export default function AboutPage() {
               permissions that still make sense when a client&rsquo;s assistant
               logs in
             </StoryNote>
-            . None of that got cheaper. It is
-            the reason most generated software never reaches a real customer.
+            . None of that got cheaper. It is the reason most generated software
+            never reaches a real customer.
           </P>
           <P>
             Assembly is that part.{" "}
@@ -269,11 +272,12 @@ export default function AboutPage() {
             >
               More than 1,000 firms
             </StoryNote>{" "}
-            already run their client work on the platform: a branded portal where clients message, sign,
-            pay, and follow along, and a dashboard where the firm runs it. So
-            when a firm describes the app it needs, the app is not born in a
-            sandbox. It arrives inside the portal those clients already use, with
-            the firm&rsquo;s data, billing, and permissions attached.
+            already run their client work on the platform: a branded portal
+            where clients message, sign, pay, and follow along, and a dashboard
+            where the firm runs it. So when a firm describes the app it needs,
+            the app is not born in a sandbox. It arrives inside the portal those
+            clients already use, with the firm&rsquo;s data, billing, and
+            permissions attached.
           </P>
           <P>
             We think that is what the next decade of professional services looks

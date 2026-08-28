@@ -27,6 +27,22 @@ export const INVALID_EMAIL_ERROR =
 export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL || "https://assembly.com";
 
+/**
+ * True only on the deployment serving assembly.com itself.
+ *
+ * Staging sets NEXT_PUBLIC_SITE_URL to its own host, so an unset value plus a
+ * production build is the live site. NODE_ENV keeps `next dev` out of it, so a
+ * page held back from production still renders locally.
+ *
+ * Used to hold a finished page on staging while the rest of a release goes
+ * live: production promotes by fast-forwarding main, which takes every commit,
+ * so a page that is not ready has to hold itself back rather than be left
+ * behind. Caveat: preview deployments also leave the var unset, so they behave
+ * as production here.
+ */
+export const IS_LIVE_SITE =
+  process.env.NODE_ENV === "production" && !process.env.NEXT_PUBLIC_SITE_URL;
+
 export interface NavLink {
   label: string;
   href: string;
@@ -319,7 +335,8 @@ export const DESKTOP_DOWNLOADS: {
 
 // The partner programs run on PartnerStack: applications, tracking, and payouts
 // all live there, so both pages hand off rather than collecting anything here.
-const PARTNERSTACK_APPLY = "https://dash.partnerstack.com/application?company=assembly";
+const PARTNERSTACK_APPLY =
+  "https://dash.partnerstack.com/application?company=assembly";
 export const AFFILIATE_APPLY_URL = `${PARTNERSTACK_APPLY}&group=affiliates`;
 export const EXPERT_APPLY_URL = `${PARTNERSTACK_APPLY}&group=experts`;
 // The Experts directory is still served by the old marketing site; point at it
@@ -378,7 +395,12 @@ export const FOOTER_COLUMNS: FooterGroup[][] = [
         { label: "Guide", href: GUIDE_URL, external: true },
         { label: "API reference", href: API_REFERENCE_URL, external: true },
         { label: "What's new", href: "/updates" },
-        { label: "Community", href: COMMUNITY_URL, external: true, newTab: true },
+        {
+          label: "Community",
+          href: COMMUNITY_URL,
+          external: true,
+          newTab: true,
+        },
         { label: "Status", href: STATUS_URL, external: true, newTab: true },
         { label: "LLM info", href: "/llm-info" },
       ],
@@ -391,7 +413,12 @@ export const FOOTER_COLUMNS: FooterGroup[][] = [
         { label: "Customers", href: "/customers" },
         { label: "Careers", href: "/jobs" },
         { label: "Brand", href: "/brand" },
-        { label: "Trust center", href: TRUST_CENTER_URL, external: true, newTab: true },
+        {
+          label: "Trust center",
+          href: TRUST_CENTER_URL,
+          external: true,
+          newTab: true,
+        },
         // The HTML sitemap. Its own reason to exist is a crawler following links
         // rather than the XML index, so it has to be linked from somewhere on
         // every page — which is what the footer is.
