@@ -31,7 +31,7 @@ export const PRICING_FAQS: FAQEntry[] = [
   {
     question: "Do unused build credits roll over?",
     answer:
-      "No, credit balances refresh to your plan's amount each month. If you're planning a heavy build month, add-on credits can be adjusted month to month on any paid plan.",
+      "Yes, unused build credits roll over for one additional month before they expire. If you're planning a heavy build month, add-on credits can be adjusted month to month on any paid plan.",
   },
   {
     question: "How many apps can I have?",
