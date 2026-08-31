@@ -16,7 +16,7 @@ export default function Error() {
   const isHome = pathname === "/";
   return (
     <>
-      {isHome && <StudioNav hideDemo darkTop={theme === "dark"} />}
+      {isHome && <StudioNav darkTop={theme === "dark"} />}
       <ErrorScreen
         title="Something came loose"
         description="An unexpected error interrupted things on our end — not yours. Head back home while we put the pieces back."

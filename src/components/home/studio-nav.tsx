@@ -69,7 +69,6 @@ export function StudioNav({
   softGlass = false,
   maxWidthClass,
   restPaddingClass,
-  hideDemo = false,
   minimal = false,
   themeToggle,
 }: {
@@ -85,9 +84,6 @@ export function StudioNav({
   // Override the at-rest horizontal padding so the nav clears a rounded hero
   // panel's edge on narrower layouts (V63).
   restPaddingClass?: string;
-  // Hide the signed-out desktop bar's "Book a demo" link — dropped for launch on
-  // some heroes. The signed-in side keeps its own, in both the bar and the sheet.
-  hideDemo?: boolean;
   // Internal pages (the proposal creator): the same bar, same scroll behaviour
   // and same sizes, but the marketing links and account actions collapse to a
   // single way back to the site. There's no menu to open, so no burger either.
@@ -412,6 +408,13 @@ export function StudioNav({
         ? "bg-white text-neutral-900"
         : "bg-foreground text-background"
   }`;
+  // The demo CTA sits beside Get started, so it takes the primary's geometry
+  // with the outline treatment the mobile sheet already uses for it.
+  const secondaryCtaCls = `whitespace-nowrap rounded-lg border px-4 py-1.5 text-sm transition-colors ${
+    lightContent
+      ? "border-white/20 text-white hover:bg-white/10"
+      : "border-foreground/20 text-foreground hover:bg-foreground/[0.06]"
+  }`;
   const logoInvert = lightContent ? "brightness-0 invert" : "";
 
   // Over a dark surface the full-screen mobile menu stays dark rather than
@@ -551,9 +554,9 @@ export function StudioNav({
             className={`relative z-10 mx-auto flex items-center ${contentRail} ${scrolled ? "h-14" : "h-16"}`}
             style={{ transition: rowTransition }}
           >
-            {/* Three balanced columns keep the nav truly centred while the equal
-              side columns guarantee it never crowds the logo or the actions. */}
-            <div className="flex flex-1 items-center">
+            {/* Logo and nav are left-aligned together: the right column now
+              carries three actions, and a centred nav would crowd them. */}
+            <div className="flex items-center">
               <Link
                 href="/"
                 onClick={onLogoClick}
@@ -563,9 +566,9 @@ export function StudioNav({
               </Link>
             </div>
 
-            {/* Primary nav — centered between the two equal side columns */}
+            {/* Primary nav — left, beside the logo */}
             <nav
-              className={`flex shrink-0 justify-center ${minimal ? "hidden" : ""}`}
+              className={`ml-6 flex shrink-0 justify-start ${minimal ? "hidden" : ""}`}
             >
               <ul className="flex items-center">
                 {NAV_ENTRIES.map((entry) =>
@@ -670,11 +673,9 @@ export function StudioNav({
               {minimal ? null : (
                 <>
                   <span className="contents auth-only">
-                    {/* Deliberately not behind `hideDemo`. That flag is set on
-                      every page and predates the signed-in nav, where a demo is
-                      the one thing an existing customer might still want from
-                      the bar. Suppressed only on the demo page itself, where it
-                      would point at the page you are already reading. */}
+                    {/* A demo is the one thing an existing customer might
+                      still want from the bar. Suppressed only on the demo page
+                      itself, where it would point at the page you are reading. */}
                     {pathname !== DEMO_URL && (
                       <Link href={DEMO_URL} className={linkCls}>
                         {DEMO_CTA_LABEL}
@@ -685,14 +686,18 @@ export function StudioNav({
                     </a>
                   </span>
                   <span className="contents unauth-only">
-                    {!hideDemo && (
-                      <Link href={DEMO_URL} className={linkCls}>
-                        {DEMO_CTA_LABEL}
-                      </Link>
-                    )}
                     <a href={LOGIN_URL} className={linkCls}>
                       Log in
                     </a>
+                    {/* A booked demo is the main conversion for a visitor who
+                      isn't ready to sign up, so it carries button weight beside
+                      Get started rather than sitting as a text link. Suppressed
+                      only on the demo page itself. */}
+                    {pathname !== DEMO_URL && (
+                      <Link href={DEMO_URL} className={secondaryCtaCls}>
+                        {DEMO_CTA_LABEL}
+                      </Link>
+                    )}
                     <a href={SIGNUP_URL} className={ctaCls}>
                       Get started
                     </a>

@@ -379,7 +379,6 @@ export function HeroV76({
     <>
       <StudioNav
         darkTop={dark}
-        hideDemo
         maxWidthClass="max-w-[1600px]"
         restPaddingClass="px-6 md:px-10"
       />

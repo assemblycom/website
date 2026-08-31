@@ -51,7 +51,6 @@ export function RootShell({ children }: { children: React.ReactNode }) {
   // there to avoid a duplicate bar.
   const nav = isHome ? null : (
     <StudioNav
-      hideDemo
       darkTop={dark}
       // Match the home hero's nav rail exactly so the logo/links don't shift
       // horizontally when navigating between home and the content pages.

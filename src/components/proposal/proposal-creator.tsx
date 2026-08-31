@@ -292,7 +292,6 @@ export function ProposalCreator({ templates }: { templates: Template[] }) {
     <div className="flex min-h-screen flex-col">
       <StudioNav
         minimal
-        hideDemo
         darkTop={theme === "dark"}
         maxWidthClass="max-w-[1600px]"
         restPaddingClass="px-6 md:px-10"
