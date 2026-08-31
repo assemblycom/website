@@ -200,6 +200,8 @@ export function SelectMenu({
   options,
   placeholder = "Select…",
   name,
+  id,
+  error,
   required = false,
   searchable = false,
   searchPlaceholder = "Search…",
@@ -211,6 +213,10 @@ export function SelectMenu({
   placeholder?: string;
   /** Renders a hidden input so the control works inside a plain form post. */
   name?: string;
+  /** Put on the trigger, so a form that validates this field can focus it. */
+  id?: string;
+  /** Validation message, shown under the field like the text inputs' own. */
+  error?: string;
   /** Marks the label, for a field the form won't submit without. */
   required?: boolean;
   searchable?: boolean;
@@ -324,12 +330,14 @@ export function SelectMenu({
             same specificity and stylesheet order would otherwise decide. */}
         <button
           type="button"
+          id={id}
           onClick={() => (open ? close() : setOpen(true))}
           aria-haspopup="listbox"
           aria-expanded={open}
+          aria-describedby={error && id ? `${id}-error` : undefined}
           className={`${FIELD_CLS} flex items-center justify-between gap-3 text-left !text-sm ${
             selected ? "" : "!text-muted-foreground"
-          }`}
+          } ${error ? "border-[var(--mock-negative-fg)]" : ""}`}
         >
           <span className="flex min-w-0 items-center gap-2.5">
             {selected?.avatar !== undefined && (
@@ -439,6 +447,15 @@ export function SelectMenu({
         )}
       </div>
       {name && <input type="hidden" name={name} value={value} />}
+      {error && (
+        <p
+          id={id ? `${id}-error` : undefined}
+          role="alert"
+          className="type-caption text-[var(--mock-negative-fg)]"
+        >
+          {error}
+        </p>
+      )}
     </div>
   );
 }

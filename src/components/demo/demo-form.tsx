@@ -124,11 +124,18 @@ function Field({
 // The browser's own validation bubble is an OS overlay that ignores every type
 // and colour decision on this page, so the form validates itself and shows the
 // message inline — same reasoning as SelectMenu replacing a native <select>.
+// Every field is required. Company size especially: the router decides which
+// calendar a lead sees from that bracket alone, so a blank one falls through to
+// the catch-all and lands on whoever is on rota rather than the right team.
+// The order is the order they appear, so the focus below lands on the first gap.
 const REQUIRED_FIELDS = [
   { name: "firstName", message: "Enter your first name." },
   { name: "lastName", message: "Enter your last name." },
   { name: "company", message: "Enter your company name." },
   { name: "email", message: "Enter your work email." },
+  { name: "industry", message: "Enter your industry." },
+  { name: "companySize", message: "Select your company size." },
+  { name: "message", message: "Tell us what you're looking to do." },
 ] as const;
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -490,31 +497,42 @@ export function DemoForm() {
         </div>
 
         <div className="grid gap-5 sm:grid-cols-2">
-          <Field label="Industry" htmlFor="industry">
+          <Field label="Industry" htmlFor="industry" error={errors.industry}>
             <input
               id="industry"
               name="industry"
               type="text"
               placeholder="Accounting, legal, marketing…"
               className={inputCls}
+              {...fieldProps("industry")}
             />
           </Field>
           <SelectMenu
             label="Company size"
+            id="companySize"
             name="companySize"
             value={companySize}
-            onChange={setCompanySize}
+            onChange={(next) => {
+              setCompanySize(next);
+              clearError("companySize");
+            }}
             options={COMPANY_SIZES}
+            error={errors.companySize}
           />
         </div>
 
-        <Field label="What are you looking to do with Assembly?" htmlFor="message">
+        <Field
+          label="What are you looking to do with Assembly?"
+          htmlFor="message"
+          error={errors.message}
+        >
           <textarea
             id="message"
             name="message"
             rows={4}
             placeholder="Tell us about your use case, clients, or the apps you have in mind."
             className={`${inputCls} resize-none`}
+            {...fieldProps("message")}
           />
         </Field>
       </div>
