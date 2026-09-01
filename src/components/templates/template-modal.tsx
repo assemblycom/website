@@ -8,9 +8,8 @@ import {
   IconClose,
   IconExpand,
 } from "@/components/templates/modal-icons";
-import { APP_URL, templateSignupUrl } from "@/lib/constants";
 import { TEMPLATE_CUSTOMIZATION as CUSTOMIZABLE } from "@/lib/templates";
-import { AuthLink } from "@/components/ui/auth-link";
+import { TemplateAuthCta } from "@/components/templates/template-cta";
 
 // Slim, serializable slice of a template the modal needs.
 export interface ModalTemplate {
@@ -245,13 +244,9 @@ export function TemplateModalBrowser({
 
               {/* Desktop CTA — on mobile the floating action bar carries it. */}
               <div className="mt-6 hidden md:block">
-                {/* Signed-in visitors add the app straight to their
-                    workspace; signed-out visitors sign up from this template. */}
-                <AuthLink
-                  authedHref={APP_URL}
-                  authedLabel="Add app to workspace"
-                  href={templateSignupUrl(template)}
-                  label="Get started"
+                {/* One link for both auth states — see TemplateAuthCta. */}
+                <TemplateAuthCta
+                  template={template}
                   className="block w-full max-w-xs rounded-lg bg-foreground px-5 py-2.5 text-center text-sm text-background sm:inline-block sm:w-auto transition-opacity hover:opacity-90"
                 />
               </div>
@@ -263,11 +258,8 @@ export function TemplateModalBrowser({
             sheet's foot on a fade so content visibly scrolls beneath it. */}
         <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-background via-background/85 to-transparent pb-4 pt-12 md:hidden">
           <div className="pointer-events-auto flex justify-center px-4">
-            <AuthLink
-              authedHref={APP_URL}
-              authedLabel="Add app to workspace"
-              href={templateSignupUrl(template)}
-              label="Get started"
+            <TemplateAuthCta
+              template={template}
               className="w-full max-w-sm rounded-lg bg-foreground px-5 py-2.5 text-center text-sm text-background"
             />
           </div>
