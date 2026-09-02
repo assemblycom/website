@@ -2,12 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
-  entryBodyHtml,
-  entryHeadline,
+  entryBodyMarkdown,
   getUpdate,
   getUpdates,
-  standfirst,
-} from "@/lib/ghost";
+  renderEntry,
+} from "@/lib/updates-content";
 import { formatEntryDate } from "@/lib/updates";
 import { pageMetadata } from "@/lib/seo";
 
@@ -33,8 +32,8 @@ export async function generateMetadata({
   const entry = await getUpdate(slug);
   if (!entry) return {};
   return pageMetadata({
-    title: entryHeadline(entry),
-    description: standfirst(entry),
+    title: entry.title,
+    description: entry.excerpt,
     path: `/updates/${entry.slug}`,
   });
 }
@@ -83,12 +82,14 @@ export default async function UpdateEntryPage({
               own. It keeps the h2 step it renders at on the listing, so the
               same entry reads at the same size in both places. */}
           <h1 className="type-h2 text-balance text-foreground">
-            {entryHeadline(entry)}
+            {entry.title}
           </h1>
 
           <div
             className="post-body updates-entry mt-6"
-            dangerouslySetInnerHTML={{ __html: entryBodyHtml(entry) }}
+            dangerouslySetInnerHTML={{
+              __html: renderEntry(entryBodyMarkdown(entry)),
+            }}
           />
 
           {/* The changelog is read as a stream, so an entry on its own page
@@ -108,7 +109,7 @@ export default async function UpdateEntryPage({
                     Newer
                   </span>
                   <span className="type-body mt-1 block text-pretty text-foreground transition-colors group-hover:text-muted-foreground">
-                    {entryHeadline(newer)}
+                    {newer.title}
                   </span>
                 </Link>
               ) : (
@@ -123,7 +124,7 @@ export default async function UpdateEntryPage({
                     Older
                   </span>
                   <span className="type-body mt-1 block text-pretty text-foreground transition-colors group-hover:text-muted-foreground">
-                    {entryHeadline(older)}
+                    {older.title}
                   </span>
                 </Link>
               ) : (

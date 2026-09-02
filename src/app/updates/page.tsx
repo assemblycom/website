@@ -7,7 +7,7 @@ import {
   formatEntryDate,
   updatesPath,
 } from "@/lib/updates";
-import { getUpdates, updateEntryHtml } from "@/lib/ghost";
+import { getUpdates, renderEntry } from "@/lib/updates-content";
 import { PAGE_SEO, pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata(PAGE_SEO.updates);
@@ -100,15 +100,12 @@ export default async function UpdatesPage({
                   </time>
                 </Link>
 
-                {/* Ghost's own markup, restyled by .post-body in globals.css.
-                    The entry titles in Ghost are internal labels ("Changelog -
-                    MCP"); each body leads with the heading readers should see,
-                    so the body is the whole entry. */}
+                {/* The entry's Markdown, rendered to the markup .post-body in
+                    globals.css styles. Each body leads with the headline
+                    readers should see, so the body is the whole entry. */}
                 <div
                   className="post-body updates-entry"
-                  dangerouslySetInnerHTML={{
-                    __html: updateEntryHtml(entry.html),
-                  }}
+                  dangerouslySetInnerHTML={{ __html: renderEntry(entry.body) }}
                 />
               </div>
             </li>

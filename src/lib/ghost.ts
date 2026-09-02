@@ -1,9 +1,13 @@
 /**
- * Ghost, twice. The marketing blog and the changelog are two separate Ghost
- * instances with separate keys, so everything here takes the instance it is
- * reading as an argument rather than closing over one.
+ * The marketing blog behind /blog, out of Ghost.
  *
- * Two ways into each, picked by whether that instance has a key configured:
+ * It reads one instance now. The changelog used to be a second one here — a
+ * separate Ghost with its own key — and is committed to the repo instead; see
+ * src/lib/updates-content.ts. What is left still takes the instance it reads as
+ * an argument, because the shape is right for a CMS client and wrong to unpick
+ * for the sake of one caller.
+ *
+ * Two ways in, picked by whether the instance has a key configured:
  *
  *   • key set — the Content API, which returns the whole archive. This is the
  *     one we want.
@@ -24,12 +28,6 @@ interface GhostSource {
 const BLOG: GhostSource = {
   url: process.env.GHOST_API_URL ?? "https://copilot-blog.ghost.io",
   key: process.env.GHOST_CONTENT_API_KEY,
-};
-
-/** The changelog, behind /updates. A different instance, not a tag on the blog. */
-const UPDATES: GhostSource = {
-  url: process.env.GHOST_UPDATES_API_URL ?? "https://copilot-updates.ghost.io",
-  key: process.env.GHOST_UPDATES_CONTENT_API_KEY,
 };
 
 // Well under the API's 100 maximum: at 100 a page of posts came back over 5MB,
@@ -238,7 +236,7 @@ function dropPastedStylesheets(html: string): string {
   return html.replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, "");
 }
 
-function stripEmoji(html: string): string {
+export function stripEmoji(html: string): string {
   return html.replace(/>([^<]+)</g, (match, text: string) => {
     const stripped = text.replace(EMOJI, "");
     if (stripped === text) return match;
@@ -351,7 +349,7 @@ function liftHeaderNotes(html: string): string {
  * them, which leaves a lone dark speck mid-sentence; one post carries
  * twenty-one. Only ever matches runs with no letters or digits in them.
  */
-function unboldPunctuation(html: string): string {
+export function unboldPunctuation(html: string): string {
   return html.replace(/<strong>([\s:;,.!?\u2013\u2014-]*)<\/strong>/g, "$1");
 }
 
@@ -648,17 +646,9 @@ export function getPosts(): Promise<GhostPost[]> {
   return getFrom(BLOG);
 }
 
-/** The changelog's entries, newest first. A different Ghost from getPosts(). */
-export function getUpdates(): Promise<GhostPost[]> {
-  return getFrom(UPDATES);
-}
 
 export async function getPost(slug: string): Promise<GhostPost | undefined> {
   return (await getPosts()).find((post) => post.slug === slug);
-}
-
-export async function getUpdate(slug: string): Promise<GhostPost | undefined> {
-  return (await getUpdates()).find((post) => post.slug === slug);
 }
 
 /** Just enough of a post to name it and link to it. */
@@ -906,88 +896,6 @@ export function splitFaq(html: string): {
 }
 
 /**
- * Ghost writes `sizes="(min-width: 720px) 720px"` on every body image, sized for
- * its own theme's column. Ours is wider, so the browser was picking a candidate
- * off the srcset for a 720px slot and the page stretched it — soft on any
- * screen, softer on a retina one. The slot the page actually draws is passed in
- * here instead.
- */
-/**
- * Most changelog entries head their sections with <h3> and never use an <h2>:
- * the level is the writer's habit rather than a hierarchy, and left alone those
- * heads render a pixel larger than the body text beside them while the entries
- * that do use <h2> get a proper one. So the entry's first heading sets its top
- * level: where that is an <h3>, every heading shifts up a step.
- *
- * Testing whether an <h2> appears anywhere instead would leave the one entry
- * that opens with <h3> feature sections and then closes with an <h2>
- * "Improvements" ranked upside down, the features a size below the fixes list.
- */
-export function normalizeEntryHeadings(html: string): string {
-  if (/<h([1-6])[^>]*>/i.exec(html)?.[1] !== "3") return html;
-  return html
-    .replace(/<(\/?)h3([\s>])/gi, "<$1h2$2")
-    .replace(/<(\/?)h4([\s>])/gi, "<$1h3$2");
-}
-
-/**
- * Marks a paragraph whose WHOLE content is one link, so the changelog can draw
- * it as a closing "read more" line with an arrow rather than as a stray
- * sentence. A link inside a sentence is untouched: the arrow is a promise that
- * the line goes somewhere, and mid-paragraph there is nothing for it to point
- * from.
- *
- * Matched here rather than in CSS because CSS cannot see text nodes —
- * `p:has(> a:only-child)` is also true of "See our release page." and would
- * hang an arrow off the end of a sentence.
- */
-export function markStandaloneLinks(html: string): string {
-  return html.replace(
-    /<p([^>]*)>(\s*<a\b[^>]*>(?:(?!<\/p>)[\s\S])*?<\/a>\s*)<\/p>/gi,
-    (whole, attrs: string, inner: string) => {
-      // One link and nothing else — a second <a> means it is a line of links,
-      // not a single destination.
-      if ((inner.match(/<a\b/gi) ?? []).length !== 1) return whole;
-      if (/\bclass\s*=/.test(attrs)) {
-        return `<p${attrs.replace(
-          /\bclass\s*=\s*("|')(.*?)\1/i,
-          (_m, q: string, cls: string) => `class=${q}${cls} entry-link${q}`,
-        )}>${inner}</p>`;
-      }
-      return `<p${attrs} class="entry-link">${inner}</p>`;
-    },
-  );
-}
-
-// Ghost's editor leaves an empty paragraph behind wherever a writer pressed
-// return past the end of a block, usually under an image. It draws as a hole in
-// the entry, so it comes out.
-export function dropEmptyParagraphs(html: string): string {
-  return html.replace(
-    /<p\b[^>]*>(?:\s|&nbsp;|<br\s*\/?>)*<\/p>/gi,
-    "",
-  );
-}
-
-// The 2020–21 changelog was imported from the pre-Ghost changelog, whose
-// screenshots were served through that site's own image proxy. The host is gone
-// and the bucket behind it no longer serves public reads, so every one of those
-// figures renders as a broken box with its alt text sitting above the identical
-// caption. None of them are recoverable, so they come out of the entry rather
-// than being drawn as a hole in it.
-const DEAD_IMAGE_HOST = "updates.joinportal.com";
-
-export function dropUnservableFigures(html: string): string {
-  return html
-    .replace(/<figure\b[^>]*>[\s\S]*?<\/figure>/gi, (figure) =>
-      figure.includes(DEAD_IMAGE_HOST) ? "" : figure,
-    )
-    .replace(/<img\b[^>]*>/gi, (img) =>
-      img.includes(DEAD_IMAGE_HOST) ? "" : img,
-    );
-}
-
-/**
  * Lifts a pull quote that sits directly under an image to above it.
  *
  * A quote placed right after a figure reads as that image's caption — the eye
@@ -1010,95 +918,13 @@ export function quotesAboveFigures(html: string): string {
   );
 }
 
-// Every docs link written before the docs moved is dead. ReadMe served them at
-// docs.assembly.com/reference/* (and docs.joinportal.com/* before the rename);
-// the docs now live under assembly.com/docs, where the reference is split a page
-// per endpoint. Nothing redirects, so an entry from 2024 sends readers to a 404.
-//
-// Keyed by legacy path because the two dead hosts used the same paths. A path
-// without an entry falls back to the section root rather than being guessed at.
-const DEAD_DOC_HOSTS = ["docs.assembly.com", "docs.joinportal.com"];
-const DOCS_ROOT = "https://assembly.com/docs";
-const DOC_PATHS: Record<string, string> = {
-  // The welcome page rather than "", which would point at /docs and take the
-  // redirect the deep links here exist to avoid.
-  "/": "/getting-started/welcome",
-  "/reference/introduction": "/api-reference/introduction",
-  "/reference/getting-started-introduction": "/api-reference/introduction",
-  "/reference/pagination": "/api-reference/pagination",
-  "/reference/audit-log": "/api-reference/events/list-audit-events",
-  "/reference/custom-fields": "/api-reference/resources/custom-fields",
-  "/reference/tasks": "/api-reference/resources/tasks",
-  "/reference/notifications": "/api-reference/resources/notifications",
-  "/reference/messages": "/api-reference/resources/messages",
-  "/reference/message-channels": "/api-reference/resources/message-channels",
-  "/reference/files": "/api-reference/resources/files",
-  "/reference/create-a-file": "/api-reference/files/create-a-file",
-  "/reference/webhooks-events": "/api-reference/webhooks/events",
-  "/docs/custom-apps-overview": "/building-new-apps/introduction",
-  "/docs/marketplace-apps-overview": "/building-new-apps/introduction",
-  "/page/authenticated-extensions": "/embeds-and-links/url-parameters",
-};
-// An unmapped /reference/* page was still an API page, so it lands on the API
-// reference rather than the top of the docs.
-const REFERENCE_FALLBACK = "/api-reference/introduction";
-
-export function relinkDeadDocs(html: string): string {
-  return html.replace(/href="([^"]*)"/gi, (whole, href: string) => {
-    let url: URL;
-    try {
-      url = new URL(href, DOCS_ROOT);
-    } catch {
-      return whole;
-    }
-    if (!DEAD_DOC_HOSTS.includes(url.hostname)) return whole;
-    const path = url.pathname.replace(/\/$/, "") || "/";
-    const target =
-      DOC_PATHS[path] ??
-      (path.startsWith("/reference/")
-        ? REFERENCE_FALLBACK
-        : DOC_PATHS["/"]);
-    // Ghost's own ?ref= tracking param goes with the dead URL it was on.
-    return `href="${DOCS_ROOT}${target}"`;
-  });
-}
-
-// A handful of changelog screenshots were exported with their own 1px frame
-// baked into the canvas. The page draws its own outline around every screenshot
-// (see .post-body img), so those land a second contour a pixel inside the
-// first — the same double edge the review-screenshot rule dodges, except here
-// the frame is in the pixels rather than in the CSS. Removing our outline is not
-// the fix: the baked frame is a different grey at a different radius.
-//
-// So the file is re-served cropped past its own frame. Ghost's copy can't be
-// edited, so the crop lives in public/ and the entry's <img> is pointed at it —
-// which also means dropping the Ghost srcset, since those are the uncropped
-// renditions of the same picture.
-const CROPPED_SCREENSHOTS: Record<string, { src: string; width: number; height: number }> = {
-  // "Messages API", September 14 2023.
-  "2023/09/marma.jpg": {
-    src: "/images/updates/messages-api.jpg",
-    width: 1984,
-    height: 1234,
-  },
-};
-
-export function withCroppedScreenshots(html: string): string {
-  return html.replace(/<img\b[^>]*>/gi, (tag) => {
-    const key = Object.keys(CROPPED_SCREENSHOTS).find((path) =>
-      tag.includes(path),
-    );
-    if (!key) return tag;
-    const { src, width, height } = CROPPED_SCREENSHOTS[key];
-    return tag
-      .replace(/\ssrcset\s*=\s*("[^"]*"|'[^']*')/i, "")
-      .replace(/\ssizes\s*=\s*("[^"]*"|'[^']*')/i, "")
-      .replace(/\ssrc\s*=\s*("[^"]*"|'[^']*')/i, ` src="${src}"`)
-      .replace(/\swidth\s*=\s*("[^"]*"|'[^']*')/i, ` width="${width}"`)
-      .replace(/\sheight\s*=\s*("[^"]*"|'[^']*')/i, ` height="${height}"`);
-  });
-}
-
+/**
+ * Ghost writes `sizes="(min-width: 720px) 720px"` on every body image, sized for
+ * its own theme's column. Ours is wider, so the browser was picking a candidate
+ * off the srcset for a 720px slot and the page stretched it — soft on any
+ * screen, softer on a retina one. The slot the page actually draws is passed in
+ * here instead.
+ */
 export function withImageSizes(html: string, sizes: string): string {
   return html.replace(/<img\b[^>]*>/g, (tag) =>
     /\ssizes\s*=/i.test(tag)
@@ -1362,58 +1188,6 @@ export function withHeadingIds(html: string): {
   );
 
   return { html: out, headings };
-}
-
-// "Changelog - MCP", "June 30 2026: Changelog" — the boilerplate an editor types
-// to find an entry again, which is not part of its name.
-const ENTRY_LABEL = /^\s*changelog\s*[-–—:]\s*|\s*[-–—:]\s*changelog\s*$/gi;
-
-// Only a heading the body OPENS on. A heading further down is a section of the
-// entry, not its name.
-const LEADING_HEADING = /^\s*<h[23][^>]*>([\s\S]*?)<\/h[23]>/i;
-
-/**
- * The changelog's render pipeline, in the order the transforms have to run.
- *
- * Shared because /updates prints every entry inline and /updates/<slug> prints
- * one of them: two copies of this chain would drift, and the drift would show
- * as the same entry rendering differently on two pages.
- */
-export function updateEntryHtml(html: string): string {
-  return markStandaloneLinks(
-    dropEmptyParagraphs(
-      dropUnservableFigures(
-        relinkDeadDocs(withCroppedScreenshots(normalizeEntryHeadings(html))),
-      ),
-    ),
-  );
-}
-
-/**
- * What to call one changelog entry.
- *
- * Ghost's titles here are internal labels rather than headlines, and every entry
- * whose body opens on a heading is already carrying the name readers should see.
- * The title is the fallback for the few that open on a paragraph, with the label
- * boilerplate taken off.
- */
-export function entryHeadline(post: GhostPost): string {
-  const heading = LEADING_HEADING.exec(post.html)?.[1];
-  const text = heading
-    ? decodeEntities(heading.replace(/<[^>]+>/g, "")).trim()
-    : "";
-  if (text) return text;
-  return decodeEntities(post.title.replace(ENTRY_LABEL, "")).trim() || post.title;
-}
-
-/**
- * The body with its opening heading removed, for the page that has already
- * printed that heading as its <h1>. Leaving it in would put the same line on the
- * page twice, once at each of two levels.
- */
-export function entryBodyHtml(post: GhostPost): string {
-  const html = updateEntryHtml(post.html);
-  return LEADING_HEADING.test(html) ? html.replace(LEADING_HEADING, "") : html;
 }
 
 // A paragraph whose entire content is one <strong> — "Here's what I looked at:"

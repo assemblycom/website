@@ -39,6 +39,19 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  // The changelog's entries are read off disk at request time, and Next only
+  // ships the files it can see being imported. Naming the directory puts it in
+  // the bundle for the three routes that read it; without this /updates is a
+  // 500 on Vercel and works fine locally, which is the worst way to find out.
+  // The imagery goes with them on the two routes that render an entry: those
+  // read each screenshot's dimensions off the file so the browser knows the
+  // aspect ratio before the bytes arrive, and public/ is served from the CDN
+  // rather than mounted in the function.
+  outputFileTracingIncludes: {
+    "/updates": ["./src/content/updates/**", "./public/images/updates/**"],
+    "/updates/[slug]": ["./src/content/updates/**", "./public/images/updates/**"],
+    "/sitemap-updates.xml": ["./src/content/updates/**"],
+  },
   // Read at BUILD time and inlined, which is the whole point: it dates the
   // hand-shipped pages in the sitemaps. A static page changes when the site is
   // deployed and at no other moment, so "now" at build is its real lastmod —

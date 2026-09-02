@@ -14,17 +14,12 @@ import { getComparisons } from "@/lib/comparisons";
 import { getAppTemplates, getListedEmbeds } from "@/lib/contentful";
 import { getDefinitions } from "@/lib/definitions";
 import { getFeaturePages } from "@/lib/features";
-import {
-  entryHeadline,
-  getAuthors,
-  getCategories,
-  getPosts,
-  getUpdates,
-} from "@/lib/ghost";
+import { getAuthors, getCategories, getPosts } from "@/lib/ghost";
 import { getOpenRoles } from "@/lib/careers";
 import { getSolutions } from "@/lib/solutions";
 import { getVisibleTemplates } from "@/lib/visible-templates";
 import { updatesPath } from "@/lib/updates";
+import { getUpdates } from "@/lib/updates-content";
 import { tagPath } from "@/lib/blog";
 
 /**
@@ -289,7 +284,7 @@ export async function updatesUrls(): Promise<SitemapUrl[]> {
     ...entries.map((entry) => ({
       path: `/updates/${entry.slug}`,
       lastModified: entry.updatedAt,
-      title: entryHeadline(entry),
+      title: entry.title,
     })),
   ];
 }

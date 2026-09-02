@@ -95,20 +95,18 @@ Set it in `.env.local` for local work, and in the Vercel project's environment
 variables for staging and production. Read server-side only; it never reaches
 the browser.
 
-## Ghost, again (optional) — the `/updates` changelog
+## Ghost, once more — the `/updates` importer only
 
-`/updates` reads a **second, separate Ghost instance** (`copilot-updates.ghost.io`),
-not a tag on the blog. It has its own key, and the two are not interchangeable.
-**Not set** → the changelog falls back to that instance's RSS feed and shows only
-the newest 15 entries instead of all 170. **Set** → the whole archive back to 2020.
+`/updates` no longer reads Ghost. The changelog is committed under
+`src/content/updates`, so the site needs nothing set to serve it and a new entry
+is a new file. The two variables below are read by
+`scripts/freeze-updates.mts`, the one-time importer that brought the archive
+across, and by nothing the site renders — **they do not belong in Vercel**.
 
 | Variable | Needed for | Notes |
 | --- | --- | --- |
-| `GHOST_UPDATES_CONTENT_API_KEY` | The full archive rather than the newest 15 | The updates Ghost admin → **Settings → Integrations → Custom** → **Content API key**. 26 characters, no colon. Read-only. |
-| `GHOST_UPDATES_API_URL` | Pointing at a different Ghost | Defaults to `https://copilot-updates.ghost.io`. Leave unset. |
-
-Set it in `.env.local` locally and in the Vercel project's environment variables
-for Production, Staging, and Preview. Read server-side only.
+| `GHOST_UPDATES_CONTENT_API_KEY` | Re-running the importer | The old updates Ghost admin → **Settings → Integrations → Custom** → **Content API key**. 26 characters, no colon. Read-only. |
+| `GHOST_UPDATES_API_URL` | Pointing the importer elsewhere | Defaults to `https://copilot-updates.ghost.io`. Leave unset. |
 
 ## Contentful (optional) — the `/templates` gallery
 

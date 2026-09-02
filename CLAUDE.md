@@ -288,6 +288,46 @@ Contentful entry does nothing — nothing reads it.
   a deploy; and `src/lib/careers.ts` reads the Ashby job board, because a closed
   role has to stop listing. `src/lib/ghost.ts` (the blog) was never Contentful.
 
+## The changelog: `/updates`
+
+The changelog is committed to the repo. It used to be a Ghost instance of its
+own (`copilot-updates.ghost.io`), read at request time; it is now 170 Markdown
+files in `src/content/updates` with their imagery in `public/images/updates`.
+Publishing in that Ghost does nothing — nothing reads it.
+
+**Adding an entry is adding one file:** `src/content/updates/<slug>.md`, where
+the slug becomes its URL at `/updates/<slug>`.
+
+```markdown
+---
+title: "Bulk actions in the Files app"
+excerpt: "One sentence for the search result and the page description."
+date: 2026-09-02T10:00:00.000-04:00
+updated: 2026-09-02T10:00:00.000-04:00
+---
+
+## Bulk actions in the Files app
+
+Open on the headline as an `h2` — it is the entry's name on the listing and its
+`h1` on its own page, so `title` should be the same words. Then ordinary
+Markdown: paragraphs, `###` for sections, `-` lists, `[links](https://…)`.
+
+![](/images/updates/2026/09/bulk-actions.webp "An optional caption")
+```
+
+Nothing lists the entries, so no index needs editing and the sitemap picks the
+new page up on its own. Notes:
+
+- **Screenshots** go under `public/images/updates/<year>/<month>/`, webp, no
+  wider than 1600px — entries render inside a 720px measure. Their dimensions
+  are read off the file, so there is nothing to measure or declare.
+- **`date` orders the listing** and stamps the entry. The filename does not.
+- **A YouTube embed or a video** is written as the HTML it is; Markdown passes a
+  block of it through. Copy the shape from an existing entry.
+- `scripts/freeze-updates.mts` is the one-time importer that brought the archive
+  across, kept for reference like `freeze-cms.mts`. Re-running it overwrites
+  hand edits with whatever the old Ghost still holds — so don't.
+
 ## Adding a New Page
 1. Create `src/app/<page-name>/page.tsx`
 2. Add an entry to `PAGE_SEO` in `src/lib/seo.ts` and export
