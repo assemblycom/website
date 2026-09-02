@@ -213,6 +213,12 @@ function openGetStarted(value: string) {
   window.location.href = buildSignupUrl(trimmed || undefined);
 }
 
+// Once there is a prompt in the box, the button names what happens to it
+// rather than where it takes you. Both auth states converge on the one
+// sentence: the destination still differs, the promise does not. Empty, they
+// diverge again — "Get started" for a visitor, "Open Assembly" for a customer.
+const TYPED_SUBMIT_LABEL = "Build in Assembly";
+
 export function V66Composer({ glow = true, surfaceClassName = "bg-white ring-1 ring-black/[0.06]", surfaceRadiusClass = "rounded-[22px]", minHeightClass = "min-h-[188px]", tone = "light", typewriter = false, mutedControls = false, submitLabel, authedSubmitLabel, submitDark = false, themeAuto = false, accent = LIME, hidePlus = false, hideHowTo = false, howToLabel = "How it works", howToSide = "left", promptPicker = false, promptPickerLabel = "Select a prompt", promptPickerSide = "left", promptPickerUp = false, promptItems, plusItems, compact = false, minimalControls = false, plusAsAttach = false, footerLeading, showSubmit = true, submitDisabled, textDimmed = false, splitFooter = false, value: valueProp, onValueChange, textareaRef }: { glow?: boolean; surfaceClassName?: string; surfaceRadiusClass?: string; minHeightClass?: string; tone?: "light" | "dark"; typewriter?: boolean; mutedControls?: boolean; submitLabel?: string; authedSubmitLabel?: string; submitDark?: boolean; themeAuto?: boolean; accent?: string; hidePlus?: boolean; hideHowTo?: boolean; howToLabel?: string; howToSide?: "left" | "right"; promptPicker?: boolean; promptPickerLabel?: string; promptPickerSide?: "left" | "right"; promptPickerUp?: boolean; promptItems?: (string | { label: string; prompt: string })[]; plusItems?: { label: string; icon: "attach" | "transfer" }[]; compact?: boolean; minimalControls?: boolean; plusAsAttach?: boolean; footerLeading?: React.ReactNode; showSubmit?: boolean; submitDisabled?: boolean; textDimmed?: boolean; splitFooter?: boolean; value?: string; onValueChange?: (v: string) => void; textareaRef?: React.Ref<HTMLTextAreaElement> } = {}) {
 
   // Prompt-picker entries. Default: the shared "Build a …" examples. A hero can
@@ -819,6 +825,10 @@ export function V66Composer({ glow = true, surfaceClassName = "bg-white ring-1 r
                 visitor straight to onboarding. */}
             {showSubmit && (() => {
               const submitActive = submitDisabled === undefined ? Boolean(value.trim()) : !submitDisabled;
+              // Separate from submitActive, which the hero pins to true so the
+              // pill never reads as disabled over an empty box.
+              const typed = Boolean(value.trim());
+              const showsLabel = Boolean(submitLabel && submitActive);
               return (
             <button
               type="button"
@@ -834,7 +844,7 @@ export function V66Composer({ glow = true, surfaceClassName = "bg-white ring-1 r
               // With both labels in the markup the visible one names the button;
               // an aria-label would override it with whichever word is wrong for
               // this visitor.
-              aria-label={authedSubmitLabel ? undefined : (submitLabel ?? "Build it")}
+              aria-label={showsLabel ? undefined : (submitLabel ?? "Build it")}
               className={`flex ${submitH} items-center justify-center gap-1.5 rounded-lg ${pillText} font-normal transition-all duration-150 ease-out active:scale-[0.98] ${
                 submitActive
                   ? themeAuto
@@ -868,8 +878,11 @@ export function V66Composer({ glow = true, surfaceClassName = "bg-white ring-1 r
                   signed-out word first and swap it after hydration, in the one
                   spot on the page a visitor is already looking. The hidden half
                   is `display:none`, so it leaves the accessible name alone. */}
-              {submitLabel && submitActive &&
-                (authedSubmitLabel ? (
+              {showsLabel &&
+                (typed ? (
+                  // One label for everyone, so no auth split to resolve.
+                  <span className="whitespace-nowrap">{TYPED_SUBMIT_LABEL}</span>
+                ) : authedSubmitLabel ? (
                   <>
                     <span className="auth-only whitespace-nowrap">{authedSubmitLabel}</span>
                     <span className="unauth-only whitespace-nowrap">{submitLabel}</span>
