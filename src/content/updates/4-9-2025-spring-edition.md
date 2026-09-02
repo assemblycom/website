@@ -11,9 +11,9 @@ Magic links let your clients log in with a single click from a secure link sent 
 
 This is what the new experience is like when a client gets a notification about a new invoice. This client has never received an email notification before and has never set a password. Notice that it just works — they’re immediately taken to the checkout page to pay.
 
-<figure class="kg-card kg-video-card kg-width-regular" data-kg-thumbnail="https://copilot-blog.ghost.io/content/media/2025/04/vid1_thumb.jpg" data-kg-custom-thumbnail="">
+<figure class="kg-card kg-video-card kg-width-regular" data-kg-thumbnail="/images/updates/2025/04/vid1_thumb.jpg" data-kg-custom-thumbnail="">
             <div class="kg-video-container">
-                <video controls src="/images/updates/2025/04/vid1.mp4" poster="/images/updates/external/img.spacergif.org-spacer.png" width="1920" height="1080" playsinline="" preload="metadata" style="background: transparent url('https://copilot-blog.ghost.io/content/media/2025/04/vid1_thumb.jpg') 50% 50% / cover no-repeat;"></video>
+                <video controls src="/images/updates/2025/04/vid1.mp4" poster="/images/updates/external/img.spacergif.org-spacer.png" width="1920" height="1080" playsinline="" preload="metadata" style="background: transparent url('/images/updates/2025/04/vid1_thumb.jpg') 50% 50% / cover no-repeat;"></video>
                 </figure>
 
 When magic links are enabled, all email notifications to clients have magic links in them. In addition, there are ways to manually share magic links. On the CRM you can send magic links from the CRM table or the client/company details pages. On the Billing App, you can send magic links for open invoices. And on the Contracts App, you can send magic links for open contract requests.
@@ -28,9 +28,9 @@ We recommend that you enable magic links. Password-less authentication (Google O
 
 You can now create a payment link connected to a product, and anyone (existing client or not) can pay for that product. Here’s how it works:
 
-<figure class="kg-card kg-video-card kg-width-regular" data-kg-thumbnail="https://copilot-blog.ghost.io/content/media/2025/04/vid2_thumb.jpg" data-kg-custom-thumbnail="">
+<figure class="kg-card kg-video-card kg-width-regular" data-kg-thumbnail="/images/updates/2025/04/vid2_thumb.jpg" data-kg-custom-thumbnail="">
             <div class="kg-video-container">
-                <video controls src="/images/updates/2025/04/vid2.mp4" poster="/images/updates/external/img.spacergif.org-spacer.png" width="1920" height="1080" playsinline="" preload="metadata" style="background: transparent url('https://copilot-blog.ghost.io/content/media/2025/04/vid2_thumb.jpg') 50% 50% / cover no-repeat;"></video>
+                <video controls src="/images/updates/2025/04/vid2.mp4" poster="/images/updates/external/img.spacergif.org-spacer.png" width="1920" height="1080" playsinline="" preload="metadata" style="background: transparent url('/images/updates/2025/04/vid2_thumb.jpg') 50% 50% / cover no-repeat;"></video>
                 </figure>
 
 If a payment link is opened by someone who isn’t authenticated, we ask for an email. If checkout occurs and the email is new, then that client is taken through a self-serve sign up experience. This means that the client journey can now start with a payment.

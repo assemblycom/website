@@ -325,16 +325,24 @@ async function shrinkVideo(file: string): Promise<void> {
 }
 
 /**
- * Every remote src and poster in one entry, brought local.
+ * Every remote asset in one entry, brought local.
  *
- * srcset and sizes go with them: those named Ghost's own responsive variants,
- * and there is one file per image now.
+ * Four places carry one, and the video card uses three of them for the same
+ * poster frame: src, poster, its data-kg-thumbnail attributes, and a
+ * `background: url(…)` in an inline style. Missing any one leaves the entry
+ * fetching from Ghost's CDN, which is the dependency this whole import exists
+ * to remove.
+ *
+ * srcset and sizes are dropped rather than rewritten: those named Ghost's own
+ * responsive variants, and there is one file per image now.
  */
+const REMOTE_ASSET = /(?:(?:src|poster|data-kg-thumbnail|data-kg-custom-thumbnail)=\\?"|url\('?)(https?:\/\/[^"')\\]+)/g;
+
 async function localiseAssets(html: string): Promise<string> {
   const remote = new Set<string>();
-  for (const [, url] of html.matchAll(/(?:src|poster)="(https?:[^"]+)"/g)) {
-    // Embeds are the destination, not an asset: a YouTube iframe has nothing
-    // to bring down.
+  for (const [, url] of html.matchAll(REMOTE_ASSET)) {
+    // An embed is a destination, not an asset: a YouTube iframe has nothing to
+    // bring down.
     if (!/youtube\.com|youtu\.be|vimeo\.com|loom\.com/.test(url)) remote.add(url);
   }
 
@@ -344,12 +352,11 @@ async function localiseAssets(html: string): Promise<string> {
     if (local) localFor.set(url, local);
   }
 
-  return html
-    .replace(/\s(?:srcset|sizes)="[^"]*"/g, "")
-    .replace(/(src|poster)="(https?:[^"]+)"/g, (whole, attr: string, url: string) => {
-      const local = localFor.get(url);
-      return local ? `${attr}="${local}"` : whole;
-    });
+  let out = html.replace(/\s(?:srcset|sizes)="[^"]*"/g, "");
+  for (const [url, local] of localFor) {
+    out = out.split(url).join(local);
+  }
+  return out;
 }
 
 // ---------------------------------------------------------------------------
