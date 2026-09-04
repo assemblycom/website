@@ -22,12 +22,19 @@ export function TemplateDetailPanel({
   open,
   onClose,
   onStart,
+  plainPreview = false,
 }: {
   template: Template;
   open: boolean;
   onClose: () => void;
   /** Closes the panel and sends them to the signup block. */
   onStart: () => void;
+  /**
+   * Draws the preview as an empty frame instead of the template's cover art.
+   * For surfaces whose cards are deliberately artwork-free, where a drawn cover
+   * appearing only in the panel would be the one illustration on the page.
+   */
+  plainPreview?: boolean;
 }) {
   // Esc closes, and the page behind can't scroll under the panel while it's up.
   useEffect(() => {
@@ -103,12 +110,19 @@ export function TemplateDetailPanel({
           )}
 
           <div className="mt-7">
-            <TemplateGallery
-              title={template.title}
-              slug={template.slug}
-              images={template.images}
-              previewCount={template.previewCount}
-            />
+            {plainPreview ? (
+              <div
+                aria-hidden
+                className="aspect-[16/10] rounded-[16px] bg-muted"
+              />
+            ) : (
+              <TemplateGallery
+                title={template.title}
+                slug={template.slug}
+                images={template.images}
+                previewCount={template.previewCount}
+              />
+            )}
           </div>
 
           <h3 className="type-h4 mt-10">About this app</h3>
@@ -117,8 +131,8 @@ export function TemplateDetailPanel({
           </p>
           <p className="type-body mt-4 text-foreground/80">
             Start from this template and describe what you want changed.
-            Assembly reshapes it to your firm, then publishes it to your
-            client portal in minutes.
+            Assembly reshapes it to your firm, then publishes it to your client
+            portal in minutes.
           </p>
 
           <h3 className="type-h4 mt-9">What you can customize</h3>

@@ -129,6 +129,12 @@ export const PAGE_SEO = {
   // proposal is sent as a link and read in Slack or a mail client, so the
   // preview IS the first impression, and without its own record the page
   // inherited the homepage's card and previewed as the marketing site.
+  builtOn: {
+    title: "Built on Assembly",
+    description:
+      "The firm you just dealt with runs their client experience on Assembly. Build one for your business.",
+    path: "/built-on",
+  },
   proposal: {
     title: "Your proposal",
     description:
