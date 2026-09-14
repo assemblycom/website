@@ -114,6 +114,105 @@ export const BUILT_ON_FIRMS: BuiltOnFirm[] = [
     sidebarTextColor: "#101114",
     industry: "marketing",
   },
+  // --- Pulled from staging with scripts/pull-branding.mts. Local preview only;
+  // --- do not commit. Remove with: git checkout src/lib/built-on-firms.ts
+  {
+    id: "accountingbro",
+    name: "Accounting Bro",
+    logoUrl:
+      "https://lightout-portal.s3.us-west-2.amazonaws.com/public/e8okQUEnp/images/assets/logoUrl/brand-logo.png",
+    brandColor: "#092a36",
+    sidebarTextColor: "#ffffff",
+    industry: "accounting_and_bookkeeping",
+  },
+  {
+    id: "adamsconstruction",
+    name: "Adam's Construction",
+    logoUrl:
+      "https://lightout-portal.s3-accelerate.amazonaws.com/public/NdhR9rJ-p/images/assets/logoUrl/Bob%20the%20Builder.jpg",
+    industry: "construction",
+  },
+  {
+    id: "adamlocal",
+    name: "adamlocal",
+    logoUrl:
+      "https://lightout-portal.s3.us-west-2.amazonaws.com/public/zSCaOUEcM/images/assets/logoUrl/brand-logo.png",
+    brandColor: "#092a36",
+    sidebarTextColor: "#ffffff",
+    industry: "entertainment",
+  },
+  {
+    id: "allenestagingnew1",
+    name: "allenestagingnew1",
+    logoUrl:
+      "https://lightout-portal.s3.us-west-2.amazonaws.com/public/Gb23JmPcp/images/assets/logoUrl/brand-logo.png",
+    brandColor: "#092a36",
+    sidebarTextColor: "#ffffff",
+    industry: "technology",
+  },
+  // Awkward real uploads, for checking the logo slot against what firms send.
+  {
+    // 17.4:1 strip, opaque white background baked in.
+    id: "billingtest70",
+    name: "billingtest70",
+    logoUrl:
+      "https://lightout-portal.s3-accelerate.amazonaws.com/public/A-3UXYIzp/images/assets/logoUrl/Screenshot%202024-05-28%20at%203.16.55%E2%80%AFPM.png",
+    industry: "logistics_and_transportation",
+  },
+  {
+    // 8.4:1 wordmark, opaque white background.
+    id: "copilotdevapp2025",
+    name: "CopilotDevs2025",
+    logoUrl:
+      "https://lightout-portal.s3-accelerate.amazonaws.com/public/v06KiTlrM/images/assets/logoUrl/TFA-Wordmark-Login-v4.webp",
+    industry: "design",
+  },
+  {
+    // Opaque DARK background baked in: the case a white tile cannot flatter.
+    id: "assemblydemo1",
+    name: "Assembly Demo Portal",
+    logoUrl:
+      "https://lightout-portal.s3-accelerate.amazonaws.com/public/chkX-py9M/images/assets/logoUrl/Black.png",
+    industry: "marketing",
+  },
+  {
+    // A photograph, not a mark. Firms do this.
+    id: "ezeugospizzashop",
+    name: "Ezeugo's Pizza Shop",
+    logoUrl:
+      "https://lightout-portal.s3-accelerate.amazonaws.com/public/us-east-1_hbeb_CVap/images/assets/logoUrl/nicolas-houdayer-vfztaLdOxoI-unsplash.jpg",
+    industry: "engineering",
+  },
+  {
+    // Transparent dark glyph on a black brand colour: invisible before the fix.
+    id: "localportal",
+    name: "Local Portal",
+    logoUrl:
+      "https://lightout-portal.s3-accelerate.amazonaws.com/public/us-west-2_82RKYmV8C/images/assets/logoUrl/Copilot_Wordmark_DarkGreen%20%283%29.png",
+    brandColor: "#000000",
+    sidebarTextColor: "#ffffff",
+    industry: "engineering",
+  },
+  {
+    // Transparent dark glyph on a bright cyan brand colour.
+    id: "customization",
+    name: "Customization",
+    logoUrl:
+      "https://lightout-portal.s3-accelerate.amazonaws.com/public/us-east-1_J0yBvSOap/images/assets/logoUrl/Square%20logo.png",
+    brandColor: "#00aced",
+    sidebarTextColor: "#ffffff",
+    industry: "ecommerce",
+  },
+  {
+    // Brand colour AND a 4:1 logo: the rejection path landing on a real colour
+    // rather than the neutral slot.
+    id: "internaljan19neil",
+    name: "Internal Jan19 Neil",
+    logoUrl:
+      "https://lightout-portal.s3-accelerate.amazonaws.com/public/us-east-1_ghyIQ-Oap/images/assets/logoUrl/linkedin_1584_396.jpg",
+    brandColor: "#3c4b88",
+    industry: "design",
+  },
   {
     // Opted out. Resolves, but renders as the generic page.
     id: "harlowkane",
