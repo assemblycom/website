@@ -168,9 +168,12 @@ export function BuiltOnExamples({
       {/* The page's own rule, so both ends land on the rails rather than on the
           column's 40px inset. Desktop only, like every other GridDivider here:
           on a phone the header above it is hidden anyway. */}
-      {/* The header sits between two rules, so the space under it matches the
-          space over it — the section's own pt, not a smaller ad-hoc gap. */}
-      <div className="mb-10 mt-14 md:mt-24">
+      {/* The margins follow what is actually visible, which is three different
+          things: below sm nothing above it renders, so it contributes nothing
+          and the cards sit on the section's own padding; from sm the header is
+          there and needs a gap under it; from md the rule appears and the space
+          over the header (the section's pt) is matched under it. */}
+      <div className="sm:mt-10 md:mb-10 md:mt-24">
         <GridDivider />
       </div>
 
