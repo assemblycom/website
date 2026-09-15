@@ -244,8 +244,13 @@ export function BuiltOnExamples({
 
       {/* The proposal page's panel, reused rather than rebuilt: same right-hand
           slide-in, same Esc-to-close and scroll lock. */}
+      {/* Keyed by slug: the panel stays mounted between openings, so without a
+          key TemplateGallery carries its selected index to the next app — pick
+          preview 4, open one with three, and every frame renders at opacity-0.
+          A new key remounts the gallery on the first frame instead. */}
       {active && (
         <TemplateDetailPanel
+          key={active.slug}
           template={active}
           open={open}
           onClose={() => setOpen(false)}

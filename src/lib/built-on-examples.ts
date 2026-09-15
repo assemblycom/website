@@ -4,15 +4,14 @@ import type { Template } from "@/lib/templates";
 import { getCatalogueTemplates } from "@/lib/visible-templates";
 
 /**
- * The four apps /built-on and /built-by show, resolved on the server.
+ * The apps /built-on and /built-by show, resolved on the server.
  *
- * Two sources, because they hold different things. The catalogue carries rank,
- * which decides the order; each app's own Contentful entry carries the
- * screenshots, which is what /templates/[slug] reads. Reading only the
- * catalogue is why these apps used to show their drawn cover art while their
- * own template page showed real UI for the same slug.
+ * The set and its order are SHOWN in built-on-firms, not the catalogue's rank:
+ * reordering these in Contentful changes nothing here. The catalogue is still
+ * read for each app's current copy, and its own Contentful entry for the
+ * screenshots /templates/[slug] uses.
  *
- * Enriched after the four are chosen rather than across the whole catalogue:
+ * Enriched after the set is chosen rather than across the whole catalogue:
  * only these need their artwork.
  */
 export async function resolveBuiltOnExamples(

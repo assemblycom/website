@@ -6,9 +6,9 @@ import { IS_LIVE_SITE } from "@/lib/constants";
 import { resolveBuiltOnExamples } from "@/lib/built-on-examples";
 import { PAGE_SEO, pageMetadata } from "@/lib/seo";
 
-// The example apps are ordered by the catalogue's rank, which lives in
-// Contentful rather than in the committed array. Re-resolved every few minutes
-// so a reorder there lands without a deploy, the same cadence /templates uses.
+// Which apps are shown, and in what order, is fixed in SHOWN — a reorder in
+// Contentful does not move them. The re-resolve is for the copy and screenshots
+// those entries carry, on the same cadence /templates uses.
 export const revalidate = 300;
 
 /**
