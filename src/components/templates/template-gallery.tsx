@@ -213,12 +213,12 @@ export function TemplateGallery({
                 onLoad={() => markLoaded(i)}
                 // A screenshot that 404s would otherwise shimmer forever.
                 onError={() => markLoaded(i)}
-                // Cover, anchored to the top: the frame is 16:9, which is what
-                // these are shot at, so the crop is nil for a matching capture
-                // and takes a little off the bottom of an odd one. Contain left
-                // any off-ratio screenshot sitting in a band of empty frame,
-                // which read as the image being too small for its slot.
-                className={`object-cover object-top transition-opacity duration-200 ${
+                // Contain: most captures are 16:9 and fill this frame either
+                // way, but the set also holds portrait shots (service-request
+                // -intake is 1818x1950), and cover showed about half of one.
+                // Half a screenshot is worse than a screenshot in a band of
+                // frame, and the band is the same --muted the frame already is.
+                className={`object-contain transition-opacity duration-200 ${
                   i === active ? "opacity-100" : "opacity-0"
                 }`}
               />

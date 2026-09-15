@@ -90,6 +90,9 @@ function Examples({
           ? `The kind of thing ${phrase} builds`
           : "The kind of thing firms build"
       }
+      // DRAFT COPY — says what the cards are, since the section otherwise runs
+      // from a headline straight into six of them.
+      blurb="Each of these started as a description of what a firm needed. Open one to see what it does for a client."
       templates={examples}
     />
   );

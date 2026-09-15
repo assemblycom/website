@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { GridDivider } from "@/components/ui/grid-lines";
 import { TemplateDetailPanel } from "@/components/proposal/template-detail-panel";
 import { V69CardMock } from "@/components/home/hero-v71";
 import { MockFit } from "@/components/templates/mock-fit";
@@ -111,10 +112,12 @@ const CARD =
  */
 export function BuiltOnExamples({
   heading,
+  blurb,
   templates,
   signupHref,
 }: {
   heading: string;
+  blurb: string;
   templates: Template[];
   signupHref: string;
 }) {
@@ -144,13 +147,37 @@ export function BuiltOnExamples({
           standard 40px inset, so the heading's left edge lands where every
           other section's does rather than out at the viewport gutter. */}
       <div className="mx-auto max-w-[1200px] px-6 md:px-10">
-        {/* Hidden on phones, where the cards carry the section on their own and
-            a second headline under the hero's read as a false start. sr-only
-            rather than hidden: it still names the section for a screen reader
-            and still takes no space. */}
-        <h2 className="type-h2 max-w-xl text-balance text-foreground max-sm:sr-only">
-          {heading}
-        </h2>
+        {/* Heading left, a line of orientation right, top-aligned: items-start,
+            not items-end, so the paragraph's first line runs with the heading's
+            first line rather than sitting on its last.
+
+            Both are hidden on phones, where the cards carry the section on
+            their own and a second headline under the hero's read as a false
+            start. The heading goes sr-only rather than hidden, so it still
+            names the section for a screen reader while taking no space. */}
+        <div className="grid gap-x-12 gap-y-4 lg:grid-cols-2 lg:items-start">
+          <h2 className="type-h2 max-w-xl text-balance text-foreground max-sm:sr-only">
+            {heading}
+          </h2>
+          <p className="type-body max-w-md text-muted-foreground max-sm:hidden">
+            {blurb}
+          </p>
+        </div>
+      </div>
+
+      {/* The page's own rule, so both ends land on the rails rather than on the
+          column's 40px inset. Desktop only, like every other GridDivider here:
+          on a phone the header above it is hidden anyway. */}
+      {/* The margins follow what is actually visible, which is three different
+          things: below sm nothing above it renders, so it contributes nothing
+          and the cards sit on the section's own padding; from sm the header is
+          there and needs a gap under it; from md the rule appears and the space
+          over the header (the section's pt) is matched under it. */}
+      <div className="sm:mt-10 md:mb-10 md:mt-24">
+        <GridDivider />
+      </div>
+
+      <div className="mx-auto max-w-[1200px] px-6 md:px-10">
 
         {/* One large card beside a 2x3 of small ones. A flat row of equal cards
             gave every app the same weight and read as a list; this lands the
@@ -161,10 +188,7 @@ export function BuiltOnExamples({
             nothing is pinned or scrubbed. It is `items-start` that lets it:
             a stretched grid item fills the row and has nothing to stick
             within. Below lg the columns stack and it is an ordinary card. */}
-        {/* No top margin on a phone: that margin exists to sit the grid under the
-            heading, and with the heading hidden there it stacked on the
-            section's own padding and left a hole under the hero. */}
-        <div className="mt-12 grid items-start gap-8 max-sm:mt-0 lg:grid-cols-2 lg:gap-10">
+        <div className="grid items-start gap-8 lg:grid-cols-2 lg:gap-10">
           <button
             type="button"
             onClick={() => show(lead)}
@@ -223,8 +247,13 @@ export function BuiltOnExamples({
 
       {/* The proposal page's panel, reused rather than rebuilt: same right-hand
           slide-in, same Esc-to-close and scroll lock. */}
+      {/* Keyed by slug: the panel stays mounted between openings, so without a
+          key TemplateGallery carries its selected index to the next app — pick
+          preview 4, open one with three, and every frame renders at opacity-0.
+          A new key remounts the gallery on the first frame instead. */}
       {active && (
         <TemplateDetailPanel
+          key={active.slug}
           template={active}
           open={open}
           onClose={() => setOpen(false)}

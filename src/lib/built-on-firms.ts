@@ -162,7 +162,7 @@ const SHOWN = [
   "proposal-builder",
   "new-client-intake",
   "document-collection",
-  "retainer-usage-overview",
+  "client-project-tracker",
   "client-support-requests",
 ] as const;
 
