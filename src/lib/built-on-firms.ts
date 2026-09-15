@@ -142,62 +142,34 @@ export function getBuiltOnFirm(
 }
 
 /**
- * The four apps shown for a firm.
+ * The four apps shown, whoever is looking.
  *
- * Chosen by industry rather than picked by hand: every template in the
- * catalogue already carries the two to four industries it most naturally
- * serves, so the firm's own onboarding answer selects them.
+ * These used to be picked per industry, ranked by how specific each template
+ * was to the firm's own onboarding answer. Two things were wrong with that.
+ * Four in five workspaces carry an industry the catalogue has no tag for, so
+ * most visitors got the fallback set anyway; and where it did fire it put
+ * near-identical apps in front of consultancies and agencies, because the
+ * industry tags themselves do not separate those cleanly. One deliberate set
+ * everyone sees is easier to judge and easier to change.
  *
- * Ranked by how SPECIFIC each one is to that industry, narrowest first. Sorting
- * by "featured" instead put the same four broad templates in front of every
- * firm — an accountant and a lawyer saw an identical page, which defeats the
- * point of personalizing it. A template tagged for three industries says more
- * about a law firm than one tagged for all of them, so the case status page
- * beats the project tracker. Ties break on the catalogue's own rank.
- *
- * A firm with no industry (or "other") gets the most popular apps instead: the
- * catalogue in rank order, which is the order the product's own Add-an-App
- * picker puts them in. That is a real ordering the team maintains, where
- * `featured` is a boolean that is true for nearly every template and so says
- * almost nothing.
- *
- * Drawn from the whole catalogue rather than the /templates gallery listing.
- * These are illustrations that open a detail panel, not links into the
- * catalogue, and the same choice is already made on the proposal page.
+ * `firm` and `catalogue` stay in the signature: the CMS still supplies each
+ * app's copy and artwork, and per-firm selection is a decision that may come
+ * back.
  */
+const SHOWN = [
+  "time-tracker",
+  "client-onboarding-wizard",
+  "proposal-builder",
+  "new-client-intake",
+] as const;
+
 export function getBuiltOnExamples(
-  firm?: BuiltOnFirm,
-  /**
-   * The Contentful-resolved catalogue. Rank only exists there, so without it
-   * this falls back to the committed array and its hand-ordered sequence.
-   */
+  _firm?: BuiltOnFirm,
   catalogue: Template[] = TEMPLATES,
 ): Template[] {
-  const byRank = (a: Template, b: Template) =>
-    (a.rank ?? Infinity) - (b.rank ?? Infinity);
-
-  // The CMS catalogue also carries the product's CORE apps — Google Sheets and
-  // the rest — which rank near the top and are not things a firm built. The
-  // committed list is the curated template set, so it decides what is eligible
-  // and the CMS only supplies the ordering.
-  const eligible = catalogue.filter((t) =>
-    TEMPLATES.some((known) => known.slug === t.slug),
-  );
-
-  const tag = firm?.industry ? INDUSTRIES[firm.industry]?.tag : undefined;
-  const matched = tag
-    ? eligible
-        .filter((t) => t.industries?.includes(tag))
-        .sort(
-          (a, b) =>
-            (a.industries?.length ?? 9) - (b.industries?.length ?? 9) ||
-            byRank(a, b),
-        )
-    : [];
-
-  const popular = [...eligible]
-    .sort(byRank)
-    .filter((t) => !matched.some((m) => m.slug === t.slug));
-
-  return [...matched, ...popular].slice(0, 4);
+  return SHOWN.map(
+    (slug) =>
+      catalogue.find((t) => t.slug === slug) ??
+      TEMPLATES.find((t) => t.slug === slug),
+  ).filter((t): t is Template => Boolean(t));
 }

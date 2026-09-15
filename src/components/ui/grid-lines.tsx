@@ -46,10 +46,27 @@ export function GridRails({
 
 // Horizontal rule between sections, capped to the rail width so both ends land
 // exactly on a rail. Desktop only — on mobile there are no rails for it to meet.
-export function GridDivider() {
+export function GridDivider({
+  /**
+   * Runs the rule the full width of the viewport instead of stopping at the
+   * rails. For a join the rails do not reach — above the first section, where
+   * there is nothing yet for a 1200px rule to meet at its ends.
+   *
+   * Still desktop-only, like the capped rule: on a phone the sections are
+   * already one column stacked on empty page, and a line across it read as a
+   * lid rather than as a join.
+   */
+  fullBleed = false,
+}: {
+  fullBleed?: boolean;
+} = {}) {
   return (
     <div
-      className={`mx-auto hidden max-w-[1200px] border-t md:block ${GRID_LINE}`}
+      className={
+        fullBleed
+          ? `hidden border-t md:block ${GRID_LINE}`
+          : `mx-auto hidden max-w-[1200px] border-t md:block ${GRID_LINE}`
+      }
     />
   );
 }

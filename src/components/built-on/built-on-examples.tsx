@@ -10,11 +10,49 @@ import type { Template } from "@/lib/templates";
  * --muted, the same token the FAQ rows use, so the two greys on the page are
  * one grey rather than two that nearly match.
  */
-const SURFACE = "bg-muted";
+const SURFACE =
+  "bg-muted ring-1 ring-foreground/10 transition-colors duration-200 group-hover:bg-foreground/[0.07] group-hover:ring-foreground/20";
 
 /**
- * The whole card is the hit area, so the whole card is what fills on hover, not
- * the image inside it.
+ * The app's own screenshot, the same one its template page shows, or the grey
+ * frame while a template still has none.
+ */
+function Preview({
+  template,
+  className,
+}: {
+  template: Template;
+  className: string;
+}) {
+  return (
+    <div
+      aria-hidden
+      className={`overflow-hidden ${className} ${SURFACE}`}
+    >
+      {template.image ? (
+        // A plain img, not next/image: a cover can come from Contentful or from
+        // public/, and only one of those is an allowed optimisation host.
+        //
+        // Contain, with padding: these are whole app screens, and cover cut the
+        // sidebar off one edge and the header off the other, so the card showed
+        // a crop of a UI rather than a UI. The outlined frame is what keeps the
+        // letterboxing reading as a frame rather than as a small image.
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={template.image}
+          alt=""
+          className="size-full object-contain p-2"
+        />
+      ) : null}
+    </div>
+  );
+}
+
+/**
+ * The whole card is the hit area, but the fill is gone: bleeding it 1rem past
+ * the content drew a rounded rectangle offset from the text it belonged to, so
+ * the page grew a shape on hover instead of responding to one. The preview
+ * answers instead — it is the thing being offered and has edges of its own.
  *
  * The negative margin is HORIZONTAL only. It lets the fill bleed past the
  * content so the content itself still starts on the grid line, and leaving the
@@ -26,7 +64,7 @@ const CARD =
   // even at display:block, so without an explicit width the card collapsed to
   // the width of its own text and the preview frame shrank with it. The extra
   // 2rem is what the negative margin gives back.
-  "group -mx-4 w-[calc(100%+2rem)] cursor-pointer rounded-2xl p-4 text-left transition-colors outline-none hover:bg-muted/55 focus-visible:ring-2 focus-visible:ring-foreground/40";
+  "group w-full cursor-pointer rounded-2xl text-left outline-none focus-visible:ring-2 focus-visible:ring-foreground/40 focus-visible:ring-offset-4 focus-visible:ring-offset-background";
 
 /**
  * The proof section under the hero: what the visitor's firm built, and what
@@ -63,8 +101,11 @@ export function BuiltOnExamples({
     setOpen(true);
   };
 
+  // Ordinary section rhythm, not a second gap: from md the hero already holds
+  // a full screen and centres its content, so the separation is done before
+  // this section starts. Stacking more on top of it read as a hole.
   return (
-    <section className="py-20 md:py-28">
+    <section className="pb-20 pt-14 md:pb-28 md:pt-24">
       {/* The site's content column: capped to the 1200px rail width with the
           standard 40px inset, so the heading's left edge lands where every
           other section's does rather than out at the viewport gutter. */}
@@ -73,17 +114,17 @@ export function BuiltOnExamples({
           {heading}
         </h2>
 
-        <div className="mt-12 grid items-start gap-x-12 gap-y-12 lg:grid-cols-12">
-          <div className="lg:col-span-7">
+        <div className="mt-12 grid items-start gap-x-12 gap-y-10 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-y-12">
+          <div>
             <button
               type="button"
               onClick={() => show(lead)}
               aria-label={`${lead.title} details`}
               className={`block ${CARD}`}
             >
-              <div
-                aria-hidden
-                className={`aspect-[16/10] rounded-[16px] ${SURFACE}`}
+              <Preview
+                template={lead}
+                className="aspect-[16/10] rounded-[8px]"
               />
               <h3 className="type-h4 mt-5 text-foreground">{lead.title}</h3>
               <p className="type-body mt-1.5 max-w-md text-muted-foreground">
@@ -97,24 +138,24 @@ export function BuiltOnExamples({
               a second separator doing the same job. The gap is set so the three
               rows sit clear of each other once each one's own padding is
               counted. */}
-          <div className="flex flex-col gap-2 lg:col-span-5">
+          <div className="flex flex-col gap-10 lg:aspect-[8/7] lg:gap-3">
             {rest.map((template) => (
-              <div key={template.slug}>
+              <div key={template.slug} className="lg:min-h-0 lg:flex-1">
                 <button
                   type="button"
                   onClick={() => show(template)}
                   aria-label={`${template.title} details`}
-                  className={`flex items-center gap-5 ${CARD}`}
+                  className={`block lg:flex lg:h-full lg:items-center lg:gap-5 ${CARD}`}
                 >
-                  <div
-                    aria-hidden
-                    className={`size-24 shrink-0 rounded-[12px] sm:size-28 ${SURFACE}`}
+                  <Preview
+                    template={template}
+                    className="aspect-[16/10] w-full rounded-[8px] lg:aspect-square lg:h-full lg:w-auto lg:shrink-0"
                   />
-                  <div className="min-w-0">
-                    <h3 className="type-body text-foreground">
+                  <div className="mt-5 min-w-0 lg:mt-0">
+                    <h3 className="type-h4 text-foreground lg:type-body">
                       {template.title}
                     </h3>
-                    <p className="type-caption mt-1.5 text-muted-foreground">
+                    <p className="type-body mt-1.5 text-muted-foreground lg:type-caption">
                       {template.description}
                     </p>
                   </div>
@@ -130,7 +171,6 @@ export function BuiltOnExamples({
       {active && (
         <TemplateDetailPanel
           template={active}
-          plainPreview
           open={open}
           onClose={() => setOpen(false)}
           onStart={() => {

@@ -133,9 +133,12 @@ export function TemplateGallery({
   const media: MediaItem[] = realImages
     .slice(0, MAX_FRAMES)
     .map((src) => ({ src }));
-  // Pad with placeholder frames so a template that declares several previews
-  // shows that many slots even before real screenshots are wired.
-  while (media.length < targetCount) media.push({ src: undefined });
+  // No padding once real media exists. Empty frames were there to show the
+  // gallery's shape before screenshots were wired; beside a real screenshot
+  // they read as images that failed to load.
+  if (media.length === 0) {
+    while (media.length < targetCount) media.push({ src: undefined });
+  }
 
   const [active, setActive] = useState(0);
   const current = media[active] ?? media[0];
@@ -210,11 +213,12 @@ export function TemplateGallery({
                 onLoad={() => markLoaded(i)}
                 // A screenshot that 404s would otherwise shimmer forever.
                 onError={() => markLoaded(i)}
-                // Contain (not cover) so the full screenshot is visible, never
-                // cropped. The frame is 16:9 to match what the screenshots are shot
-                // at — at 16:10 every one of them sat in a band of empty frame top
-                // and bottom, which read as the screenshot being too small.
-                className={`object-contain transition-opacity duration-200 ${
+                // Cover, anchored to the top: the frame is 16:9, which is what
+                // these are shot at, so the crop is nil for a matching capture
+                // and takes a little off the bottom of an odd one. Contain left
+                // any off-ratio screenshot sitting in a band of empty frame,
+                // which read as the image being too small for its slot.
+                className={`object-cover object-top transition-opacity duration-200 ${
                   i === active ? "opacity-100" : "opacity-0"
                 }`}
               />

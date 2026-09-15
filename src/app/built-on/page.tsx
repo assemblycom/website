@@ -3,7 +3,7 @@ import { BuiltOnPage } from "@/components/built-on/built-on-page";
 import { DEFAULT_BUILT_ON_FIRM, getBuiltOnFirm } from "@/lib/built-on-firms";
 import { redirect } from "next/navigation";
 import { IS_LIVE_SITE } from "@/lib/constants";
-import { getCatalogueTemplates } from "@/lib/visible-templates";
+import { resolveBuiltOnExamples } from "@/lib/built-on-examples";
 import { PAGE_SEO, pageMetadata } from "@/lib/seo";
 
 // The example apps are ordered by the catalogue's rank, which lives in
@@ -42,14 +42,19 @@ export default async function BuiltOn({
   // One firm for now. `?w=` still resolves the others, and an id that matches
   // nothing still falls through to the generic page.
   const workspaceId = one("w") ?? DEFAULT_BUILT_ON_FIRM;
+  const firm = getBuiltOnFirm(workspaceId);
+
+  const examples = await resolveBuiltOnExamples(firm);
+
   return (
     <BuiltOnPage
-      catalogue={await getCatalogueTemplates()}
+      examples={examples}
       // A workspace we can't resolve, or one that opted out, gets the generic
       // page rather than a half-personalized one naming nobody.
-      firm={getBuiltOnFirm(workspaceId)}
+      firm={firm}
       workspaceId={workspaceId}
       surface={one("s")}
     />
   );
 }
+

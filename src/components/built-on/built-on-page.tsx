@@ -3,11 +3,9 @@ import { GridDivider, GridRails } from "@/components/ui/grid-lines";
 import { BuiltOnExamples } from "@/components/built-on/built-on-examples";
 import { BuiltOnFaq } from "@/components/built-on/built-on-faq";
 import { BuiltOnCta } from "@/components/built-on/built-on-cta";
-import { HeroField } from "@/components/built-on/hero-field";
 import { BuiltOnViewTracker } from "@/components/built-on/built-on-view-tracker";
 import type { BuiltOnEventProps } from "@/components/built-on/built-on-events";
 import {
-  getBuiltOnExamples,
   industryPhrase,
   type BuiltOnFirm,
 } from "@/lib/built-on-firms";
@@ -42,12 +40,13 @@ function Hero({
   surface?: string;
   event: BuiltOnEventProps;
 }) {
+  // Sized by its own padding, not by the viewport. Owning the whole first
+  // screen made the hero mostly empty space around three lines of type, and a
+  // screen's height is the wrong unit for how much room a headline needs. The
+  // tradeoff is that the next section's heading can now show at the bottom of
+  // a tall window, which is what the rule above it is there to make deliberate.
   return (
-    <section className="relative overflow-hidden px-6 pb-28 pt-24 text-center md:pb-44 md:pt-32">
-      {/* The firm's colour, carried by the field rather than by a panel or a
-          tinted headline: it colours the page without asking the brand to
-          survive being put behind text. */}
-      <HeroField color={firm?.brandColor} />
+    <section className="relative overflow-hidden px-6 pb-20 pt-20 text-center md:pb-32 md:pt-28">
       <div className="relative mx-auto max-w-3xl">
         {firm ? <FirmMark firm={firm} /> : null}
 
@@ -73,12 +72,12 @@ function Examples({
   firm,
   workspaceId,
   surface,
-  catalogue,
+  examples,
 }: {
   firm?: BuiltOnFirm;
   workspaceId?: string;
   surface?: string;
-  catalogue?: Template[];
+  examples: Template[];
 }) {
   const phrase = industryPhrase(firm?.industry);
   return (
@@ -91,7 +90,7 @@ function Examples({
           ? `The kind of thing ${phrase} builds`
           : "The kind of thing firms build"
       }
-      templates={getBuiltOnExamples(firm, catalogue)}
+      templates={examples}
     />
   );
 }
@@ -109,7 +108,10 @@ function ClosingCta({
     <>
       <GridDivider />
       <section className="px-6 py-16 text-center md:py-24">
-        <h2 className="type-display mx-auto max-w-md text-balance text-foreground md:max-w-2xl">
+        {/* type-h2, the step every other section heading on the page uses.
+            type-display is the hero's, and a second heading at that size read
+            as a second hero rather than as the page's last section. */}
+        <h2 className="type-h2 mx-auto max-w-md text-balance text-foreground md:max-w-2xl">
           Build one for your business
         </h2>
         <p className="type-lead mx-auto mt-5 max-w-sm text-balance text-muted-foreground sm:max-w-xl">
@@ -127,11 +129,14 @@ export function BuiltOnPage({
   firm,
   workspaceId,
   surface,
-  catalogue,
+  examples,
 }: {
   firm?: BuiltOnFirm;
-  /** Resolved on the server, since rank comes from the CMS. */
-  catalogue?: Template[];
+  /**
+   * The four apps to show, chosen and enriched on the server: rank comes from
+   * the CMS catalogue, and the screenshots from each app's Contentful entry.
+   */
+  examples: Template[];
   /** The raw `?w=`, kept even when it matched nothing so signup still gets it. */
   workspaceId?: string;
   surface?: string;
@@ -158,18 +163,21 @@ export function BuiltOnPage({
         surface={surface}
         event={event}
       />
-      {/* No rule between the hero and the first section. The hero already ends
-          on a wide band of empty page, and a full-bleed line across it read as
-          a lid rather than as a join. The rails starting is separation enough.
-          The rules further down stay, because those genuinely divide two
-          sections that sit close together. */}
+      {/* Full bleed, unlike the rules further down: those sit inside the rails
+          and meet them at the corners, and there are no rails this high up the
+          page for a 1200px rule to end on. */}
+      <GridDivider fullBleed />
       <div className="relative">
-        <GridRails fadeTop={280} />
+        {/* No fadeTop: the fade existed because the rails opened under a hero
+            with nothing above them, and appearing from nothing was gentler
+            than two lines starting mid-air. There is a rule above them now, so
+            they have an edge to start from and can be crisp. */}
+        <GridRails />
         <Examples
           firm={firm}
           workspaceId={workspaceId}
           surface={surface}
-          catalogue={catalogue}
+          examples={examples}
         />
         <GridDivider />
         <BuiltOnFaq />

@@ -86,7 +86,11 @@ export function TemplateDetailPanel({
             type="button"
             onClick={onClose}
             aria-label="Close app details"
-            className="flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            // -mr-2 pulls the 32px target back so the GLYPH lines up with the
+            // header's padding, not the button's box. Without it the icon sat
+            // ~10px further in than the label opposite it, and the header read
+            // as lopsided even though both sides used px-6.
+            className="-mr-2 flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           >
             <IconClose className="size-[13px]" />
           </button>
@@ -130,16 +134,20 @@ export function TemplateDetailPanel({
             {template.longDescription}
           </p>
           <p className="type-body mt-4 text-foreground/80">
-            Start from this template and describe what you want changed.
-            Assembly reshapes it to your firm, then publishes it to your client
-            portal in minutes.
+            Describe what you want changed and Assembly reshapes it to your
+            firm, then publishes it to your client portal.
           </p>
 
-          <h3 className="type-h4 mt-9">What you can customize</h3>
-          <ul className="mt-3 space-y-2.5">
+          <h3 className="type-h4 mt-8">What you can customize</h3>
+          {/* The dot sits ON the section's left edge, not outside it: nothing
+              in this panel should start further left than its headings. The
+              text is inset just enough to clear the dot. */}
+          <ul className="mt-3 space-y-2">
             {TEMPLATE_CUSTOMIZATION.map((item) => (
-              <li key={item} className="flex items-start gap-3">
-                <span className="mt-2.5 size-1.5 shrink-0 rounded-full bg-foreground/40" />
+              <li key={item} className="flex items-start gap-2.5">
+                {/* mt-2.5 is (24px line - 4px dot) / 2, so the dot sits on the
+                    first line's centre rather than near its top. */}
+                <span className="mt-2.5 size-1 shrink-0 rounded-full bg-foreground/35" />
                 <span className="type-body text-foreground/80">{item}</span>
               </li>
             ))}
@@ -147,7 +155,7 @@ export function TemplateDetailPanel({
 
           {template.features.length > 0 && (
             <>
-              <h3 className="type-h4 mt-9">What&rsquo;s included</h3>
+              <h3 className="type-h4 mt-8">What&rsquo;s included</h3>
               <div className="mt-3 flex flex-wrap gap-2">
                 {template.features.map((feature) => (
                   // Set in the mono, in caps, the way the tags on the proposal's
@@ -164,11 +172,11 @@ export function TemplateDetailPanel({
             </>
           )}
 
-          <h3 className="type-h4 mt-9">Perfect for</h3>
+          <h3 className="type-h4 mt-8">Perfect for</h3>
           {/* The industries, and not the catalogue category the template is
               filed under: naming the shelf tells the recipient nothing about
               whether this fits their firm. */}
-          <p className="type-body mt-2 text-muted-foreground">
+          <p className="type-body mt-3 text-muted-foreground">
             {perfectFor} firms.
           </p>
         </div>
