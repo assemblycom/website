@@ -80,7 +80,7 @@ export function TemplateDetailPanel({
           open ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <div className="flex shrink-0 items-center justify-between gap-4 border-b border-border px-6 py-4">
+        <div className="flex shrink-0 items-center justify-between gap-4 border-b border-border px-6 py-4 max-sm:px-5">
           <p className="type-caption text-muted-foreground">App details</p>
           <button
             type="button"
@@ -96,7 +96,7 @@ export function TemplateDetailPanel({
           </button>
         </div>
 
-        <div className="scrollbar-slim flex-1 overflow-y-auto overscroll-contain px-6 py-7">
+        <div className="scrollbar-slim flex-1 overflow-y-auto overscroll-contain px-6 py-7 max-sm:px-5 max-sm:py-6">
           <h2 className="type-h3">{template.title}</h2>
           <p className="type-lead mt-3 text-muted-foreground">
             {template.description}
@@ -113,11 +113,11 @@ export function TemplateDetailPanel({
             </div>
           )}
 
-          <div className="mt-7">
+          <div className="mt-7 max-sm:mt-6">
             {plainPreview ? (
               <div
                 aria-hidden
-                className="aspect-[16/10] rounded-[16px] bg-muted"
+                className="aspect-[16/10] rounded-lg bg-muted sm:rounded-[16px]"
               />
             ) : (
               <TemplateGallery
@@ -129,7 +129,7 @@ export function TemplateDetailPanel({
             )}
           </div>
 
-          <h3 className="type-h4 mt-10">About this app</h3>
+          <h3 className="type-h4 mt-10 max-sm:mt-8">About this app</h3>
           <p className="type-body mt-3 text-foreground/80">
             {template.longDescription}
           </p>
@@ -138,7 +138,7 @@ export function TemplateDetailPanel({
             firm, then publishes it to your client portal.
           </p>
 
-          <h3 className="type-h4 mt-8">What you can customize</h3>
+          <h3 className="type-h4 mt-8 max-sm:mt-7">What you can customize</h3>
           {/* The dot sits ON the section's left edge, not outside it: nothing
               in this panel should start further left than its headings. The
               text is inset just enough to clear the dot. */}
@@ -155,7 +155,7 @@ export function TemplateDetailPanel({
 
           {template.features.length > 0 && (
             <>
-              <h3 className="type-h4 mt-8">What&rsquo;s included</h3>
+              <h3 className="type-h4 mt-8 max-sm:mt-7">What&rsquo;s included</h3>
               <div className="mt-3 flex flex-wrap gap-2">
                 {template.features.map((feature) => (
                   // Set in the mono, in caps, the way the tags on the proposal's
@@ -172,7 +172,7 @@ export function TemplateDetailPanel({
             </>
           )}
 
-          <h3 className="type-h4 mt-8">Perfect for</h3>
+          <h3 className="type-h4 mt-8 max-sm:mt-7">Perfect for</h3>
           {/* The industries, and not the catalogue category the template is
               filed under: naming the shelf tells the recipient nothing about
               whether this fits their firm. */}

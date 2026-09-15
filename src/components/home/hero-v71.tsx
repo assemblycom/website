@@ -112,8 +112,9 @@ function useInViewReplay(onPlay: () => void) {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    // The templates gallery renders these mocks as static art — never animate there.
-    if (el.closest(".template-mock")) return;
+    // The templates gallery renders these mocks as static art. .template-mock-live
+    // is the rail that opts back in (/built-on), matching the CSS freeze.
+    if (el.closest(".template-mock:not(.template-mock-live)")) return;
     if (!window.matchMedia("(hover: none), (max-width: 767px)").matches) return;
     // The same element the `group-[.is-inview]:` hooks resolve against.
     const card =
@@ -138,38 +139,53 @@ function useInViewReplay(onPlay: () => void) {
 // thing it produces rather than the form that produced it. The row reuses the
 // onboarding cover's glass pane, so every raised surface in the gallery is the
 // same material.
-const INTAKE_CONTACT = {
-  initials: "AE",
-  name: "Alex Everett",
-  email: "alex@everettdesign.com",
-};
+// Two submissions, because the cover's subject is intake ARRIVING: one record
+// lands, then a second follows it in. A single card could be a list of one.
+const INTAKE_CONTACTS = [
+  { initials: "AE", name: "Alex Everett", email: "alex@everettdesign.com" },
+  { initials: "PR", name: "Priya Raman", email: "priya@larkspur.co" },
+];
 
 function CardIntake() {
-  const { initials, name, email } = INTAKE_CONTACT;
   return (
-    // v69-cover-column is the phone treatment: the row is held to the width it
-    // was drawn at and centred, instead of stretching across the wider frame.
+    // v69-cover-column is the phone treatment: the rows are held to the width
+    // they were drawn at and centred, instead of stretching across the frame.
     <div className="v69-cover-column v69-plot-grid v69-plot-grid--dots v69-plot-grid--fade v69-plot-shimmer flex h-full items-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
-      {/* Opaque, like every other record card in the set: the translucent pane
-          let the dot field run straight through it, so the row read as printed
-          into the paper rather than lying on it. */}
-      <div className="flex w-full items-center gap-3 rounded-xl border border-black/[0.08] bg-[#FFFFFF] p-3 [[data-theme=dark]_&]:border-[rgba(255,255,255,0.09)] [[data-theme=dark]_&]:bg-[#303030]">
-        {/* Initials, not a photograph: the gallery is drawn art throughout, and a
-            face is the one thing on it that would read as a real person. */}
-        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[var(--v69-well)] text-[13px] leading-none text-[var(--v69-ink)] [[data-theme=light]_&]:bg-[var(--v69-inner)] [[data-theme=light]_.template-mock_&]:bg-[#e6e6e6] [[data-theme=light]_&]:text-[#595959] [[data-theme=dark]_&]:bg-[rgba(255,255,255,0.12)]">
-          {initials}
-        </span>
-        <span className="min-w-0 flex-1">
-          {/* pb/-mb on both: `truncate` clips at the line box, which at
-              leading-none is exactly the font size, so the g and y in the address
-              lost their tails. */}
-          <span className="block truncate pb-[3px] -mb-[3px] text-[13px] leading-none text-[var(--v69-ink)]">
-            {name}
-          </span>
-          <span className="mt-1.5 block truncate pb-[3px] -mb-[3px] text-[10px] leading-none text-muted-foreground">
-            {email}
-          </span>
-        </span>
+      <div className="flex w-full flex-col gap-2">
+        {INTAKE_CONTACTS.map(({ initials, name, email }, i) => (
+          // Each record arrives the way a notification does on an Apple device:
+          // in from above under a curve that overshoots a hair before settling.
+          // The second lands a beat after the first, so the cover reads as
+          // submissions coming in rather than as a list that was always there.
+          //
+          // Opaque, like every other record card in the set: the translucent
+          // pane let the dot field run straight through it, so the row read as
+          // printed into the paper rather than lying on it.
+          <div
+            key={name}
+            className={`v69-notify-in flex w-full items-center gap-3 rounded-xl border border-black/[0.08] bg-[#FFFFFF] p-3 [[data-theme=dark]_&]:border-[rgba(255,255,255,0.09)] [[data-theme=dark]_&]:bg-[#303030] ${
+              i === 1 ? "v69-notify-in--late" : ""
+            }`}
+          >
+            {/* Initials, not a photograph: the gallery is drawn art throughout,
+                and a face is the one thing on it that would read as a real
+                person. */}
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[var(--v69-well)] text-[13px] leading-none text-[var(--v69-ink)] [[data-theme=light]_&]:bg-[var(--v69-inner)] [[data-theme=light]_.template-mock_&]:bg-[#e6e6e6] [[data-theme=light]_&]:text-[#595959] [[data-theme=dark]_&]:bg-[rgba(255,255,255,0.12)]">
+              {initials}
+            </span>
+            <span className="min-w-0 flex-1">
+              {/* pb/-mb on both: `truncate` clips at the line box, which at
+                  leading-none is exactly the font size, so the g and y in the
+                  address lost their tails. */}
+              <span className="block truncate pb-[3px] -mb-[3px] text-[13px] leading-none text-[var(--v69-ink)]">
+                {name}
+              </span>
+              <span className="mt-1.5 block truncate pb-[3px] -mb-[3px] text-[10px] leading-none text-muted-foreground">
+                {email}
+              </span>
+            </span>
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -277,7 +293,7 @@ function CardOnboarding() {
   return (
     // Dark keeps the project tracker's gradient face; light takes a flat warm
     // off-white instead.
-    <div className="flex h-full flex-col justify-center bg-[linear-gradient(160deg,#ffffff_0%,#f4f6f9_58%,#eceff3_100%)] p-3.5 [[data-theme=light]_&]:bg-none [[data-theme=light]_&]:bg-[var(--v69-card)] [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2] [[data-theme=dark]_&]:bg-none [[data-theme=dark]_&]:bg-[var(--v69-card)]">
+    <div className="flex h-full flex-col justify-center bg-[linear-gradient(160deg,#ffffff_0%,#f4f6f9_58%,#eceff3_100%)] px-7 py-3.5 [[data-theme=light]_&]:bg-none [[data-theme=light]_&]:bg-[var(--v69-card)] [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2] [[data-theme=dark]_&]:bg-none [[data-theme=dark]_&]:bg-[var(--v69-card)]">
       {/* Avatar + bar + percentage on their own tile — the same glass surface the
           help-desk rows use, so the row reads as a pane sitting on the card
           rather than a filled block. */}
@@ -497,7 +513,7 @@ export function CardDashboard({
       ref={inViewRef}
       onMouseEnter={(e) => {
         // Templates gallery is static — don't replay the grow/count-up there.
-        if (still || e.currentTarget.closest(".template-mock")) return;
+        if (still || e.currentTarget.closest(".template-mock:not(.template-mock-live)")) return;
         setPlay((p) => p + 1);
       }}
       onMouseLeave={() => {
@@ -656,7 +672,7 @@ function CardTimeTracker() {
     <div
       ref={inViewRef}
       onMouseEnter={(e) => {
-        if (e.currentTarget.closest(".template-mock")) return;
+        if (e.currentTarget.closest(".template-mock:not(.template-mock-live)")) return;
         setPlay((p) => p + 1);
       }}
       onMouseLeave={() => setPlay(0)}
@@ -698,9 +714,14 @@ function CardTimeTracker() {
           // px LCD glyphs) plus the circle's own side padding was wider than the
           // card's height, which forced the aspect-square box to widen past a
           // true circle into an oval.
+          // The gallery's light face went a step lighter (#e6e6e6 to #ededed)
+          // once the card behind it lost its brand gradient: against a coloured
+          // field the housing read as a display, and against plain white it
+          // read as a dark block. The unlit pixels are ink at 9%, so they still
+          // ghost on the lighter fill.
           // Light drops the hairline: its fill is already a clear step off the
           // face, so the outline only added a hard edge inside a soft recess.
-          className={`my-0.5 rounded-lg bg-[var(--v69-card)] px-2 py-1.5 [[data-theme=light]_&]:bg-[var(--v69-inner)] [[data-theme=light]_.template-mock_&]:bg-[#e6e6e6] [[data-theme=dark]_&]:bg-[#2B2B2B] [[data-theme=dark]_.template-mock_&]:bg-[var(--v69-card)] ${MOCK_OUTLINE} [[data-theme=light]_&]:border-transparent [[data-theme=light]_.template-mock_&]:border-transparent`}
+          className={`my-0.5 rounded-lg bg-[var(--v69-card)] px-2 py-1.5 [[data-theme=light]_&]:bg-[var(--v69-inner)] [[data-theme=light]_.template-mock_&]:bg-[#ededed] [[data-theme=dark]_&]:bg-[#2B2B2B] [[data-theme=dark]_.template-mock_&]:bg-[var(--v69-card)] ${MOCK_OUTLINE} [[data-theme=light]_&]:border-transparent [[data-theme=light]_.template-mock_&]:border-transparent`}
         >
           <span className="flex items-center gap-[4px] py-0.5">
             {[..."09"].map((d, i) => (
@@ -802,12 +823,31 @@ function CardProposal() {
           gallery's near-1:1 fit this panel's 16px came out slightly rounder than
           the card holding it, and two corners a pixel and a half apart read as
           a mismatch rather than as a pair. */}
-      <div className="flex flex-1 flex-col rounded-2xl bg-[var(--v69-inner)] p-4 max-sm:rounded-[14px] [[data-theme=dark]_&]:bg-[#2E2E2E]">
-        <div className="text-[10px] text-muted-foreground">Proposal</div>
+      <div
+        // A step darker than the card, the same step the Document collector's
+        // folder body takes off its own face (--v69-inner and --fld-back are
+        // both #e6e6e6 in this skin): the white rows need a ground to sit on,
+        // and flush with the card they floated.
+        //
+        // Outlined like the folder in Document collector, and at ITS weight:
+        // MOCK_OUTLINE doubles to black/15 inside .template-mock, which next to
+        // the folder's flat rgba(0,0,0,0.07) read as a heavier line doing a
+        // different job. Same values as --fld-edge, written out rather than
+        // shared, since that token is scoped to the folder cover.
+        className="flex flex-1 flex-col rounded-2xl border border-[rgba(0,0,0,0.07)] bg-[var(--v69-inner)] p-4 max-sm:rounded-[14px] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.09)] [[data-theme=dark]_&]:bg-[#2E2E2E]"
+      >
+        {/* The label takes the mono face and caps, so it reads as the ledger
+            line over the figure rather than as a caption. */}
+        <div className="font-[family-name:var(--font-diatype-mono)] text-[10px] uppercase tracking-[0.08em] text-muted-foreground">
+          Proposal
+        </div>
         {/* A hair of vertical padding so descender room isn't shaved off the
             digit columns, which clip themselves as they roll. */}
         <div className="mt-1.5 -my-0.5 py-0.5">
-          <div className="text-[26px] font-normal leading-none tracking-tight text-[var(--v69-ink)]">
+          {/* ABC Diatype Mono, the site's own mono face: a proposal total is a
+              figure to be read digit by digit, and the tabular widths keep the
+              columns from shifting as the roll lands on each numeral. */}
+          <div className="font-[family-name:var(--font-diatype-mono)] text-[26px] font-normal leading-none tracking-tight text-[var(--v69-ink)]">
             <V69RollingTotal value="$18,500" />
           </div>
         </div>
@@ -824,7 +864,13 @@ function CardProposal() {
               // punched through the glass.
               // No ring in either skin: the fill already steps off the panel, so
               // a hairline only drew a box around each row.
-              className="flex items-center justify-between rounded-lg bg-white px-3 py-3.5 ring-0 [[data-theme=dark]_&]:bg-[#3A3A3A]"
+              // rounded-xl, the one radius every record block on the rail uses (the
+              // intake records, the onboarding tile). At rounded-lg these rows and
+              // the help-desk queue were visibly squarer than their neighbours.
+              // The taller padding is part of that: a 12px corner on a 42px row
+              // is nearly a third of its height and reads as a pill, so these
+              // rows carry the height the other record blocks have.
+              className="flex items-center justify-between rounded-xl bg-white px-3 py-5 ring-0 [[data-theme=dark]_&]:bg-[#3A3A3A]"
             >
               <div className="text-[11px] font-normal leading-tight text-[var(--v69-ink)]">
                 {title}
@@ -1043,7 +1089,10 @@ function CardDocuments() {
             alone — its front is already a clear step off the ground. The
             gallery scales the whole cover up, which scales the cast shadow with
             it, so there it runs shorter and lighter. */}
-        <div className="absolute inset-x-3 bottom-3 top-[36%] flex flex-col justify-between rounded-[13px] border border-[var(--fld-edge)] bg-[var(--fld-front)] p-3 shadow-[0_-2px_4px_rgba(16,24,40,0.05)] [[data-theme=light]_&]:shadow-[0_-2px_4px_rgba(16,24,40,0.05),0_1px_2px_rgba(16,24,40,0.06),0_8px_16px_-6px_rgba(16,24,40,0.16)] [[data-theme=light]_.template-mock_&]:shadow-[0_-1px_3px_rgba(16,24,40,0.04),0_1px_2px_rgba(16,24,40,0.04),0_6px_14px_-10px_rgba(16,24,40,0.10)]">
+        {/* No cast shadow. The folder reads as layers through its own fills and
+            hairlines, the way every other cover on the rail does; the drop
+            shadow was the only one in the set. */}
+        <div className="absolute inset-x-3 bottom-3 top-[36%] flex flex-col justify-between rounded-[13px] border border-[var(--fld-edge)] bg-[var(--fld-front)] p-3">
           <div className="min-w-0">
             <div className="truncate text-[13px] font-medium leading-tight text-[var(--fld-ink)]">
               {FOLDER_LABEL}
@@ -1586,7 +1635,7 @@ function CardSupport() {
     // v69-cover-support is a hook, not a style: the dotted ground it turns on is
     // scoped to the templates gallery in globals.css, so the home hero's rail
     // keeps this cover's plain face.
-    <div className="v69-cover-support flex h-full flex-col justify-center gap-2 bg-[var(--v69-card)] p-4 [[data-theme=light]_&]:bg-[var(--v69-card)] [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
+    <div className="v69-cover-support flex h-full flex-col justify-center gap-2.5 bg-[var(--v69-card)] px-8 py-5 [[data-theme=light]_&]:bg-[var(--v69-card)] [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
       {SUPPORT_REQUESTS.map((r, i) => (
         <div
           key={r.title}
@@ -1604,7 +1653,11 @@ function CardSupport() {
           // the fill is already a legible step, and the hairline read as an
           // outline drawn round each row. The gallery keeps it — its rows sit on
           // flat white, where the fill alone is not a step. Dark is untouched.
-          className="flex items-center gap-2.5 rounded-lg border border-black/[0.08] bg-[var(--v69-inner)] px-3 py-2.5 [[data-theme=light]_&]:border-transparent [[data-theme=light]_&]:bg-[var(--v69-inner)] [[data-theme=light]_.template-mock_&]:border-black/[0.08] [[data-theme=light]_.template-mock_&]:bg-[#FFFFFF] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.09)]"
+          // The height is in the padding, not in a second line: these have to
+          // read as blocks of the same family as the intake record and the
+          // proposal rows, and a 13px line in a 10px-padded row came out half
+          // their height — three thin strips rather than a queue.
+          className="flex items-center gap-2.5 rounded-xl border border-black/[0.08] bg-[var(--v69-inner)] px-3 py-5 [[data-theme=light]_&]:border-transparent [[data-theme=light]_&]:bg-[var(--v69-inner)] [[data-theme=light]_.template-mock_&]:border-black/[0.08] [[data-theme=light]_.template-mock_&]:bg-[#FFFFFF] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.09)]"
         >
           {/* One request resolves instead: the middle row's status crosses from in
               progress to done, which is the single thing this app does. It loads on
@@ -1626,9 +1679,11 @@ function CardSupport() {
           ) : (
             <SupportStatusIcon state={r.state} />
           )}
-          <p className="min-w-0 truncate text-[13px] leading-tight text-[var(--v69-ink)] [[data-theme=light]_&]:text-[#3a3a3a] [[data-theme=light]_.template-mock-gallery_&]:text-[#1B1B1B]">
+          {/* The request alone. The status is already carried by the glyph, and
+              spelling it out under the title was a second label for one fact. */}
+          <span className="min-w-0 flex-1 truncate pb-[3px] -mb-[3px] text-[13px] leading-none text-[var(--v69-ink)] [[data-theme=light]_&]:text-[#3a3a3a] [[data-theme=light]_.template-mock-gallery_&]:text-[#1B1B1B]">
             {r.title}
-          </p>
+          </span>
         </div>
       ))}
     </div>
@@ -2910,7 +2965,7 @@ function CardRetainerColumns() {
     <div
       ref={inViewRef}
       onMouseEnter={(e) => {
-        if (e.currentTarget.closest(".template-mock")) return;
+        if (e.currentTarget.closest(".template-mock:not(.template-mock-live)")) return;
         setPlay((p) => p + 1);
       }}
       onMouseLeave={() => setPlay(0)}
@@ -2933,7 +2988,12 @@ function CardRetainerColumns() {
       // dark values: the templates detail page renders these mocks without the
       // .v72-mock-dark skin, so --v69-ink there is still the light-mode near-black
       // and the labels would sit dark-on-dark.
-      className="flex h-full flex-col bg-[#D9ED92] p-3.5 [--v69-card:color-mix(in_srgb,#ffffff_60%,#D9ED92)] [--v69-inner:color-mix(in_srgb,#ffffff_60%,#D9ED92)] [&_[data-slot=engagement-bar]]:border-0 [[data-theme=dark]_&]:bg-[#262626] [[data-theme=dark]_&]:[--muted-foreground:#8F8F8F] [[data-theme=dark]_&]:[--v69-ink:#F2F2F2] [[data-theme=dark]_&_[data-slot=engagement-bar]]:border [[data-theme=dark]_&_[data-slot=engagement-bar]]:border-[rgba(255,255,255,0.12)] [[data-theme=dark]_.template-mock_&_[data-slot=engagement-bar]]:border-[rgba(255,255,255,0.20)] [[data-theme=dark]_&_[data-slot=engagement-bar]]:bg-[#323232]"
+      // In the gallery's light skin it takes the neutral face every other cover
+      // there uses, the way the templates rail already resolves the hero's other
+      // accent hues to ink: on a page of grey widgets the lime field was the one
+      // block of colour and pulled the eye off whatever you were reading. The
+      // hero rail keeps the lime, and dark is untouched.
+      className="flex h-full flex-col bg-[#D9ED92] p-3.5 [--v69-card:color-mix(in_srgb,#ffffff_60%,#D9ED92)] [--v69-inner:color-mix(in_srgb,#ffffff_60%,#D9ED92)] [&_[data-slot=engagement-bar]]:border-0 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2] [[data-theme=light]_.template-mock_&]:[--v69-card:#ffffff] [[data-theme=light]_.template-mock_&]:[--v69-inner:#ffffff] [[data-theme=light]_.template-mock_&_[data-slot=engagement-bar]]:border [[data-theme=light]_.template-mock_&_[data-slot=engagement-bar]]:border-black/[0.08] [[data-theme=dark]_&]:bg-[#262626] [[data-theme=dark]_&]:[--muted-foreground:#8F8F8F] [[data-theme=dark]_&]:[--v69-ink:#F2F2F2] [[data-theme=dark]_&_[data-slot=engagement-bar]]:border [[data-theme=dark]_&_[data-slot=engagement-bar]]:border-[rgba(255,255,255,0.12)] [[data-theme=dark]_.template-mock_&_[data-slot=engagement-bar]]:border-[rgba(255,255,255,0.20)] [[data-theme=dark]_&_[data-slot=engagement-bar]]:bg-[#323232]"
     >
       <div className="flex flex-1 items-end gap-2.5">
         {bars.map((b, i) => (

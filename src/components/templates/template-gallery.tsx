@@ -33,7 +33,7 @@ export const FOCUS_INSET = "px-5 lg:px-6";
 // Focus thumbs are sized, not stretched — a fixed width keeps them subordinate
 // to the preview however many there are (some templates ship a single image).
 const FOCUS_THUMB = "w-[68px] shrink-0 rounded-[5px]";
-const DEFAULT_THUMB = "rounded-[6px]";
+const DEFAULT_THUMB = "rounded-[4px] sm:rounded-[6px]";
 
 type MediaItem = { src?: string };
 
@@ -184,7 +184,7 @@ export function TemplateGallery({
         } ${
           focus
             ? "[[data-theme=dark]_&]:bg-white/[0.03]"
-            : "rounded-xl ring-1 ring-border [[data-theme=dark]_&]:ring-white/[0.12]"
+            : "rounded-lg ring-1 ring-border sm:rounded-xl [[data-theme=dark]_&]:ring-white/[0.12]"
         }`}
       >
         {current.src ? (

@@ -161,6 +161,9 @@ const SHOWN = [
   "client-onboarding-wizard",
   "proposal-builder",
   "new-client-intake",
+  "document-collection",
+  "retainer-usage-overview",
+  "client-support-requests",
 ] as const;
 
 export function getBuiltOnExamples(
