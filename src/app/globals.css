@@ -1318,15 +1318,20 @@ html[data-theme="dark"] .v63-ring-solid::before {
 .group.is-inview .v69-accent-drift {
   animation-play-state: running;
 }
-/* The gallery's light skin takes the neutral card face instead of the brand
-   ramp — the same call the retainer cover makes, and the same one that already
-   resolves this rail's other accent hues to ink: on a page of grey widgets a
-   lime-to-blue field was the one block of colour and took the eye first. Flat,
-   not a grey ramp: the drift only ever existed to move the hues. The hero's
-   animated card keeps the ramp, and dark is untouched. */
+/* Light mode's static gallery card is parked mid-drift, which landed the top of
+   the frame on the lime's pale end and read washed out. Holding full-strength
+   lime longer puts real green at the top of that frozen window. Dark keeps the
+   stops above, and the animated hero card is untouched. */
 [data-theme="light"] .template-mock .v69-accent-drift {
-  background-image: none;
-  background-color: var(--v69-card);
+  background-image: linear-gradient(
+    180deg,
+    #d9ed92 0%,
+    #d9ed92 32%,
+    #cfe5a2 44%,
+    #a7bde4 62%,
+    #7da4ff 80%,
+    #7da4ff 100%
+  );
 }
 @keyframes v69AccentDrift {
   from {
@@ -1419,48 +1424,11 @@ html[data-theme="dark"] .v63-ring-solid::before {
 }
 /* The gallery's static skin plays nothing, so the resting state has to stand on
    its own there — everything at full opacity, in place. */
-.template-mock:not(.template-mock-live) .v69-chat-send,
-.template-mock:not(.template-mock-live) .v69-chat-status,
-.template-mock:not(.template-mock-live) .v69-chat-shimmer {
+.template-mock .v69-chat-send,
+.template-mock .v69-chat-status,
+.template-mock .v69-chat-shimmer {
   animation: none !important;
 }
-/* New-client record: an Apple-style notification arrival. It drops in from
-   above under a spring-ish curve that overshoots a hair before settling, with
-   the scale and the blur clearing on the way — the blur is what sells it as
-   coming toward the viewer rather than sliding down a track. No shadow: the
-   card's own hairline carries its edge, and a drop shadow under a card that is
-   already lifting read as two effects doing one job. */
-@keyframes v69NotifyIn {
-  0% {
-    opacity: 0;
-    transform: translateY(-38%) scale(0.94);
-    filter: blur(6px);
-  }
-  55% {
-    opacity: 1;
-    filter: blur(0);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    filter: blur(0);
-  }
-}
-.group:hover .v69-notify-in,
-.group.is-inview .v69-notify-in {
-  will-change: transform, opacity, filter;
-  animation: v69NotifyIn 0.72s cubic-bezier(0.22, 1.4, 0.36, 1) both;
-}
-/* The second record lands a beat after the first — far enough behind to read as
-   a separate arrival, close enough that the pair still feels like one moment. */
-.group:hover .v69-notify-in--late,
-.group.is-inview .v69-notify-in--late {
-  animation-delay: 0.34s;
-}
-.template-mock:not(.template-mock-live) .v69-notify-in {
-  animation: none !important;
-}
-
 /* The proposal total spins into place like the pricing page's billing toggle:
    each digit column rolls a full 0–9 cycle and lands on the numeral it started
    on, so the figure is never briefly a different, untrue amount. --v69-roll is
@@ -1882,9 +1850,9 @@ html[data-theme="dark"] .v63-ring-solid::before {
 .group.is-inview .v69-preview-image {
   animation: v69ImageIn 0.9s ease-out 1.75s both;
 }
-.template-mock:not(.template-mock-live) .v69-preview-dot,
-.template-mock:not(.template-mock-live) .v69-preview-dots,
-.template-mock:not(.template-mock-live) .v69-preview-image {
+.template-mock .v69-preview-dot,
+.template-mock .v69-preview-dots,
+.template-mock .v69-preview-image {
   animation: none !important;
 }
 @keyframes v69DotTwinkle {
@@ -2101,15 +2069,12 @@ html[data-theme="dark"] .v63-ring-solid::before {
 
 /* Template gallery (/templates): cards are static previews — no visible motion
    on hover or scroll there, even though the same mocks animate in the home hero.
-   .template-mock-live opts a rail back out of the freeze — /built-on wants the
-   gallery's skin AND the hero's hover sequence — so the freeze is written as
-   :not() rather than as a flat rule.
    Zero the durations (rather than `animation: none`) so content that is REVEALED
    by an animation still shows its final state — it just appears instantly. */
-.template-mock:not(.template-mock-live),
-.template-mock:not(.template-mock-live) *,
-.template-mock:not(.template-mock-live) *::before,
-.template-mock:not(.template-mock-live) *::after {
+.template-mock,
+.template-mock *,
+.template-mock *::before,
+.template-mock *::after {
   animation-duration: 0s !important;
   animation-delay: 0s !important;
   transition-duration: 0s !important;

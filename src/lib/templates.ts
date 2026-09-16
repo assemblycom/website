@@ -544,8 +544,6 @@ const BASE_TEMPLATES: Template[] = [
     longDescription:
       "Give clients one place to ask for new work, with the questions you need answered up front so a request arrives ready to scope instead of needing three follow-ups.",
     features: ["Request types", "Required details", "Status per request", "Assign an owner"],
-    image: "/images/templates/service-request-intake.png",
-    images: ["/images/templates/service-request-intake.png"],
   },
   {
     slug: "internal-ticketing",
