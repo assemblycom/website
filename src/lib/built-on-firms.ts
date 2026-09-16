@@ -1,34 +1,3 @@
-import { TEMPLATES, type Template } from "./templates";
-
-/**
- * The industries the product actually records.
- *
- * Onboarding asks every firm what it does and stores the answer on
- * PORTAL_ONBOARDING as `industry`, normalized to one of these six or to
- * "other" (see NormalizeIndustry and PortalOnboardingIndustryType* in core).
- * The product already leans on it elsewhere: recommended resources rank their
- * content per industry off the same value.
- *
- * Each maps to a tag in the site's own template catalogue, and to the phrase
- * the section heading uses. Anything unrecognised, "other" included, falls
- * through to the generic set.
- */
-const INDUSTRIES: Record<string, { tag: string; phrase: string }> = {
-  accounting_and_bookkeeping: {
-    tag: "Accounting",
-    phrase: "an accounting firm",
-  },
-  legal: { tag: "Legal", phrase: "a law firm" },
-  marketing: { tag: "Marketing", phrase: "a marketing agency" },
-  consulting: { tag: "Consulting", phrase: "a consultancy" },
-  technology: { tag: "Technology", phrase: "a technology company" },
-  real_estate: { tag: "Real estate", phrase: "a property firm" },
-};
-
-export function industryPhrase(industry?: string) {
-  return industry ? INDUSTRIES[industry]?.phrase : undefined;
-}
-
 /**
  * Stand-in workspace records for /built-on.
  *
@@ -67,12 +36,6 @@ export interface BuiltOnFirm {
    * showing a half-personalized one.
    */
   optedOut?: boolean;
-  /**
-   * What the firm told onboarding it does: PORTAL_ONBOARDING's `industry`, one
-   * of the six presets or "other". Drives both the section heading and which
-   * four apps are shown.
-   */
-  industry?: string;
 }
 
 export const BUILT_ON_FIRMS: BuiltOnFirm[] = [
@@ -80,21 +43,29 @@ export const BUILT_ON_FIRMS: BuiltOnFirm[] = [
     id: "northbank",
     name: "Northbank Advisory",
     brandColor: "#1f5c4a",
-    industry: "accounting_and_bookkeeping",
   },
   {
-    // The wide-wordmark case: a real uploaded logo on the brand colour.
+    // An uploaded logo, which gets the light tile rather than the brand colour:
+    // the file's own pixels cannot be read, and most uploads are dark glyphs or
+    // bake in a white square, so a brand colour behind either one hides it.
     id: "calderwood",
     name: "Calderwood Legal",
+    logoUrl: "/images/logo-mark.svg",
+    brandColor: "#2c3e7a",
+  },
+  {
+    // Wider than the slot can render legibly, so the logo is dropped and the
+    // initial takes the square back — in the firm's own colours.
+    id: "calderwoodwide",
+    name: "Calderwood Wide",
     logoUrl: "/images/logo-full.svg",
     brandColor: "#2c3e7a",
-    industry: "legal",
+    sidebarTextColor: "#ffffff",
   },
   {
     // No logo and no brand colour: the bare minimum a workspace can carry.
     id: "meridian",
     name: "Meridian Property Group",
-    industry: "real_estate",
   },
   {
     // Black, which a lot of firms pick. It is fine in light mode and vanishes
@@ -103,7 +74,6 @@ export const BUILT_ON_FIRMS: BuiltOnFirm[] = [
     name: "Harlow & Reed",
     brandColor: "#000000",
     sidebarTextColor: "#ffffff",
-    industry: "consulting",
   },
   {
     // A brand colour far too light for a white mark. The tile walks it down its
@@ -112,7 +82,6 @@ export const BUILT_ON_FIRMS: BuiltOnFirm[] = [
     name: "Brightleaf Studio",
     brandColor: "#d9ed92",
     sidebarTextColor: "#101114",
-    industry: "marketing",
   },
   {
     // Opted out. Resolves, but renders as the generic page.
@@ -120,7 +89,6 @@ export const BUILT_ON_FIRMS: BuiltOnFirm[] = [
     name: "Harlow Kane",
     brandColor: "#6b4f2a",
     optedOut: true,
-    industry: "consulting",
   },
 ];
 
@@ -139,40 +107,4 @@ export function getBuiltOnFirm(
   if (!id) return undefined;
   const firm = BUILT_ON_FIRMS.find((f) => f.id === id);
   return firm?.optedOut ? undefined : firm;
-}
-
-/**
- * The four apps shown, whoever is looking.
- *
- * These used to be picked per industry, ranked by how specific each template
- * was to the firm's own onboarding answer. Two things were wrong with that.
- * Four in five workspaces carry an industry the catalogue has no tag for, so
- * most visitors got the fallback set anyway; and where it did fire it put
- * near-identical apps in front of consultancies and agencies, because the
- * industry tags themselves do not separate those cleanly. One deliberate set
- * everyone sees is easier to judge and easier to change.
- *
- * `firm` and `catalogue` stay in the signature: the CMS still supplies each
- * app's copy and artwork, and per-firm selection is a decision that may come
- * back.
- */
-const SHOWN = [
-  "time-tracker",
-  "client-onboarding-wizard",
-  "proposal-builder",
-  "new-client-intake",
-  "document-collection",
-  "client-project-tracker",
-  "client-support-requests",
-] as const;
-
-export function getBuiltOnExamples(
-  _firm?: BuiltOnFirm,
-  catalogue: Template[] = TEMPLATES,
-): Template[] {
-  return SHOWN.map(
-    (slug) =>
-      catalogue.find((t) => t.slug === slug) ??
-      TEMPLATES.find((t) => t.slug === slug),
-  ).filter((t): t is Template => Boolean(t));
 }

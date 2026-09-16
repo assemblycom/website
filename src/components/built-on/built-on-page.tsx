@@ -1,15 +1,10 @@
 import { SIGNUP_URL } from "@/lib/constants";
 import { GridDivider, GridRails } from "@/components/ui/grid-lines";
-import { BuiltOnExamples } from "@/components/built-on/built-on-examples";
 import { BuiltOnFaq } from "@/components/built-on/built-on-faq";
 import { BuiltOnCta } from "@/components/built-on/built-on-cta";
 import { BuiltOnViewTracker } from "@/components/built-on/built-on-view-tracker";
 import type { BuiltOnEventProps } from "@/components/built-on/built-on-events";
-import {
-  industryPhrase,
-  type BuiltOnFirm,
-} from "@/lib/built-on-firms";
-import type { Template } from "@/lib/templates";
+import type { BuiltOnFirm } from "@/lib/built-on-firms";
 import { FirmMark } from "@/components/built-on/firm-mark";
 
 /**
@@ -68,36 +63,6 @@ function Hero({
   );
 }
 
-function Examples({
-  firm,
-  workspaceId,
-  surface,
-  examples,
-}: {
-  firm?: BuiltOnFirm;
-  workspaceId?: string;
-  surface?: string;
-  examples: Template[];
-}) {
-  const phrase = industryPhrase(firm?.industry);
-  return (
-    <BuiltOnExamples
-      signupHref={signupHref(workspaceId, surface)}
-      // A firm whose industry we don't recognise gets the generic heading, not
-      // a half-personalized one, since the four apps below it are generic too.
-      heading={
-        phrase
-          ? `The kind of thing ${phrase} builds`
-          : "The kind of thing firms build"
-      }
-      // DRAFT COPY — says what the cards are, since the section otherwise runs
-      // from a headline straight into six of them.
-      blurb="Each of these started as a description of what a firm needed. Open one to see what it does for a client."
-      templates={examples}
-    />
-  );
-}
-
 function ClosingCta({
   workspaceId,
   surface,
@@ -109,7 +74,7 @@ function ClosingCta({
 }) {
   return (
     <>
-      <GridDivider />
+      <GridDivider onMobile />
       <section className="px-6 py-16 text-center md:py-24">
         {/* type-h2, the step every other section heading on the page uses.
             type-display is the hero's, and a second heading at that size read
@@ -132,14 +97,8 @@ export function BuiltOnPage({
   firm,
   workspaceId,
   surface,
-  examples,
 }: {
   firm?: BuiltOnFirm;
-  /**
-   * The four apps to show, chosen and enriched on the server: rank comes from
-   * the CMS catalogue, and the screenshots from each app's Contentful entry.
-   */
-  examples: Template[];
   /** The raw `?w=`, kept even when it matched nothing so signup still gets it. */
   workspaceId?: string;
   surface?: string;
@@ -169,20 +128,13 @@ export function BuiltOnPage({
       {/* Full bleed, unlike the rules further down: those sit inside the rails
           and meet them at the corners, and there are no rails this high up the
           page for a 1200px rule to end on. */}
-      <GridDivider fullBleed />
+      <GridDivider fullBleed onMobile />
       <div className="relative">
         {/* No fadeTop: the fade existed because the rails opened under a hero
             with nothing above them, and appearing from nothing was gentler
             than two lines starting mid-air. There is a rule above them now, so
             they have an edge to start from and can be crisp. */}
         <GridRails />
-        <Examples
-          firm={firm}
-          workspaceId={workspaceId}
-          surface={surface}
-          examples={examples}
-        />
-        <GridDivider />
         <BuiltOnFaq />
         <ClosingCta workspaceId={workspaceId} surface={surface} event={event} />
       </div>

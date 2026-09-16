@@ -20,7 +20,7 @@ export const OG_IMAGE = {
  * lime one. So the two kinds of proposal are told apart at a glance, before the
  * reader has clicked anything.
  */
-export type OgVariant = "template" | "prompt";
+export type OgVariant = "template" | "prompt" | "built";
 
 // Both things this card can name are names, not sentences: a template's title,
 // which runs 9 to 27 characters across the whole catalogue, and an app name,
@@ -44,7 +44,37 @@ export function ogTitleFromParam(raw: string | null | undefined): string {
 }
 
 export function ogVariantFromParam(raw: string | null | undefined): OgVariant {
-  return raw === "prompt" ? "prompt" : "template";
+  if (raw === "prompt") return "prompt";
+  if (raw === "built") return "built";
+  return "template";
+}
+
+/**
+ * The brand colour a "built" card is painted in, as six hex digits without the
+ * hash. Validated at both ends, like the title: the endpoint is a public URL, so
+ * ?c= is whatever anyone puts in it and it lands in a CSS background.
+ */
+export function ogColorFromParam(raw: string | null | undefined) {
+  return raw && /^[0-9a-fA-F]{6}$/.test(raw) ? `#${raw}` : undefined;
+}
+
+/**
+ * The card a shared build unfurls as: the firm's name on the firm's own colour.
+ *
+ * A share post carries native video on LinkedIn and X, which suppresses the link
+ * card entirely — but the same link gets pasted into Slack, mail and DMs, where
+ * an unfurl naming the firm is the difference between a recognisable link and a
+ * generic homepage preview.
+ */
+export function ogImageForFirm(name: string, brandColor?: string) {
+  const printed = ogTitleFromParam(name);
+  const color = brandColor ? `&c=${brandColor.replace("#", "")}` : "";
+  return {
+    url: `/api/og?title=${encodeURIComponent(printed)}&v=built${color}`,
+    width: OG_IMAGE_WIDTH,
+    height: OG_IMAGE_HEIGHT,
+    alt: `${printed} — built on ${SITE_NAME}`,
+  };
 }
 
 /**

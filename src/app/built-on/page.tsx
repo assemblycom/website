@@ -3,13 +3,7 @@ import { BuiltOnPage } from "@/components/built-on/built-on-page";
 import { DEFAULT_BUILT_ON_FIRM, getBuiltOnFirm } from "@/lib/built-on-firms";
 import { redirect } from "next/navigation";
 import { IS_LIVE_SITE } from "@/lib/constants";
-import { resolveBuiltOnExamples } from "@/lib/built-on-examples";
 import { PAGE_SEO, pageMetadata } from "@/lib/seo";
-
-// Which apps are shown, and in what order, is fixed in SHOWN — a reorder in
-// Contentful does not move them. The re-resolve is for the copy and screenshots
-// those entries carry, on the same cadence /templates uses.
-export const revalidate = 300;
 
 /**
  * Where the "Built on Assembly" badge sends a firm's client. The page is
@@ -44,11 +38,8 @@ export default async function BuiltOn({
   const workspaceId = one("w") ?? DEFAULT_BUILT_ON_FIRM;
   const firm = getBuiltOnFirm(workspaceId);
 
-  const examples = await resolveBuiltOnExamples(firm);
-
   return (
     <BuiltOnPage
-      examples={examples}
       // A workspace we can't resolve, or one that opted out, gets the generic
       // page rather than a half-personalized one naming nobody.
       firm={firm}
