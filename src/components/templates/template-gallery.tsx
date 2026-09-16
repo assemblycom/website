@@ -33,7 +33,7 @@ export const FOCUS_INSET = "px-5 lg:px-6";
 // Focus thumbs are sized, not stretched — a fixed width keeps them subordinate
 // to the preview however many there are (some templates ship a single image).
 const FOCUS_THUMB = "w-[68px] shrink-0 rounded-[5px]";
-const DEFAULT_THUMB = "rounded-[4px] sm:rounded-[6px]";
+const DEFAULT_THUMB = "rounded-[6px]";
 
 type MediaItem = { src?: string };
 
@@ -133,12 +133,9 @@ export function TemplateGallery({
   const media: MediaItem[] = realImages
     .slice(0, MAX_FRAMES)
     .map((src) => ({ src }));
-  // No padding once real media exists. Empty frames were there to show the
-  // gallery's shape before screenshots were wired; beside a real screenshot
-  // they read as images that failed to load.
-  if (media.length === 0) {
-    while (media.length < targetCount) media.push({ src: undefined });
-  }
+  // Pad with placeholder frames so a template that declares several previews
+  // shows that many slots even before real screenshots are wired.
+  while (media.length < targetCount) media.push({ src: undefined });
 
   const [active, setActive] = useState(0);
   const current = media[active] ?? media[0];
@@ -184,7 +181,7 @@ export function TemplateGallery({
         } ${
           focus
             ? "[[data-theme=dark]_&]:bg-white/[0.03]"
-            : "rounded-lg ring-1 ring-border sm:rounded-xl [[data-theme=dark]_&]:ring-white/[0.12]"
+            : "rounded-xl ring-1 ring-border [[data-theme=dark]_&]:ring-white/[0.12]"
         }`}
       >
         {current.src ? (
@@ -213,11 +210,10 @@ export function TemplateGallery({
                 onLoad={() => markLoaded(i)}
                 // A screenshot that 404s would otherwise shimmer forever.
                 onError={() => markLoaded(i)}
-                // Contain: most captures are 16:9 and fill this frame either
-                // way, but the set also holds portrait shots (service-request
-                // -intake is 1818x1950), and cover showed about half of one.
-                // Half a screenshot is worse than a screenshot in a band of
-                // frame, and the band is the same --muted the frame already is.
+                // Contain (not cover) so the full screenshot is visible, never
+                // cropped. The frame is 16:9 to match what the screenshots are shot
+                // at — at 16:10 every one of them sat in a band of empty frame top
+                // and bottom, which read as the screenshot being too small.
                 className={`object-contain transition-opacity duration-200 ${
                   i === active ? "opacity-100" : "opacity-0"
                 }`}
