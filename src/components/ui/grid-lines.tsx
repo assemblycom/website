@@ -51,21 +51,29 @@ export function GridDivider({
    * Runs the rule the full width of the viewport instead of stopping at the
    * rails. For a join the rails do not reach — above the first section, where
    * there is nothing yet for a 1200px rule to meet at its ends.
-   *
-   * Still desktop-only, like the capped rule: on a phone the sections are
-   * already one column stacked on empty page, and a line across it read as a
-   * lid rather than as a join.
    */
   fullBleed = false,
+  /**
+   * Keeps the rule on phones too, bleeding to the screen edges the way the
+   * trust ticker's own mobile rules do. Off by default: most pages stack into
+   * one column on a phone with enough air between sections to read as separate,
+   * and a line across that reads as a lid rather than a join. A page whose
+   * sections sit closer together needs the join drawn.
+   */
+  onMobile = false,
 }: {
   fullBleed?: boolean;
+  onMobile?: boolean;
 } = {}) {
+  // Below 1200px the cap is wider than the viewport, so the capped rule bleeds
+  // to the edges on a phone by itself — dropping `hidden` is the whole change.
+  const visibility = onMobile ? "block" : "hidden md:block";
   return (
     <div
       className={
         fullBleed
-          ? `hidden border-t md:block ${GRID_LINE}`
-          : `mx-auto hidden max-w-[1200px] border-t md:block ${GRID_LINE}`
+          ? `border-t ${visibility} ${GRID_LINE}`
+          : `mx-auto max-w-[1200px] border-t ${visibility} ${GRID_LINE}`
       }
     />
   );
