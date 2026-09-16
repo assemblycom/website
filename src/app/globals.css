@@ -2425,17 +2425,6 @@ html[data-theme="dark"] .v63-ring-solid::before {
     --template-mock-w: 268px;
     --template-mock-h: 168px;
   }
-  /* /built-on runs these covers full width on a phone, where the gallery's box
-     scales a cover to about 1:1 and its fixed-px type comes out a third larger
-     relative to the card than the same cover reads at on the desktop grid. A
-     larger box scales the whole drawing down to roughly the desktop ratio.
-     Specificity, not preference, is why this sits beside the gallery's own
-     rules: those are unlayered `:has()` selectors and outrank any utility. */
-  .built-on-cover.template-mock-fit:has(> .template-mock-gallery),
-  .built-on-cover.template-mock-fit:has(.v69-cover-column) {
-    --template-mock-w: 400px;
-    --template-mock-h: 250px;
-  }
   /* Except the tight one. Its object is a single row carrying a filename and a
      size, and at the 268 box that row scaled up ~1.25x — the type came out half
      again the size it reads at on desktop and the row dominated the card. A
