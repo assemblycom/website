@@ -2,10 +2,12 @@ import { ImageResponse } from "next/og";
 import {
   OG_IMAGE_HEIGHT,
   OG_IMAGE_WIDTH,
+  ogColorFromParam,
   ogTitleFromParam,
   ogVariantFromParam,
   type OgVariant,
 } from "@/lib/og";
+import { readableTileColor } from "@/lib/built-on-color";
 
 // The card a template or a proposal unfurls as: the name of the thing set
 // top-left, the mark in the far corner, and nothing else. Every other page keeps
@@ -37,6 +39,10 @@ const SKIN: Record<OgVariant, { background: string; ink: string }> = {
       "linear-gradient(180deg, #D9ED92 0%, #D9ED92 45%, #7DA4FF 95%, #7DA4FF 100%)",
     ink: "#111111",
   },
+  // A firm's own build. Flat, because the colour is the firm's rather than ours
+  // and a gradient would blend two brands into one. ?c= replaces this default
+  // per firm; the periwinkle stands in when a workspace has set no colour.
+  built: { background: "#7DA4FF", ink: "#FBFBF7" },
 };
 
 // Set against the canvas rather than in absolute pixels so the layout holds if
@@ -66,7 +72,17 @@ const MARK_PATHS = [
 export async function GET(request: Request) {
   const params = new URL(request.url).searchParams;
   const title = ogTitleFromParam(params.get("title"));
-  const { background, ink } = SKIN[ogVariantFromParam(params.get("v"))];
+  const variant = ogVariantFromParam(params.get("v"));
+  const brand = ogColorFromParam(params.get("c"));
+  const skin = SKIN[variant];
+  // The card's ink is white, so the firm's colour is walked down its own hue
+  // until white reads on it — the same correction the page's logo tile makes,
+  // so a firm's colour looks the same in both places.
+  const background =
+    variant === "built" && brand
+      ? readableTileColor(brand, "#ffffff")
+      : skin.background;
+  const { ink } = skin;
 
   // Self-fetched from the request's own origin. Reading it off disk depends on
   // the file being traced into the serverless bundle; the public asset is
@@ -76,51 +92,70 @@ export async function GET(request: Request) {
   ).then((res) => res.arrayBuffer());
 
   return new ImageResponse(
-    (
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        padding: PAD,
+        background,
+        color: ink,
+        fontFamily: "PP Mori",
+      }}
+    >
+      {/* Stops short of the full width so a long name breaks onto a second
+            line rather than running edge to edge. */}
       <div
         style={{
-          width: "100%",
-          height: "100%",
           display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          padding: PAD,
-          background,
-          color: ink,
-          fontFamily: "PP Mori",
+          width: "88%",
+          fontSize: FONT_SIZE,
+          // A shade tighter than the default on both counts, which is what
+          // keeps a two-line name reading as one object.
+          lineHeight: 1.15,
+          letterSpacing: "-0.01em",
         }}
       >
-        {/* Stops short of the full width so a long name breaks onto a second
-            line rather than running edge to edge. */}
-        <div
-          style={{
-            display: "flex",
-            width: "88%",
-            fontSize: FONT_SIZE,
-            // A shade tighter than the default on both counts, which is what
-            // keeps a two-line name reading as one object.
-            lineHeight: 1.15,
-            letterSpacing: "-0.01em",
-          }}
-        >
-          {title}
-        </div>
-        {/* Alone in the far corner: the name owns the top of the card, and the
-            mark is the one thing that has to be in the same place every time. */}
-        <div style={{ display: "flex", justifyContent: "flex-end" }}>
-          <svg
-            width={MARK_SIZE}
-            height={MARK_SIZE}
-            viewBox="0 0 139 139"
-            fill="none"
-          >
-            {MARK_PATHS.map((d) => (
-              <path key={d} d={d} fill={ink} />
-            ))}
-          </svg>
-        </div>
+        {title}
       </div>
-    ),
+      {/* The name owns the top of the card, and the mark is the one thing that
+            has to be in the same place every time. A shared build adds the
+            attribution beside it: on the other two cards the mark alone says
+            whose card it is, but here the whole point is what the app was built
+            on, and a reader meeting the link in Slack has no other clue. Kept
+            out of the title so a long firm name can never truncate it away. */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: variant === "built" ? "space-between" : "flex-end",
+        }}
+      >
+        {variant === "built" ? (
+          <div
+            style={{
+              display: "flex",
+              fontSize: Math.round(FONT_SIZE * 0.46),
+              opacity: 0.75,
+            }}
+          >
+            Built on Assembly
+          </div>
+        ) : null}
+        <svg
+          width={MARK_SIZE}
+          height={MARK_SIZE}
+          viewBox="0 0 139 139"
+          fill="none"
+        >
+          {MARK_PATHS.map((d) => (
+            <path key={d} d={d} fill={ink} />
+          ))}
+        </svg>
+      </div>
+    </div>,
     {
       width: OG_IMAGE_WIDTH,
       height: OG_IMAGE_HEIGHT,
