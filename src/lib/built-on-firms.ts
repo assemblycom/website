@@ -45,11 +45,22 @@ export const BUILT_ON_FIRMS: BuiltOnFirm[] = [
     brandColor: "#1f5c4a",
   },
   {
-    // The wide-wordmark case: a real uploaded logo on the brand colour.
+    // An uploaded logo, which gets the light tile rather than the brand colour:
+    // the file's own pixels cannot be read, and most uploads are dark glyphs or
+    // bake in a white square, so a brand colour behind either one hides it.
     id: "calderwood",
     name: "Calderwood Legal",
+    logoUrl: "/images/logo-mark.svg",
+    brandColor: "#2c3e7a",
+  },
+  {
+    // Wider than the slot can render legibly, so the logo is dropped and the
+    // initial takes the square back — in the firm's own colours.
+    id: "calderwoodwide",
+    name: "Calderwood Wide",
     logoUrl: "/images/logo-full.svg",
     brandColor: "#2c3e7a",
+    sidebarTextColor: "#ffffff",
   },
   {
     // No logo and no brand colour: the bare minimum a workspace can carry.
