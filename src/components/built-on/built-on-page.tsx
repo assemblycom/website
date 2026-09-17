@@ -63,36 +63,6 @@ function Hero({
   );
 }
 
-function ClosingCta({
-  workspaceId,
-  surface,
-  event,
-}: {
-  workspaceId?: string;
-  surface?: string;
-  event: BuiltOnEventProps;
-}) {
-  return (
-    <>
-      <GridDivider onMobile />
-      <section className="px-6 py-16 text-center md:py-24">
-        {/* type-h2, the step every other section heading on the page uses.
-            type-display is the hero's, and a second heading at that size read
-            as a second hero rather than as the page's last section. */}
-        <h2 className="type-h2 mx-auto max-w-md text-balance text-foreground md:max-w-2xl">
-          Build one for your business
-        </h2>
-        <p className="type-lead mx-auto mt-5 max-w-sm text-balance text-muted-foreground sm:max-w-xl">
-          Describe the app your clients need. Assembly builds and runs it.
-        </p>
-        <div className="mt-8">
-          <BuiltOnCta href={signupHref(workspaceId, surface)} event={event} />
-        </div>
-      </section>
-    </>
-  );
-}
-
 export function BuiltOnPage({
   firm,
   workspaceId,
@@ -136,7 +106,6 @@ export function BuiltOnPage({
             they have an edge to start from and can be crisp. */}
         <GridRails />
         <BuiltOnFaq firm={firm} />
-        <ClosingCta workspaceId={workspaceId} surface={surface} event={event} />
       </div>
     </>
   );
