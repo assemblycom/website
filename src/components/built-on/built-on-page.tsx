@@ -135,7 +135,7 @@ export function BuiltOnPage({
             than two lines starting mid-air. There is a rule above them now, so
             they have an edge to start from and can be crisp. */}
         <GridRails />
-        <BuiltOnFaq />
+        <BuiltOnFaq firm={firm} />
         <ClosingCta workspaceId={workspaceId} surface={surface} event={event} />
       </div>
     </>
