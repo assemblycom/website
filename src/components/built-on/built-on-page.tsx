@@ -47,8 +47,8 @@ function Hero({
 
         <h1 className="type-display mt-7 text-balance text-foreground">
           {firm
-            ? `${firm.name} runs client experience on Assembly.`
-            : "Firms run their client experience on Assembly."}
+            ? `${firm.name} runs their client experience on Assembly`
+            : "Firms run their client experience on Assembly"}
         </h1>
 
         <p className="type-lead mx-auto mt-5 max-w-lg text-balance text-muted-foreground">

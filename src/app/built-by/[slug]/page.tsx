@@ -35,7 +35,7 @@ export async function generateMetadata({
   // LinkedIn and X suppress the card in favour of the native video, so the
   // preview names the firm rather than falling back to the site's own card.
   const title = firm
-    ? `${firm.name} runs client experience on Assembly`
+    ? `${firm.name} runs their client experience on Assembly`
     : "Built on Assembly";
 
   return {
