@@ -207,6 +207,7 @@ export const LEGACY_REDIRECTS = [
   { source: "/buckets/wips", destination: "/", permanent: true },
   { source: "/capterra", destination: "https://reviews.capterra.com/products/new/d3021edf-83e8-4898-87da-b760d6ba0658?lid=214210", permanent: true },
   { source: "/ccar-websockets", destination: "/", permanent: true },
+  { source: "/chatgpt", destination: "https://chatgpt.com/plugins/plugin_asdk_app_69e144b6acc48191bd001a3d7c752c5c", permanent: true },
   { source: "/client-collaboration-portal", destination: "/", permanent: true },
   { source: "/client-portal-collaboration", destination: "/blog/client-collaboration-portal", permanent: true },
   { source: "/Co-create", destination: "/", permanent: true },
