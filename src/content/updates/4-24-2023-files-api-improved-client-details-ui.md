@@ -7,13 +7,9 @@ updated: 2025-09-29T03:16:27.000-04:00
 
 ## Files API
 
-![](/images/updates/2023/05/Files-API.webp)
-
 We've made substantial improvements to our Files API. In addition to being able to create folders in the Files App, you can now upload files via API as well. In addition we added webhooks for file.created, link.created, and folder.created events. You can learn more about the updated Files endpoint [here](https://assembly.com/docs/api-reference/resources/files) and about our webhooks [here](https://assembly.com/docs/api-reference/webhooks/events). Future updates will bring these capabilities to Zapier as well.
 
 ## Improved Client Details page
-
-![](/images/updates/2023/05/Client-Details.webp)
 
 We reworked the client details page and improved performance and design. The new page is more snappy overall and makes better use of space.
 

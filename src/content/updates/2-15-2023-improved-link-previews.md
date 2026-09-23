@@ -9,8 +9,6 @@ updated: 2023-02-15T10:21:16.000-05:00
 
 We redesigned link previews in the Messaging App and made them look more polished and easier to read.
 
-![](/images/updates/2023/02/Screen-Shot-2023-02-15-at-10.14.46-AM.webp)
-
 ## Improvements &amp; Updates
 
 - Improved how deep linking works across the Copilot Dashboard. Now when you open a link to a specific page, even if you have to log in first we try to redirect you to the correct destination after.

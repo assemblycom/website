@@ -9,13 +9,9 @@ updated: 2025-09-29T11:37:00.000-04:00
 
 One of our product principles at Assembly is to remove as much friction as possible for your clients. In line with that, today we rolled out Sign up and Log in with Google and enabled it for clients in all portals. Google authentication works seamlessly for new clients and also for clients that previously set up with an email and password. If you want to disable Google auth for clients, you can do so in your settings.
 
-![](/images/updates/2023/09/Summer-Release---Client-Google-Auth.webp)
-
 ## Assembly Dashboard PWA
 
 Set up a Progressive Web App (PWA) on you mobile or tablet device if you want to more easily use the Assembly Dashboard (internal user experience) on the go. Note that while this makes the experience of accessing the Assembly Dashboard better on Android or iOS, our PWA doesn't yet have push notifications. To install the PWA, follow the device-specific instructions [here](https://aureatelabs.com/blog/install-pwa-to-device/?ref=assembly-blog.ghost.io).
-
-![](/images/updates/2023/09/Summer-Release---PWA.webp)
 
 ## Assembly Guide
 

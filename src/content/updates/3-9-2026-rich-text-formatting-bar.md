@@ -7,8 +7,6 @@ updated: 2026-03-09T14:21:20.000-04:00
 
 ## Rich Text Formatting Bar
 
-![](/images/updates/2026/03/image--18-.webp)
-
 The message composer has been rebuilt with a full formatting toolbar. You can now apply bold, italic, underline, strikethrough, headings, bullet lists, numbered lists, and inline links directly from the composer — no markdown required.
 
 The same formatting experience now extends across the surfaces where you write most: article authoring in the Helpdesk App, service descriptions in the Payments App, scheduled messages in Automations, and internal notes in the CRM. Consistent rich text controls, everywhere you need them.

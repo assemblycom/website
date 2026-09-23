@@ -7,16 +7,12 @@ updated: 2025-09-28T23:58:15.000-04:00
 
 ## Notification Attachments
 
-![](/images/updates/2023/01/Email-attachments-1.webp)
-
 We now include PDF attachments in some of our email notifications to make the experience for your clients more seamless. This eliminates the need for clients to navigate into your portal to access and download files. Initially, we are including PDFs in two email notifications:
 
 - **Open invoice notifications.** Email notifications to clients about open invoices now include the PDF for the invoice as an attachment.
 - **Signed contract notifications.** Email notifications to clients and internal users that are sent when a document has been signed by all parties now include the PDF for the signed contract as an attachment.
 
 ## Referrals
-
-![](/images/updates/2023/01/Referrals.webp)
 
 We are grateful for the increasing number of trials being initiated by our customers and partners. To make it easier for you to spread the word about Assembly, you can now click on 'Referrals' in the sidebar and share a unique invite link with anyone. You can earn up to $500 (in Amazon gift card credits) per referral.
 

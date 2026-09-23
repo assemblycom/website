@@ -7,8 +7,6 @@ updated: 2025-09-29T03:16:27.000-04:00
 
 ## Continuous Deployments
 
-![](/images/updates/2023/05/Daily-updates.webp)
-
 For the last 2 years, we have aimed to release new features on a weekly cadence. This goal pushed our team to make progress quickly and deliver something valuable every 7 days. During this time we have also invested heavily in our engineering and testing infrastructure. Starting today, we are comfortable doing releases on a continuous basis, which generally means multiple times per day. When a new release is available, you will see a notification above. Simply refresh the page to receive the latest version of our software.
 
 ## Improvements &amp; Updates

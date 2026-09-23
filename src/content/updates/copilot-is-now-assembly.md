@@ -7,7 +7,7 @@ updated: 2025-10-02T09:09:58.000-04:00
 
 ## Copilot is now Assembly
 
-![](/images/updates/2025/09/AI.webp)
+![](/images/updates/2025/09/Frame-2147224679--1-.webp)
 
 Today we rebranded from Copilot to Assembly. You can read about the reason for the name change [on our launch blogpost](https://assembly.com/blog/copilot-rebrand-assembly?ref=copilot-updates.ghost.io). You will start seeing our branding change across various surfaces. Our name has changed, but our mission hasn’t: helping you deliver customer experiences that stand out for your brand.
 
@@ -20,8 +20,6 @@ The dashboard for you and your internal team is now on&nbsp;[dashboard.assembly.
 Your client’s experience remains the same. If you have a custom domain for your portal, it works just like before. If you don’t, and your portal is on a &lt;name&gt;.copilot.app URL, that remains the same as well. In all scenarios, the client experience remains unchanged and your clients don’t have to log in again.
 
 ## New features on Assembly
-
-![](/images/updates/2025/09/Frame-2147224679--1-.webp)
 
 ### Internal Chat
 

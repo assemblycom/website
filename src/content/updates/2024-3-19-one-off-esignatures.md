@@ -9,8 +9,6 @@ updated: 2024-03-19T17:04:42.000-04:00
 
 The Contracts App we released two months ago came with support for reusable contract templates, but not one-off eSignature requests. You can now create one-off requests that don't clutter up the templates you have by switching off the template toggle when creating a contract.
 
-![](/images/updates/2024/03/one-off.webp)
-
 ## Improvements &amp; Updates
 
 - Embeds and Custom Apps now refresh when you click on them in the sidebar. This makes it easier to navigate back to the root URL.
@@ -18,7 +16,7 @@ The Contracts App we released two months ago came with support for reusable cont
 - In the Contracts App, you can now add longer multi-line variable inputs.
 - Improved the loading behavior on invoices and subscriptions pages.
 - Improved the default sorting order for the Contracts App submissions and requests page.
-- Various UI improvements on the *Settings &gt; API* page.
+- Various UI improvements on the Settings &gt; API page.
 - Fixed a bug that prevented Helpdesk articles from updating in some rare scenarios.
 - Fixed a bug where for one-off eSignature requests PDFs were not being included in email notifications.
 - Fixed a client import bug where blank custom fields weren't handled correctly.

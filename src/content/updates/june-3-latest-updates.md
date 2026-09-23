@@ -9,8 +9,6 @@ updated: 2025-09-29T03:16:14.000-04:00
 
 The Tasks App now supports sub-tasks, making it easier to break down complex work and projects into manageable pieces.
 
-![](/images/updates/2025/06/Tasks-App-Subtask-Onboarding.webp)
-
 ## Tasks API, Zapier, and Make support
 
 Tasks are a critical part of most automation workflows. You can now leverage task webhooks and endpoints via our API, Zapier, and Make. Specifically, we’ve added:

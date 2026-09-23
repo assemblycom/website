@@ -9,8 +9,6 @@ updated: 2026-05-29T13:46:54.000-04:00
 
 We now send automated reminder emails to your clients on the same cadence as other reminder emails for forms, contracts, and invoices — so client tasks stay top-of-mind without your team having to chase them down.
 
-![](/images/updates/2026/05/image--12-.webp)
-
 **For tasks with a due date:** reminders go out 3 days before the due date, on the due date, 3 days after, and again 7 days after.
 
 **For tasks without a due date:** reminders go out 3 days after assignment and again 7 days after.

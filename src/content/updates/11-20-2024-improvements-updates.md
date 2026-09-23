@@ -7,7 +7,7 @@ updated: 2024-11-20T17:01:49.000-05:00
 
 ## Improvements &amp; Updates
 
-- In the Tasks App, we now support attachments. Simply drag &amp; drop a file or type “/” and select the *Upload* option.
+- In the Tasks App, we now support attachments. Simply drag &amp; drop a file or type “/” and select the Upload option.
 - In the Tasks App, email notifications to clients now link directly to specific tasks instead of the Task App homepage.
 - On the homepage analytics dashboard, we improved the accuracy of the Subscriptions metric, which previously included subscriptions canceled before they started.
 - On the homepage analytics dashboard, we now show percentage changes comparing metrics to the previously selected period.
