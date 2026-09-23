@@ -9,11 +9,7 @@ updated: 2025-09-29T03:16:14.000-04:00
 
 We’re excited to announce [Assembly Store](https://assembly.com/store?ref=copilot-updates.ghost.io) — now you can create a Shopify-like storefront with recurring subscription plans and one-off services, making it easy for new leads and existing clients to pay.
 
-![](/images/updates/2025/06/Blog-cover-1.webp)
-
 Take advantage of the best aspects of eCommerce platforms — easy checkout options, upfront payments, online storefronts — and put them to work for your service business.
-
-![](/images/updates/2025/06/Store-IU-Outline.webp)
 
 ## Deliver experiences that delight your clients
 
@@ -22,8 +18,6 @@ Assembly Store was specifically designed for professional service firms where th
 ## Fully automated onboarding
 
 With our in-product automation builder, you can set up workflows to make the client onboarding journey easy for everyone. For example, you can set up a workflow where clients that just made their first store purchase are prompted to fill out a new client onboarding form.
-
-<div style="position: relative; padding-bottom: 60.25%; height: 0;"><img src="/images/updates/external/copilot.app-image.gif" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>
 
 ## Set up your Assembly Store
 

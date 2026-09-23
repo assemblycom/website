@@ -11,8 +11,6 @@ Some of the pages in Assembly make use of what we internally refer to as the "ch
 
 With our new updates we redesigned channels from scratch so that they load faster, scroll smoother, look cleaner, and can more easily be navigated on mobile. In addition, we now use circular avatars to depict individual clients and square icons to depict companies.
 
-![](/images/updates/2023/12/Channel-redesign.webp)
-
 ## Improvements &amp; Updates
 
 - Improved real-time notification behavior for new invoices.

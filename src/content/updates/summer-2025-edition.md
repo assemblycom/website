@@ -7,8 +7,6 @@ updated: 2025-09-29T11:36:47.000-04:00
 
 ## New &amp; Improved QuickBooks Integration
 
-![](/images/updates/2025/08/QuickBooks-Integration-New--1-.webp)
-
 We’ve rebuilt the QuickBooks integration from the ground up. It’s still one-way (Assembly → QuickBooks), but now lets you map and automatically sync products, invoices, and clients from Assembly to Quickbooks.
 
 **If you are new to QuickBooks Online and want to try it out, click** [**here**](https://quickbooks.partnerlinks.io/grz7fipmi4pi?ref=copilot-updates.ghost.io) **to get 30% off for your first 6 months.**
@@ -25,8 +23,6 @@ Here’s what’s new:
 Still using the old QuickBooks App? Follow [our migration guide](https://assembly.com/guide/quickbooks-app?ref=copilot-updates.ghost.io#upgrading-to-the-new-quickbooks-integration) to upgrade your experience.
 
 ## Improved Client Billing Experience
-
-![](/images/updates/2025/08/Billing---Desktop-1.webp)
 
 Your clients now have a redesigned Billing page that brings together everything related to payments. They can easily add and manage payment methods, view active subscriptions, and see and pay invoices — all in one place.
 

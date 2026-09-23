@@ -11,8 +11,6 @@ Today we're rolling out the 2024 Winter Release. Check out [the full blog pos](h
 
 With the new Tasks App you can create tasks and assign them to internal users, clients, and companies. Check out an interactive demo [here](https://app.arcade.software/share/CsdkAw67Bt0DMjVOmdfx?ref=copilot-updates.ghost.io) and install it [here](https://assembly.com/apps/directory/tasks?ref=copilot-updates.ghost.io).
 
-![](/images/updates/2024/10/Tasks---Board-view-1.webp)
-
 ## Internal Automations
 
 With Assembly Automations, we designed an automation builder from scratch that lets you quickly and seamlessly set up the most popular workflow automations. At launch time, we are starting with the templates below, and in the upcoming months we’re following up with more templates and a builder that lets you set up automations from scratch.
@@ -23,10 +21,7 @@ With Assembly Automations, we designed an automation builder from scratch that l
 
 You can set up automations&nbsp;[here](https://dashboard.assembly.com/automations?ref=copilot-updates.ghost.io).&nbsp;
 
-![](/images/updates/2024/10/autos.webp)
-
 ## New homepage
 
 The new homepage features an analytics section at the top that displays your total clients, active clients, and active subscriptions (if the Billing App is enabled). Below the analytics, you'll find sections showing unread notifications and recently visited pages for easier navigation. You can view the new home page and analytics&nbsp;[on the Assembly Dashboard](https://dashboard.assembly.com/?ref=copilot-updates.ghost.io).
 
-![](/images/updates/2024/10/analyts.webp)

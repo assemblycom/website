@@ -44,6 +44,9 @@ src/
 
 ## Design Guidelines
 - Use only font-weight 400 (regular) and 500 (medium). Never use bold (600/700).
+- Never use italics anywhere on this site: no `*text*` or `_text_` in Markdown copy,
+  no `italic` in components. For a UI label or an identifier, write it plain. Only a
+  hard override from the site owner lifts this.
 - Keep heading sizes restrained — prefer text-3xl/text-4xl, max text-5xl for page titles.
 - Use CSS variables from globals.css for colors (--accent, --muted, --border, etc).
 - Keep components responsive — mobile-first, max-w-7xl container.

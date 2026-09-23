@@ -11,8 +11,6 @@ We’ve rolled out more ways to use custom fields on companies to create a custo
 
 ## Set app visibility rules based on company custom field tags
 
-![](/images/updates/2025/12/LP-CCF-App-Visibility.webp)
-
 Previously, you could decide which apps and embeds were visible to individual clients depending on custom field tags. You can now set app visibility rules on a company level, using company custom fields.
 
 For example:
@@ -26,8 +24,6 @@ For example:
 
 ### New Action: Update company
 
-![](/images/updates/2025/12/LP-Automations-CCF-Action.webp)
-
 You can now automatically change tags for a company based on certain automation triggers.
 
 Examples:
@@ -37,8 +33,6 @@ Examples:
 
 ### New Trigger: When a company is updated
 
-![](/images/updates/2025/12/LP-Automations-Company-Trigger.webp)
-
 Whenever a company’s custom field tag is added, modified, or removed, you can trigger an automation to streamline your operations.
 
 Examples:
@@ -47,8 +41,6 @@ Examples:
 - When a company is updated to Gold, send a custom message in the Messages App saying: “Welcome to your Gold Tier membership…” and outlining new benefits.
 
 ## Use company custom fields in URL parameters
-
-![](/images/updates/2025/12/LP-CCF-URL-parameters.webp)
 
 Before today, your embedded apps could pass a client’s custom fields as URL parameters. This is useful for passing information from these fields to external tools to save your clients time. We’ve now expanded this functionality to support company custom fields in URL parameters.
 

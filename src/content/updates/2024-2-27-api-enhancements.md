@@ -13,8 +13,8 @@ See our&nbsp;[API docs](https://assembly.com/docs/api-reference/introduction)&nb
 - Added a `contract.requested` webhook.
 - Added a `creationMethod` property to the client resource. This property is especially useful if you want to set up different workflows depending on how a client was created. `creationMethod` method can be&nbsp;`internalUser`,&nbsp;`client`, &amp;&nbsp;`directSignUp`:
   - `internalUser`&nbsp;indicates that the client was created individually in Assembly by an internal user, created via import by an internal user, or created via API, Zapier, or Make connected with an internal user's API key.
-  - `client`&nbsp;indicated that the client was invited by another client. This is only possible if the ability for clients to invite other clients is enabled in&nbsp;*Settings &gt; General.*
-  - `directSignUp`&nbsp;indicates that the client signed up directly via the direct sign-up link. This is only available if client direct sign-up is enabled in&nbsp;*Settings &gt; General.*
+  - `client`&nbsp;indicated that the client was invited by another client. This is only possible if the ability for clients to invite other clients is enabled in&nbsp;Settings &gt; General.
+  - `directSignUp`&nbsp;indicates that the client signed up directly via the direct sign-up link. This is only available if client direct sign-up is enabled in&nbsp;Settings &gt; General.
 - Query params in API calls are now case-insensitive. This improvement was made for all List endpoints.
 - Implemented e164 validation for phone number custom fields. This makes phone number inputs much more flexible than before.
 - We previously used a `createdBy` property on many resources. We've replaced it with `creatorId` which represents the unique identifier of the creator of the resource.

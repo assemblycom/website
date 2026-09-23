@@ -9,13 +9,9 @@ updated: 2026-05-15T13:47:13.000-04:00
 
 In the Tasks App you can now configure auto-archive for tasks marked done so completed work doesn't pile up indefinitely. Subtasks follow their parent's auto-archive behavior, and the Tasks API surfaces an archived state so external automations can filter on it. Archived items remain searchable and restorable. To set up auto-archiving and the time window for it, navigate to the ‘Configure Tasks App’ page from the kebab menu.
 
-![](/images/updates/2026/05/tasks_hq.webp)
-
 ## Dynamic date fields in Tasks App templates
 
 Task templates now support dynamic date placeholders — `{{currentWeek}}`, `{{currentMonth}}`, `{{currentQuarter}}`, and `{{year}}` — that resolve to live values when the template is applied. This makes recurring templates like "Q1 close" or "Week of March 24 deliverables" stay accurate without manual editing. Dynamic fields work in both the template title and description, and you can insert them from a sidebar panel or by typing `{` for an autocomplete picker. Fields render with a distinct visual treatment so they're easy to spot in template previews.
-
-![](/images/updates/2026/05/task-2-hq.webp)
 
 ## Addresses for invoices
 

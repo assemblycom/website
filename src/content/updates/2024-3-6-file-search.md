@@ -9,12 +9,10 @@ updated: 2024-03-06T14:40:09.000-05:00
 
 Two weeks ago we announced search for messages and now we're following up with search in the Files App. File search is available for both you and your clients.
 
-![](/images/updates/2024/02/Group-1-1.webp)
-
 ## Improvements &amp; Updates
 
 - Clients can now search messages. Previously message search was only available for internal users.
-- On the *Settings &gt; General* page, you can now configure if uninvited clients should receive email notifications. You will want to turn this on if you want the client journey to start with a new invoice, contract request, or other email notification that is not "Accept your invite".
+- On the Settings &gt; General page, you can now configure if uninvited clients should receive email notifications. You will want to turn this on if you want the client journey to start with a new invoice, contract request, or other email notification that is not "Accept your invite".
 - Dropdowns with clients and/or companies are now sorted by creation date.
 - Dropdowns can now be navigated with up/down arrows.
 - Fixed a bug that previously let you create unanswerable forms with just title sections.

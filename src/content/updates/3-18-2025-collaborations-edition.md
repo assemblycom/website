@@ -9,13 +9,9 @@ updated: 2025-09-29T11:36:49.000-04:00
 
 You can now add notes to clients and companies. Internal notes are visible only to you and other internal users with access and can be edited after creation. Notes are located on the sidebar of client and company detail pages. Use the slash (/) command to add rich text formatting, including headings and more. Notes also come with full API, Zapier, and Make support.
 
-![](/images/updates/2025/03/CRM---Client---Details---Contracts.webp)
-
 ## Tasks App Improvements
 
 A big element of task and project management is discussion — clarifying details, answering questions, and so on. Task comments now support replies. Replies work as expected, with some extra touches like collapsing long discussion threads by default. In comments we also added support for images and attachments so that users can provide all the details needed when discussing a task.
-
-![](/images/updates/2025/03/Client-view---list.webp)
 
 ## API
 

@@ -7,21 +7,15 @@ updated: 2026-08-20T11:04:22.000-04:00
 
 ## Refund invoices from the Payments App
 
-![](/images/updates/2026/06/Refunds-Screenshots-Changelog.webp)
-
 In the Payments App, you can now refund paid invoices in two clicks. Click the refund action on the invoice row (or the invoice detail page), confirm the amount, and the refund is initiated. The invoice updates to a new "Refund initiated" status while we process it, then flips to "Refunded" when complete. You and your client get an automatic notification and an updated receipt. The refund lifecycle shows up on the invoice's history timeline and on the audit log.
 
 For now, refunds are for full amounts only; partial refunds are coming soon. Refund activity doesn't yet sync to QuickBooks or Xero — that's also on the way.
 
 ## A refreshed way to add apps
 
-![](/images/updates/2026/06/Add-App-or-Embed-Task-app-.webp)
-
 We redesigned the Add an App experience so it’s simpler and faster. When adding a new app, you’ll now see a section with app recommendations, a section to add your custom embeds and links, and a list of the popular embeds in our platform.
 
 ## Grouped email notifications for Tasks
-
-![](/images/updates/2026/06/image--14---1-.webp)
 
 Clients now receive one summary email notification for tasks activity in a 5-minute window, rather than individual notifications for each. The summary covers everything that happened in that window — tasks assigned to a client, tasks shared with them, and new comments on their tasks. Reminder emails continue to send separately, so nothing time-sensitive gets buried. The same grouped notification experience is coming to your internal team next.
 

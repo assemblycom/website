@@ -11,15 +11,11 @@ In your [Dashboard’s CRM](https://dashboard.assembly.com/clients/users?ref=cop
 
 Adding multiple companies to clients is available to [Professional, Advanced, and Enterprise plans](https://dashboard.assembly.com/settings/plans?ref=copilot-updates.ghost.io).
 
-![](/images/updates/2025/08/OCMC-Dashboard.webp)
-
 Check out our [interactive walkthrough](https://app.arcade.software/share/Lkg5SyLHk7DAKwBfYALT?ref=copilot-updates.ghost.io) to learn more.
 
 ## Client experience: Easily switch between multiple companies
 
 Few things are more frustrating than asking a client to manage multiple logins to different services. Now, your clients who are part of multiple entities or companies get one login — and can seamlessly access all the companies they’re associated with.
-
-![](/images/updates/2025/08/OCMC-client-portal.webp)
 
 They now see a new primary sidebar that lets them switch between companies, with notifications specific to their company.
 

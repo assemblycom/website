@@ -7,9 +7,7 @@ updated: 2025-09-28T23:58:05.000-04:00
 
 ## Message search
 
-You can now search for messages in message channels. To do so click on *Search* in the top-right or press Command (Mac) or Ctrl (Windows) + F. You can click Escape to exit search.
-
-![](/images/updates/2024/02/Channel-content-search---Searching.webp)
+You can now search for messages in message channels. To do so click on Search in the top-right or press Command (Mac) or Ctrl (Windows) + F. You can click Escape to exit search.
 
 ## Improvements &amp; Updates
 

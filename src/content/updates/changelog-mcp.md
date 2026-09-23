@@ -7,11 +7,11 @@ updated: 2026-07-17T13:59:48.000-04:00
 
 ## Connect Assembly to ChatGPT &amp; Claude
 
+![](/images/updates/2026/07/Assembly-MCP-Example-1.webp)
+
 Introducing the [Assembly MCP](https://assembly.com/blog/assembly-mcp-claude-chatgpt?ref=copilot-updates.ghost.io): You can now connect Assembly to AI tools like ChatGPT and Claude!
 
 Once connected, you can ask your AI tool to analyze your team's or clients' activities, brief you before a client call, or take bulk actions in your Assembly workspace like sending messages, contracts, tasks, and more.
-
-![](/images/updates/2026/07/Assembly-MCP-Example-1.webp)
 
 Connect to your favorite AI tool in a few minutes with [our installation guide](https://assembly.com/guide/mcp?ref=copilot-updates.ghost.io).
 

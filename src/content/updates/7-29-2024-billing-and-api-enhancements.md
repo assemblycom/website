@@ -7,15 +7,11 @@ updated: 2025-09-29T03:16:17.000-04:00
 
 ## Reusable products and prices for invoicing
 
-In the Billing App, you can now create products and prices, and then easily use them in invoices and invoice templates. This streamlines your invoicing process by eliminating repetitive data entry, ensuring consistency, and saving you time. You can create and manage products by clicking on *Products* on your sidebar under *Billing.* Note that products/prices can currently only be used in one-off invoices and support for subscriptions is coming soon.
-
-![](/images/updates/2024/07/first.webp)
+In the Billing App, you can now create products and prices, and then easily use them in invoices and invoice templates. This streamlines your invoicing process by eliminating repetitive data entry, ensuring consistency, and saving you time. You can create and manage products by clicking on Products on your sidebar under Billing. Note that products/prices can currently only be used in one-off invoices and support for subscriptions is coming soon.
 
 ## Invoice details &amp; payment retries
 
 If you click on an invoice you’re now taken to the new invoice details page. Here you can see invoice information directly without having to download a PDF. The right sidebar also shows a history of events including payments attempts. For any open invoice you can now manually make charge attempts with the payment method of your choice. No longer do you need to contact your client to retry payments. Note that manually retrying payments also works for invoices created by a subscription.
-
-![](/images/updates/2024/07/second.webp)
 
 ## Business addresses for invoices
 
