@@ -390,7 +390,7 @@ export const PRIVACY_POLICY: LegalDocument = {
           id: "15-behavioral-remarketing-intro",
           heading: null,
           blocks: [
-            { type: "p", text: "Assembly Platforms Inc. uses advertising services from Google, Meta (Facebook and Instagram) and LinkedIn to show ads on third-party websites and apps and to measure how those ads perform. We and our third-party vendors use cookies to inform, optimise and serve ads based on your past visits to our Service." },
+            { type: "p", text: "Copilot Platforms Inc. uses advertising services from Google, Meta (Facebook and Instagram) and LinkedIn to show ads on third-party websites and apps and to measure how those ads perform. We and our third-party vendors use cookies to inform, optimise and serve ads based on your past visits to our Service." },
           ],
         },
         {
