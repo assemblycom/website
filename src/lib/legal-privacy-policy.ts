@@ -12,7 +12,8 @@ import type { LegalDocument } from "@/components/legal/legal-document";
 export const PRIVACY_POLICY: LegalDocument = {
   title: "Privacy Policy",
   effective: "April 15, 2022",
-  lastUpdated: "08/07/2026",
+  lastUpdated: "09/24/2026",
+  showLastUpdated: true,
   parts: [
     {
       id: "1-introduction",
@@ -106,7 +107,7 @@ export const PRIVACY_POLICY: LegalDocument = {
                 "**Session Cookies**: We use Session Cookies to operate our Service.",
                 "**Preference Cookies**: We use Preference Cookies to remember your preferences and various settings.",
                 "**Security Cookies**: We use Security Cookies for security purposes.",
-                "**Advertising Cookies**: Advertising Cookies are used to serve you with advertisements that may be relevant to you and your interests.",
+                "**Advertising Cookies and Pixels**: We and our advertising partners, including Google, Meta and LinkedIn, use cookies, pixels and similar technologies to show you ads that may be relevant to you, to measure how well our ads perform, and to understand which ads lead to sign-ups or purchases.",
               ],
             },
           ],
@@ -137,6 +138,7 @@ export const PRIVACY_POLICY: LegalDocument = {
                 "to carry out our obligations and enforce our rights arising from any contracts entered into between you and us, including for billing and collection;",
                 "to provide you with notices about your account and/or subscription, including expiration and renewal notices, email-instructions, etc.;",
                 "to provide you with news, special offers and general information about other goods, services and events which we offer that are similar to those that you have already purchased or enquired about unless you have opted not to receive such information;",
+                "to measure the effectiveness of our advertising campaigns and to show relevant ads to you and to people with similar interests, including by sharing hashed contact information with advertising partners as described in Section 15;",
                 "in any other way we may describe when you provide the information; for any other purpose with your consent.",
               ],
             },
@@ -248,7 +250,7 @@ export const PRIVACY_POLICY: LegalDocument = {
     },
     {
       id: "10-your-data-protection-rights-under-the-california-privacy-protection-act-caloppa",
-      title: "10. Your Data Protection Rights under the California Privacy Protection Act (CalOPPA)",
+      title: "10. Your Data Protection Rights under the California Online Privacy Protection Act (CalOPPA)",
       group: "Your rights",
       shortTitle: "10. CalOPPA Rights",
       sections: [
@@ -268,7 +270,7 @@ export const PRIVACY_POLICY: LegalDocument = {
               ],
             },
             { type: "p", text: "Our Policy on “**Do Not Track**” Signals:" },
-            { type: "p", text: "We honor Do Not Track signals and do not track, plant cookies, or use advertising when a Do Not Track browser mechanism is in place. Do Not Track is a preference you can set in your web browser to inform websites that you do not want to be tracked." },
+            { type: "p", text: "There is no common industry standard for responding to Do Not Track signals, so we do not currently respond to them. Do Not Track is a preference you can set in your web browser to inform websites that you do not want to be tracked." },
             { type: "p", text: "You can enable or disable Do Not Track by visiting the Preferences or Settings page of your web browser." },
           ],
         },
@@ -303,13 +305,13 @@ export const PRIVACY_POLICY: LegalDocument = {
               type: "list",
               items: [
                 "**To delete your personal information**. If you make this request, we will delete the personal information we hold about you as of the date of your request from our records and direct any service providers to do the same. In some cases, deletion may be accomplished through de-identification of the information. If you choose to delete your personal information, you may not be able to use certain functions that require your personal information to operate.",
-                "**To stop selling your personal information**. We don't sell or rent your personal information to any third parties for any purpose. You are the only owner of your Personal Data and can request disclosure or deletion at any time.",
+                "**To stop selling or sharing your personal information**. We do not sell your personal information for money. However, sharing identifiers (such as hashed email addresses), cookie data and usage data with advertising partners for cross-context behavioral advertising may count as “selling” or “sharing” under California law. In the past 12 months we have shared the following categories with advertising partners (Google, Meta and LinkedIn): identifiers and internet or other electronic network activity. You have the right to opt out of this sale or sharing by emailing support@assembly.com. You are the only owner of your Personal Data and can request disclosure or deletion at any time.",
               ],
             },
-            { type: "p", text: "Please note, if you ask us to delete or stop selling your data, it may impact your experience with us, and you may not be able to participate in certain programs or membership services which require the usage of your personal information to function. But in no circumstances, we will discriminate against you for exercising your rights." },
+            { type: "p", text: "Please note, if you ask us to delete or stop selling or sharing your data, it may impact your experience with us, and you may not be able to participate in certain programs or membership services which require the usage of your personal information to function. But in no circumstances, we will discriminate against you for exercising your rights." },
             { type: "p", text: "To exercise your California data protection rights described above, please send your request(s) by one of the following means:" },
             { type: "p", text: "By email: support@assembly.com" },
-            { type: "p", text: "Your data protection rights, described above, are covered by the CCPA, short for the California Consumer Privacy Act. To find out more, visit the official California Legislative Information website. The CCPA took effect on 01/01/2020." },
+            { type: "p", text: "These rights are provided under the California Consumer Privacy Act, as amended by the California Privacy Rights Act (CPRA). To find out more, visit the official California Legislative Information website." },
           ],
         },
       ],
@@ -378,30 +380,46 @@ export const PRIVACY_POLICY: LegalDocument = {
       ],
     },
     {
+      // The id predates the rename and is kept so existing links to it still land.
       id: "15-behavioral-remarketing",
-      title: "15. Behavioral Remarketing",
+      title: "15. Advertising, Remarketing and Conversion Measurement",
       group: "Third parties and AI",
-      shortTitle: "15. Remarketing",
+      shortTitle: "15. Advertising",
       sections: [
         {
           id: "15-behavioral-remarketing-intro",
           heading: null,
           blocks: [
-            { type: "p", text: "Assembly Platforms Inc. uses remarketing services to advertise on third party websites to you after you visited our Service. We and our third-party vendors use cookies to inform, optimise and serve ads based on your past visits to our Service." },
+            { type: "p", text: "Copilot Platforms Inc. uses advertising services from Google, Meta (Facebook and Instagram) and LinkedIn to show ads on third-party websites and apps and to measure how those ads perform. We and our third-party vendors use cookies to inform, optimise and serve ads based on your past visits to our Service." },
+          ],
+        },
+        {
+          id: "15-behavioral-remarketing-hashed-contact-information",
+          heading: "Hashed contact information",
+          blocks: [
+            { type: "p", text: "When you sign up, request a demo, submit a form or otherwise give us your contact details, we may share your email address and phone number with these partners in hashed form. Hashing turns the information into a scrambled code before it leaves our systems. Our partners compare the code with codes they hold for their own users to (a) tell us whether our ads led to an action on our site, and (b) help us reach existing customers, or people similar to them, with relevant ads. This uses tools such as Google Enhanced Conversions and Customer Match, Meta Advanced Matching and the Meta Conversions API, and the LinkedIn Insight Tag and Conversions API. Our partners’ use of this information is governed by their own privacy policies." },
+            { type: "p", text: "You can opt out of this sharing as described in Section 11, or by contacting support@assembly.com." },
           ],
         },
         {
           id: "15-behavioral-remarketing-google-ads-adwords",
           heading: "Google Ads (AdWords)",
           blocks: [
-            { type: "p", text: "Google Ads (AdWords) remarketing service is provided by Google Inc. You can opt-out of Google Analytics for Display Advertising and customize the Google Display Network ads by visiting the Google Ads Settings page: http://www.google.com/settings/ads Google also recommends installing the Google Analytics Opt-out Browser Add-on – https://tools.google.com/dlpage/gaoptout – for your web browser. Google Analytics Opt-out Browser Add-on provides visitors with the ability to prevent their data from being collected and used by Google Analytics. For more information on the privacy practices of Google, please visit the Google Privacy Terms web page: https://policies.google.com/privacy?hl=en" },
+            { type: "p", text: "Google Ads (AdWords) remarketing service is provided by Google LLC. You can opt-out of Google Analytics for Display Advertising and customize the Google Display Network ads by visiting My Ad Center: https://myadcenter.google.com Google also recommends installing the Google Analytics Opt-out Browser Add-on, https://tools.google.com/dlpage/gaoptout, for your web browser. Google Analytics Opt-out Browser Add-on provides visitors with the ability to prevent their data from being collected and used by Google Analytics. For more information on the privacy practices of Google, please visit the Google Privacy Terms web page: https://policies.google.com/privacy?hl=en" },
           ],
         },
         {
           id: "15-behavioral-remarketing-facebook",
           heading: "Facebook",
           blocks: [
-            { type: "p", text: "Facebook remarketing service is provided by Facebook Inc. You can learn more about interest-based advertising from Facebook by visiting this page: https://www.facebook.com/help/164968693837950 To opt-out from Facebook's interest-based ads, follow these instructions from Facebook: https://www.facebook.com/help/568137493302217 Facebook adheres to the Self-Regulatory Principles for Online Behavioural Advertising established by the Digital Advertising Alliance. You can also opt-out from Facebook and other participating companies through the Digital Advertising Alliance in the USA http://www.aboutads.info/choices/, the Digital Advertising Alliance of Canada in Canada http://youradchoices.ca/ or the European Interactive Digital Advertising Alliance in Europe http://www.youronlinechoices.eu/, or opt-out using your mobile device settings. For more information on the privacy practices of Facebook, please visit Facebook's Data Policy: https://www.facebook.com/privacy/explanation" },
+            { type: "p", text: "Facebook remarketing service is provided by Meta Platforms, Inc. You can learn more about interest-based advertising from Facebook by visiting this page: https://www.facebook.com/help/164968693837950 To opt-out from Facebook's interest-based ads, visit your Ad Preferences: https://www.facebook.com/adpreferences Facebook adheres to the Self-Regulatory Principles for Online Behavioural Advertising established by the Digital Advertising Alliance. You can also opt-out from Facebook and other participating companies through the Digital Advertising Alliance in the USA http://www.aboutads.info/choices/, the Digital Advertising Alliance of Canada in Canada http://youradchoices.ca/ or the European Interactive Digital Advertising Alliance in Europe http://www.youronlinechoices.eu/, or opt-out using your mobile device settings. For more information on the privacy practices of Facebook, please visit Facebook's Data Policy: https://www.facebook.com/privacy/policy" },
+          ],
+        },
+        {
+          id: "15-behavioral-remarketing-linkedin",
+          heading: "LinkedIn",
+          blocks: [
+            { type: "p", text: "LinkedIn advertising and the Insight Tag are provided by LinkedIn Corporation. You can manage ad preferences in your LinkedIn settings: https://www.linkedin.com/psettings/advertising For more information on the privacy practices of LinkedIn, please visit LinkedIn's Privacy Policy: https://www.linkedin.com/legal/privacy-policy" },
           ],
         },
       ],
@@ -439,7 +457,7 @@ export const PRIVACY_POLICY: LegalDocument = {
           blocks: [
             { type: "p", text: "Assembly offers different AI capabilities within the Service. For a complete list, see [**Assembly's AI Policy & Data Handling page**](/legal/ai-policy)." },
             { type: "p", text: "For Assembly's in-product AI features, neither Assembly nor the applicable Service Provider uses inputs or outputs to train AI models. For MCP connections, the third-party AI provider is an **independent third party that the customer has chosen** — not Assembly's Service Provider — and the customer is responsible for the AI provider's processing of data after it leaves Assembly's Service, including any logging, retention, training, or onward sharing the AI provider performs under its own terms. Customers should review the AI provider's privacy policy, terms, and any applicable data-processing agreement before connecting." },
-            { type: "p", text: "Assembly does not use traffic from its in-product AI features or MCP to train AI models, sell or \"share\" it under the California Privacy Rights Act, or use it for marketing. The retention principles in Section 6 (Retention of Data), the transfer disclosures in Section 7 (Transfer of Data), and the rights described in Sections 10 (GDPR) and 12 (CCPA) apply." },
+            { type: "p", text: "Assembly does not use traffic from its in-product AI features or MCP to train AI models, sell or \"share\" it under the California Privacy Rights Act, or use it for marketing. The retention principles in Section 6 (Retention of Data), the transfer disclosures in Section 7 (Transfer of Data), and the rights described in Sections 9 (GDPR) and 11 (CCPA) apply." },
             { type: "p", text: "For complete and up-to-date information about how Assembly Assistant, additional AI features, and MCP work — including data categories, retention periods, sub-processors, audit logging, customer responsibilities, and how to revoke access — see [**Assembly's AI Policy & Data Handling page**](/legal/ai-policy). Assembly will update that page as functionality changes; material changes affecting this Privacy Policy will be reflected here as described in Section 20." },
           ],
         },
@@ -469,7 +487,7 @@ export const PRIVACY_POLICY: LegalDocument = {
     {
       id: "19-children-s-privacy",
       title: "19. Children's Privacy",
-      group: "Children, changes and contact",
+      group: "Other information",
       sections: [
         {
           id: "19-children-s-privacy-intro",
@@ -483,7 +501,7 @@ export const PRIVACY_POLICY: LegalDocument = {
     {
       id: "20-changes-to-this-privacy-policy",
       title: "20. Changes to This Privacy Policy",
-      group: "Children, changes and contact",
+      group: "Other information",
       shortTitle: "20. Policy Changes",
       sections: [
         {
@@ -498,7 +516,7 @@ export const PRIVACY_POLICY: LegalDocument = {
     {
       id: "21-contact-us",
       title: "21. Contact Us",
-      group: "Children, changes and contact",
+      group: "Other information",
       sections: [
         {
           id: "21-contact-us-intro",

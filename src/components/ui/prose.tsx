@@ -139,16 +139,24 @@ function Emphasis({ text }: { text: string }) {
  * across two lines mid-token on a phone ("https://eur-" / "lex.europa.eu/…"),
  * which reads as a hyphenated word rather than an address. The scheme and "www."
  * carry no information, so they go first; anything still too long for a ~40
- * character column is cut back to its host, since a deep path like
- * "/help/164968693837950" is not something anyone reads.
+ * character column is cut back, since a deep path like "/help/164968693837950"
+ * is not something anyone reads.
+ *
+ * The first path segment survives that cut. Section 15 cites two LinkedIn pages
+ * a sentence apart — ad preferences and their privacy policy — and cutting both
+ * to the host alone left the reader two identical labels pointing at different
+ * places, on the one page where telling an opt-out from a policy matters. A
+ * segment long enough to be a path of its own is dropped with the rest.
  */
 const MAX_URL_LABEL = 32;
+const MAX_URL_STEM = 30;
 
 function displayUrl(url: string): string {
   const bare = url.replace(/^https?:\/\//, "").replace(/^www\./, "").replace(/\/$/, "");
   if (bare.length <= MAX_URL_LABEL) return bare;
-  const host = bare.split("/")[0];
-  return `${host}/\u2026`;
+  const [host, ...path] = bare.split("/");
+  const stem = path.length > 0 ? `${host}/${path[0]}` : host;
+  return `${stem.length <= MAX_URL_STEM ? stem : host}/\u2026`;
 }
 
 function Autolink({ text }: { text: string }) {

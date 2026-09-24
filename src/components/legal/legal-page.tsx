@@ -63,18 +63,26 @@ export function LegalPage({ document: doc }: { document: LegalDocument }) {
             {doc.subtitle}
           </p>
         )}
-        {/* The effective date alone. "Last updated" is still tracked in the
-            document data — Legal maintains it — but it is not shown: two dates
-            side by side asked the reader to work out which one mattered.
+        {/* The effective date alone by default. "Last updated" is still tracked
+            in the document data — Legal maintains it — but it is not shown: two
+            dates side by side asked the reader to work out which one mattered.
             
-            The AI Policy is the exception, because it carries no effective date
-            at all, and a legal page with no date on it is worse than one showing
-            the wrong kind. Tabular figures so the digits line up. */}
+            Two exceptions. The AI Policy carries no effective date at all, and a
+            legal page with no date on it is worse than one showing the wrong
+            kind. And a document can opt into both with `showLastUpdated`, which
+            the Privacy Policy does, so its revisions are visible. Stacked on
+            their own lines rather than side by side, so each reads as its own
+            fact. Tabular figures so the digits line up. */}
         <p className="type-caption mt-6 tabular-nums text-muted-foreground">
           {doc.effective
             ? `Effective ${doc.effective}`
             : `Last updated ${spellDate(doc.lastUpdated)}`}
         </p>
+        {doc.effective && doc.showLastUpdated && (
+          <p className="type-caption mt-1 tabular-nums text-muted-foreground">
+            Last updated {spellDate(doc.lastUpdated)}
+          </p>
+        )}
       </header>
 
       {/* No rule between the title block and the document — space alone, which is

@@ -46,6 +46,12 @@ export interface LegalDocument {
   effective?: string;
   /** As written on the source page, e.g. "08/07/2026". */
   lastUpdated: string;
+  /**
+   * Show "Last updated" under the effective date. Off by default, so a document
+   * with an effective date shows that alone; on for the ones Legal has asked to
+   * carry both.
+   */
+  showLastUpdated?: boolean;
   /** Copy that runs before the first numbered section. */
   intro?: LegalBlock[];
   parts: LegalPart[];
