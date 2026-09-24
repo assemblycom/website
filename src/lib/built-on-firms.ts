@@ -96,6 +96,23 @@ export const BUILT_ON_FIRMS: BuiltOnFirm[] = [
 export const DEFAULT_BUILT_ON_FIRM = "northbank";
 
 /**
+ * What a workspace lookup found. Opting out is kept apart from not being found:
+ * the page may name an unknown workspace from the badge's own `firm` param, but
+ * never one that asked to be left out.
+ */
+export type BuiltOnFirmLookup =
+  | { status: "found"; firm: BuiltOnFirm }
+  | { status: "optedOut" }
+  | { status: "unknown" };
+
+export function lookupBuiltOnFirm(id: string | undefined): BuiltOnFirmLookup {
+  const firm = id ? BUILT_ON_FIRMS.find((f) => f.id === id) : undefined;
+  if (!firm) return { status: "unknown" };
+  if (firm.optedOut) return { status: "optedOut" };
+  return { status: "found", firm };
+}
+
+/**
  * The workspace to personalize with, or undefined for the generic page.
  *
  * An id that resolves to nothing and an id whose workspace opted out are the
@@ -104,7 +121,6 @@ export const DEFAULT_BUILT_ON_FIRM = "northbank";
 export function getBuiltOnFirm(
   id: string | undefined,
 ): BuiltOnFirm | undefined {
-  if (!id) return undefined;
-  const firm = BUILT_ON_FIRMS.find((f) => f.id === id);
-  return firm?.optedOut ? undefined : firm;
+  const lookup = lookupBuiltOnFirm(id);
+  return lookup.status === "found" ? lookup.firm : undefined;
 }
