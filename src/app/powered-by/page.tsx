@@ -1,13 +1,9 @@
 import type { Metadata } from "next";
 import { BuiltOnPage } from "@/components/built-on/built-on-page";
-import {
-  DEFAULT_BUILT_ON_FIRM,
-  getBuiltOnFirm,
-  lookupBuiltOnFirm,
-  type BuiltOnFirm,
-} from "@/lib/built-on-firms";
+import type { BuiltOnFirm } from "@/lib/built-on-firms";
 import { redirect } from "next/navigation";
 import { IS_LIVE_SITE } from "@/lib/constants";
+import { getFirmBranding } from "@/lib/firm-branding";
 import { attributionFromSearchParams } from "@/lib/powered-by-attribution";
 import { PAGE_SEO, pageMetadata } from "@/lib/seo";
 
@@ -40,7 +36,7 @@ export default async function PoweredBy({
     <BuiltOnPage
       // A workspace we can neither look up nor name gets the generic page
       // rather than a half-personalized one naming nobody.
-      firm={resolveFirm(attribution.ref, attribution.firm)}
+      firm={await resolveFirm(attribution.ref, attribution.firm)}
       attribution={attribution}
     />
   );
@@ -49,20 +45,13 @@ export default async function PoweredBy({
 /**
  * The firm to name. The workspace lookup wins; the badge's own `firm` param is
  * the fallback, so a lookup that misses still gets a named heading, just
- * without the firm's logo or colours. A workspace that opted out stays generic
- * whatever the URL says its name is.
+ * without the firm's logo or colours.
  */
-function resolveFirm(ref?: string, firmName?: string): BuiltOnFirm | undefined {
-  // Staging only: a bare visit shows a stand-in firm so there is something to
-  // look at. It is display alone — no `ref` is invented for signup.
-  if (!ref && !firmName) return getBuiltOnFirm(DEFAULT_BUILT_ON_FIRM);
-  const lookup = lookupBuiltOnFirm(ref);
-  switch (lookup.status) {
-    case "found":
-      return lookup.firm;
-    case "optedOut":
-      return undefined;
-    case "unknown":
-      return firmName ? { id: ref ?? "", name: firmName } : undefined;
-  }
+async function resolveFirm(
+  ref?: string,
+  firmName?: string,
+): Promise<BuiltOnFirm | undefined> {
+  const found = await getFirmBranding(ref);
+  if (found) return found;
+  return firmName ? { id: ref ?? "", name: firmName } : undefined;
 }

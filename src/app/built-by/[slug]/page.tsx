@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { BuiltOnPage } from "@/components/built-on/built-on-page";
-import { getBuiltOnFirm } from "@/lib/built-on-firms";
+import { getFirmBranding } from "@/lib/firm-branding";
 import { IS_LIVE_SITE, SITE_NAME, SITE_URL } from "@/lib/constants";
 import { OG_IMAGE, ogImageForFirm } from "@/lib/og";
 import { shareAttribution } from "@/lib/powered-by-attribution";
@@ -26,7 +26,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const firm = getBuiltOnFirm(slug);
+  const firm = await getFirmBranding(slug);
 
   // A link posted publicly gets unfurled in Slack, mail and DMs even when
   // LinkedIn and X suppress the card in favour of the native video, so the
@@ -74,13 +74,13 @@ export default async function BuiltBy({
   const { slug } = await params;
   return (
     <BuiltOnPage
-      // A slug that resolves to nothing, and a firm that opted out, both get the
-      // generic page — but the slug still travels to signup, so a firm that
-      // opted out of being named is still credited for the visitor it sent.
-      // The link carries no query string, so the attribution a badge would
+      // The slug is looked up as a workspace id, since nothing stores a
+      // friendlier one yet. A slug that resolves to nothing gets the generic
+      // page, but still travels to signup as `ref`, so the workspace behind
+      // the link is still credited. The link carries no query string, so the attribution a badge would
       // have sent is supplied here, with `utm_content=share` telling a shared
       // post apart from a badge click.
-      firm={getBuiltOnFirm(slug)}
+      firm={await getFirmBranding(slug)}
       attribution={shareAttribution(slug)}
     />
   );

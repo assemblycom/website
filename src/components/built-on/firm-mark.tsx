@@ -59,14 +59,16 @@ function fitFor(width: number, height: number): Fit {
 }
 
 export function FirmMark({ firm }: { firm: BuiltOnFirm }) {
-  // null until the upload has been measured. The img still mounts and loads
-  // while it is null — it just stays invisible, because how it should sit in
-  // the square is not known yet and showing it contained first makes it jump
-  // to its final fit a frame later.
-  const [fit, setFit] = useState<Fit | null>(null);
+  // The fit is known before anything loads: the lookup measured the upload on
+  // the server, so the square renders in its final state on the first paint.
+  // Only a load failure can change it afterwards.
+  const [failed, setFailed] = useState(false);
   const { theme } = useTheme();
   const ground = PAGE_GROUND[theme === "dark" ? "dark" : "light"];
-  const showsLogo = Boolean(firm.logoUrl) && fit !== "initial";
+  const showsLogo =
+    Boolean(firm.logoUrl && firm.logoWidth && firm.logoHeight) &&
+    !failed &&
+    fitFor(firm.logoWidth ?? 0, firm.logoHeight ?? 0) === "contain";
   const tile =
     firm.brandColor && !showsLogo
       ? readableTileColor(firm.brandColor, ground)
@@ -88,35 +90,26 @@ export function FirmMark({ firm }: { firm: BuiltOnFirm }) {
       aria-label={firm.name}
     >
       {firm.logoUrl && showsLogo ? (
-        // A plain img, not next/image: the source is a workspace upload on a
-        // host this site cannot know at build time. An upload that 404s falls
-        // back to the initial rather than leaving the square empty.
+        // A plain img, not next/image: the source is a workspace upload, and
+        // optimising it would put our image pipeline in front of every firm's
+        // logo. An upload that fails to load falls back to the initial rather
+        // than leaving the square empty.
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={firm.logoUrl}
+          width={firm.logoWidth}
+          height={firm.logoHeight}
           alt=""
-          // The server renders this img, so a cached upload can finish loading
-          // before React hydrates and onLoad never fires. The ref measures
-          // anything already complete; onLoad catches the rest.
+          // The server renders this img, so an upload can fail before React
+          // hydrates and onError never fires. A complete image with no pixels
+          // is one that already failed.
           ref={(node) => {
-            if (node?.complete && node.naturalWidth) {
-              setFit(fitFor(node.naturalWidth, node.naturalHeight));
-            }
+            if (node?.complete && !node.naturalWidth) setFailed(true);
           }}
-          onLoad={(e) =>
-            setFit(
-              fitFor(
-                e.currentTarget.naturalWidth,
-                e.currentTarget.naturalHeight,
-              ),
-            )
-          }
-          onError={() => setFit("initial")}
-          className={`size-full object-contain p-2.5 transition-opacity duration-150 ${
-            fit === null ? "opacity-0" : "opacity-100"
-          }`}
+          onError={() => setFailed(true)}
+          className="size-full object-contain p-2.5"
         />
-      ) : firm.logoUrl && fit === null ? null : (
+      ) : (
         // Uppercased rather than shown as typed: plenty of workspace names are
         // lowercase or machine-generated, and a lone lowercase letter reads as
         // a typo instead of a mark.
