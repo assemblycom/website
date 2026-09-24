@@ -25,3 +25,45 @@ export const ANALYTICS_HOST = "assembly.com";
 export function onProductionHost(body: string): string {
   return `if(location.hostname===${JSON.stringify(ANALYTICS_HOST)}){${body}}`;
 }
+
+/**
+ * Set by the /legal/do-not-sell-or-share page when a visitor opts out of the
+ * sale or sharing of their personal information. A plain first-party cookie, so
+ * the check below can read it before anything else on the page runs.
+ */
+export const AD_OPT_OUT_COOKIE = "assembly_ad_opt_out";
+
+/** Roughly a year. Chrome caps cookie lifetimes at 400 days regardless. */
+const AD_OPT_OUT_MAX_AGE = 60 * 60 * 24 * 365;
+
+/**
+ * True when this browser may load advertising tags: no Global Privacy Control
+ * signal and no opt-out cookie. The Privacy Policy (sections 10 and 11) promises
+ * both are honoured, so anything carrying ad pixels or hashed-email conversion
+ * events has to go through `whenAdTrackingAllowed`.
+ */
+const AD_TRACKING_ALLOWED = `!navigator.globalPrivacyControl&&document.cookie.split("; ").indexOf(${JSON.stringify(`${AD_OPT_OUT_COOKIE}=1`)})<0`;
+
+/**
+ * `onProductionHost`, plus the opt-out check. For Google Tag Manager, which
+ * carries the Google, Meta and LinkedIn tags. Inlined into the snippet for the
+ * same reason as the host check: it holds before React has run.
+ */
+export function whenAdTrackingAllowed(body: string): string {
+  return onProductionHost(`if(${AD_TRACKING_ALLOWED}){${body}}`);
+}
+
+/** Client-side reading of the same two signals, for the opt-out page. */
+export function readAdOptOut(): { gpc: boolean; optedOut: boolean } {
+  const nav = navigator as Navigator & { globalPrivacyControl?: boolean };
+  return {
+    gpc: nav.globalPrivacyControl === true,
+    optedOut: document.cookie.split("; ").includes(`${AD_OPT_OUT_COOKIE}=1`),
+  };
+}
+
+export function setAdOptOut(optedOut: boolean) {
+  document.cookie = optedOut
+    ? `${AD_OPT_OUT_COOKIE}=1; Max-Age=${AD_OPT_OUT_MAX_AGE}; Path=/; SameSite=Lax; Secure`
+    : `${AD_OPT_OUT_COOKIE}=; Max-Age=0; Path=/; SameSite=Lax; Secure`;
+}

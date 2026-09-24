@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { TocMobile } from "@/components/ui/toc-mobile";
 import {
   entriesFor,
@@ -37,8 +38,18 @@ function spellDate(value: string) {
   return month ? `${month} ${Number(match[2])}, ${match[3]}` : value;
 }
 
-/** Shared frame for every legal page: title block, contents rail, document. */
-export function LegalPage({ document: doc }: { document: LegalDocument }) {
+/**
+ * Shared frame for every legal page: title block, contents rail, document.
+ * `children` render after the document, for a page that has to do something as
+ * well as say it (the opt-out control on the Do Not Sell or Share page).
+ */
+export function LegalPage({
+  document: doc,
+  children,
+}: {
+  document: LegalDocument;
+  children?: ReactNode;
+}) {
   const entries = entriesFor(doc);
 
   return (
@@ -94,12 +105,16 @@ export function LegalPage({ document: doc }: { document: LegalDocument }) {
             before the document started. The phone gets the collapsing bar at the
             foot of this component instead — the pattern the blog posts already
             use. */}
-        <div className="hidden lg:absolute lg:inset-y-0 lg:left-0 lg:block lg:w-56">
-          <LegalToc document={doc} />
-        </div>
+        {/* A page with no numbered parts has nothing to list, so no rail. */}
+        {entries.length > 0 && (
+          <div className="hidden lg:absolute lg:inset-y-0 lg:left-0 lg:block lg:w-56">
+            <LegalToc document={doc} />
+          </div>
+        )}
 
         <div className={`legal-body mx-auto ${LEGAL_MEASURE}`}>
           <LegalDocumentBody document={doc} />
+          {children}
         </div>
       </div>
 

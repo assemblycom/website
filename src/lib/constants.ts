@@ -353,6 +353,11 @@ export const LEGAL_LINKS: NavLink[] = [
   { label: "Terms of service", href: "/legal/terms-of-service" },
   { label: "Privacy policy", href: "/legal/privacy-policy" },
   { label: "AI policy", href: "/legal/ai-policy" },
+  // CPRA wants the opt-out reachable from every page, which the footer is.
+  {
+    label: "Do not sell or share my personal information",
+    href: "/legal/do-not-sell-or-share",
+  },
 ];
 
 /**
