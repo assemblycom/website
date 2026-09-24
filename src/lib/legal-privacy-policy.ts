@@ -487,7 +487,7 @@ export const PRIVACY_POLICY: LegalDocument = {
     {
       id: "19-children-s-privacy",
       title: "19. Children's Privacy",
-      group: "Children, changes and contact",
+      group: "Other information",
       sections: [
         {
           id: "19-children-s-privacy-intro",
@@ -501,7 +501,7 @@ export const PRIVACY_POLICY: LegalDocument = {
     {
       id: "20-changes-to-this-privacy-policy",
       title: "20. Changes to This Privacy Policy",
-      group: "Children, changes and contact",
+      group: "Other information",
       shortTitle: "20. Policy Changes",
       sections: [
         {
@@ -516,7 +516,7 @@ export const PRIVACY_POLICY: LegalDocument = {
     {
       id: "21-contact-us",
       title: "21. Contact Us",
-      group: "Children, changes and contact",
+      group: "Other information",
       sections: [
         {
           id: "21-contact-us-intro",
