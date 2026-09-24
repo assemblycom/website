@@ -1,5 +1,8 @@
 import type { NextConfig } from "next";
-import { OPTIMIZED_IMAGE_HOSTS } from "./src/lib/image-hosts";
+import {
+  OPTIMIZED_IMAGE_HOSTS,
+  WORKSPACE_LOGO_HOSTS,
+} from "./src/lib/image-hosts";
 import { LEGACY_REDIRECTS } from "./src/lib/redirects";
 
 // Mintlify docs are hosted at assembly-ff8b9417.mintlify.site and proxied
@@ -19,7 +22,9 @@ const cspDirectives = [
   // loaded via next/script which adds its own <script> elements at runtime.
   "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://*.googletagmanager.com https://*.google-analytics.com https://cdn.segment.com https://*.segment.io https://copilotplatforms.chilipiper.com",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-  "img-src 'self' data: blob: https://images.ctfassets.net https://storage.ghost.io https://images.unsplash.com https://www.googletagmanager.com https://*.google-analytics.com",
+  // The workspace logo hosts are /powered-by's firm logos, listed so switching
+  // this header to enforcing doesn't blank every one. See WORKSPACE_LOGO_HOSTS.
+  `img-src 'self' data: blob: https://images.ctfassets.net https://storage.ghost.io https://images.unsplash.com https://www.googletagmanager.com https://*.google-analytics.com ${WORKSPACE_LOGO_HOSTS.map((host) => `https://${host}`).join(" ")}`,
   "font-src 'self' data: https://fonts.gstatic.com",
   "connect-src 'self' https://*.google-analytics.com https://*.googletagmanager.com https://cdn.segment.com https://api.segment.io https://*.customer.io https://copilotplatforms.chilipiper.com https://graphql.contentful.com https://storage.ghost.io",
   "frame-src 'self' https://www.youtube.com https://copilotplatforms.chilipiper.com",
@@ -34,7 +39,10 @@ const securityHeaders = [
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   { key: "X-Frame-Options", value: "SAMEORIGIN" },
-  { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+  {
+    key: "Permissions-Policy",
+    value: "camera=(), microphone=(), geolocation=()",
+  },
   { key: "Content-Security-Policy-Report-Only", value: cspDirectives },
 ];
 
@@ -49,7 +57,10 @@ const nextConfig: NextConfig = {
   // rather than mounted in the function.
   outputFileTracingIncludes: {
     "/updates": ["./src/content/updates/**", "./public/images/updates/**"],
-    "/updates/[slug]": ["./src/content/updates/**", "./public/images/updates/**"],
+    "/updates/[slug]": [
+      "./src/content/updates/**",
+      "./public/images/updates/**",
+    ],
     "/sitemap-updates.xml": ["./src/content/updates/**"],
   },
   // Read at BUILD time and inlined, which is the whole point: it dates the
@@ -123,7 +134,10 @@ const nextConfig: NextConfig = {
         // flush, since browsers cache it outside the normal HTTP cache.
         source: "/favicon.:ext(ico|svg)",
         headers: [
-          { key: "Cache-Control", value: "public, max-age=86400, stale-while-revalidate=604800" },
+          {
+            key: "Cache-Control",
+            value: "public, max-age=86400, stale-while-revalidate=604800",
+          },
         ],
       },
       {
