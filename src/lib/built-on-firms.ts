@@ -11,9 +11,9 @@ export interface BuiltOnFirm {
   id: string;
   name: string;
   /**
-   * The firm's own uploaded logo. Absent when the workspace only carries a
-   * stand-in (a generated letter, or Assembly's own mark), so the page draws
-   * the initial rather than presenting our logo as theirs.
+   * The workspace's logo: the firm's upload, or the stand-in the logo finder
+   * assigned it. Absent only when neither loads, and then the page draws the
+   * initial.
    */
   logoUrl?: string;
   /**
