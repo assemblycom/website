@@ -1,4 +1,3 @@
-import { SIGNUP_URL } from "@/lib/constants";
 import { GridDivider, GridRails } from "@/components/ui/grid-lines";
 import { BuiltOnFaq } from "@/components/built-on/built-on-faq";
 import { BuiltOnCta } from "@/components/built-on/built-on-cta";
@@ -6,6 +5,10 @@ import { BuiltOnViewTracker } from "@/components/built-on/built-on-view-tracker"
 import type { BuiltOnEventProps } from "@/components/built-on/built-on-events";
 import type { BuiltOnFirm } from "@/lib/built-on-firms";
 import { FirmMark } from "@/components/built-on/firm-mark";
+import {
+  signupHref,
+  type PoweredByAttribution,
+} from "@/lib/powered-by-attribution";
 
 /**
  * The page a client lands on from the "Built on Assembly" badge in a firm's
@@ -14,25 +17,13 @@ import { FirmMark } from "@/components/built-on/firm-mark";
  * carries one action and nothing to weigh it against.
  */
 
-// Everything the badge knows travels through to signup, so a workspace can be
-// credited for the client it sent. `s` is the badge surface (login, email,
-// footer); `w` is the firm's workspace.
-function signupHref(workspaceId?: string, surface?: string) {
-  const params = new URLSearchParams({ source: "built-on" });
-  if (workspaceId) params.set("w", workspaceId);
-  if (surface) params.set("s", surface);
-  return `${SIGNUP_URL}&${params.toString()}`;
-}
-
 function Hero({
   firm,
-  workspaceId,
-  surface,
+  attribution,
   event,
 }: {
   firm?: BuiltOnFirm;
-  workspaceId?: string;
-  surface?: string;
+  attribution: PoweredByAttribution;
   event: BuiltOnEventProps;
 }) {
   // Sized by its own padding, not by the viewport. Owning the whole first
@@ -56,7 +47,9 @@ function Hero({
         </p>
 
         <div className="mt-8">
-          <BuiltOnCta href={signupHref(workspaceId, surface)} event={event} />
+          {/* Everything the visit carried travels through to signup, so the
+              workspace that sent this visitor is the one credited for them. */}
+          <BuiltOnCta href={signupHref(attribution)} event={event} />
         </div>
       </div>
     </section>
@@ -65,36 +58,32 @@ function Hero({
 
 export function BuiltOnPage({
   firm,
-  workspaceId,
-  surface,
+  attribution,
 }: {
   firm?: BuiltOnFirm;
-  /** The raw `?w=`, kept even when it matched nothing so signup still gets it. */
-  workspaceId?: string;
-  surface?: string;
+  /**
+   * What the visit carried, forwarded to signup as it arrived — including a
+   * `ref` that matched nothing, so the workspace is still credited.
+   */
+  attribution: PoweredByAttribution;
 }) {
   // One object, shared by the view and both CTAs, so a click can always be
   // matched to the view it came from.
   const event: BuiltOnEventProps = {
-    workspace_id: workspaceId,
-    surface,
+    ref: attribution.ref,
+    utm_content: attribution.utm.utm_content,
     personalized: Boolean(firm),
     firm: firm?.name ?? null,
   };
 
   return (
     <>
-      <BuiltOnViewTracker {...event} />
+      <BuiltOnViewTracker event={event} />
       {/* No rails through the hero. It is one centred column of text with
           nothing sitting on the 1200px grid, so rails there frame empty space
           on both sides rather than guiding anything. They start where the
           content that uses them starts. */}
-      <Hero
-        firm={firm}
-        workspaceId={workspaceId}
-        surface={surface}
-        event={event}
-      />
+      <Hero firm={firm} attribution={attribution} event={event} />
       {/* Full bleed, unlike the rules further down: those sit inside the rails
           and meet them at the corners, and there are no rails this high up the
           page for a 1200px rule to end on. */}

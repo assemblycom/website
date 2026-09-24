@@ -1,14 +1,14 @@
 /**
- * Stand-in workspace records for /built-on.
+ * Stand-in workspace records for /powered-by.
  *
  * This array is the data contract. The real page will ask the product for one
- * workspace by the `?w=` in the URL and get back exactly this shape; nothing in
+ * workspace by the `ref` in the URL and get back exactly this shape; nothing in
  * the page changes when that swap happens. Every field except the id and the
  * name is optional, because a real workspace may have no logo, no brand colour,
  * or may have asked to be left out — see the fallbacks in the page.
  */
 export interface BuiltOnFirm {
-  /** Stands in for the workspace id carried by `?w=`. */
+  /** Stands in for the workspace id carried by `ref`. */
   id: string;
   name: string;
   /**
@@ -92,7 +92,7 @@ export const BUILT_ON_FIRMS: BuiltOnFirm[] = [
   },
 ];
 
-/** The firm the page shows when no `?w=` is given. */
+/** The firm the page shows when no `ref` or `firm` is given. */
 export const DEFAULT_BUILT_ON_FIRM = "northbank";
 
 /**

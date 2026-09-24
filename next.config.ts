@@ -86,6 +86,15 @@ const nextConfig: NextConfig = {
         destination: "/embed/:slug",
         permanent: true,
       },
+      // The badge page was built at /built-on and moved to /powered-by, the
+      // path the growth-loops PRD and the product's badge link use. Only ever
+      // linked from staging, so temporary: a 308 would be cached hard for a
+      // path nobody outside the team has.
+      {
+        source: "/built-on",
+        destination: "/powered-by",
+        permanent: false,
+      },
       // Everything the previous assembly.com site published. Listed last so the
       // two rules above keep precedence if the table ever grows a row that
       // overlaps them.

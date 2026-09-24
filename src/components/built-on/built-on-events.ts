@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * The three things /built-on reports.
+ * The two things /powered-by and /built-by report.
  *
  * Segment is already on every page (see SegmentScript in the root layout), and
  * it auto-fires a generic page view; these are the badge-specific ones, named in
@@ -17,10 +17,13 @@ export const BUILT_ON_EVENTS = {
 } as const;
 
 export interface BuiltOnEventProps {
-  /** The `?w=` as it arrived, kept even when it resolved to nothing. */
-  workspace_id?: string;
-  /** The `?s=`: which badge surface sent them (login, email, footer). */
-  surface?: string;
+  /** The `ref` as it arrived, kept even when it resolved to nothing. */
+  ref?: string;
+  /**
+   * The `utm_content`: which badge placement sent them (client_login, invoice,
+   * email_footer…), or `share` from /built-by.
+   */
+  utm_content?: string;
   /**
    * False when the page fell back to generic. Without this you cannot tell a
    * badge that converts badly from one whose workspace never resolved.
