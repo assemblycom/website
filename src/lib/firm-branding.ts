@@ -38,11 +38,6 @@ const DEFAULT_LOGO_DOMAINS = [
 /** The three sizes the logo finder stores for each domain. */
 const DEFAULT_LOGO_SIZES = ["512@2x", "60@2x", "24@2x"] as const;
 
-/**
- * Where the logo finder writes: the bucket's regional host, the backend's
- * S3ResourceFilesBucketURL.
- */
-const BUCKET_URL = "https://lightout-portal.s3.us-west-2.amazonaws.com";
 const BRAND_LOGOS_PATH = "/public/images/brand-logos";
 const DEFAULT_LOGO_PATHS = new Set(
   DEFAULT_LOGO_DOMAINS.flatMap((domain) =>
@@ -53,26 +48,30 @@ const DEFAULT_LOGO_PATHS = new Set(
 );
 
 /**
- * The digests of the default logos, read from the bucket. Each download is
- * cached for a day like any other logo, so this costs a handful of requests a
- * day rather than per visit. One that fails to download is left out of the
- * set for now and tried again on the next render.
+ * SHA-256 of each file in DEFAULT_LOGO_PATHS, taken from the lightout-portal
+ * bucket. They catch a default that was copied to a new key rather than
+ * referenced where the logo finder stored it. Pinned here so no render waits
+ * on downloading them; if the finder ever regenerates the files, re-hash them.
  */
-const defaultLogoDigests = cache(async (): Promise<Set<string>> => {
-  const digests = await Promise.all(
-    [...DEFAULT_LOGO_PATHS].map(async (path) => {
-      const bytes = await fetchBytes(`${BUCKET_URL}${path}`);
-      return bytes ? sha256(bytes) : undefined;
-    }),
-  );
-  return new Set(digests.filter((digest) => digest !== undefined));
-});
+const DEFAULT_LOGO_DIGESTS = new Set([
+  "351365ee1905debead7a2ef0571b03242590ad7addd7f47a359bb10f7d473d9b",
+  "bc3ff5e7901baeca844c3ffa191b5945e874d86aa7b7b2db843a95e971e2166c",
+  "ca36bc58b6d03b43d5fc6c2bee3d7c1d89ad5a882e2eef22dfce497752a7dc66",
+  "2f8450d7ad023779ffca1bb79d12597fff5a9410cc4a535526f9063d6e1572b2",
+  "5d4c66a6ad3b664f5e75507c1787cc4e174db5077478dc1ec634a6f588e2efe2",
+  "fb1e9123cf3ef60c69c40527dcde5b4857e6209e813db93cb455766d78f389e6",
+  "705d3cb6b90d12d8904715c1c695903e8b5e9f6b6a9b74d11d32b562a3ffb611",
+  "5e5b8ca688051ab8564342a76435a66060dac55b601d6d6fbdc13903b1c6fd46",
+  "bd0b2603ba359580dd530cd5e03b4814f6dc8651e3ca1e6b8782bda7baffab4a",
+  "7900f426d308c05df78171dec8e66376f3dbc453d6e22a1f11786c5d40f83bfb",
+  "fd5f1932d4aef78fa523a64723567b94529e5d880ff2a9bd25475a8feb05e986",
+  "40a72bbbc9644d65eebbdf51d2ab76f278989de945b8fd0554b99701d7212e1c",
+]);
 
 /**
  * Whether a URL points straight at one of the default files. Most workspaces
  * that carry one reference it where the logo finder stored it, which this
- * answers without a download — and still answers when the bucket is slow and
- * the digests above came back short.
+ * answers without a download.
  */
 function isDefaultLogoPath(url: string): boolean {
   try {
@@ -133,24 +132,26 @@ interface OwnLogo {
 
 /**
  * The first candidate, in order, that is a real upload of the firm's own,
- * measured. All are fetched at once: the page waits on this, and in turn would
- * wait for the slowest in sequence.
+ * measured. All start downloading at once, but only the ones ahead of the
+ * winner are waited on: once the first choice is usable, a slow second one
+ * no longer holds the page.
  */
 async function firstOwnLogo(
   candidates: (string | undefined)[],
 ): Promise<OwnLogo | undefined> {
   const urls = [...new Set(candidates)].filter((url) => url !== undefined);
-  const measured = await Promise.all(urls.map(measureOwnLogo));
-  return measured.find((logo) => logo !== undefined);
+  const pending = urls.map(measureOwnLogo);
+  for (const logo of pending) {
+    const measured = await logo;
+    if (measured) return measured;
+  }
+  return undefined;
 }
 
 async function measureOwnLogo(url: string): Promise<OwnLogo | undefined> {
   if (!isWorkspaceLogoHost(url) || isDefaultLogoPath(url)) return undefined;
-  const [bytes, defaults] = await Promise.all([
-    fetchBytes(url),
-    defaultLogoDigests(),
-  ]);
-  if (!bytes || defaults.has(sha256(bytes))) return undefined;
+  const bytes = await fetchBytes(url);
+  if (!bytes || DEFAULT_LOGO_DIGESTS.has(sha256(bytes))) return undefined;
 
   try {
     const { width, height } = imageSize(bytes);
