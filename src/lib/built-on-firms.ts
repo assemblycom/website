@@ -1,14 +1,14 @@
 /**
- * Stand-in workspace records for /built-on.
+ * Stand-in workspace records for /powered-by.
  *
  * This array is the data contract. The real page will ask the product for one
- * workspace by the `?w=` in the URL and get back exactly this shape; nothing in
+ * workspace by the `ref` in the URL and get back exactly this shape; nothing in
  * the page changes when that swap happens. Every field except the id and the
  * name is optional, because a real workspace may have no logo, no brand colour,
  * or may have asked to be left out — see the fallbacks in the page.
  */
 export interface BuiltOnFirm {
-  /** Stands in for the workspace id carried by `?w=`. */
+  /** Stands in for the workspace id carried by `ref`. */
   id: string;
   name: string;
   /**
@@ -92,8 +92,25 @@ export const BUILT_ON_FIRMS: BuiltOnFirm[] = [
   },
 ];
 
-/** The firm the page shows when no `?w=` is given. */
+/** The firm the page shows when no `ref` or `firm` is given. */
 export const DEFAULT_BUILT_ON_FIRM = "northbank";
+
+/**
+ * What a workspace lookup found. Opting out is kept apart from not being found:
+ * the page may name an unknown workspace from the badge's own `firm` param, but
+ * never one that asked to be left out.
+ */
+export type BuiltOnFirmLookup =
+  | { status: "found"; firm: BuiltOnFirm }
+  | { status: "optedOut" }
+  | { status: "unknown" };
+
+export function lookupBuiltOnFirm(id: string | undefined): BuiltOnFirmLookup {
+  const firm = id ? BUILT_ON_FIRMS.find((f) => f.id === id) : undefined;
+  if (!firm) return { status: "unknown" };
+  if (firm.optedOut) return { status: "optedOut" };
+  return { status: "found", firm };
+}
 
 /**
  * The workspace to personalize with, or undefined for the generic page.
@@ -104,7 +121,6 @@ export const DEFAULT_BUILT_ON_FIRM = "northbank";
 export function getBuiltOnFirm(
   id: string | undefined,
 ): BuiltOnFirm | undefined {
-  if (!id) return undefined;
-  const firm = BUILT_ON_FIRMS.find((f) => f.id === id);
-  return firm?.optedOut ? undefined : firm;
+  const lookup = lookupBuiltOnFirm(id);
+  return lookup.status === "found" ? lookup.firm : undefined;
 }

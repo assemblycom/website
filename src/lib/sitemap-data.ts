@@ -58,7 +58,7 @@ const EXCLUDED = new Set<string>([
   PROPOSAL_CREATOR_PATH,
   // Personalized per workspace and reached from a badge or a shared post, not
   // from search. Both are noindex in their own metadata.
-  "/built-on",
+  "/powered-by",
   "/built-by",
   // An internal contact sheet of the template cover mocks. Unlisted and
   // noindex; it exists to look at while designing, not to be found.

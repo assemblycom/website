@@ -7,15 +7,20 @@ import {
   type BuiltOnEventProps,
 } from "./built-on-events";
 
-/** Reports the page view once per mount. Renders nothing. */
-export function BuiltOnViewTracker(props: BuiltOnEventProps) {
+/**
+ * Reports the page view once per mount. Renders nothing.
+ *
+ * Takes the props as one object rather than spread: they carry a `ref` (the
+ * referring workspace), which React would take for its own and never pass on.
+ */
+export function BuiltOnViewTracker({ event }: { event: BuiltOnEventProps }) {
   // React runs effects twice in development's strict mode, which would double
   // every view in the numbers people look at while building this.
   const sent = useRef(false);
   useEffect(() => {
     if (sent.current) return;
     sent.current = true;
-    trackBuiltOn(BUILT_ON_EVENTS.viewed, props);
+    trackBuiltOn(BUILT_ON_EVENTS.viewed, event);
     // Fires on mount only: the page is one document per visitor, so a change in
     // these values means a new page, not a second view of this one.
     // eslint-disable-next-line react-hooks/exhaustive-deps

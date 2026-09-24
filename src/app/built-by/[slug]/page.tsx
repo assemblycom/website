@@ -4,11 +4,12 @@ import { BuiltOnPage } from "@/components/built-on/built-on-page";
 import { getBuiltOnFirm } from "@/lib/built-on-firms";
 import { IS_LIVE_SITE, SITE_NAME, SITE_URL } from "@/lib/constants";
 import { OG_IMAGE, ogImageForFirm } from "@/lib/og";
+import { shareAttribution } from "@/lib/powered-by-attribution";
 
 /**
  * The attributed link a firm shares when it posts about something it built.
  *
- * Same page as /built-on, reached a different way. The badge is clicked out of a
+ * Same page as /powered-by, reached a different way. The badge is clicked out of a
  * portal, so a query string is fine there; this one is typed into a LinkedIn
  * post and printed on the end card of a video, so it has to be short and has to
  * survive being read aloud. It also has to stay legible in the address bar after
@@ -18,10 +19,6 @@ import { OG_IMAGE, ogImageForFirm } from "@/lib/og";
  * to the CMS feature pages (/client-portal, /invoicing), and a firm slug there
  * would collide with those and with every future one.
  */
-
-// The surface, recorded on the signup link and on both events, so traffic from
-// a shared post can be told apart from traffic from the badge.
-const SURFACE = "share";
 
 export async function generateMetadata({
   params,
@@ -70,7 +67,7 @@ export default async function BuiltBy({
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  // Held on staging with /built-on, since the generator that hands firms this
+  // Held on staging with /powered-by, since the generator that hands firms this
   // link does not exist yet. Delete these two lines to ship both.
   if (IS_LIVE_SITE) redirect("/");
 
@@ -80,9 +77,11 @@ export default async function BuiltBy({
       // A slug that resolves to nothing, and a firm that opted out, both get the
       // generic page — but the slug still travels to signup, so a firm that
       // opted out of being named is still credited for the visitor it sent.
+      // The link carries no query string, so the attribution a badge would
+      // have sent is supplied here, with `utm_content=share` telling a shared
+      // post apart from a badge click.
       firm={getBuiltOnFirm(slug)}
-      workspaceId={slug}
-      surface={SURFACE}
+      attribution={shareAttribution(slug)}
     />
   );
 }
