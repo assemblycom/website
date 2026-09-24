@@ -250,7 +250,7 @@ export const PRIVACY_POLICY: LegalDocument = {
     },
     {
       id: "10-your-data-protection-rights-under-the-california-privacy-protection-act-caloppa",
-      title: "10. Your Data Protection Rights under the California Privacy Protection Act (CalOPPA)",
+      title: "10. Your Data Protection Rights under the California Online Privacy Protection Act (CalOPPA)",
       group: "Your rights",
       shortTitle: "10. CalOPPA Rights",
       sections: [
@@ -405,14 +405,14 @@ export const PRIVACY_POLICY: LegalDocument = {
           id: "15-behavioral-remarketing-google-ads-adwords",
           heading: "Google Ads (AdWords)",
           blocks: [
-            { type: "p", text: "Google Ads (AdWords) remarketing service is provided by Google Inc. You can opt-out of Google Analytics for Display Advertising and customize the Google Display Network ads by visiting My Ad Center: https://myadcenter.google.com Google also recommends installing the Google Analytics Opt-out Browser Add-on – https://tools.google.com/dlpage/gaoptout – for your web browser. Google Analytics Opt-out Browser Add-on provides visitors with the ability to prevent their data from being collected and used by Google Analytics. For more information on the privacy practices of Google, please visit the Google Privacy Terms web page: https://policies.google.com/privacy?hl=en" },
+            { type: "p", text: "Google Ads (AdWords) remarketing service is provided by Google LLC. You can opt-out of Google Analytics for Display Advertising and customize the Google Display Network ads by visiting My Ad Center: https://myadcenter.google.com Google also recommends installing the Google Analytics Opt-out Browser Add-on, https://tools.google.com/dlpage/gaoptout, for your web browser. Google Analytics Opt-out Browser Add-on provides visitors with the ability to prevent their data from being collected and used by Google Analytics. For more information on the privacy practices of Google, please visit the Google Privacy Terms web page: https://policies.google.com/privacy?hl=en" },
           ],
         },
         {
           id: "15-behavioral-remarketing-facebook",
           heading: "Facebook",
           blocks: [
-            { type: "p", text: "Facebook remarketing service is provided by Facebook Inc. You can learn more about interest-based advertising from Facebook by visiting this page: https://www.facebook.com/help/164968693837950 To opt-out from Facebook's interest-based ads, visit your Ad Preferences: https://www.facebook.com/adpreferences Facebook adheres to the Self-Regulatory Principles for Online Behavioural Advertising established by the Digital Advertising Alliance. You can also opt-out from Facebook and other participating companies through the Digital Advertising Alliance in the USA http://www.aboutads.info/choices/, the Digital Advertising Alliance of Canada in Canada http://youradchoices.ca/ or the European Interactive Digital Advertising Alliance in Europe http://www.youronlinechoices.eu/, or opt-out using your mobile device settings. For more information on the privacy practices of Facebook, please visit Facebook's Data Policy: https://www.facebook.com/privacy/explanation" },
+            { type: "p", text: "Facebook remarketing service is provided by Meta Platforms, Inc. You can learn more about interest-based advertising from Facebook by visiting this page: https://www.facebook.com/help/164968693837950 To opt-out from Facebook's interest-based ads, visit your Ad Preferences: https://www.facebook.com/adpreferences Facebook adheres to the Self-Regulatory Principles for Online Behavioural Advertising established by the Digital Advertising Alliance. You can also opt-out from Facebook and other participating companies through the Digital Advertising Alliance in the USA http://www.aboutads.info/choices/, the Digital Advertising Alliance of Canada in Canada http://youradchoices.ca/ or the European Interactive Digital Advertising Alliance in Europe http://www.youronlinechoices.eu/, or opt-out using your mobile device settings. For more information on the privacy practices of Facebook, please visit Facebook's Data Policy: https://www.facebook.com/privacy/policy" },
           ],
         },
         {
