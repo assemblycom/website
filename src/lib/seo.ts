@@ -113,12 +113,6 @@ export const PAGE_SEO = {
       "How Assembly handles workspace data across its AI capabilities: Assembly Assistant, third-party AI assistant connections via MCP, and the AI app builder.",
     path: "/legal/ai-policy",
   },
-  doNotSell: {
-    title: "Do Not Sell or Share My Personal Information",
-    description:
-      "Opt out of Assembly sharing your personal information with advertising partners, as described in Section 11 of the Privacy Policy.",
-    path: "/legal/do-not-sell-or-share",
-  },
   privacyPolicy: {
     title: "Privacy Policy",
     description:

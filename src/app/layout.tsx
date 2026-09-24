@@ -5,7 +5,7 @@ import { RootShell } from "@/components/layout/root-shell";
 import { FeaturedPostProvider } from "@/components/layout/featured-post";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { SegmentScript } from "@/components/analytics/segment-script";
-import { GtmScript } from "@/components/analytics/gtm-script";
+import { GtmScript, GtmNoScript } from "@/components/analytics/gtm-script";
 import { PageTracker } from "@/components/analytics/page-tracker";
 // Imported from the plain module, never from the "use client" provider — a
 // server importer of a client export gets a throwing proxy, not the string.
@@ -209,6 +209,7 @@ export default async function RootLayout({
         />
       </head>
       <body className="min-h-full overflow-x-clip font-sans">
+        <GtmNoScript />
         <ThemeProvider>
           <FeaturedPostProvider post={featured}>
             <RootShell>{children}</RootShell>
