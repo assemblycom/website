@@ -1,10 +1,12 @@
 import "server-only";
 
+import { createHash } from "node:crypto";
 import { cache } from "react";
 import { imageSize } from "image-size";
 
 import type { BuiltOnFirm } from "@/lib/built-on-firms";
 import { IS_LIVE_SITE } from "@/lib/constants";
+import { DEFAULT_LOGO_HASHES } from "@/lib/default-logo-hashes";
 import { isWorkspaceLogoHost } from "@/lib/image-hosts";
 
 const PORTAL_API_URL =
@@ -74,8 +76,9 @@ interface FirmLogo {
 }
 
 /**
- * The first candidate, in order, that loads and can be measured. This includes
- * the stand-in the logo finder assigns a workspace with no upload of its own.
+ * The first candidate, in order, that loads, can be measured, and is not one of
+ * Assembly's own stand-ins (see DEFAULT_LOGO_HASHES). A workspace whose every
+ * candidate is a stand-in gets no logo, and the page draws the initial.
  * All start downloading at once, but only the ones ahead of the winner are
  * waited on: once the first choice is usable, a slow second one no longer
  * holds the page.
@@ -96,6 +99,8 @@ async function measureLogo(url: string): Promise<FirmLogo | undefined> {
   if (!isWorkspaceLogoHost(url)) return undefined;
   const bytes = await fetchBytes(url);
   if (!bytes) return undefined;
+  // Assembly's own mark, wherever it is filed, is not the firm's logo.
+  if (DEFAULT_LOGO_HASHES.has(sha256(bytes))) return undefined;
 
   try {
     const { width, height } = imageSize(bytes);
@@ -104,6 +109,10 @@ async function measureLogo(url: string): Promise<FirmLogo | undefined> {
     // Not an image we can read, so not one we can size or trust to render.
     return undefined;
   }
+}
+
+function sha256(bytes: Uint8Array): string {
+  return createHash("sha256").update(bytes).digest("hex");
 }
 
 async function fetchJson(url: string): Promise<unknown> {
