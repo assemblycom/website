@@ -5,7 +5,7 @@ import type { LegalDocument } from "@/components/legal/legal-document";
 // bump `lastUpdated` when they do. The control itself is
 // `components/legal/ad-opt-out.tsx`.
 export const DO_NOT_SELL: LegalDocument = {
-  title: "Do Not Sell or Share My Personal Information",
+  title: "Do not sell or share my personal information",
   lastUpdated: "09/24/2026",
   intro: [
     { type: "p", text: "California law gives you the right to opt out of the “sale” or “sharing” of your personal information. This includes sharing identifiers (such as hashed email addresses), cookie data and usage data with advertising partners for cross-context behavioral advertising. Section 11 of our [Privacy Policy](/legal/privacy-policy) describes what we share and with whom." },
