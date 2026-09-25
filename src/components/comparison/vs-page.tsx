@@ -3,6 +3,7 @@ import { FAQ, type FAQEntry } from "@/components/home/faq";
 import { Testimonials } from "@/components/home/testimonials";
 import { FeatureMatrix } from "@/components/comparison/feature-matrix";
 import { GRID_LINE, GridDivider, GridRails } from "@/components/ui/grid-lines";
+import { PostToc } from "@/components/blog/post-toc";
 import { Reveal } from "@/components/ui/reveal";
 import { VisualSlot } from "@/components/ui/visual-slot";
 import { DEMO_URL, SIGNUP_URL } from "@/lib/constants";
@@ -164,36 +165,55 @@ export function VsComparisonPage({ page }: { page: VsPage }) {
 
         <GridDivider />
 
-        {page.pillars.map((pillar, i) => (
-          <div key={pillar.heading}>
-            {i > 0 && <GridDivider />}
-            <section className={`${RAIL} py-16 md:py-20`}>
-              <Reveal>
-                <div className="grid gap-10 md:grid-cols-2 md:gap-16">
-                  <div className="md:self-start">
+        {/* One region rather than a section per pillar, with the site's own
+            contents rail standing beside it. Six full-width sections in a row
+            gave the reader no sense of how long the argument was or where they
+            were in it; the rail answers both without pinning the scroll. */}
+        <section className={`${RAIL} py-16 md:py-24`}>
+          <div className="grid gap-12 md:grid-cols-[13rem_minmax(0,1fr)] md:gap-16">
+            <PostToc
+              headings={page.pillars.map((pillar) => ({
+                id: pillarId(pillar.heading),
+                text: pillar.heading,
+              }))}
+              // Sticky, not fixed: it holds beside the pillars and lets go at
+              // the end of them, so it never outlives the region it indexes.
+              className="hidden md:sticky md:top-28 md:block md:self-start"
+            />
+
+            <div className="space-y-16 md:space-y-24">
+              {page.pillars.map((pillar) => (
+                <div
+                  key={pillar.heading}
+                  id={pillarId(pillar.heading)}
+                  // Matches the line the rail counts a heading as reached at,
+                  // so a jumped-to pillar is current the moment it lands.
+                  className="scroll-mt-28"
+                >
+                  <Reveal>
                     <h3 className="type-h3 text-balance leading-[1.2]">
                       {pillar.heading}
                     </h3>
                     {pillar.sub && (
-                      <p className="mt-4 max-w-md text-muted-foreground">
+                      <p className="mt-4 max-w-xl text-muted-foreground">
                         {pillar.sub}
                       </p>
                     )}
-                    <p className="mt-4 max-w-md text-muted-foreground">
+                    <p className="mt-4 max-w-xl text-muted-foreground">
                       {pillar.body}
                     </p>
                     {pillar.note && <Note>{pillar.note}</Note>}
-                  </div>
-                  <VisualSlot
-                    ratio="4 / 3"
-                    label={pillar.visual.label}
-                    description={pillar.visual.description}
-                  />
+                    <VisualSlot
+                      className="mt-8"
+                      label={pillar.visual.label}
+                      description={pillar.visual.description}
+                    />
+                  </Reveal>
                 </div>
-              </Reveal>
-            </section>
+              ))}
+            </div>
           </div>
-        ))}
+        </section>
 
         <GridDivider />
 
@@ -331,6 +351,14 @@ export function VsComparisonPage({ page }: { page: VsPage }) {
 }
 
 /** A fact-check or legal flag, kept beside the claim it qualifies. */
+/** A pillar's anchor, derived from its heading so the two can never drift. */
+function pillarId(heading: string) {
+  return `pillar-${heading
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "")}`;
+}
+
 function Note({ children }: { children: React.ReactNode }) {
   return (
     <p className="mt-5 max-w-md rounded-lg bg-muted p-4 text-sm leading-relaxed text-muted-foreground">
