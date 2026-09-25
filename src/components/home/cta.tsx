@@ -1,11 +1,17 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { V66Composer } from "./hero-v66";
 import { PROMPT_IDEAS } from "./prompt-ideas";
 import { useTheme } from "@/components/theme/theme-provider";
 
-export function CTA() {
+export function CTA({
+  heading,
+}: {
+  // Overrides the default close for a page whose argument ends somewhere else
+  // (e.g. the AI app builder page closes on what you would build today).
+  heading?: ReactNode;
+} = {}) {
   // Dark sheet flowing into the black footer below; the green wordmark panel is
   // revealed beneath (square top, footer rounds the bottom).
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -37,9 +43,13 @@ export function CTA() {
         <h2
           className="type-h2 text-balance leading-[1.12] text-neutral-900 [[data-theme=dark]_&]:text-white"
         >
-          Build the firm
-          <br />
-          only you can build
+          {heading ?? (
+            <>
+              Build the firm
+              <br />
+              only you can build
+            </>
+          )}
         </h2>
         <div className="mx-auto mt-8 max-w-xl text-left">
           {/* Same animated gradient border as the hero composer up top. Every
