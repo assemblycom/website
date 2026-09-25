@@ -14,7 +14,18 @@ import { Section } from "@/components/ui/section";
 // link goes to their case study rather than the customers index.
 // ─────────────────────────────────────────────────────────────────────────
 
-const FEATURED = {
+export interface CustomerStory {
+  quote: string;
+  name: string;
+  firm: string;
+  /** Portrait or firm shot in /public/images/customers. */
+  image: string;
+  stats: { value: string; label: string }[];
+  href: string;
+}
+
+// The default story, and the one the homepage runs.
+const FEATURED: CustomerStory = {
   quote:
     "We’ve built out apps within weeks that I doubt we could have done within five to ten years before.",
   name: "Garrett",
@@ -34,7 +45,18 @@ const FEATURED = {
 // empty space above the last bar for the story link to sit in.
 const BAR_HEIGHTS = ["md:h-[280px]", "md:h-[228px]", "md:h-[186px]"];
 
-export function Testimonials() {
+/**
+ * One featured customer story, in the composition the homepage established.
+ *
+ * Takes a story so the feature and comparison pages can run their own (the
+ * client portal page leads with Collective CPA) without a second copy of this
+ * layout drifting away from this one.
+ */
+export function Testimonials({
+  story = FEATURED,
+}: {
+  story?: CustomerStory;
+} = {}) {
   return (
     // px-0 on the Section so the measure below owns the horizontal inset: this
     // section's edges have to land on the same line as the one under it, and
@@ -47,7 +69,7 @@ export function Testimonials() {
             column every other element in the section lines up on. */}
         <div className="absolute right-10 top-0 hidden size-32 overflow-hidden rounded-xl bg-muted [[data-theme=dark]_&]:bg-white/[0.06] md:block lg:size-36">
           <Image
-            src={FEATURED.image}
+            src={story.image}
             alt=""
             fill
             // Declared well above the 144px box: object-cover scales the source
@@ -65,7 +87,7 @@ export function Testimonials() {
         {/* Avatar on mobile — sits inline above the attribution. */}
         <div className="relative mb-5 size-32 overflow-hidden rounded-xl bg-muted [[data-theme=dark]_&]:bg-white/[0.06] md:hidden">
           <Image
-            src={FEATURED.image}
+            src={story.image}
             alt=""
             fill
             sizes="256px"
@@ -77,8 +99,8 @@ export function Testimonials() {
         {/* Attribution leads the section — small caps in the mono face, the
             colour shift (not a divider glyph) separates name from role. */}
         <p className="type-eyebrow text-foreground md:pr-44">
-          {FEATURED.name}
-          <span className="ml-3 text-muted-foreground">{FEATURED.firm}</span>
+          {story.name}
+          <span className="ml-3 text-muted-foreground">{story.firm}</span>
         </p>
 
         {/* Pull quote — the hero of the section. type-h2 (28 → 36px) rather
@@ -94,9 +116,13 @@ export function Testimonials() {
             a hanging glyph reads as a stray character and every wrapped line
             looked indented against it. The blockquote already says it's a
             quote. */}
-        <blockquote className="type-h2 mt-5 max-w-3xl text-foreground md:pr-44 md:[text-indent:-0.4em]">
+        {/* max-w-4xl, not 3xl: the portrait sits at right-10 of a 1200px rail,
+            so pr-44 already clears it and the extra measure costs nothing. At
+            3xl a longer quote than the default ran six short lines against a
+            half-empty column. */}
+        <blockquote className="type-h2 mt-5 max-w-4xl text-foreground md:pr-44 md:[text-indent:-0.4em]">
           <span className="hidden md:inline">&ldquo;</span>
-          {FEATURED.quote}
+          {story.quote}
           <span className="hidden md:inline">&rdquo;</span>
         </blockquote>
 
@@ -111,7 +137,7 @@ export function Testimonials() {
               columns. At md+ they become the descending bar chart — tallest to
               shortest — with the story link floating above the last bar. */}
           <div className="flex flex-col gap-3 md:mt-16 md:flex-row md:items-end md:gap-5">
-            {FEATURED.stats.map((s, i) => (
+            {story.stats.map((s, i) => (
               <div
                 key={s.label}
                 // bg-muted (the palette's light gray) rather than a warm off-white
@@ -143,7 +169,7 @@ export function Testimonials() {
           {/* Story link — floats in the whitespace above the shortest bar on
             desktop; the last line inside the ringed block on mobile. */}
           <Link
-            href={FEATURED.href}
+            href={story.href}
             className="type-body group inline-flex items-center gap-1.5 px-2 pb-1 pt-2 text-foreground md:absolute md:bottom-[210px] md:right-10 md:mt-0 md:p-0 lg:bottom-[218px]"
           >
             {/* No rule under the text: the arrow beside it already reads as a

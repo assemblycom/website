@@ -41,6 +41,30 @@ export const PAGE_SEO = {
       "Free forever, with real client experience apps included. Paid plans add contacts, build credits, and white-labeling as your firm grows. No credit card required.",
     path: "/pricing",
   },
+  aiAppBuilder: {
+    title: "AI App Builder",
+    description:
+      "Describe an app in plain English. Assembly builds a working app for your team or your clients, with secure logins, permissions, and your branding built in.",
+    path: "/ai-app-builder",
+  },
+  clientPortal: {
+    title: "Client Portal Software You Can Build On",
+    description:
+      "Assembly is the client portal with ready-made apps for messaging, billing, files, and contracts, plus an AI app builder to customize your own.",
+    path: "/client-portal",
+  },
+  vsLovable: {
+    title: "Assembly vs Lovable: The Client-Facing AI App Builder",
+    description:
+      "Compare Assembly and Lovable. Assembly ships AI-built apps into a branded client experience with logins, a CRM, and permissions included, not a prototype.",
+    path: "/comparison/lovable",
+  },
+  vsBase44: {
+    title: "Assembly vs Base44: Client-Ready AI App Builder",
+    description:
+      "Compare Assembly and Base44. Assembly puts your brand on every app, includes a client experience and CRM, and lets clients use your apps at no credit cost.",
+    path: "/comparison/base44",
+  },
   security: {
     title: "Security",
     description:

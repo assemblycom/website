@@ -324,19 +324,41 @@ export function NavMegaPanel({
           : `pointer-events-none opacity-0 ${instant ? "" : "-translate-y-1"}`
       } [[data-theme=dark]_&]:border-white/10`}
     >
-      <div className={`mx-auto flex gap-16 ${railClassName} py-8`}>
-        {columnsOf(shown).map((column) => (
-          <div key={column.label ?? shown.label} className="min-w-0 basis-44">
-            <p className={COLUMN_LABEL}>{column.label ?? shown.label}</p>
-            <ul className="mt-3 -ml-1">
-              {column.items.map((item) => (
-                <li key={item.href}>
-                  <PanelLink item={item} onNavigate={menu.close} />
-                </li>
+      {/* Every group is laid out in the same grid cell, with the ones that are
+          not open hidden rather than unmounted. The sheet is then always as tall
+          as the tallest panel, so a short menu (Product, two links) drops to the
+          same depth as a long one (Resources, three) and switching between
+          triggers never changes the sheet's height mid-hover.
+
+          `invisible` (visibility: hidden), not opacity: it takes the hidden
+          groups out of the accessibility tree and off the tab order, so only the
+          open panel's links can be read or focused. */}
+      <div className={`mx-auto grid ${railClassName} py-8`}>
+        {entries.filter(isNavGroup).map((group) => {
+          const current = group.label === shown.label;
+          return (
+            <div
+              key={group.label}
+              aria-hidden={!current}
+              className={`col-start-1 row-start-1 flex gap-16 ${
+                current ? "" : "invisible"
+              }`}
+            >
+              {columnsOf(group).map((column) => (
+                <div key={column.label ?? group.label} className="min-w-0 basis-56">
+                  <p className={COLUMN_LABEL}>{column.label ?? group.label}</p>
+                  <ul className="mt-3 -ml-1">
+                    {column.items.map((item) => (
+                      <li key={item.href}>
+                        <PanelLink item={item} onNavigate={menu.close} />
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               ))}
-            </ul>
-          </div>
-        ))}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
