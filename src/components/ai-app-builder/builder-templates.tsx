@@ -44,7 +44,7 @@ export function BuilderTemplates() {
         <div className="flex items-end justify-between gap-6">
           <div>
             <h2 className="type-h2 text-balance">
-              Not a builder? Start from a template and remix it.
+              Not a builder? Start from a template and remix it
             </h2>
             <p className="mt-4 max-w-2xl text-muted-foreground">
               20+ templates made for businesses like yours. Install one, then

@@ -63,7 +63,7 @@ export function BuilderAlternatives() {
     <section className="mx-auto max-w-[1200px] px-6 py-16 md:px-10 md:py-24">
       <Reveal>
         <h2 className="type-h2 text-balance">
-          Three ways to get a custom app. One is ready to use.
+          Three ways to get a custom app. One is ready to use
         </h2>
         <p className="mt-4 max-w-2xl text-muted-foreground">
           Every option below can produce an app. Only one comes with the logins,

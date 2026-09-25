@@ -113,7 +113,7 @@ export default function ClientPortalPage() {
             Free forever plan
           </span>
           <h1 className="type-display mt-6 text-balance">
-            The client portal you can build on.
+            The client portal you can build on
           </h1>
           <p className="type-lead mx-auto mt-6 max-w-xl text-balance text-muted-foreground">
             Assembly is the client portal with ready-made apps for messaging,

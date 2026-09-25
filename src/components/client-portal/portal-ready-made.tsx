@@ -44,7 +44,7 @@ export function PortalReadyMade() {
         <div className="flex items-end justify-between gap-6">
           <div>
             <h2 className="type-h2 text-balance">
-              Start with what every firm needs.
+              Start with what every firm needs
             </h2>
             <p className="mt-4 max-w-2xl text-muted-foreground">
               Choose from built-in pre-made app templates, all added to a

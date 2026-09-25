@@ -24,7 +24,7 @@ export const metadata: Metadata = pageMetadata(PAGE_SEO.aiAppBuilder);
  */
 const PILLARS: Pillar[] = [
   {
-    heading: "Build client-facing apps and internal tools, all in one place.",
+    heading: "Build client-facing apps and internal tools, all in one place",
     body: "Describe an onboarding flow for your clients or a reporting dashboard for your team. Assembly builds it, and each lands where it belongs: client apps in your branded client experience, team tools in your dashboard.",
     facts: [
       { label: "Collective CPA", value: "Live team dashboard in under an hour" },
@@ -37,7 +37,7 @@ const PILLARS: Pillar[] = [
     },
   },
   {
-    heading: "One CRM. Every app connects to it.",
+    heading: "One CRM. Every app connects to it",
     body: "Assembly includes a full CRM: contacts, companies, and custom fields. Every app you build connects to it automatically, and each client only sees what they're allowed to see.",
     facts: [
       { label: "What it holds", value: "Contacts, companies, custom fields" },
@@ -50,7 +50,7 @@ const PILLARS: Pillar[] = [
     },
   },
   {
-    heading: "Secure logins, permissions, and billing come built in.",
+    heading: "Secure logins, permissions, and billing come built in",
     body: "Every app comes with secure logins for your team and your clients, control over who sees what, and a built-in billing option if you need it. You approve a plan before anything is built, nothing reaches clients until you make it visible, and our team helps if a build stalls.",
     facts: [
       { label: "Clients sign in with", value: "Google or a one-click email link" },
@@ -63,7 +63,7 @@ const PILLARS: Pillar[] = [
     },
   },
   {
-    heading: "Your clients already have a branded home. New apps land in it.",
+    heading: "Your clients already have a branded home. New apps land in it",
     body: "Your clients see your logo and colors. Every new app picks up your branding automatically, so nothing looks bolted on.",
     facts: [
       { label: "Why firms pick Assembly", value: "Branding, the number 3 reason" },
@@ -181,7 +181,7 @@ export default function AiAppBuilderPage() {
             in a row before the argument had started. */}
         <section className="mx-auto max-w-[1200px] px-6 py-16 text-center md:px-10 md:py-24">
           <h2 className="type-h2 mx-auto max-w-3xl text-balance">
-            Build the app. Everything around it comes included.
+            Build the app. Everything around it comes included
           </h2>
         </section>
 

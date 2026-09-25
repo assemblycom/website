@@ -39,7 +39,7 @@ export function PortalBuild() {
     >
       <Reveal>
         <h2 className="type-h2 text-balance">
-          Build the features unique to your firm.
+          Build the features unique to your firm
         </h2>
         <p className="mt-4 max-w-2xl text-muted-foreground">
           Tell us what you want. Assembly shows you a plan to approve or edit,

@@ -35,7 +35,7 @@ export function PortalStack() {
         <div className="grid gap-10 md:grid-cols-2 md:gap-16">
           <div className="md:self-start">
             <h2 className="type-h2 text-balance">
-              Keep the tools you already use.
+              Keep the tools you already use
             </h2>
             <p className="mt-5 max-w-md text-muted-foreground">
               Embed the tools you love, connect what you run, automate the

@@ -48,7 +48,7 @@ export function PortalTailor() {
     <section className="mx-auto max-w-[1200px] px-6 py-16 md:px-10 md:py-24">
       <Reveal>
         <h2 className="type-h2 text-balance">
-          One portal. A different experience for every client.
+          One portal. A different experience for every client
         </h2>
         <p className="mt-4 max-w-2xl text-muted-foreground">
           Control which apps each client and company sees, brand it on your own

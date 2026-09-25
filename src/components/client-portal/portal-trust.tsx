@@ -18,7 +18,7 @@ export function PortalTrust() {
         <div className="grid gap-10 md:grid-cols-2 md:gap-16">
           <div className="md:self-start">
             <h2 className="type-h2 text-balance">
-              Secure by the platform, not by the prompt.
+              Secure by the platform, not by the prompt
             </h2>
             <p className="mt-5 max-w-md text-muted-foreground">
               Logins, permissions, and data isolation are platform

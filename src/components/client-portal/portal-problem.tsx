@@ -15,7 +15,7 @@ export function PortalProblem() {
     <section className="mx-auto max-w-[1200px] px-6 py-16 md:px-10 md:py-24">
       <Reveal>
         <h2 className="type-h2 text-balance">
-          Off-the-shelf portals make your firm fit the software. Not Assembly.
+          Off-the-shelf portals make your firm fit the software. Not Assembly
         </h2>
         <p className="mt-5 max-w-2xl text-muted-foreground">
           Stop bending your workflow to fit someone else&apos;s product. When

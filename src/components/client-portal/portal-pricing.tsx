@@ -25,7 +25,7 @@ export function PortalPricing() {
       <Reveal>
         <div className="flex items-end justify-between gap-6">
           <div>
-            <h2 className="type-h2 text-balance">Start free. Build as you grow.</h2>
+            <h2 className="type-h2 text-balance">Start free. Build as you grow</h2>
             <p className="mt-4 max-w-2xl text-muted-foreground">
               The free plan never expires and includes real, publishable apps.
               Paid plans add your own domain, more clients, and more apps.

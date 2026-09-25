@@ -26,7 +26,7 @@ const PAGE: VsPage = {
     },
   },
   glance: {
-    heading: "Same prompt. Very different destination.",
+    heading: "Same prompt. Very different destination",
     sub: "Lovable ends with a prototype you finish. Assembly ends with an app your clients can sign into.",
     rows: [
       {
@@ -87,7 +87,7 @@ const PAGE: VsPage = {
   pillarsHeading: "Why teams choose Assembly over Lovable",
   pillars: [
     {
-      heading: "Apps your clients can use securely.",
+      heading: "Apps your clients can use securely",
       sub: "Lovable ships a prototype at its own address. Assembly builds into a branded client experience ready for your clients to use.",
       body: "Every Assembly app has two sides: your team works in the dashboard, and each client sees only their own view inside your client experience. There is no second app to secure or connect.",
       visual: {
@@ -97,7 +97,7 @@ const PAGE: VsPage = {
       },
     },
     {
-      heading: "Secure logins and permissions come built in.",
+      heading: "Secure logins and permissions come built in",
       sub: "Assembly lets you customize access rules and handles authentication, so you do not have to worry about it.",
       body: "On Lovable, access rules are generated per app. On Assembly we maintain the platform infrastructure, so the logins, permissions, and the boundary between what your team sees and what each client sees stay secure.",
       visual: {
@@ -107,7 +107,7 @@ const PAGE: VsPage = {
       },
     },
     {
-      heading: "One CRM. Every app connects to it.",
+      heading: "One CRM. Every app connects to it",
       body: "Assembly includes a full CRM: contacts, companies, and custom fields. Every app you build connects to it automatically, and each client only sees what they're allowed to see.",
       visual: {
         label: "Pillar 3 visual",
@@ -118,7 +118,7 @@ const PAGE: VsPage = {
   ],
   deepDives: [
     {
-      heading: "Describe it. Approve it. Clients use it.",
+      heading: "Describe it. Approve it. Clients use it",
       body: "Assembly asks a few questions, shows a plan covering what it builds, what data it uses and who sees it, then waits for your approval. Only then does it publish into your client experience. New apps stay hidden from clients until you make them visible, and you can keep chatting to change anything, before launch or six months later.",
       visual: {
         label: "Deep dive, the plan",
@@ -127,7 +127,7 @@ const PAGE: VsPage = {
       },
     },
     {
-      heading: "A full client experience, not just a builder.",
+      heading: "A full client experience, not just a builder",
       body: "Lovable gives you a blank canvas. Assembly gives you a client portal out of the box, so you build the part that is distinctly yours. The built-in CRM, the client experience, and ready-made apps for billing, messaging and onboarding are already there.",
       visual: {
         label: "Deep dive, the platform",
@@ -136,7 +136,7 @@ const PAGE: VsPage = {
       },
     },
     {
-      heading: "Stop carrying the maintenance yourself.",
+      heading: "Stop carrying the maintenance yourself",
       body: "With tools like Lovable, every app is a codebase you own and maintain, and every AI edit can break what worked. On Assembly the most important parts of your clients' experience are engineered once and inherited by every app, on a platform thousands of professional businesses already run on.",
       note: "Use the phrase engineered once and inherited by every app. Do not write that security fixes ship platform-wide, which is not documented in those words.",
       visual: {
@@ -147,7 +147,7 @@ const PAGE: VsPage = {
     },
   ],
   betterFit: {
-    heading: "When Lovable is the better fit.",
+    heading: "When Lovable is the better fit",
     sub: "We would rather tell you than waste your time.",
     items: [
       {
@@ -165,7 +165,7 @@ const PAGE: VsPage = {
     ],
   },
   pricing: {
-    heading: "Predictable pricing by design.",
+    heading: "Predictable pricing by design",
     sub: "Lovable's credits also fund hosting and your live app's AI usage, so an active app keeps spending.",
     body: "On Assembly, build credits are used only when the app builder creates or edits an app. Using your live apps consumes none, so a busy client-facing app does not compete with your own building. Hosting is included at no more than $5 a month, and clients can use your apps as much as they want.",
     visual: {
@@ -175,7 +175,7 @@ const PAGE: VsPage = {
     },
   },
   proof: {
-    heading: "Built on Assembly, ready for clients in weeks.",
+    heading: "Built on Assembly, ready for clients in weeks",
     sub: "An 11-person agency shipped apps to 200+ clients in five weeks.",
   },
   faqs: [

@@ -27,7 +27,7 @@ const PAGE: VsPage = {
     },
   },
   glance: {
-    heading: "Two ways to ship an app. One is meant for clients.",
+    heading: "Two ways to ship an app. One is meant for clients",
     sub: "Base44 is fast and all-in-one. Here is what changes when clients are involved.",
     rows: [
       {
@@ -88,7 +88,7 @@ const PAGE: VsPage = {
   pillarsHeading: "Why teams choose Assembly over Base44",
   pillars: [
     {
-      heading: "Your brand, from the very first screen.",
+      heading: "Your brand, from the very first screen",
       sub: "Assembly offers full white-labeling on the Professional plan.",
       body: "Customization and white-labeling is one of the top three reasons customers choose Assembly, raised in 27% of 2,926 sales calls.",
       note: "The Base44 login-splash claim is current as of September 2026 and sourced to Base44's own feedback board. Base44 shipped platform-wide custom login pages in June 2026 and could close the gap, so re-verify before every refresh of this page.",
@@ -99,7 +99,7 @@ const PAGE: VsPage = {
       },
     },
     {
-      heading: "A real client experience, included.",
+      heading: "A real client experience, included",
       sub: "Every app has a team side and a per-client side.",
       body: "Base44 can build a client-facing app, but you assemble the client experience yourself. Assembly comes with a branded one out of the box. Apps ship straight into it, and each client sees only their own view.",
       visual: {
@@ -109,7 +109,7 @@ const PAGE: VsPage = {
       },
     },
     {
-      heading: "One credit meter, not two.",
+      heading: "One credit meter, not two",
       sub: "Using your live apps in Assembly does not require credits.",
       body: "Base44 meters building and live usage separately, and neither rolls over. On Assembly, once an app is live you pay $5 a month hosting and your clients use it as much as they want. Credits roll over for one month, and you can change your plan whenever you want.",
       note: "Confirm the exact figures against the live pricing page before publish: paid plans include 200 build credits a month and Free includes 50, unused credits roll over one additional month, extra credits are $0.60 each, extra apps are $5 a month. The rollover policy changed recently.",
@@ -122,7 +122,7 @@ const PAGE: VsPage = {
   ],
   deepDives: [
     {
-      heading: "Built for clients, not just builders.",
+      heading: "Built for clients, not just builders",
       body: "Tools for your team land in your dashboard. Client-facing apps land in your branded client experience with logins already handled. Assembly shows you a plan before it builds, and new apps stay hidden from clients until you make them visible.",
       visual: {
         label: "Deep dive, the plan",
@@ -131,7 +131,7 @@ const PAGE: VsPage = {
       },
     },
     {
-      heading: "The stack Base44 makes you build is already assembled.",
+      heading: "The stack Base44 makes you build is already assembled",
       body: "Assembly comes with a built-in CRM, a client login experience, and ready-to-use apps for billing, project management and onboarding. Connect the tools you already run through native integrations, embeds, or by asking the builder to integrate them for you.",
       visual: {
         label: "Deep dive, the platform",
@@ -140,7 +140,7 @@ const PAGE: VsPage = {
       },
     },
     {
-      heading: "Security you don't generate.",
+      heading: "Security you don't generate",
       body: "Each app in Assembly is scoped to your workspace with its own dedicated database and deployment, and a maintained boundary between team and client data. Logins and permissions are platform infrastructure maintained by Assembly, not generated per app.",
       note: "Confirm Base44's current certifications at its Trust Center before any comparative security claim ships.",
       visual: {
@@ -151,7 +151,7 @@ const PAGE: VsPage = {
     },
   ],
   betterFit: {
-    heading: "When Base44 is the better fit.",
+    heading: "When Base44 is the better fit",
     sub: "We would rather tell you than waste your time.",
     items: [
       {
@@ -169,7 +169,7 @@ const PAGE: VsPage = {
     ],
   },
   proof: {
-    heading: "Built on Assembly and ready for clients in weeks.",
+    heading: "Built on Assembly and ready for clients in weeks",
     sub: "An 11-person agency shipped apps to 200+ clients in five weeks.",
   },
   faqs: [
