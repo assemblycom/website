@@ -86,13 +86,17 @@ export function BuilderAlternatives() {
                     className={`px-4 py-3 ${i === OWN ? "bg-muted" : ""}`}
                   >
                     <span
-                      className={`type-eyebrow block ${
+                      className={`block text-sm ${
                         i === OWN ? "text-foreground" : "text-muted-foreground"
                       }`}
                     >
                       {COLUMNS[i]}
                     </span>
-                    <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                    <p
+                      className={`mt-1 text-sm leading-relaxed ${
+                        i === OWN ? "text-foreground" : "text-muted-foreground"
+                      }`}
+                    >
                       {cell}
                     </p>
                   </div>
@@ -116,14 +120,14 @@ export function BuilderAlternatives() {
             </colgroup>
             <thead>
               <tr className={`border-b ${GRID_LINE}`}>
-                <th scope="col" className="pb-3 pr-4">
+                <th scope="col" className="pb-5 pr-8">
                   <span className="sr-only">Capability</span>
                 </th>
                 {COLUMNS.map((column, i) => (
                   <th
                     key={column}
                     scope="col"
-                    className={`type-eyebrow px-4 pb-3 pt-3 ${
+                    className={`px-6 pb-5 pt-5 text-sm font-normal ${
                       i === OWN
                         ? "rounded-t-lg bg-muted text-foreground"
                         : "text-muted-foreground"
@@ -139,17 +143,24 @@ export function BuilderAlternatives() {
                 const last = r === ROWS.length - 1;
                 return (
                   <tr key={row.label} className={last ? "" : `border-b ${GRID_LINE}`}>
-                    <th scope="row" className="py-4 pr-4 align-top font-normal">
+                    <th scope="row" className="py-6 pr-8 align-top font-normal">
                       <span className="block text-sm">{row.label}</span>
                     </th>
                     {row.cells.map((cell, i) => (
                       <td
                         key={COLUMNS[i]}
-                        className={`px-4 py-4 align-top ${
+                        className={`px-6 py-6 align-top ${
                           i === OWN ? "bg-muted" : ""
                         } ${i === OWN && last ? "rounded-b-lg" : ""}`}
                       >
-                        <p className="text-sm leading-relaxed text-muted-foreground">
+                        {/* Our column in full-strength text. Set in the same
+                            muted grey as the two alternatives, the answer
+                            carried no more weight than what it is answering. */}
+                        <p
+                          className={`text-sm leading-relaxed ${
+                            i === OWN ? "text-foreground" : "text-muted-foreground"
+                          }`}
+                        >
                           {cell}
                         </p>
                       </td>
@@ -161,16 +172,14 @@ export function BuilderAlternatives() {
           </table>
         </div>
 
-        <p className="mt-8 text-sm text-muted-foreground">
-          Want the breakdown against a tool by name? See the{" "}
-          <Link
-            href="/comparison"
-            className="underline underline-offset-2 transition-colors hover:text-foreground"
-          >
-            comparison pages
-          </Link>
-          .
-        </p>
+        {/* The outlined link the other sections on this page already use for a
+            side route, rather than a loose sentence under the table. */}
+        <Link
+          href="/comparison"
+          className="mt-8 inline-block rounded-lg border border-border px-4 py-1.5 text-sm text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground"
+        >
+          Compare against a specific tool
+        </Link>
       </Reveal>
     </section>
   );

@@ -39,19 +39,36 @@ export function PortalPricing() {
           </Link>
         </div>
 
-        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {TIERS.map((tier) => (
-            <div key={tier.name} className={`rounded-xl border p-5 ${GRID_LINE}`}>
-              <p className="type-eyebrow text-muted-foreground">{tier.name}</p>
-              <p className="mt-3 text-2xl leading-none">{tier.price}</p>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {tier.name === "Free" ? "forever" : "per month, billed annually"}
-              </p>
-              <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-                {tier.note}
-              </p>
-            </div>
-          ))}
+        {/* One tiled grid closed by its own rules rather than four outlined
+            chips, so the four plans read as one ladder. The rules have to be
+            re-declared per breakpoint because the column count changes: four
+            across, then two, then one. */}
+        <div className="-mx-6 mt-12 md:-mx-10">
+          <div className={`hidden border-t md:block ${GRID_LINE}`} />
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4">
+            {TIERS.map((tier, i) => (
+              <div
+                key={tier.name}
+                className={`px-6 py-8 md:px-10 md:py-12 ${GRID_LINE} ${
+                  i > 0 ? "border-t" : ""
+                } ${i % 2 === 1 ? "sm:border-l" : "sm:border-l-0"} ${
+                  i >= 2 ? "sm:border-t" : "sm:border-t-0"
+                } ${i > 0 ? "lg:border-l" : "lg:border-l-0"} lg:border-t-0`}
+              >
+                <p className="type-eyebrow text-muted-foreground">{tier.name}</p>
+                <p className="mt-3 text-2xl leading-none">{tier.price}</p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {tier.name === "Free"
+                    ? "forever"
+                    : "per month, billed annually"}
+                </p>
+                <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+                  {tier.note}
+                </p>
+              </div>
+            ))}
+          </div>
+          <div className={`hidden border-t md:block ${GRID_LINE}`} />
         </div>
       </Reveal>
     </section>

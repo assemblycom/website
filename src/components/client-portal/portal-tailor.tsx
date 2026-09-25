@@ -55,22 +55,33 @@ export function PortalTailor() {
           domain, and give each segment the workflow it actually needs.
         </p>
 
-        <div className="mt-10 grid gap-4 sm:grid-cols-2">
-          {SEGMENTS.map((item) => (
-            <Link
-              key={item.segment}
-              href={item.href}
-              className={`rounded-xl border p-5 transition-colors hover:border-foreground/20 ${GRID_LINE}`}
-            >
-              <p className="type-eyebrow text-muted-foreground">
-                {item.segment}
-              </p>
-              <p className="mt-3 text-sm">{item.app}</p>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                {item.body}
-              </p>
-            </Link>
-          ))}
+        {/* One tiled grid closed by its own rules, rather than four outlined
+            cards floating in gaps: the four are one set, and the rules say so
+            the way the rest of the page's grid does. */}
+        <div className="-mx-6 mt-12 md:-mx-10">
+          <div className={`hidden border-t md:block ${GRID_LINE}`} />
+          <div className="grid sm:grid-cols-2">
+            {SEGMENTS.map((item, i) => (
+              <Link
+                key={item.segment}
+                href={item.href}
+                className={`px-6 py-8 transition-colors hover:bg-muted md:px-10 md:py-12 ${GRID_LINE} ${
+                  i > 0 ? "border-t" : ""
+                } ${i % 2 === 1 ? "sm:border-l" : "sm:border-l-0"} ${
+                  i >= 2 ? "sm:border-t" : "sm:border-t-0"
+                }`}
+              >
+                <p className="type-eyebrow text-muted-foreground">
+                  {item.segment}
+                </p>
+                <p className="mt-3 text-sm">{item.app}</p>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  {item.body}
+                </p>
+              </Link>
+            ))}
+          </div>
+          <div className={`hidden border-t md:block ${GRID_LINE}`} />
         </div>
 
         <p className="mt-8 max-w-2xl text-muted-foreground">

@@ -58,8 +58,11 @@ function Mark({ value }: { value: boolean }) {
  */
 function Cell({ value }: { value: ComparisonRow["assembly"] }) {
   if (typeof value === "boolean") {
+    // Every cell in a row tops out so their first lines share a baseline. The
+    // disc is shorter than a line box, so it takes the difference as an offset
+    // to sit on that line rather than above it.
     return (
-      <div className="flex justify-center">
+      <div className="flex justify-center pt-0.5">
         <Mark value={value} />
       </div>
     );
@@ -137,18 +140,18 @@ export function FeatureMatrix({
           </colgroup>
           <thead>
             <tr className={`border-b ${GRID_LINE}`}>
-              <th scope="col" className="pb-3 pr-4">
+              <th scope="col" className="pb-5 pr-8">
                 <span className="sr-only">Capability</span>
               </th>
               <th
                 scope="col"
-                className={`type-eyebrow rounded-t-lg px-4 pb-3 pt-3 text-center text-foreground ${OWN_COLUMN}`}
+                className={`rounded-t-lg px-6 pb-5 pt-5 text-center text-sm font-normal text-foreground ${OWN_COLUMN}`}
               >
                 Assembly
               </th>
               <th
                 scope="col"
-                className="type-eyebrow px-4 pb-3 pt-3 text-center text-muted-foreground"
+                className="px-6 pb-5 pt-5 text-center text-sm font-normal text-muted-foreground"
               >
                 {competitor}
               </th>
@@ -162,7 +165,7 @@ export function FeatureMatrix({
                 key={row.label}
                 className={i === rows.length - 1 ? "" : `border-b ${GRID_LINE}`}
               >
-                <th scope="row" className="py-4 pr-4 font-normal align-top">
+                <th scope="row" className="py-6 pr-8 align-top font-normal">
                   <span className="type-body block text-foreground">
                     {row.label}
                   </span>
@@ -175,13 +178,13 @@ export function FeatureMatrix({
                 {/* The wash closes on the last row, so the column reads as one
                   panel rather than as a fill that runs off the bottom. */}
                 <td
-                  className={`px-4 py-4 align-middle ${OWN_COLUMN} ${
+                  className={`px-6 py-6 align-top ${OWN_COLUMN} ${
                     i === rows.length - 1 ? "rounded-b-lg" : ""
                   }`}
                 >
                   <Cell value={row.assembly} />
                 </td>
-                <td className="px-4 py-4 align-middle">
+                <td className="px-6 py-6 align-top">
                   <Cell value={row.competitor} />
                 </td>
               </tr>
@@ -210,10 +213,10 @@ function StackedValue({
 }) {
   return (
     <div
-      className={`flex items-baseline gap-4 px-4 py-2.5 ${own ? OWN_COLUMN : ""}`}
+      className={`flex items-baseline gap-4 px-4 py-3.5 ${own ? OWN_COLUMN : ""}`}
     >
       <span
-        className={`type-eyebrow w-24 shrink-0 ${
+        className={`w-24 shrink-0 text-sm ${
           own ? "text-foreground" : "text-muted-foreground"
         }`}
       >

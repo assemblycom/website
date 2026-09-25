@@ -2,7 +2,7 @@ import { CTA } from "@/components/home/cta";
 import { FAQ, type FAQEntry } from "@/components/home/faq";
 import { Testimonials } from "@/components/home/testimonials";
 import { FeatureMatrix } from "@/components/comparison/feature-matrix";
-import { GridDivider, GridRails } from "@/components/ui/grid-lines";
+import { GRID_LINE, GridDivider, GridRails } from "@/components/ui/grid-lines";
 import { Reveal } from "@/components/ui/reveal";
 import { VisualSlot } from "@/components/ui/visual-slot";
 import { DEMO_URL, SIGNUP_URL } from "@/lib/constants";
@@ -135,10 +135,17 @@ export function VsComparisonPage({ page }: { page: VsPage }) {
             credibility than it buys. */}
         <section className={`${RAIL} py-16 md:py-24`}>
           <Reveal>
-            <h2 className="type-h2 text-balance">{page.glance.heading}</h2>
-            <p className="mt-4 max-w-2xl text-muted-foreground">
+            <h2 className="type-h2 text-balance text-center">
+              {page.glance.heading}
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-center text-muted-foreground">
               {page.glance.sub}
             </p>
+            {/* Bled to the rails, so the heading reads as its own band above
+                the table the way the two headings below it do. */}
+            <div
+              className={`-mx-6 mt-12 hidden border-t md:-mx-10 md:block ${GRID_LINE}`}
+            />
             <FeatureMatrix
               rows={page.glance.rows}
               competitor={page.competitor}
@@ -149,9 +156,13 @@ export function VsComparisonPage({ page }: { page: VsPage }) {
 
         <GridDivider />
 
-        <section className={`${RAIL} pb-4 pt-16 md:pt-24`}>
-          <h2 className="type-h2 text-balance">{page.pillarsHeading}</h2>
+        <section className={`${RAIL} py-16 md:py-24`}>
+          <h2 className="type-h2 text-balance text-center">
+            {page.pillarsHeading}
+          </h2>
         </section>
+
+        <GridDivider />
 
         {page.pillars.map((pillar, i) => (
           <div key={pillar.heading}>
@@ -218,24 +229,38 @@ export function VsComparisonPage({ page }: { page: VsPage }) {
 
         {/* The honest boundary. Visually calmer than the pillars on purpose:
             it should read as a fair-minded aside, not another pitch. */}
-        <section className={`${RAIL} py-16 md:py-24`}>
+        {/* No bottom padding on desktop: the columns carry it instead, so the
+            rules between them run all the way down to the section's own rule. */}
+        <section className={`${RAIL} pb-16 pt-16 md:pb-0 md:pt-24`}>
           <Reveal>
-            <h2 className="type-h2 text-balance">{page.betterFit.heading}</h2>
-            <p className="mt-4 max-w-2xl text-muted-foreground">
+            <h2 className="type-h2 text-balance text-center">
+              {page.betterFit.heading}
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-center text-muted-foreground">
               {page.betterFit.sub}
             </p>
-            <div className="mt-10 grid gap-4 md:grid-cols-3">
-              {page.betterFit.items.map((item) => (
-                <div
-                  key={item.title}
-                  className="rounded-xl border border-border p-5"
-                >
-                  <p className="text-sm">{item.title}</p>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                    {item.body}
-                  </p>
-                </div>
-              ))}
+            {/* Bled out to the rails and divided by them rather than boxed:
+                three outlined cards read as three offers, which is the one
+                thing this section is not. */}
+            <div className="-mx-6 mt-12 md:-mx-10">
+              <div className={`hidden border-t md:block ${GRID_LINE}`} />
+              <div className="grid md:grid-cols-3">
+                {page.betterFit.items.map((item, i) => (
+                  <div
+                    key={item.title}
+                    className={`px-6 py-8 md:px-10 md:pb-24 md:pt-12 ${
+                      i > 0
+                        ? `border-t md:border-l md:border-t-0 ${GRID_LINE}`
+                        : ""
+                    }`}
+                  >
+                    <p className="text-sm">{item.title}</p>
+                    <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                      {item.body}
+                    </p>
+                  </div>
+                ))}
+              </div>
             </div>
           </Reveal>
         </section>
@@ -270,12 +295,16 @@ export function VsComparisonPage({ page }: { page: VsPage }) {
 
         <GridDivider />
 
-        <section className={`${RAIL} pb-4 pt-16 md:pt-24`}>
-          <h2 className="type-h2 text-balance">{page.proof.heading}</h2>
-          <p className="mt-4 max-w-2xl text-muted-foreground">
+        <section className={`${RAIL} py-16 md:py-24`}>
+          <h2 className="type-h2 text-balance text-center">
+            {page.proof.heading}
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl text-center text-muted-foreground">
             {page.proof.sub}
           </p>
         </section>
+
+        <GridDivider />
         {/* The site's featured-story component, carrying its default (AdvertAI):
             an agency shipping to 200+ clients is the outcome a visitor stalled
             in a code-generation tool is trying to picture, and the quote is
