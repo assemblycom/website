@@ -61,6 +61,10 @@ export function BuilderPillars({ pillars }: { pillars: Pillar[] }) {
 
   return (
     <section className="mx-auto max-w-[1200px] px-6 md:px-10">
+      {/* Opens the block edge to edge, both ends on a rail. The claims' own
+          rules below it stop at the vertical guide between the columns. */}
+      <div className={`-mx-6 border-t md:-mx-10 ${GRID_LINE}`} />
+
       <div className="md:flex md:items-stretch">
         <div className="md:flex-1">
           {pillars.map((pillar, i) => (
@@ -69,9 +73,12 @@ export function BuilderPillars({ pillars }: { pillars: Pillar[] }) {
               ref={(el) => {
                 items.current[i] = el;
               }}
-              // The negative margin puts the rule's left end on the rail, and
-              // the matching padding puts the copy back where it belongs.
-              className="-mx-6 px-6 py-12 md:mx-0 md:-ml-10 md:py-32 md:pl-10 md:pr-14 lg:pr-20"
+              // Pulled out past the section's padding so the rule's left end
+              // lands on the page's own vertical rail; the padding then holds
+              // the copy clear of both lines.
+              className={`-mx-6 px-6 py-12 md:mx-0 md:-ml-10 md:py-20 md:pl-10 md:pr-10 lg:pl-12 lg:pr-12 ${
+                i > 0 ? "md:border-t" : ""
+              } ${GRID_LINE}`}
             >
               <h3 className="type-h3 text-balance leading-[1.2]">
                 {pillar.heading}
@@ -86,7 +93,7 @@ export function BuilderPillars({ pillars }: { pillars: Pillar[] }) {
                   className="mt-8"
                   label={pillar.visual.label}
                   description={pillar.visual.description}
-                  ratio="1 / 1"
+                  ratio="4 / 3"
                 />
                 <FactList facts={pillar.facts} />
               </div>
@@ -95,18 +102,18 @@ export function BuilderPillars({ pillars }: { pillars: Pillar[] }) {
         </div>
 
         {/* The pinned column. A flex child stretches by default, so its left
-            border is the vertical guide for the whole block. */}
+            border is the vertical guide the claims' rules terminate on. */}
         <div
-          className="hidden md:block md:w-1/2 md:pl-14 lg:pl-20"
+          className={`hidden md:block md:-mr-10 md:w-[56%] md:border-l md:px-10 lg:px-12 ${GRID_LINE}`}
         >
-          <div className="sticky top-24 py-32">
-            <div className="relative" style={{ aspectRatio: "1 / 1" }}>
+          <div className="sticky top-24 py-20">
+            <div className="relative" style={{ aspectRatio: "4 / 3" }}>
               {pillars.map((pillar, i) => (
                 <VisualSlot
                   key={pillar.heading}
                   label={pillar.visual.label}
                   description={pillar.visual.description}
-                  ratio="1 / 1"
+                  ratio="4 / 3"
                   className={`absolute inset-0 transition-opacity duration-500 ${
                     i === active ? "opacity-100" : "opacity-0"
                   }`}

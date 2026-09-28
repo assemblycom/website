@@ -1,26 +1,18 @@
-import { GRID_LINE } from "@/components/ui/grid-lines";
 import { Reveal } from "@/components/ui/reveal";
+import { StepRail, type RailStep } from "@/components/ui/step-rail";
 import { VisualSlot } from "@/components/ui/visual-slot";
 
-interface Step {
-  name: string;
-  body: string;
-  /** Spotlit steps get an illustrated card below; the rest are named only. */
-  spotlight?: boolean;
-}
-
-// Four cards side by side, so they are read as a set rather than in turn: the
+// Four steps side by side, so they are read as a set rather than in turn: the
 // copy is cut to one length, roughly 60 to 70 characters, which holds at three
-// lines from 1024 up. What a step needs beyond that is carried by the
-// spotlights below it, the pillars above, or the FAQ.
-const STEPS: Step[] = [
+// lines from 1024 up. What a step needs beyond that is carried by the pillars
+// above or the FAQ.
+const STEPS: RailStep[] = [
   {
     name: "Describe",
     body: "Say what you want in plain English, or start from a template.",
   },
   {
     name: "Plan",
-    spotlight: true,
     body: "Assembly asks a few questions, then shows a plan you approve.",
   },
   {
@@ -29,61 +21,25 @@ const STEPS: Step[] = [
   },
   {
     name: "Iterate",
-    spotlight: true,
     body: "Keep chatting to change it, before launch or six months later.",
   },
 ];
 
 /**
- * How it works, weighted rather than even.
- *
- * All four steps are named in a rail across the top so the sequence is legible,
- * but only Plan and Iterate are illustrated. Describe and Build are the beats
- * the hero already shows, and drawing them again a scroll later reads as the
- * same demo twice. Plan carries the page's strongest trust moment, and Iterate
- * appears nowhere else.
+ * How it works: one frame of the build, then the four steps as a single rail
+ * beneath it.
  */
 export function BuilderHowItWorks() {
-  const spotlights = STEPS.filter((s) => s.spotlight);
   return (
     <section className="mx-auto max-w-[1200px] px-6 py-14 md:px-10 md:py-20">
       <Reveal>
-        <h3 className="type-h3 text-balance">
-          Describe it, approve the plan, then keep changing it
-        </h3>
-
-        <ol className={`mt-8 grid divide-y rounded-xl border md:grid-cols-4 md:divide-x md:divide-y-0 ${GRID_LINE} divide-border [[data-theme=dark]_&]:divide-[#383838]`}>
-          {STEPS.map((step, i) => (
-            <li key={step.name} className="p-5">
-              <span className="type-eyebrow text-muted-foreground">
-                Step {i + 1}
-              </span>
-              <p className="mt-2 text-sm">{step.name}</p>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                {step.body}
-              </p>
-            </li>
-          ))}
-        </ol>
-
-        <div className="mt-6 grid gap-6 md:grid-cols-2">
-          {spotlights.map((step) => (
-            <VisualSlot
-              key={step.name}
-              ratio="4 / 3"
-              label={
-                step.name === "Plan"
-                  ? "Spotlight, plan and approve"
-                  : "Spotlight, iterate"
-              }
-              description={
-                step.name === "Plan"
-                  ? "A real Plan summary card, large enough to read the actual copy on it: what it will build, what data it will use, who will see it, with a visible Approve and Edit pair. Caption: You approve before anything builds."
-                  : "A chat bubble with a plain-language edit request and the app visibly updating beside it, as a before and after or a subtle diff highlight. Caption: Keep changing it, before launch or six months after."
-              }
-            />
-          ))}
-        </div>
+        <VisualSlot
+          className="mb-12"
+          ratio="16 / 9"
+          label="How it works"
+          description="The build in one frame: a prompt and its clarifying question on the left, the Plan card mid-approval in the centre, and the finished app open in the workspace on the right. Real product chrome, no robot or circuit imagery."
+        />
+        <StepRail steps={STEPS} />
       </Reveal>
     </section>
   );

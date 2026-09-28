@@ -49,7 +49,7 @@ function renderAnswer(text: string, links?: FAQLink[]): ReactNode {
           {...(external
             ? { target: "_blank", rel: "noopener noreferrer" }
             : {})}
-          className="underline underline-offset-2 transition-colors hover:text-foreground"
+          className="underline underline-offset-2 [text-decoration-skip-ink:none] transition-colors hover:text-foreground"
         >
           {link.label}
         </a>,

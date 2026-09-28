@@ -11,6 +11,7 @@ import { BuilderHowItWorks } from "@/components/ai-app-builder/builder-how-it-wo
 import { BuilderAlternatives } from "@/components/ai-app-builder/builder-alternatives";
 import { BuilderTemplates } from "@/components/ai-app-builder/builder-templates";
 import { VisualSlot } from "@/components/ui/visual-slot";
+import { GridDivider, GridRails } from "@/components/ui/grid-lines";
 import { DEMO_URL, SIGNUP_URL } from "@/lib/constants";
 import { PAGE_SEO, pageMetadata } from "@/lib/seo";
 
@@ -168,35 +169,68 @@ export default function AiAppBuilderPage() {
         </div>
       </section>
 
-      {/* Chapter 1 — the four claims. */}
-      <BuilderChapter
-        eyebrow="What you get"
-        heading="Build the app. Everything around it comes included"
-        intro="Plenty of tools can generate something that looks like an app. Assembly builds one your clients and your team can actually use, with the logins, client data, and branding that make it real."
-      />
-      <BuilderPillars pillars={PILLARS} />
+      {/* The argument, framed by the shared vertical rails so this page draws
+          the same grid as home, security and customers. A rule closes each
+          chapter, capped to the rails so both ends land on one. */}
+      <div className="relative">
+        <GridRails />
+        {/* Full-bleed: this rule opens the region, so there is no rail yet at
+            its ends for a capped one to land on. */}
+        <GridDivider fullBleed />
 
-      {/* Chapter 2 — the mechanism behind the claims, then the decision the
-          reader is actually weighing. The two belong together: the comparison
-          only lands once you know how a build works. */}
-      <BuilderChapter
-        eyebrow="How it works"
-        heading="Four claims are easy to make. Here is the mechanism"
-        intro="You see a plan before anything is built, and nothing reaches a client until you make it visible. Which is what separates this from the two other ways to get a custom app."
-      />
-      <BuilderHowItWorks />
-      <BuilderAlternatives />
+        {/* Chapter 1 — the four claims. */}
+        <BuilderChapter
+          eyebrow="What you get"
+          heading="Build the app. Everything around it comes included"
+        />
+        <BuilderPillars pillars={PILLARS} />
 
-      {/* Chapter 3 — the reader now believes it works and wants a way in. */}
-      <BuilderChapter
-        eyebrow="Where to start"
-        heading="You do not have to start from a blank prompt"
-        intro="Install a template made for businesses like yours and remix it with the builder. Firms are already running their teams and their clients on apps they built this way."
-      />
-      <BuilderTemplates />
-      <Testimonials />
+        <GridDivider />
 
-      <FAQ heading="Frequently asked questions" items={BUILDER_FAQS} twoColumn />
+        {/* Chapter 2 — the mechanism behind the claims, then the decision the
+            reader is actually weighing. The two belong together: the comparison
+            only lands once you know how a build works. */}
+        <BuilderChapter
+          eyebrow="How it works"
+          heading="Four claims are easy to make. Here is the mechanism"
+          intro="You see a plan before anything is built, and nothing reaches a client until you make it visible. Which is what separates this from the two other ways to get a custom app."
+        />
+        <BuilderHowItWorks />
+
+        {/* Separates the mechanism from the comparison it sets up. */}
+        <GridDivider />
+
+        {/* No divider after this one: the table closes on its own rule, which
+            already runs rail to rail, and a second line below it read as a
+            doubled break. */}
+        <BuilderAlternatives />
+
+        {/* Chapter 3 — the reader now believes it works and wants a way in. */}
+        <BuilderChapter
+          eyebrow="Where to start"
+          heading="You do not have to start from a blank prompt"
+          intro="Install a template made for businesses like yours and remix it with the builder. Firms are already running their teams and their clients on apps they built this way."
+        />
+        <GridDivider />
+
+        <BuilderTemplates />
+
+        <GridDivider />
+
+        <Testimonials />
+
+        <GridDivider />
+
+        <FAQ
+          heading="Frequently asked questions"
+          items={BUILDER_FAQS}
+          twoColumn
+        />
+
+        {/* Full-bleed: this rule closes the region, so the rails stop here and
+            there is nothing at its ends for a capped one to land on. */}
+        <GridDivider fullBleed />
+      </div>
 
       <CTA
         heading={

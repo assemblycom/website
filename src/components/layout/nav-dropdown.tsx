@@ -163,6 +163,25 @@ export function NavBarFill() {
 }
 
 /**
+ * The bar's bottom hairline, drawn as an element rather than a border on the
+ * header so it can fade with the sheet: while a panel is open the bar and the
+ * panel are one surface, and a line across the join reads as a seam. Matches
+ * the panel's own 150ms so the two settle together.
+ */
+export function NavBarBorder() {
+  const menu = useMenu("NavBarBorder");
+  const open = Boolean(menu.state.label);
+  return (
+    <div
+      aria-hidden
+      className={`pointer-events-none absolute inset-x-0 bottom-0 z-[6] border-b border-border transition-opacity duration-150 [[data-theme=dark]_&]:border-[#383838] ${
+        open ? "opacity-0" : "opacity-100"
+      }`}
+    />
+  );
+}
+
+/**
  * One grouped nav entry's trigger. The panel it opens is rendered by
  * NavMegaPanel at the header, so this is only the button and its hover intent.
  * Must sit inside NavDropdownGroup.

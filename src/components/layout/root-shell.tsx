@@ -56,6 +56,9 @@ export function RootShell({ children }: { children: React.ReactNode }) {
       // horizontally when navigating between home and the content pages.
       maxWidthClass="max-w-[1600px]"
       restPaddingClass="px-6 md:px-10"
+      // Content pages sit under the bar on a plain ground, so it closes on the
+      // same hairline the page grid draws.
+      bordered
     />
   );
 

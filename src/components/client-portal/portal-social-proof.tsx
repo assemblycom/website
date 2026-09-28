@@ -23,10 +23,13 @@ const LOGO_SLUGS = [
 
 export function PortalSocialProof() {
   return (
-    <section className="mx-auto max-w-[1200px] px-6 py-16 md:px-10 md:py-20">
+    <section className="mx-auto max-w-[1200px] px-6 pb-16 pt-6 md:px-10 md:pb-20 md:pt-8">
       <Reveal>
-        {/* The strip opens the band, above the claim it backs up. */}
-        <div className="mb-12 border-b border-border pb-5 [[data-theme=dark]_&]:border-[#383838]">
+        {/* The strip opens the band, above the claim it backs up. Pulled out
+            past the section's padding so it runs rail to rail: the track is a
+            marquee, and items should enter and leave at the page's own edges
+            rather than 40px inside them. */}
+        <div className="-mx-6 mb-12 border-b border-border pb-5 md:-mx-10 [[data-theme=dark]_&]:border-[#383838]">
           <PortalStatTicker />
         </div>
 
@@ -34,10 +37,9 @@ export function PortalSocialProof() {
             back into the same sentence, so the pair reads as one line rather
             than a heading with a subtitle parked under it. */}
         <h2 className="type-h2 max-w-[680px] text-balance">
-          Trusted by 1,000+ professional service firms.{" "}
+          Trusted by 1,000+ firms.{" "}
           <span className="text-muted-foreground">
-            Agencies, accountants, and consultants run their client
-            relationships on Assembly.
+            Agencies, accountants, and consultants run on Assembly.
           </span>
         </h2>
 
@@ -55,11 +57,13 @@ export function PortalSocialProof() {
           {LOGO_SLUGS.map((slug) => (
             <div
               key={slug}
-              className="flex aspect-square items-center justify-center rounded-xl bg-background p-5"
+              className="group flex aspect-square items-center justify-center rounded-xl bg-background p-5 transition-colors duration-200 hover:bg-muted/60 [[data-theme=dark]_&]:hover:bg-white/[0.06]"
             >
               {/* Held back from full strength so the row reads as a roster
-                  rather than eight marks competing with the heading. */}
-              <div className="flex h-7 w-full max-w-[110px] items-center justify-center text-foreground/60">
+                  rather than eight marks competing with the heading. The mark
+                  comes up to full on hover, so the tile answers the pointer
+                  without the row shouting at rest. */}
+              <div className="flex h-7 w-full max-w-[110px] items-center justify-center text-foreground/60 transition-colors duration-200 group-hover:text-foreground">
                 <CustomerLogo slug={slug} fit />
               </div>
             </div>

@@ -14,22 +14,25 @@ export function PortalProblem() {
   return (
     <section className="mx-auto max-w-[1200px] px-6 py-16 md:px-10 md:py-24">
       <Reveal>
-        <h2 className="type-h2 text-balance">
-          Off-the-shelf portals make your firm fit the software. Not Assembly
-        </h2>
-        <p className="mt-5 max-w-2xl text-muted-foreground">
-          Stop bending your workflow to fit someone else&apos;s product.
-        </p>
-        <Link
-          href="#build"
-          className="mt-6 inline-block rounded-lg border border-border px-4 py-1.5 text-sm text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground"
-        >
-          See how firms build their own
-        </Link>
-        {/* Full width under the copy, the way the build section's visual sits,
-            rather than beside it. */}
+        <div className="text-center">
+          <h2 className="type-h2 mx-auto max-w-3xl text-balance">
+            Off-the-shelf portals make your firm fit the software. Not Assembly
+          </h2>
+          <p className="mx-auto mt-5 max-w-2xl text-balance text-muted-foreground">
+            Stop bending your workflow to fit someone else&apos;s product.
+          </p>
+          <Link
+            href="#build"
+            className="mt-6 inline-block rounded-lg border border-border px-4 py-1.5 text-sm text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground"
+          >
+            See how firms build their own
+          </Link>
+        </div>
+
+        {/* Full width under the intro row, the way the build section's visual
+            sits, rather than beside it. */}
         <VisualSlot
-          className="mt-10"
+          className="mt-12"
           label="Problem visual"
           description="Before and after diptych. Left, desaturated: a generic client portal with a greyed-out Request a feature button and three external tool tabs hovering around it, faint connector lines, a confused client avatar. Right, full colour: the Brandmages portal with a custom Intake app already in the sidebar, everything in one frame. One word under each side: Almost fits, and Fits."
         />

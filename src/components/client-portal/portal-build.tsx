@@ -1,26 +1,26 @@
-import { GRID_LINE } from "@/components/ui/grid-lines";
 import { Reveal } from "@/components/ui/reveal";
+import { StepRail, type RailStep } from "@/components/ui/step-rail";
 import { VisualSlot } from "@/components/ui/visual-slot";
 
-// Four columns of one height, so the bodies are written to one length: roughly
-// three lines each. Left to their natural lengths they ran from two lines to
-// six, and three of the four columns were mostly empty.
-const STEPS = [
+// Cut to two lines each. Left to their natural lengths they ran from two lines
+// to six, and a row read across does not survive one column being twice the
+// depth of its neighbours.
+const STEPS: RailStep[] = [
   {
     name: "Describe",
-    body: "Say what you want in plain English, or start from a template and describe what to change.",
+    body: "Say what you want in plain English, or start from a template.",
   },
   {
     name: "Plan",
-    body: "The builder asks a few questions, then shows you a plan to approve or edit before anything is built.",
+    body: "The builder asks a few questions, then shows a plan you approve.",
   },
   {
     name: "Build",
-    body: "A real app deploys into your workspace, with a team view and a client view, hidden until you publish.",
+    body: "A real app lands in your workspace, hidden until you publish.",
   },
   {
     name: "Iterate",
-    body: "Keep chatting to change anything about the app, before launch or six months after it goes live.",
+    body: "Keep chatting to change it, before launch or long after.",
   },
 ];
 
@@ -42,30 +42,19 @@ export function PortalBuild() {
           Build the features unique to your firm
         </h2>
         <p className="mt-4 max-w-2xl text-muted-foreground">
-          Tell us what you want. Assembly shows you a plan to approve or edit,
-          then ships your app into your portal with logins, permissions,
-          branding, and payments already handled.
+          Tell us what you want. Assembly shows you a plan to approve, then ships
+          the app into your portal with logins, branding, and payments already
+          handled.
         </p>
 
-        <ol className={`mt-10 grid divide-y rounded-xl border md:grid-cols-4 md:divide-x md:divide-y-0 ${GRID_LINE} divide-border [[data-theme=dark]_&]:divide-[#383838]`}>
-          {STEPS.map((step, i) => (
-            <li key={step.name} className="p-5">
-              <span className="type-eyebrow text-muted-foreground">
-                Step {i + 1}
-              </span>
-              <p className="mt-2 text-sm">{step.name}</p>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                {step.body}
-              </p>
-            </li>
-          ))}
-        </ol>
-
         <VisualSlot
-          className="mt-10"
+          className="mb-12 mt-10"
+          ratio="16 / 9"
           label="Build visual"
           description="Two panels, prompt on the left and portal on the right. Left: a chat thread where the operator asks for a project tracker each client sees for their own project, and the builder replies with a readable Plan card listing the fields, who sees it, and the team view, with Approve and Edit. Right: the Brandmages portal with a new Project Tracker item appearing in the sidebar and a Hidden from clients toggle on the new app, switched off."
         />
+
+        <StepRail steps={STEPS} />
       </Reveal>
     </section>
   );

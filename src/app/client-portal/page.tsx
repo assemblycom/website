@@ -144,13 +144,14 @@ export default function ClientPortalPage() {
         </div>
       </section>
 
-      {/* Credibility before the argument starts. */}
-      <div className="border-t border-border [[data-theme=dark]_&]:border-[#383838]" />
-      <PortalSocialProof />
-
       <div className="relative">
         <GridRails />
         <GridDivider fullBleed />
+
+        {/* Credibility before the argument starts, inside the same rails so the
+            proof is framed by the grid the argument is. */}
+        <PortalSocialProof />
+        <GridDivider />
 
         <PortalProblem />
         <GridDivider />

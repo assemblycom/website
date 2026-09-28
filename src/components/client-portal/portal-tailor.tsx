@@ -47,13 +47,15 @@ export function PortalTailor() {
   return (
     <section className="mx-auto max-w-[1200px] px-6 py-16 md:px-10 md:py-24">
       <Reveal>
-        <h2 className="type-h2 text-balance">
-          One portal. A different experience for every client
-        </h2>
-        <p className="mt-4 max-w-2xl text-muted-foreground">
-          Control which apps each client and company sees, brand it on your own
-          domain, and give each segment the workflow it actually needs.
-        </p>
+        <div className="text-center">
+          <h2 className="type-h2 mx-auto max-w-3xl text-balance">
+            One portal. A different experience for every client
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl text-balance text-muted-foreground">
+            Control which apps each client and company sees, brand it on your own
+            domain, and give each segment the workflow it actually needs.
+          </p>
+        </div>
 
         {/* One tiled grid closed by its own rules, rather than four outlined
             cards floating in gaps: the four are one set, and the rules say so
@@ -78,17 +80,21 @@ export function PortalTailor() {
                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                   {item.body}
                 </p>
+                {/* Each segment gets its own shot rather than the set sharing
+                    one frame below them: the claim is that the portal differs
+                    per segment, and a single visual cannot make it. */}
+                <VisualSlot
+                  className="mt-6"
+                  ratio="16 / 10"
+                  label={`${item.segment} visual`}
+                  description={`${item.app}. ${item.body} Shown inside the Brandmages portal chrome, with the sidebar carrying only the apps this segment can see.`}
+                />
               </Link>
             ))}
           </div>
           <div className={`hidden border-t md:block ${GRID_LINE}`} />
         </div>
 
-        <VisualSlot
-          className="mt-10"
-          label="Tailor visual"
-          description="The same Brandmages portal chrome held constant while the main panel swaps per segment: an approval flow with round history, a document checklist with upload states, a progress dashboard with milestone bars, an onboarding wizard at step 3 of 6. A client switcher along the top shows three fictional clients, and selecting one changes which apps appear in the sidebar. A small inset shows the same portal re-themed under a second fictional brand on its own domain."
-        />
       </Reveal>
     </section>
   );
