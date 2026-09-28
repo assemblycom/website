@@ -87,7 +87,7 @@ const PAGE: VsPage = {
   pillarsHeading: "Why teams choose Assembly over Lovable",
   pillars: [
     {
-      heading: "Apps your clients can use securely",
+      heading: "Apps your clients can use",
       sub: "Lovable ships a prototype at its own address. Assembly builds into a branded client experience ready for your clients to use.",
       body: "Every Assembly app has two sides: your team works in the dashboard, and each client sees only their own view inside your client experience. There is no second app to secure or connect.",
       visual: {
@@ -97,7 +97,7 @@ const PAGE: VsPage = {
       },
     },
     {
-      heading: "Secure logins and permissions come built in",
+      heading: "Logins and permissions built in",
       sub: "Assembly lets you customize access rules and handles authentication, so you do not have to worry about it.",
       body: "On Lovable, access rules are generated per app. On Assembly we maintain the platform infrastructure, so the logins, permissions, and the boundary between what your team sees and what each client sees stay secure.",
       visual: {
@@ -107,7 +107,7 @@ const PAGE: VsPage = {
       },
     },
     {
-      heading: "One CRM. Every app connects to it",
+      heading: "One CRM behind every app",
       body: "Assembly includes a full CRM: contacts, companies, and custom fields. Every app you build connects to it automatically, and each client only sees what they're allowed to see.",
       visual: {
         label: "Pillar 3 visual",

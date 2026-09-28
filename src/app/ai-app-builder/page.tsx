@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import { CTA } from "@/components/home/cta";
 import { Testimonials } from "@/components/home/testimonials";
 import { FAQ, type FAQEntry } from "@/components/home/faq";
-import { GridDivider, GridRails } from "@/components/ui/grid-lines";
 import {
   BuilderPillars,
   type Pillar,
 } from "@/components/ai-app-builder/builder-pillars";
+import { BuilderChapter } from "@/components/ai-app-builder/builder-chapter";
 import { BuilderHowItWorks } from "@/components/ai-app-builder/builder-how-it-works";
 import { BuilderAlternatives } from "@/components/ai-app-builder/builder-alternatives";
 import { BuilderTemplates } from "@/components/ai-app-builder/builder-templates";
@@ -138,10 +138,9 @@ export default function AiAppBuilderPage() {
           <h1 className="type-display text-balance">
             The AI app builder made for service businesses
           </h1>
-          <p className="type-lead mx-auto mt-6 max-w-2xl text-pretty text-muted-foreground">
-            Describe an app in plain English. Assembly builds a working app for
-            your team or your clients, with secure logins, permissions, and your
-            branding built in.
+          <p className="type-lead mx-auto mt-6 max-w-2xl text-balance text-muted-foreground">
+            Describe what you want. Assembly builds a working app with logins,
+            permissions, and your branding built in.
           </p>
           <div className="mx-auto mt-8 flex w-full max-w-xs flex-col items-stretch gap-3 sm:w-auto sm:max-w-none sm:flex-row sm:items-center sm:justify-center">
             <a
@@ -169,49 +168,35 @@ export default function AiAppBuilderPage() {
         </div>
       </section>
 
-      {/* Content region — pillars through customer proof, framed by the shared
-          vertical rails so the rules line up with every other page. */}
-      <div className="relative">
-        <GridRails />
-        <GridDivider fullBleed />
+      {/* Chapter 1 — the four claims. */}
+      <BuilderChapter
+        eyebrow="What you get"
+        heading="Build the app. Everything around it comes included"
+        intro="Plenty of tools can generate something that looks like an app. Assembly builds one your clients and your team can actually use, with the logins, client data, and branding that make it real."
+      />
+      <BuilderPillars pillars={PILLARS} />
 
-        {/* The pillars open with their own band, padded top and bottom like
-            every other section. It used to carry pb-4, which put its lead one
-            line above the first pillar's heading — four paragraphs of grey text
-            in a row before the argument had started. */}
-        <section className="mx-auto max-w-[1200px] px-6 py-16 text-center md:px-10 md:py-24">
-          <h2 className="type-h2 mx-auto max-w-3xl text-balance">
-            Build the app. Everything around it comes included
-          </h2>
-        </section>
+      {/* Chapter 2 — the mechanism behind the claims, then the decision the
+          reader is actually weighing. The two belong together: the comparison
+          only lands once you know how a build works. */}
+      <BuilderChapter
+        eyebrow="How it works"
+        heading="Four claims are easy to make. Here is the mechanism"
+        intro="You see a plan before anything is built, and nothing reaches a client until you make it visible. Which is what separates this from the two other ways to get a custom app."
+      />
+      <BuilderHowItWorks />
+      <BuilderAlternatives />
 
-        {/* No divider above: the first claim's own rule opens the block, and it
-            stops at the vertical rule rather than running the full width. No
-            wrapper padding either — the claims carry their own, and padding
-            here left the vertical rule ending short of the divider below. */}
-        <BuilderPillars pillars={PILLARS} />
+      {/* Chapter 3 — the reader now believes it works and wants a way in. */}
+      <BuilderChapter
+        eyebrow="Where to start"
+        heading="You do not have to start from a blank prompt"
+        intro="Install a template made for businesses like yours and remix it with the builder. Firms are already running their teams and their clients on apps they built this way."
+      />
+      <BuilderTemplates />
+      <Testimonials />
 
-        <GridDivider />
-        <BuilderHowItWorks />
-
-        <GridDivider />
-        <BuilderAlternatives />
-
-        <GridDivider />
-        <BuilderTemplates />
-
-        <GridDivider />
-        <Testimonials />
-
-        <GridDivider />
-      </div>
-
-      <div className="relative pb-10 md:pb-16">
-        <GridRails />
-        <FAQ heading="Frequently asked questions" items={BUILDER_FAQS} twoColumn />
-      </div>
-
-      <div className="border-t border-border [[data-theme=dark]_&]:border-[#383838]" />
+      <FAQ heading="Frequently asked questions" items={BUILDER_FAQS} twoColumn />
 
       <CTA
         heading={

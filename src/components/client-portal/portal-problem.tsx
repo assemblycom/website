@@ -18,9 +18,7 @@ export function PortalProblem() {
           Off-the-shelf portals make your firm fit the software. Not Assembly
         </h2>
         <p className="mt-5 max-w-2xl text-muted-foreground">
-          Stop bending your workflow to fit someone else&apos;s product. When
-          the portal almost fits, the gap becomes another tool, another
-          spreadsheet, another thread your clients have to follow.
+          Stop bending your workflow to fit someone else&apos;s product.
         </p>
         <Link
           href="#build"

@@ -39,16 +39,15 @@ export function BuilderTemplates() {
   }).filter((card) => card !== null);
 
   return (
-    <section className="mx-auto max-w-[1200px] px-6 py-16 md:px-10 md:py-24">
+    <section className="mx-auto max-w-[1200px] px-6 py-14 md:px-10 md:py-20">
       <Reveal>
         <div className="flex items-end justify-between gap-6">
           <div>
-            <h2 className="type-h2 text-balance">
-              Not a builder? Start from a template and remix it
-            </h2>
+            <h3 className="type-h3 text-balance">
+              Start from a template and remix it
+            </h3>
             <p className="mt-4 max-w-2xl text-muted-foreground">
-              20+ templates made for businesses like yours. Install one, then
-              remix it with the builder.
+              20+ templates made for businesses like yours.
             </p>
           </div>
           <Link

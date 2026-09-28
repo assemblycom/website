@@ -84,11 +84,6 @@ export function PortalTailor() {
           <div className={`hidden border-t md:block ${GRID_LINE}`} />
         </div>
 
-        <p className="mt-8 max-w-2xl text-muted-foreground">
-          Your logo and colors on every plan. Your own domain, with the Assembly
-          badge removed, on Pro and up.
-        </p>
-
         <VisualSlot
           className="mt-10"
           label="Tailor visual"

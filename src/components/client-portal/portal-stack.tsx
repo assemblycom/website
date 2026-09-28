@@ -23,10 +23,6 @@ const WAYS = [
 /**
  * De-risks the operator who already runs tools: you add Assembly, you do not
  * rip and replace. Integration questions came up in 60% of onboarding calls.
- *
- * The closing line is a deliberate limit, not hedging. App-to-app connections
- * today often still go through the automation builder or middleware, so the
- * page says so rather than claiming everything talks to everything.
  */
 export function PortalStack() {
   return (
@@ -40,10 +36,6 @@ export function PortalStack() {
             <p className="mt-5 max-w-md text-muted-foreground">
               Embed the tools you love, connect what you run, automate the
               busywork, and drive everything from the API and MCP server.
-            </p>
-            <p className="mt-5 max-w-md text-sm text-muted-foreground">
-              Apps connect to the same client records. Connections between apps
-              today may use the automation builder or middleware.
             </p>
           </div>
 

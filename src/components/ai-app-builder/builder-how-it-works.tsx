@@ -46,15 +46,13 @@ const STEPS: Step[] = [
 export function BuilderHowItWorks() {
   const spotlights = STEPS.filter((s) => s.spotlight);
   return (
-    <section className="mx-auto max-w-[1200px] px-6 py-16 md:px-10 md:py-24">
+    <section className="mx-auto max-w-[1200px] px-6 py-14 md:px-10 md:py-20">
       <Reveal>
-        <h2 className="type-h2 text-balance">How it works</h2>
-        <p className="mt-4 max-w-2xl text-muted-foreground">
-          Nothing is built until you have seen the plan, and nothing reaches a
-          client until you make it visible.
-        </p>
+        <h3 className="type-h3 text-balance">
+          Describe it, approve the plan, then keep changing it
+        </h3>
 
-        <ol className={`mt-10 grid divide-y rounded-xl border md:grid-cols-4 md:divide-x md:divide-y-0 ${GRID_LINE} divide-border [[data-theme=dark]_&]:divide-[#383838]`}>
+        <ol className={`mt-8 grid divide-y rounded-xl border md:grid-cols-4 md:divide-x md:divide-y-0 ${GRID_LINE} divide-border [[data-theme=dark]_&]:divide-[#383838]`}>
           {STEPS.map((step, i) => (
             <li key={step.name} className="p-5">
               <span className="type-eyebrow text-muted-foreground">

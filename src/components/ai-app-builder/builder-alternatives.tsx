@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { GRID_LINE } from "@/components/ui/grid-lines";
-import { Reveal } from "@/components/ui/reveal";
 
 const COLUMNS = [
   "Build in-house",
@@ -60,16 +59,24 @@ const ROWS: { label: string; cells: [string, string, string] }[] = [
  */
 export function BuilderAlternatives() {
   return (
-    <section className="mx-auto max-w-[1200px] px-6 py-16 md:px-10 md:py-24">
-      <Reveal>
-        <h2 className="type-h2 text-balance">
+    <section className="mx-auto max-w-[1200px] px-6 py-14 md:px-10 md:py-20">
+        <h3 className="type-h3 text-balance">
           Three ways to get a custom app. One is ready to use
-        </h2>
+        </h3>
         <p className="mt-4 max-w-2xl text-muted-foreground">
           Every option below can produce an app. Only one comes with the logins,
           client data, and client experience that let your clients or your team
           use it the same day.
         </p>
+
+        {/* Sits with the copy that sets the comparison up, not after the table:
+            the side route belongs to the argument, not to the last row. */}
+        <Link
+          href="/comparison"
+          className="mt-6 inline-block rounded-lg border border-border px-4 py-1.5 text-sm text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground"
+        >
+          Compare against a specific tool
+        </Link>
 
         {/* Below md, one option at a time under its capability. Three columns
             of free text will not fit a phone. */}
@@ -171,16 +178,6 @@ export function BuilderAlternatives() {
             </tbody>
           </table>
         </div>
-
-        {/* The outlined link the other sections on this page already use for a
-            side route, rather than a loose sentence under the table. */}
-        <Link
-          href="/comparison"
-          className="mt-8 inline-block rounded-lg border border-border px-4 py-1.5 text-sm text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground"
-        >
-          Compare against a specific tool
-        </Link>
-      </Reveal>
     </section>
   );
 }

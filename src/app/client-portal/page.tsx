@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { CTA } from "@/components/home/cta";
 import { FAQ, type FAQEntry } from "@/components/home/faq";
-import { TrustTicker } from "@/components/home/trust-ticker";
 import {
   Testimonials,
   type CustomerStory,
@@ -9,6 +8,7 @@ import {
 import { SecurityCompliance } from "@/components/security/security-compliance";
 import { GridDivider, GridRails } from "@/components/ui/grid-lines";
 import { VisualSlot } from "@/components/ui/visual-slot";
+import { PortalSocialProof } from "@/components/client-portal/portal-social-proof";
 import { PortalProblem } from "@/components/client-portal/portal-problem";
 import { PortalReadyMade } from "@/components/client-portal/portal-ready-made";
 import { PortalBuild } from "@/components/client-portal/portal-build";
@@ -116,9 +116,8 @@ export default function ClientPortalPage() {
             The client portal you can build on
           </h1>
           <p className="type-lead mx-auto mt-6 max-w-xl text-balance text-muted-foreground">
-            Assembly is the client portal with ready-made apps for messaging,
-            billing, files, and contracts, plus an AI app builder to customize
-            your own.
+            Ready-made apps for the work every firm shares, plus an AI app
+            builder for the work that is only yours.
           </p>
           <div className="mx-auto mt-8 flex w-full max-w-xs flex-col items-stretch gap-3 sm:w-auto sm:max-w-none sm:flex-row sm:items-center sm:justify-center">
             <a
@@ -145,12 +144,9 @@ export default function ClientPortalPage() {
         </div>
       </section>
 
-      {/* Credibility before the argument starts. The site's own numbers band,
-          rather than a second one with different figures — the brief's stats
-          and this band's disagree, and that is a fact-check to settle once, in
-          one place, not a reason for the page to state its own. */}
+      {/* Credibility before the argument starts. */}
       <div className="border-t border-border [[data-theme=dark]_&]:border-[#383838]" />
-      <TrustTicker />
+      <PortalSocialProof />
 
       <div className="relative">
         <GridRails />

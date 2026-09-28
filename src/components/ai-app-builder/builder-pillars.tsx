@@ -71,7 +71,7 @@ export function BuilderPillars({ pillars }: { pillars: Pillar[] }) {
               }}
               // The negative margin puts the rule's left end on the rail, and
               // the matching padding puts the copy back where it belongs.
-              className={`-mx-6 border-t px-6 py-12 md:mx-0 md:-ml-10 md:py-40 md:pl-10 md:pr-8 lg:pr-12 ${GRID_LINE}`}
+              className="-mx-6 px-6 py-12 md:mx-0 md:-ml-10 md:py-32 md:pl-10 md:pr-14 lg:pr-20"
             >
               <h3 className="type-h3 text-balance leading-[1.2]">
                 {pillar.heading}
@@ -97,9 +97,9 @@ export function BuilderPillars({ pillars }: { pillars: Pillar[] }) {
         {/* The pinned column. A flex child stretches by default, so its left
             border is the vertical guide for the whole block. */}
         <div
-          className={`hidden md:block md:w-1/2 md:border-l md:pl-8 lg:pl-12 ${GRID_LINE}`}
+          className="hidden md:block md:w-1/2 md:pl-14 lg:pl-20"
         >
-          <div className="sticky top-24 py-40">
+          <div className="sticky top-24 py-32">
             <div className="relative" style={{ aspectRatio: "1 / 1" }}>
               {pillars.map((pillar, i) => (
                 <VisualSlot

@@ -1,22 +1,67 @@
 import Link from "next/link";
-import { GRID_LINE } from "@/components/ui/grid-lines";
+import { CheckIcon } from "@/components/ui/check-icon";
 import { Reveal } from "@/components/ui/reveal";
+import { APP_URL, DEMO_URL, DEMO_CTA_LABEL } from "@/lib/constants";
 
 /**
- * A four-chip teaser, not a matrix: the full plan comparison is /pricing, and
- * this section exists only to take cost anxiety off the table, which appears in
- * roughly half of sales calls.
+ * A teaser, not a matrix: the full plan comparison is /pricing, and this
+ * section exists only to take cost anxiety off the table, which appears in
+ * roughly half of sales calls. Each tier carries three perks rather than its
+ * whole feature list, so the four cards stay scannable.
  *
- * Figures come from the brief and still need checking against the live pricing
- * page before this ships, in particular which plan unlocks a custom domain
- * versus badge removal. Build credits are deliberately not mentioned: this page
- * never explains them, so naming them raises a question it cannot answer.
+ * Names, prices, and perks are the live /pricing figures. Build credits are
+ * deliberately left out: this page never explains them, so naming them raises
+ * a question it cannot answer.
  */
-const TIERS = [
-  { name: "Free", price: "$0", note: "Never expires. Real, publishable apps." },
-  { name: "Starter", price: "$29", note: "More clients and more apps." },
-  { name: "Pro", price: "$99", note: "Custom domain and white-label." },
-  { name: "Advanced", price: "$499", note: "HIPAA BAA and enforced MFA." },
+type Tier = {
+  name: string;
+  price: string;
+  cadence: string;
+  perksLabel: string;
+  perks: string[];
+  cta: string;
+  href: string;
+  recommended?: boolean;
+};
+
+const TIERS: Tier[] = [
+  {
+    name: "Free",
+    price: "Free",
+    cadence: "Never expires",
+    perksLabel: "Includes:",
+    perks: ["5 active contacts", "30+ pre-made apps", "Real, publishable apps"],
+    cta: "Get started",
+    href: APP_URL,
+  },
+  {
+    name: "Starter",
+    price: "$29",
+    cadence: "per month, billed annually",
+    perksLabel: "Everything in Free, plus:",
+    perks: ["50 active contacts", "API and MCP connector", "Add-on build credits"],
+    cta: "Get started",
+    href: APP_URL,
+  },
+  {
+    name: "Professional",
+    price: "$99",
+    cadence: "per month, billed annually",
+    perksLabel: "Everything in Starter, plus:",
+    perks: ["Custom domains", "Remove Assembly badge", "Automation builder"],
+    cta: "Get started",
+    href: APP_URL,
+    recommended: true,
+  },
+  {
+    name: "Advanced",
+    price: "$499",
+    cadence: "per month, billed annually",
+    perksLabel: "Everything in Professional, plus:",
+    perks: ["Unlimited active contacts", "HIPAA compliance (BAA)", "Enforced MFA"],
+    cta: DEMO_CTA_LABEL,
+    href: DEMO_URL,
+  },
 ];
 
 export function PortalPricing() {
@@ -39,36 +84,61 @@ export function PortalPricing() {
           </Link>
         </div>
 
-        {/* One tiled grid closed by its own rules rather than four outlined
-            chips, so the four plans read as one ladder. The rules have to be
-            re-declared per breakpoint because the column count changes: four
-            across, then two, then one. */}
-        <div className="-mx-6 mt-12 md:-mx-10">
-          <div className={`hidden border-t md:block ${GRID_LINE}`} />
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4">
-            {TIERS.map((tier, i) => (
-              <div
-                key={tier.name}
-                className={`px-6 py-8 md:px-10 md:py-12 ${GRID_LINE} ${
-                  i > 0 ? "border-t" : ""
-                } ${i % 2 === 1 ? "sm:border-l" : "sm:border-l-0"} ${
-                  i >= 2 ? "sm:border-t" : "sm:border-t-0"
-                } ${i > 0 ? "lg:border-l" : "lg:border-l-0"} lg:border-t-0`}
-              >
-                <p className="type-eyebrow text-muted-foreground">{tier.name}</p>
-                <p className="mt-3 text-2xl leading-none">{tier.price}</p>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {tier.name === "Free"
-                    ? "forever"
-                    : "per month, billed annually"}
-                </p>
-                <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-                  {tier.note}
-                </p>
+        {/* Four filled cards rather than one tiled grid: the perk lists run to
+            different lengths, and separate surfaces let each one end where it
+            ends instead of stretching the whole row to the longest. Only the
+            recommended plan's tag marks it out, so no card outshouts the rest —
+            the same restraint the full pricing table keeps. */}
+        <div className="mt-12 grid gap-4 min-[560px]:grid-cols-2 lg:grid-cols-4">
+          {TIERS.map((tier) => (
+            <div
+              key={tier.name}
+              className="flex flex-col rounded-2xl bg-muted p-6 [[data-theme=dark]_&]:bg-white/[0.04]"
+            >
+              <div className="flex items-center gap-2">
+                <h3 className="text-lg">{tier.name}</h3>
+                {/* The site's shared chip. Its usual muted fill is this card's
+                    own surface, so it takes the page tone instead and reads as
+                    a tag rather than dissolving into the card. */}
+                {tier.recommended ? (
+                  <span className="inline-flex items-center rounded-md bg-background px-2.5 py-1 font-mono text-[11px] uppercase tracking-wide text-muted-foreground [[data-theme=dark]_&]:bg-white/[0.06]">
+                    Recommended
+                  </span>
+                ) : null}
               </div>
-            ))}
-          </div>
-          <div className={`hidden border-t md:block ${GRID_LINE}`} />
+              <p className="mt-2 text-3xl leading-none">{tier.price}</p>
+              <p className="mt-2 text-xs text-muted-foreground">
+                {tier.cadence}
+              </p>
+
+              <p className="mt-6 text-sm text-muted-foreground">
+                {tier.perksLabel}
+              </p>
+              <ul className="mb-8 mt-3 space-y-2 text-sm">
+                {tier.perks.map((perk) => (
+                  <li key={perk} className="flex items-start gap-2">
+                    <span className="mt-0.5">
+                      <CheckIcon />
+                    </span>
+                    {perk}
+                  </li>
+                ))}
+              </ul>
+
+              {/* mt-auto floors the button, so the four line up across the row
+                  however long each perk list runs. */}
+              <a
+                href={tier.href}
+                className={`mt-auto rounded-lg px-5 py-2 text-center text-sm transition-opacity hover:opacity-90 ${
+                  tier.recommended
+                    ? "bg-foreground text-background"
+                    : "border border-border bg-background text-foreground"
+                }`}
+              >
+                {tier.cta}
+              </a>
+            </div>
+          ))}
         </div>
       </Reveal>
     </section>

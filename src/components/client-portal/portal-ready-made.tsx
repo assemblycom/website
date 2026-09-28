@@ -48,9 +48,7 @@ export function PortalReadyMade() {
             </h2>
             <p className="mt-4 max-w-2xl text-muted-foreground">
               Choose from built-in pre-made app templates, all added to a
-              branded portal ready for your clients to use. Every one is a
-              working app: install it, use it, or tell the builder what to
-              change.
+              branded portal ready for your clients to use.
             </p>
           </div>
           <Link
