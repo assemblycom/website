@@ -26,10 +26,10 @@ export function PortalSocialProof() {
     <section className="mx-auto max-w-[1200px] px-6 pb-16 pt-6 md:px-10 md:pb-20 md:pt-8">
       <Reveal>
         {/* The strip opens the band, above the claim it backs up. Pulled out
-            past the section's padding so it runs rail to rail: the track is a
-            marquee, and items should enter and leave at the page's own edges
-            rather than 40px inside them. */}
-        <div className="-mx-6 mb-12 border-b border-border pb-5 md:-mx-10 [[data-theme=dark]_&]:border-[#383838]">
+            past the section's padding so its rule runs rail to rail, with the
+            padding put back inside so the label and the track keep clear of
+            the vertical guides. */}
+        <div className="-mx-6 mb-12 border-b border-border px-6 pb-5 md:-mx-10 md:px-10 [[data-theme=dark]_&]:border-[#383838]">
           <PortalStatTicker />
         </div>
 
