@@ -42,6 +42,11 @@ export interface PoweredByAttribution {
    * back to it when the workspace can't be looked up.
    */
   firm?: string;
+  /**
+   * The referrer's first name, for the signup screen to say who sent them.
+   * Only /referrals has one: its link starts with it.
+   */
+  first?: string;
   utm: Partial<Record<UtmKey, string>>;
 }
 
@@ -112,16 +117,27 @@ const REFERRAL_UTM = {
 } as const;
 
 /** The attribution a /referrals link stands for, once its code is resolved. */
-export function referralAttribution(
-  ref: string,
-  firm: string | undefined,
-  content: ReferralContent,
-): PoweredByAttribution {
-  return { ref, firm, utm: { ...REFERRAL_UTM, utm_content: content } };
+export function referralAttribution({
+  ref,
+  firm,
+  first,
+  content,
+}: {
+  ref: string;
+  firm?: string;
+  first?: string;
+  content: ReferralContent;
+}): PoweredByAttribution {
+  return { ref, firm, first, utm: { ...REFERRAL_UTM, utm_content: content } };
 }
 
 /** Signup, with everything the visit carried. */
-export function signupHref({ ref, firm, utm }: PoweredByAttribution): string {
+export function signupHref({
+  ref,
+  firm,
+  first,
+  utm,
+}: PoweredByAttribution): string {
   const params = new URLSearchParams();
   for (const key of UTM_KEYS) {
     const value = utm[key];
@@ -129,6 +145,7 @@ export function signupHref({ ref, firm, utm }: PoweredByAttribution): string {
   }
   if (ref) params.set("ref", ref);
   if (firm) params.set("firm", firm);
+  if (first) params.set("first", first);
   const query = params.toString();
   // SIGNUP_URL already carries `?referrer=`, which the app needs to create the
   // workspace on the current pricing model.

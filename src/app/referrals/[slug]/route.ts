@@ -14,8 +14,9 @@ import { lookupReferral } from "@/lib/referral-lookup";
  * both copy-link and the invite email.
  *
  * It carries no tracking params, so this resolves the code and forwards to
- * signup with the Loop 2 attribution the PRD writes down. The first name is
- * only there to make the link read as personal; nothing uses it.
+ * signup with the Loop 2 attribution the PRD writes down, plus the referrer's
+ * first name off the front of the link as `first`, which signup reads to say
+ * who sent the visitor.
  *
  * A route rather than a page: there is nothing to render, only somewhere to
  * send the visitor. Every path ends at signup, never at an error page, because
@@ -41,7 +42,7 @@ export async function GET(
       : "link";
 
   const destination = await referralSignupUrl(
-    codeFromSlug(slug),
+    parseSlug(slug),
     content,
     deadline,
   );
@@ -53,18 +54,32 @@ export async function GET(
   return response;
 }
 
+// A first name longer than this is not one the product wrote into a link.
+const MAX_FIRST_NAME_LENGTH = 50;
+
+interface ReferralSlug {
+  first?: string;
+  code: string;
+}
+
 /**
- * The code is everything after the first `_`. User codes are shortids, which
- * contain `_` themselves (`Usman_h6L_2vXvg`), so splitting on the last one
- * would cut real codes in half.
+ * The first name is everything before the first `_`, the code everything
+ * after. User codes are shortids, which contain `_` themselves
+ * (`Usman_h6L_2vXvg`), so splitting on the last one would cut real codes in
+ * half.
  */
-function codeFromSlug(slug: string): string {
+function parseSlug(slug: string): ReferralSlug {
   const split = slug.indexOf("_");
-  return split === -1 ? slug : slug.slice(split + 1);
+  if (split === -1) return { code: slug };
+  const first = slug.slice(0, split).trim();
+  return {
+    first: first && first.length <= MAX_FIRST_NAME_LENGTH ? first : undefined,
+    code: slug.slice(split + 1),
+  };
 }
 
 async function referralSignupUrl(
-  code: string,
+  { first, code }: ReferralSlug,
   content: ReferralContent,
   deadline: number,
 ): Promise<string> {
@@ -75,7 +90,7 @@ async function referralSignupUrl(
   if (referral.referrerPortalId) {
     const ref = referral.referrerPortalId;
     const firm = await beforeDeadline(getFirmName(ref), deadline);
-    return signupHref(referralAttribution(ref, firm, content));
+    return signupHref(referralAttribution({ ref, firm, first, content }));
   }
 
   // growth-loops is off for this referrer, so the old program credits the
