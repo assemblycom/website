@@ -5,15 +5,9 @@ import { cache } from "react";
 import { imageSize } from "image-size";
 
 import type { BuiltOnFirm } from "@/lib/built-on-firms";
-import { IS_LIVE_SITE } from "@/lib/constants";
 import { DEFAULT_LOGO_HASHES } from "@/lib/default-logo-hashes";
 import { isWorkspaceLogoHost } from "@/lib/image-hosts";
-
-const PORTAL_API_URL =
-  process.env.PORTAL_API_URL ??
-  (IS_LIVE_SITE
-    ? "https://app-api.assembly.com"
-    : "https://app-api.assembly-staging.com");
+import { PORTAL_API_URL, PORTAL_ID } from "@/lib/portal-api";
 
 /** Five minutes: a firm that just rebranded is on the page soon enough. */
 const CONFIG_REVALIDATE_SECONDS = 300;
@@ -23,11 +17,6 @@ const TIMEOUT_MS = 3_000;
 /** Far past any real logo. Bigger than this isn't worth measuring on a render. */
 const MAX_LOGO_BYTES = 2 * 1024 * 1024;
 
-/**
- * Portal ids are shortids. Anything else can't be one, and is not put into a
- * request path.
- */
-const PORTAL_ID = /^[A-Za-z0-9_-]{1,64}$/;
 const HEX_COLOR = /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i;
 
 /**
@@ -38,10 +27,7 @@ export const getFirmBranding = cache(
   async (ref: string | undefined): Promise<BuiltOnFirm | undefined> => {
     if (!ref || !PORTAL_ID.test(ref)) return undefined;
 
-    const config = await fetchJson(
-      `${PORTAL_API_URL}/portal/${ref}/config?viewMode=internal`,
-    );
-    const fields = field(config, "fields");
+    const fields = field(await fetchConfig(ref), "fields");
     const name = text(fields, "name");
     // An id that matches nothing still answers 200, with every field empty.
     if (!name) return undefined;
@@ -68,6 +54,22 @@ export const getFirmBranding = cache(
     };
   },
 );
+
+/**
+ * Only the firm's name, for callers that forward it rather than draw the page.
+ * Skips the logo downloads getFirmBranding waits on, which a redirect has no use
+ * for.
+ */
+export const getFirmName = cache(
+  async (ref: string | undefined): Promise<string | undefined> => {
+    if (!ref || !PORTAL_ID.test(ref)) return undefined;
+    return text(field(await fetchConfig(ref), "fields"), "name");
+  },
+);
+
+function fetchConfig(ref: string): Promise<unknown> {
+  return fetchJson(`${PORTAL_API_URL}/portal/${ref}/config?viewMode=internal`);
+}
 
 interface FirmLogo {
   url: string;

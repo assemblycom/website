@@ -98,6 +98,28 @@ export function shareAttribution(ref: string): PoweredByAttribution {
   };
 }
 
+/**
+ * Where a /referrals link was shared, carried as `utm_content`: copied out of
+ * the product, or sent by its invite email, which appends `?via=email`.
+ */
+export type ReferralContent = "link" | "email_invite";
+
+/** The PRD's Loop 2 params, which /referrals supplies since its link has none. */
+const REFERRAL_UTM = {
+  utm_source: "assembly",
+  utm_medium: "referral",
+  utm_campaign: "referral",
+} as const;
+
+/** The attribution a /referrals link stands for, once its code is resolved. */
+export function referralAttribution(
+  ref: string,
+  firm: string | undefined,
+  content: ReferralContent,
+): PoweredByAttribution {
+  return { ref, firm, utm: { ...REFERRAL_UTM, utm_content: content } };
+}
+
 /** Signup, with everything the visit carried. */
 export function signupHref({ ref, firm, utm }: PoweredByAttribution): string {
   const params = new URLSearchParams();
