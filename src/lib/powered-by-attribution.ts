@@ -42,11 +42,6 @@ export interface PoweredByAttribution {
    * back to it when the workspace can't be looked up.
    */
   firm?: string;
-  /**
-   * The referrer's first name, for the signup screen to say who sent them.
-   * Only /referrals has one: its link starts with it.
-   */
-  first?: string;
   utm: Partial<Record<UtmKey, string>>;
 }
 
@@ -103,41 +98,8 @@ export function shareAttribution(ref: string): PoweredByAttribution {
   };
 }
 
-/**
- * Where a /referrals link was shared, carried as `utm_content`: copied out of
- * the product, or sent by its invite email, which appends `?via=email`.
- */
-export type ReferralContent = "link" | "email_invite";
-
-/** The PRD's Loop 2 params, which /referrals supplies since its link has none. */
-const REFERRAL_UTM = {
-  utm_source: "assembly",
-  utm_medium: "referral",
-  utm_campaign: "referral",
-} as const;
-
-/** The attribution a /referrals link stands for, once its code is resolved. */
-export function referralAttribution({
-  ref,
-  firm,
-  first,
-  content,
-}: {
-  ref: string;
-  firm?: string;
-  first?: string;
-  content: ReferralContent;
-}): PoweredByAttribution {
-  return { ref, firm, first, utm: { ...REFERRAL_UTM, utm_content: content } };
-}
-
 /** Signup, with everything the visit carried. */
-export function signupHref({
-  ref,
-  firm,
-  first,
-  utm,
-}: PoweredByAttribution): string {
+export function signupHref({ ref, firm, utm }: PoweredByAttribution): string {
   const params = new URLSearchParams();
   for (const key of UTM_KEYS) {
     const value = utm[key];
@@ -145,7 +107,6 @@ export function signupHref({
   }
   if (ref) params.set("ref", ref);
   if (firm) params.set("firm", firm);
-  if (first) params.set("first", first);
   const query = params.toString();
   // SIGNUP_URL already carries `?referrer=`, which the app needs to create the
   // workspace on the current pricing model.
