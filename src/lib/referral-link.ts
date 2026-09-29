@@ -5,12 +5,14 @@ import { getFirmName } from "@/lib/firm-branding";
 import { PORTAL_API_URL, PORTAL_ID } from "@/lib/portal-api";
 
 /**
- * Where a referral link, `/referrals/{firstName}_{code}`, sends the visitor:
+ * Where a referral link, `/referrals/{firstName}_{code}`, sends the visitor.
+ * Every visit gets the PRD's Loop 2 UTMs, so every referral click is tracked.
+ * On top of them:
  *
- * - growth-loops on: signup with the PRD's Loop 2 params, plus the referrer's
- *   first name as `first` so signup can say who sent them.
- * - growth-loops off: signup with `referred`, which the old program reads.
- * - unknown code, or the lookup fails: plain signup.
+ * - growth-loops on: `ref` and `firm` for the referring workspace, and the
+ *   referrer's first name as `first` so signup can say who sent them.
+ * - growth-loops off: `referred`, which the old program reads.
+ * - unknown code, or the lookup fails: nothing more.
  */
 
 /** The longest the visitor waits. Past it, the optional firm name is dropped. */
@@ -23,18 +25,21 @@ export async function referralSignupUrl(
 ): Promise<string> {
   const deadline = Date.now() + DEADLINE_MS;
   const { firstName, code } = parseSlug(slug);
-
-  const referral = await lookupReferral(code);
-  if (!referral) return SIGNUP_URL;
-
-  const ref = referral.referrerPortalId;
-  if (!ref) return signupWith({ referred: code });
-
-  return signupWith({
+  const utm = {
     utm_source: "assembly",
     utm_medium: "referral",
     utm_campaign: "referral",
     utm_content: viaEmail ? "email_invite" : "link",
+  };
+
+  const referral = await lookupReferral(code);
+  if (!referral) return signupWith(utm);
+
+  const ref = referral.referrerPortalId;
+  if (!ref) return signupWith({ ...utm, referred: code });
+
+  return signupWith({
+    ...utm,
     ref,
     firm: await beforeDeadline(getFirmName(ref), deadline),
     first: firstName,
