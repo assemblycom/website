@@ -7,10 +7,13 @@ import { useTheme } from "@/components/theme/theme-provider";
 
 export function CTA({
   heading,
+  planChips = true,
 }: {
   // Overrides the default close for a page whose argument ends somewhere else
   // (e.g. the AI app builder page closes on what you would build today).
   heading?: ReactNode;
+  /** Off for a page that has already made the free-plan case further up. */
+  planChips?: boolean;
 } = {}) {
   // Dark sheet flowing into the black footer below; the green wordmark panel is
   // revealed beneath (square top, footer rounds the bottom).
@@ -110,16 +113,18 @@ export function CTA({
               site sets in mono caps everywhere else, and separate pills say that
               better than a middot between two clauses did. Muted, so they
               reassure without competing with the submit button above them. */}
-          <ul className="mt-3 flex flex-wrap items-center justify-center gap-1.5">
-            {["Free forever", "No credit card required"].map((label) => (
-              <li
-                key={label}
-                className="rounded-md bg-muted px-2 py-1 font-mono text-[11px] uppercase leading-none tracking-wide text-muted-foreground [[data-theme=dark]_&]:bg-white/[0.06]"
-              >
-                {label}
-              </li>
-            ))}
-          </ul>
+          {planChips ? (
+            <ul className="mt-3 flex flex-wrap items-center justify-center gap-1.5">
+              {["Free forever", "No credit card required"].map((label) => (
+                <li
+                  key={label}
+                  className="rounded-md bg-muted px-2 py-1 font-mono text-[11px] uppercase leading-none tracking-wide text-muted-foreground [[data-theme=dark]_&]:bg-white/[0.06]"
+                >
+                  {label}
+                </li>
+              ))}
+            </ul>
+          ) : null}
         </div>
       </div>
     </section>

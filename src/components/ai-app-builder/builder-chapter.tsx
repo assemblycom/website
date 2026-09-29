@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import { Reveal } from "@/components/ui/reveal";
 
 /**
@@ -13,15 +14,23 @@ export function BuilderChapter({
   eyebrow,
   heading,
   intro,
+  tightBottom = false,
 }: {
   eyebrow: string;
   heading: string;
   intro?: string;
+  /** Set when the next section carries its own top padding, so the two do not stack. */
+  tightBottom?: boolean;
 }) {
   // Slightly more room below than above, so the title clears the section it
   // introduces rather than sitting tight on it.
   return (
-    <section className="mx-auto max-w-[1200px] px-6 pb-24 pt-16 text-center md:px-10 md:pb-36 md:pt-24">
+    <section
+      className={cn(
+        "mx-auto max-w-[1200px] px-6 pt-16 text-center md:px-10 md:pt-24",
+        tightBottom ? "pb-10 md:pb-16" : "pb-24 md:pb-36",
+      )}
+    >
       <Reveal>
         {/* The site's tag chip, as on about and the sitemap, rather than bare
             mono type set loose above the heading. */}

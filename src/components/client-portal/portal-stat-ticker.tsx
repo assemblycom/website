@@ -35,11 +35,9 @@ export function PortalStatTicker() {
       className="flex cursor-default select-none flex-col items-stretch gap-3 lg:flex-row lg:items-center lg:gap-0"
     >
       <div className="shrink-0 lg:border-r lg:border-border lg:pr-5 [[data-theme=dark]_&]:lg:border-[#383838]">
-        {/* PP Mori rather than the eyebrow's mono: this is the strip's own
-            label, not one of the mono-set stat labels beside it. */}
-        <span className="type-eyebrow font-sans text-foreground">
-          Assembly in numbers
-        </span>
+        {/* PP Mori in sentence case rather than the eyebrow's mono caps: this
+            is the strip's own label, not one of the stat labels beside it. */}
+        <span className="text-sm text-foreground">Assembly in numbers</span>
       </div>
 
       {/* overflow-clip rather than hidden: hidden on the X axis forces the Y

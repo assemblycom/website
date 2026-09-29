@@ -162,20 +162,23 @@ export default function ClientPortalPage() {
         <PortalBuild />
         <GridDivider />
 
+        {/* No divider after this one: the segment grid closes on its own
+            rule, which already runs rail to rail, and a second line below it
+            read as a doubled break. */}
         <PortalTailor />
-        <GridDivider />
 
         <PortalStack />
+        <GridDivider />
+
+        {/* The seals open the trust argument rather than closing it, and sit
+            inside the rails so the band's outer cells land on the vertical
+            guides the way its inner hairlines already do. */}
+        <SecurityCompliance />
         <GridDivider />
 
         <PortalTrust />
         <GridDivider />
       </div>
-
-      {/* The seals sit under the trust section's argument, the way they do on
-          the security page. */}
-      <SecurityCompliance />
-      <div className="border-t border-border [[data-theme=dark]_&]:border-[#383838]" />
 
       <div className="relative">
         <GridRails />

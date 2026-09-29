@@ -73,22 +73,18 @@ export function PortalTailor() {
                   i >= 2 ? "sm:border-t" : "sm:border-t-0"
                 }`}
               >
-                <p className="type-eyebrow text-muted-foreground">
-                  {item.segment}
-                </p>
-                <p className="mt-3 text-sm">{item.app}</p>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                  {item.body}
-                </p>
-                {/* Each segment gets its own shot rather than the set sharing
-                    one frame below them: the claim is that the portal differs
-                    per segment, and a single visual cannot make it. */}
+                {/* Shot first, caption under it. The claim is that the portal
+                    looks different per segment, so the picture makes the case
+                    and the words label what you are already looking at. Each
+                    segment gets its own, since a single shared frame cannot
+                    show four different portals. */}
                 <VisualSlot
-                  className="mt-6"
-                  ratio="16 / 10"
+                  ratio="4 / 3"
                   label={`${item.segment} visual`}
                   description={`${item.app}. ${item.body} Shown inside the Brandmages portal chrome, with the sidebar carrying only the apps this segment can see.`}
                 />
+                <p className="mt-6 text-sm text-muted-foreground">{item.app}</p>
+                <p className="mt-2 leading-relaxed">{item.body}</p>
               </Link>
             ))}
           </div>

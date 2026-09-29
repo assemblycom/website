@@ -194,6 +194,7 @@ export default function AiAppBuilderPage() {
           eyebrow="How it works"
           heading="Four claims are easy to make. Here is the mechanism"
           intro="You see a plan before anything is built, and nothing reaches a client until you make it visible. Which is what separates this from the two other ways to get a custom app."
+          tightBottom
         />
         <BuilderHowItWorks />
 
@@ -240,6 +241,7 @@ export default function AiAppBuilderPage() {
             built this afternoon
           </>
         }
+        planChips={false}
       />
     </>
   );

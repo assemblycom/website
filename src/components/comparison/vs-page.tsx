@@ -139,7 +139,7 @@ export function VsComparisonPage({ page }: { page: VsPage }) {
             <h2 className="type-h2 text-balance text-center">
               {page.glance.heading}
             </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-center text-muted-foreground">
+            <p className="mx-auto mt-4 max-w-2xl text-balance text-center text-muted-foreground">
               {page.glance.sub}
             </p>
             {/* Bled to the rails, so the heading reads as its own band above
@@ -151,6 +151,7 @@ export function VsComparisonPage({ page }: { page: VsPage }) {
               rows={page.glance.rows}
               competitor={page.competitor}
               caption={`Assembly compared with ${page.competitor}`}
+              bleedToRails
             />
           </Reveal>
         </section>
@@ -256,7 +257,7 @@ export function VsComparisonPage({ page }: { page: VsPage }) {
             <h2 className="type-h2 text-balance text-center">
               {page.betterFit.heading}
             </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-center text-muted-foreground">
+            <p className="mx-auto mt-4 max-w-2xl text-balance text-center text-muted-foreground">
               {page.betterFit.sub}
             </p>
             {/* Bled out to the rails and divided by them rather than boxed:
@@ -319,7 +320,7 @@ export function VsComparisonPage({ page }: { page: VsPage }) {
           <h2 className="type-h2 text-balance text-center">
             {page.proof.heading}
           </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-center text-muted-foreground">
+          <p className="mx-auto mt-4 max-w-2xl text-balance text-center text-muted-foreground">
             {page.proof.sub}
           </p>
         </section>

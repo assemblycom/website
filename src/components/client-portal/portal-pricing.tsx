@@ -68,17 +68,17 @@ export function PortalPricing() {
   return (
     <section className="mx-auto max-w-[1200px] px-6 py-16 md:px-10 md:py-24">
       <Reveal>
-        <div className="flex items-end justify-between gap-6">
-          <div>
-            <h2 className="type-h2 text-balance">Start free. Build as you grow</h2>
-            <p className="mt-4 max-w-2xl text-muted-foreground">
-              The free plan never expires and includes real, publishable apps.
-              Paid plans add your own domain, more clients, and more apps.
-            </p>
-          </div>
+        <div className="text-center">
+          <h2 className="type-h2 mx-auto max-w-3xl text-balance">
+            Start free. Build as you grow
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl text-balance text-muted-foreground">
+            The free plan never expires and includes real, publishable apps.
+            Paid plans add your own domain, more clients, and more apps.
+          </p>
           <Link
             href="/pricing"
-            className="hidden shrink-0 rounded-lg border border-border px-4 py-1.5 text-sm text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground md:inline-block"
+            className="mt-6 inline-block rounded-lg border border-border px-4 py-1.5 text-sm text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground"
           >
             See full pricing
           </Link>
@@ -99,9 +99,12 @@ export function PortalPricing() {
                 <h3 className="text-lg">{tier.name}</h3>
                 {/* The site's shared chip. Its usual muted fill is this card's
                     own surface, so it takes the page tone instead and reads as
-                    a tag rather than dissolving into the card. */}
+                    a tag rather than dissolving into the card. Set in the body
+                    face at full strength: mono caps in muted grey on a fill
+                    barely off the card was the one thing on the card you could
+                    not read. */}
                 {tier.recommended ? (
-                  <span className="inline-flex items-center rounded-md bg-background px-2.5 py-1 font-mono text-[11px] uppercase tracking-wide text-muted-foreground [[data-theme=dark]_&]:bg-white/[0.06]">
+                  <span className="inline-flex items-center rounded-md border border-border bg-background px-2.5 py-1 text-xs leading-none text-foreground [[data-theme=dark]_&]:border-white/10 [[data-theme=dark]_&]:bg-white/[0.06]">
                     Recommended
                   </span>
                 ) : null}

@@ -88,11 +88,22 @@ export function FeatureMatrix({
   rows,
   competitor,
   caption,
+  bleedToRails = false,
 }: {
   rows: ComparisonRow[];
   competitor: string;
   caption: string;
+  /**
+   * Pulls the table out past a `px-10` rail container so its row rules end on
+   * the page's vertical guides instead of stopping short of them, then puts the
+   * same inset back on the outer cells so the text still clears the lines. Off
+   * for the CMS pages, whose band is narrower than the rails.
+   */
+  bleedToRails?: boolean;
 }) {
+  // Only the outer cells take the inset back; the middle column keeps its own.
+  const edgeL = bleedToRails ? "pl-10" : "";
+  const edgeR = bleedToRails ? "pr-10" : "";
   return (
     <>
       {/* Below md the same rows as a stack, one capability at a time.
@@ -126,7 +137,11 @@ export function FeatureMatrix({
         ))}
       </ul>
 
-      <div className="mt-10 hidden overflow-x-auto md:block">
+      <div
+        className={`mt-10 hidden overflow-x-auto md:block ${
+          bleedToRails ? "md:-mx-10" : ""
+        }`}
+      >
         {/* table-fixed with declared columns, so the two product columns are the
             same width in every section. Auto layout sized each table to its own
             content, and scrolling the page stepped through five tables whose
@@ -140,7 +155,7 @@ export function FeatureMatrix({
           </colgroup>
           <thead>
             <tr className={`border-b ${GRID_LINE}`}>
-              <th scope="col" className="pb-5 pr-8">
+              <th scope="col" className={`pb-5 pr-8 ${edgeL}`}>
                 <span className="sr-only">Capability</span>
               </th>
               <th
@@ -151,7 +166,7 @@ export function FeatureMatrix({
               </th>
               <th
                 scope="col"
-                className="px-6 pb-5 pt-5 text-center text-sm font-normal text-muted-foreground"
+                className={`pb-5 pl-6 pt-5 text-center text-sm font-normal text-muted-foreground ${edgeR || "pr-6"}`}
               >
                 {competitor}
               </th>
@@ -165,7 +180,10 @@ export function FeatureMatrix({
                 key={row.label}
                 className={i === rows.length - 1 ? "" : `border-b ${GRID_LINE}`}
               >
-                <th scope="row" className="py-6 pr-8 align-top font-normal">
+                <th
+                  scope="row"
+                  className={`py-6 pr-8 align-top font-normal ${edgeL}`}
+                >
                   <span className="type-body block text-foreground">
                     {row.label}
                   </span>
@@ -184,7 +202,7 @@ export function FeatureMatrix({
                 >
                   <Cell value={row.assembly} />
                 </td>
-                <td className="px-6 py-6 align-top">
+                <td className={`py-6 pl-6 align-top ${edgeR || "pr-6"}`}>
                   <Cell value={row.competitor} />
                 </td>
               </tr>
