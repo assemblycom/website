@@ -22,17 +22,29 @@ import { lookupReferral } from "@/lib/referral-lookup";
  * whoever clicked meant to sign up whether or not the code still resolves.
  */
 
+/**
+ * How long the visitor waits for the redirect, across both lookups. Past it,
+ * the optional firm name is dropped rather than waited on; `ref` and the UTMs,
+ * which are what credit the referrer, still go through.
+ */
+const DEADLINE_MS = 3_000;
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> },
 ) {
+  const deadline = Date.now() + DEADLINE_MS;
   const { slug } = await params;
   const content: ReferralContent =
     request.nextUrl.searchParams.get("via") === "email"
       ? "email_invite"
       : "link";
 
-  const destination = await referralSignupUrl(codeFromSlug(slug), content);
+  const destination = await referralSignupUrl(
+    codeFromSlug(slug),
+    content,
+    deadline,
+  );
 
   // Temporary, and not cached anywhere: where a code leads depends on the
   // referrer's growth-loops flag, which can change under the same link.
@@ -54,6 +66,7 @@ function codeFromSlug(slug: string): string {
 async function referralSignupUrl(
   code: string,
   content: ReferralContent,
+  deadline: number,
 ): Promise<string> {
   const referral = await lookupReferral(code);
 
@@ -61,10 +74,27 @@ async function referralSignupUrl(
 
   if (referral.referrerPortalId) {
     const ref = referral.referrerPortalId;
-    return signupHref(referralAttribution(ref, await getFirmName(ref), content));
+    const firm = await beforeDeadline(getFirmName(ref), deadline);
+    return signupHref(referralAttribution(ref, firm, content));
   }
 
   // growth-loops is off for this referrer, so the old program credits the
   // user, through the param signup has always read.
   return `${SIGNUP_URL}&${new URLSearchParams({ referred: code })}`;
+}
+
+/** The promise's value, or undefined if it hasn't settled by the deadline. */
+async function beforeDeadline<T>(
+  promise: Promise<T>,
+  deadline: number,
+): Promise<T | undefined> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const expired = new Promise<undefined>((resolve) => {
+    timer = setTimeout(() => resolve(undefined), deadline - Date.now());
+  });
+  try {
+    return await Promise.race([promise, expired]);
+  } finally {
+    clearTimeout(timer);
+  }
 }
