@@ -7,11 +7,20 @@ import { useTheme } from "@/components/theme/theme-provider";
 
 export function CTA({
   heading,
+  subheading,
+  submitLabel = "Get started",
+  secondaryCta,
   planChips = true,
 }: {
   // Overrides the default close for a page whose argument ends somewhere else
   // (e.g. the AI app builder page closes on what you would build today).
   heading?: ReactNode;
+  /** One line under the heading, where a page's brief calls for one. */
+  subheading?: string;
+  /** The composer's submit wording, which a feature page names after its own CTA. */
+  submitLabel?: string;
+  /** An outline second action beside the box, visibly secondary to the submit. */
+  secondaryCta?: { label: string; href: string };
   /** Off for a page that has already made the free-plan case further up. */
   planChips?: boolean;
 } = {}) {
@@ -54,6 +63,11 @@ export function CTA({
             </>
           )}
         </h2>
+        {subheading ? (
+          <p className="type-lead mx-auto mt-5 max-w-xl text-balance text-muted-foreground">
+            {subheading}
+          </p>
+        ) : null}
         <div className="mx-auto mt-8 max-w-xl text-left">
           {/* Same animated gradient border as the hero composer up top. Every
               prop below must stay in step with hero-v76's composer — the two
@@ -83,7 +97,7 @@ export function CTA({
               promptItems={PROMPT_IDEAS}
               hideHowTo
               plusAsAttach
-              submitLabel="Get started"
+              submitLabel={submitLabel}
 
               // Signed in, "Get started" is the wrong sentence to hand someone who
 
@@ -106,6 +120,19 @@ export function CTA({
               surfaceClassName="bg-[#f7f8fa] shadow-[0_1px_2px_rgba(16,24,40,0.04)] [[data-theme=dark]_&]:bg-transparent [[data-theme=dark]_&]:shadow-[0_24px_60px_-28px_rgba(0,0,0,0.8)]"
             />
           </div>
+
+          {/* Secondary action. An outline button under the box rather than
+              beside it, so it never reads as the composer's own control. */}
+          {secondaryCta ? (
+            <div className="mt-4 flex justify-center">
+              <a
+                href={secondaryCta.href}
+                className="rounded-lg border border-foreground/20 bg-transparent px-5 py-2.5 text-center text-sm text-foreground transition-colors hover:bg-foreground/5 [[data-theme=dark]_&]:border-white/25 [[data-theme=dark]_&]:text-white"
+              >
+                {secondaryCta.label}
+              </a>
+            </div>
+          ) : null}
 
           {/* Answers the two things people weigh before typing anything, right
               where they'd hesitate. As two chips in the mono face rather than a

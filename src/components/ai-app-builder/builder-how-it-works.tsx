@@ -13,15 +13,15 @@ const STEPS: RailStep[] = [
   },
   {
     name: "Plan",
-    body: "Assembly asks a few questions, then shows a plan you approve.",
+    body: "Approve or edit the plan before anything is built.",
   },
   {
     name: "Build",
-    body: "The app lands in your workspace, hidden from clients until you publish.",
+    body: "Client apps land in your client experience, team tools in your dashboard.",
   },
   {
     name: "Iterate",
-    body: "Keep chatting to change it, before launch or six months later.",
+    body: "Keep chatting to change anything, before launch or six months later.",
   },
 ];
 

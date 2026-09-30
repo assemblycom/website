@@ -20,8 +20,13 @@ export interface CustomerStory {
   firm: string;
   /** Portrait or firm shot in /public/images/customers. */
   image: string;
+  /** One line of context under the quote. Only the pages whose brief calls for
+   * one pass it; the homepage story runs without. */
+  intro?: string;
   stats: { value: string; label: string }[];
   href: string;
+  /** Overrides the default link wording where a page names the firm. */
+  linkLabel?: string;
 }
 
 // The default story, and the one the homepage runs.
@@ -126,6 +131,12 @@ export function Testimonials({
           <span className="hidden md:inline">&rdquo;</span>
         </blockquote>
 
+        {story.intro ? (
+          <p className="mt-5 max-w-2xl text-muted-foreground md:pr-44">
+            {story.intro}
+          </p>
+        ) : null}
+
         {/* On a phone the bars and the story link are ringed as one block, so
             the link reads as the end of the proof rather than a stray line
             under it. `md:contents` dissolves this wrapper at desktop, where the
@@ -176,7 +187,7 @@ export function Testimonials({
               link, and the underline was a third horizontal line in a block
               that is mostly horizontal lines. Hover brightens instead. */}
             <span className="transition-colors group-hover:text-foreground">
-              Read firm&rsquo;s story
+              {story.linkLabel ?? "Read firm’s story"}
             </span>
             <span className="transition-transform duration-200 group-hover:translate-x-0.5">
               &rarr;

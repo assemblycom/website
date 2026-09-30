@@ -16,7 +16,8 @@ export function BuilderChapter({
   intro,
   tightBottom = false,
 }: {
-  eyebrow: string;
+  /** The site's tag chip. Omitted where the brief approves no eyebrow copy. */
+  eyebrow?: string;
   heading: string;
   intro?: string;
   /** Set when the next section carries its own top padding, so the two do not stack. */
@@ -34,12 +35,21 @@ export function BuilderChapter({
       <Reveal>
         {/* The site's tag chip, as on about and the sitemap, rather than bare
             mono type set loose above the heading. */}
-        <p>
-          <span className="inline-flex items-center rounded-md bg-muted px-3 py-1.5 font-mono text-xs uppercase tracking-wide text-muted-foreground [[data-theme=dark]_&]:bg-white/[0.08]">
-            {eyebrow}
-          </span>
-        </p>
-        <h2 className="type-h2 mx-auto mt-4 max-w-3xl text-balance">{heading}</h2>
+        {eyebrow ? (
+          <p>
+            <span className="inline-flex items-center rounded-md bg-muted px-3 py-1.5 font-mono text-xs uppercase tracking-wide text-muted-foreground [[data-theme=dark]_&]:bg-white/[0.08]">
+              {eyebrow}
+            </span>
+          </p>
+        ) : null}
+        <h2
+          className={cn(
+            "type-h2 mx-auto max-w-3xl text-balance",
+            eyebrow && "mt-4",
+          )}
+        >
+          {heading}
+        </h2>
         {intro ? (
           <p className="mx-auto mt-5 max-w-2xl text-balance text-muted-foreground">
             {intro}

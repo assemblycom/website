@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { CTA } from "@/components/home/cta";
-import { Testimonials } from "@/components/home/testimonials";
+import {
+  Testimonials,
+  type CustomerStory,
+} from "@/components/home/testimonials";
 import { FAQ, type FAQEntry } from "@/components/home/faq";
 import {
   BuilderPillars,
@@ -26,10 +29,16 @@ export const metadata: Metadata = pageMetadata(PAGE_SEO.aiAppBuilder);
 const PILLARS: Pillar[] = [
   {
     heading: "Build client-facing apps and internal tools, all in one place",
-    body: "Describe an onboarding flow for your clients or a reporting dashboard for your team. Assembly builds it, and each lands where it belongs: client apps in your branded client experience, team tools in your dashboard.",
+    body: "Describe it once. Client apps land in your client experience, team tools in your dashboard.",
     facts: [
-      { label: "Collective CPA", value: "Live team dashboard in under an hour" },
-      { label: "AdvertAI Marketing", value: "A Message Center their team lives in" },
+      {
+        label: "Collective CPA",
+        value: "A live close-status dashboard in under an hour",
+      },
+      {
+        label: "AdvertAI Marketing",
+        value: "A complete Message Center their team lives in",
+      },
     ],
     visual: {
       label: "Pillar 1 visual",
@@ -39,11 +48,8 @@ const PILLARS: Pillar[] = [
   },
   {
     heading: "One CRM. Every app connects to it",
-    body: "Assembly includes a full CRM: contacts, companies, and custom fields. Every app you build connects to it automatically, and each client only sees what they're allowed to see.",
-    facts: [
-      { label: "What it holds", value: "Contacts, companies, custom fields" },
-      { label: "What each client sees", value: "Only their own records" },
-    ],
+    body: "Contacts, companies, and custom fields come built in. Each client only sees what they're allowed to see.",
+    facts: [],
     visual: {
       label: "Pillar 2 visual",
       description:
@@ -52,11 +58,8 @@ const PILLARS: Pillar[] = [
   },
   {
     heading: "Secure logins, permissions, and billing come built in",
-    body: "Every app comes with secure logins for your team and your clients, control over who sees what, and a built-in billing option if you need it. You approve a plan before anything is built, nothing reaches clients until you make it visible, and our team helps if a build stalls.",
-    facts: [
-      { label: "Clients sign in with", value: "Google or a one-click email link" },
-      { label: "Multi-factor auth", value: "Every plan, enforced on Advanced" },
-    ],
+    body: "Built and maintained by Assembly. Nothing reaches your clients until you make it visible.",
+    facts: [],
     visual: {
       label: "Pillar 3 visual",
       description:
@@ -65,10 +68,13 @@ const PILLARS: Pillar[] = [
   },
   {
     heading: "Your clients already have a branded home. New apps land in it",
-    body: "Your clients see your logo and colors. Every new app picks up your branding automatically, so nothing looks bolted on.",
+    body: "Your logo and colors, not ours. Every new app picks them up automatically.",
     facts: [
-      { label: "Why firms pick Assembly", value: "Branding, the number 3 reason" },
-      { label: "Raised in", value: "27% of 2,926 sales calls" },
+      {
+        label: "Why customers choose Assembly",
+        value: "Branding, the number 3 reason",
+      },
+      { label: "Raised in", value: "27% of sales calls" },
     ],
     visual: {
       label: "Pillar 4 visual",
@@ -79,54 +85,89 @@ const PILLARS: Pillar[] = [
 ];
 
 /**
- * Five earnest objections first, then the three "best / compare" search
- * questions, so the page answers a reader before it answers a query.
+ * The brief's eight questions, in its order and its wording: this section
+ * carries the page's search and AI-answer load, so the visible question has to
+ * match the one the answer is written against. Long questions get a short form
+ * for phones, where a wrapped question turns a tidy stack of rows into a ragged
+ * one.
  */
 const BUILDER_FAQS: FAQEntry[] = [
   {
-    question: "What if the builder gets it wrong?",
+    question: "Do I need to know how to code to use Assembly's AI app builder?",
+    shortQuestion: "Do I need to know how to code?",
     answer:
-      "Nothing reaches your clients until you've approved the plan and made the app visible to them. New apps stay hidden from clients by default while you test. If something needs fixing after launch, keep chatting with the app builder to change it — nothing is frozen at publish.",
+      "No. Describe what you want in plain English, or start from a template. Assembly asks a few clarifying questions and shows a plan you approve or edit, and then it builds. Changes after launch happen the same way, by continuing the conversation, with no coding at any step.",
   },
   {
-    question: "Do I need to know how to code?",
+    question: "How much does Assembly's AI app builder cost?",
+    shortQuestion: "How much does it cost?",
     answer:
-      "No. Describe what you want in plain English, or start from a template. Assembly asks a few clarifying questions and shows a plan you approve or edit, then it builds. Changes after launch happen the same way, by continuing the conversation, with no coding at any step.",
-  },
-  {
-    question: "How much does it cost?",
-    answer:
-      "Assembly has a free plan that never expires, and you can build and publish working apps on it. Paid plans add more apps and your own domain for the client experience. Full details are on the pricing page.",
+      "Assembly has a free plan that never expires, and you can build and publish working apps on it. Paid plans add more apps and your own domain for the client experience. Full details are on Assembly's pricing page.",
     links: [{ label: "pricing page", href: "/pricing" }],
   },
   {
-    question: "Is it secure enough for client data?",
+    question:
+      "Is Assembly's AI app builder secure enough to handle client data?",
+    shortQuestion: "Is it secure enough for client data?",
     answer:
-      "Yes. Logins and permissions on Assembly are built and maintained by Assembly's team, not generated by the AI for each app. Clients sign in with Google or a secure one-click email link, and multi-factor authentication is available on every plan, with enforced MFA on Advanced plans. Each client sees only their own data. Full details are on the security page.",
+      "Yes. Logins and permissions on Assembly are built and maintained by Assembly's team, not generated by the AI for each app. Clients sign in with Google or a secure one-click email link, and multi-factor authentication is available on every plan, with enforced MFA on Advanced plans. Each client sees only their own data. Full details are on Assembly's security page.",
     links: [{ label: "security page", href: "/security" }],
   },
   {
-    question: "What is it not good for?",
+    question:
+      "How is Assembly's AI app builder different from Lovable, Replit, and other AI app builders?",
+    shortQuestion: "How is it different from other builders?",
+    answer:
+      "Most AI app builders generate a working prototype and stop there, leaving logins, hosting, and client data for the person building it to figure out. Assembly's AI app builder comes with that layer built in: logins for your team and your clients, permissions, a CRM, your branding, and a built-in billing option. What gets built is an app your business can use right away, for your clients or your team, rather than a prototype that still needs to be finished. See Assembly's comparison pages against Lovable and Base44 for a feature-by-feature breakdown.",
+    links: [{ label: "comparison pages", href: "/comparison" }],
+  },
+  {
+    question:
+      "What happens if Assembly's AI app builder builds something wrong that my clients could see?",
+    shortQuestion: "What if the builder gets it wrong?",
+    answer:
+      "Nothing reaches your clients until you've approved the plan and made the app visible to them. New apps stay hidden from clients by default while you test. If something needs fixing after launch, keep chatting with the app builder to change it.",
+  },
+  {
+    question: "What is Assembly's AI app builder not good for building?",
+    shortQuestion: "What is it not good for?",
     answer:
       "Public marketing websites. Assembly's AI app builder is built for apps people log into, meaning your team and your clients, not anonymous visitors on the open web. A public website is better built with a different tool and linked from inside your client experience.",
   },
   {
-    question: "The best AI app builder for service businesses?",
+    question: "What is the best AI app builder for service businesses?",
+    shortQuestion: "The best AI app builder for service businesses?",
     answer:
       "For a service business, the best AI app builder does more than generate a prototype: it comes with the pieces that make an app usable by a team or a paying client, meaning logins, permissions, branding, and a place for client data. Assembly is built for agencies, accounting and bookkeeping practices, law offices, and consultancies. Describe the app in plain English, or start from one of its templates, and Assembly builds a working app for your team or your clients with that layer already included.",
   },
   {
-    question: "Best tool to vibe code a client app?",
+    question: "What's the best tool to vibe code an app for my clients?",
+    shortQuestion: "Best tool to vibe code a client app?",
     answer:
-      "General-purpose vibe coding tools generate a working prototype at a separate URL that still has to be secured, hosted, and connected to client data before a customer can use it. Assembly's AI app builder is built for client-facing apps: describe the app in plain English, approve the plan, and it publishes into a branded client experience that comes with Assembly, with client logins and permissions already handled.",
-  },
-  {
-    question: "How is it different from other builders?",
-    answer:
-      "Most AI app builders generate a working prototype and stop there, leaving logins, hosting, and client data for the person building it to figure out. Assembly comes with that layer built in: logins for your team and your clients, permissions, a CRM, your branding, and a built-in billing option. What gets built is an app your business can use right away, rather than a prototype that still needs to be finished.",
-    links: [{ label: "comparison pages", href: "/comparison" }],
+      "General-purpose vibe coding tools like Lovable or Replit generate a working prototype at a separate URL that still has to be secured, hosted, and connected to client data before a customer can use it. Assembly's AI app builder is built for client-facing apps: describe the app in plain English, approve the plan, and it publishes into a branded client experience that comes with Assembly, with client logins and permissions already handled.",
   },
 ];
+
+/**
+ * The featured story the brief names for this page, in its approved wording.
+ * The quote is already public and says "Assembly Studio", so it is left as is.
+ */
+const ADVERTAI_STORY: CustomerStory = {
+  quote:
+    "We've been able to build out apps in just a few weeks that I don't know if we could have done within five to ten years before Assembly Studio.",
+  name: "Garrett Leonard",
+  firm: "Founder, AdvertAI Marketing",
+  image: "/images/customers/advertai-marketing.jpg",
+  intro:
+    "An 11-person web design agency. The founder built the Message Center his team works in all day, and retired five tools along the way.",
+  stats: [
+    { value: "5", label: "Tools retired" },
+    { value: "Weeks, not years", label: "To build" },
+    { value: "Built by the founder", label: "No developer hired" },
+  ],
+  href: "/customers/advertai-marketing",
+  linkLabel: "Read AdvertAI's story",
+};
 
 export default function AiAppBuilderPage() {
   return (
@@ -141,7 +182,10 @@ export default function AiAppBuilderPage() {
           </h1>
           <p className="type-lead mx-auto mt-6 max-w-2xl text-balance text-muted-foreground">
             Describe what you want. Assembly builds a working app with logins,
-            permissions, and your branding built in.
+            permissions, and your branding built in, for agencies, accountants,
+            consultants, and other service businesses. Your clients log in at
+            your own domain and see their files, messages, invoices, and the
+            apps you built for them.
           </p>
           <div className="mx-auto mt-8 flex w-full max-w-xs flex-col items-stretch gap-3 sm:w-auto sm:max-w-none sm:flex-row sm:items-center sm:justify-center">
             <a
@@ -180,8 +224,8 @@ export default function AiAppBuilderPage() {
 
         {/* Chapter 1 — the four claims. */}
         <BuilderChapter
-          eyebrow="What you get"
-          heading="Build the app. Everything around it comes included"
+          heading="What AI app builders promise. What Assembly proves"
+          intro="Plenty of tools can generate something that looks like an app. Assembly builds one your clients and your team can actually use."
         />
         <BuilderPillars pillars={PILLARS} />
 
@@ -190,12 +234,7 @@ export default function AiAppBuilderPage() {
         {/* Chapter 2 — the mechanism behind the claims, then the decision the
             reader is actually weighing. The two belong together: the comparison
             only lands once you know how a build works. */}
-        <BuilderChapter
-          eyebrow="How it works"
-          heading="Four claims are easy to make. Here is the mechanism"
-          intro="You see a plan before anything is built, and nothing reaches a client until you make it visible. Which is what separates this from the two other ways to get a custom app."
-          tightBottom
-        />
+        <BuilderChapter heading="How it works" tightBottom />
         <BuilderHowItWorks />
 
         {/* Separates the mechanism from the comparison it sets up. */}
@@ -206,19 +245,14 @@ export default function AiAppBuilderPage() {
             doubled break. */}
         <BuilderAlternatives />
 
-        {/* Chapter 3 — the reader now believes it works and wants a way in. */}
-        <BuilderChapter
-          eyebrow="Where to start"
-          heading="You do not have to start from a blank prompt"
-          intro="Install a template made for businesses like yours and remix it with the builder. Firms are already running their teams and their clients on apps they built this way."
-        />
-        <GridDivider />
-
+        {/* Chapter 3 — the reader now believes it works and wants a way in.
+            The templates section carries its own heading, so no chapter title
+            sits above it. */}
         <BuilderTemplates />
 
         <GridDivider />
 
-        <Testimonials />
+        <Testimonials story={ADVERTAI_STORY} />
 
         <GridDivider />
 
@@ -241,6 +275,9 @@ export default function AiAppBuilderPage() {
             built this afternoon
           </>
         }
+        subheading="Skip the five-figure custom build. Describe what your business needs, or start from a template."
+        submitLabel="Start building for free"
+        secondaryCta={{ label: "Book demo", href: DEMO_URL }}
         planChips={false}
       />
     </>

@@ -1,10 +1,21 @@
 import Link from "next/link";
 import { GRID_LINE } from "@/components/ui/grid-lines";
 
-const COLUMNS = ["Build in-house", "Standalone AI builders", "Assembly"] as const;
+const COLUMNS: { name: string; examples?: string }[] = [
+  { name: "Build in-house" },
+  // The brief names the tools a reader is actually weighing us against; the
+  // second line keeps them out of a header that has to hold one line.
+  { name: "Standalone AI app builders", examples: "Lovable, Base44, Replit" },
+  { name: "Assembly's AI app builder" },
+];
 
 /** Index of the Assembly column, which carries the wash. */
 const OWN = 2;
+
+const COMPARISONS = [
+  { label: "Assembly vs. Lovable", href: "/comparison/lovable" },
+  { label: "Assembly vs. Base44", href: "/comparison/base44" },
+] as const;
 
 // Cells are cut to roughly one line at the table's column width — a comparison
 // is scanned across, not read down, and a three-line answer stops the scan.
@@ -15,34 +26,22 @@ const ROWS: { label: string; cells: [string, string, string] }[] = [
   },
   {
     label: "Ready on day one?",
-    cells: [
-      "After a full build and QA",
-      "No. A URL that still needs logins and data",
-      "Yes. In your client experience and your dashboard",
-    ],
+    cells: ["After a full build and QA", "No", "Yes"],
   },
   {
     label: "Logins and permissions",
-    cells: [
-      "You own the security surface",
-      "You set them up yourself",
-      "Built in and maintained",
-    ],
+    cells: ["You own the security", "You set them up", "Built in"],
   },
   {
     label: "Client data",
-    cells: [
-      "You design and host the database",
-      "Starts empty. A new database per app",
-      "A shared CRM powers every app",
-    ],
+    cells: ["You build the database", "Empty for every app", "One shared CRM"],
   },
   {
     label: "Maintenance",
     cells: [
-      "Needs a developer on call",
+      "A developer on call",
       "Yours, after every change",
-      "Ours. You chat to change the app",
+      "Handled by Assembly",
     ],
   },
 ];
@@ -73,18 +72,23 @@ export function BuilderAlternatives() {
         Three ways to get a custom app. One is ready to use
       </h3>
       <p className="mt-4 max-w-2xl text-muted-foreground">
-        Every option below can produce an app. Only one arrives with the logins,
-        client data, and client experience that make it usable the same day.
+        All three produce an app. Only one is ready for your clients and your
+        team on day one.
       </p>
 
       {/* Sits with the copy that sets the comparison up, not after the table:
           the side route belongs to the argument, not to the last row. */}
-      <Link
-        href="/comparison"
-        className="mt-6 inline-block rounded-lg border border-border px-4 py-1.5 text-sm text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground"
-      >
-        Compare against a specific tool
-      </Link>
+      <div className="mt-6 flex flex-wrap gap-2">
+        {COMPARISONS.map((comparison) => (
+          <Link
+            key={comparison.href}
+            href={comparison.href}
+            className="inline-block rounded-lg border border-border px-4 py-1.5 text-sm text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground"
+          >
+            {comparison.label} &rarr;
+          </Link>
+        ))}
+      </div>
 
       {/* Below md, one option at a time under its capability. Three columns
           of free text will not fit a phone. */}
@@ -97,11 +101,11 @@ export function BuilderAlternatives() {
             >
               {row.cells.map((cell, i) => (
                 <div
-                  key={COLUMNS[i]}
+                  key={COLUMNS[i].name}
                   className={`px-4 py-3 ${i === OWN ? "bg-muted" : ""}`}
                 >
                   <span className="block text-xs text-muted-foreground">
-                    {COLUMNS[i]}
+                    {COLUMNS[i].name}
                   </span>
                   <p
                     className={`mt-1 text-sm leading-relaxed ${
@@ -138,7 +142,7 @@ export function BuilderAlternatives() {
               </th>
               {COLUMNS.map((column, i) => (
                 <th
-                  key={column}
+                  key={column.name}
                   scope="col"
                   className={`px-6 pb-4 pt-4 text-sm font-normal ${
                     i === OWN
@@ -146,7 +150,12 @@ export function BuilderAlternatives() {
                       : "text-muted-foreground"
                   }`}
                 >
-                  {column}
+                  {column.name}
+                  {column.examples ? (
+                    <span className="mt-1 block text-xs text-muted-foreground">
+                      {column.examples}
+                    </span>
+                  ) : null}
                 </th>
               ))}
             </tr>
@@ -162,7 +171,7 @@ export function BuilderAlternatives() {
                 </th>
                 {row.cells.map((cell, i) => (
                   <td
-                    key={COLUMNS[i]}
+                    key={COLUMNS[i].name}
                     className={`px-6 py-5 align-top ${
                       i === OWN ? `bg-muted ${EDGE_R}` : ""
                     }`}
