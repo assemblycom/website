@@ -22,6 +22,10 @@ const STEP_MS = 4000;
  * The sweep only runs while the row is on screen: a progress bar advancing where
  * nobody is looking is wasted work, and it would be mid-cycle and meaningless by
  * the time it scrolled into view.
+ *
+ * Each step is also a button. The rail advancing on its own is a hint that the
+ * steps are a sequence, not a reason to make someone wait for the one they want
+ * to read, so clicking a step selects it and restarts its dwell from there.
  */
 export function StepRail({
   steps,
@@ -67,12 +71,15 @@ export function StepRail({
     // bar sweeping across it: the rail settles on the first step and stays.
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
     if (!running || reduced.matches) return;
+    // `active` is a dependency so a click restarts the dwell: without it the
+    // interval keeps its own cadence and a step chosen late in a cycle would
+    // be replaced almost immediately.
     const id = setInterval(
       () => setActive((i) => (i + 1) % steps.length),
       STEP_MS,
     );
     return () => clearInterval(id);
-  }, [running, steps.length]);
+  }, [running, steps.length, active]);
 
   useEffect(() => {
     // Driven with the Web Animations API rather than a CSS transition: the bar
@@ -82,9 +89,16 @@ export function StepRail({
     if (!bar) return;
     bars.current.forEach((b) => b?.getAnimations().forEach((a) => a.cancel()));
     if (!running) return;
+    // Reduced motion still needs the current step marked, so its rule fills at
+    // once rather than sweeping.
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const anim = bar.animate(
       [{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }],
-      { duration: STEP_MS, easing: "linear", fill: "forwards" },
+      {
+        duration: reduced ? 0 : STEP_MS,
+        easing: "linear",
+        fill: "forwards",
+      },
     );
     return () => anim.cancel();
   }, [active, running]);
@@ -93,27 +107,34 @@ export function StepRail({
     <ol ref={row} className={`grid gap-8 md:grid-cols-4 md:gap-6 ${className}`}>
       {steps.map((step, i) => (
         <li key={step.name}>
-          <div className="relative h-0.5 w-full overflow-hidden rounded-full bg-border [[data-theme=dark]_&]:bg-[#383838]">
-            <div
-              ref={(el) => {
-                bars.current[i] = el;
-              }}
-              className="absolute inset-y-0 left-0 w-full origin-left bg-foreground"
-              // Empty unless it is the current step; the sweep itself is run
-              // above. The first step stays filled when the rail is paused, so
-              // a still frame still reads as step one.
-              style={{
-                transform: !running && i === 0 ? "scaleX(1)" : "scaleX(0)",
-              }}
-            />
-          </div>
-          <span className="type-eyebrow mt-4 block text-muted-foreground">
-            Step {i + 1}
-          </span>
-          <p className="mt-2 text-sm">{step.name}</p>
-          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-            {step.body}
-          </p>
+          <button
+            type="button"
+            onClick={() => setActive(i)}
+            aria-current={i === active ? "step" : undefined}
+            className="group block w-full rounded-sm text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/30 focus-visible:ring-offset-4 focus-visible:ring-offset-background"
+          >
+            <div className="relative h-0.5 w-full overflow-hidden rounded-full bg-border transition-colors group-hover:bg-foreground/25 [[data-theme=dark]_&]:bg-[#383838] [[data-theme=dark]_&]:group-hover:bg-white/30">
+              <div
+                ref={(el) => {
+                  bars.current[i] = el;
+                }}
+                className="absolute inset-y-0 left-0 w-full origin-left bg-foreground"
+                // Empty unless it is the current step; the sweep itself is run
+                // above. The first step stays filled when the rail is paused,
+                // so a still frame still reads as step one.
+                style={{
+                  transform: !running && i === 0 ? "scaleX(1)" : "scaleX(0)",
+                }}
+              />
+            </div>
+            <span className="type-eyebrow mt-4 block text-muted-foreground">
+              Step {i + 1}
+            </span>
+            <p className="mt-2 text-sm">{step.name}</p>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              {step.body}
+            </p>
+          </button>
         </li>
       ))}
     </ol>

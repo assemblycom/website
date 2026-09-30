@@ -1,39 +1,15 @@
-import Link from "next/link";
-import { GRID_LINE } from "@/components/ui/grid-lines";
 import { Reveal } from "@/components/ui/reveal";
-import { VisualSlot } from "@/components/ui/visual-slot";
+import {
+  ApprovalsMock,
+  OnboardingMock,
+} from "@/components/client-portal/segment-mock";
 
-/**
- * Each segment named by the app they would actually build, and linked to the
- * real template behind it, so the section is a set of destinations rather than
- * four adjectives.
- */
-const SEGMENTS = [
-  {
-    segment: "Agencies and creative studios",
-    app: "A campaign approval flow",
-    body: "Clients review and sign off on deliverables round by round.",
-    href: "/templates/design-approvals",
-  },
-  {
-    segment: "Accounting and bookkeeping",
-    app: "A year-end document collection app",
-    body: "A per-client checklist with upload tracking.",
-    href: "/templates/document-collection",
-  },
-  {
-    segment: "Consultants and coaches",
-    app: "A client progress dashboard",
-    body: "Milestones and outcomes per engagement.",
-    href: "/templates/client-project-tracker",
-  },
-  {
-    segment: "Legal, real estate, financial advisory",
-    app: "A per-client onboarding wizard",
-    body: "Saves progress across steps, next to a secure data room.",
-    href: "/templates/client-onboarding-wizard",
-  },
-];
+/** Shared by every card in the set. */
+const CARD =
+  "rounded-3xl bg-muted [[data-theme=dark]_&]:bg-white/[0.04]";
+const PAD = "p-6 md:p-10";
+const TITLE = "text-base leading-snug";
+const BODY = "mt-2 text-sm leading-relaxed text-muted-foreground";
 
 /**
  * The payoff: one portal, a different experience per client and per segment.
@@ -57,38 +33,60 @@ export function PortalTailor() {
           </p>
         </div>
 
-        {/* One tiled grid closed by its own rules, rather than four outlined
-            cards floating in gaps: the four are one set, and the rules say so
-            the way the rest of the page's grid does. */}
-        <div className="-mx-6 mt-12 md:-mx-10">
-          <div className={`hidden border-t md:block ${GRID_LINE}`} />
-          <div className="grid sm:grid-cols-2">
-            {SEGMENTS.map((item, i) => (
-              <Link
-                key={item.segment}
-                href={item.href}
-                className={`px-6 py-8 transition-colors hover:bg-muted md:px-10 md:py-12 ${GRID_LINE} ${
-                  i > 0 ? "border-t" : ""
-                } ${i % 2 === 1 ? "sm:border-l" : "sm:border-l-0"} ${
-                  i >= 2 ? "sm:border-t" : "sm:border-t-0"
-                }`}
-              >
-                {/* Shot first, caption under it. The claim is that the portal
-                    looks different per segment, so the picture makes the case
-                    and the words label what you are already looking at. Each
-                    segment gets its own, since a single shared frame cannot
-                    show four different portals. */}
-                <VisualSlot
-                  ratio="4 / 3"
-                  label={`${item.segment} visual`}
-                  description={`${item.app}. ${item.body} Shown inside the Brandmages portal chrome, with the sidebar carrying only the apps this segment can see.`}
-                />
-                <p className="mt-6 text-sm text-muted-foreground">{item.app}</p>
-                <p className="mt-2 leading-relaxed">{item.body}</p>
-              </Link>
-            ))}
+        {/* Four cards of four different shapes. Same-size cards each holding
+            the same screenshot argue the opposite of what the heading says, so
+            the set varies by width, by how much chrome each picture carries,
+            and by where the copy sits. Not links: there is nothing to go to
+            from here, and a hover state on a picture of an app invites a click
+            the card cannot answer. */}
+        <div className="mt-12 grid gap-4 md:mt-14 md:gap-5 lg:grid-cols-3">
+          {/* Wide. The only card with the sidebar, because this is where the
+              set establishes that all four are one portal. Cropped right and
+              bottom so it reads as a window onto a running app. */}
+          <div
+            className={`flex flex-col overflow-hidden lg:col-span-2 ${CARD} ${PAD} pb-0 md:pb-0`}
+          >
+            <p className={TITLE}>A campaign approval flow</p>
+            <p className={`${BODY} max-w-sm`}>
+              Clients review and sign off on deliverables round by round.
+            </p>
+            <div
+              className={`-mr-6 mt-8 min-h-[276px] flex-1 overflow-hidden rounded-tl-xl border-l border-t border-border shadow-[0_1px_2px_rgba(16,24,40,0.04),0_18px_40px_-28px_rgba(16,24,40,0.28)] md:-mr-10 md:mt-10 [[data-theme=dark]_&]:border-[#383838] [[data-theme=dark]_&]:shadow-[0_18px_44px_-28px_rgba(0,0,0,0.6)]`}
+            >
+              <ApprovalsMock />
+            </div>
           </div>
-          <div className={`hidden border-t md:block ${GRID_LINE}`} />
+
+          {/* Copy only for now, like the card below it. ProgressMock is still
+              in segment-mock.tsx and drops back in under this text. */}
+          <div className={`flex flex-col ${CARD} ${PAD}`}>
+            <p className={TITLE}>A client progress dashboard</p>
+            <p className={BODY}>Milestones and outcomes per engagement.</p>
+          </div>
+
+          {/* Copy only for now. DocumentsMock is still in segment-mock.tsx and
+              drops back in under this text when we want it. */}
+          <div className={`flex flex-col ${CARD} ${PAD}`}>
+            <p className={TITLE}>A year-end document collection app</p>
+            <p className={BODY}>A per-client checklist with upload tracking.</p>
+          </div>
+
+          {/* Wide, and a board of panels rather than one screen: the app is
+              several things at once, and the bottom row runs off the card so
+              the board reads as continuing past it. */}
+          <div
+            className={`flex flex-col overflow-hidden lg:col-span-2 ${CARD} ${PAD} pb-0 md:pb-0`}
+          >
+            <p className={TITLE}>A per-client onboarding wizard</p>
+            <p className={`${BODY} max-w-md`}>
+              Saves progress across steps, next to a secure data room.
+            </p>
+            <div
+              className={`-mr-6 mt-8 min-h-[248px] flex-1 overflow-hidden rounded-tl-xl border-l border-t border-border md:-mr-10 md:mt-10 [[data-theme=dark]_&]:border-[#383838]`}
+            >
+              <OnboardingMock />
+            </div>
+          </div>
         </div>
 
       </Reveal>

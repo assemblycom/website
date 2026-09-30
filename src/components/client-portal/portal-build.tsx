@@ -38,14 +38,16 @@ export function PortalBuild() {
       className="mx-auto max-w-[1200px] px-6 py-16 md:px-10 md:py-24"
     >
       <Reveal>
-        <h2 className="type-h2 text-balance">
-          Build the features unique to your firm
-        </h2>
-        <p className="mt-4 max-w-2xl text-muted-foreground">
-          Tell us what you want. Assembly shows you a plan to approve, then ships
-          the app into your portal with logins, branding, and payments already
-          handled.
-        </p>
+        <div className="text-center">
+          <h2 className="type-h2 mx-auto max-w-3xl text-balance">
+            Build the features unique to your firm
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl text-balance text-muted-foreground">
+            Tell us what you want. Assembly shows you a plan to approve, then
+            ships the app into your portal with logins, branding, and payments
+            already handled.
+          </p>
+        </div>
 
         <VisualSlot
           className="mb-12 mt-10"

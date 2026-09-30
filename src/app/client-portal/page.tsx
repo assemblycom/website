@@ -5,7 +5,6 @@ import {
   Testimonials,
   type CustomerStory,
 } from "@/components/home/testimonials";
-import { SecurityCompliance } from "@/components/security/security-compliance";
 import { GridDivider, GridRails } from "@/components/ui/grid-lines";
 import { VisualSlot } from "@/components/ui/visual-slot";
 import { PortalSocialProof } from "@/components/client-portal/portal-social-proof";
@@ -168,12 +167,6 @@ export default function ClientPortalPage() {
         <PortalTailor />
 
         <PortalStack />
-        <GridDivider />
-
-        {/* The seals open the trust argument rather than closing it, and sit
-            inside the rails so the band's outer cells land on the vertical
-            guides the way its inner hairlines already do. */}
-        <SecurityCompliance />
         <GridDivider />
 
         <PortalTrust />

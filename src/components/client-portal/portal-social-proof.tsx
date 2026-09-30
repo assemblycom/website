@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { CustomerLogo } from "@/components/customers/customer-logos";
-import { PortalStatTicker } from "@/components/client-portal/portal-stat-ticker";
+import { getCaseStudyBySlug } from "@/lib/case-studies";
 import { Reveal } from "@/components/ui/reveal";
 
 /**
@@ -23,16 +23,8 @@ const LOGO_SLUGS = [
 
 export function PortalSocialProof() {
   return (
-    <section className="mx-auto max-w-[1200px] px-6 pb-16 pt-6 md:px-10 md:pb-20 md:pt-8">
+    <section className="mx-auto max-w-[1200px] px-6 py-16 md:px-10 md:py-20">
       <Reveal>
-        {/* The strip opens the band, above the claim it backs up. Pulled out
-            past the section's padding so its rule runs rail to rail, with the
-            padding put back inside so the label and the track keep clear of
-            the vertical guides. */}
-        <div className="-mx-6 mb-12 border-b border-border px-6 pb-5 md:-mx-10 md:px-10 [[data-theme=dark]_&]:border-[#383838]">
-          <PortalStatTicker />
-        </div>
-
         {/* Two-tone heading: the claim at full strength, the qualifier stepped
             back into the same sentence, so the pair reads as one line rather
             than a heading with a subtitle parked under it. */}
@@ -55,8 +47,13 @@ export function PortalSocialProof() {
             muted surface underneath, so the row reads as eight cards. */}
         <div className="mt-12 grid grid-cols-2 gap-1 rounded-2xl bg-muted p-1 sm:grid-cols-4 lg:grid-cols-8 [[data-theme=dark]_&]:bg-white/[0.04]">
           {LOGO_SLUGS.map((slug) => (
-            <div
+            // Every mark has a story behind it, so the tile is the link to it.
+            // A wordmark alone says nothing to a screen reader, hence the
+            // company name on the link.
+            <Link
               key={slug}
+              href={`/customers/${slug}`}
+              aria-label={`Read the ${getCaseStudyBySlug(slug)?.company ?? ""} case study`}
               className="group flex aspect-square items-center justify-center rounded-xl bg-background p-5 transition-colors duration-200 hover:bg-muted/60 [[data-theme=dark]_&]:hover:bg-white/[0.06]"
             >
               {/* Held back from full strength so the row reads as a roster
@@ -66,7 +63,7 @@ export function PortalSocialProof() {
               <div className="flex h-7 w-full max-w-[110px] items-center justify-center text-foreground/60 transition-colors duration-200 group-hover:text-foreground">
                 <CustomerLogo slug={slug} fit />
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </Reveal>

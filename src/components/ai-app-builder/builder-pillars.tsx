@@ -76,7 +76,9 @@ export function BuilderPillars({ pillars }: { pillars: Pillar[] }) {
               // Pulled out past the section's padding so the rule's left end
               // lands on the page's own vertical rail; the padding then holds
               // the copy clear of both lines.
-              className={`-mx-6 px-6 py-12 md:mx-0 md:-ml-10 md:py-20 md:pl-10 md:pr-10 lg:pl-12 lg:pr-12 ${
+              // Asymmetric on purpose: the claim sits close to the rule that
+              // opens it and well clear of the one that closes it.
+              className={`-mx-6 px-6 pb-16 pt-10 md:mx-0 md:-ml-10 md:pb-32 md:pl-10 md:pr-6 md:pt-14 lg:pl-12 lg:pr-8 ${
                 i > 0 ? "md:border-t" : ""
               } ${GRID_LINE}`}
             >
@@ -104,16 +106,16 @@ export function BuilderPillars({ pillars }: { pillars: Pillar[] }) {
         {/* The pinned column. A flex child stretches by default, so its left
             border is the vertical guide the claims' rules terminate on. */}
         <div
-          className={`hidden md:block md:-mr-10 md:w-[56%] md:border-l md:px-10 lg:px-12 ${GRID_LINE}`}
+          className={`hidden md:block md:-mr-10 md:w-[56%] md:border-l md:pl-6 md:pr-10 lg:pl-8 lg:pr-12 ${GRID_LINE}`}
         >
           <div className="sticky top-24 py-20">
-            <div className="relative" style={{ aspectRatio: "4 / 3" }}>
+            <div className="relative" style={{ aspectRatio: "1 / 1" }}>
               {pillars.map((pillar, i) => (
                 <VisualSlot
                   key={pillar.heading}
                   label={pillar.visual.label}
                   description={pillar.visual.description}
-                  ratio="4 / 3"
+                  ratio="1 / 1"
                   className={`absolute inset-0 transition-opacity duration-500 ${
                     i === active ? "opacity-100" : "opacity-0"
                   }`}

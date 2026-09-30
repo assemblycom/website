@@ -21,6 +21,7 @@ type Tier = {
   perks: string[];
   cta: string;
   href: string;
+  /** Takes the filled button rather than the outlined one. */
   recommended?: boolean;
 };
 
@@ -86,29 +87,17 @@ export function PortalPricing() {
 
         {/* Four filled cards rather than one tiled grid: the perk lists run to
             different lengths, and separate surfaces let each one end where it
-            ends instead of stretching the whole row to the longest. Only the
-            recommended plan's tag marks it out, so no card outshouts the rest —
-            the same restraint the full pricing table keeps. */}
+            ends instead of stretching the whole row to the longest. The
+            recommended plan is marked only by its filled button, so no card
+            outshouts the rest, the same restraint the full pricing table
+            keeps. */}
         <div className="mt-12 grid gap-4 min-[560px]:grid-cols-2 lg:grid-cols-4">
           {TIERS.map((tier) => (
             <div
               key={tier.name}
               className="flex flex-col rounded-2xl bg-muted p-6 [[data-theme=dark]_&]:bg-white/[0.04]"
             >
-              <div className="flex items-center gap-2">
-                <h3 className="text-lg">{tier.name}</h3>
-                {/* The site's shared chip. Its usual muted fill is this card's
-                    own surface, so it takes the page tone instead and reads as
-                    a tag rather than dissolving into the card. Set in the body
-                    face at full strength: mono caps in muted grey on a fill
-                    barely off the card was the one thing on the card you could
-                    not read. */}
-                {tier.recommended ? (
-                  <span className="inline-flex items-center rounded-md border border-border bg-background px-2.5 py-1 text-xs leading-none text-foreground [[data-theme=dark]_&]:border-white/10 [[data-theme=dark]_&]:bg-white/[0.06]">
-                    Recommended
-                  </span>
-                ) : null}
-              </div>
+              <h3 className="text-lg">{tier.name}</h3>
               <p className="mt-2 text-3xl leading-none">{tier.price}</p>
               <p className="mt-2 text-xs text-muted-foreground">
                 {tier.cadence}
