@@ -182,10 +182,7 @@ export default function AiAppBuilderPage() {
           </h1>
           <p className="type-lead mx-auto mt-6 max-w-2xl text-balance text-muted-foreground">
             Describe what you want. Assembly builds a working app with logins,
-            permissions, and your branding built in, for agencies, accountants,
-            consultants, and other service businesses. Your clients log in at
-            your own domain and see their files, messages, invoices, and the
-            apps you built for them.
+            permissions, and your branding built in.
           </p>
           <div className="mx-auto mt-8 flex w-full max-w-xs flex-col items-stretch gap-3 sm:w-auto sm:max-w-none sm:flex-row sm:items-center sm:justify-center">
             <a
@@ -260,6 +257,7 @@ export default function AiAppBuilderPage() {
           heading="Frequently asked questions"
           items={BUILDER_FAQS}
           twoColumn
+          compactQuestions
         />
 
         {/* Full-bleed: this rule closes the region, so the rails stop here and
