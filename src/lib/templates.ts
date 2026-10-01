@@ -136,6 +136,7 @@ const INDUSTRY_BY_SLUG: Record<string, string[]> = {
   "deals-pipeline": ["Real estate", "Consulting", "Financial services", "Technology"],
   "case-status-page": ["Legal", "Healthcare", "Financial services"],
   "retainer-usage-overview": ["Marketing", "Consulting", "Legal"],
+  "client-engagement-dashboard": ["Consulting", "Marketing", "Accounting", "Legal"],
   "conditional-forms": ["Legal", "Healthcare", "Accounting", "Financial services"],
   "client-calendar": ["Consulting", "Legal", "Real estate", "Healthcare"],
   "mass-messenger": ["Marketing", "Consulting", "Accounting", "Real estate"],
@@ -391,6 +392,26 @@ const BASE_TEMPLATES: Template[] = [
     features: ["Used vs. remaining", "Breakdown by work", "Per-period", "Client-visible"],
   },
   {
+    // Hidden in Contentful until the launch flag flips. This committed record is
+    // the half the CMS has no copy of — the cover mock, the industry tags, the
+    // feature list — so the gallery card is complete the moment the entry is
+    // unhidden rather than falling back to the generic cover. No templateId yet:
+    // a guessed one silently starts signup on the wrong app.
+    slug: "client-engagement-dashboard",
+    title: "Engagement dashboard",
+    description: "Spot quiet clients before they churn",
+    icon: "\ud83d\udcc9",
+    category: "Dashboards",
+    longDescription:
+      "Score how engaged every client is from what they actually do across their portal, follow the 12-week trend, and hear about it when an account goes quiet or drops sharply \u2014 while there is still time to do something.",
+    features: [
+      "Churn risk scoring",
+      "12-week activity trends",
+      "Configurable thresholds",
+      "Quiet-account alerts",
+    ],
+  },
+  {
     slug: "conditional-forms",
     templateId: "app-67adf3fa",
     title: "Conditional forms",
@@ -625,6 +646,7 @@ const LISTED_SLUGS = new Set([
 
 // Templates whose core value depends on AI — surfaced with an "AI" tag.
 const AI_SLUGS = new Set([
+  "client-engagement-dashboard",
   "client-ai-assistant",
   "voice-ai-integration",
   "internal-ai-assistant",
@@ -735,6 +757,16 @@ export const TEMPLATE_FEATURE_DETAILS: Record<string, string> = {
     "Clean timesheets out, ready for whatever you bill from.",
   "Per-project":
     "Every entry belongs to a project, so a client with three jobs running stays three jobs.",
+
+  // Client engagement dashboard
+  "Churn risk scoring":
+    "Every client carries a score built from what they actually do in the portal, so the list sorts by who needs attention rather than by name.",
+  "12-week activity trends":
+    "A quarter of activity behind each account, so a quiet fortnight reads as either a dip or the start of a drop.",
+  "Configurable thresholds":
+    "You set what counts as quiet. Start from a preset, and see which accounts would change state before you save it.",
+  "Quiet-account alerts":
+    "You hear when an account goes quiet, falls sharply, or a follow-up you scheduled comes due \u2014 in the product, not in a monthly report.",
 
   // Content approval flow
   "Posts & campaigns":
