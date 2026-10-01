@@ -32,7 +32,7 @@ import { MockFrame } from "@/components/home/mock-frame";
 // Assembly wordmark stair-step, in currentColor. `animated` lights the three
 // bars in sequence (bottom → top) for the "thinking" indicator; otherwise it's
 // a plain static mark (e.g. the questions-card header).
-function IconMark({
+export function IconMark({
   className,
   animated = false,
 }: {

@@ -11,6 +11,7 @@ export function CTA({
   submitLabel = "Get started",
   secondaryCta,
   planChips = true,
+  promptExamples,
 }: {
   // Overrides the default close for a page whose argument ends somewhere else
   // (e.g. the AI app builder page closes on what you would build today).
@@ -23,6 +24,8 @@ export function CTA({
   secondaryCta?: { label: string; href: string };
   /** Off for a page that has already made the free-plan case further up. */
   planChips?: boolean;
+  /** Page-specific examples, completing "Build …", for both the typewriter and the Ideas menu. */
+  promptExamples?: string[];
 } = {}) {
   // Dark sheet flowing into the black footer below; the green wordmark panel is
   // revealed beneath (square top, footer rounds the bottom).
@@ -94,7 +97,10 @@ export function CTA({
               promptPicker
               promptPickerLabel="Ideas"
               promptPickerSide="left"
-              promptItems={PROMPT_IDEAS}
+              promptItems={
+                promptExamples?.map((ex) => `Build ${ex}`) ?? PROMPT_IDEAS
+              }
+              typewriterExamples={promptExamples}
               hideHowTo
               plusAsAttach
               submitLabel={submitLabel}

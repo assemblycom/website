@@ -381,9 +381,6 @@ export function HeroV76({
         darkTop={dark}
         maxWidthClass="max-w-[1600px]"
         restPaddingClass="px-6 md:px-10"
-        // The bar closes on the same hairline here as on every other page, so
-        // the header does not change shape when you navigate.
-        bordered
       />
       {/* Theme-dependent colour here is written as a data-theme variant, not as a
           `dark ? …` ternary: `dark` only resolves after hydration, so the server

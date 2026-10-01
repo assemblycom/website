@@ -43,7 +43,7 @@ function IconLock({ className }: { className?: string }) {
   );
 }
 
-function IconUpload({ className }: { className?: string }) {
+export function IconUpload({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 20 20" className={className} aria-hidden>
       <path d="M10 13.2V3.6m0 0L6.6 7M10 3.6 13.4 7" {...STROKE} />

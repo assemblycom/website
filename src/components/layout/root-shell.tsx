@@ -11,6 +11,11 @@ import { useTheme } from "@/components/theme/theme-provider";
 // to fill one (see the branch below).
 const SHORT_PAGES = new Set(["/demo", "/demo-video"]);
 
+// The page rises out of the announcement band as a sheet with rounded top
+// corners; the band's ground shows in the cut corners. No overflow clip, since
+// that would stop the nav inside from sticking.
+const SHEET = "relative flex flex-1 flex-col rounded-t-[28px] bg-background";
+
 /**
  * Every page in this shell ends in the reveal footer — a single black sheet
  * closing on the brand aurora (the gradient lives inside the footer itself,
@@ -56,9 +61,6 @@ export function RootShell({ children }: { children: React.ReactNode }) {
       // horizontally when navigating between home and the content pages.
       maxWidthClass="max-w-[1600px]"
       restPaddingClass="px-6 md:px-10"
-      // Content pages sit under the bar on a plain ground, so it closes on the
-      // same hairline the page grid draws.
-      bordered
     />
   );
 
@@ -76,25 +78,29 @@ export function RootShell({ children }: { children: React.ReactNode }) {
   // full screen below.
   if (SHORT_PAGES.has(pathname)) {
     return (
-      <div className="flex min-h-screen flex-col bg-background">
+      <div className="flex min-h-screen flex-col bg-muted">
         <AnnouncementBar />
-        {nav}
-        <main id="main" className="flex-1">
-          {children}
-        </main>
-        <Footer reveal light={revealFooterLight} themeToggle={themeToggle} />
+        <div className={SHEET}>
+          {nav}
+          <main id="main" className="flex-1">
+            {children}
+          </main>
+          <Footer reveal light={revealFooterLight} themeToggle={themeToggle} />
+        </div>
       </div>
     );
   }
 
   return (
     <>
-      <div className="flex min-h-screen flex-col bg-background">
+      <div className="flex min-h-screen flex-col bg-muted">
         <AnnouncementBar />
-        {nav}
-        <main id="main" className="flex-1">
-          {children}
-        </main>
+        <div className={SHEET}>
+          {nav}
+          <main id="main" className="flex-1">
+            {children}
+          </main>
+        </div>
       </div>
       <Footer reveal light={revealFooterLight} themeToggle={themeToggle} />
     </>
