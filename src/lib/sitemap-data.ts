@@ -21,6 +21,7 @@ import { getVisibleTemplates } from "@/lib/visible-templates";
 import { updatesPath } from "@/lib/updates";
 import { getUpdates } from "@/lib/updates-content";
 import { tagPath } from "@/lib/blog";
+import { LEGACY_REDIRECTS } from "@/lib/redirects";
 
 /**
  * One source of truth for every URL this site publishes, grouped the way the
@@ -217,6 +218,10 @@ export async function embedUrls(): Promise<SitemapUrl[]> {
   }));
 }
 
+const REDIRECTED_PATHS = new Set<string>(
+  LEGACY_REDIRECTS.map((redirect) => redirect.source),
+);
+
 /** Ghost /blog posts, plus the author and tag pages they generate. */
 export async function blogUrls(): Promise<SitemapUrl[]> {
   const [posts, authors, categories] = await Promise.all([
@@ -241,11 +246,15 @@ export async function blogUrls(): Promise<SitemapUrl[]> {
     }
   }
   return [
-    ...posts.map((post) => ({
-      path: `/blog/${post.slug}`,
-      lastModified: post.updatedAt,
-      title: post.title,
-    })),
+    // A post that redirects elsewhere is not a page to list: Search Console
+    // reports a sitemap URL that only redirects.
+    ...posts
+      .filter((post) => !REDIRECTED_PATHS.has(`/blog/${post.slug}`))
+      .map((post) => ({
+        path: `/blog/${post.slug}`,
+        lastModified: post.updatedAt,
+        title: post.title,
+      })),
     // An author page is a list of that author's posts, so it changes when their
     // newest post does.
     ...authors.map((author) => ({
