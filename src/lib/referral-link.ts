@@ -1,8 +1,11 @@
 import "server-only";
 
-import { SIGNUP_URL } from "@/lib/constants";
 import { getFirmName } from "@/lib/firm-branding";
-import { PORTAL_API_URL, PORTAL_ID } from "@/lib/portal-api";
+import {
+  PORTAL_API_URL,
+  PORTAL_ID,
+  PORTAL_SIGNUP_URL,
+} from "@/lib/portal-api";
 
 /**
  * Where a referral link, `/referrals/{firstName}_{code}`, sends the visitor.
@@ -96,8 +99,8 @@ function signupWith(params: Record<string, string | undefined>): string {
   for (const [key, value] of Object.entries(params)) {
     if (value) query.set(key, value);
   }
-  // SIGNUP_URL already has a query string (`?referrer=`), so this appends.
-  return `${SIGNUP_URL}&${query}`;
+  // PORTAL_SIGNUP_URL already has a query string (`?referrer=`), so this appends.
+  return `${PORTAL_SIGNUP_URL}&${query}`;
 }
 
 /** The promise's value, or undefined if it hasn't settled by the deadline. */

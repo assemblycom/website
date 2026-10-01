@@ -1,4 +1,4 @@
-import { APP_URL, IS_LIVE_SITE, SIGNUP_REFERRER } from "@/lib/constants";
+import { PORTAL_SIGNUP_URL } from "@/lib/portal-api";
 
 /**
  * The tracking contract for /powered-by and /built-by, as the growth-loops PRD
@@ -51,15 +51,6 @@ const BADGE_UTM = {
   utm_medium: "powered_by",
   utm_campaign: "badge",
 } as const;
-
-/**
- * The dashboard signup lands in. Off the live site the firm is looked up on the
- * staging API (see `PORTAL_API_URL`), so the visitor signs up on the staging
- * dashboard too: a `ref` from a staging workspace means nothing to production.
- */
-const SIGNUP_URL = `${
-  IS_LIVE_SITE ? APP_URL : "https://dashboard.assembly-staging.com"
-}/signup?referrer=${SIGNUP_REFERRER}`;
 
 // A firm name long enough to break the heading is not one a badge wrote.
 const MAX_FIRM_LENGTH = 80;
@@ -117,7 +108,7 @@ export function signupHref({ ref, firm, utm }: PoweredByAttribution): string {
   if (ref) params.set("ref", ref);
   if (firm) params.set("firm", firm);
   const query = params.toString();
-  // SIGNUP_URL already carries `?referrer=`, which the app needs to create the
-  // workspace on the current pricing model.
-  return query ? `${SIGNUP_URL}&${query}` : SIGNUP_URL;
+  // PORTAL_SIGNUP_URL already carries `?referrer=`, which the app needs to
+  // create the workspace on the current pricing model.
+  return query ? `${PORTAL_SIGNUP_URL}&${query}` : PORTAL_SIGNUP_URL;
 }
