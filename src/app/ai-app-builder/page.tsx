@@ -187,33 +187,34 @@ export default function AiAppBuilderPage() {
           it on the right; on a phone they stack. */}
       <section className="pb-16 pt-24 md:pb-24 md:pt-32">
         <div className="mx-auto max-w-[1400px] px-6 md:px-10">
-          <div className="grid gap-8 md:grid-cols-[1.15fr_0.85fr] md:items-start md:gap-16">
-            <div>
-              <h1 className="type-display max-w-[16ch] text-balance">
-                The AI app builder made for service businesses
-              </h1>
-              <div className="mt-8 flex flex-wrap items-center gap-3">
-                <a
-                  href={SIGNUP_URL}
-                  className="rounded-lg bg-foreground px-5 py-2.5 text-center text-sm text-background transition-opacity hover:opacity-90"
-                >
-                  Start building for free
-                </a>
-                <a
-                  href={DEMO_URL}
-                  className="rounded-lg border border-foreground/20 bg-transparent px-5 py-2.5 text-center text-sm text-foreground transition-colors hover:bg-foreground/5"
-                >
-                  Book demo
-                </a>
-              </div>
-            </div>
+          {/* Stacked, the detail reads straight after the headline and the
+              actions close the block; side by side it moves to the right
+              column and the actions stay under the claim. */}
+          <div className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-start lg:gap-x-16">
+            <h1 className="type-display max-w-[16ch] text-balance">
+              The AI app builder made for service businesses
+            </h1>
             {/* Kept to about three lines so it balances the headline; the own-
                 domain point is carried by the branding pillar further down. */}
-            <p className="type-lead max-w-[34rem] text-pretty text-muted-foreground md:pt-2">
+            <p className="type-lead max-w-[34rem] text-pretty text-muted-foreground lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:pt-2">
               Describe what you want. Assembly builds a working app with logins,
               permissions, and your branding built in, for agencies,
               accountants, consultants, and other service businesses.
             </p>
+            <div className="flex flex-wrap items-center gap-3">
+              <a
+                href={SIGNUP_URL}
+                className="rounded-lg bg-foreground px-5 py-2.5 text-center text-sm text-background transition-opacity hover:opacity-90"
+              >
+                Start building for free
+              </a>
+              <a
+                href={DEMO_URL}
+                className="rounded-lg border border-foreground/20 bg-transparent px-5 py-2.5 text-center text-sm text-foreground transition-colors hover:bg-foreground/5"
+              >
+                Book demo
+              </a>
+            </div>
           </div>
 
           <BuilderHeroVisual />

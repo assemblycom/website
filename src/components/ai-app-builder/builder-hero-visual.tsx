@@ -18,8 +18,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import { MockFit } from "@/components/templates/mock-fit";
-import { IconMark, NavItem, SectionLabel } from "@/components/home/build-app-visual";
-import { IconUpload } from "@/components/client-portal/segment-mock";
+import {
+  IconMark,
+  NavItem,
+  SectionLabel,
+} from "@/components/home/build-app-visual";
 import { IconArrowUp } from "@/components/home/build-step-visual";
 import {
   IconApp,
@@ -30,7 +33,7 @@ import {
   IconChat,
   IconFile,
   IconGlobe,
-    IconPlus,
+  IconPlus,
   IconUsers,
 } from "@/components/home/mock-icons";
 
@@ -42,7 +45,6 @@ const CHAT_H = 500;
 const LIVE_W = 720;
 
 const PROMPT = "Build a year-end document checklist my clients can upload to.";
-
 
 // Brandmages' brand colour is black, so the client side runs on ink: fills take
 // the foreground, and the sidebar is the brand itself, near-black with white
@@ -60,19 +62,13 @@ const WINDOW = `overflow-hidden rounded-xl border bg-background shadow-[0_1px_2p
 const PANEL = `mt-4 overflow-hidden rounded-lg border bg-background ${LINE}`;
 const TABLE_HEAD = `flex items-center gap-3 border-b bg-muted/60 px-3.5 py-2 text-[10.5px] leading-none text-muted-foreground ${LINE} [[data-theme=dark]_&]:bg-white/[0.04]`;
 
-function PageHeader({ title, sub }: { title: string; sub: string }) {
-  return (
-    <div>
-      <p className="text-[14px] leading-none text-foreground">{title}</p>
-      <p className="mt-2 text-[11px] leading-none text-muted-foreground">{sub}</p>
-    </div>
-  );
-}
-
 const CHIP = "rounded px-1.5 py-[3px] text-[10px] leading-none";
 const POSITIVE = `${CHIP} bg-[var(--mock-positive-bg)] text-[color:var(--mock-positive-fg)]`;
 const WARNING = `${CHIP} bg-[var(--mock-warning-bg)] text-[color:var(--mock-warning-fg)]`;
 const NEUTRAL = `${CHIP} bg-muted text-muted-foreground [[data-theme=dark]_&]:bg-white/[0.08]`;
+// The column keeps a fixed width so the header lines up; the pill inside hugs
+// its label.
+const STATUS_COL = "flex w-[72px] shrink-0 justify-center";
 
 // How long the planner spends thinking once the prompt is sent.
 const THINKING_MS = 2800;
@@ -93,7 +89,9 @@ function useBuildDemo() {
   }, [phase]);
 
   const play = () => {
-    const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    const reduce = window.matchMedia?.(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
     setPhase(reduce ? "planned" : "thinking");
   };
 
@@ -103,7 +101,9 @@ function useBuildDemo() {
 // Fade in only: the outgoing state drops out at once, so two states never
 // overlap mid-transition.
 const fade = (visible: boolean) =>
-  visible ? "opacity-100 transition-opacity duration-500 ease-out" : "pointer-events-none opacity-0";
+  visible
+    ? "opacity-100 transition-opacity duration-500 ease-out"
+    : "pointer-events-none opacity-0";
 
 /** The product's loading line while the planner works: its animated mark, then "Thinking...". */
 function ThinkingLine() {
@@ -117,8 +117,11 @@ function ThinkingLine() {
 
 // The result card's two views, with the brief's labels for each side.
 const VIEWS = ["Your team", "Your clients"] as const;
+// Below the side-by-side breakpoint only one card shows, picked by this switch.
+const CARDS = ["Describe it", "See it live"] as const;
 
-const CARD = "flex flex-col overflow-hidden rounded-[28px] transition-[background-color,box-shadow] duration-300";
+const CARD =
+  "flex flex-col overflow-hidden rounded-[28px] transition-[background-color,box-shadow] duration-300";
 // Both cards share one grey; the clicked card is marked by width, not colour,
 // and hover only firms up the outline.
 const cardTone = (active: boolean) =>
@@ -136,98 +139,131 @@ export function BuilderHeroVisual() {
   // Manual only: the reader chooses which side to look at.
   const [view, setView] = useState(0);
   const [active, setActive] = useState<"chat" | "live">("live");
+  // Kept apart from `active` so the phone opens on the prompt, in reading
+  // order, without changing which card desktop widens first.
+  const [shown, setShown] = useState(0);
+  // Both cards share one grid cell below lg, so the taller one holds the
+  // height and switching never moves the page.
+  const cardSlot = (i: number) =>
+    `[grid-area:1/1] lg:[grid-area:auto] ${shown === i ? "" : "invisible lg:visible"}`;
 
   return (
-    // Two cards rather than one composed scene: each half gets its own frame and
-    // scales on its own, so on a phone they stack and stay readable.
-    // On desktop the card the reader clicks widens and the other narrows, at a
-    // fixed height so the swap never moves the page.
-    <div
-      className={`mt-12 grid gap-3 transition-[grid-template-columns] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] md:mt-16 lg:h-[600px] ${
-        active === "chat" ? "lg:grid-cols-[7fr_5fr]" : "lg:grid-cols-[5fr_7fr]"
-      }`}
-    >
+    <div className="mt-12 md:mt-16">
+      {/* Two cards rather than one composed scene: each half gets its own frame
+        and scales on its own. On desktop the card the reader clicks widens and
+        the other narrows, at a fixed height so the swap never moves the page. */}
       <div
-        className={`${CARD} ${CARD_PAD} relative min-w-0 ${cardTone(active === "chat")}`}
+        className={`grid gap-3 transition-[grid-template-columns] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] lg:h-[600px] ${
+          active === "chat"
+            ? "lg:grid-cols-[7fr_5fr]"
+            : "lg:grid-cols-[5fr_7fr]"
+        }`}
       >
-        {/* The whole card replays the build, so it moves only when the reader
+        <div
+          className={`${CARD} ${CARD_PAD} relative min-w-0 justify-center lg:justify-start ${cardTone(active === "chat")} ${cardSlot(0)}`}
+        >
+          {/* The whole card replays the build, so it moves only when the reader
             asks for it. */}
-        <button
-          type="button"
-          onClick={() => {
-            setActive("chat");
-            play();
-          }}
-          disabled={phase === "thinking"}
-          aria-label="Replay the builder writing the plan"
-          className="absolute inset-0 z-10 cursor-pointer rounded-[28px] focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-default"
-        />
-        {/* Same row height as the toggle's row beside it, so both mocks start
-            on one line. */}
-        <div className={HEAD_ROW}>
-          <p className="type-h4 text-foreground">Describe it</p>
-        </div>
-        {/* Above the card's replay button so Approve and Send can show a
+          <button
+            type="button"
+            onClick={() => {
+              setActive("chat");
+              play();
+            }}
+            disabled={phase === "thinking"}
+            aria-label="Replay the builder writing the plan"
+            className="absolute inset-0 z-10 cursor-pointer rounded-[28px] focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-default"
+          />
+          {/* Same row height as the toggle's row beside it, so both mocks start
+            on one line. Below lg the switch above already names the card. */}
+          <div className={`${HEAD_ROW} hidden lg:flex`}>
+            <p className="type-h4 text-foreground">Describe it</p>
+          </div>
+          {/* Above the card's replay button so Approve and Send can show a
             hover; everything else lets the pointer through to the button. */}
-        <div aria-hidden className="pointer-events-none relative z-20 mt-6 min-h-0 select-none lg:flex-1">
-          <MockFit className="relative aspect-[24/25] w-full [--template-mock-h:500px] [--template-mock-w:480px] lg:aspect-auto lg:h-full">
-            <div style={{ width: CHAT_W, height: CHAT_H }} className={`flex flex-col ${WINDOW}`}>
-              {/* The thread runs from the top. While the planner works a
+          <div
+            aria-hidden
+            className="pointer-events-none relative z-20 min-h-0 select-none lg:mt-6 lg:flex-1"
+          >
+            <MockFit className="relative aspect-[24/25] max-h-[460px] w-full [--template-mock-h:500px] [--template-mock-w:480px] lg:aspect-auto lg:h-full lg:max-h-none">
+              <div
+                style={{ width: CHAT_W, height: CHAT_H }}
+                className={`flex flex-col ${WINDOW}`}
+              >
+                {/* The thread runs from the top. While the planner works a
                   thinking line holds the place; then the plan arrives as a
                   document. */}
-              <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden px-5 pt-5">
-                <p className="shrink-0 rounded-lg bg-muted px-4 py-3 text-[13px] leading-[1.55] text-foreground [[data-theme=dark]_&]:bg-white/[0.08]">
-                  {PROMPT}
-                </p>
-                <div className="relative min-h-0 flex-1">
-                  <div className={`absolute inset-x-0 top-0 ${fade(phase === "thinking")}`}>
-                    <ThinkingLine />
-                  </div>
-                  <div className={`absolute inset-x-0 top-0 ${fade(planned)}`}>
-                    <p className="mb-3 text-[13px] leading-[1.55] text-foreground">
-                      Here is the plan. Approve it and I will start building.
-                    </p>
-                    <PlanDoc />
+                <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden px-5 pt-5">
+                  <p className="shrink-0 rounded-lg bg-muted px-4 py-3 text-[13px] leading-[1.55] text-foreground [[data-theme=dark]_&]:bg-white/[0.08]">
+                    {PROMPT}
+                  </p>
+                  <div className="relative min-h-0 flex-1">
+                    <div
+                      className={`absolute inset-x-0 top-0 ${fade(phase === "thinking")}`}
+                    >
+                      <ThinkingLine />
+                    </div>
+                    <div
+                      className={`absolute inset-x-0 top-0 ${fade(planned)}`}
+                    >
+                      <p className="mb-3 text-[13px] leading-[1.55] text-foreground">
+                        Here is the plan. Approve it and I will start building.
+                      </p>
+                      <PlanDoc />
+                    </div>
                   </div>
                 </div>
+                <Composer phase={phase} />
               </div>
-              <Composer phase={phase} />
-            </div>
-          </MockFit>
+            </MockFit>
+          </div>
         </div>
-      </div>
 
-      <div
-        className={`${CARD} relative min-w-0 cursor-pointer ${cardTone(active === "live")}`}
-        onClick={() => setActive("live")}
-      >
-        <div className={`${HEAD_ROW} flex-wrap justify-between gap-3 ${CARD_PAD} pb-0 md:pb-0`}>
-          <p className="type-h4 text-foreground">Live for your team and your clients</p>
-          <ViewToggle view={view} onSelect={setView} />
-        </div>
-        {/* One screen, running off the card's right and bottom edges, so it
+        <div
+          className={`${CARD} relative min-w-0 cursor-pointer ${cardTone(active === "live")} ${cardSlot(1)}`}
+          onClick={() => setActive("live")}
+        >
+          <div
+            className={`${HEAD_ROW} flex-wrap justify-between gap-3 ${CARD_PAD} pb-0 md:pb-0`}
+          >
+            <p className="type-h4 hidden text-foreground lg:block">
+              Live for your team and your clients
+            </p>
+            <ViewToggle options={VIEWS} view={view} onSelect={setView} />
+          </div>
+          {/* One screen, running off the card's right and bottom edges, so it
             reads as a window into the product rather than a framed picture.
             Its ground is off-white, not white, so where it meets the card's
             edge it does not melt into the white page below. */}
-        <WidthScaled
-          designW={LIVE_W}
-          className="mt-6 aspect-[3/2] pl-6 md:pl-8 lg:aspect-auto lg:min-h-0 lg:flex-1"
-        >
-          <div className="h-[760px] w-full overflow-hidden rounded-tl-xl border-l border-t border-black/[0.12] bg-neutral-50 shadow-[0_8px_24px_-18px_rgba(16,24,40,0.14)] [[data-theme=dark]_&]:border-white/[0.14] [[data-theme=dark]_&]:bg-background">
-            <div className="relative h-full">
-              {VIEWS.map((label, i) => (
-                <div
-                  key={label}
-                  className={`absolute inset-0 transition-opacity duration-500 ${
-                    view === i ? "opacity-100" : "pointer-events-none opacity-0"
-                  }`}
-                >
-                  {i === 0 ? <TeamDashboard live /> : <ClientView />}
-                </div>
-              ))}
+          {/* Size-contained so the screen fills whatever height the prompt
+              card sets, rather than stretching both cards to its own. */}
+          <WidthScaled
+            designW={LIVE_W}
+            className="mt-6 min-h-[280px] flex-1 pl-6 [contain:size] md:pl-8 lg:min-h-0"
+          >
+            <div className="h-[760px] w-full overflow-hidden rounded-tl-xl border-l border-t border-black/[0.12] bg-neutral-50 shadow-[0_8px_24px_-18px_rgba(16,24,40,0.14)] [[data-theme=dark]_&]:border-white/[0.14] [[data-theme=dark]_&]:bg-background">
+              <div className="relative h-full">
+                {VIEWS.map((label, i) => (
+                  <div
+                    key={label}
+                    className={`absolute inset-0 transition-opacity duration-500 ${
+                      view === i
+                        ? "opacity-100"
+                        : "pointer-events-none opacity-0"
+                    }`}
+                  >
+                    {i === 0 ? <TeamDashboard live /> : <ClientView />}
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        </WidthScaled>
+          </WidthScaled>
+        </div>
+      </div>
+      {/* Under the picture rather than above it, so it reads as part of the
+          shot and does not compete with the hero's buttons. */}
+      <div className="mt-4 flex justify-center lg:hidden">
+        <ViewToggle options={CARDS} view={shown} onSelect={setShown} />
       </div>
     </div>
   );
@@ -239,8 +275,13 @@ const SIDE_BY_SIDE_PX = 1024;
 // How far the screen runs past the card's right edge. No right padding inside
 // it: panels run on past the crop, the way a real screen continues off-frame.
 const BLEED_PX = 40;
+// Stacked, just enough that the panels' borders clear the card's rounded
+// corner without cropping the status column a phone still needs.
+const STACKED_BLEED_PX = 12;
 // Side by side the screen is drawn at its design size.
 const SIDE_BY_SIDE_SCALE = 1;
+// The narrowest layout the stacked screen reflows to before it starts scaling.
+const STACKED_MIN_W = 460;
 
 /**
  * Holds the result screen pinned to the top left and crops whatever runs past
@@ -258,7 +299,10 @@ function WidthScaled({
   children: React.ReactNode;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const [fit, setFit] = useState<{ scale: number; width: number | string } | null>(null);
+  const [fit, setFit] = useState<{
+    scale: number;
+    width: number | string;
+  } | null>(null);
 
   useEffect(() => {
     const el = ref.current;
@@ -272,7 +316,12 @@ function WidthScaled({
         return;
       }
       const pad = parseFloat(getComputedStyle(el).paddingLeft) || 0;
-      setFit({ scale: (el.clientWidth - pad) / designW, width: designW });
+      // Narrower than the design, the screen reflows to this width before it
+      // shrinks, so a phone shows fewer columns at a readable size rather than
+      // the whole desktop layout scaled down to fine print.
+      const avail = el.clientWidth - pad;
+      const scale = Math.min(SIDE_BY_SIDE_SCALE, avail / STACKED_MIN_W);
+      setFit({ scale, width: (avail + STACKED_BLEED_PX) / scale });
     };
     apply();
     const observer = new ResizeObserver(apply);
@@ -302,17 +351,19 @@ function WidthScaled({
   );
 }
 
-/** Flips the one screen between the team's side and a client's side. */
+/** A pill switch: flips the result screen's side, and on phones picks the card. */
 function ViewToggle({
+  options,
   view,
   onSelect,
 }: {
+  options: readonly string[];
   view: number;
   onSelect: (i: number) => void;
 }) {
   return (
     <div className="flex items-center gap-0.5 rounded-full border border-border p-1 [[data-theme=dark]_&]:border-white/15">
-      {VIEWS.map((label, i) => (
+      {options.map((label, i) => (
         <button
           key={label}
           type="button"
@@ -333,9 +384,9 @@ function ViewToggle({
 
 // Short enough to show whole: a hero should read at a glance, not crop mid-line.
 const PLAN_FLOWS = [
-  "Your team sends each client a checklist → sets a due date.",
-  "Client sees only their own checklist → uploads each document.",
-  "Your team reviews each upload → marks it received.",
+  "Your team sends each client a checklist and sets a due date.",
+  "Client sees only their checklist and uploads each document.",
+  "Your team reviews each upload and marks it received.",
 ];
 
 /**
@@ -344,9 +395,14 @@ const PLAN_FLOWS = [
  */
 function PlanDoc() {
   return (
-    <div className={`overflow-hidden rounded-lg border bg-background text-[13px] leading-[1.6] text-foreground ${LINE}`}>
+    <div
+      className={`overflow-hidden rounded-lg border bg-background text-[13px] leading-[1.6] text-foreground ${LINE}`}
+    >
       <div className="px-4 py-3.5">
-        <p>A year-end checklist each client uploads to, with status your team can track.</p>
+        <p>
+          A year-end checklist each client uploads to, with status your team can
+          track.
+        </p>
         <p className="mt-3">Core flows</p>
         <ul className="mt-1.5 flex list-disc flex-col gap-1.5 pl-4 marker:text-foreground">
           {PLAN_FLOWS.map((item) => (
@@ -354,7 +410,9 @@ function PlanDoc() {
           ))}
         </ul>
       </div>
-      <div className={`flex items-center justify-center gap-1.5 border-t py-2 text-[12px] leading-none text-muted-foreground ${LINE}`}>
+      <div
+        className={`pointer-events-auto flex cursor-default items-center justify-center gap-1.5 border-t py-2 text-[12px] leading-none text-muted-foreground transition-colors hover:text-foreground ${LINE}`}
+      >
         View full plan
         <IconChevronDown className="size-[10px]" />
       </div>
@@ -369,7 +427,9 @@ function PlanDoc() {
 function Composer({ phase }: { phase: Phase }) {
   const planned = phase === "planned";
   const box = (
-    <div className={`rounded-lg border bg-background px-3.5 pb-2.5 pt-3 ${LINE}`}>
+    <div
+      className={`rounded-lg border bg-background px-3.5 pb-2.5 pt-3 ${LINE}`}
+    >
       {/* Takes typing so the box feels real, but nothing sends: Enter and the
           arrow are inert. Out of the tab order, as the mock around it is
           hidden from assistive tech. */}
@@ -383,9 +443,7 @@ function Composer({ phase }: { phase: Phase }) {
         className="pointer-events-auto block w-full resize-none bg-transparent text-[13px] leading-[1.45] text-foreground outline-none placeholder:text-muted-foreground/60"
       />
       <div className="flex items-center justify-end">
-        <span
-          className="pointer-events-auto flex size-[26px] cursor-default items-center justify-center rounded-[4px] bg-foreground text-background transition-opacity hover:opacity-85"
-        >
+        <span className="pointer-events-auto flex size-[26px] cursor-default items-center justify-center rounded-[4px] bg-foreground text-background transition-opacity hover:opacity-85">
           <IconArrowUp className="size-[13px]" />
         </span>
       </div>
@@ -401,7 +459,9 @@ function Composer({ phase }: { phase: Phase }) {
               Requirements
             </span>
             {/* Hover only: it is a picture of the button, so it does nothing. */}
-            <span className={`pointer-events-auto flex cursor-default items-center rounded-[4px] border bg-background px-3 py-[7px] text-[12px] leading-none text-foreground transition-colors hover:bg-muted ${LINE} [[data-theme=dark]_&]:hover:bg-white/[0.08]`}>
+            <span
+              className={`pointer-events-auto flex cursor-default items-center rounded-[4px] border bg-background px-3 py-[7px] text-[12px] leading-none text-foreground transition-colors hover:bg-muted ${LINE} [[data-theme=dark]_&]:hover:bg-white/[0.08]`}
+            >
               Approve
             </span>
           </div>
@@ -417,7 +477,16 @@ function Composer({ phase }: { phase: Phase }) {
 /** An outlined check circle, as the Requirements bar draws it. */
 function IconCheckCircleOutline({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 16 16" className={className} fill="none" stroke="currentColor" strokeWidth={1.3} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <svg
+      viewBox="0 0 16 16"
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.3}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
       <circle cx="8" cy="8" r="6" />
       <path d="m5.6 8 1.6 1.6 3.2-3.2" />
     </svg>
@@ -427,12 +496,37 @@ function IconCheckCircleOutline({ className }: { className?: string }) {
 /** The team's view, in Assembly's own neutral chrome. */
 function TeamDashboard({ live }: { live: boolean }) {
   const rows = [
-    { name: "Dana Whitfield", firm: "Whitfield Coffee Co.", done: 8, status: "In progress" },
-    { name: "Marcus Lee", firm: "Lee & Daughters", done: 12, status: "Complete" },
+    {
+      name: "Dana Whitfield",
+      firm: "Whitfield Coffee Co.",
+      done: 8,
+      status: "In progress",
+    },
+    {
+      name: "Marcus Lee",
+      firm: "Lee & Daughters",
+      done: 12,
+      status: "Complete",
+    },
     { name: "Priya Raman", firm: "Raman Florals", done: 3, status: "Awaiting" },
-    { name: "Owen Brooks", firm: "Brooks Bicycle Works", done: 10, status: "In progress" },
-    { name: "Lena Ortiz", firm: "Ortiz Architecture", done: 12, status: "Complete" },
-    { name: "Sam Patel", firm: "Patel Family Bakery", done: 6, status: "In progress" },
+    {
+      name: "Owen Brooks",
+      firm: "Brooks Bicycle Works",
+      done: 10,
+      status: "In progress",
+    },
+    {
+      name: "Lena Ortiz",
+      firm: "Ortiz Architecture",
+      done: 12,
+      status: "Complete",
+    },
+    {
+      name: "Sam Patel",
+      firm: "Patel Family Bakery",
+      done: 6,
+      status: "In progress",
+    },
   ];
   return (
     <div className="flex h-full">
@@ -443,7 +537,9 @@ function TeamDashboard({ live }: { live: boolean }) {
           <span className="flex size-[16px] items-center justify-center rounded-[3px] bg-foreground text-background">
             <IconBrandMark className="size-[9px]" />
           </span>
-          <span className="text-[11.5px] leading-none text-foreground">BrandMages</span>
+          <span className="text-[11.5px] leading-none text-foreground">
+            BrandMages
+          </span>
         </div>
         <NavItem icon={<IconBook />} label="CRM" />
         <NavItem icon={<IconUsers />} label="Team" />
@@ -455,16 +551,22 @@ function TeamDashboard({ live }: { live: boolean }) {
       </div>
       <div className="@container min-w-0 flex-1 pl-5 pt-5">
         <div>
-          <PageHeader title="Year-end documents" sub="Every client's checklist, in one place." />
-          <div className={`${PANEL} grid grid-cols-3`}>
+          <div className={`${PANEL} mt-0! grid grid-cols-3`}>
             {[
               ["Clients", "6"],
               ["Complete", "2"],
               ["Awaiting", "1"],
             ].map(([label, value], i) => (
-              <div key={label} className={`px-3.5 py-3 ${i ? `border-l ${LINE}` : ""}`}>
-                <p className="text-[10.5px] leading-none text-muted-foreground">{label}</p>
-                <p className="mt-2 text-[16px] leading-none text-foreground">{value}</p>
+              <div
+                key={label}
+                className={`px-3.5 py-3 ${i ? `border-l ${LINE}` : ""}`}
+              >
+                <p className="text-[10.5px] leading-none text-muted-foreground">
+                  {label}
+                </p>
+                <p className="mt-2 text-[16px] leading-none text-foreground">
+                  {value}
+                </p>
               </div>
             ))}
           </div>
@@ -499,12 +601,18 @@ function TeamDashboard({ live }: { live: boolean }) {
                     {row.done}/12
                   </span>
                 </span>
-                <span
-                  className={`w-[72px] text-center ${
-                    row.status === "Complete" ? POSITIVE : row.status === "Awaiting" ? WARNING : NEUTRAL
-                  }`}
-                >
-                  {row.status}
+                <span className={STATUS_COL}>
+                  <span
+                    className={
+                      row.status === "Complete"
+                        ? POSITIVE
+                        : row.status === "Awaiting"
+                          ? WARNING
+                          : NEUTRAL
+                    }
+                  >
+                    {row.status}
+                  </span>
                 </span>
               </div>
             ))}
@@ -529,14 +637,18 @@ function ClientView() {
   // sizes), so flipping the toggle changes only the brand and the content.
   return (
     <div className="flex h-full">
-      <div className={`flex w-[150px] shrink-0 flex-col px-1.5 py-2 ${BRAND_SIDEBAR}`}>
+      <div
+        className={`flex w-[150px] shrink-0 flex-col px-1.5 py-2 ${BRAND_SIDEBAR}`}
+      >
         <div className="flex items-center gap-1.5 px-1.5 pb-2 pt-0.5">
           {/* The firm's own logo: a black mark on a white tile, the same in
               both themes because it is their file, not our chrome. */}
           <span className="flex size-[16px] items-center justify-center rounded-[3px] bg-white text-black">
             <IconBrandMark className="size-[9px]" />
           </span>
-          <span className="text-[11.5px] leading-none text-white">Brandmages</span>
+          <span className="text-[11.5px] leading-none text-white">
+            Brandmages
+          </span>
         </div>
         {[
           { icon: <IconGlobe />, label: "Home" },
@@ -548,24 +660,33 @@ function ClientView() {
           <div
             key={label}
             className={`flex h-[24px] items-center gap-2 rounded px-1.5 transition-colors ${
-              active ? "bg-white/[0.12] text-white" : "text-white/60 hover:bg-white/[0.06] hover:text-white/90"
+              active
+                ? "bg-white/[0.12] text-white"
+                : "text-white/60 hover:bg-white/[0.06] hover:text-white/90"
             }`}
           >
             <span className="flex shrink-0 items-center justify-center [&>svg]:size-[16px]">
               {icon}
             </span>
-            <span className="min-w-0 flex-1 truncate text-[11.5px] leading-none">{label}</span>
+            <span className="min-w-0 flex-1 truncate text-[11.5px] leading-none">
+              {label}
+            </span>
           </div>
         ))}
       </div>
       <div className="min-w-0 flex-1 pl-5 pt-5">
         <div>
-          <PageHeader title="Your 2025 year-end documents" sub="Requested by Brandmages for your 2025 return." />
-          <div className={`${PANEL} px-3.5 py-3`}>
-            <p className="text-[10.5px] leading-none text-muted-foreground">Documents received</p>
-            <p className="mt-2 text-[16px] leading-none text-foreground">8 of 12</p>
+          <div className={`${PANEL} mt-0! px-3.5 py-3`}>
+            <p className="text-[10.5px] leading-none text-muted-foreground">
+              Documents received
+            </p>
+            <p className="mt-2 text-[16px] leading-none text-foreground">
+              8 of 12
+            </p>
             <div className="mt-3 h-1 w-full overflow-hidden rounded-full bg-muted [[data-theme=dark]_&]:bg-white/[0.08]">
-              <span className={`block h-full w-2/3 rounded-full ${BRAND_FILL}`} />
+              <span
+                className={`block h-full w-2/3 rounded-full ${BRAND_FILL}`}
+              />
             </div>
           </div>
           <div className={PANEL}>
@@ -578,19 +699,22 @@ function ClientView() {
                 key={label}
                 className={`flex items-center justify-between gap-3 border-b px-3.5 py-[12px] last:border-b-0 ${LINE}`}
               >
-                <span className="truncate text-[11.5px] leading-none text-foreground">{label}</span>
-                {state === "Received" ? (
-                  <span className={`w-[72px] text-center ${POSITIVE}`}>Received</span>
-                ) : state === "Awaiting" ? (
-                  <span className={`w-[72px] text-center ${WARNING}`}>Awaiting</span>
-                ) : (
+                <span className="truncate text-[11.5px] leading-none text-foreground">
+                  {label}
+                </span>
+                <span className={STATUS_COL}>
                   <span
-                    className={`flex w-[72px] items-center justify-center gap-1 rounded-[4px] py-[3px] text-[10px] leading-none ${BRAND_FILL}`}
+                    className={
+                      state === "Received"
+                        ? POSITIVE
+                        : state === "Awaiting"
+                          ? WARNING
+                          : `${CHIP} ${BRAND_FILL}`
+                    }
                   >
-                    <IconUpload className="size-[10px]" />
-                    Upload
+                    {state}
                   </span>
-                )}
+                </span>
               </div>
             ))}
           </div>
