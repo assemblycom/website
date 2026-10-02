@@ -1,6 +1,12 @@
 "use client";
 
-import type { Arm, CopyKey, LayoutKey } from "@/lib/hero-variants";
+import {
+  parseArm,
+  readHeroArmCookie,
+  type Arm,
+  type CopyKey,
+  type LayoutKey,
+} from "@/lib/hero-variants";
 
 /**
  * What the homepage hero test reports (see src/lib/hero-variants.ts).
@@ -47,6 +53,31 @@ export function trackHeroExperiment(
   // wherever the visitor blocks it, and a missing tracker must never break the
   // page or, worse, the CTA.
   window.analytics?.track(event, { ...props });
+}
+
+/**
+ * Reports a click on one of the hero's own calls to action, resolving the arm
+ * from the cookie at click time.
+ *
+ * Click time rather than a prop because the two layouts reach signup by
+ * different routes — the big-type arm through a plain link, the control arm
+ * through the shared composer, which is also used by the page-bottom CTA and
+ * so cannot take the hero's arm as its own. Reading here keeps one definition
+ * for both, and it reports nothing off an arm, which is what makes it safe to
+ * call from a component that is not always in the test.
+ */
+export function trackHeroCta(cta: string) {
+  const arm = readHeroArmCookie();
+  if (!arm) return;
+  const parsed = parseArm(arm);
+  if (!parsed) return;
+  trackHeroExperiment(HERO_EXPERIMENT_EVENTS.ctaClicked, {
+    arm,
+    copy: parsed.copy,
+    layout: parsed.layout,
+    cta,
+    ...utmProps(),
+  });
 }
 
 /** The campaign params a visit arrived with, if any. */

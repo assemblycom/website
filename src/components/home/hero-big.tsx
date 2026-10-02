@@ -1,6 +1,7 @@
 import { Fragment } from "react";
 import { AppMarkGlyph, type AppMark, type MarkTint } from "./app-marks";
 import { SIGNUP_URL, DEMO_URL } from "@/lib/constants";
+import { trackHeroCta } from "./hero-experiment";
 
 // The "big type" arm of the hero test (see src/lib/hero-variants.ts): oversized
 // type with app marks set into the headline, and no prompt box — the ask is the
@@ -202,6 +203,7 @@ export function HeroBig({
         <div className="mx-auto mt-10 flex w-full max-w-sm flex-col gap-3 sm:w-auto sm:max-w-none sm:flex-row sm:items-center sm:justify-center">
           <a
             href={signupHref}
+            onClick={() => trackHeroCta("bigtype-primary")}
             // White on dark, not `bg-foreground`. That token resolves to
             // #d9d9d9 there, which next to the nav's own primary a few hundred
             // pixels above reads as a greyed-out version of the same button.
@@ -214,6 +216,7 @@ export function HeroBig({
           </a>
           <a
             href={DEMO_URL}
+            onClick={() => trackHeroCta("bigtype-demo")}
             className="inline-flex w-full shrink-0 items-center justify-center whitespace-nowrap rounded-lg border border-foreground/20 bg-transparent px-4 py-3 text-center text-sm text-foreground transition-colors hover:bg-foreground/5 sm:w-auto sm:py-2 md:px-5 md:py-2.5"
           >
             Book a demo

@@ -55,8 +55,17 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Kill switch: serve the shipped hero AND drop any assignment already held.
+  // Leaving the cookie meant the composer still read it at click time and
+  // stamped an arm onto signup, so a returning visitor was credited to a hero
+  // the switch had just stopped showing them. Collapsing the test has to
+  // collapse what it reports as well, or the arm outlives the experiment.
   if (!enabled) {
-    return NextResponse.next();
+    const response = NextResponse.next();
+    if (request.cookies.has(HERO_COOKIE)) {
+      response.cookies.delete(HERO_COOKIE);
+    }
+    return response;
   }
 
   // Reviewing a specific arm, via ?copy=&layout=. Writes the cookie too, so

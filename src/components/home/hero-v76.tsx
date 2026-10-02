@@ -513,6 +513,10 @@ export function HeroV76({
                 <div className="v63-gradient-border v63-ring-solid relative rounded-[18px] [--composer-submit:var(--color-neutral-900)] md:rounded-[22px] [[data-theme=dark]_&]:[--composer-submit:#FFFFFF]">
                   <V66Composer
                     textareaRef={inputRef}
+                    // Reports this composer as the control arm's hero CTA. Left
+                    // unset the shared composer stays silent, which is what the
+                    // page-bottom CTA wants.
+                    ctaSurface={variant ? "control-composer" : undefined}
                     typewriter
                     // Always accented — the arrow routes to onboarding even
                     // with an empty box, so it never reads as disabled.

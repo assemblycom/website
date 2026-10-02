@@ -68,7 +68,16 @@ const EXCLUDED = new Set<string>([
   // under /hero-variant/<arm>. findStaticRoutes already skips them for being a
   // dynamic segment, so this is belt and braces — but the day somebody adds a
   // page at /hero-variant itself, six duplicates of the homepage should not be
-  // what reaches the sitemap. Noindex in the page's own metadata too.
+  // what reaches the sitemap.
+  //
+  // The usual partner to this entry — `robots: { index: false }` on the page —
+  // is deliberately ABSENT here, and must stay absent. Metadata is resolved for
+  // the route that renders, not the URL that was asked for, and middleware
+  // rewrites `/` to this route: a noindex on it is served on the homepage to
+  // every enrolled visitor, Googlebot included. Nothing is lost by leaving it
+  // off, because middleware also redirects a direct hit here back to `/`, so
+  // there is no reachable URL for a crawler to index. See the page's own
+  // comment in src/app/hero-variant/[arm]/page.tsx.
   "/hero-variant",
 ]);
 
