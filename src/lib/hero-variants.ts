@@ -27,11 +27,21 @@ export const ARMS: Arm[] = COPY_KEYS.flatMap((copy) =>
 );
 
 /**
- * Served to anyone the test leaves out — logged-in visitors, and every request
- * when the kill switch is on. The layout the site ships today, carrying the
- * headline it ships today.
+ * What renders for anyone the test leaves out — logged-in visitors, and every
+ * request while the kill switch is on.
+ *
+ * A test message on the shipped layout, NOT the headline the site used to
+ * carry. "The platform firms run on and build on" is retired: the three
+ * messages below replace it outright, and a visitor outside the test should see
+ * the site as it now reads rather than a headline nothing else still uses.
+ *
+ * The cost of that is deliberate and worth naming: there is no holdout. No arm
+ * and no fallback reproduces the old page, so the test can say which message
+ * and which layout win against each other, and cannot say whether any of them
+ * beats what came before.
  */
-export const UNENROLLED_ARM = "control" satisfies LayoutKey;
+export const FALLBACK_COPY: CopyKey = "firm";
+export const FALLBACK_LAYOUT: LayoutKey = "control";
 
 export interface CopyVariant {
   key: CopyKey;
