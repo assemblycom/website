@@ -197,11 +197,12 @@ export function TrustTicker() {
             aria-hidden
             className="-mx-6 border-t border-border md:hidden [[data-theme=dark]_&]:border-[#383838]"
           />
-          {/* No side lines. The row used to close itself with a border-x inset
-              from the page rails, which drew a second vertical a little way in
-              from each rail and left a narrow empty cell standing between the
-              two at both ends. The rules between the figures are enough to read
-              the four as one set, and the page rails are the band's edge. */}
+          {/* border-x closes the row on its own two side lines, level with the
+              figures rather than out at the page rails. The rails are hidden
+              across this band (see home-content.tsx) precisely so this is the
+              only vertical at each end: with both drawn, the pair bracketed a
+              strip of empty page and the outer figures read as padded away from
+              the edge of their own band. */}
           {/* 820, not the sm breakpoint: below it the four columns are too narrow
               for "Businesses powered" and "Payments processed" to hold one line,
               and a row of half-wrapped labels is a worse state than the stacked
@@ -209,7 +210,7 @@ export function TrustTicker() {
               font mid-load can't tip it back into wrapping. */}
           {/* Written as base styles reset at 820 rather than as max-[819px]
               variants: arbitrary max-* variants don't come out of this build. */}
-          <div className="-mx-6 grid grid-cols-2 min-[820px]:mx-0 min-[820px]:grid-cols-4 min-[820px]:gap-x-0 min-[820px]:gap-y-0 min-[820px]:divide-x min-[820px]:divide-border [[data-theme=dark]_&]:min-[820px]:divide-[#383838]">
+          <div className="-mx-6 grid grid-cols-2 min-[820px]:mx-0 min-[820px]:grid-cols-4 min-[820px]:gap-x-0 min-[820px]:gap-y-0 min-[820px]:divide-x min-[820px]:divide-border min-[820px]:border-x min-[820px]:border-border [[data-theme=dark]_&]:min-[820px]:divide-[#383838] [[data-theme=dark]_&]:min-[820px]:border-[#383838]">
             {STATS.map((s, i) => (
               // Every cell is centred in its own column, at every width. Left-
               // aligned, the four figures shared a starting offset but each one

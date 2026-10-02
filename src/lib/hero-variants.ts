@@ -77,7 +77,7 @@ export const COPY_VARIANTS: Record<CopyKey, CopyVariant> = {
       // Hand-set, because the automatic measure breaks "AI-native" at its own
       // hyphen — the 16ch cap lands mid-compound at every width, and a split
       // hyphenated word at display size reads as a mistake.
-      lines: ["Become an", "AI-native business"],
+      lines: ["Become", "an AI-native business"],
       iconAfter: "Become",
       iconPair: true,
       iconBefore: "business",

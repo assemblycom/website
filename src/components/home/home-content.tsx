@@ -29,30 +29,36 @@ export async function HomeContent({ variant }: { variant?: HeroVariantProps }) {
           canvas. */}
       <HeroV76 templates={templates} variant={variant} />
 
+      {/* The numbers band sits OUTSIDE the rails wrapper below, so the rails do
+          not run past it. It carries its own pair of side lines, level with the
+          figures (see trust-ticker.tsx); with the rails drawn as well, the two
+          verticals at each end bracketed a strip of empty page and the outer
+          figures read as padded away from the edge of their own band.
+
+          Both its rules are full bleed for the same reason: there are no rails
+          across this band for a capped rule to land on.
+
+          Fade-only (no rise): the ticker's own colored band made the translate
+          read as the whole block sliding on load. */}
+      <div className="section-follow">
+        <GridDivider fullBleed />
+        <Reveal variant="fade">
+          <TrustTicker />
+        </Reveal>
+        <GridDivider fullBleed />
+      </div>
+
       {/* Content region — framed by vertical rails aligned to the 1200px
-          content column. The rails start below the hero and run down through
-          the sections (the wide footer sits outside this wrapper). Drawn on top
-          as thin lines in the column gutter so section fills never hide them. */}
+          content column. The rails start below the numbers band and run down
+          through the sections (the wide footer sits outside this wrapper).
+          Drawn on top as thin lines in the column gutter so section fills never
+          hide them. */}
       <div className="relative">
         <GridRails />
 
         {/* The "how it works" walkthrough comes first, then the three platform
             points (left-rail menu + visual). */}
         <div className="section-follow">
-          {/* Fade-only (no rise): the ticker's own colored band made the
-              translate read as the whole block sliding on load. */}
-          {/* Opens the stats band, and drawn here rather than inside it: the
-              band's own column is capped narrower than the rails and nudged
-              off-centre, so a rule drawn there stopped short at both ends.
-              Full bleed because this is the first rule under the hero — the
-              vertical rails start below it, so a capped rule has nothing to
-              land on at either end and reads as stopping short. */}
-          <GridDivider fullBleed />
-          <Reveal variant="fade">
-            <TrustTicker />
-          </Reveal>
-          {/* Closes the band, on the same rails. */}
-          <GridDivider />
           <Reveal variant="fade">
             <HowItWorks />
           </Reveal>
