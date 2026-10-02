@@ -41,11 +41,13 @@ export async function HomeContent({ variant }: { variant?: HeroVariantProps }) {
         <div className="section-follow">
           {/* Fade-only (no rise): the ticker's own colored band made the
               translate read as the whole block sliding on load. */}
-          {/* Opens the stats band, and drawn here rather than inside it so both
-              ends land on the vertical rails — the band's own column is capped
-              narrower than the rails and nudged off-centre, so a rule drawn there
-              stopped short at both ends. */}
-          <GridDivider />
+          {/* Opens the stats band, and drawn here rather than inside it: the
+              band's own column is capped narrower than the rails and nudged
+              off-centre, so a rule drawn there stopped short at both ends.
+              Full bleed because this is the first rule under the hero — the
+              vertical rails start below it, so a capped rule has nothing to
+              land on at either end and reads as stopping short. */}
+          <GridDivider fullBleed />
           <Reveal variant="fade">
             <TrustTicker />
           </Reveal>
