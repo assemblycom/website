@@ -464,10 +464,17 @@ export function HeroV76({
 
           <div className={`relative z-10 ${RAIL} pb-16 pt-36 md:pt-36 lg:pb-20`}>
             <div
-              className="relative z-30 mx-auto max-w-2xl"
+              // 3xl, not 2xl. The builder message's hand-set lockup has a
+              // 717px line, and at the old 576px headline cap two lines were
+              // not possible at all — the whole headline measures 1278px, so a
+              // two-line set needs 639px each and it broke to three. Widened
+              // for every message rather than only that one: a measure that
+              // changed with the copy would put a layout difference inside the
+              // message comparison.
+              className="relative z-30 mx-auto max-w-3xl"
             >
               <h1
-                className="type-display mx-auto max-w-xl text-center text-neutral-900 [[data-theme=dark]_&]:text-white"
+                className="type-display mx-auto max-w-3xl text-center text-neutral-900 [[data-theme=dark]_&]:text-white"
               >
                 {/* Fixed lockup on every breakpoint, for the shipped headline
                     and for any test message that sets its own lines. A message
