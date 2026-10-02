@@ -65,7 +65,7 @@ export const COPY_VARIANTS: Record<CopyKey, CopyVariant> = {
     label: "AI-native firm",
     h1: "Your firm rebuilt for the AI era",
     big: { iconAfter: "firm", iconPair: true, iconBefore: "for" },
-    body: "Start with ready-to-go apps for client onboarding, document requests, proposals, payments, and project tracking. Then describe anything else your firm needs, and AI builds it in minutes.",
+    body: "Start with customizable apps for client intake, proposals, payments, project tracking, and more. Describe anything else, and AI builds it.",
   },
   builder: {
     key: "builder",
@@ -89,7 +89,7 @@ export const COPY_VARIANTS: Record<CopyKey, CopyVariant> = {
       iconPair: true,
       iconBefore: "projects",
     },
-    body: "Every app ships with secure client logins, permissions and client-by-client data access built in. Your clients sign in once to a branded experience and see only what's theirs. No code, no hosting, no auth to wire up.",
+    body: "Built apps with secure client logins, permissions, and per-client personalization. Ready to use with clients from day one. No code, no hosting, no auth to wire up.",
   },
   clients: {
     key: "clients",
@@ -100,10 +100,7 @@ export const COPY_VARIANTS: Record<CopyKey, CopyVariant> = {
       iconAfter: "Deliver",
       iconPair: true,
     },
-    // "30+ ready-made apps", plural. The prototype carries the test doc's
-    // singular verbatim so the preview and the spec cannot disagree; this is
-    // the copy that goes in front of visitors, so it is corrected here.
-    body: "Assembly comes with a CRM, a branded client experience, and 30+ ready-made apps that work together: proposals, intake, onboarding, project tracking, invoicing, and more. Tailor any of them with AI, or build what's missing.",
+    body: "Assembly comes with a CRM, a branded client experience, and 30+ apps for intake, proposals, payments, project tracking, and more. Tailor any of them with AI, or build what's missing.",
   },
 };
 
