@@ -84,48 +84,63 @@ const RAIL = "mx-auto max-w-[1200px] px-6 md:px-10";
  * clear, travels on the section that makes it rather than in a doc somewhere,
  * so a page cannot quietly outrun what was verified.
  */
-export function VsComparisonPage({ page }: { page: VsPage }) {
+export function VsComparisonPage({
+  page,
+  heroVisual,
+}: {
+  page: VsPage;
+  /**
+   * A built hero visual. When given, the hero splits: copy bottom-left, the
+   * visual filling the right half. Without one, the centred hero and its
+   * placeholder stay.
+   */
+  heroVisual?: React.ReactNode;
+}) {
   return (
     <>
-      <section className="px-6 pb-16 pt-24 text-center md:pb-24 md:pt-32">
-        <div className="mx-auto max-w-3xl">
-          {/* The site's shared chip — mono, uppercase, rounded-md on the muted
+      {heroVisual ? (
+        <SplitHero page={page} visual={heroVisual} />
+      ) : (
+        <section className="px-6 pb-16 pt-24 text-center md:pb-24 md:pt-32">
+          <div className="mx-auto max-w-3xl">
+            {/* The site's shared chip — mono, uppercase, rounded-md on the muted
               fill — the same one the stat chips and filter chips use, rather
               than a bare eyebrow line. */}
-          <span className="inline-flex items-center rounded-md bg-muted px-3 py-1.5 font-mono text-xs uppercase tracking-wide text-muted-foreground">
-            Assembly vs {page.competitor}
-          </span>
-          <h1 className="type-display mt-4 text-balance">{page.hero.h1}</h1>
-          {/* A narrower measure than the headline's, and balanced rather than
+            <span className="inline-flex items-center rounded-md bg-muted px-3 py-1.5 font-mono text-xs uppercase tracking-wide text-muted-foreground">
+              Assembly vs {page.competitor}
+            </span>
+            <h1 className="type-display mt-4 text-balance">{page.hero.h1}</h1>
+            {/* A narrower measure than the headline's, and balanced rather than
               pretty: at max-w-2xl the lead ran almost the full width of the
               h1 above it and dropped three words onto the second line, which
               read as an overflow instead of a pair of lines. */}
-          <p className="type-lead mx-auto mt-6 max-w-lg text-balance text-muted-foreground">
-            {page.hero.sub}
-          </p>
-          <div className="mx-auto mt-8 flex w-full max-w-xs flex-col items-stretch gap-3 sm:w-auto sm:max-w-none sm:flex-row sm:items-center sm:justify-center">
-            <a
-              href={SIGNUP_URL}
-              className="rounded-lg bg-foreground px-5 py-2.5 text-center text-sm text-background transition-opacity hover:opacity-90"
-            >
-              Start building for free
-            </a>
-            <a
-              href={DEMO_URL}
-              className="rounded-lg border border-foreground/20 bg-transparent px-5 py-2.5 text-center text-sm text-foreground transition-colors hover:bg-foreground/5"
-            >
-              Book a demo
-            </a>
+            <p className="type-lead mx-auto mt-6 max-w-lg text-balance text-muted-foreground">
+              {page.hero.sub}
+            </p>
+            <div className="mx-auto mt-8 flex w-full max-w-xs flex-col items-stretch gap-3 sm:w-auto sm:max-w-none sm:flex-row sm:items-center sm:justify-center">
+              <a
+                href={SIGNUP_URL}
+                className="rounded-lg bg-foreground px-5 py-2.5 text-center text-sm text-background transition-opacity hover:opacity-90"
+              >
+                Start building for free
+              </a>
+              <a
+                href={DEMO_URL}
+                className="rounded-lg border border-foreground/20 bg-transparent px-5 py-2.5 text-center text-sm text-foreground transition-colors hover:bg-foreground/5"
+              >
+                Book a demo
+              </a>
+            </div>
           </div>
-        </div>
-        <div className="mx-auto mt-14 max-w-[1200px] px-0 md:px-4">
-          <VisualSlot
-            className="text-left"
-            label={page.hero.visual.label}
-            description={page.hero.visual.description}
-          />
-        </div>
-      </section>
+          <div className="mx-auto mt-14 max-w-[1200px] px-0 md:px-4">
+            <VisualSlot
+              className="text-left"
+              label={page.hero.visual.label}
+              description={page.hero.visual.description}
+            />
+          </div>
+        </section>
+      )}
 
       <div className="relative">
         <GridRails />
@@ -337,11 +352,7 @@ export function VsComparisonPage({ page }: { page: VsPage }) {
 
       <div className="relative pb-10 md:pb-16">
         <GridRails />
-        <FAQ
-          heading="Frequently asked questions"
-          items={page.faqs}
-          twoColumn
-        />
+        <FAQ heading="Frequently asked questions" items={page.faqs} twoColumn />
       </div>
 
       <div className="border-t border-border [[data-theme=dark]_&]:border-[#383838]" />
@@ -365,5 +376,57 @@ function Note({ children }: { children: React.ReactNode }) {
     <p className="mt-5 max-w-md rounded-lg bg-muted p-4 text-sm leading-relaxed text-muted-foreground">
       {children}
     </p>
+  );
+}
+
+/**
+ * The hero as two halves: the claim set low on the left so it reads last,
+ * after the eye has taken in the product on the right. Stacked, the copy leads
+ * and the visual follows.
+ */
+function SplitHero({
+  page,
+  visual,
+}: {
+  page: VsPage;
+  visual: React.ReactNode;
+}) {
+  return (
+    // The site's hero container, so the copy starts on the same line as the
+    // nav and the other product heroes.
+    <section className="mx-auto grid max-w-[1400px] lg:min-h-[min(760px,calc(100svh-120px))] lg:grid-cols-2">
+      <div className="flex flex-col justify-end px-6 pb-12 pt-24 md:px-10 md:pb-16 lg:pt-16">
+        <span className="text-sm text-muted-foreground">
+          Assembly vs {page.competitor}
+        </span>
+        <h1 className="type-display mt-4 max-w-[17ch] text-balance">
+          {page.hero.h1}
+        </h1>
+        <p className="type-lead mt-6 max-w-lg text-pretty text-muted-foreground">
+          {page.hero.sub}
+        </p>
+        <div className="mt-8 flex flex-wrap items-center gap-3">
+          <a
+            href={SIGNUP_URL}
+            className="rounded-lg bg-foreground px-5 py-2.5 text-center text-sm text-background transition-opacity hover:opacity-90"
+          >
+            Start building for free
+          </a>
+          <a
+            href={DEMO_URL}
+            className="rounded-lg border border-foreground/20 bg-transparent px-5 py-2.5 text-center text-sm text-foreground transition-colors hover:bg-foreground/5"
+          >
+            Book a demo
+          </a>
+        </div>
+      </div>
+      {/* Inset on the page's own gutter and rounded, so the panel reads as a
+          surface set on the page rather than half the page painted. */}
+      <div className="flex px-6 pb-6 md:px-10 md:pb-10 lg:pl-0 lg:pt-6">
+        <div className="min-h-[560px] w-full overflow-hidden rounded-[28px]">
+          {visual}
+        </div>
+      </div>
+    </section>
   );
 }

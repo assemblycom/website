@@ -1,72 +1,44 @@
 import Link from "next/link";
 import { CustomerLogo } from "@/components/customers/customer-logos";
 import { getCaseStudyBySlug } from "@/lib/case-studies";
-import { Reveal } from "@/components/ui/reveal";
 
 /**
- * Passive credibility band: who already runs on Assembly, stated once before
- * the argument starts. No CTA of its own beyond the quiet link out to the
- * stories.
+ * Who already runs on Assembly, as a plain row of marks under the hero's
+ * product shot. No heading: the marks carry it, the way the row under a
+ * product demo does on most product pages.
  */
-// Eight of the case-study wordmarks, picked to read across the verticals the
-// subheader names rather than as one sector's roster.
+// Picked to read across the verticals the hero names rather than as one
+// sector's roster. Six so a phone and a tablet both fill whole rows; the
+// sixth drops out where the row runs five across.
 const LOGO_SLUGS = [
   "collective-cpa",
   "advertai-marketing",
-  "orca-accounting",
-  "heritage-law-partners",
   "ditto-by-dbc",
-  "valuenode-accounting",
   "metta-health",
+  "orca-accounting",
   "sargent-cpa",
 ];
+const DESKTOP_COUNT = 5;
 
 export function PortalSocialProof() {
   return (
-    <section className="mx-auto max-w-[1200px] px-6 py-16 md:px-10 md:py-20">
-      <Reveal>
-        {/* Two-tone heading: the claim at full strength, the qualifier stepped
-            back into the same sentence, so the pair reads as one line rather
-            than a heading with a subtitle parked under it. */}
-        <h2 className="type-h2 max-w-[680px] text-balance">
-          Trusted by 1,000+ firms.{" "}
-          <span className="text-muted-foreground">
-            Agencies, accountants, and consultants run on Assembly.
-          </span>
-        </h2>
-
+    <div className="grid grid-cols-2 gap-x-6 gap-y-8 px-6 pt-10 sm:grid-cols-3 md:px-10 md:pt-14 lg:grid-cols-5">
+      {LOGO_SLUGS.map((slug, i) => (
+        // Every mark has a story behind it, so the mark is the link to it. A
+        // wordmark alone says nothing to a screen reader, hence the name.
         <Link
-          href="/customers"
-          className="mt-6 inline-block rounded-lg border border-border px-4 py-1.5 text-sm text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground"
+          key={slug}
+          href={`/customers/${slug}`}
+          aria-label={`Read the ${getCaseStudyBySlug(slug)?.company ?? ""} case study`}
+          className={`flex h-8 items-center justify-center text-foreground/45 transition-colors duration-200 hover:text-foreground ${
+            i >= DESKTOP_COUNT ? "lg:hidden" : ""
+          }`}
         >
-          See customer stories
+          <div className="flex h-full w-full max-w-[140px] items-center justify-center">
+            <CustomerLogo slug={slug} fit />
+          </div>
         </Link>
-
-        {/* Each logo gets its own card rather than a column between hairlines:
-            the tiles carry the page tone and the gaps between them show the
-            muted surface underneath, so the row reads as eight cards. */}
-        <div className="mt-12 grid grid-cols-2 gap-1 rounded-2xl bg-muted p-1 sm:grid-cols-4 lg:grid-cols-8 [[data-theme=dark]_&]:bg-white/[0.04]">
-          {LOGO_SLUGS.map((slug) => (
-            // Every mark has a story behind it, so the tile is the link to it.
-            // A wordmark alone says nothing to a screen reader, hence the
-            // company name on the link.
-            <Link
-              key={slug}
-              href={`/customers/${slug}`}
-              aria-label={`Read the ${getCaseStudyBySlug(slug)?.company ?? ""} case study`}
-              className="group flex aspect-square items-center justify-center rounded-xl bg-background p-5 transition-colors duration-200 hover:bg-muted/60 [[data-theme=dark]_&]:hover:bg-white/[0.06]"
-            >
-              {/* Held back from full strength so the row reads as a roster
-                  rather than eight marks competing with the heading. The mark
-                  comes up to full on hover, so the tile answers the pointer
-                  without the row shouting at rest. */}
-              <div className="flex h-7 w-full max-w-[110px] items-center justify-center text-foreground/60 transition-colors duration-200 group-hover:text-foreground">
-                <CustomerLogo slug={slug} fit />
-              </div>
-            </Link>
-          ))}
-        </div>
-      </Reveal>
-    </section>
+      ))}
+    </div>
   );
 }

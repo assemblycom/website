@@ -6,7 +6,6 @@ import {
   type CustomerStory,
 } from "@/components/home/testimonials";
 import { GridDivider, GridRails } from "@/components/ui/grid-lines";
-import { VisualSlot } from "@/components/ui/visual-slot";
 import { PortalSocialProof } from "@/components/client-portal/portal-social-proof";
 import { PortalProblem } from "@/components/client-portal/portal-problem";
 import { PortalReadyMade } from "@/components/client-portal/portal-ready-made";
@@ -15,6 +14,7 @@ import { PortalTailor } from "@/components/client-portal/portal-tailor";
 import { PortalStack } from "@/components/client-portal/portal-stack";
 import { PortalTrust } from "@/components/client-portal/portal-trust";
 import { PortalPricing } from "@/components/client-portal/portal-pricing";
+import { PortalHeroCarousel } from "@/components/client-portal/portal-hero-carousel";
 import { DEMO_URL, SIGNUP_URL } from "@/lib/constants";
 import { PAGE_SEO, pageMetadata } from "@/lib/seo";
 
@@ -102,55 +102,47 @@ export default function ClientPortalPage() {
     <>
       {/* Hero — the category the visitor searched for, and the thesis, in one
           breath. "Build on" is the one phrase no legacy portal (no builder) and
-          no code-generation tool (no portal) can claim. */}
-      <section className="px-6 pb-16 pt-24 text-center md:pb-24 md:pt-32">
-        <div className="mx-auto max-w-3xl">
-          {/* The site's shared chip, same one the stat and filter chips use.
-              The plan is the first thing this visitor wants to know, so it
-              leads rather than trailing the buttons. */}
-          <span className="inline-flex items-center rounded-md bg-muted px-3 py-1.5 font-mono text-xs uppercase tracking-wide text-muted-foreground">
-            Free forever plan
-          </span>
-          <h1 className="type-display mt-6 text-balance">
-            The client portal you can build on
-          </h1>
-          <p className="type-lead mx-auto mt-6 max-w-xl text-balance text-muted-foreground">
-            Ready-made apps for the work every firm shares, plus an AI app
-            builder for the work that is only yours.
-          </p>
-          <div className="mx-auto mt-8 flex w-full max-w-xs flex-col items-stretch gap-3 sm:w-auto sm:max-w-none sm:flex-row sm:items-center sm:justify-center">
-            <a
-              href={SIGNUP_URL}
-              className="rounded-lg bg-foreground px-5 py-2.5 text-center text-sm text-background transition-opacity hover:opacity-90"
-            >
-              Get started free
-            </a>
-            <a
-              href={DEMO_URL}
-              className="rounded-lg border border-foreground/20 bg-transparent px-5 py-2.5 text-center text-sm text-foreground transition-colors hover:bg-foreground/5"
-            >
-              Book a demo
-            </a>
+          no code-generation tool (no portal) can claim. Same split header as
+          the AI app builder page: stacked, the detail follows the headline and
+          the actions close the block. */}
+      <section className="pb-16 pt-24 md:pb-24 md:pt-32">
+        <div className="mx-auto max-w-[1400px] px-6 md:px-10">
+          <div className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-start lg:gap-x-16">
+            <h1 className="type-display max-w-[16ch] text-balance">
+              The client portal you can build on
+            </h1>
+            <p className="type-lead max-w-[34rem] text-pretty text-muted-foreground lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:pt-2">
+              Ready-made apps for the work every firm shares, plus an AI app
+              builder for the work that is only yours.
+            </p>
+            <div>
+              <div className="flex flex-wrap items-center gap-3">
+                <a
+                  href={SIGNUP_URL}
+                  className="rounded-lg bg-foreground px-5 py-2.5 text-center text-sm text-background transition-opacity hover:opacity-90"
+                >
+                  Get started free
+                </a>
+                <a
+                  href={DEMO_URL}
+                  className="rounded-lg border border-foreground/20 bg-transparent px-5 py-2.5 text-center text-sm text-foreground transition-colors hover:bg-foreground/5"
+                >
+                  Book a demo
+                </a>
+              </div>
+            </div>
           </div>
-        </div>
 
-        <div className="mx-auto mt-14 max-w-[1200px] px-0 md:px-4">
-          <VisualSlot
-            className="text-left"
-            label="Hero shot, also the OG image"
-            description="Left third: a prompt box in Assembly's build panel reading Build a client onboarding tracker my clients can see, with a Plan card already surfaced and an Approve button. Right two-thirds: a laptop frame showing the Brandmages client portal on its own domain, sidebar listing Home, Messages, Billing, Files, Project Tracker and Approvals, with a new Onboarding item mid-slide into the sidebar. A thin line connects the Approve button to the new item. The portal is the hero; the AI is subordinate to it."
-          />
+          <PortalHeroCarousel />
+          {/* Credibility right under the product shot, before the argument
+              starts. */}
+          <PortalSocialProof />
         </div>
       </section>
 
       <div className="relative">
         <GridRails />
         <GridDivider fullBleed />
-
-        {/* Credibility before the argument starts, inside the same rails so the
-            proof is framed by the grid the argument is. */}
-        <PortalSocialProof />
-        <GridDivider />
 
         <PortalProblem />
         <GridDivider />
@@ -183,7 +175,11 @@ export default function ClientPortalPage() {
 
       <div className="relative pb-10 md:pb-16">
         <GridRails />
-        <FAQ heading="Frequently asked questions" items={PORTAL_FAQS} twoColumn />
+        <FAQ
+          heading="Frequently asked questions"
+          items={PORTAL_FAQS}
+          twoColumn
+        />
       </div>
 
       <div className="border-t border-border [[data-theme=dark]_&]:border-[#383838]" />

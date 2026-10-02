@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { VsComparisonPage, type VsPage } from "@/components/comparison/vs-page";
+import { TeamClientsHeroVisual } from "@/components/comparison/team-clients-hero-visual";
 import { PAGE_SEO, pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata(PAGE_SEO.vsLovable);
@@ -230,5 +231,7 @@ const PAGE: VsPage = {
 };
 
 export default function AssemblyVsLovablePage() {
-  return <VsComparisonPage page={PAGE} />;
+  return (
+    <VsComparisonPage page={PAGE} heroVisual={<TeamClientsHeroVisual />} />
+  );
 }

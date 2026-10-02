@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { VsComparisonPage, type VsPage } from "@/components/comparison/vs-page";
+import { BrandedLoginHeroVisual } from "@/components/comparison/branded-login-hero-visual";
 import { PAGE_SEO, pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata(PAGE_SEO.vsBase44);
@@ -39,8 +40,7 @@ const PAGE: VsPage = {
         label: "Branding on login",
         assembly:
           "Your logo and colors from the first screen. Your own domain with no Assembly badge on Professional and up",
-        competitor:
-          "Base44 logo on the login splash, even on custom domains",
+        competitor: "Base44 logo on the login splash, even on custom domains",
       },
       {
         label: "Client experience",
@@ -229,5 +229,7 @@ const PAGE: VsPage = {
 };
 
 export default function AssemblyVsBase44Page() {
-  return <VsComparisonPage page={PAGE} />;
+  return (
+    <VsComparisonPage page={PAGE} heroVisual={<BrandedLoginHeroVisual />} />
+  );
 }
