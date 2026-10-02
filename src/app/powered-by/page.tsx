@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { BuiltOnPage } from "@/components/built-on/built-on-page";
 import type { BuiltOnFirm } from "@/lib/built-on-firms";
-import { redirect } from "next/navigation";
-import { IS_LIVE_SITE } from "@/lib/constants";
 import { getFirmBranding } from "@/lib/firm-branding";
 import { attributionFromSearchParams } from "@/lib/powered-by-attribution";
 import { PAGE_SEO, pageMetadata } from "@/lib/seo";
@@ -24,12 +22,6 @@ export default async function PoweredBy({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  // Held on staging while the badge that feeds this page is still being built.
-  // Production promotes by fast-forwarding main, which takes every commit, so a
-  // page that is not ready has to hold itself back. Same guard /about uses.
-  // Delete these two lines and the page goes live with the next release.
-  if (IS_LIVE_SITE) redirect("/");
-
   const attribution = attributionFromSearchParams(await searchParams);
 
   return (
