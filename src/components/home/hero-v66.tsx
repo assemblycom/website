@@ -9,6 +9,7 @@ import {
   buildSignupUrl,
 } from "@/lib/constants";
 import { AUTH_ATTRIBUTE } from "@/lib/auth-script";
+import { readHeroArmCookie, withHeroArm } from "@/lib/hero-variants";
 import { TEMPLATES } from "@/lib/templates";
 import { IconArrow, IconFile, IconPaperclip, IconPlay, IconX } from "./icons";
 import { TemplateMock } from "./template-preview";
@@ -210,7 +211,13 @@ function openGetStarted(value: string) {
     return;
   }
 
-  window.location.href = buildSignupUrl(trimmed || undefined);
+  // Read here rather than taken as a prop: this runs on click, where the cookie
+  // is readable and there is no server render to disagree with. Null for anyone
+  // the hero test left out, and then the URL is the one it has always been.
+  window.location.href = withHeroArm(
+    buildSignupUrl(trimmed || undefined),
+    readHeroArmCookie(),
+  );
 }
 
 // Once there is a prompt in the box, the button names what happens to it

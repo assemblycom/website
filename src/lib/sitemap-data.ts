@@ -64,6 +64,12 @@ const EXCLUDED = new Set<string>([
   // An internal contact sheet of the template cover mocks. Unlisted and
   // noindex; it exists to look at while designing, not to be found.
   "/covers",
+  // The hero test's rewrite targets, which serve the homepage's own content
+  // under /hero-variant/<arm>. findStaticRoutes already skips them for being a
+  // dynamic segment, so this is belt and braces — but the day somebody adds a
+  // page at /hero-variant itself, six duplicates of the homepage should not be
+  // what reaches the sitemap. Noindex in the page's own metadata too.
+  "/hero-variant",
 ]);
 
 // /about is finished but held on staging, where it redirects to the homepage in
