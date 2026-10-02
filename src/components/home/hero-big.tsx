@@ -155,12 +155,18 @@ export function HeroBig({
           className={`type-display-xl mx-auto text-balance text-center ${lines ? "max-w-none" : "max-w-[16ch]"} text-neutral-900 [[data-theme=dark]_&]:text-white`}
         >
           {lines ? (
-            // The hand-set lockup is a desktop measure: on a phone each of its
-            // lines wraps again and drops a word onto a line of its own, so
-            // below md the lines run together and the browser balances them.
-            lines.map((line, i) => (
-              <span key={line} className="inline md:block md:whitespace-nowrap">
-                {i > 0 ? " " : ""}
+            // The lockup's breaks are honoured at every width. They used to be
+            // released below md so the browser could re-balance the whole
+            // headline — but the balancer has no idea which words belong
+            // together, and on "Become an AI-native business" it broke the
+            // compound at its own hyphen ("an AI-" / "native"). Each line is a
+            // block, so the breaks hold; only `whitespace-nowrap` is held back
+            // below md, which lets a line that is too long for a narrow screen
+            // wrap inside itself rather than overflow.
+            lines.map((line) => (
+              // No separating space between lines any more: they were joined
+              // inline below md and needed one, and as blocks they do not.
+              <span key={line} className="block md:whitespace-nowrap">
                 <BigHeadline
                   text={line}
                   iconAfter={iconAfter}

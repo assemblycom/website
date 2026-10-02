@@ -192,6 +192,14 @@ export function HeroV76({
   // because the test treats headline and body as one message. The hero without
   // a variant keeps its own `showBody` default, which is off.
   const body = message?.body;
+  // The control arm centres its whole block — headline, body and composer — on
+  // the page, where the shipped hero sets them left against the template strip.
+  // Scoped to the test rather than applied outright, so the no-variant render
+  // stays the hero the site ships today and remains something to fall back to.
+  const centred = Boolean(variant);
+  // Mobile centres either way; this is only about what happens from md up.
+  const alignBlock = centred ? "" : " md:mx-0";
+  const alignText = centred ? "" : " md:mx-0 md:text-left";
   // Theme is global now (persisted, applied to <html data-theme>), so the hero
   // reads it from context and the nav toggle drives the whole site.
   const { theme } = useTheme();
@@ -467,8 +475,12 @@ export function HeroV76({
         <div className="relative overflow-hidden bg-white [[data-theme=dark]_&]:bg-[var(--background)]">
 
           <div className={`relative z-10 ${RAIL} pb-16 pt-36 md:pt-36 lg:pb-20`}>
-            <div className="relative z-30 max-w-2xl">
-              <h1 className="type-display mx-auto max-w-xl text-center text-neutral-900 md:mx-0 md:text-left [[data-theme=dark]_&]:text-white">
+            <div
+              className={`relative z-30 max-w-2xl${centred ? " mx-auto" : ""}`}
+            >
+              <h1
+                className={`type-display mx-auto max-w-xl text-center text-neutral-900 [[data-theme=dark]_&]:text-white${alignText}`}
+              >
                 {/* Fixed lockup on every breakpoint, for the shipped headline
                     and for any test message that sets its own lines. A message
                     without them balances on its own. */}
@@ -483,13 +495,15 @@ export function HeroV76({
               </h1>
 
               {(body ?? showBody) && (
-                <p className="type-lead mx-auto mt-4 max-w-lg text-center text-muted-foreground md:mx-0 md:text-left">
+                <p
+                  className={`type-lead mx-auto mt-4 max-w-lg text-center text-muted-foreground${alignText}`}
+                >
                   {body ??
                     "Describe what you need in plain language and Assembly ships a polished, client-ready app — no code, no handoffs."}
                 </p>
               )}
 
-              <div className="mx-auto mt-8 max-w-xl md:mx-0">
+              <div className={`mx-auto mt-8 max-w-xl${alignBlock}`}>
                 {/* The submit pill's two fills, as a custom property the
                     composer reads. Deliberately the nav's primary in both
                     themes — near-black on the light page, white on the dark
