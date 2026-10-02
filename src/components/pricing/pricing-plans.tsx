@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { CheckIcon } from "@/components/ui/check-icon";
 import { APP_URL, DEMO_URL, DEMO_CTA_LABEL } from "@/lib/constants";
 
 interface PlanFeatureGroup {
@@ -216,26 +217,6 @@ function EnterpriseCard() {
         </div>
       </div>
     </div>
-  );
-}
-
-function CheckIcon() {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      fill="none"
-      className="shrink-0 text-accent"
-    >
-      <path
-        d="M4 8l2.5 2.5L12 5.5"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
   );
 }
 

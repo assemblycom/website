@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { HeroV76 } from "@/components/home/hero-v76";
 import { getVisibleTemplates } from "@/lib/visible-templates";
 import { HowItWorks } from "@/components/home/how-it-works";
-import { TrustTicker } from "@/components/home/trust-ticker";
 import { Testimonials } from "@/components/home/testimonials";
 import { HomeFAQ } from "@/components/home/faq";
 import { CTA } from "@/components/home/cta";
@@ -49,18 +48,14 @@ export default async function HomePage() {
         {/* The "how it works" walkthrough comes first, then the three platform
             points (left-rail menu + visual). */}
         <div className="section-follow">
-          {/* Fade-only (no rise): the ticker's own colored band made the
-              translate read as the whole block sliding on load. */}
-          {/* Opens the stats band, and drawn here rather than inside it so both
-              ends land on the vertical rails — the band's own column is capped
-              narrower than the rails and nudged off-centre, so a rule drawn there
-              stopped short at both ends. */}
-          <GridDivider />
-          <Reveal variant="fade">
-            <TrustTicker />
-          </Reveal>
-          {/* Closes the band, on the same rails. */}
-          <GridDivider />
+          {/* The stats band is out for now. TrustTicker is untouched in
+              home/trust-ticker.tsx and drops back in here between two
+              dividers, which is what its own rules used to be.
+
+              Full bleed because this is the first rule under the hero: there
+              are no rails above it for a capped one to land on, so it opens
+              the region edge to edge the way the other pages do. */}
+          <GridDivider fullBleed />
           <Reveal variant="fade">
             <HowItWorks />
           </Reveal>

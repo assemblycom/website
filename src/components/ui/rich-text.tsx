@@ -83,7 +83,7 @@ const OPTIONS = {
           {...(external
             ? { target: "_blank", rel: "noopener noreferrer" }
             : {})}
-          className="text-foreground underline underline-offset-2 transition-colors hover:decoration-foreground"
+          className="text-foreground underline underline-offset-2 [text-decoration-skip-ink:none] transition-colors hover:decoration-foreground"
         >
           {children}
         </a>

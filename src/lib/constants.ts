@@ -101,11 +101,46 @@ export function isNavGroup(entry: NavEntry): entry is NavGroup {
   return "items" in entry;
 }
 
-// One grouped panel and four direct links. Templates, Customers and Security
-// are their own links rather than a Product panel: two items behind a trigger
-// is a panel that costs a hover to read what it could have just said. Resources
-// stays a group because most of what is in it lives off-site.
+// Two grouped panels and four direct links. Templates, Customers and Security
+// stay their own links rather than folding into Product: they are destinations
+// in their own right, and burying a single link behind a trigger costs a hover
+// to read what it could have just said. Resources is a group because most of
+// what is in it lives off-site.
+//
+// Product holds two columns: the feature pages, and the vertical pages the site
+// already has. The use-case links point at the canonical solutions slugs rather
+// than the shorter /solutions/accounting-firms and /solutions/marketing-agencies
+// forms, which are redirects — a nav link spends that hop on every page.
 export const NAV_ENTRIES: NavEntry[] = [
+  {
+    label: "Product",
+    items: [
+      {
+        label: "AI app builder",
+        href: "/ai-app-builder",
+        section: "Features",
+        description: "Describe an app, and Assembly builds it",
+      },
+      {
+        label: "Client portal",
+        href: "/client-portal",
+        section: "Features",
+        description: "The branded place your clients sign in to",
+      },
+      {
+        label: "For accounting firms",
+        href: "/solutions/accounting-client-portal",
+        section: "Use cases",
+        description: "Onboarding, document collection and year-end work",
+      },
+      {
+        label: "For marketing agencies",
+        href: "/solutions/marketing-agency-client-portal",
+        section: "Use cases",
+        description: "Approvals, reporting and client sign-off",
+      },
+    ],
+  },
   { label: "Templates", href: "/templates" },
   { label: "Customers", href: "/customers" },
   { label: "Security", href: "/security" },
@@ -381,7 +416,6 @@ export const FOOTER_COLUMNS: FooterGroup[][] = [
         { label: "Security", href: "/security" },
         { label: "Pricing", href: "/pricing" },
         { label: "Desktop app", href: "/download" },
-        { label: "Compare", href: "/comparison" },
         { label: "Sign up", href: SIGNUP_URL, external: true },
         { label: "Book a demo", href: DEMO_URL },
       ],
@@ -426,5 +460,20 @@ export const FOOTER_COLUMNS: FooterGroup[][] = [
       ],
     },
   ],
-  [{ label: "Legal", links: LEGAL_LINKS }],
+  [
+    {
+      // Compare shares the last column with Legal rather than taking a track of
+      // its own: three links do not fill one, and Legal is the shortest shelf
+      // here, so there is room above it. Compare sits first because it is a
+      // destination someone reads on the way to deciding, while Legal is what
+      // you go looking for.
+      label: "Compare",
+      links: [
+        { label: "Assembly vs Lovable", href: "/comparison/lovable" },
+        { label: "Assembly vs Base44", href: "/comparison/base44" },
+        { label: "All comparisons", href: "/comparison" },
+      ],
+    },
+    { label: "Legal", links: LEGAL_LINKS },
+  ],
 ];

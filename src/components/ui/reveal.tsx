@@ -1,15 +1,32 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+
+// The in-view check has to run before the browser paints, or content that is
+// already on screen flashes hidden for a frame. useLayoutEffect does that, but
+// React warns when it runs during SSR, so fall back to useEffect on the server
+// (where the branch never actually runs).
+const useIsomorphicLayoutEffect =
+  typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 /**
  * Scroll reveal — fades a section in as it enters the viewport so sections hand
- * off smoothly instead of snapping. `rise` also lifts it a touch; `fade` is
+ * off smoothly instead of snapping.
+ *
+ * Only sections you scroll TO animate. Anything already on screen when the page
+ * loads is shown outright, with no transition: animating it meant every
+ * navigation replayed an entrance for the top of the page, which read as a page
+ * transition rather than as content arriving. `rise` also lifts it a touch; `fade` is
  * opacity-only for sections that contain a `position: sticky` child (a transform
  * ancestor — even translateY(0) — would break the sticky), e.g. How it works.
  * Reduced-motion shows content immediately. Reveals once, then disconnects.
  * Fixed trigger point (~90% of viewport height); no per-instance override.
  */
+// Reveal once the element's top is within ~90% of the viewport height.
+function isInView(el: HTMLElement) {
+  return el.getBoundingClientRect().top < window.innerHeight * 0.9;
+}
+
 export function Reveal({
   children,
   variant = "rise",
@@ -30,27 +47,31 @@ export function Reveal({
   durationMs?: number;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const [shown, setShown] = useState(false);
+  // "instant" is shown without a transition — on screen at load, or reduced
+  // motion. "shown" is the animated entrance, reached only by scrolling.
+  const [state, setState] = useState<"hidden" | "instant" | "shown">("hidden");
+
+  useIsomorphicLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ||
+      isInView(el)
+    ) {
+      setState("instant");
+    }
+  }, []);
 
   useEffect(() => {
     const el = ref.current;
-    if (!el) return;
-    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
-      setShown(true);
-      return;
-    }
-    // Reveal once the element's top is within ~90% of the viewport height.
-    const inView = () => el.getBoundingClientRect().top < window.innerHeight * 0.9;
-    if (inView()) {
-      setShown(true);
-      return;
-    }
+    if (!el || state !== "hidden") return;
+    const inView = () => isInView(el);
     let done = false;
     let io: IntersectionObserver | undefined;
     const reveal = () => {
       if (done) return;
       done = true;
-      setShown(true);
+      setState("shown");
       io?.disconnect();
       window.removeEventListener("scroll", onScroll);
     };
@@ -74,7 +95,7 @@ export function Reveal({
       io?.disconnect();
       window.removeEventListener("scroll", onScroll);
     };
-  }, []);
+  }, [state]);
 
   const hidden =
     variant === "fade"
@@ -95,11 +116,18 @@ export function Reveal({
   if (delayMs) style.transitionDelay = `${delayMs}ms`;
   if (durationMs) style.transitionDuration = `${durationMs}ms`;
 
+  // No transition classes at all on the instant path, so nothing animates on
+  // the way in and a later scroll cannot re-trigger it.
+  const motion =
+    state === "instant"
+      ? ""
+      : `transition-all ${duration} ease-[cubic-bezier(0.22,1,0.36,1)]`;
+
   return (
     <div
       ref={ref}
-      style={Object.keys(style).length ? style : undefined}
-      className={`transition-all ${duration} ease-[cubic-bezier(0.22,1,0.36,1)] ${shown ? visible : hidden} ${className}`}
+      style={state === "instant" || !Object.keys(style).length ? undefined : style}
+      className={`${motion} ${state === "hidden" ? hidden : visible} ${className}`}
     >
       {children}
     </div>

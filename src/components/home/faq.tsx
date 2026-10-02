@@ -10,10 +10,10 @@ export interface FAQLink {
 
 export interface FAQEntry {
   question: string;
-  // Shown in place of `question` below sm. A question that wraps to a second
-  // line turns a tidy stack of rows into a ragged one, and on a phone there is
-  // no room to solve that with type size. Optional: only the questions that
-  // actually wrap carry one, and the short form has to mean the same thing.
+  // Shown in place of `question` below sm, and at every width on a page that
+  // asks for it. A question that wraps to a second line turns a tidy stack of
+  // rows into a ragged one. Optional: only the questions that actually wrap
+  // carry one, and the short form has to mean the same thing.
   shortQuestion?: string;
   answer: string;
   /**
@@ -49,7 +49,7 @@ function renderAnswer(text: string, links?: FAQLink[]): ReactNode {
           {...(external
             ? { target: "_blank", rel: "noopener noreferrer" }
             : {})}
-          className="underline underline-offset-2 transition-colors hover:text-foreground"
+          className="underline underline-offset-2 [text-decoration-skip-ink:none] transition-colors hover:text-foreground"
         >
           {link.label}
         </a>,
@@ -127,10 +127,12 @@ function FAQItem({
   open,
   onToggle,
   variant = "cards",
+  compactQuestions = false,
 }: FAQEntry & {
   open: boolean;
   onToggle: () => void;
   variant?: FAQVariant;
+  compactQuestions?: boolean;
 }) {
   // Controlled by the parent so only one answer is open at a time (opening one
   // closes the others). Toggles on click only — hover-to-open made rows pop open
@@ -192,8 +194,14 @@ function FAQItem({
           className="group flex w-full cursor-pointer items-center justify-between gap-6 py-5 text-left"
         >
           <span className="type-body text-foreground">
-            <span className="sm:hidden">{shortQuestion ?? question}</span>
-            <span className="hidden sm:inline">{question}</span>
+            {compactQuestions ? (
+              shortQuestion ?? question
+            ) : (
+              <>
+                <span className="sm:hidden">{shortQuestion ?? question}</span>
+                <span className="hidden sm:inline">{question}</span>
+              </>
+            )}
           </span>
           {/* The chevron turns 90°, not 180 — half the travel of a full flip,
               and timed to the drawer (300ms) so the two move as one gesture.
@@ -241,8 +249,14 @@ function FAQItem({
         className="flex w-full cursor-pointer items-center justify-between gap-4 rounded-[8px] px-5 py-3 text-left outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-foreground/40"
       >
         <span className="type-body text-foreground">
-          <span className="sm:hidden">{shortQuestion ?? question}</span>
-          <span className="hidden sm:inline">{question}</span>
+          {compactQuestions ? (
+            shortQuestion ?? question
+          ) : (
+            <>
+              <span className="sm:hidden">{shortQuestion ?? question}</span>
+              <span className="hidden sm:inline">{question}</span>
+            </>
+          )}
         </span>
         <svg
           width="20"
@@ -276,11 +290,14 @@ export function Accordion({
   items,
   twoColumn,
   variant = "cards",
+  compactQuestions = false,
   flushTop = true,
 }: {
   items: FAQEntry[];
   twoColumn: boolean;
   variant?: FAQVariant;
+  /** Run `shortQuestion` at every width, not only below sm. */
+  compactQuestions?: boolean;
   /**
    * The divided list is normally ruled top by the layout above it, so the first
    * row drops its top padding to sit against that line. A list with no rule
@@ -294,6 +311,7 @@ export function Accordion({
       key={faq.question}
       {...faq}
       variant={variant}
+      compactQuestions={compactQuestions}
       open={openId === faq.question}
       onToggle={() =>
         setOpenId((cur) => (cur === faq.question ? null : faq.question))
@@ -342,11 +360,18 @@ export function FAQ({
   items = FAQS,
   twoColumn = false,
   variant = "cards",
+  compactQuestions = false,
 }: {
   heading?: string;
   items?: FAQEntry[];
   twoColumn?: boolean;
   variant?: FAQVariant;
+  /**
+   * Run the short form of every question that has one, at every width. For a
+   * page whose questions are written long for search: the row stays one line
+   * while the full wording is still what the answer is filed under.
+   */
+  compactQuestions?: boolean;
 } = {}) {
   // Vercel-style: heading sits in a left column, the divided question list runs
   // down the right. The heading sticks so it stays with the list on long scrolls.
@@ -357,7 +382,12 @@ export function FAQ({
         <Section id="faq" className="px-0 py-16 md:py-24">
           <div className="mx-auto max-w-[1200px] px-6 md:px-10">
             <h2 className="type-h2 text-center">{heading}</h2>
-            <Accordion items={items} twoColumn variant={variant} />
+            <Accordion
+              items={items}
+              twoColumn
+              variant={variant}
+              compactQuestions={compactQuestions}
+            />
           </div>
         </Section>
       );
@@ -368,7 +398,12 @@ export function FAQ({
           <div className="md:sticky md:top-28 md:self-start">
             <h2 className="type-h2">{heading}</h2>
           </div>
-          <Accordion items={items} twoColumn={false} variant={variant} />
+          <Accordion
+            items={items}
+            twoColumn={false}
+            variant={variant}
+            compactQuestions={compactQuestions}
+          />
         </div>
       </Section>
     );
@@ -384,7 +419,12 @@ export function FAQ({
         <h2 className="type-h2 mx-auto max-w-80 text-center sm:max-w-none">
           {heading}
         </h2>
-        <Accordion items={items} twoColumn={twoColumn} variant={variant} />
+        <Accordion
+          items={items}
+          twoColumn={twoColumn}
+          variant={variant}
+          compactQuestions={compactQuestions}
+        />
       </div>
     </Section>
   );

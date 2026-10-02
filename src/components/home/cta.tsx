@@ -1,11 +1,32 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { V66Composer } from "./hero-v66";
 import { PROMPT_IDEAS } from "./prompt-ideas";
 import { useTheme } from "@/components/theme/theme-provider";
 
-export function CTA() {
+export function CTA({
+  heading,
+  subheading,
+  submitLabel = "Get started",
+  secondaryCta,
+  planChips = true,
+  promptExamples,
+}: {
+  // Overrides the default close for a page whose argument ends somewhere else
+  // (e.g. the AI app builder page closes on what you would build today).
+  heading?: ReactNode;
+  /** One line under the heading, where a page's brief calls for one. */
+  subheading?: string;
+  /** The composer's submit wording, which a feature page names after its own CTA. */
+  submitLabel?: string;
+  /** An outline second action beside the box, visibly secondary to the submit. */
+  secondaryCta?: { label: string; href: string };
+  /** Off for a page that has already made the free-plan case further up. */
+  planChips?: boolean;
+  /** Page-specific examples, completing "Build …", for both the typewriter and the Ideas menu. */
+  promptExamples?: string[];
+} = {}) {
   // Dark sheet flowing into the black footer below; the green wordmark panel is
   // revealed beneath (square top, footer rounds the bottom).
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -37,10 +58,19 @@ export function CTA() {
         <h2
           className="type-h2 text-balance leading-[1.12] text-neutral-900 [[data-theme=dark]_&]:text-white"
         >
-          Build the firm
-          <br />
-          only you can build
+          {heading ?? (
+            <>
+              Build the firm
+              <br />
+              only you can build
+            </>
+          )}
         </h2>
+        {subheading ? (
+          <p className="type-lead mx-auto mt-5 max-w-xl text-balance text-muted-foreground">
+            {subheading}
+          </p>
+        ) : null}
         <div className="mx-auto mt-8 max-w-xl text-left">
           {/* Same animated gradient border as the hero composer up top. Every
               prop below must stay in step with hero-v76's composer — the two
@@ -67,10 +97,13 @@ export function CTA() {
               promptPicker
               promptPickerLabel="Ideas"
               promptPickerSide="left"
-              promptItems={PROMPT_IDEAS}
+              promptItems={
+                promptExamples?.map((ex) => `Build ${ex}`) ?? PROMPT_IDEAS
+              }
+              typewriterExamples={promptExamples}
               hideHowTo
               plusAsAttach
-              submitLabel="Get started"
+              submitLabel={submitLabel}
 
               // Signed in, "Get started" is the wrong sentence to hand someone who
 
@@ -94,22 +127,37 @@ export function CTA() {
             />
           </div>
 
+          {/* Secondary action. An outline button under the box rather than
+              beside it, so it never reads as the composer's own control. */}
+          {secondaryCta ? (
+            <div className="mt-4 flex justify-center">
+              <a
+                href={secondaryCta.href}
+                className="rounded-lg border border-foreground/20 bg-transparent px-5 py-2.5 text-center text-sm text-foreground transition-colors hover:bg-foreground/5 [[data-theme=dark]_&]:border-white/25 [[data-theme=dark]_&]:text-white"
+              >
+                {secondaryCta.label}
+              </a>
+            </div>
+          ) : null}
+
           {/* Answers the two things people weigh before typing anything, right
               where they'd hesitate. As two chips in the mono face rather than a
               sentence: they're a pair of facts about the plan, which is what the
               site sets in mono caps everywhere else, and separate pills say that
               better than a middot between two clauses did. Muted, so they
               reassure without competing with the submit button above them. */}
-          <ul className="mt-3 flex flex-wrap items-center justify-center gap-1.5">
-            {["Free forever", "No credit card required"].map((label) => (
-              <li
-                key={label}
-                className="rounded-md bg-muted px-2 py-1 font-mono text-[11px] uppercase leading-none tracking-wide text-muted-foreground [[data-theme=dark]_&]:bg-white/[0.06]"
-              >
-                {label}
-              </li>
-            ))}
-          </ul>
+          {planChips ? (
+            <ul className="mt-3 flex flex-wrap items-center justify-center gap-1.5">
+              {["Free forever", "No credit card required"].map((label) => (
+                <li
+                  key={label}
+                  className="rounded-md bg-muted px-2 py-1 font-mono text-[11px] uppercase leading-none tracking-wide text-muted-foreground [[data-theme=dark]_&]:bg-white/[0.06]"
+                >
+                  {label}
+                </li>
+              ))}
+            </ul>
+          ) : null}
         </div>
       </div>
     </section>

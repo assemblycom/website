@@ -18,6 +18,7 @@ import {
 } from "@/lib/constants";
 import {
   NavBarFill,
+  NavBarBorder,
   NavDropdown,
   NavDropdownGroup,
   NavMegaPanel,
@@ -70,6 +71,7 @@ export function StudioNav({
   maxWidthClass,
   restPaddingClass,
   minimal = false,
+  bordered = false,
   themeToggle,
 }: {
   fullWidth?: boolean;
@@ -88,6 +90,10 @@ export function StudioNav({
   // and same sizes, but the marketing links and account actions collapse to a
   // single way back to the site. There's no menu to open, so no burger either.
   minimal?: boolean;
+  // Closes the bar with the same hairline the page grid draws, for pages that
+  // sit under it on a plain ground. Off for heroes, where the bar floats over
+  // artwork and a rule would cut across it.
+  bordered?: boolean;
   // Optional light/dark toggle rendered in the nav (used by themeable heroes).
   themeToggle?: { theme: "light" | "dark"; onToggle: () => void };
 }) {
@@ -423,6 +429,13 @@ export function StudioNav({
   // page behind it, not a lighter charcoal.
   // bg-background, not a hex a digit off it: the sheet was #0a0a0b against a
   // #0a0a0a page, which is a difference with no reason to exist.
+  // Same hairline as the page grid's rails and rules, so the bar closes on the
+  // line the content below it is framed by. Mobile only — the desktop bar draws
+  // it as an element instead (NavBarBorder) so it can fade with the sheet.
+  const navBorder = bordered
+    ? "border-b border-border [[data-theme=dark]_&]:border-[#383838]"
+    : "";
+
   const menuSurface = darkTop ? "bg-background text-white" : "bg-background";
   const menuBorder = darkTop ? "border-white/10" : "border-border";
   const menuMuted = darkTop ? "text-white/50" : "text-muted-foreground";
@@ -491,7 +504,7 @@ export function StudioNav({
           so the fill cannot lag the bar it is covering for either. */}
       <header
         ref={mobileHeaderRef}
-        className={`${position} transition-colors ${ease} lg:hidden [[data-toc-bar]_&]:bg-background [[data-toc-bar]_&]:transition-none ${mobileMenuOpen ? "pointer-events-none z-[70]" : "z-50"}`}
+        className={`${position} transition-colors ${ease} lg:hidden [[data-toc-bar]_&]:bg-background [[data-toc-bar]_&]:transition-none ${navBorder} ${mobileMenuOpen ? "pointer-events-none z-[70]" : "z-50"}`}
       >
         {/* The strip. Dropped on a post or a policy, where the contents bar is
             drawn directly under the nav: two stacked strips with two hairlines
@@ -550,6 +563,7 @@ export function StudioNav({
             style={navStripStyle}
           />
           {!minimal && <NavBarFill />}
+          {bordered && <NavBarBorder />}
           <div
             className={`relative z-10 mx-auto flex items-center ${contentRail} ${scrolled ? "h-14" : "h-16"}`}
             style={{ transition: rowTransition }}
