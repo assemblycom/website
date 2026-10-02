@@ -63,8 +63,21 @@ export const COPY_VARIANTS: Record<CopyKey, CopyVariant> = {
   firm: {
     key: "firm",
     label: "AI-native firm",
-    h1: "Your firm rebuilt for the AI era",
-    big: { iconAfter: "firm", iconPair: true, iconBefore: "for" },
+    h1: "Become an AI-native business",
+    // Re-anchored with the headline. These are matched by `indexOf`, so the
+    // previous anchors ("firm", "for") would simply not be found in the new
+    // wording and the big-type arm would have rendered with no app tiles at
+    // all — silently, since a tile that isn't located is dropped. Same count
+    // and rhythm as before: a pair early, a single before the last word.
+    big: {
+      // Hand-set, because the automatic measure breaks "AI-native" at its own
+      // hyphen — the 16ch cap lands mid-compound at every width, and a split
+      // hyphenated word at display size reads as a mistake.
+      lines: ["Become an", "AI-native business"],
+      iconAfter: "Become",
+      iconPair: true,
+      iconBefore: "business",
+    },
     body: "Start with customizable apps for client intake, proposals, payments, project tracking, and more. Describe anything else, and AI builds it.",
   },
   builder: {
