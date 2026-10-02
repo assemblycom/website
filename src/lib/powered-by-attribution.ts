@@ -38,8 +38,8 @@ export interface PoweredByAttribution {
   /** The referring workspace id. Decides who is credited. */
   ref?: string;
   /**
-   * The firm's name as the badge wrote it. Display only: the heading falls
-   * back to it when the workspace can't be looked up.
+   * The firm's name as the badge wrote it. Forwarded to signup, never shown:
+   * anyone can write it, so the page names only a firm the lookup found.
    */
   firm?: string;
   utm: Partial<Record<UtmKey, string>>;
