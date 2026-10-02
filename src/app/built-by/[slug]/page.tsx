@@ -67,8 +67,8 @@ export default async function BuiltBy({
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  // Held on staging with /powered-by, since the generator that hands firms this
-  // link does not exist yet. Delete these two lines to ship both.
+  // Held on staging, since the generator that hands firms this link does not
+  // exist yet. Delete these two lines to ship it.
   if (IS_LIVE_SITE) redirect("/");
 
   const { slug } = await params;
