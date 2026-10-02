@@ -645,6 +645,16 @@ html[data-theme="dark"] body {
     letter-spacing: -0.02em;
     font-weight: 400;
   }
+  /* One step up from .type-display, for the hero test's big-type arm and
+     nothing else. Fluid rather than stepped at breakpoints: the headline is
+     the whole layout there, so it wants to track the viewport continuously
+     instead of jumping at 768px. 40px at the narrow end, 84px at the wide. */
+  .type-display-xl {
+    font-size: clamp(2.5rem, calc(1.36rem + 4.86vw), 5.25rem);
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+    font-weight: 400;
+  }
   .type-h2 {
     /* Mobile H2 was 26px against a 36px display — a 1.4 jump, where every other
        breakpoint holds ~1.3. 28px keeps the ratio steady across breakpoints. */

@@ -197,10 +197,12 @@ export function TrustTicker() {
             aria-hidden
             className="-mx-6 border-t border-border md:hidden [[data-theme=dark]_&]:border-[#383838]"
           />
-          {/* border-x closes the row on its own two side lines, inset from the
-              page rails — the band's boundary, on the same hairline values as the
-              column rules between the figures. Desktop only: the phone 2x2 is set
-              by guide lines, not a frame. */}
+          {/* border-x closes the row on its own two side lines, level with the
+              figures rather than out at the page rails. The rails are hidden
+              across this band (see home-content.tsx) precisely so this is the
+              only vertical at each end: with both drawn, the pair bracketed a
+              strip of empty page and the outer figures read as padded away from
+              the edge of their own band. */}
           {/* 820, not the sm breakpoint: below it the four columns are too narrow
               for "Businesses powered" and "Payments processed" to hold one line,
               and a row of half-wrapped labels is a worse state than the stacked

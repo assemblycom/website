@@ -9,6 +9,8 @@ import {
   buildSignupUrl,
 } from "@/lib/constants";
 import { AUTH_ATTRIBUTE } from "@/lib/auth-script";
+import { readHeroArmCookie, withHeroArm } from "@/lib/hero-variants";
+import { trackHeroCta } from "./hero-experiment";
 import { TEMPLATES } from "@/lib/templates";
 import { IconArrow, IconFile, IconPaperclip, IconPlay, IconX } from "./icons";
 import { TemplateMock } from "./template-preview";
@@ -187,8 +189,11 @@ function V66Nav() {
 //
 // The prompt is still stamped onto the entry we're leaving, so coming BACK from
 // onboarding refills the composer instead of making you retype it.
-function openGetStarted(value: string) {
+function openGetStarted(value: string, ctaSurface?: string) {
   const trimmed = value.trim();
+  // Only the hero passes a surface, so the page-bottom CTA — which shares this
+  // composer — never reports itself as a hero click.
+  if (ctaSurface) trackHeroCta(ctaSurface);
   if (trimmed) {
     const here = new URL(window.location.href);
     here.searchParams.set("prompt", trimmed);
@@ -210,7 +215,13 @@ function openGetStarted(value: string) {
     return;
   }
 
-  window.location.href = buildSignupUrl(trimmed || undefined);
+  // Read here rather than taken as a prop: this runs on click, where the cookie
+  // is readable and there is no server render to disagree with. Null for anyone
+  // the hero test left out, and then the URL is the one it has always been.
+  window.location.href = withHeroArm(
+    buildSignupUrl(trimmed || undefined),
+    readHeroArmCookie(),
+  );
 }
 
 // Once there is a prompt in the box, the button names what happens to it
@@ -219,7 +230,7 @@ function openGetStarted(value: string) {
 // diverge again — "Get started" for a visitor, "Open Assembly" for a customer.
 const TYPED_SUBMIT_LABEL = "Build in Assembly";
 
-export function V66Composer({ glow = true, surfaceClassName = "bg-white ring-1 ring-black/[0.06]", surfaceRadiusClass = "rounded-[22px]", minHeightClass = "min-h-[188px]", tone = "light", typewriter = false, mutedControls = false, submitLabel, authedSubmitLabel, submitDark = false, themeAuto = false, accent = LIME, hidePlus = false, hideHowTo = false, howToLabel = "How it works", howToSide = "left", promptPicker = false, promptPickerLabel = "Select a prompt", promptPickerSide = "left", promptPickerUp = false, promptItems, plusItems, compact = false, minimalControls = false, plusAsAttach = false, footerLeading, showSubmit = true, submitDisabled, textDimmed = false, splitFooter = false, value: valueProp, onValueChange, textareaRef }: { glow?: boolean; surfaceClassName?: string; surfaceRadiusClass?: string; minHeightClass?: string; tone?: "light" | "dark"; typewriter?: boolean; mutedControls?: boolean; submitLabel?: string; authedSubmitLabel?: string; submitDark?: boolean; themeAuto?: boolean; accent?: string; hidePlus?: boolean; hideHowTo?: boolean; howToLabel?: string; howToSide?: "left" | "right"; promptPicker?: boolean; promptPickerLabel?: string; promptPickerSide?: "left" | "right"; promptPickerUp?: boolean; promptItems?: (string | { label: string; prompt: string })[]; plusItems?: { label: string; icon: "attach" | "transfer" }[]; compact?: boolean; minimalControls?: boolean; plusAsAttach?: boolean; footerLeading?: React.ReactNode; showSubmit?: boolean; submitDisabled?: boolean; textDimmed?: boolean; splitFooter?: boolean; value?: string; onValueChange?: (v: string) => void; textareaRef?: React.Ref<HTMLTextAreaElement> } = {}) {
+export function V66Composer({ glow = true, surfaceClassName = "bg-white ring-1 ring-black/[0.06]", surfaceRadiusClass = "rounded-[22px]", minHeightClass = "min-h-[188px]", tone = "light", typewriter = false, mutedControls = false, submitLabel, authedSubmitLabel, submitDark = false, themeAuto = false, accent = LIME, hidePlus = false, hideHowTo = false, howToLabel = "How it works", howToSide = "left", promptPicker = false, promptPickerLabel = "Select a prompt", promptPickerSide = "left", promptPickerUp = false, promptItems, plusItems, compact = false, minimalControls = false, plusAsAttach = false, footerLeading, showSubmit = true, submitDisabled, textDimmed = false, splitFooter = false, value: valueProp, onValueChange, textareaRef, ctaSurface }: { glow?: boolean; surfaceClassName?: string; surfaceRadiusClass?: string; minHeightClass?: string; tone?: "light" | "dark"; typewriter?: boolean; mutedControls?: boolean; submitLabel?: string; authedSubmitLabel?: string; submitDark?: boolean; themeAuto?: boolean; accent?: string; hidePlus?: boolean; hideHowTo?: boolean; howToLabel?: string; howToSide?: "left" | "right"; promptPicker?: boolean; promptPickerLabel?: string; promptPickerSide?: "left" | "right"; promptPickerUp?: boolean; promptItems?: (string | { label: string; prompt: string })[]; plusItems?: { label: string; icon: "attach" | "transfer" }[]; compact?: boolean; minimalControls?: boolean; plusAsAttach?: boolean; footerLeading?: React.ReactNode; showSubmit?: boolean; submitDisabled?: boolean; textDimmed?: boolean; splitFooter?: boolean; value?: string; onValueChange?: (v: string) => void; textareaRef?: React.Ref<HTMLTextAreaElement>; /** Names this composer as a hero CTA in the test readout. Only the hero passes it. */ ctaSurface?: string } = {}) {
 
   // Prompt-picker entries. Default: the shared "Build a …" examples. A hero can
   // pass `promptItems` as plain strings (shown and inserted verbatim) or as
@@ -599,7 +610,7 @@ export function V66Composer({ glow = true, surfaceClassName = "bg-white ring-1 r
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
                 if (value.trim()) {
-                  openGetStarted(value);
+                  openGetStarted(value, ctaSurface);
                 }
               }
             }}
@@ -718,10 +729,17 @@ export function V66Composer({ glow = true, surfaceClassName = "bg-white ring-1 r
                         type="button"
                         onClick={() => {
                           if (value.trim()) {
-                            openGetStarted(value);
+                            openGetStarted(value, ctaSurface);
                             return;
                           }
-                          window.location.href = buildSignupUrl();
+                          // Carries the arm like every other signup route:
+                          // this path skipped it, so an empty-box submit was
+                          // the one hero click that reached signup anonymous.
+                          if (ctaSurface) trackHeroCta(ctaSurface);
+                          window.location.href = withHeroArm(
+                            buildSignupUrl(),
+                            readHeroArmCookie(),
+                          );
                         }}
                         // Site primary button: rounded-lg on the foreground/
                         // background token pair, which inverts itself per theme.
@@ -839,7 +857,7 @@ export function V66Composer({ glow = true, surfaceClassName = "bg-white ring-1 r
                 // it could say "Open Assembly": a signed-in visitor clicking an
                 // empty box was still sent to sign up. openGetStarted handles an
                 // empty value — nothing to stamp, nothing to carry.
-                openGetStarted(value);
+                openGetStarted(value, ctaSurface);
               }}
               // With both labels in the markup the visible one names the button;
               // an aria-label would override it with whichever word is wrong for
