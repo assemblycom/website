@@ -197,10 +197,11 @@ export function TrustTicker() {
             aria-hidden
             className="-mx-6 border-t border-border md:hidden [[data-theme=dark]_&]:border-[#383838]"
           />
-          {/* border-x closes the row on its own two side lines, inset from the
-              page rails — the band's boundary, on the same hairline values as the
-              column rules between the figures. Desktop only: the phone 2x2 is set
-              by guide lines, not a frame. */}
+          {/* No side lines. The row used to close itself with a border-x inset
+              from the page rails, which drew a second vertical a little way in
+              from each rail and left a narrow empty cell standing between the
+              two at both ends. The rules between the figures are enough to read
+              the four as one set, and the page rails are the band's edge. */}
           {/* 820, not the sm breakpoint: below it the four columns are too narrow
               for "Businesses powered" and "Payments processed" to hold one line,
               and a row of half-wrapped labels is a worse state than the stacked
@@ -208,7 +209,7 @@ export function TrustTicker() {
               font mid-load can't tip it back into wrapping. */}
           {/* Written as base styles reset at 820 rather than as max-[819px]
               variants: arbitrary max-* variants don't come out of this build. */}
-          <div className="-mx-6 grid grid-cols-2 min-[820px]:mx-0 min-[820px]:grid-cols-4 min-[820px]:gap-x-0 min-[820px]:gap-y-0 min-[820px]:divide-x min-[820px]:divide-border min-[820px]:border-x min-[820px]:border-border [[data-theme=dark]_&]:min-[820px]:divide-[#383838] [[data-theme=dark]_&]:min-[820px]:border-[#383838]">
+          <div className="-mx-6 grid grid-cols-2 min-[820px]:mx-0 min-[820px]:grid-cols-4 min-[820px]:gap-x-0 min-[820px]:gap-y-0 min-[820px]:divide-x min-[820px]:divide-border [[data-theme=dark]_&]:min-[820px]:divide-[#383838]">
             {STATS.map((s, i) => (
               // Every cell is centred in its own column, at every width. Left-
               // aligned, the four figures shared a starting offset but each one
