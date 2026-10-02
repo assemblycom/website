@@ -144,7 +144,13 @@ export function HeroBig({
 }) {
   return (
     <section className="relative -mt-14 bg-white md:-mt-16 [[data-theme=dark]_&]:bg-[#0a0a0a]">
-      <div className="mx-auto flex min-h-[calc(100svh-5rem)] max-w-[1200px] flex-col justify-center px-6 py-24 md:px-10">
+      {/* Sized to its content with a floor under it, not to the viewport. At a
+          full 100svh the box stood ~230px taller than the headline, body and
+          buttons inside it, and all of that slack sat underneath them — which
+          put the numbers band entirely below the fold on a laptop. The floor
+          keeps the hero generous on a short viewport; above that it stops
+          growing and the band comes up into view. */}
+      <div className="mx-auto flex min-h-[calc(68svh-5rem)] max-w-[1200px] flex-col justify-center px-6 pb-16 pt-28 md:px-10 md:pb-20">
         <h1
           className={`type-display-xl mx-auto text-balance text-center ${lines ? "max-w-none" : "max-w-[16ch]"} text-neutral-900 [[data-theme=dark]_&]:text-white`}
         >
