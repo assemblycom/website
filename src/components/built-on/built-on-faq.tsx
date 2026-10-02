@@ -9,51 +9,67 @@ import type { BuiltOnFirm } from "@/lib/built-on-firms";
  * firm they came from.
  */
 function builtOnFaqs(firm?: BuiltOnFirm): FAQEntry[] {
+  // Named when we know the business, so the answers are about the thing the
+  // visitor just used rather than about us. Assembly is named outright rather
+  // than as "it": this reader may be meeting the brand for the first time.
+  const business = firm?.name ?? "This business";
+  const businessInSentence = firm?.name ?? "this business";
+
   return [
     {
-      // Named when we know the firm, so the first question is about the thing
-      // the visitor just used rather than about us.
-      question: `Could I build what ${firm?.name ?? "this firm"} has?`,
+      question: "What is Assembly?",
       answer:
-        "Yes. Everything you just used, from the branded sign-in to the portal and the apps inside it, runs on Assembly. Describe what your clients need in plain English and Assembly builds it. Most firms have a first app live the same day.",
+        "Assembly is an AI app builder and client experience platform for service businesses: accounting firms, agencies, consultancies, law firms and more. With Assembly, your clients get one branded place to engage with your business. You customize the experience to include what you need to manage your clients, from onboarding to contracts, file sharing, and payments. Install ready-to-use apps or use AI to build your own.",
     },
     {
-      question: "Do I need to know how to code?",
-      answer:
-        "No. You describe what you want, Assembly asks a few questions and shows you a plan, you approve or edit it, and it builds. Changes later work the same way, by conversation.",
+      question: "Why did I see “Powered by Assembly”?",
+      shortQuestion: "Why “Powered by Assembly”?",
+      answer: `${business} uses Assembly to run their client experience. The “Powered by Assembly” badge explains more about the platform. Assembly is free to use. You can choose to white-label Assembly on our Professional paid plan.`,
     },
     {
-      question: "What can I build?",
+      question: `Could I build what ${businessInSentence} has?`,
       answer:
-        "Anything your clients or your team need to get work done together. Onboarding and intake, document collection, approvals, project trackers, client dashboards, billing and payments. Every app has two sides: your team works in your dashboard, each client gets their own view inside your branded experience.",
+        "Yes. The branded sign-in, the client portal and the apps inside the portal all run on Assembly. Describe what your clients need in plain English, and Assembly builds the app. Most businesses have a first app live on Assembly the same day.",
     },
     {
-      question: "I don't want to build anything. Can I just use it?",
-      shortQuestion: "Can I just use it as it comes?",
+      question: "Do I need to know how to code to use Assembly?",
+      shortQuestion: "Do I need to know how to code?",
       answer:
-        "Yes. Assembly comes with 30+ templates built for professional services firms: client onboarding, document collection, proposals and contracts, invoicing, project tracking, and more. Install one with a click and you have a working client experience, no building required. If you ever want it to work differently, ask, and Assembly adjusts it.",
+        "No. Describe what you want, and Assembly asks a few questions, shows you a plan and builds the app once you approve. Later changes work the same way: ask Assembly in plain English.",
     },
     {
-      question: "Will it carry my brand or yours?",
+      question: "What can I build with Assembly?",
       answer:
-        "Yours. Your logo, colors, and domain. Clients see your firm, not Assembly. Free and Starter plans include a small “Built on Assembly” badge like the one that brought you here. Paid plans remove it.",
+        "Anything your clients or your team need to get work done together: onboarding and intake, document collection, approvals, project trackers, client dashboards, billing and payments. Every Assembly app has two sides. Your team works in your dashboard, and each client gets their own view inside your branded portal.",
     },
     {
-      question: "Is my clients' data secure?",
+      question: "Can I use Assembly without building anything?",
+      shortQuestion: "Can I use Assembly without building?",
       answer:
-        "Yes. Security is platform infrastructure, not something the AI generates. Clients sign in with magic links or Google, roles and permissions are enforced by the platform, and a structural boundary separates what your team sees from what your clients see. Details in our trust center.",
+        "Yes. Assembly comes with 30+ ready-made templates for service businesses, covering client onboarding, document collection, proposals and contracts, invoicing, project tracking and more. Install a template in one click and your client portal is ready to use. To change how a template works, ask Assembly.",
+    },
+    {
+      question: "Will my clients see my brand or Assembly’s?",
+      shortQuestion: "My brand or Assembly’s?",
+      answer:
+        "Your brand. Assembly uses your logo, colors and domain, so clients see your business, not Assembly. Free and Starter plans show a small “Powered by Assembly” badge like the one that brought you here. The Professional plan and above remove the badge.",
+    },
+    {
+      question: "Is client data secure on Assembly?",
+      answer:
+        "Yes. Security is built into the Assembly platform; the AI doesn't generate it. Clients sign in with magic links or Google, Assembly enforces roles and permissions, and your team's view is kept separate from what clients see. Details are in the Assembly trust center.",
       links: [{ label: "trust center", href: TRUST_CENTER_URL }],
     },
     {
       question: "Do I have to replace the tools I already use?",
       shortQuestion: "Do I have to replace my tools?",
       answer:
-        "No. Assembly connects to the tools your firm already runs on, so your apps can pull from and push to them rather than replace them.",
+        "No. Assembly connects to the tools your business already uses, so Assembly apps can read from and write to those tools instead of replacing them.",
     },
     {
-      question: "What does it cost?",
+      question: "How much does Assembly cost?",
       answer:
-        "Start free, and the free plan doesn't expire. You can build and publish real apps on it. Paid plans add more apps and more monthly build credits as your firm grows.",
+        "Start free, and the free plan doesn't expire. You can build and publish real apps on the free plan. Paid plans add more apps and more monthly build credits as your business grows.",
     },
   ];
 }

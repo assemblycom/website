@@ -132,7 +132,7 @@ export const PAGE_SEO = {
   poweredBy: {
     title: "Built on Assembly",
     description:
-      "The firm you just dealt with runs their client experience on Assembly. Build one for your business.",
+      "Assembly is an AI app builder and client experience platform for service businesses. Build your own client portal.",
     path: "/powered-by",
   },
   proposal: {
