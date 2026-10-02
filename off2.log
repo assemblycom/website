@@ -1,0 +1,7 @@
+▲ Next.js 16.3.0
+- Local:         http://localhost:4313
+- Network:       http://192.168.4.26:4313
+✓ Ready in 65ms
+✓ Running next.config.ts took 21ms
+[templates] 12 Contentful entries have no committed record in src/lib/templates.ts, so they fall back to the generic cover: tasks, contracts-app, billing-app, client-home, messaging-app, message-autoresponder, files-app, forms-app, profile-manager, xero, exporter, quickbooks
+[templates] 12 Contentful entries have no committed record in src/lib/templates.ts, so they fall back to the generic cover: tasks, contracts-app, billing-app, client-home, messaging-app, message-autoresponder, files-app, forms-app, profile-manager, xero, exporter, quickbooks

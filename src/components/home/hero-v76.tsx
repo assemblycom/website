@@ -6,6 +6,8 @@ import { APP_URL, SIGNUP_URL, templateSignupUrl } from "@/lib/constants";
 import { type Template } from "@/lib/templates";
 import {
   COPY_VARIANTS,
+  FALLBACK_COPY,
+  FALLBACK_LAYOUT,
   withHeroArm,
   type Arm,
   type CopyKey,
@@ -34,12 +36,6 @@ export interface HeroVariantProps {
   copy: CopyKey;
   layout: LayoutKey;
 }
-
-/**
- * The headline the site shipped before the test, and still ships to anyone it
- * leaves out. Written as lines because the lockup is fixed at every breakpoint.
- */
-const SHIPPED_H1_LINES = ["The platform firms", "run on and build on"];
 
 const MONO = '"ABC Diatype Mono", ui-monospace, SFMono-Regular, Menlo, monospace';
 const RAIL = "mx-auto max-w-[1600px] px-6 md:px-10";
@@ -156,14 +152,12 @@ const TemplateCard = memo(function TemplateCard({
 
 export function HeroV76({
   showPlus = true,
-  showBody = false,
   // Passed by the page rather than imported: the visible set is resolved against
   // Contentful on the server, which a client component can't await.
   templates,
   variant,
 }: {
   showPlus?: boolean;
-  showBody?: boolean;
   templates: Template[];
   /**
    * The hero test arm, resolved in middleware and handed down from the server
@@ -179,27 +173,19 @@ export function HeroV76({
 }) {
   const carousel = carouselFrom(templates);
 
-  // The message this arm carries. Without a variant there is no test for this
-  // visitor, and the hero keeps the headline it has always had.
-  const message = variant ? COPY_VARIANTS[variant.copy] : null;
-  // No message means no test, and the shipped lockup. A message uses its own
-  // lines where it sets them, and balances on its own where it doesn't —
-  // falling back to the shipped lines here would print the old headline under
-  // a new arm.
-  const headlineLines = message ? message.h1Lines : SHIPPED_H1_LINES;
-  const headline = message?.h1;
-  // Every arm shows a body line, including the ones on the shipped layout,
-  // because the test treats headline and body as one message. The hero without
-  // a variant keeps its own `showBody` default, which is off.
-  const body = message?.body;
-  // The control arm centres its whole block — headline, body and composer — on
-  // the page, where the shipped hero sets them left against the template strip.
-  // Scoped to the test rather than applied outright, so the no-variant render
-  // stays the hero the site ships today and remains something to fall back to.
-  const centred = Boolean(variant);
-  // Mobile centres either way; this is only about what happens from md up.
-  const alignBlock = centred ? "" : " md:mx-0";
-  const alignText = centred ? "" : " md:mx-0 md:text-left";
+  // Every render carries one of the three messages now. Without a variant the
+  // visitor is simply outside the test — they are not shown the old headline,
+  // which is retired, but the fallback message on the fallback layout.
+  const message = COPY_VARIANTS[variant?.copy ?? FALLBACK_COPY];
+  const layout = variant?.layout ?? FALLBACK_LAYOUT;
+  // A message uses its own lockup where it sets one, and balances on its own
+  // where it doesn't.
+  const headlineLines = message.h1Lines;
+  const headline = message.h1;
+  // Headline and body are one message, so the body always renders with it.
+  // The `showBody` prop that used to gate it is gone: it defaulted to off for
+  // the retired headline, which had no body line.
+  const body = message.body;
   // Theme is global now (persisted, applied to <html data-theme>), so the hero
   // reads it from context and the nav toggle drives the whole site.
   const { theme } = useTheme();
@@ -451,7 +437,7 @@ export function HeroV76({
           <HeroArmLinks arm={variant.arm} />
         </>
       )}
-      {variant?.layout === "bigtype" && message ? (
+      {layout === "bigtype" ? (
         <HeroBig
           headline={message.h1}
           lines={message.big.lines}
@@ -461,8 +447,10 @@ export function HeroV76({
           iconBefore={message.big.iconBefore}
           // Built from the arm the server resolved, not from the cookie: this
           // is rendered into markup, and a cookie read here would produce one
-          // href on the server and another on the client.
-          signupHref={withHeroArm(SIGNUP_URL, variant.arm)}
+          // href on the server and another on the client. Null outside the
+          // test, which the fallback layout means cannot happen today — but
+          // the arm is optional, so this says so rather than assuming it.
+          signupHref={withHeroArm(SIGNUP_URL, variant?.arm ?? null)}
         />
       ) : (
       <>
@@ -476,10 +464,10 @@ export function HeroV76({
 
           <div className={`relative z-10 ${RAIL} pb-16 pt-36 md:pt-36 lg:pb-20`}>
             <div
-              className={`relative z-30 max-w-2xl${centred ? " mx-auto" : ""}`}
+              className="relative z-30 mx-auto max-w-2xl"
             >
               <h1
-                className={`type-display mx-auto max-w-xl text-center text-neutral-900 [[data-theme=dark]_&]:text-white${alignText}`}
+                className="type-display mx-auto max-w-xl text-center text-neutral-900 [[data-theme=dark]_&]:text-white"
               >
                 {/* Fixed lockup on every breakpoint, for the shipped headline
                     and for any test message that sets its own lines. A message
@@ -494,16 +482,16 @@ export function HeroV76({
                   : headline}
               </h1>
 
-              {(body ?? showBody) && (
+              {body && (
                 <p
-                  className={`type-lead mx-auto mt-4 max-w-lg text-center text-muted-foreground${alignText}`}
+                  className="type-lead mx-auto mt-4 max-w-lg text-center text-muted-foreground"
                 >
                   {body ??
                     "Describe what you need in plain language and Assembly ships a polished, client-ready app — no code, no handoffs."}
                 </p>
               )}
 
-              <div className={`mx-auto mt-8 max-w-xl${alignBlock}`}>
+              <div className="mx-auto mt-8 max-w-xl">
                 {/* The submit pill's two fills, as a custom property the
                     composer reads. Deliberately the nav's primary in both
                     themes — near-black on the light page, white on the dark
