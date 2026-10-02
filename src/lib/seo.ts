@@ -130,7 +130,7 @@ export const PAGE_SEO = {
   // preview IS the first impression, and without its own record the page
   // inherited the homepage's card and previewed as the marketing site.
   poweredBy: {
-    title: "Built on Assembly",
+    title: "Powered by Assembly",
     description:
       "Assembly is an AI app builder and client experience platform for service businesses. Build your own client portal.",
     path: "/powered-by",

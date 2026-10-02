@@ -11,7 +11,7 @@ import {
 } from "@/lib/powered-by-attribution";
 
 /**
- * The page a client lands on from the "Built on Assembly" badge in a firm's
+ * The page a client lands on from the "Powered by Assembly" badge in a firm's
  * portal, login screen or email footer. It is written for someone who has never
  * heard of us and has just used the product without knowing it, so the page
  * carries one action and nothing to weigh it against.
