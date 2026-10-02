@@ -19,7 +19,11 @@ import { SIGNUP_URL, DEMO_URL } from "@/lib/constants";
  */
 function HeadlineTile({ mark, tint }: { mark: AppMark; tint: MarkTint }) {
   return (
-    <span className="relative inline-block h-[0.78em] w-[0.78em] shrink-0 overflow-hidden rounded-[0.2em] bg-neutral-900">
+    // The tile is near-black on the light page, which is the contrast it wants
+    // there. On the dark page #171717 sits three steps off the #0a0a0a ground
+    // and the tile all but disappears, leaving the marks floating on nothing —
+    // so dark takes a lighter fill and the tile reads as a surface again.
+    <span className="relative inline-block h-[0.78em] w-[0.78em] shrink-0 overflow-hidden rounded-[0.2em] bg-neutral-900 [[data-theme=dark]_&]:bg-neutral-700">
       <span className="grid h-full w-full place-items-center">
         {/* The marks have different proportions, so each fits the same square
             box on its longest side. The box leaves an even inset whichever way
@@ -198,7 +202,13 @@ export function HeroBig({
         <div className="mx-auto mt-10 flex w-full max-w-sm flex-col gap-3 sm:w-auto sm:max-w-none sm:flex-row sm:items-center sm:justify-center">
           <a
             href={signupHref}
-            className="inline-flex w-full shrink-0 items-center justify-center whitespace-nowrap rounded-lg bg-foreground px-4 py-3 text-center text-sm text-background transition-opacity hover:opacity-90 sm:w-auto sm:py-2 md:px-5 md:py-2.5"
+            // White on dark, not `bg-foreground`. That token resolves to
+            // #d9d9d9 there, which next to the nav's own primary a few hundred
+            // pixels above reads as a greyed-out version of the same button.
+            // The nav uses bg-white/text-neutral-900 on a dark top; this is the
+            // same pair, written as a data-theme variant so it is right on the
+            // first paint.
+            className="inline-flex w-full shrink-0 items-center justify-center whitespace-nowrap rounded-lg bg-foreground px-4 py-3 text-center text-sm text-background transition-opacity hover:opacity-90 sm:w-auto sm:py-2 md:px-5 md:py-2.5 [[data-theme=dark]_&]:bg-white [[data-theme=dark]_&]:text-neutral-900"
           >
             Get started
           </a>

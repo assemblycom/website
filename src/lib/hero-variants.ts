@@ -64,6 +64,10 @@ export const COPY_VARIANTS: Record<CopyKey, CopyVariant> = {
     key: "firm",
     label: "AI-native firm",
     h1: "Become an AI-native business",
+    // Breaks before the compound rather than after it. Left to balance itself
+    // this came out "Become an AI-native" / "business", which leaves a single
+    // word on the second line and splits the phrase that carries the message.
+    h1Lines: ["Become an", "AI-native business"],
     // Re-anchored with the headline. These are matched by `indexOf`, so the
     // previous anchors ("firm", "for") would simply not be found in the new
     // wording and the big-type arm would have rendered with no app tiles at
