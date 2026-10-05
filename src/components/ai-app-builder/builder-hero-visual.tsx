@@ -29,7 +29,6 @@ import {
   IconBook,
   IconBrandMark,
   IconCard,
-  IconChevronDown,
   IconChat,
   IconFile,
   IconGlobe,
@@ -77,15 +76,22 @@ const ROW_HOVER =
 
 // How long the planner spends thinking once the prompt is sent.
 const THINKING_MS = 2800;
+// The card's widening transition, matched below on the grid. A replay started
+// by the opening click waits this out so the two moves read in order.
+const EXPAND_MS = 560;
 
 type Phase = "thinking" | "planned";
 
 /**
  * Opens on the finished plan and replays the build only on the reader's click,
  * rather than looping on its own. A reduced-motion visitor stays on the plan.
+ *
+ * `play` takes a delay so the click that opens the card can also start the
+ * replay: the card widens first, then the thread runs, instead of both at once.
  */
 function useBuildDemo() {
   const [phase, setPhase] = useState<Phase>("planned");
+  const queued = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (phase !== "thinking") return;
@@ -93,11 +99,27 @@ function useBuildDemo() {
     return () => clearTimeout(id);
   }, [phase]);
 
-  const play = () => {
+  useEffect(
+    () => () => {
+      if (queued.current) clearTimeout(queued.current);
+    },
+    [],
+  );
+
+  const play = (delay = 0) => {
+    if (queued.current) clearTimeout(queued.current);
     const reduce = window.matchMedia?.(
       "(prefers-reduced-motion: reduce)",
     ).matches;
-    setPhase(reduce ? "planned" : "thinking");
+    if (reduce) {
+      setPhase("planned");
+      return;
+    }
+    if (delay <= 0) {
+      setPhase("thinking");
+      return;
+    }
+    queued.current = setTimeout(() => setPhase("thinking"), delay);
   };
 
   return { phase, play };
@@ -140,7 +162,6 @@ const HEAD_ROW = "flex min-h-[40px] items-center";
 
 export function BuilderHeroVisual() {
   const { phase, play } = useBuildDemo();
-  const planned = phase === "planned";
   // Manual only: the reader chooses which side to look at.
   const [view, setView] = useState(0);
   const [active, setActive] = useState<"chat" | "live">("live");
@@ -176,10 +197,13 @@ export function BuilderHeroVisual() {
             type="button"
             onClick={() => {
               // Expanding and replaying at once read as a jump: the card was
-              // still widening while the plan blanked out under it. The first
-              // click only opens the card; once it is open, clicking replays.
+              // still widening while the thread blanked out under it. So the
+              // click that opens the card queues the replay behind the widen
+              // rather than skipping it — opening the card is what the reader
+              // asked to watch, and a second click should not be the price.
               if (active !== "chat") {
                 setActive("chat");
+                play(EXPAND_MS);
                 return;
               }
               play();
@@ -215,19 +239,27 @@ export function BuilderHeroVisual() {
                   thinking line holds the place; then the plan arrives as a
                   document. */}
                 <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden">
-                  <p className="shrink-0 rounded-lg bg-muted px-4 py-3 text-[14px] leading-[1.5] text-foreground [[data-theme=dark]_&]:bg-white/[0.08]">
+                  {/* The same bordered white surface the composer below is.
+                    It was --muted, which on this card is one shade off the
+                    card's own grey in light and a wash over the same near-black
+                    in dark — the bubble disappeared and the request read as
+                    loose text on the card. Both pieces of the thread now sit on
+                    the card rather than in it. */}
+                  <p
+                    className={`shrink-0 rounded-lg border bg-background px-4 py-3 text-[14px] leading-[1.5] text-foreground ${LINE}`}
+                  >
                     {PROMPT}
                   </p>
+                  {/* The plan used to land here as a document panel. It is
+                    the composer's Requirements bar that says a plan is waiting,
+                    and the panel repeated it at length — so the thread is the
+                    request and the thinking line, and the plan arriving is the
+                    tray below opening. */}
                   <div className="relative min-h-0 flex-1">
                     <div
                       className={`absolute inset-x-0 top-0 ${fade(phase === "thinking")}`}
                     >
                       <ThinkingLine />
-                    </div>
-                    <div
-                      className={`absolute inset-x-0 top-0 ${fade(planned)}`}
-                    >
-                      <PlanDoc />
                     </div>
                   </div>
                 </div>
@@ -281,7 +313,16 @@ export function BuilderHeroVisual() {
       {/* Under the picture rather than above it, so it reads as part of the
           shot and does not compete with the hero's buttons. */}
       <div className="mt-4 flex justify-center lg:hidden">
-        <ViewToggle options={CARDS} view={shown} onSelect={setShown} />
+        <ViewToggle
+          options={CARDS}
+          view={shown}
+          onSelect={(i) => {
+            setShown(i);
+            // Stacked, switching to the prompt card is the only "opening" it
+            // has, and nothing is widening to wait for.
+            if (i === 0) play();
+          }}
+        />
       </div>
     </div>
   );
@@ -410,55 +451,21 @@ function ViewToggle({
   );
 }
 
-// Short enough to show whole: a hero should read at a glance, not crop mid-line.
-const PLAN_FLOWS = [
-  "Your team sends a checklist with a due date.",
-  "Each client uploads to their own list.",
-  "Your team marks each upload received.",
-];
-
 /**
- * The plan as the product shows it: a document in the thread, collapsed to the
- * flows with a row to open the rest, so it ends on purpose rather than cut off.
+ * The builder's message box. Once a plan is waiting, the Requirements bar with
+ * Approve sits on top of it as the frame's first row, as the product draws it.
  *
- * It used to open on a one-line summary under a "Core flows" heading. The
- * summary said what the request bubble one line above already said, and a
- * heading over three bullets in a mock this size labels something nobody could
- * mistake. Both came out: the panel was reading as five stacked blocks of prose
- * when the story it has to tell is request → plan → approve.
- */
-function PlanDoc() {
-  return (
-    <div
-      className={`overflow-hidden rounded-lg border bg-background text-[14px] leading-[1.5] text-foreground ${LINE}`}
-    >
-      <div className="px-4 py-3.5">
-        <ul className="flex list-disc flex-col gap-1.5 pl-4 marker:text-foreground">
-          {PLAN_FLOWS.map((item) => (
-            <li key={item}>{item}</li>
-          ))}
-        </ul>
-      </div>
-      <div
-        className={`pointer-events-auto flex cursor-default items-center justify-center gap-1.5 border-t py-2 text-[13px] leading-none text-muted-foreground transition-colors hover:text-foreground ${LINE}`}
-      >
-        View full plan
-        <IconChevronDown className="size-[10px]" />
-      </div>
-    </div>
-  );
-}
-
-/**
- * The builder's message box. Once a plan is waiting, it sits inside a grey tray
- * whose top row is the Requirements bar with Approve, as the product draws it.
+ * That bar used to be a grey tray wrapped around a white box. On a grey card
+ * the tray had nothing to show against — --muted and the card's own grey are a
+ * shade apart in light, and in dark both are a wash over near-black — so the
+ * bar read as card, not as part of the input. Now the whole composer is one
+ * bordered surface and the bar is a row inside it, separated by the same rule
+ * the rest of the mock uses.
  */
 function Composer({ phase }: { phase: Phase }) {
   const planned = phase === "planned";
   const box = (
-    <div
-      className={`rounded-lg border bg-background px-3.5 pb-2.5 pt-3 ${LINE}`}
-    >
+    <div className="px-3.5 pb-2.5 pt-3">
       {/* Takes typing so the box feels real, but nothing sends: Enter and the
           arrow are inert. Out of the tab order, as the mock around it is
           hidden from assistive tech. */}
@@ -480,28 +487,30 @@ function Composer({ phase }: { phase: Phase }) {
   );
   return (
     <div className="pt-3">
-      {planned ? (
-        <div className="rounded-lg bg-muted [[data-theme=dark]_&]:bg-white/[0.06]">
-          {/* The Approve pill sets this row's height, so slimming the bar is
-              mostly slimming the pill. Label drops to the pill's size too —
-              at 14px against a 13px button the row read top-heavy. */}
-          <div className="flex items-center justify-between py-1.5 pl-3 pr-2">
-            <span className="flex items-center gap-2 text-[13px] leading-none text-foreground">
-              <IconCheckCircleOutline className="size-[13px]" />
-              Requirements
-            </span>
-            {/* Hover only: it is a picture of the button, so it does nothing. */}
-            <span
-              className={`pointer-events-auto flex cursor-default items-center rounded-[4px] border bg-background px-3 py-[5px] text-[13px] leading-none text-foreground transition-colors hover:bg-muted ${LINE} [[data-theme=dark]_&]:hover:bg-white/[0.08]`}
-            >
-              Approve
-            </span>
-          </div>
-          {box}
+      <div
+        className={`overflow-hidden rounded-lg border bg-background ${LINE}`}
+      >
+        {/* The Approve pill sets this row's height, so slimming the bar is
+            mostly slimming the pill. Label drops to the pill's size too —
+            at 14px against a 13px button the row read top-heavy. */}
+        <div
+          className={`flex items-center justify-between border-b py-1.5 pl-3 pr-2 transition-opacity duration-500 ease-out ${LINE} ${
+            planned ? "opacity-100" : "pointer-events-none hidden opacity-0"
+          }`}
+        >
+          <span className="flex items-center gap-2 text-[13px] leading-none text-foreground">
+            <IconCheckCircleOutline className="size-[13px]" />
+            Requirements
+          </span>
+          {/* Hover only: it is a picture of the button, so it does nothing. */}
+          <span
+            className={`pointer-events-auto flex cursor-default items-center rounded-[4px] border bg-muted px-3 py-[5px] text-[13px] leading-none text-foreground transition-colors hover:bg-background ${LINE} [[data-theme=dark]_&]:bg-white/[0.08] [[data-theme=dark]_&]:hover:bg-white/[0.12]`}
+          >
+            Approve
+          </span>
         </div>
-      ) : (
-        box
-      )}
+        {box}
+      </div>
     </div>
   );
 }
