@@ -76,7 +76,10 @@ function NavRow({
     <span
       className={`flex items-center gap-1.5 rounded-md px-1.5 py-[5px] text-[10px] leading-none ${
         active
-          ? "bg-background text-foreground [[data-theme=dark]_&]:bg-white/[0.08]"
+          ? // Half-strength white, not full. The sidebar is --muted and the
+            // page is white, so a solid pill on it drew a hard edge that read
+            // as a border around the row rather than as the row being picked.
+            "bg-background/60 text-foreground [[data-theme=dark]_&]:bg-white/[0.06]"
           : "text-muted-foreground"
       }`}
     >

@@ -65,7 +65,7 @@ function Screen({
 }) {
   return (
     <div
-      className={`group relative w-[62%] shrink-0 transition-[z-index] hover:z-20 ${
+      className={`group relative w-[62%] shrink-0 hover:z-20 ${
         front ? "z-10 -ml-[24%]" : ""
       }`}
     >
@@ -73,19 +73,32 @@ function Screen({
         aria-hidden
         className="pointer-events-none absolute -inset-1 z-10 scale-[0.985] rounded-[15px] border-4 border-foreground/[0.07] opacity-0 transition duration-200 group-hover:scale-100 group-hover:opacity-100 motion-reduce:transition-none"
       />
-      {/* Desaturated and held back in opacity rather than drawn in a second
-          set of greys: a muted copy of the same chrome stays correct in both
-          themes, where hardcoded greys would only be right in one. */}
+      {/* The frame is opaque whichever screen is in front. The dimming used to
+          sit here, which made the whole screen translucent — so whenever it
+          came forward you could read the other one straight through it. It is
+          on the layer inside now, over a white ground that hides whatever is
+          behind. */}
       <div
-        className={`h-[300px] overflow-hidden rounded-t-xl border-l border-r border-t border-border md:h-[400px] [[data-theme=dark]_&]:border-[#383838] ${
-          dimmed ? "opacity-55 grayscale" : ""
-        } ${
+        className={`h-[300px] overflow-hidden rounded-t-xl border-l border-r border-t border-border bg-background md:h-[400px] [[data-theme=dark]_&]:border-[#383838] ${
           front
             ? "shadow-[-18px_0_40px_-24px_rgba(16,24,40,0.3),0_1px_2px_rgba(16,24,40,0.05)] [[data-theme=dark]_&]:shadow-[-18px_0_40px_-24px_rgba(0,0,0,0.7)]"
             : ""
         }`}
       >
-        {children}
+        {/* Desaturated and held back in opacity rather than drawn in a second
+            set of greys: a muted copy of the same chrome stays correct in both
+            themes, where hardcoded greys would only be right in one. It comes
+            back to full strength under the pointer, because a reader who has
+            reached for it is asking to read it. */}
+        <div
+          className={`h-full transition duration-300 motion-reduce:transition-none ${
+            dimmed
+              ? "opacity-55 grayscale group-hover:opacity-100 group-hover:grayscale-0"
+              : ""
+          }`}
+        >
+          {children}
+        </div>
       </div>
     </div>
   );
@@ -95,26 +108,14 @@ export function PortalProblem() {
   return (
     <section className="mx-auto max-w-[1200px] px-6 py-16 md:px-10 md:py-24">
       <Reveal>
-        <div className="text-center">
-          <h2 className="type-h2 mx-auto max-w-3xl text-balance">
-            Off-the-shelf portals make you fit the software. Not here.
-          </h2>
-          <p className="mx-auto mt-5 max-w-2xl text-balance text-muted-foreground">
-            Stop bending your workflow to fit someone else&apos;s product.
-          </p>
-          {/* The site's secondary, not its primary. This jumps down the page
-              to the build section, whose own "Describe your first app" IS the
-              primary — a filled button here would shout as loudly as the thing
-              it is pointing at, and would be the page's third primary after
-              the hero's. Secondary rather than the muted side-route chip it
-              was, so it still reads as an action. */}
-          <Link
-            href="#build"
-            className="mt-6 inline-block rounded-lg border border-foreground/20 bg-transparent px-5 py-2.5 text-sm text-foreground transition-colors hover:bg-foreground/5 [[data-theme=dark]_&]:border-white/25"
-          >
-            See how firms build their own
-          </Link>
-        </div>
+        {/* Ranged left, and the claim on its own. The lead under it said in
+            other words what the heading had just said, and the jump link below
+            it pointed at a section this one is the set-up for — so the reader
+            met two sentences and a button before the picture that is the
+            actual argument. */}
+        <h2 className="type-h2 max-w-2xl text-balance">
+          Off-the-shelf portals make you fit the software. Not here.
+        </h2>
 
         {/* Above the tray in two columns, in the pair's reading order. They
             stopped being captions aligned under their own screen once the
