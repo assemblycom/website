@@ -77,20 +77,23 @@ export function PortalReadyMade() {
   return (
     <section className="mx-auto max-w-[1200px] px-6 py-16 md:px-10 md:py-24">
       <Reveal>
-        <div className="flex items-end justify-between gap-6">
-          <div>
-            <h2 className="type-h2 text-balance">
-              Start with what every firm needs.
-            </h2>
-            <p className="mt-4 max-w-2xl text-muted-foreground">
-              Choose from 30+ pre-made app templates, all added to a branded
-              portal ready for your clients to use. Every one is a working app:
-              install it, use it, or tell the builder what to change.
-            </p>
-          </div>
+        {/* The link sits under the copy rather than off to the right of
+            it. Floated right it was level with the second line of the
+            paragraph and a rail's width away from it, so it read as a
+            control belonging to the section's edge rather than as the
+            sentence's own next step. */}
+        <div className="max-w-2xl">
+          <h2 className="type-h2 text-balance">
+            Start with what every firm needs.
+          </h2>
+          <p className="mt-4 max-w-2xl text-muted-foreground">
+            Choose from 30+ pre-made app templates, all added to a branded
+            portal ready for your clients to use. Every one is a working app:
+            install it, use it, or tell the builder what to change.
+          </p>
           <Link
             href="/templates"
-            className="hidden shrink-0 rounded-lg border border-border px-4 py-1.5 text-sm text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground md:inline-block"
+            className="mt-6 inline-block rounded-lg border border-border px-4 py-1.5 text-sm text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground"
           >
             Browse templates
           </Link>

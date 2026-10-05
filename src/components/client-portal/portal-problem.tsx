@@ -1,6 +1,11 @@
 import Link from "next/link";
 import { Reveal } from "@/components/ui/reveal";
-import { VisualSlot } from "@/components/ui/visual-slot";
+import { AlmostFitsMock } from "@/components/client-portal/segment-mock";
+
+/** Shared by both blocks, and by the tailor grid further down the page. */
+const CARD =
+  "flex flex-col overflow-hidden rounded-3xl bg-muted [[data-theme=dark]_&]:bg-white/[0.04]";
+const PAD = "p-6 md:p-10";
 
 /**
  * The pain the established operator already feels.
@@ -9,6 +14,11 @@ import { VisualSlot } from "@/components/ui/visual-slot";
  * portal I have almost fits" — rigidity and missing features are the top two
  * cancellation reasons across the category. So the section names that, and sets
  * up the two-part answer: ready-made apps, then the builder.
+ *
+ * Two blocks under the claim rather than one picture with a quote hung off it:
+ * the picture is the claim shown and the quote is the claim attested, which are
+ * two statements of equal weight, so they get two cards of equal weight. The
+ * picture leads because it is the thing the sentence above is about.
  */
 export function PortalProblem() {
   return (
@@ -35,42 +45,35 @@ export function PortalProblem() {
           </Link>
         </div>
 
-        {/* Full width under the intro row, the way the build section's visual
-            sits, rather than beside it. */}
-        <VisualSlot
-          className="mt-12"
-          label="Problem visual"
-          description="Before and after diptych. Left, desaturated: a generic client portal with a greyed-out Request a feature button and three external tool tabs hovering around it, faint connector lines, a confused client avatar. Right, full colour: the Brandmages portal with a custom Intake app already in the sidebar, everything in one frame. One word under each side: Almost fits, and Fits."
-        />
-
-        {/* The brief's proof for the claim above, under the picture rather than
-            between it and the heading: the claim, then what it looks like, then
-            the firm that lived it. Quoted from the published Capital One case
-            study rather than retyped, so the wording on this page and the
-            wording on the story cannot drift.
-
-            Laid out as the customer quotes elsewhere are: a square tile for the
-            firm's mark beside the quote, attribution under it in two lines,
-            name then role. It was a rule down the left of a centred column,
-            which gave the page a third left edge nothing else shared. */}
-        <figure className="mt-12 grid gap-8 md:mt-16 md:grid-cols-[minmax(0,300px)_1fr] md:gap-12">
-          {/* The firm's mark goes here once the art exists; until then the tile
-              carries the name, the way the template rail's thumbnail slot
-              holds its own space rather than filling with invented art. */}
-          <div className="flex aspect-square items-center justify-center rounded-2xl bg-muted/60 p-8 text-center [[data-theme=dark]_&]:bg-white/[0.04]">
-            <span className="type-h4 text-balance text-foreground">
-              Capital One Luxury Travel
-            </span>
+        <div className="mt-12 grid gap-4 md:mt-14 md:gap-5 lg:grid-cols-2">
+          {/* Not cropped, unlike the window cards elsewhere on the page: this
+              picture is a comparison, and a diptych with one half running off
+              the card is an argument with one half missing. */}
+          <div className={`${CARD} ${PAD}`}>
+            <p className="text-base leading-snug">An app no vendor ships</p>
+            <p className="mt-2 max-w-sm text-sm leading-relaxed text-muted-foreground">
+              Not a feature request in someone&apos;s queue. An app in your
+              sidebar, named for the job your firm actually does.
+            </p>
+            <div className="mt-8 min-h-[320px] flex-1 md:mt-10">
+              <AlmostFitsMock />
+            </div>
           </div>
-          <div className="flex flex-col">
+
+          {/* The brief's proof for the claim above: a firm that lived the
+              problem before it had somewhere to put it. Quoted from the
+              published Capital One case study rather than retyped, so the
+              wording on this page and the wording on the story cannot drift,
+              and the attribution links to the story it came from. */}
+          <figure className={`${CARD} ${PAD}`}>
             <blockquote className="type-h3 text-pretty text-foreground">
               &ldquo;Before Assembly, we were managing hotel partners through
               Google spreadsheets and long email chains. It became hard to scale
               and created friction for everyone.&rdquo;
             </blockquote>
-            {/* mt-auto so the attribution sits on the tile's floor on desktop
-                and directly under the quote when the two stack. */}
-            <figcaption className="type-caption mt-8 md:mt-auto md:pt-8">
+            {/* mt-auto so the attribution sits on the card's floor, level with
+                where the picture beside it runs off its own. */}
+            <figcaption className="type-caption mt-10 pt-2 md:mt-auto">
               <Link
                 href="/customers/capital-one-luxury-travel"
                 className="group block"
@@ -83,8 +86,8 @@ export function PortalProblem() {
                 </span>
               </Link>
             </figcaption>
-          </div>
-        </figure>
+          </figure>
+        </div>
       </Reveal>
     </section>
   );

@@ -44,7 +44,8 @@ const NEUTRAL = `${CHIP} bg-muted text-muted-foreground [[data-theme=dark]_&]:bg
 
 // Every hover move hangs off this, so "no motion" is one rule rather than
 // four separate ones that can drift.
-const MOVE = "motion-safe:transition-all motion-safe:duration-500 motion-safe:ease-out motion-reduce:transition-none";
+const MOVE =
+  "motion-safe:transition-all motion-safe:duration-500 motion-safe:ease-out motion-reduce:transition-none";
 
 /** The frame each card's scene is drawn in, scaled to whatever the rail gives it. */
 function Scene({
@@ -256,9 +257,7 @@ export function PlanCard() {
   return (
     <Scene>
       <div className={`flex flex-col ${WINDOW}`}>
-        <div
-          className={`flex items-center gap-2.5 border-b px-4 py-3 ${LINE}`}
-        >
+        <div className={`flex items-center gap-2.5 border-b px-4 py-3 ${LINE}`}>
           <Ring value={DONE / PLAN_ITEMS.length} />
           <span className="flex-1 truncate text-[14px] leading-none text-foreground">
             Plan
@@ -272,44 +271,43 @@ export function PlanCard() {
           // The first unsettled row: the one the builder is asking about now.
           const next = !done && (PLAN_ITEMS[i - 1]?.done ?? true);
           return (
-          <div
-            key={label}
-            className={`flex items-center gap-2.5 border-b px-4 py-[11px] last:border-b-0 ${LINE} ${
-              next ? "bg-muted/60 [[data-theme=dark]_&]:bg-white/[0.04]" : ""
-            }`}
-          >
-            {/* Three states, as the reference draws them: filled with a check
+            <div
+              key={label}
+              className={`flex items-center gap-2.5 border-b px-4 py-[11px] last:border-b-0 ${LINE} ${
+                next ? "bg-muted/60 [[data-theme=dark]_&]:bg-white/[0.04]" : ""
+              }`}
+            >
+              {/* Three states, as the reference draws them: filled with a check
                 for settled, a crisp open circle for the one in play, and a
                 dashed faint circle for the ones still queued. One washed-out
                 ring doing both of the last two jobs read as a blob rather
                 than as a state. All three share the 16px outer diameter, so
                 the column lines up and no mark looks heavier than another. */}
-            <span className="flex size-[18px] shrink-0 items-center justify-center">
-              {done ? (
-                <span className="flex size-[16px] items-center justify-center rounded-full bg-foreground text-background">
-                  <IconCheck className="size-[10px]" />
-                </span>
-              ) : next ? (
-                <span
-                  className={`${MOVE} size-[16px] rounded-full border-2 border-muted-foreground/70 group-hover/card:border-foreground`}
-                />
-              ) : (
-                <span
-                  className={`size-[16px] rounded-full border border-dashed ${LINE}`}
-                />
-              )}
-            </span>
-            <span
-              className={`min-w-0 flex-1 truncate text-[13.5px] leading-none ${
-                done ? "text-muted-foreground" : "text-foreground"
-              }`}
-            >
-              {label}
-            </span>
-          </div>
+              <span className="flex size-[18px] shrink-0 items-center justify-center">
+                {done ? (
+                  <span className="flex size-[16px] items-center justify-center rounded-full bg-foreground text-background">
+                    <IconCheck className="size-[10px]" />
+                  </span>
+                ) : next ? (
+                  <span
+                    className={`${MOVE} size-[16px] rounded-full border-2 border-muted-foreground/70 group-hover/card:border-foreground`}
+                  />
+                ) : (
+                  <span
+                    className={`size-[16px] rounded-full border border-dashed ${LINE}`}
+                  />
+                )}
+              </span>
+              <span
+                className={`min-w-0 flex-1 truncate text-[13.5px] leading-none ${
+                  done ? "text-muted-foreground" : "text-foreground"
+                }`}
+              >
+                {label}
+              </span>
+            </div>
           );
         })}
-
       </div>
     </Scene>
   );
@@ -372,10 +370,14 @@ export function BuildCard() {
             <span className="whitespace-nowrap text-[14px] leading-none text-foreground">
               Project tracker
             </span>
-            <span className={`${NEUTRAL} whitespace-nowrap`}>Meridian Corp</span>
+            <span className={`${NEUTRAL} whitespace-nowrap`}>
+              Meridian Corp
+            </span>
           </div>
 
-          <div className={`mt-3 flex items-center gap-3 rounded-lg border px-3.5 py-2.5 ${LINE}`}>
+          <div
+            className={`mt-3 flex items-center gap-3 rounded-lg border px-3.5 py-2.5 ${LINE}`}
+          >
             <span className="whitespace-nowrap text-[11.5px] leading-none text-muted-foreground">
               2 of 4 complete
             </span>

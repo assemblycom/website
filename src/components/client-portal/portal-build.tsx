@@ -79,9 +79,7 @@ export function PortalBuild() {
         </div>
 
         <div className="mt-12">
-          <CardRail
-            label="How building works"
-          >
+          <CardRail label="How building works">
             {STEPS.map((step, i) => (
               <RailCard
                 key={step.name}

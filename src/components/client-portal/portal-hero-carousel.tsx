@@ -418,7 +418,11 @@ export function PortalHeroCarousel() {
                 frame. The track's own width follows the sum, so it grows and
                 shrinks with them. */}
             {[
-              { key: ITEMS[0].key, title: ITEMS[0].title, index: 0 as number | null },
+              {
+                key: ITEMS[0].key,
+                title: ITEMS[0].title,
+                index: 0 as number | null,
+              },
               {
                 key: "select-template",
                 title: "Select a template",
@@ -463,7 +467,11 @@ export function PortalHeroCarousel() {
                   }}
                   onKeyDown={(e) => {
                     const dir =
-                      e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+                      e.key === "ArrowRight"
+                        ? 1
+                        : e.key === "ArrowLeft"
+                          ? -1
+                          : 0;
                     if (!dir) return;
                     const here = row.findIndex((t) => t.key === key);
                     const nextI = (here + dir + row.length) % row.length;
@@ -475,16 +483,19 @@ export function PortalHeroCarousel() {
                       if (target.index === 0) setExpanded(false);
                       selectTab(target.index);
                     }
-                    const el = e.currentTarget.parentElement?.querySelector<HTMLElement>(
-                      `[data-pill="${target.key}"]`,
-                    );
+                    const el =
+                      e.currentTarget.parentElement?.querySelector<HTMLElement>(
+                        `[data-pill="${target.key}"]`,
+                      );
                     el?.focus();
                     if (el) revealTab(el);
                   }}
                   data-pill={key}
                   aria-hidden={!shownPill}
                   tabIndex={
-                    shownPill && (selected || (isOpener && active !== 0)) ? 0 : -1
+                    shownPill && (selected || (isOpener && active !== 0))
+                      ? 0
+                      : -1
                   }
                   // Width comes off a 0fr→1fr grid column, not max-width. A
                   // max-width has to be guessed high (18rem) while a pill is

@@ -73,17 +73,20 @@ export function BuilderTemplates() {
   return (
     <section className="mx-auto max-w-[1200px] px-6 py-14 md:px-10 md:py-20">
       <Reveal>
-        <div className="flex items-end justify-between gap-6">
-          <div>
-            <h3 className="type-h3 text-balance">Not a builder? Start here</h3>
-            <p className="mt-4 max-w-2xl text-muted-foreground">
-              20+ templates made for businesses like yours. Install one, then
-              remix it with the builder.
-            </p>
-          </div>
+        {/* The link sits under the copy rather than off to the right of
+            it. Floated right it was level with the second line of the
+            paragraph and a rail's width away from it, so it read as a
+            control belonging to the section's edge rather than as the
+            sentence's own next step. */}
+        <div className="max-w-2xl">
+          <h3 className="type-h3 text-balance">Not a builder? Start here</h3>
+          <p className="mt-4 max-w-2xl text-muted-foreground">
+            20+ templates made for businesses like yours. Install one, then
+            remix it with the builder.
+          </p>
           <Link
             href="/templates"
-            className="hidden shrink-0 rounded-lg border border-border px-4 py-1.5 text-sm text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground md:inline-block"
+            className="mt-6 inline-block rounded-lg border border-border px-4 py-1.5 text-sm text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground"
           >
             Browse all templates
           </Link>

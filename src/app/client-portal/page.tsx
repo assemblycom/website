@@ -7,6 +7,7 @@ import { PortalProblem } from "@/components/client-portal/portal-problem";
 import { PortalReadyMade } from "@/components/client-portal/portal-ready-made";
 import { PortalBuild } from "@/components/client-portal/portal-build";
 import { PortalTailor } from "@/components/client-portal/portal-tailor";
+import { PortalStack } from "@/components/client-portal/portal-stack";
 import { PortalTrust } from "@/components/client-portal/portal-trust";
 import { PortalPricing } from "@/components/client-portal/portal-pricing";
 import { PortalProof } from "@/components/client-portal/portal-proof";
@@ -142,6 +143,12 @@ export default function ClientPortalPage() {
             rule, which already runs rail to rail, and a second line below it
             read as a doubled break. */}
         <PortalTailor />
+
+        {/* The claim about a firm's existing stack, which used to be a fifth
+            card inside the grid above. No divider between them: the section
+            draws its own rules, and a third line in the same inch read as a
+            stutter. */}
+        <PortalStack />
 
         <GridDivider />
 

@@ -393,6 +393,208 @@ export function DocumentsMock() {
   );
 }
 
+// ── The stack section's picture — someone else's tool, inside the portal ──
+// The claim is that what a firm already runs comes with it, so the picture is
+// an outside tool running as an app in the sidebar: the portal's own chrome
+// around a scheduler that is plainly not ours, marked Embedded so nobody reads
+// it as a feature we built.
+const SLOT_DAYS = ["Mon 14", "Tue 15", "Wed 16"];
+const SLOT_TIMES = ["9:00", "11:30", "14:00", "16:30"];
+
+export function EmbedMock() {
+  return (
+    <div
+      aria-hidden
+      className="pointer-events-none flex h-full select-none bg-background"
+    >
+      <PortalSidebar app="Book a call" />
+      <div className="flex min-w-0 flex-1 flex-col">
+        <AppHeader
+          title="Book a call"
+          meta={<span className={NEUTRAL}>Embedded</span>}
+        />
+        <div className="min-h-0 flex-1 px-4 py-3.5">
+          <span className="block text-[9.5px] leading-none text-muted-foreground">
+            March 2026
+          </span>
+          <div className="mt-2.5 grid grid-cols-3 gap-1.5">
+            {SLOT_DAYS.map((day) => (
+              <span
+                key={day}
+                className={`flex items-center justify-center rounded-[5px] border py-[7px] text-[10px] leading-none text-foreground ${LINE}`}
+              >
+                {day}
+              </span>
+            ))}
+          </div>
+          <div className="mt-2 flex flex-col gap-1.5">
+            {SLOT_TIMES.map((time, i) => (
+              <span
+                key={time}
+                // The first slot reads as the one being taken, so the panel
+                // has a subject rather than four identical rows.
+                className={`flex items-center justify-center rounded-[5px] py-[7px] text-[10px] leading-none ${
+                  i === 0
+                    ? "bg-foreground text-background"
+                    : `border text-foreground ${LINE}`
+                }`}
+              >
+                {time}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── The problem section's picture — the before/after diptych ─────────────
+// The brief's own: a desaturated generic portal with the firm's real tools
+// orbiting it as tabs, beside the Brandmages portal with the Intake app in the
+// sidebar where those tabs used to be. One word under each.
+//
+// Two small panels rather than one full portal screen, because the claim is a
+// comparison: a single screen can show what fits, but only a pair can show
+// what almost does. Both are drawn at the same size and the same chrome, so
+// the only differences the eye finds are the ones that carry the argument.
+const GENERIC_NAV = ["Home", "Messages", "Files", "Billing"];
+const BRAND_NAV = ["Home", "Messages", "Files", "Billing"];
+// The work that has nowhere to live in the portal on the left.
+const ORBIT_TOOLS = ["Intake sheet", "Email thread", "Shared drive"];
+
+/** One panel of the diptych: portal chrome at a size that fits beside itself. */
+function MiniPortal({
+  brand,
+  nav,
+  active,
+  children,
+}: {
+  brand: string;
+  nav: string[];
+  active?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div
+      className={`flex h-full overflow-hidden rounded-lg border bg-background ${LINE}`}
+    >
+      <div
+        className={`flex w-[78px] shrink-0 flex-col gap-[1px] border-r bg-muted px-1.5 py-2 ${LINE} [[data-theme=dark]_&]:bg-white/[0.04]`}
+      >
+        <span className="flex items-center gap-1 px-1 pb-2">
+          <span className="flex size-[12px] items-center justify-center rounded-[2px] bg-foreground text-background">
+            <IconBrandMark className="size-[7px]" />
+          </span>
+          <span className="truncate text-[8.5px] leading-none text-foreground">
+            {brand}
+          </span>
+        </span>
+        {nav.map((label) => (
+          <span
+            key={label}
+            className="truncate rounded-[3px] px-1 py-[3.5px] text-[8.5px] leading-none text-muted-foreground"
+          >
+            {label}
+          </span>
+        ))}
+        {active ? (
+          <span
+            className={`truncate rounded-[3px] border bg-background px-1 py-[3.5px] text-[8.5px] leading-none text-foreground ${LINE}`}
+          >
+            {active}
+          </span>
+        ) : null}
+      </div>
+      <div className="flex min-w-0 flex-1 flex-col p-2">{children}</div>
+    </div>
+  );
+}
+
+/** A field as the intake app draws it: label over a filled row. */
+function MiniField({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <span className="block text-[8px] leading-none text-muted-foreground">
+        {label}
+      </span>
+      <div
+        className={`mt-1 flex h-[18px] items-center truncate rounded-[4px] border px-1.5 text-[9px] leading-none text-foreground ${LINE}`}
+      >
+        {value}
+      </div>
+    </div>
+  );
+}
+
+export function AlmostFitsMock() {
+  return (
+    <div
+      aria-hidden
+      className="pointer-events-none grid h-full select-none grid-cols-2 gap-3 sm:gap-4"
+    >
+      {/* Desaturated, and held back in opacity rather than drawn in a second
+          set of greys: a muted copy of the same chrome stays correct in both
+          themes, where hardcoded greys would only be right in one. */}
+      <figure className="flex min-h-0 flex-col opacity-55 grayscale">
+        <div className="min-h-0 flex-1">
+          <MiniPortal brand="Generic portal" nav={GENERIC_NAV}>
+            <span className="text-[9px] leading-none text-foreground">
+              Billing
+            </span>
+            {/* The work the portal has no app for, orbiting it as the tabs it
+                actually lives in. */}
+            <div className="mt-2 flex flex-col gap-1">
+              {ORBIT_TOOLS.map((tool) => (
+                <span
+                  key={tool}
+                  className={`flex items-center justify-between gap-1 truncate rounded-[4px] border border-dashed px-1.5 py-[5px] text-[8.5px] leading-none text-muted-foreground ${LINE}`}
+                >
+                  {tool}
+                  <IconGlobe className="size-[8px] shrink-0" />
+                </span>
+              ))}
+            </div>
+            <span className="mt-auto w-fit rounded-[4px] bg-muted px-1.5 py-[5px] text-[8px] leading-none text-muted-foreground [[data-theme=dark]_&]:bg-white/[0.08]">
+              Request a feature
+            </span>
+          </MiniPortal>
+        </div>
+        <figcaption className="mt-3 text-center text-[11px] leading-none text-muted-foreground">
+          Almost fits
+        </figcaption>
+      </figure>
+
+      <figure className="flex min-h-0 flex-col">
+        <div className="min-h-0 flex-1">
+          <MiniPortal
+            brand="Brandmages"
+            nav={BRAND_NAV}
+            active="Partner intake"
+          >
+            <span className="flex items-center justify-between gap-1">
+              <span className="truncate text-[9px] leading-none text-foreground">
+                Partner intake
+              </span>
+              <span className={NEUTRAL}>Your app</span>
+            </span>
+            <div className="mt-2 flex flex-col gap-1.5">
+              <MiniField label="Property" value="Hotel Corvina" />
+              <MiniField label="Rate agreement" value="2026 preferred" />
+            </div>
+            <span className="mt-auto w-fit rounded-[4px] bg-foreground px-1.5 py-[5px] text-[8px] leading-none text-background">
+              Submit partner
+            </span>
+          </MiniPortal>
+        </div>
+        <figcaption className="mt-3 text-center text-[11px] leading-none text-foreground">
+          Fits
+        </figcaption>
+      </figure>
+    </div>
+  );
+}
+
 // ── 4. Legal — a dashboard of panels, cropped ────────────────────────────
 // Not one screen but a board of them, on a recessed tray, with the bottom row
 // running off the card. The onboarding app is several things at once — where
