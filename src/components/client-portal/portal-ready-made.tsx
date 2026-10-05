@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Reveal } from "@/components/ui/reveal";
+import { TemplateRail } from "@/components/templates/template-rail";
 
 /**
  * The six templates that mirror the work every firm shares: onboarding,
@@ -99,32 +100,8 @@ export function PortalReadyMade() {
             frames (no template shots yet), so a big 5:3 panel above each title
             was mostly grey. A small square beside the text carries the same
             slot at a fraction of the height, and twelve rows fit where six
-            cards did. */}
-        <div className="mt-12 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-          {cards.map((card) => (
-            <Link
-              key={card.href}
-              href={card.href}
-              className="group flex items-center gap-4 rounded-xl bg-muted/50 p-3 transition-colors hover:bg-muted [[data-theme=dark]_&]:bg-white/[0.03] [[data-theme=dark]_&]:hover:bg-white/[0.06]"
-            >
-              {/* The template shot goes here once the art exists. It takes the
-                  full `--muted` against the row's half-strength fill, so the
-                  slot is the darker element — the way a real thumbnail will be
-                  once there is one. White on the lighter row read as a hole. */}
-              <span className="size-14 shrink-0 rounded-lg bg-muted [[data-theme=dark]_&]:bg-white/[0.07]" />
-              <span className="min-w-0 flex-1">
-                <span className="block truncate text-sm font-medium text-foreground">
-                  {card.title}
-                </span>
-                {/* One line, hard. The descriptions are written to fit; the
-                    truncate is the guard rather than the mechanism. */}
-                <span className="mt-0.5 block truncate text-sm text-muted-foreground">
-                  {card.description}
-                </span>
-              </span>
-            </Link>
-          ))}
-        </div>
+            cards did. Shared with /ai-app-builder's rail. */}
+        <TemplateRail cards={cards} />
       </Reveal>
     </section>
   );

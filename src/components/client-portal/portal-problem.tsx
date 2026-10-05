@@ -35,28 +35,6 @@ export function PortalProblem() {
           </Link>
         </div>
 
-        {/* The brief's proof for the claim above: a firm that lived the problem
-            before it had somewhere to put it. Quoted from the published Capital
-            One case study rather than retyped, so the wording on this page and
-            the wording on the story cannot drift, and the attribution links to
-            the story it came from. Ranged left inside a centred block — a rule
-            down the left of centred lines has nothing to align to. */}
-        <figure className="mx-auto mt-12 max-w-2xl border-l border-border pl-6 text-left [[data-theme=dark]_&]:border-[#383838]">
-          <blockquote className="type-h4 text-pretty text-foreground">
-            &ldquo;Before Assembly, we were managing hotel partners through
-            Google spreadsheets and long email chains. It became hard to scale
-            and created friction for everyone.&rdquo;
-          </blockquote>
-          <figcaption className="type-caption mt-4 text-muted-foreground">
-            <Link
-              href="/customers/capital-one-luxury-travel"
-              className="underline underline-offset-4 transition-colors hover:text-foreground"
-            >
-              Phillip LaRue, Sr. Director of Luxury Travel at Capital One
-            </Link>
-          </figcaption>
-        </figure>
-
         {/* Full width under the intro row, the way the build section's visual
             sits, rather than beside it. */}
         <VisualSlot
@@ -64,6 +42,49 @@ export function PortalProblem() {
           label="Problem visual"
           description="Before and after diptych. Left, desaturated: a generic client portal with a greyed-out Request a feature button and three external tool tabs hovering around it, faint connector lines, a confused client avatar. Right, full colour: the Brandmages portal with a custom Intake app already in the sidebar, everything in one frame. One word under each side: Almost fits, and Fits."
         />
+
+        {/* The brief's proof for the claim above, under the picture rather than
+            between it and the heading: the claim, then what it looks like, then
+            the firm that lived it. Quoted from the published Capital One case
+            study rather than retyped, so the wording on this page and the
+            wording on the story cannot drift.
+
+            Laid out as the customer quotes elsewhere are: a square tile for the
+            firm's mark beside the quote, attribution under it in two lines,
+            name then role. It was a rule down the left of a centred column,
+            which gave the page a third left edge nothing else shared. */}
+        <figure className="mt-12 grid gap-8 md:mt-16 md:grid-cols-[minmax(0,300px)_1fr] md:gap-12">
+          {/* The firm's mark goes here once the art exists; until then the tile
+              carries the name, the way the template rail's thumbnail slot
+              holds its own space rather than filling with invented art. */}
+          <div className="flex aspect-square items-center justify-center rounded-2xl bg-muted/60 p-8 text-center [[data-theme=dark]_&]:bg-white/[0.04]">
+            <span className="type-h4 text-balance text-foreground">
+              Capital One Luxury Travel
+            </span>
+          </div>
+          <div className="flex flex-col">
+            <blockquote className="type-h3 text-pretty text-foreground">
+              &ldquo;Before Assembly, we were managing hotel partners through
+              Google spreadsheets and long email chains. It became hard to scale
+              and created friction for everyone.&rdquo;
+            </blockquote>
+            {/* mt-auto so the attribution sits on the tile's floor on desktop
+                and directly under the quote when the two stack. */}
+            <figcaption className="type-caption mt-8 md:mt-auto md:pt-8">
+              <Link
+                href="/customers/capital-one-luxury-travel"
+                className="group block"
+              >
+                <span className="block text-foreground transition-colors group-hover:underline group-hover:underline-offset-4">
+                  Phillip LaRue
+                </span>
+                <span className="mt-0.5 block text-muted-foreground">
+                  Sr. Director of Luxury Travel, Capital One
+                </span>
+              </Link>
+            </figcaption>
+          </div>
+        </figure>
       </Reveal>
     </section>
   );

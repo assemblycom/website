@@ -168,15 +168,23 @@ export function NavBarFill() {
  * panel are one surface, and a line across the join reads as a seam. Matches
  * the panel's own 150ms so the two settle together.
  */
-export function NavBarBorder() {
+export function NavBarBorder({
+  visible = true,
+  easeClassName = "duration-150",
+}: {
+  /** Off at the top of the page, on once the bar is over content. */
+  visible?: boolean;
+  /** The scroll fade rides the bar's own curve; the menu fade stays quick. */
+  easeClassName?: string;
+}) {
   const menu = useMenu("NavBarBorder");
   const open = Boolean(menu.state.label);
   return (
     <div
       aria-hidden
-      className={`pointer-events-none absolute inset-x-0 bottom-0 z-[6] border-b border-border transition-opacity duration-150 [[data-theme=dark]_&]:border-[#383838] ${
-        open ? "opacity-0" : "opacity-100"
-      }`}
+      className={`pointer-events-none absolute inset-x-0 bottom-0 z-[6] border-b border-border transition-opacity [[data-theme=dark]_&]:border-[#383838] ${
+        open ? "duration-150" : easeClassName
+      } ${open || !visible ? "opacity-0" : "opacity-100"}`}
     />
   );
 }

@@ -432,9 +432,16 @@ export function StudioNav({
   // Same hairline as the page grid's rails and rules, so the bar closes on the
   // line the content below it is framed by. Mobile only — the desktop bar draws
   // it as an element instead (NavBarBorder) so it can fade with the sheet.
-  const navBorder = bordered
-    ? "border-b border-border [[data-theme=dark]_&]:border-[#383838]"
-    : "";
+  //
+  // Only once the bar is over content: at the top there is nothing above the
+  // page for the rule to close off, and a line under a transparent bar draws a
+  // box around nothing. The colour is what changes, never the width — a border
+  // that appears by growing from 0 shifts everything under it by a pixel.
+  const navBorder = `border-b transition-colors ${ease} ${
+    bordered || scrolled
+      ? "border-border [[data-theme=dark]_&]:border-[#383838]"
+      : "border-transparent"
+  }`;
 
   const menuSurface = darkTop ? "bg-background text-white" : "bg-background";
   const menuBorder = darkTop ? "border-white/10" : "border-border";
@@ -563,7 +570,10 @@ export function StudioNav({
             style={navStripStyle}
           />
           {!minimal && <NavBarFill />}
-          {bordered && <NavBarBorder />}
+          {/* Fades in with the strip behind it, on the same curve, so the bar
+              and its closing rule arrive as one surface rather than the
+              hairline landing first over a still-transparent bar. */}
+          <NavBarBorder visible={bordered || scrolled} easeClassName={ease} />
           <div
             className={`relative z-10 mx-auto flex items-center ${contentRail} ${scrolled ? "h-14" : "h-16"}`}
             style={{ transition: rowTransition }}

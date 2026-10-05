@@ -80,17 +80,21 @@ const THINKING_MS = 2800;
 // by the opening click waits this out so the two moves read in order.
 const EXPAND_MS = 560;
 
-type Phase = "thinking" | "planned";
+// idle  — the card at rest: the prompt sitting in the box, nothing sent.
+// thinking — the builder working.
+// planned — a plan is waiting, so the Requirements bar is on the box.
+type Phase = "idle" | "thinking" | "planned";
 
 /**
- * Opens on the finished plan and replays the build only on the reader's click,
- * rather than looping on its own. A reduced-motion visitor stays on the plan.
+ * Opens at rest — just the prompt in the box — and runs the build only on the
+ * reader's click, rather than looping on its own. A reduced-motion visitor
+ * lands straight on the planned state.
  *
  * `play` takes a delay so the click that opens the card can also start the
- * replay: the card widens first, then the thread runs, instead of both at once.
+ * run: the card widens first, then the build runs, instead of both at once.
  */
 function useBuildDemo() {
-  const [phase, setPhase] = useState<Phase>("planned");
+  const [phase, setPhase] = useState<Phase>("idle");
   const queued = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -223,8 +227,8 @@ export function BuilderHeroVisual() {
             aria-hidden
             className="pointer-events-none relative z-20 min-h-0 select-none lg:mt-6 lg:flex-1"
           >
-            {/* No MockFit and no window: the thread lays out at the card's own
-              width, at its own type size.
+            {/* No MockFit and no window: the composer lays out at the card's
+              own width, at its own type size.
 
               It used to be a 480×500 panel scaled to fit, which at this card's
               height resolved to 0.744 — so 14px type rendered at 10.4px while
@@ -232,39 +236,24 @@ export function BuilderHeroVisual() {
               13px. The left half of the hero was simply smaller than the right.
               Dropping the fixed design size removes the scale, and dropping the
               white window stops the chat reading as a screenshot pasted onto
-              the card: it is the card. */}
-            <div className="h-full">
-              <div className="flex h-full flex-col">
-                {/* The thread runs from the top. While the planner works a
-                  thinking line holds the place; then the plan arrives as a
-                  document. */}
-                <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden">
-                  {/* The same bordered white surface the composer below is.
-                    It was --muted, which on this card is one shade off the
-                    card's own grey in light and a wash over the same near-black
-                    in dark — the bubble disappeared and the request read as
-                    loose text on the card. Both pieces of the thread now sit on
-                    the card rather than in it. */}
-                  <p
-                    className={`shrink-0 rounded-lg border bg-background px-4 py-3 text-[14px] leading-[1.5] text-foreground ${LINE}`}
-                  >
-                    {PROMPT}
-                  </p>
-                  {/* The plan used to land here as a document panel. It is
-                    the composer's Requirements bar that says a plan is waiting,
-                    and the panel repeated it at length — so the thread is the
-                    request and the thinking line, and the plan arriving is the
-                    tray below opening. */}
-                  <div className="relative min-h-0 flex-1">
-                    <div
-                      className={`absolute inset-x-0 top-0 ${fade(phase === "thinking")}`}
-                    >
-                      <ThinkingLine />
-                    </div>
-                  </div>
+              the card: it is the card.
+
+              And the thread above the box is gone with it. The request used to
+              sit in a bubble of its own, repeating as a message what the box
+              below already held as text, with the card's whole middle empty
+              between them. One box, centred, holding the prompt — the card is
+              the thing you type into, which is what "Describe it" promises. */}
+            <div className="flex h-full flex-col justify-center">
+              {/* Kept at its own height whether or not the line is in it, so
+                the box does not jump when the builder starts and finishes. */}
+              <div className="relative h-[21px] shrink-0">
+                <div
+                  className={`absolute inset-x-0 top-0 ${fade(phase === "thinking")}`}
+                >
+                  <ThinkingLine />
                 </div>
-                <Composer phase={phase} />
               </div>
+              <Composer phase={phase} />
             </div>
           </div>
         </div>
@@ -291,7 +280,9 @@ export function BuilderHeroVisual() {
             designW={LIVE_W}
             className="mt-6 min-h-[280px] flex-1 pl-6 [contain:size] md:pl-8 lg:min-h-0"
           >
-            <div className={`h-[760px] w-full overflow-hidden rounded-tl-xl border-l border-t bg-neutral-50 shadow-[0_8px_24px_-18px_rgba(16,24,40,0.14)] [[data-theme=dark]_&]:bg-background ${LINE}`}>
+            <div
+              className={`h-[760px] w-full overflow-hidden rounded-tl-xl border-l border-t bg-neutral-50 shadow-[0_8px_24px_-18px_rgba(16,24,40,0.14)] [[data-theme=dark]_&]:bg-background ${LINE}`}
+            >
               <div className="relative h-full">
                 {VIEWS.map((label, i) => (
                   <div
@@ -452,8 +443,10 @@ function ViewToggle({
 }
 
 /**
- * The builder's message box. Once a plan is waiting, the Requirements bar with
- * Approve sits on top of it as the frame's first row, as the product draws it.
+ * The builder's message box, and at rest the whole card: the prompt is in it as
+ * typed text rather than above it as a sent message. Once a plan is waiting the
+ * Requirements bar with Approve opens on top of it as the frame's first row, as
+ * the product draws it — so expanding the card has something to land on.
  *
  * That bar used to be a grey tray wrapped around a white box. On a grey card
  * the tray had nothing to show against — --muted and the card's own grey are a
@@ -472,7 +465,8 @@ function Composer({ phase }: { phase: Phase }) {
       <textarea
         rows={2}
         tabIndex={-1}
-        placeholder={planned ? "Type to revise plan" : "Write a message"}
+        defaultValue={PROMPT}
+        placeholder="Describe what you want to build"
         onKeyDown={(e) => {
           if (e.key === "Enter") e.preventDefault();
         }}
@@ -490,24 +484,41 @@ function Composer({ phase }: { phase: Phase }) {
       <div
         className={`overflow-hidden rounded-lg border bg-background ${LINE}`}
       >
-        {/* The Approve pill sets this row's height, so slimming the bar is
-            mostly slimming the pill. Label drops to the pill's size too —
-            at 14px against a 13px button the row read top-heavy. */}
+        {/* Opened on its own height rather than faded in: at rest the row is
+            not there at all, and an element with no height has no fade to
+            play. The grid rows carry it from nothing to its full height, so
+            the box grows a bar instead of blinking one on.
+
+            The Approve pill sets that height, so slimming the bar is mostly
+            slimming the pill. Label drops to the pill's size too — at 14px
+            against a 13px button the row read top-heavy. */}
         <div
-          className={`flex items-center justify-between border-b py-1.5 pl-3 pr-2 transition-opacity duration-500 ease-out ${LINE} ${
-            planned ? "opacity-100" : "pointer-events-none hidden opacity-0"
+          className={`grid transition-[grid-template-rows] duration-500 ease-out ${
+            planned ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
           }`}
         >
-          <span className="flex items-center gap-2 text-[13px] leading-none text-foreground">
-            <IconCheckCircleOutline className="size-[13px]" />
-            Requirements
-          </span>
-          {/* Hover only: it is a picture of the button, so it does nothing. */}
-          <span
-            className={`pointer-events-auto flex cursor-default items-center rounded-[4px] border bg-muted px-3 py-[5px] text-[13px] leading-none text-foreground transition-colors hover:bg-background ${LINE} [[data-theme=dark]_&]:bg-white/[0.08] [[data-theme=dark]_&]:hover:bg-white/[0.12]`}
+          {/* The clipping wrapper is its own element: a grid item's
+              min-height resolves to auto, so a padded flex row put straight
+              into the 0fr track keeps its own height and spills out of the
+              box instead of collapsing into it. */}
+          <div
+            className={`min-h-0 overflow-hidden ${planned ? "" : "pointer-events-none"}`}
           >
-            Approve
-          </span>
+            <div
+              className={`flex items-center justify-between border-b py-1.5 pl-3 pr-2 ${LINE}`}
+            >
+              <span className="flex items-center gap-2 text-[13px] leading-none text-foreground">
+                <IconCheckCircleOutline className="size-[13px]" />
+                Requirements
+              </span>
+              {/* Hover only: it is a picture of the button, so it does nothing. */}
+              <span
+                className={`pointer-events-auto flex cursor-default items-center rounded-[4px] border bg-muted px-3 py-[5px] text-[13px] leading-none text-foreground transition-colors hover:bg-background ${LINE} [[data-theme=dark]_&]:bg-white/[0.08] [[data-theme=dark]_&]:hover:bg-white/[0.12]`}
+              >
+                Approve
+              </span>
+            </div>
+          </div>
         </div>
         {box}
       </div>
