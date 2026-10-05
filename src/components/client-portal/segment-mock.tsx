@@ -17,7 +17,6 @@ import {
   IconBrandMark,
   IconCard,
   IconChat,
-  IconCheck,
   IconChevronDown,
   IconDocuments,
   IconFile,
@@ -223,75 +222,105 @@ export function ApprovalsMock() {
   );
 }
 
-// ── 2. Consultants — a diagram, no chrome ─────────────────────────────────
-// Progress is a shape, not a screen. Drawn straight onto the card the way the
-// reference draws its globe, so one card in the set is artwork rather than a
-// window.
-const MILESTONES = [
-  { label: "Discovery", done: true },
-  { label: "Model review", done: true },
-  { label: "Pilot", done: false },
-  { label: "Handover", done: false },
+// ── 2. Consultants — a chart, no chrome ──────────────────────────────────
+// Progress across engagements is a magnitude per client, so it is a bar list:
+// four rows, one per engagement, each a track filled to its share. Drawn
+// straight onto the card the way the reference draws its artwork, so one card
+// in the set is a chart rather than a window.
+//
+// Labels sit INSIDE the track at full width rather than being the bar itself:
+// with the bar's width carrying the value, the shortest row could not hold
+// "Northwind Group" and every name would have truncated.
+const ENGAGEMENTS = [
+  { client: "Meridian Corp", done: 6, total: 6 },
+  { client: "Oakwood LLC", done: 5, total: 6 },
+  { client: "Bloom Studios", done: 3, total: 6 },
+  { client: "Northwind Group", done: 2, total: 6 },
 ];
 
 export function ProgressMock() {
-  // 62% of a circle, drawn from the top.
-  const r = 52;
-  const c = 2 * Math.PI * r;
   return (
     <div
       aria-hidden
-      className="pointer-events-none flex h-full select-none flex-col items-center justify-center gap-5 px-6 pb-2"
+      className="pointer-events-none flex h-full select-none flex-col justify-center"
     >
-      <div className="relative">
-        <svg viewBox="0 0 128 128" className="size-[132px]">
-          <circle
-            cx="64"
-            cy="64"
-            r={r}
-            fill="none"
-            stroke="var(--border)"
-            strokeWidth="7"
-          />
-          <circle
-            cx="64"
-            cy="64"
-            r={r}
-            fill="none"
-            stroke="var(--foreground)"
-            strokeWidth="7"
-            strokeLinecap="round"
-            strokeDasharray={`${c * 0.62} ${c}`}
-            transform="rotate(-90 64 64)"
-          />
-        </svg>
-        <span className="absolute inset-0 flex flex-col items-center justify-center gap-1">
-          <span className="text-[26px] leading-none text-foreground">62%</span>
-          <span className="text-[9px] leading-none text-muted-foreground">
-            complete
-          </span>
-        </span>
+      <div className="flex flex-col gap-2">
+        {ENGAGEMENTS.map(({ client, done, total }) => (
+          <div
+            key={client}
+            className="relative h-[36px] overflow-hidden rounded-md bg-foreground/[0.05] [[data-theme=dark]_&]:bg-white/[0.06]"
+          >
+            <div
+              className="absolute inset-y-0 left-0 rounded-md bg-foreground/[0.11] [[data-theme=dark]_&]:bg-white/[0.12]"
+              style={{ width: `${(done / total) * 100}%` }}
+            />
+            <div className="relative flex h-full items-center justify-between gap-3 px-3">
+              <span className="truncate text-[13px] leading-none text-foreground">
+                {client}
+              </span>
+              <span className="shrink-0 text-[13px] leading-none tabular-nums text-muted-foreground">
+                {done}/{total}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── 2b. Accounting — the collection as an analytics tile ─────────────────
+// A SECOND documents picture, for the tailor grid. DocumentsMock below is the
+// portal screen and is what the hero carousel draws, so it is left alone; this
+// one exists because beside the onboarding board the row-and-chip screen read
+// as the same card twice. A headline figure over a column chart is a different
+// KIND of picture, which is the whole point of that set.
+const UPLOADS = [1, 2, 2, 4, 3, 5];
+
+export function DocumentsStatsMock() {
+  const peak = Math.max(...UPLOADS);
+  return (
+    <div
+      aria-hidden
+      className={`pointer-events-none flex h-full select-none flex-col gap-4 rounded-xl border bg-background p-4 ${LINE}`}
+    >
+      <div>
+        <p className="text-[11.5px] leading-none text-muted-foreground">
+          Documents received
+        </p>
+        <p className="mt-2 text-[24px] leading-none text-foreground">8 of 12</p>
       </div>
 
-      <div className="flex w-full max-w-[188px] flex-col gap-2">
-        {MILESTONES.map((m) => (
-          <span key={m.label} className="flex items-center gap-2">
-            <span
-              className={`flex size-[13px] shrink-0 items-center justify-center rounded-full ${
-                m.done ? "bg-foreground text-background" : `border ${LINE}`
-              }`}
-            >
-              {m.done ? <IconCheck className="size-[7px]" /> : null}
-            </span>
-            <span
-              className={`text-[10px] leading-none ${
-                m.done ? "text-foreground" : "text-muted-foreground"
-              }`}
-            >
-              {m.label}
-            </span>
-          </span>
-        ))}
+      {/* No axis rule: with the columns all starting from the same edge the
+          baseline is already read, and the line only added a second horizontal
+          to a card that has one under the heading. Corners are rounded at both
+          ends so each column is a complete shape rather than a strip cut off
+          at the bottom — which is what the rule was there to hide. 6px gutter,
+          one direct label on the peak. */}
+      <div className="flex flex-1 flex-col">
+        <div className="flex min-h-[86px] flex-1 items-end gap-[6px]">
+          {UPLOADS.map((n, i) => (
+            <div key={i} className="flex h-full flex-1 flex-col justify-end">
+              {n === peak ? (
+                <span className="mb-1 text-center text-[10.5px] leading-none tabular-nums text-muted-foreground">
+                  {n}
+                </span>
+              ) : null}
+              <div
+                className={`w-full rounded-[6px] ${
+                  n === peak
+                    ? "bg-foreground"
+                    : "bg-foreground/[0.14] [[data-theme=dark]_&]:bg-white/[0.16]"
+                }`}
+                style={{ height: `${(n / peak) * 100}%` }}
+              />
+            </div>
+          ))}
+        </div>
+        <div className="flex items-center justify-between pt-3 text-[10.5px] leading-none text-muted-foreground">
+          <span>Nov 4</span>
+          <span>Dec 9</span>
+        </div>
       </div>
     </div>
   );

@@ -1,7 +1,9 @@
 import { Reveal } from "@/components/ui/reveal";
 import {
   ApprovalsMock,
+  DocumentsStatsMock,
   OnboardingMock,
+  ProgressMock,
 } from "@/components/client-portal/segment-mock";
 
 /** Shared by every card in the set. */
@@ -57,18 +59,27 @@ export function PortalTailor() {
             </div>
           </div>
 
-          {/* Copy only for now, like the card below it. ProgressMock is still
-              in segment-mock.tsx and drops back in under this text. */}
+          {/* The one card that is artwork rather than a window: progress is a
+              shape, not a screen, so the diagram is drawn straight onto the
+              card with no frame around it. */}
           <div className={`flex flex-col ${CARD} ${PAD}`}>
             <p className={TITLE}>A client progress dashboard</p>
             <p className={BODY}>Milestones and outcomes per engagement.</p>
+            <div className="mt-6 min-h-[264px] flex-1">
+              <ProgressMock />
+            </div>
           </div>
 
-          {/* Copy only for now. DocumentsMock is still in segment-mock.tsx and
-              drops back in under this text when we want it. */}
+          {/* Not a third row-and-chip screen: beside the onboarding board on
+              its right that read as the same card twice. A headline figure
+              over a column chart is a different kind of picture, which is
+              what this set is built on. */}
           <div className={`flex flex-col ${CARD} ${PAD}`}>
             <p className={TITLE}>A year-end document collection app</p>
             <p className={BODY}>A per-client checklist with upload tracking.</p>
+            <div className="mt-6 min-h-[232px] flex-1">
+              <DocumentsStatsMock />
+            </div>
           </div>
 
           {/* Wide, and a board of panels rather than one screen: the app is
