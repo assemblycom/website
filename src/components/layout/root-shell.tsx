@@ -11,10 +11,14 @@ import { useTheme } from "@/components/theme/theme-provider";
 // to fill one (see the branch below).
 const SHORT_PAGES = new Set(["/demo", "/demo-video"]);
 
-// The page rises out of the announcement band as a sheet with rounded top
-// corners; the band's ground shows in the cut corners. No overflow clip, since
-// that would stop the nav inside from sticking.
-const SHEET = "relative flex flex-1 flex-col rounded-t-[28px] bg-background";
+// The page sheet. Its top corners used to be rounded, so that the announcement
+// band's ground showed through the cuts and the page read as rising out of it.
+// With the band down (see lib/announcement.ts) there is nothing above to rise
+// out of, and the cuts only exposed two slivers of --muted at the very top — so
+// the sheet meets the top edge square. Round the corners again alongside putting
+// a band back. No overflow clip, since that would stop the nav inside from
+// sticking.
+const SHEET = "relative flex flex-1 flex-col bg-background";
 
 /**
  * Every page in this shell ends in the reveal footer — a single black sheet

@@ -90,7 +90,12 @@ function NavRow({
 }
 
 /** The client's own sidebar. Only the one card that needs full chrome uses it. */
-function PortalSidebar({ app }: { app: string }) {
+/**
+ * The client's own nav down the left of a portal screen. Exported because the
+ * hero carousel wraps it around the mocks that do not build one in, so every
+ * screen in that set reads as the same portal.
+ */
+export function PortalSidebar({ app }: { app: string }) {
   return (
     <div
       className={`hidden w-[136px] shrink-0 flex-col gap-[2px] border-r bg-muted px-2 py-2.5 sm:flex ${LINE} [[data-theme=dark]_&]:bg-white/[0.04]`}
@@ -118,13 +123,7 @@ function PortalSidebar({ app }: { app: string }) {
 }
 
 /** An app's title bar, with whatever state belongs beside the title. */
-function AppHeader({
-  title,
-  meta,
-}: {
-  title: string;
-  meta?: React.ReactNode;
-}) {
+function AppHeader({ title, meta }: { title: string; meta?: React.ReactNode }) {
   return (
     <div
       className={`flex items-center justify-between gap-3 border-b px-4 py-3 ${LINE}`}
@@ -209,11 +208,11 @@ export function ApprovalsMock() {
             sub="Uploaded yesterday"
           />
           <div className="mt-3.5 flex items-center gap-2">
-            <span className="rounded-md bg-foreground px-2.5 py-[6px] text-[10px] leading-none text-background">
+            <span className="rounded-[4px] bg-foreground px-2.5 py-[6px] text-[10px] leading-none text-background">
               Approve
             </span>
             <span
-              className={`rounded-md border px-2.5 py-[6px] text-[10px] leading-none text-muted-foreground ${LINE}`}
+              className={`rounded-[4px] border px-2.5 py-[6px] text-[10px] leading-none text-muted-foreground ${LINE}`}
             >
               Request changes
             </span>
@@ -279,9 +278,7 @@ export function ProgressMock() {
           <span key={m.label} className="flex items-center gap-2">
             <span
               className={`flex size-[13px] shrink-0 items-center justify-center rounded-full ${
-                m.done
-                  ? "bg-foreground text-background"
-                  : `border ${LINE}`
+                m.done ? "bg-foreground text-background" : `border ${LINE}`
               }`}
             >
               {m.done ? <IconCheck className="size-[7px]" /> : null}
@@ -300,51 +297,67 @@ export function ProgressMock() {
   );
 }
 
-// ── 3. Accounting — one panel, floating ───────────────────────────────────
-// A checklist is small enough to show whole, so this card shows the app on its
-// own rather than cropping a portal around it.
+// ── 3. Accounting — the checklist as a portal screen ──────────────────────
+// Built to the same shape as the approvals screen: sidebar, app header, then
+// the content filling the frame. It used to be a bordered panel floating in the
+// window, which inside a framed shot read as two boxes with a gap between them
+// — most visible on a phone, where the sidebar is hidden and nothing explained
+// the inner edge. What makes it a different app is its CONTENT — a completion
+// bar, received tags and an upload action — not a second frame around it.
 export function DocumentsMock() {
   return (
     <div
       aria-hidden
-      className={`pointer-events-none select-none overflow-hidden rounded-xl border shadow-[0_1px_2px_rgba(16,24,40,0.04),0_14px_34px_-24px_rgba(16,24,40,0.3)] ${PANEL} [[data-theme=dark]_&]:shadow-[0_16px_38px_-24px_rgba(0,0,0,0.6)]`}
+      className="pointer-events-none flex h-full select-none bg-background"
     >
-      <AppHeader
-        title="2025 year-end"
-        meta={
-          <span className="shrink-0 text-[10px] leading-none text-muted-foreground">
-            8 of 12
-          </span>
-        }
-      />
-      <div className="px-4 py-3.5">
-        <div className="h-1 w-full overflow-hidden rounded-full bg-muted [[data-theme=dark]_&]:bg-white/[0.08]">
-          <span className="block h-full w-2/3 rounded-full bg-foreground" />
-        </div>
-        <div className="mt-1">
-          <Row
-            label="W-2, all employees"
-            trailing={<span className={POSITIVE}>Received</span>}
-          />
-          <Row
-            label="1099-NEC contractors"
-            trailing={<span className={POSITIVE}>Received</span>}
-          />
-          <Row
-            label="Bank statements, Q4"
-            trailing={
-              <span
-                className={`flex items-center gap-1 rounded-md border px-2 py-[5px] text-[9px] leading-none text-foreground ${LINE}`}
-              >
-                <IconUpload className="size-[9px]" />
-                Upload
+      <PortalSidebar app="Documents" />
+      <div className="flex min-w-0 flex-1 flex-col">
+        {/* The count and the meter that measures it, together.
+
+            The meter used to be a full-width rule under the header, filled to
+            two thirds, with nothing beside it: no label, no end, and no
+            relation to the rows below — so it read as a stray line rather than
+            as "8 of 12 are in". Short, and set against the figure it measures,
+            it says that once and at a glance. */}
+        <AppHeader
+          title="2025 year-end"
+          meta={
+            <span className="flex shrink-0 items-center gap-2">
+              <span className="h-1 w-10 overflow-hidden rounded-full bg-muted [[data-theme=dark]_&]:bg-white/[0.08]">
+                <span className="block h-full w-2/3 rounded-full bg-foreground" />
               </span>
-            }
-          />
-          <Row
-            label="Mileage log"
-            trailing={<span className={WARNING}>Awaiting</span>}
-          />
+              <span className="text-[10px] leading-none text-muted-foreground">
+                8 of 12
+              </span>
+            </span>
+          }
+        />
+        <div className="min-h-0 flex-1 px-4 py-3.5">
+          <div>
+            <Row
+              label="W-2, all employees"
+              trailing={<span className={POSITIVE}>Received</span>}
+            />
+            <Row
+              label="1099-NEC contractors"
+              trailing={<span className={POSITIVE}>Received</span>}
+            />
+            <Row
+              label="Bank statements, Q4"
+              trailing={
+                <span
+                  className={`flex items-center gap-1 rounded-[4px] border px-2 py-[5px] text-[9px] leading-none text-foreground ${LINE}`}
+                >
+                  <IconUpload className="size-[9px]" />
+                  Upload
+                </span>
+              }
+            />
+            <Row
+              label="Mileage log"
+              trailing={<span className={WARNING}>Awaiting</span>}
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -384,34 +397,54 @@ export function OnboardingMock() {
   return (
     <div
       aria-hidden
-      className="pointer-events-none grid h-full select-none grid-cols-[1.55fr_1fr] content-start gap-2.5 bg-black/[0.035] p-2.5 [[data-theme=dark]_&]:bg-black/20"
+      // One column on a phone. Two columns of four panels at ~300px wide meant
+      // every panel was a third the width it was drawn for: the step names
+      // truncated to "Your d…", the figures crowded their labels, and the
+      // screen had to be decoded rather than recognised. Stacked, each panel is
+      // full width and the shot crops after the second — which is what the
+      // other screens in the set do anyway.
+      // White, like every other screen in the set. It used to be a recessed
+      // tray (a 3.5% black wash) so the white panels would lift off it — but
+      // that tone and the panel ground behind the shot are within a hair of
+      // each other, so the whole screen sank into the page and only the panels
+      // read as anything. On white it is unmistakably an app screen; the panels
+      // keep their hairline borders, which is separation enough.
+      className="pointer-events-none grid h-full select-none grid-cols-1 content-start gap-2.5 bg-background p-2.5 sm:grid-cols-[1.55fr_1fr]"
     >
       {/* Where this client is up to. */}
       <Panel title="Client onboarding">
         <p className="mt-2 text-[13px] leading-none text-foreground">
           Engagement letter
         </p>
-        <div className="mt-3 flex items-center gap-1.5">
-          {STEPS.map((s, i) => (
-            <span key={s} className="flex min-w-0 flex-1 flex-col gap-1.5">
+        {/* One continuous track, filled to where this client has got to —
+            the same bar the document checklist uses, so the two screens show
+            progress the same way.
+
+            It was four separate segments in four different greys (black, 45%
+            black, and two at the muted tone), which at 3px with gaps between
+            them read as a row of loading placeholders rather than as one
+            measure of how far along something is. A single track with a filled
+            run has an obvious start, end and position. */}
+        <div className="mt-3">
+          <div className="h-1 w-full overflow-hidden rounded-full bg-muted [[data-theme=dark]_&]:bg-white/[0.08]">
+            <span className="block h-full w-1/2 rounded-full bg-foreground" />
+          </div>
+          {/* Hidden on a phone: at four across a 300px screen every name
+              truncated to a stub, and a row of stubs reads as damage. The track
+              still carries how far along this is, and "Engagement letter" above
+              names the step. */}
+          <div className="mt-2 hidden grid-cols-4 gap-1.5 sm:grid">
+            {STEPS.map((s, i) => (
               <span
-                className={`h-[3px] rounded-full ${
-                  i === 0
-                    ? "bg-foreground"
-                    : i === 1
-                      ? "bg-foreground/45"
-                      : "bg-muted [[data-theme=dark]_&]:bg-white/[0.08]"
-                }`}
-              />
-              <span
+                key={s}
                 className={`truncate text-[8.5px] leading-none ${
                   i <= 1 ? "text-foreground" : "text-muted-foreground"
                 }`}
               >
                 {s}
               </span>
-            </span>
-          ))}
+            ))}
+          </div>
         </div>
       </Panel>
 
@@ -448,7 +481,9 @@ export function OnboardingMock() {
         </div>
       </Panel>
 
-      <Panel title="Access">
+      {/* Last in, first out: stacked, this one is below the crop anyway, and
+          it carries the least — a line and two placeholder bars. */}
+      <Panel title="Access" className="hidden sm:block">
         <div className="mt-2 flex items-center gap-1.5 text-[10px] leading-none text-foreground">
           <IconLock className="size-[11px] text-muted-foreground" />
           Client only

@@ -116,16 +116,24 @@ export default function ClientPortalPage() {
               builder for the work that is only yours.
             </p>
             <div>
-              <div className="flex flex-wrap items-center gap-3">
+              {/* Stacked and full width on phones, side by side from md.
+                  Sized to their own text, the pair stacked into two different
+                  widths with a ragged right edge, and each sat under the 44px
+                  tap target. Full width only on true phones: from sm there is
+                  room for the pair side by side at their own size, and holding
+                  them full width to md left two very wide buttons on a tablet.
+                  Matches the pricing billing toggle's shape (w-full, then
+                  w-auto at a breakpoint). */}
+              <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
                 <a
                   href={SIGNUP_URL}
-                  className="rounded-lg bg-foreground px-5 py-2.5 text-center text-sm text-background transition-opacity hover:opacity-90"
+                  className="w-full rounded-lg bg-foreground px-5 py-3 text-center text-sm text-background transition-opacity hover:opacity-90 sm:w-auto sm:py-2.5"
                 >
                   Get started free
                 </a>
                 <a
                   href={DEMO_URL}
-                  className="rounded-lg border border-foreground/20 bg-transparent px-5 py-2.5 text-center text-sm text-foreground transition-colors hover:bg-foreground/5"
+                  className="w-full rounded-lg border border-foreground/20 bg-transparent px-5 py-3 text-center text-sm text-foreground transition-colors hover:bg-foreground/5 sm:w-auto sm:py-2.5"
                 >
                   Book a demo
                 </a>

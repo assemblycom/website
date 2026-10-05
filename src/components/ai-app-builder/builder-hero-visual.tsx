@@ -241,7 +241,7 @@ export function BuilderHeroVisual() {
             designW={LIVE_W}
             className="mt-6 min-h-[280px] flex-1 pl-6 [contain:size] md:pl-8 lg:min-h-0"
           >
-            <div className="h-[760px] w-full overflow-hidden rounded-tl-xl border-l border-t border-black/[0.12] bg-neutral-50 shadow-[0_8px_24px_-18px_rgba(16,24,40,0.14)] [[data-theme=dark]_&]:border-white/[0.14] [[data-theme=dark]_&]:bg-background">
+            <div className={`h-[760px] w-full overflow-hidden rounded-tl-xl border-l border-t bg-neutral-50 shadow-[0_8px_24px_-18px_rgba(16,24,40,0.14)] [[data-theme=dark]_&]:bg-background ${LINE}`}>
               <div className="relative h-full">
                 {VIEWS.map((label, i) => (
                   <div
