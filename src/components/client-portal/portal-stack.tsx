@@ -7,7 +7,7 @@ const WAYS: FAQEntry[] = [
   {
     question: "Embed what you already use",
     answer:
-      "Embed any link or dashboard inside your portal. Embeds do not count toward app limits.",
+      "Embed any link or dashboard inside your portal, next to your apps.",
   },
   {
     question: "Connect what you run",
@@ -57,13 +57,16 @@ export function PortalStack() {
               "relative",
               // Opening rule.
               // A finer dot than `border-dotted`, which at 1px sets its dots
-              // one pixel apart and reads as a broken hairline. 1.5px marks on
-              // a 6px pitch, which is what the reference draws.
-              "before:absolute before:inset-x-0 before:top-0 before:h-px before:content-[''] before:bg-[repeating-linear-gradient(to_right,var(--border)_0_1.5px,transparent_1.5px_6px)]",
+              // one pixel apart and reads as a broken hairline. 2px marks on a
+              // 5px pitch. The colour is mixed off --foreground rather than
+              // taken from --border: at --border the dots were so pale the
+              // rule read as empty space, and mixing keeps it theme-derived
+              // so light and dark each get their own value.
+              "before:absolute before:inset-x-0 before:top-0 before:h-px before:content-[''] before:bg-[repeating-linear-gradient(to_right,color-mix(in_oklab,var(--foreground)_32%,transparent)_0_2px,transparent_2px_5px)]",
               // Each row: a rule beneath it, except the last.
               "[&>div>div]:relative [&>div>div]:border-b-0",
               "[&>div>div]:after:absolute [&>div>div]:after:inset-x-0 [&>div>div]:after:bottom-0 [&>div>div]:after:h-px [&>div>div]:after:content-['']",
-              "[&>div>div]:after:bg-[repeating-linear-gradient(to_right,var(--border)_0_1.5px,transparent_1.5px_6px)]",
+              "[&>div>div]:after:bg-[repeating-linear-gradient(to_right,color-mix(in_oklab,var(--foreground)_32%,transparent)_0_2px,transparent_2px_5px)]",
               "[&>div>div:last-child]:after:hidden",
               // Inset from the row's own edges, so the copy is not flush
               // against the hover fill while the rules still span the column.

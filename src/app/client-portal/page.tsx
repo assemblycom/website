@@ -34,19 +34,19 @@ const PORTAL_FAQS: FAQEntry[] = [
   {
     question: "Can I build my own apps into it?",
     answer:
-      "Yes. Describe the app you need in plain English. Assembly shows you a plan to approve or edit, then ships a real app into your portal with logins, permissions, branding, and payments already handled. Change it later the same way, by chatting.",
+      "Yes. Describe the app you need in plain English. Assembly shows you a plan to approve or edit, then ships a real app into your portal with logins, permissions, and branding already handled. Change it later the same way, by chatting.",
     links: [{ label: "in plain English", href: "/ai-app-builder" }],
   },
   {
     question: "Do I need to code to customize it?",
     answer:
-      "No. There is nothing to code. You describe what you want, review a plan, and publish. You can also start from 20+ ready-made templates, each a working app, and tell the builder what to change.",
-    links: [{ label: "20+ ready-made templates", href: "/templates" }],
+      "No. There is nothing to code. You describe what you want, review a plan, and publish. You can also start from 30+ ready-made templates, each a working app, and tell the builder what to change.",
+    links: [{ label: "30+ ready-made templates", href: "/templates" }],
   },
   {
     question: "Can I white-label it?",
     answer:
-      "Yes. Your logo and colors are on every plan. On Pro and up, clients sign in on your own domain with the Assembly badge removed, so the whole experience feels like your firm's software. Every new app you build inherits the brand automatically.",
+      "Yes. Your logo and colors are on every plan. On Professional and up, clients sign in on your own domain with the Assembly badge removed, so the whole experience feels like your firm's software. Every new app you build inherits the brand automatically.",
   },
   {
     question: "Is my client portal secure?",
@@ -90,9 +90,9 @@ const COLLECTIVE_CPA: CustomerStory = {
   // Short values, the way the component's bars are set: the figure carries the
   // claim and the caption only says what it counts.
   stats: [
-    { value: "Under an hour", label: "To a live team dashboard" },
-    { value: "One portal", label: "Ready-made and custom apps" },
-    { value: "Zero", label: "Core applications replaced" },
+    { value: "4x faster", label: "Change management" },
+    { value: "200+", label: "Tax clients migrated" },
+    { value: "One week", label: "Google Drive migration" },
   ],
   href: "/customers/collective-cpa",
 };
