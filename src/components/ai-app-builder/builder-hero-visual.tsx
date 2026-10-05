@@ -60,15 +60,20 @@ const WINDOW = `overflow-hidden rounded-xl border bg-background shadow-[0_1px_2p
 // a page header, then white panels on the screen's grey ground, tables with a
 // tinted label row.
 const PANEL = `mt-4 overflow-hidden rounded-lg border bg-background ${LINE}`;
-const TABLE_HEAD = `flex items-center gap-3 border-b bg-muted/60 px-3.5 py-2 text-[10.5px] leading-none text-muted-foreground ${LINE} [[data-theme=dark]_&]:bg-white/[0.04]`;
+const TABLE_HEAD = `flex items-center gap-3 border-b bg-muted/60 px-3.5 py-2 text-[11.5px] leading-none text-muted-foreground ${LINE} [[data-theme=dark]_&]:bg-white/[0.04]`;
 
-const CHIP = "rounded px-1.5 py-[3px] text-[10px] leading-none";
+const CHIP = "rounded px-1.5 py-[4px] text-[11px] leading-none";
 const POSITIVE = `${CHIP} bg-[var(--mock-positive-bg)] text-[color:var(--mock-positive-fg)]`;
 const WARNING = `${CHIP} bg-[var(--mock-warning-bg)] text-[color:var(--mock-warning-fg)]`;
 const NEUTRAL = `${CHIP} bg-muted text-muted-foreground [[data-theme=dark]_&]:bg-white/[0.08]`;
 // The column keeps a fixed width so the header lines up; the pill inside hugs
 // its label.
-const STATUS_COL = "flex w-[72px] shrink-0 justify-center";
+const STATUS_COL = "flex w-[78px] shrink-0 justify-center";
+// A hovered table row takes the same tint as the table head, so it reads as
+// part of the table rather than as a new colour. Both views use it: the
+// sidebar rows already answered the pointer and the rows beside them did not.
+const ROW_HOVER =
+  "transition-colors hover:bg-muted/60 [[data-theme=dark]_&]:hover:bg-white/[0.04]";
 
 // How long the planner spends thinking once the prompt is sent.
 const THINKING_MS = 2800;
@@ -108,7 +113,7 @@ const fade = (visible: boolean) =>
 /** The product's loading line while the planner works: its animated mark, then "Thinking...". */
 function ThinkingLine() {
   return (
-    <p className="flex items-center gap-2 text-[13px] leading-[1.55] text-muted-foreground">
+    <p className="flex items-center gap-2 text-[14px] leading-[1.5] text-muted-foreground">
       <IconMark animated className="size-[13px] text-foreground" />
       Thinking...
     </p>
@@ -153,7 +158,7 @@ export function BuilderHeroVisual() {
         and scales on its own. On desktop the card the reader clicks widens and
         the other narrows, at a fixed height so the swap never moves the page. */}
       <div
-        className={`grid gap-3 transition-[grid-template-columns] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] lg:h-[600px] ${
+        className={`grid gap-3 transition-[grid-template-columns] duration-[560ms] ease-[cubic-bezier(0.4,0,0.2,1)] lg:h-[600px] ${
           active === "chat"
             ? "lg:grid-cols-[7fr_5fr]"
             : "lg:grid-cols-[5fr_7fr]"
@@ -167,7 +172,13 @@ export function BuilderHeroVisual() {
           <button
             type="button"
             onClick={() => {
-              setActive("chat");
+              // Expanding and replaying at once read as a jump: the card was
+              // still widening while the plan blanked out under it. The first
+              // click only opens the card; once it is open, clicking replays.
+              if (active !== "chat") {
+                setActive("chat");
+                return;
+              }
               play();
             }}
             disabled={phase === "thinking"}
@@ -194,7 +205,7 @@ export function BuilderHeroVisual() {
                   thinking line holds the place; then the plan arrives as a
                   document. */}
                 <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden px-5 pt-5">
-                  <p className="shrink-0 rounded-lg bg-muted px-4 py-3 text-[13px] leading-[1.55] text-foreground [[data-theme=dark]_&]:bg-white/[0.08]">
+                  <p className="shrink-0 rounded-lg bg-muted px-4 py-3 text-[14px] leading-[1.5] text-foreground [[data-theme=dark]_&]:bg-white/[0.08]">
                     {PROMPT}
                   </p>
                   <div className="relative min-h-0 flex-1">
@@ -206,7 +217,7 @@ export function BuilderHeroVisual() {
                     <div
                       className={`absolute inset-x-0 top-0 ${fade(planned)}`}
                     >
-                      <p className="mb-3 text-[13px] leading-[1.55] text-foreground">
+                      <p className="mb-3 text-[14px] leading-[1.5] text-foreground">
                         Here is the plan. Approve it and I will start building.
                       </p>
                       <PlanDoc />
@@ -307,9 +318,19 @@ function WidthScaled({
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    // The observer fires every frame while the cards trade widths, but side by
+    // side the fit is constant. Re-rendering the whole result screen on each of
+    // those frames is what made the expand stutter, so only a changed fit sets
+    // state.
+    const next = (fit: { scale: number; width: number | string }) =>
+      setFit((prev) =>
+        prev && prev.scale === fit.scale && prev.width === fit.width
+          ? prev
+          : fit,
+      );
     const apply = () => {
       if (window.innerWidth >= SIDE_BY_SIDE_PX) {
-        setFit({
+        next({
           scale: SIDE_BY_SIDE_SCALE,
           width: `calc((100% + ${BLEED_PX}px) / ${SIDE_BY_SIDE_SCALE})`,
         });
@@ -321,7 +342,7 @@ function WidthScaled({
       // the whole desktop layout scaled down to fine print.
       const avail = el.clientWidth - pad;
       const scale = Math.min(SIDE_BY_SIDE_SCALE, avail / STACKED_MIN_W);
-      setFit({ scale, width: (avail + STACKED_BLEED_PX) / scale });
+      next({ scale, width: (avail + STACKED_BLEED_PX) / scale });
     };
     apply();
     const observer = new ResizeObserver(apply);
@@ -384,9 +405,9 @@ function ViewToggle({
 
 // Short enough to show whole: a hero should read at a glance, not crop mid-line.
 const PLAN_FLOWS = [
-  "Your team sends each client a checklist and sets a due date.",
-  "Client sees only their checklist and uploads each document.",
-  "Your team reviews each upload and marks it received.",
+  "Your team sends a checklist with a due date.",
+  "Each client uploads to their own list.",
+  "Your team marks each upload received.",
 ];
 
 /**
@@ -396,13 +417,10 @@ const PLAN_FLOWS = [
 function PlanDoc() {
   return (
     <div
-      className={`overflow-hidden rounded-lg border bg-background text-[13px] leading-[1.6] text-foreground ${LINE}`}
+      className={`overflow-hidden rounded-lg border bg-background text-[14px] leading-[1.5] text-foreground ${LINE}`}
     >
       <div className="px-4 py-3.5">
-        <p>
-          A year-end checklist each client uploads to, with status your team can
-          track.
-        </p>
+        <p>A checklist each client uploads to, with status your team tracks.</p>
         <p className="mt-3">Core flows</p>
         <ul className="mt-1.5 flex list-disc flex-col gap-1.5 pl-4 marker:text-foreground">
           {PLAN_FLOWS.map((item) => (
@@ -411,7 +429,7 @@ function PlanDoc() {
         </ul>
       </div>
       <div
-        className={`pointer-events-auto flex cursor-default items-center justify-center gap-1.5 border-t py-2 text-[12px] leading-none text-muted-foreground transition-colors hover:text-foreground ${LINE}`}
+        className={`pointer-events-auto flex cursor-default items-center justify-center gap-1.5 border-t py-2 text-[13px] leading-none text-muted-foreground transition-colors hover:text-foreground ${LINE}`}
       >
         View full plan
         <IconChevronDown className="size-[10px]" />
@@ -440,7 +458,7 @@ function Composer({ phase }: { phase: Phase }) {
         onKeyDown={(e) => {
           if (e.key === "Enter") e.preventDefault();
         }}
-        className="pointer-events-auto block w-full resize-none bg-transparent text-[13px] leading-[1.45] text-foreground outline-none placeholder:text-muted-foreground/60"
+        className="pointer-events-auto block w-full resize-none bg-transparent text-[14px] leading-[1.4] text-foreground outline-none placeholder:text-muted-foreground/60"
       />
       <div className="flex items-center justify-end">
         <span className="pointer-events-auto flex size-[26px] cursor-default items-center justify-center rounded-[4px] bg-foreground text-background transition-opacity hover:opacity-85">
@@ -453,14 +471,17 @@ function Composer({ phase }: { phase: Phase }) {
     <div className="px-5 pb-5 pt-3">
       {planned ? (
         <div className="rounded-lg bg-muted [[data-theme=dark]_&]:bg-white/[0.06]">
-          <div className="flex items-center justify-between py-2 pl-3 pr-2">
+          {/* The Approve pill sets this row's height, so slimming the bar is
+              mostly slimming the pill. Label drops to the pill's size too —
+              at 14px against a 13px button the row read top-heavy. */}
+          <div className="flex items-center justify-between py-1.5 pl-3 pr-2">
             <span className="flex items-center gap-2 text-[13px] leading-none text-foreground">
-              <IconCheckCircleOutline className="size-[14px]" />
+              <IconCheckCircleOutline className="size-[13px]" />
               Requirements
             </span>
             {/* Hover only: it is a picture of the button, so it does nothing. */}
             <span
-              className={`pointer-events-auto flex cursor-default items-center rounded-[4px] border bg-background px-3 py-[7px] text-[12px] leading-none text-foreground transition-colors hover:bg-muted ${LINE} [[data-theme=dark]_&]:hover:bg-white/[0.08]`}
+              className={`pointer-events-auto flex cursor-default items-center rounded-[4px] border bg-background px-3 py-[5px] text-[13px] leading-none text-foreground transition-colors hover:bg-muted ${LINE} [[data-theme=dark]_&]:hover:bg-white/[0.08]`}
             >
               Approve
             </span>
@@ -475,7 +496,7 @@ function Composer({ phase }: { phase: Phase }) {
 }
 
 /** An outlined check circle, as the Requirements bar draws it. */
-function IconCheckCircleOutline({ className }: { className?: string }) {
+export function IconCheckCircleOutline({ className }: { className?: string }) {
   return (
     <svg
       viewBox="0 0 16 16"
@@ -531,13 +552,13 @@ function TeamDashboard({ live }: { live: boolean }) {
   return (
     <div className="flex h-full">
       <div
-        className={`flex w-[150px] shrink-0 flex-col border-r bg-muted px-1.5 py-2 ${LINE} [[data-theme=dark]_&]:bg-white/[0.04] [&>div:not(:first-child)]:h-[24px] [&>div:not(:first-child)]:transition-colors [&>div:not(:first-child):hover]:bg-border/50`}
+        className={`flex w-[164px] shrink-0 flex-col border-r bg-muted px-1.5 py-2 [--mock-nav-size:13px] [--mock-nav-row:28px] [--mock-section-size:11px] ${LINE} [[data-theme=dark]_&]:bg-white/[0.04] [&>div:not(:first-child)]:h-[28px] [&>div:not(:first-child)]:transition-colors [&>div:not(:first-child):hover]:bg-border/50`}
       >
         <div className="flex items-center gap-1.5 px-1.5 pb-2 pt-0.5">
           <span className="flex size-[16px] items-center justify-center rounded-[3px] bg-foreground text-background">
             <IconBrandMark className="size-[9px]" />
           </span>
-          <span className="text-[11.5px] leading-none text-foreground">
+          <span className="text-[13px] leading-none text-foreground">
             BrandMages
           </span>
         </div>
@@ -561,10 +582,10 @@ function TeamDashboard({ live }: { live: boolean }) {
                 key={label}
                 className={`px-3.5 py-3 ${i ? `border-l ${LINE}` : ""}`}
               >
-                <p className="text-[10.5px] leading-none text-muted-foreground">
+                <p className="text-[11.5px] leading-none text-muted-foreground">
                   {label}
                 </p>
-                <p className="mt-2 text-[16px] leading-none text-foreground">
+                <p className="mt-2 text-[18px] leading-none text-foreground">
                   {value}
                 </p>
               </div>
@@ -574,30 +595,30 @@ function TeamDashboard({ live }: { live: boolean }) {
             <div className={TABLE_HEAD}>
               <span className="flex-1">Client</span>
               {/* Dropped when the card narrows, so names keep their room. */}
-              <span className="hidden w-[84px] @[420px]:block">Progress</span>
+              <span className="hidden w-[92px] @[420px]:block">Progress</span>
               <span className="w-[72px] text-center">Status</span>
             </div>
             {rows.map((row) => (
               <div
                 key={row.name}
-                className={`flex items-center gap-3 border-b px-3.5 py-[10px] last:border-b-0 ${LINE}`}
+                className={`flex items-center gap-3 border-b px-3.5 py-[11px] last:border-b-0 ${ROW_HOVER} ${LINE}`}
               >
                 <span className="flex min-w-0 flex-1 flex-col gap-[4px]">
-                  <span className="truncate text-[11.5px] leading-none text-foreground">
+                  <span className="truncate text-[13px] leading-none text-foreground">
                     {row.name}
                   </span>
-                  <span className="truncate text-[10px] leading-none text-muted-foreground">
+                  <span className="truncate text-[11px] leading-none text-muted-foreground">
                     {row.firm}
                   </span>
                 </span>
-                <span className="hidden w-[84px] items-center gap-2 @[420px]:flex">
+                <span className="hidden w-[92px] items-center gap-2 @[420px]:flex">
                   <span className="h-1 flex-1 overflow-hidden rounded-full bg-muted [[data-theme=dark]_&]:bg-white/[0.08]">
                     <span
                       className="block h-full rounded-full bg-foreground"
                       style={{ width: `${(row.done / 12) * 100}%` }}
                     />
                   </span>
-                  <span className="text-[10px] leading-none text-muted-foreground">
+                  <span className="text-[11px] leading-none text-muted-foreground">
                     {row.done}/12
                   </span>
                 </span>
@@ -638,7 +659,7 @@ function ClientView() {
   return (
     <div className="flex h-full">
       <div
-        className={`flex w-[150px] shrink-0 flex-col px-1.5 py-2 ${BRAND_SIDEBAR}`}
+        className={`flex w-[164px] shrink-0 flex-col px-1.5 py-2 ${BRAND_SIDEBAR}`}
       >
         <div className="flex items-center gap-1.5 px-1.5 pb-2 pt-0.5">
           {/* The firm's own logo: a black mark on a white tile, the same in
@@ -646,7 +667,7 @@ function ClientView() {
           <span className="flex size-[16px] items-center justify-center rounded-[3px] bg-white text-black">
             <IconBrandMark className="size-[9px]" />
           </span>
-          <span className="text-[11.5px] leading-none text-white">
+          <span className="text-[13px] leading-none text-white">
             Brandmages
           </span>
         </div>
@@ -659,7 +680,7 @@ function ClientView() {
         ].map(({ icon, label, active }) => (
           <div
             key={label}
-            className={`flex h-[24px] items-center gap-2 rounded px-1.5 transition-colors ${
+            className={`flex h-[28px] items-center gap-2 rounded px-1.5 transition-colors ${
               active
                 ? "bg-white/[0.12] text-white"
                 : "text-white/60 hover:bg-white/[0.06] hover:text-white/90"
@@ -668,7 +689,7 @@ function ClientView() {
             <span className="flex shrink-0 items-center justify-center [&>svg]:size-[16px]">
               {icon}
             </span>
-            <span className="min-w-0 flex-1 truncate text-[11.5px] leading-none">
+            <span className="min-w-0 flex-1 truncate text-[13px] leading-none">
               {label}
             </span>
           </div>
@@ -677,10 +698,10 @@ function ClientView() {
       <div className="min-w-0 flex-1 pl-5 pt-5">
         <div>
           <div className={`${PANEL} mt-0! px-3.5 py-3`}>
-            <p className="text-[10.5px] leading-none text-muted-foreground">
+            <p className="text-[11.5px] leading-none text-muted-foreground">
               Documents received
             </p>
-            <p className="mt-2 text-[16px] leading-none text-foreground">
+            <p className="mt-2 text-[18px] leading-none text-foreground">
               8 of 12
             </p>
             <div className="mt-3 h-1 w-full overflow-hidden rounded-full bg-muted [[data-theme=dark]_&]:bg-white/[0.08]">
@@ -697,9 +718,9 @@ function ClientView() {
             {items.map(({ label, state }) => (
               <div
                 key={label}
-                className={`flex items-center justify-between gap-3 border-b px-3.5 py-[12px] last:border-b-0 ${LINE}`}
+                className={`flex items-center justify-between gap-3 border-b px-3.5 py-[12px] last:border-b-0 ${ROW_HOVER} ${LINE}`}
               >
-                <span className="truncate text-[11.5px] leading-none text-foreground">
+                <span className="truncate text-[13px] leading-none text-foreground">
                   {label}
                 </span>
                 <span className={STATUS_COL}>

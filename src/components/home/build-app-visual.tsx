@@ -137,14 +137,14 @@ export function NavItem({
 }) {
   return (
     <div
-      className={`flex h-[26px] items-center gap-2 rounded px-1.5 ${
+      className={`flex h-[var(--mock-nav-row,26px)] items-center gap-2 rounded px-1.5 ${
         active ? "bg-border/70" : ""
       } ${muted ? "text-muted-foreground" : "text-foreground"}`}
     >
       <span className="[&>svg]:size-[16px] flex shrink-0 items-center justify-center text-muted-foreground">
         {icon}
       </span>
-      <span className="min-w-0 flex-1 truncate text-[11.5px] leading-none">
+      <span className="min-w-0 flex-1 truncate text-[length:var(--mock-nav-size,11.5px)] leading-none">
         {label}
       </span>
       {trailing}
@@ -154,7 +154,7 @@ export function NavItem({
 
 export function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <p className="px-1.5 pb-1 pt-[18px] text-[10px] leading-none text-muted-foreground">
+    <p className="px-1.5 pb-1 pt-[18px] text-[length:var(--mock-section-size,10px)] leading-none text-muted-foreground">
       {children}
     </p>
   );

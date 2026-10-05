@@ -98,10 +98,13 @@ export function MockFit({ className = "", cap = false, children }: Props) {
         scale = Math.min(scale, height / naturalH);
       }
 
-      el.style.setProperty(
-        "--template-mock-scale",
-        String(cap ? Math.min(1, scale) : scale),
-      );
+      // The observer fires every frame while a frame is being resized by a
+      // transition. Writing the same value back each time invalidates the
+      // mock's style subtree for nothing, so only a changed scale is written.
+      const value = String(cap ? Math.min(1, scale) : scale);
+      if (el.style.getPropertyValue("--template-mock-scale") !== value) {
+        el.style.setProperty("--template-mock-scale", value);
+      }
     };
 
     apply();
