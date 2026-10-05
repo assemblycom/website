@@ -76,10 +76,13 @@ function NavRow({
     <span
       className={`flex items-center gap-1.5 rounded-md px-1.5 py-[5px] text-[10px] leading-none ${
         active
-          ? // Half-strength white, not full. The sidebar is --muted and the
-            // page is white, so a solid pill on it drew a hard edge that read
-            // as a border around the row rather than as the row being picked.
-            "bg-background/60 text-foreground [[data-theme=dark]_&]:bg-white/[0.06]"
+          ? // Ink, not a pill. A filled row on a --muted sidebar drew a hard
+            // edge that read as a border around it rather than as the row
+            // being picked — and at half strength it was still the loudest
+            // mark in a mock whose subject is elsewhere. Full-strength type
+            // against muted siblings is the whole signal: it is the only
+            // black row in the column.
+            "text-foreground"
           : "text-muted-foreground"
       }`}
     >

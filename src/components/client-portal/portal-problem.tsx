@@ -138,7 +138,11 @@ export function PortalProblem() {
         {/* One tray under both, with the screens running off its bottom. No
             bottom padding: the crop is the point, and a tray that closes under
             them would make them two pictures sitting on a shelf. */}
-        <div className="mt-8 overflow-hidden rounded-3xl bg-muted p-4 pb-0 md:mt-10 md:p-6 md:pb-0 [[data-theme=dark]_&]:bg-white/[0.04]">
+        {/* Top corners only. The screens run to the tray's bottom edge, so a
+            radius down there had nothing to round: it clipped two notches out
+            of the screens instead, which read as a rendering fault rather
+            than as a corner. */}
+        <div className="mt-8 overflow-hidden rounded-t-3xl bg-muted p-4 pb-0 md:mt-10 md:p-6 md:pb-0 [[data-theme=dark]_&]:bg-white/[0.04]">
           <div className="flex">
             <Screen dimmed>
               <GenericPortalMock />
