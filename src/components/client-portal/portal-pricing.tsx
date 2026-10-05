@@ -28,10 +28,10 @@ type Tier = {
 const TIERS: Tier[] = [
   {
     name: "Free",
-    price: "Free",
-    cadence: "Never expires",
+    price: "$0",
+    cadence: "Free forever",
     perksLabel: "Includes:",
-    perks: ["5 active contacts", "30+ pre-made apps", "Real, publishable apps"],
+    perks: ["5 active contacts", "3 apps"],
     cta: "Get started",
     href: APP_URL,
   },
@@ -40,7 +40,7 @@ const TIERS: Tier[] = [
     price: "$29",
     cadence: "per month, billed annually",
     perksLabel: "Everything in Free, plus:",
-    perks: ["50 active contacts", "API and MCP connector", "Add-on build credits"],
+    perks: ["50 active contacts", "API and MCP connector"],
     cta: "Get started",
     href: APP_URL,
   },
@@ -49,7 +49,7 @@ const TIERS: Tier[] = [
     price: "$99",
     cadence: "per month, billed annually",
     perksLabel: "Everything in Starter, plus:",
-    perks: ["Custom domains", "Remove Assembly badge", "Automation builder"],
+    perks: ["Custom domain", "Assembly badge removed", "Automation builder"],
     cta: "Get started",
     href: APP_URL,
     recommended: true,
@@ -59,7 +59,7 @@ const TIERS: Tier[] = [
     price: "$499",
     cadence: "per month, billed annually",
     perksLabel: "Everything in Professional, plus:",
-    perks: ["Unlimited active contacts", "HIPAA compliance (BAA)", "Enforced MFA"],
+    perks: ["Unlimited contacts", "HIPAA BAA", "Enforced MFA"],
     cta: DEMO_CTA_LABEL,
     href: DEMO_URL,
   },
@@ -71,11 +71,12 @@ export function PortalPricing() {
       <Reveal>
         <div className="text-center">
           <h2 className="type-h2 mx-auto max-w-3xl text-balance">
-            Start free. Build as you grow
+            Start free. Build as you grow.
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-balance text-muted-foreground">
             The free plan never expires and includes real, publishable apps.
-            Paid plans add your own domain, more clients, and more apps.
+            Paid plans add contacts, apps, your own domain, and more as your
+            firm grows.
           </p>
           <Link
             href="/pricing"
@@ -85,17 +86,17 @@ export function PortalPricing() {
           </Link>
         </div>
 
-        {/* Four filled cards rather than one tiled grid: the perk lists run to
-            different lengths, and separate surfaces let each one end where it
-            ends instead of stretching the whole row to the longest. The
-            recommended plan is marked only by its filled button, so no card
-            outshouts the rest, the same restraint the full pricing table
-            keeps. */}
+        {/* Four outlined cards rather than one tiled grid: the perk lists run
+            to different lengths, and separate surfaces let each one end where
+            it ends instead of stretching the whole row to the longest. Every
+            card is the same object — the recommended plan is marked only by its
+            filled button, so none of the four outshouts the rest, the same
+            restraint the full pricing table keeps. */}
         <div className="mt-12 grid gap-4 min-[560px]:grid-cols-2 lg:grid-cols-4">
           {TIERS.map((tier) => (
             <div
               key={tier.name}
-              className="flex flex-col rounded-2xl bg-muted p-6 [[data-theme=dark]_&]:bg-white/[0.04]"
+              className="flex flex-col rounded-2xl border border-border p-6 [[data-theme=dark]_&]:border-[#383838]"
             >
               <h3 className="text-lg">{tier.name}</h3>
               <p className="mt-2 text-3xl leading-none">{tier.price}</p>
@@ -119,12 +120,16 @@ export function PortalPricing() {
 
               {/* mt-auto floors the button, so the four line up across the row
                   however long each perk list runs. */}
+              {/* The unrecommended plans take the site's standard secondary,
+                  transparent over the card. The recommended one keeps the
+                  filled button: inside the frame it is the one solid mark
+                  against a white card, where an outline would have gone soft. */}
               <a
                 href={tier.href}
-                className={`mt-auto rounded-lg px-5 py-2 text-center text-sm transition-opacity hover:opacity-90 ${
+                className={`mt-auto rounded-lg px-5 py-2 text-center text-sm ${
                   tier.recommended
-                    ? "bg-foreground text-background"
-                    : "border border-border bg-background text-foreground"
+                    ? "bg-foreground text-background transition-opacity hover:opacity-90"
+                    : "border border-foreground/20 bg-transparent text-foreground transition-colors hover:bg-foreground/5 [[data-theme=dark]_&]:border-white/25"
                 }`}
               >
                 {tier.cta}

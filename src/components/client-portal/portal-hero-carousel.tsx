@@ -8,7 +8,7 @@ import {
   PortalSidebar,
 } from "@/components/client-portal/segment-mock";
 import { IconArrowUp } from "@/components/home/build-step-visual";
-import { IconChevronDown, IconPlus } from "@/components/home/mock-icons";
+import { IconPlus } from "@/components/home/mock-icons";
 import { getTemplateBySlug } from "@/lib/templates";
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -486,17 +486,35 @@ export function PortalHeroCarousel() {
                   tabIndex={
                     shownPill && (selected || (isOpener && active !== 0)) ? 0 : -1
                   }
-                  className={`overflow-hidden whitespace-nowrap rounded-full border text-sm transition-[max-width,opacity,padding,color,background-color,border-color] duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+                  // Width comes off a 0fr→1fr grid column, not max-width. A
+                  // max-width has to be guessed high (18rem) while a pill is
+                  // really ~140px wide, so with this curve every pill hit its
+                  // own natural width in the first quarter of the duration and
+                  // then sat still — and short pills got there well before long
+                  // ones, which is what made the row pop open unevenly. A
+                  // fractional column resolves to exactly the content width, so
+                  // the easing maps 1:1 to the motion and every pill lands
+                  // together. Same technique the FAQ accordion uses on rows.
+                  //
+                  // box-shadow is in the transition list too: left out, the
+                  // selected pill's shadow snapped on while everything around
+                  // it was still easing.
+                  className={`grid overflow-hidden rounded-full border text-sm transition-[grid-template-columns,opacity,padding,color,background-color,border-color,box-shadow] duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
                     shownPill
-                      ? "max-w-[18rem] px-3.5 py-1 opacity-100"
-                      : "pointer-events-none max-w-0 border-transparent px-0 py-1 opacity-0"
+                      ? "grid-cols-[1fr] px-3.5 py-1 opacity-100"
+                      : "pointer-events-none grid-cols-[0fr] border-transparent px-0 py-1 opacity-0"
                   } ${
                     selected
                       ? "border-border bg-background text-foreground shadow-[0_1px_2px_rgba(16,24,40,0.06)] [[data-theme=dark]_&]:border-white/15 [[data-theme=dark]_&]:bg-white/[0.06]"
                       : "border-transparent text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  {title}
+                  {/* min-w-0 + overflow-hidden is what lets the 0fr column
+                      actually collapse: without it the grid item keeps its
+                      automatic minimum size and the pill never closes. */}
+                  <span className="min-w-0 overflow-hidden whitespace-nowrap">
+                    {title}
+                  </span>
                 </button>
               );
             })}
@@ -655,19 +673,22 @@ function PromptMock() {
         <p className="min-h-[44px] text-[15px] leading-[1.6] text-foreground sm:min-h-[72px]">
           Build a retainer tracker my clients can check their hours in.
         </p>
-        {/* The composer's own controls, as the product draws them: attach and
-            the model it will build with, gathered at the submit end rather
-            than split across the foot. */}
-        <div className="mt-4 flex items-center justify-end gap-2.5">
+        {/* The composer's own controls, split across the foot as the product
+            draws them: attach on the left edge, the model it will build with
+            and the submit gathered at the right. The model carries no chevron
+            here — this is a still of a composer, not a menu waiting to be
+            opened, and the caret invited a click the mock cannot answer. */}
+        <div className="mt-4 flex items-center justify-between gap-2.5">
           <span className="flex size-8 items-center justify-center rounded-lg text-muted-foreground [&>svg]:size-4">
             <IconPlus />
           </span>
-          <span className="flex items-center gap-1 text-[13px] leading-none text-muted-foreground">
-            Sonnet 5.5
-            <IconChevronDown className="size-[11px]" />
-          </span>
-          <span className="flex size-8 items-center justify-center rounded-lg bg-foreground text-background">
-            <IconArrowUp className="size-4" />
+          <span className="flex items-center gap-2.5">
+            <span className="text-[13px] leading-none text-muted-foreground">
+              Sonnet 5.5
+            </span>
+            <span className="flex size-8 items-center justify-center rounded-lg bg-foreground text-background">
+              <IconArrowUp className="size-4" />
+            </span>
           </span>
         </div>
       </div>

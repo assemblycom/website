@@ -217,12 +217,13 @@ const DONE = PLAN_ITEMS.filter((i) => i.done).length;
  * Matched to the pending row marks on BOTH counts, because matching only the
  * stroke was not enough: 1px on a 12px dot is 8.3% of its diameter and 1px on
  * a 20px ring is 5%, so the smaller circle read as the heavier one even
- * though the strokes were identical. Same 16px outer diameter, same 1px
+ * though the strokes were identical. Same 16px outer diameter, same 2px
  * stroke, same ratio.
  *
- * The viewBox is 16 so one user unit is one rendered pixel — r 7 plus a 1
- * stroke lands the outer edge exactly on 16, and the stroke needs no scaling
- * arithmetic to stay honest.
+ * The viewBox is 16 so one user unit is one rendered pixel, and 2 is also the
+ * stroke that makes the geometry exact: a stroke straddles its radius, so r 7
+ * plus a 2 stroke lands the outer edge on 16. At 1 it stopped at 15, which is
+ * part of why this ring read lighter than the row marks beside it.
  */
 function Ring({ value }: { value: number }) {
   const r = 7;
@@ -234,7 +235,7 @@ function Ring({ value }: { value: number }) {
         cy="8"
         r={r}
         fill="none"
-        strokeWidth="1"
+        strokeWidth="2"
         className="stroke-border [[data-theme=dark]_&]:stroke-[#383838]"
       />
       <circle
@@ -242,7 +243,7 @@ function Ring({ value }: { value: number }) {
         cy="8"
         r={r}
         fill="none"
-        strokeWidth="1"
+        strokeWidth="2"
         strokeLinecap="round"
         strokeDasharray={`${c * value} ${c}`}
         className="stroke-foreground"
@@ -290,7 +291,7 @@ export function PlanCard() {
                 </span>
               ) : next ? (
                 <span
-                  className={`${MOVE} size-[16px] rounded-full border-[1.5px] border-muted-foreground/70 group-hover/card:border-foreground`}
+                  className={`${MOVE} size-[16px] rounded-full border-2 border-muted-foreground/70 group-hover/card:border-foreground`}
                 />
               ) : (
                 <span
@@ -485,6 +486,50 @@ export function IterateCard() {
               </div>
             ))}
           </div>
+        </div>
+      </div>
+    </Scene>
+  );
+}
+
+/**
+ * The fifth card: who wrote the login.
+ *
+ * The four steps before it all describe something the AI does, which raises
+ * the question this card answers — so it is drawn as a panel the builder has
+ * no hand in. Two audiences, what each can reach, and the line that says who
+ * maintains it. No hover move: the other four animate because something in
+ * them changes, and the point here is that this part does not.
+ */
+export function SecuredCard() {
+  const ROWS: [string, string][] = [
+    ["Your team", "Full access"],
+    ["Your clients", "Their own data"],
+  ];
+  return (
+    <Scene>
+      <div className={`flex flex-col ${WINDOW}`}>
+        <div className={TABLE_HEAD}>
+          <span className="flex-1">Who can see this</span>
+        </div>
+        {ROWS.map(([who, access]) => (
+          <div
+            key={who}
+            className={`flex items-center gap-2 border-b px-3.5 py-[13px] ${LINE}`}
+          >
+            <span className="flex size-[16px] shrink-0 items-center justify-center rounded-full bg-foreground text-background">
+              <IconCheck className="size-[10px]" />
+            </span>
+            <span className="flex-1 truncate text-[13px] leading-none text-foreground">
+              {who}
+            </span>
+            <span className={NEUTRAL}>{access}</span>
+          </div>
+        ))}
+        <div className="px-3.5 py-3">
+          <p className="text-[11.5px] leading-[1.5] text-muted-foreground">
+            Built and maintained by Assembly.
+          </p>
         </div>
       </div>
     </Scene>

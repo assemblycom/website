@@ -1,42 +1,77 @@
 import Link from "next/link";
 import { Reveal } from "@/components/ui/reveal";
-import { getTemplateBySlug } from "@/lib/templates";
 
 /**
  * The six templates that mirror the work every firm shares: onboarding,
  * document collection, project tracking, messaging, payments, and a resource
- * library.
+ * library — the brief's set, in its order.
  *
  * Deliberately a different set from the rail on /ai-app-builder, which is
  * vertical-tagged to prove range. Here they are framed as foundations, because
  * this section's job is to answer "I'm not a builder" before the page asks
- * anyone to build. Titles and descriptions come from the site's own template
- * data so they cannot drift from /templates.
+ * anyone to build.
+ *
+ * Titles and descriptions are the brief's rather than the template data's: this
+ * page names each app for the job it does in a portal ("Payments", not the
+ * template's own longer title). Same arrangement as the rail on
+ * /ai-app-builder.
+ *
+ * No `getTemplateBySlug` guard here, unlike that rail. It checks the committed
+ * TEMPLATES array, and two of the brief's six — Messages and Payments — are
+ * served from Contentful instead, so the guard silently dropped them and the
+ * section rendered four rows where the brief asks for six. Every href below is
+ * verified to resolve; the trade is that a retired template would 404 rather
+ * than quietly lose its row.
  */
-const PICKS: { slug: string; foundation: string }[] = [
-  { slug: "client-onboarding-wizard", foundation: "Onboarding" },
-  { slug: "document-collection", foundation: "Documents" },
-  { slug: "client-project-tracker", foundation: "Projects" },
-  // The brief named a messaging and a billing template. Neither exists: both
-  // are native apps rather than things you install, so the two nearest real
-  // templates stand in and the section keeps six cards.
-  { slug: "client-support-requests", foundation: "Requests" },
-  { slug: "proposal-builder", foundation: "Payments" },
-  { slug: "client-resource-library", foundation: "Resources" },
+const PICKS: {
+  slug: string;
+  title: string;
+  description: string;
+  foundation: string;
+}[] = [
+  {
+    slug: "client-onboarding-wizard",
+    title: "Client onboarding wizard",
+    description: "Multi-step flow with saved progress.",
+    foundation: "Onboarding",
+  },
+  {
+    slug: "document-collection",
+    title: "Document collector",
+    description: "Requested docs with upload checklist.",
+    foundation: "Documents",
+  },
+  {
+    slug: "client-project-tracker",
+    title: "Project tracker",
+    description: "Milestones per engagement.",
+    foundation: "Projects",
+  },
+  {
+    slug: "messaging-app",
+    title: "Messages",
+    description: "Secure client messaging.",
+    foundation: "Messaging",
+  },
+  {
+    slug: "billing-app",
+    title: "Payments",
+    description: "Branded invoices clients can pay.",
+    foundation: "Payments",
+  },
+  {
+    slug: "client-resource-library",
+    title: "Client resource library",
+    description: "Branded guides for clients.",
+    foundation: "Resources",
+  },
 ];
 
 export function PortalReadyMade() {
-  const cards = PICKS.map((pick) => {
-    const template = getTemplateBySlug(pick.slug);
-    return template
-      ? {
-          href: `/templates/${template.slug}`,
-          title: template.title,
-          description: template.description,
-          foundation: pick.foundation,
-        }
-      : null;
-  }).filter((card) => card !== null);
+  const cards = PICKS.map((pick) => ({
+    ...pick,
+    href: `/templates/${pick.slug}`,
+  }));
 
   return (
     <section className="mx-auto max-w-[1200px] px-6 py-16 md:px-10 md:py-24">
@@ -44,11 +79,12 @@ export function PortalReadyMade() {
         <div className="flex items-end justify-between gap-6">
           <div>
             <h2 className="type-h2 text-balance">
-              Start with what every firm needs
+              Start with what every firm needs.
             </h2>
             <p className="mt-4 max-w-2xl text-muted-foreground">
-              Choose from 30+ pre-made app templates, all added to a
-              branded portal ready for your clients to use.
+              Choose from 30+ pre-made app templates, all added to a branded
+              portal ready for your clients to use. Every one is a working app:
+              install it, use it, or tell the builder what to change.
             </p>
           </div>
           <Link
@@ -59,23 +95,33 @@ export function PortalReadyMade() {
           </Link>
         </div>
 
-        <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {/* Compact rows rather than cover cards: the covers here are empty
+            frames (no template shots yet), so a big 5:3 panel above each title
+            was mostly grey. A small square beside the text carries the same
+            slot at a fraction of the height, and twelve rows fit where six
+            cards did. */}
+        <div className="mt-12 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
           {cards.map((card) => (
             <Link
               key={card.href}
               href={card.href}
-              className="group overflow-hidden rounded-xl border border-border transition-colors hover:border-foreground/20"
+              className="group flex items-center gap-4 rounded-xl bg-muted/50 p-3 transition-colors hover:bg-muted [[data-theme=dark]_&]:bg-white/[0.03] [[data-theme=dark]_&]:hover:bg-white/[0.06]"
             >
-              <div className="aspect-[5/3] overflow-hidden bg-muted" />
-              <div className="p-4">
-                <h3 className="text-sm font-medium">{card.title}</h3>
-                <p className="mt-1.5 text-sm text-muted-foreground">
-                  {card.description}
-                </p>
-                <span className="mt-3 inline-block rounded-md bg-muted px-2.5 py-1 font-mono text-xs uppercase tracking-wide text-muted-foreground">
-                  {card.foundation}
+              {/* The template shot goes here once the art exists. It takes the
+                  full `--muted` against the row's half-strength fill, so the
+                  slot is the darker element — the way a real thumbnail will be
+                  once there is one. White on the lighter row read as a hole. */}
+              <span className="size-14 shrink-0 rounded-lg bg-muted [[data-theme=dark]_&]:bg-white/[0.07]" />
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-sm font-medium text-foreground">
+                  {card.title}
                 </span>
-              </div>
+                {/* One line, hard. The descriptions are written to fit; the
+                    truncate is the guard rather than the mechanism. */}
+                <span className="mt-0.5 block truncate text-sm text-muted-foreground">
+                  {card.description}
+                </span>
+              </span>
             </Link>
           ))}
         </div>

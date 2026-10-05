@@ -9,7 +9,7 @@ import { VisualSlot } from "@/components/ui/visual-slot";
 const STEPS: RailStep[] = [
   {
     name: "Describe",
-    body: "Say what you want in plain English, or start from a template.",
+    body: "Say what you want, or start from a template.",
   },
   {
     name: "Plan",

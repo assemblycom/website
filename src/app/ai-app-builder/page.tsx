@@ -87,15 +87,20 @@ const PILLARS: Pillar[] = [
 
 /**
  * The brief's eight questions, in its order and its wording: this section
- * carries the page's search and AI-answer load, so the visible question has to
- * match the one the answer is written against. No short forms, even on phones:
- * each question names Assembly's AI app builder rather than "it".
+ * carries the page's search and AI-answer load, so `question` keeps the brief's
+ * full wording — that is what the FAQ schema below publishes and what the answer
+ * is written against.
+ *
+ * The two that would wrap to a second line carry a `shortQuestion` for the row
+ * label only. Both still name Assembly's AI app builder rather than "it", and
+ * both still ask the same thing; only the trailing generalisation is dropped,
+ * which the answer itself restates.
  */
 const BUILDER_FAQS: FAQEntry[] = [
   {
     question: "Do I need to know how to code to use Assembly's AI app builder?",
     answer:
-      "No. Describe what you want in plain English, or start from a template. Assembly asks a few clarifying questions and shows a plan you approve or edit, and then it builds. Changes after launch happen the same way, by continuing the conversation, with no coding at any step.",
+      "No. Describe what you want, or start from a template. Assembly asks a few clarifying questions and shows a plan you approve or edit, and then it builds. Changes after launch happen the same way, by continuing the conversation, with no coding at any step.",
   },
   {
     question: "How much does Assembly's AI app builder cost?",
@@ -113,6 +118,8 @@ const BUILDER_FAQS: FAQEntry[] = [
   {
     question:
       "How is Assembly's AI app builder different from Lovable, Replit, and other AI app builders?",
+    shortQuestion:
+      "How is Assembly's AI app builder different from Lovable and Replit?",
     answer:
       "Most AI app builders generate a working prototype and stop there, leaving logins, hosting, and client data for the person building it to figure out. Assembly's AI app builder comes with that layer built in: logins for your team and your clients, permissions, a CRM, your branding, and a built-in billing option. What gets built is an app your business can use right away, for your clients or your team, rather than a prototype that still needs to be finished. See Assembly's comparison pages against Lovable and Base44 for a feature-by-feature breakdown.",
     links: [{ label: "comparison pages", href: "/comparison" }],
@@ -120,6 +127,8 @@ const BUILDER_FAQS: FAQEntry[] = [
   {
     question:
       "What happens if Assembly's AI app builder builds something wrong that my clients could see?",
+    shortQuestion:
+      "What if Assembly's AI app builder builds something wrong?",
     answer:
       "Nothing reaches your clients until you've approved the plan and made the app visible to them. New apps stay hidden from clients by default while you test. If something needs fixing after launch, keep chatting with the app builder to change it.",
   },
@@ -131,12 +140,12 @@ const BUILDER_FAQS: FAQEntry[] = [
   {
     question: "What is the best AI app builder for service businesses?",
     answer:
-      "For a service business, the best AI app builder does more than generate a prototype: it comes with the pieces that make an app usable by a team or a paying client, meaning logins, permissions, branding, and a place for client data. Assembly is built for agencies, accounting and bookkeeping practices, law offices, and consultancies. Describe the app in plain English, or start from one of its templates, and Assembly builds a working app for your team or your clients with that layer already included.",
+      "For a service business, the best AI app builder does more than generate a prototype: it comes with the pieces that make an app usable by a team or a paying client, meaning logins, permissions, branding, and a place for client data. Assembly is built for agencies, accounting and bookkeeping practices, law offices, and consultancies. Describe the app, or start from one of its templates, and Assembly builds a working app for your team or your clients with that layer already included.",
   },
   {
     question: "What's the best tool to vibe code an app for my clients?",
     answer:
-      "General-purpose vibe coding tools like Lovable or Replit generate a working prototype at a separate URL that still has to be secured, hosted, and connected to client data before a customer can use it. Assembly's AI app builder is built for client-facing apps: describe the app in plain English, approve the plan, and it publishes into a branded client experience that comes with Assembly, with client logins and permissions already handled.",
+      "General-purpose vibe coding tools like Lovable or Replit generate a working prototype at a separate URL that still has to be secured, hosted, and connected to client data before a customer can use it. Assembly's AI app builder is built for client-facing apps: describe the app, approve the plan, and it publishes into a branded client experience that comes with Assembly, with client logins and permissions already handled.",
   },
 ];
 
@@ -264,10 +273,17 @@ export default function AiAppBuilderPage() {
 
         <GridDivider />
 
+        {/* The divided variant, as on /security: the heading holds a sticky
+            left column and the questions run down the right as a hairline list.
+            The two-column card grid set these eight long questions as eight
+            ragged two-line pills; one flat column lets each sit on its own rule
+            without the wording being shortened. */}
         <FAQ
           heading="Frequently asked questions"
           items={BUILDER_FAQS}
-          twoColumn
+          variant="divided"
+          dottedRules
+          compactQuestions
         />
 
         {/* Full-bleed: this rule closes the region, so the rails stop here and

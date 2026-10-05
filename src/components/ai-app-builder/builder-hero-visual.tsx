@@ -156,9 +156,12 @@ export function BuilderHeroVisual() {
     <div className="mt-12 md:mt-16">
       {/* Two cards rather than one composed scene: each half gets its own frame
         and scales on its own. On desktop the card the reader clicks widens and
-        the other narrows, at a fixed height so the swap never moves the page. */}
+        the other narrows, at a fixed height so the swap never moves the page.
+        500px is the height the client portal hero's panel resolves to, so the
+        two product pages open on a band of the same depth — at 600 this one sat
+        a hundred pixels lower before the page began. */}
       <div
-        className={`grid gap-3 transition-[grid-template-columns] duration-[560ms] ease-[cubic-bezier(0.4,0,0.2,1)] lg:h-[600px] ${
+        className={`grid gap-3 transition-[grid-template-columns] duration-[560ms] ease-[cubic-bezier(0.4,0,0.2,1)] lg:h-[500px] ${
           active === "chat"
             ? "lg:grid-cols-[7fr_5fr]"
             : "lg:grid-cols-[5fr_7fr]"
@@ -196,15 +199,22 @@ export function BuilderHeroVisual() {
             aria-hidden
             className="pointer-events-none relative z-20 min-h-0 select-none lg:mt-6 lg:flex-1"
           >
-            <MockFit className="relative aspect-[24/25] max-h-[460px] w-full [--template-mock-h:500px] [--template-mock-w:480px] lg:aspect-auto lg:h-full lg:max-h-none">
-              <div
-                style={{ width: CHAT_W, height: CHAT_H }}
-                className={`flex flex-col ${WINDOW}`}
-              >
+            {/* No MockFit and no window: the thread lays out at the card's own
+              width, at its own type size.
+
+              It used to be a 480×500 panel scaled to fit, which at this card's
+              height resolved to 0.744 — so 14px type rendered at 10.4px while
+              the Live card beside it, which is not scaled, rendered its 13px at
+              13px. The left half of the hero was simply smaller than the right.
+              Dropping the fixed design size removes the scale, and dropping the
+              white window stops the chat reading as a screenshot pasted onto
+              the card: it is the card. */}
+            <div className="h-full">
+              <div className="flex h-full flex-col">
                 {/* The thread runs from the top. While the planner works a
                   thinking line holds the place; then the plan arrives as a
                   document. */}
-                <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden px-5 pt-5">
+                <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden">
                   <p className="shrink-0 rounded-lg bg-muted px-4 py-3 text-[14px] leading-[1.5] text-foreground [[data-theme=dark]_&]:bg-white/[0.08]">
                     {PROMPT}
                   </p>
@@ -217,16 +227,13 @@ export function BuilderHeroVisual() {
                     <div
                       className={`absolute inset-x-0 top-0 ${fade(planned)}`}
                     >
-                      <p className="mb-3 text-[14px] leading-[1.5] text-foreground">
-                        Here is the plan. Approve it and I will start building.
-                      </p>
                       <PlanDoc />
                     </div>
                   </div>
                 </div>
                 <Composer phase={phase} />
               </div>
-            </MockFit>
+            </div>
           </div>
         </div>
 
@@ -411,8 +418,14 @@ const PLAN_FLOWS = [
 ];
 
 /**
- * The plan as the product shows it: a document in the thread, collapsed to its
- * summary with a row to open the rest, so it ends on purpose rather than cut off.
+ * The plan as the product shows it: a document in the thread, collapsed to the
+ * flows with a row to open the rest, so it ends on purpose rather than cut off.
+ *
+ * It used to open on a one-line summary under a "Core flows" heading. The
+ * summary said what the request bubble one line above already said, and a
+ * heading over three bullets in a mock this size labels something nobody could
+ * mistake. Both came out: the panel was reading as five stacked blocks of prose
+ * when the story it has to tell is request → plan → approve.
  */
 function PlanDoc() {
   return (
@@ -420,9 +433,7 @@ function PlanDoc() {
       className={`overflow-hidden rounded-lg border bg-background text-[14px] leading-[1.5] text-foreground ${LINE}`}
     >
       <div className="px-4 py-3.5">
-        <p>A checklist each client uploads to, with status your team tracks.</p>
-        <p className="mt-3">Core flows</p>
-        <ul className="mt-1.5 flex list-disc flex-col gap-1.5 pl-4 marker:text-foreground">
+        <ul className="flex list-disc flex-col gap-1.5 pl-4 marker:text-foreground">
           {PLAN_FLOWS.map((item) => (
             <li key={item}>{item}</li>
           ))}
@@ -468,7 +479,7 @@ function Composer({ phase }: { phase: Phase }) {
     </div>
   );
   return (
-    <div className="px-5 pb-5 pt-3">
+    <div className="pt-3">
       {planned ? (
         <div className="rounded-lg bg-muted [[data-theme=dark]_&]:bg-white/[0.06]">
           {/* The Approve pill sets this row's height, so slimming the bar is

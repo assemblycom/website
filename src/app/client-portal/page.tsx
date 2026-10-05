@@ -1,19 +1,15 @@
 import type { Metadata } from "next";
 import { CTA } from "@/components/home/cta";
 import { FAQ, type FAQEntry } from "@/components/home/faq";
-import {
-  Testimonials,
-  type CustomerStory,
-} from "@/components/home/testimonials";
 import { GridDivider, GridRails } from "@/components/ui/grid-lines";
 import { PortalSocialProof } from "@/components/client-portal/portal-social-proof";
 import { PortalProblem } from "@/components/client-portal/portal-problem";
 import { PortalReadyMade } from "@/components/client-portal/portal-ready-made";
 import { PortalBuild } from "@/components/client-portal/portal-build";
 import { PortalTailor } from "@/components/client-portal/portal-tailor";
-import { PortalStack } from "@/components/client-portal/portal-stack";
 import { PortalTrust } from "@/components/client-portal/portal-trust";
 import { PortalPricing } from "@/components/client-portal/portal-pricing";
+import { PortalProof } from "@/components/client-portal/portal-proof";
 import { PortalHeroCarousel } from "@/components/client-portal/portal-hero-carousel";
 import { DEMO_URL, SIGNUP_URL } from "@/lib/constants";
 import { PAGE_SEO, pageMetadata } from "@/lib/seo";
@@ -34,8 +30,8 @@ const PORTAL_FAQS: FAQEntry[] = [
   {
     question: "Can I build my own apps into it?",
     answer:
-      "Yes. Describe the app you need in plain English. Assembly shows you a plan to approve or edit, then ships a real app into your portal with logins, permissions, and branding already handled. Change it later the same way, by chatting.",
-    links: [{ label: "in plain English", href: "/ai-app-builder" }],
+      "Yes. Describe the app you need and Assembly's AI app builder shows you a plan to approve or edit, then ships a real app into your portal with logins, permissions, and branding already handled. Change it later the same way, by chatting.",
+    links: [{ label: "Assembly's AI app builder", href: "/ai-app-builder" }],
   },
   {
     question: "Do I need to code to customize it?",
@@ -78,25 +74,6 @@ const PORTAL_FAQS: FAQEntry[] = [
  * and accounting is the slower-converting, safety-first segment this page most
  * needs to reach. Already public on /customers, so nothing waits on approval.
  */
-const COLLECTIVE_CPA: CustomerStory = {
-  // Trimmed to the clause that is this page's thesis. The rest of the public
-  // quote ("uniting elements of their technology with existing core
-  // applications") is what the third stat already says.
-  quote:
-    "Assembly was the only one that let us flexibly build our own version of a client portal.",
-  name: "Kyle Pearson",
-  firm: "Collective CPA",
-  image: "/images/customers/collective-cpa.jpg",
-  // Short values, the way the component's bars are set: the figure carries the
-  // claim and the caption only says what it counts.
-  stats: [
-    { value: "4x faster", label: "Change management" },
-    { value: "200+", label: "Tax clients migrated" },
-    { value: "One week", label: "Google Drive migration" },
-  ],
-  href: "/customers/collective-cpa",
-};
-
 export default function ClientPortalPage() {
   return (
     <>
@@ -166,7 +143,6 @@ export default function ClientPortalPage() {
             read as a doubled break. */}
         <PortalTailor />
 
-        <PortalStack />
         <GridDivider />
 
         <PortalTrust />
@@ -175,7 +151,7 @@ export default function ClientPortalPage() {
 
       <div className="relative">
         <GridRails />
-        <Testimonials story={COLLECTIVE_CPA} />
+        <PortalProof />
         <GridDivider />
         <PortalPricing />
         <GridDivider />
@@ -183,10 +159,15 @@ export default function ClientPortalPage() {
 
       <div className="relative pb-10 md:pb-16">
         <GridRails />
+        {/* Divided with dotted rules, as on the AI app builder page — and the
+            same treatment the stack accordion further up this page already
+            uses, so the two lists on one page read as one control. No short
+            forms needed: every question here already sets on one line. */}
         <FAQ
           heading="Frequently asked questions"
           items={PORTAL_FAQS}
-          twoColumn
+          variant="divided"
+          dottedRules
         />
       </div>
 
@@ -200,6 +181,9 @@ export default function ClientPortalPage() {
             only your firm could
           </>
         }
+        // The free plan and the no-card point are both already made by the
+        // pricing section further up this page, so the chips restated them.
+        planChips={false}
       />
     </>
   );

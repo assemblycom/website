@@ -518,7 +518,7 @@ function signupSteps(fromTemplate: boolean) {
     },
     {
       title: "Use it, or change anything",
-      body: "Tell the builder what to adjust in plain English and it rebuilds. No tickets, no code, no waiting on us.",
+      body: "Tell the builder what to adjust and it rebuilds. No tickets, no code, no waiting on us.",
     },
   ];
 }

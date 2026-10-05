@@ -49,7 +49,11 @@ function renderAnswer(text: string, links?: FAQLink[]): ReactNode {
           {...(external
             ? { target: "_blank", rel: "noopener noreferrer" }
             : {})}
-          className="underline underline-offset-2 [text-decoration-skip-ink:none] transition-colors hover:text-foreground"
+          // decoration-1 rather than the font's `auto` thickness, which at
+          // body size drew a rule heavy enough to read as a highlight. 1px
+          // matches the prose links in `.post-body`, the same kind of inline
+          // link in running text.
+          className="underline decoration-1 underline-offset-2 [text-decoration-skip-ink:none] transition-colors hover:text-foreground"
         >
           {link.label}
         </a>,
@@ -74,7 +78,7 @@ const FAQS: FAQEntry[] = [
   {
     question: "Do I need to know how to code?",
     answer:
-      "No. Describe what you want in plain English. The app builder asks a few product questions, shows you a plan you approve or edit, then builds. Changes happen the same way — by conversation.",
+      "No. Describe what you want. The app builder asks a few product questions, shows you a plan you approve or edit, then builds. Changes happen the same way — by conversation.",
   },
   {
     question: "Are there templates I can start from?",
@@ -118,6 +122,23 @@ const FAQS: FAQEntry[] = [
 // on /security).
 type FAQVariant = "cards" | "divided";
 
+/**
+ * The divided list's hairline, drawn as a gradient rather than a border.
+ *
+ * A finer dot than `border-dotted`, which at 1px sets its dots one pixel apart
+ * and reads as a broken hairline: 2px marks on a 5px pitch. The colour is mixed
+ * off `--foreground` rather than taken from `--border` (at `--border` the dots
+ * were pale enough that the rule read as empty space), and mixing keeps it
+ * theme-derived, so light and dark each resolve their own value.
+ *
+ * Written out once per pseudo-element it is drawn on, because Tailwind scans
+ * for literal class strings and would not see a prefix joined on at runtime.
+ */
+const DOTTED_RULE_BEFORE =
+  "before:bg-[repeating-linear-gradient(to_right,color-mix(in_oklab,var(--foreground)_32%,transparent)_0_2px,transparent_2px_5px)]";
+const DOTTED_RULE_AFTER =
+  "after:bg-[repeating-linear-gradient(to_right,color-mix(in_oklab,var(--foreground)_32%,transparent)_0_2px,transparent_2px_5px)]";
+
 function FAQItem({
   question,
   shortQuestion,
@@ -128,11 +149,13 @@ function FAQItem({
   onToggle,
   variant = "cards",
   compactQuestions = false,
+  dottedRules = false,
 }: FAQEntry & {
   open: boolean;
   onToggle: () => void;
   variant?: FAQVariant;
   compactQuestions?: boolean;
+  dottedRules?: boolean;
 }) {
   // Controlled by the parent so only one answer is open at a time (opening one
   // closes the others). Toggles on click only — hover-to-open made rows pop open
@@ -187,7 +210,13 @@ function FAQItem({
 
   if (variant === "divided") {
     return (
-      <div className="border-b border-border last:border-b-0">
+      <div
+        className={
+          dottedRules
+            ? `relative after:absolute after:inset-x-0 after:bottom-0 after:h-px after:content-[''] ${DOTTED_RULE_AFTER} last:after:hidden`
+            : "border-b border-border last:border-b-0"
+        }
+      >
         <button
           onClick={onToggle}
           aria-expanded={open}
@@ -291,6 +320,7 @@ export function Accordion({
   twoColumn,
   variant = "cards",
   compactQuestions = false,
+  dottedRules = false,
   flushTop = true,
 }: {
   items: FAQEntry[];
@@ -298,6 +328,11 @@ export function Accordion({
   variant?: FAQVariant;
   /** Run `shortQuestion` at every width, not only below sm. */
   compactQuestions?: boolean;
+  /**
+   * Draw the divided list's rules as the dotted hairline rather than a solid
+   * border, and open the list with one. Divided only.
+   */
+  dottedRules?: boolean;
   /**
    * The divided list is normally ruled top by the layout above it, so the first
    * row drops its top padding to sit against that line. A list with no rule
@@ -312,6 +347,7 @@ export function Accordion({
       {...faq}
       variant={variant}
       compactQuestions={compactQuestions}
+      dottedRules={dottedRules}
       open={openId === faq.question}
       onToggle={() =>
         setOpenId((cur) => (cur === faq.question ? null : faq.question))
@@ -332,7 +368,19 @@ export function Accordion({
       );
     }
     return (
-      <div className={flushTop ? "[&>div:first-child>button]:pt-0" : ""}>
+      <div
+        className={[
+          flushTop ? "[&>div:first-child>button]:pt-0" : "",
+          // Opening rule, so the list reads as bounded rather than as a stack
+          // that happens to start. Only with the dotted treatment: a solid one
+          // here doubled up with whatever section rule sits above.
+          dottedRules
+            ? `relative before:absolute before:inset-x-0 before:top-0 before:h-px before:content-[''] ${DOTTED_RULE_BEFORE}`
+            : "",
+        ]
+          .filter(Boolean)
+          .join(" ")}
+      >
         {items.map(renderItem)}
       </div>
     );
@@ -361,11 +409,14 @@ export function FAQ({
   twoColumn = false,
   variant = "cards",
   compactQuestions = false,
+  dottedRules = false,
 }: {
   heading?: string;
   items?: FAQEntry[];
   twoColumn?: boolean;
   variant?: FAQVariant;
+  /** Dotted hairlines instead of solid borders. Divided only. */
+  dottedRules?: boolean;
   /**
    * Run the short form of every question that has one, at every width. For a
    * page whose questions are written long for search: the row stays one line
@@ -398,11 +449,16 @@ export function FAQ({
           <div className="md:sticky md:top-28 md:self-start">
             <h2 className="type-h2">{heading}</h2>
           </div>
+          {/* flushTop off under a dotted rule: the first row keeps its top
+              padding like every other, so it sits off the opening rule rather
+              than against it. */}
           <Accordion
             items={items}
             twoColumn={false}
             variant={variant}
             compactQuestions={compactQuestions}
+            dottedRules={dottedRules}
+            flushTop={!dottedRules}
           />
         </div>
       </Section>

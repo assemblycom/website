@@ -44,7 +44,7 @@ export const PAGE_SEO = {
   aiAppBuilder: {
     title: "AI App Builder",
     description:
-      "Describe an app in plain English. Assembly builds a working app for your team or your clients, with secure logins, permissions, and your branding built in.",
+      "Describe the app you need. Assembly builds a working app for your team or your clients, with secure logins, permissions, and your branding built in.",
     path: "/ai-app-builder",
   },
   clientPortal: {

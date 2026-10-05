@@ -20,7 +20,7 @@ const PICKS: {
     slug: "document-collection",
     title: "Year-end tax document collector",
     description:
-      "Clients get a checklist and upload each document as it's ready. Your team sees status update as files come in.",
+      "Clients upload each document as it's ready. Your team sees status as files come in.",
     vertical: "Accounting",
   },
   {
@@ -81,7 +81,7 @@ export function BuilderTemplates() {
             href="/templates"
             className="hidden shrink-0 rounded-lg border border-border px-4 py-1.5 text-sm text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground md:inline-block"
           >
-            Browse all templates &rarr;
+            Browse all templates
           </Link>
         </div>
 
@@ -90,19 +90,27 @@ export function BuilderTemplates() {
             <Link
               key={card.href}
               href={card.href}
-              className="group overflow-hidden rounded-xl border border-border transition-colors hover:border-foreground/20"
+              className="group flex h-full flex-col overflow-hidden rounded-xl border border-border transition-colors hover:border-foreground/20"
             >
               {/* The template rail on /templates shows a real preview here; on
                   this page the shots are not made yet, so the frame stays empty
                   rather than filling with art that is not the product. */}
-              <div className="aspect-[5/3] overflow-hidden bg-muted" />
-              <div className="p-4">
+              <div className="aspect-[5/3] shrink-0 overflow-hidden bg-muted" />
+              {/* flex-1 so every card fills its grid row, and the chips take
+                  mt-auto to sit on the floor: a one-line description used to
+                  pull its chips up level with the next card's second line. */}
+              <div className="flex flex-1 flex-col p-4">
                 <h3 className="text-sm font-medium">{card.title}</h3>
-                <p className="mt-1.5 text-sm text-muted-foreground">
+                {/* Two lines, hard. The descriptions are written to fit, and
+                    the clamp is the guard rather than the mechanism. */}
+                <p className="mt-1.5 line-clamp-2 text-sm text-muted-foreground">
                   {card.description}
                 </p>
-                <span className="mt-3 flex flex-wrap gap-1.5">
-                  <span className="inline-block rounded-md bg-muted px-2.5 py-1 font-mono text-xs uppercase tracking-wide text-muted-foreground">
+                <span className="mt-auto flex flex-wrap gap-1.5 pt-3">
+                  {/* A transparent border, so this chip boxes the same height
+                      as the outlined Internal one beside it. Without it the one
+                      row holding both was 2px taller than the other. */}
+                  <span className="inline-block rounded-md border border-transparent bg-muted px-2.5 py-1 font-mono text-xs uppercase tracking-wide text-muted-foreground">
                     {card.vertical}
                   </span>
                   {/* The brief wants at least one team-only tool visible in the
