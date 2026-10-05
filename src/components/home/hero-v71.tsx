@@ -528,6 +528,193 @@ export function CardDashboard({
   );
 }
 
+// Client engagement dashboard — the portfolio's engagement score on a segmented
+// half gauge. A gauge says two things a bare figure cannot: what the range is,
+// and how far along it this number falls — which is the whole question a risk
+// score is asked.
+const ENGAGEMENT_SCORE = 68;
+
+const GAUGE_CX = 60;
+const GAUGE_CY = 60;
+const GAUGE_R = 48;
+const GAUGE_BAND = 9;
+const GAUGE_SEG_COUNT = 4;
+// Along the arc, in the viewBox's own units.
+const GAUGE_SEG_GAP = 5;
+// A nick off the corners, not a cap. strokeLinecap="round" was the obvious way
+// to soften these and it is the wrong tool: a round cap is a half-disc of the
+// band's full width, so each band spends its whole thickness on its two ends and
+// what is left reads as a lozenge. Each band is instead drawn as a filled sector
+// INSET by this radius and stroked back out with a round linejoin, which puts a
+// true radius on all four corners at whatever size is asked for.
+const GAUGE_CORNER = 2;
+const GAUGE_ARC_LEN = Math.PI * GAUGE_R;
+const GAUGE_TRACK_BAND = GAUGE_BAND + 4;
+// The bands stop short of the track at both ends, so the track reads as a layer
+// the scale sits ON rather than as an outline drawn round it — at the shared
+// extent the two ran into the baseline together and the bottom was one flat cut
+// across three colours.
+const GAUGE_END_INSET = 3;
+const GAUGE_BAND_SPAN = GAUGE_ARC_LEN - 2 * GAUGE_END_INSET;
+const GAUGE_SEG_VISIBLE =
+  (GAUGE_BAND_SPAN - (GAUGE_SEG_COUNT - 1) * GAUGE_SEG_GAP) / GAUGE_SEG_COUNT;
+const GAUGE_SEG_STEP = GAUGE_SEG_VISIBLE + GAUGE_SEG_GAP;
+
+// One flat blue, not a ramp. The shading already says how far the score has got,
+// and a ramp underneath it made the colour do two jobs at once — reading partly
+// as progress and partly as a scale of its own.
+const GAUGE_FILL = "#7DA4FF";
+// What a band looks like where the score has not reached it, and the layer the
+// whole set sits on.
+const GAUGE_UNFILLED = "color-mix(in srgb, var(--v69-ink) 10%, var(--v69-card))";
+const GAUGE_TRACK = "color-mix(in srgb, var(--v69-ink) 5%, var(--v69-card))";
+// The progress clip reaches past the band on both sides; it only ever has to
+// cover it.
+const GAUGE_CLIP_R = 70;
+const GAUGE_CLIP_ID = "engagement-gauge-progress";
+
+function gaugePolar(radius: number, theta: number) {
+  return {
+    x: GAUGE_CX + radius * Math.cos(theta),
+    y: GAUGE_CY - radius * Math.sin(theta),
+  };
+}
+/** Angle at a fraction along the arc, swept left to right over the top. */
+const gaugeTheta = (fraction: number) => Math.PI * (1 - fraction);
+
+/** Distance along the arc, as a fraction of it, for a point on the band scale. */
+const gaugeFraction = (along: number) => (GAUGE_END_INSET + along) / GAUGE_ARC_LEN;
+
+/**
+ * An arc segment of the given thickness, as a sector inset by the corner radius
+ * (see GAUGE_CORNER). The track and the bands both come through here, so the
+ * corner is one number for all of them — the track used a round cap before, and
+ * a round cap is always half the thickness, so the wider track's ends carried a
+ * 6.5 radius beside the bands' 2 and the two never agreed.
+ */
+function gaugeSectorPath(theta0: number, theta1: number, width: number) {
+  const inset = GAUGE_CORNER / GAUGE_R;
+  const start = theta0 - inset;
+  const finish = theta1 + inset;
+  const outer = GAUGE_R + width / 2 - GAUGE_CORNER;
+  const inner = GAUGE_R - width / 2 + GAUGE_CORNER;
+  const a = gaugePolar(outer, start);
+  const b = gaugePolar(outer, finish);
+  const c = gaugePolar(inner, finish);
+  const d = gaugePolar(inner, start);
+  return `M ${a.x} ${a.y} A ${outer} ${outer} 0 0 1 ${b.x} ${b.y} L ${c.x} ${c.y} A ${inner} ${inner} 0 0 0 ${d.x} ${d.y} Z`;
+}
+
+function gaugeBandPath(index: number) {
+  return gaugeSectorPath(
+    gaugeTheta(gaugeFraction(index * GAUGE_SEG_STEP)),
+    gaugeTheta(gaugeFraction(index * GAUGE_SEG_STEP + GAUGE_SEG_VISIBLE)),
+    GAUGE_BAND,
+  );
+}
+
+const GAUGE_TRACK_PATH = gaugeSectorPath(Math.PI, 0, GAUGE_TRACK_BAND);
+
+/** The wedge the score has swept, used to clip the coloured bands. */
+function gaugeProgressPath(score: number) {
+  const from = gaugePolar(GAUGE_CLIP_R, gaugeTheta(0));
+  const to = gaugePolar(
+    GAUGE_CLIP_R,
+    gaugeTheta(gaugeFraction((score / 100) * GAUGE_BAND_SPAN)),
+  );
+  return `M ${GAUGE_CX} ${GAUGE_CY} L ${from.x} ${from.y} A ${GAUGE_CLIP_R} ${GAUGE_CLIP_R} 0 0 1 ${to.x} ${to.y} Z`;
+}
+
+const GAUGE_BANDS = Array.from({ length: GAUGE_SEG_COUNT }, (_, i) =>
+  gaugeBandPath(i),
+);
+
+function CardEngagement() {
+  return (
+    <div className="flex h-full items-center justify-center bg-[var(--v69-card)] p-5">
+      {/* Sized from the frame rather than pinned in px: this cover is square in
+          the gallery, 16/10 on a phone and 212 square in the home rail, and a
+          fixed gauge either overflows the short axis or leaves the square half
+          empty. Everything inside scales off the container width. */}
+      <div className="relative w-full max-w-[232px] [container-type:inline-size]">
+        <svg viewBox="0 0 120 74" className="w-full" aria-hidden>
+          <defs>
+            <clipPath id={GAUGE_CLIP_ID}>
+              <path d={gaugeProgressPath(ENGAGEMENT_SCORE)} />
+            </clipPath>
+          </defs>
+          {/* A layer under the bands, so the gaps between them are gaps in
+              something rather than in nothing. Same corner as the bands — it is
+              drawn by the same sector helper. */}
+          <path
+            d={GAUGE_TRACK_PATH}
+            fill={GAUGE_TRACK}
+            stroke={GAUGE_TRACK}
+            strokeWidth={GAUGE_CORNER * 2}
+            strokeLinejoin="round"
+          />
+          {/* Every band unfilled first, then the same shapes in colour clipped to
+              how far the score has got — so the band the score lands in is part
+              shaded rather than all or nothing. */}
+          {GAUGE_BANDS.map((d) => (
+            <path
+              key={d}
+              d={d}
+              fill={GAUGE_UNFILLED}
+              stroke={GAUGE_UNFILLED}
+              strokeWidth={GAUGE_CORNER * 2}
+              strokeLinejoin="round"
+            />
+          ))}
+          <g clipPath={`url(#${GAUGE_CLIP_ID})`}>
+            {GAUGE_BANDS.map((d) => (
+              <path
+                key={d}
+                d={d}
+                fill={GAUGE_FILL}
+                stroke={GAUGE_FILL}
+                strokeWidth={GAUGE_CORNER * 2}
+                strokeLinejoin="round"
+              />
+            ))}
+          </g>
+          <text
+            x={GAUGE_CX - GAUGE_R}
+            y="72"
+            textAnchor="middle"
+            fontSize="7"
+            fill="currentColor"
+            className="text-muted-foreground"
+            style={MOCK_MONO}
+          >
+            0
+          </text>
+          <text
+            x={GAUGE_CX + GAUGE_R}
+            y="72"
+            textAnchor="middle"
+            fontSize="7"
+            fill="currentColor"
+            className="text-muted-foreground"
+            style={MOCK_MONO}
+          >
+            100
+          </text>
+        </svg>
+        {/* Nested inside the arc, clear of the end labels. */}
+        <div className="absolute inset-x-0 bottom-0 flex flex-col items-center pb-[12cqw]">
+          <span className="text-[15cqw] font-normal leading-none tracking-tight tabular-nums text-[var(--v69-ink)]">
+            {ENGAGEMENT_SCORE}
+          </span>
+          <span className="mt-[3cqw] text-[4.5cqw] leading-none text-muted-foreground">
+            Engagement score
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function CardDataViz() {
   // Distinct from the engagement dashboard's dense histogram: a few thick
   // capsule bars, each a full-height track with a filled lower portion — reads
@@ -3822,7 +4009,7 @@ export function V69CardMock({ slug }: { slug: string }) {
   if (slug === "deliverable-progress") return <CardDeliverable />;
   if (slug === "data-room") return <CardDataRoom />;
   if (slug === "new-client-intake") return <CardIntake />;
-  if (slug === "client-engagement-dashboard") return <CardDashboard />;
+  if (slug === "client-engagement-dashboard") return <CardEngagement />;
   if (slug === "data-visualization") return <CardDataViz />;
   if (slug === "time-tracker") return <CardTimeTracker />;
   if (slug === "goal-tracker") return <CardMetrics />;

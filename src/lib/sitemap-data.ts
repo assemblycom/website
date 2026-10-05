@@ -21,6 +21,7 @@ import { getVisibleTemplates } from "@/lib/visible-templates";
 import { updatesPath } from "@/lib/updates";
 import { getUpdates } from "@/lib/updates-content";
 import { tagPath } from "@/lib/blog";
+import { LEGACY_REDIRECTS } from "@/lib/redirects";
 
 /**
  * One source of truth for every URL this site publishes, grouped the way the
@@ -63,6 +64,21 @@ const EXCLUDED = new Set<string>([
   // An internal contact sheet of the template cover mocks. Unlisted and
   // noindex; it exists to look at while designing, not to be found.
   "/covers",
+  // The hero test's rewrite targets, which serve the homepage's own content
+  // under /hero-variant/<arm>. findStaticRoutes already skips them for being a
+  // dynamic segment, so this is belt and braces — but the day somebody adds a
+  // page at /hero-variant itself, six duplicates of the homepage should not be
+  // what reaches the sitemap.
+  //
+  // The usual partner to this entry — `robots: { index: false }` on the page —
+  // is deliberately ABSENT here, and must stay absent. Metadata is resolved for
+  // the route that renders, not the URL that was asked for, and middleware
+  // rewrites `/` to this route: a noindex on it is served on the homepage to
+  // every enrolled visitor, Googlebot included. Nothing is lost by leaving it
+  // off, because middleware also redirects a direct hit here back to `/`, so
+  // there is no reachable URL for a crawler to index. See the page's own
+  // comment in src/app/hero-variant/[arm]/page.tsx.
+  "/hero-variant",
 ]);
 
 // /about is finished but held on staging, where it redirects to the homepage in
@@ -217,6 +233,10 @@ export async function embedUrls(): Promise<SitemapUrl[]> {
   }));
 }
 
+const REDIRECTED_PATHS = new Set<string>(
+  LEGACY_REDIRECTS.map((redirect) => redirect.source),
+);
+
 /** Ghost /blog posts, plus the author and tag pages they generate. */
 export async function blogUrls(): Promise<SitemapUrl[]> {
   const [posts, authors, categories] = await Promise.all([
@@ -241,11 +261,15 @@ export async function blogUrls(): Promise<SitemapUrl[]> {
     }
   }
   return [
-    ...posts.map((post) => ({
-      path: `/blog/${post.slug}`,
-      lastModified: post.updatedAt,
-      title: post.title,
-    })),
+    // A post that redirects elsewhere is not a page to list: Search Console
+    // reports a sitemap URL that only redirects.
+    ...posts
+      .filter((post) => !REDIRECTED_PATHS.has(`/blog/${post.slug}`))
+      .map((post) => ({
+        path: `/blog/${post.slug}`,
+        lastModified: post.updatedAt,
+        title: post.title,
+      })),
     // An author page is a list of that author's posts, so it changes when their
     // newest post does.
     ...authors.map((author) => ({

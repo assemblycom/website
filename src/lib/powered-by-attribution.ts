@@ -1,4 +1,4 @@
-import { SIGNUP_URL } from "@/lib/constants";
+import { PORTAL_SIGNUP_URL } from "@/lib/portal-api";
 
 /**
  * The tracking contract for /powered-by and /built-by, as the growth-loops PRD
@@ -108,7 +108,7 @@ export function signupHref({ ref, firm, utm }: PoweredByAttribution): string {
   if (ref) params.set("ref", ref);
   if (firm) params.set("firm", firm);
   const query = params.toString();
-  // SIGNUP_URL already carries `?referrer=`, which the app needs to create the
-  // workspace on the current pricing model.
-  return query ? `${SIGNUP_URL}&${query}` : SIGNUP_URL;
+  // PORTAL_SIGNUP_URL already carries `?referrer=`, which the app needs to
+  // create the workspace on the current pricing model.
+  return query ? `${PORTAL_SIGNUP_URL}&${query}` : PORTAL_SIGNUP_URL;
 }

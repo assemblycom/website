@@ -15,8 +15,18 @@ export const ANNOUNCEMENT: {
   /** Where the band goes. Internal routes only. */
   href: string;
   cta: string;
-} | null = {
-  text: "Introducing our AI app builder",
-  href: "/blog/assembly-studio",
-  cta: "Read now",
-};
+} | null = null;
+
+// Nothing to announce, so the band is down and AnnouncementBar renders nothing.
+// The last one is kept here rather than deleted — putting a band back is
+// filling this in again, and the shape is easier to copy than to remember:
+//
+//   {
+//     text: "Introducing our AI app builder",
+//     href: "/blog/assembly-studio",
+//     cta: "Read now",
+//   }
+//
+// The type annotation above stays a union for the same reason: written as a
+// bare `= null` the const narrows to `null`, and the bar's own body stops
+// type-checking against a value it can no longer hold.

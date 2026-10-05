@@ -1,10 +1,22 @@
 "use client";
 
 import Link from "next/link";
-import { memo, useEffect, useRef, useState } from "react";
-import { APP_URL, templateSignupUrl } from "@/lib/constants";
+import { Fragment, memo, useEffect, useRef, useState } from "react";
+import { APP_URL, SIGNUP_URL, templateSignupUrl } from "@/lib/constants";
 import { type Template } from "@/lib/templates";
+import {
+  COPY_VARIANTS,
+  FALLBACK_COPY,
+  FALLBACK_LAYOUT,
+  withHeroArm,
+  type Arm,
+  type CopyKey,
+  type LayoutKey,
+} from "@/lib/hero-variants";
 import { IconArrow } from "./icons";
+import { HeroArmLinks } from "./hero-arm-links";
+import { HeroBig } from "./hero-big";
+import { HeroExposure } from "./hero-exposure";
 import { V66Composer } from "./hero-v66";
 import { PROMPT_IDEAS } from "./prompt-ideas";
 import { V69CardMock } from "./hero-v71";
@@ -17,6 +29,13 @@ import { useTheme } from "@/components/theme/theme-provider";
 // cards: one card is selected (framed) at a time, first by default, and the
 // frame glides smoothly to whichever card you click. Themeable like V75.
 // ─────────────────────────────────────────────────────────────────────────
+
+/** The arm this render is serving. See src/lib/hero-variants.ts. */
+export interface HeroVariantProps {
+  arm: Arm;
+  copy: CopyKey;
+  layout: LayoutKey;
+}
 
 const MONO = '"ABC Diatype Mono", ui-monospace, SFMono-Regular, Menlo, monospace';
 const RAIL = "mx-auto max-w-[1600px] px-6 md:px-10";
@@ -133,16 +152,40 @@ const TemplateCard = memo(function TemplateCard({
 
 export function HeroV76({
   showPlus = true,
-  showBody = false,
   // Passed by the page rather than imported: the visible set is resolved against
   // Contentful on the server, which a client component can't await.
   templates,
+  variant,
 }: {
   showPlus?: boolean;
-  showBody?: boolean;
   templates: Template[];
+  /**
+   * The hero test arm, resolved in middleware and handed down from the server
+   * (see src/lib/hero-variants.ts). Omitted for anyone the test left out —
+   * logged-in visitors, and every request while the kill switch is on — and
+   * then this renders the hero exactly as it shipped before the test.
+   *
+   * Deliberately a prop and not a context read: the prototype's switcher reads
+   * the arm from the URL after mount, which paints the control hero and then
+   * swaps it. That is a layout shift on the one element under test.
+   */
+  variant?: HeroVariantProps;
 }) {
   const carousel = carouselFrom(templates);
+
+  // Every render carries one of the three messages now. Without a variant the
+  // visitor is simply outside the test — they are not shown the old headline,
+  // which is retired, but the fallback message on the fallback layout.
+  const message = COPY_VARIANTS[variant?.copy ?? FALLBACK_COPY];
+  const layout = variant?.layout ?? FALLBACK_LAYOUT;
+  // A message uses its own lockup where it sets one, and balances on its own
+  // where it doesn't.
+  const headlineLines = message.h1Lines;
+  const headline = message.h1;
+  // Headline and body are one message, so the body always renders with it.
+  // The `showBody` prop that used to gate it is gone: it defaulted to off for
+  // the retired headline, which had no body line.
+  const body = message.body;
   // Theme is global now (persisted, applied to <html data-theme>), so the hero
   // reads it from context and the nav toggle drives the whole site.
   const { theme } = useTheme();
@@ -382,6 +425,35 @@ export function HeroV76({
         maxWidthClass="max-w-[1600px]"
         restPaddingClass="px-6 md:px-10"
       />
+      {/* Inside the hero rather than up in the page: a layout that ever stops
+          rendering a hero should stop claiming the visitor saw one. */}
+      {variant && (
+        <>
+          <HeroExposure
+            arm={variant.arm}
+            copy={variant.copy}
+            layout={variant.layout}
+          />
+          <HeroArmLinks arm={variant.arm} />
+        </>
+      )}
+      {layout === "bigtype" ? (
+        <HeroBig
+          headline={message.h1}
+          lines={message.big.lines}
+          body={message.body}
+          iconAfter={message.big.iconAfter}
+          iconPair={message.big.iconPair}
+          iconBefore={message.big.iconBefore}
+          // Built from the arm the server resolved, not from the cookie: this
+          // is rendered into markup, and a cookie read here would produce one
+          // href on the server and another on the client. Null outside the
+          // test, which the fallback layout means cannot happen today — but
+          // the arm is optional, so this says so rather than assuming it.
+          signupHref={withHeroArm(SIGNUP_URL, variant?.arm ?? null)}
+        />
+      ) : (
+      <>
       {/* Theme-dependent colour here is written as a data-theme variant, not as a
           `dark ? …` ternary: `dark` only resolves after hydration, so the server
           sent the light face to every visitor and a dark-mode phone painted a
@@ -391,21 +463,42 @@ export function HeroV76({
         <div className="relative overflow-hidden bg-white [[data-theme=dark]_&]:bg-[var(--background)]">
 
           <div className={`relative z-10 ${RAIL} pb-16 pt-36 md:pt-36 lg:pb-20`}>
-            <div className="relative z-30 max-w-2xl">
-              <h1 className="type-display mx-auto max-w-xl text-center text-neutral-900 md:mx-0 md:text-left [[data-theme=dark]_&]:text-white">
-                The platform firms
-                {/* Fixed two-line lockup on every breakpoint. */}
-                <br />
-                run on and build on
+            <div
+              // 3xl, not 2xl. The builder message's hand-set lockup has a
+              // 717px line, and at the old 576px headline cap two lines were
+              // not possible at all — the whole headline measures 1278px, so a
+              // two-line set needs 639px each and it broke to three. Widened
+              // for every message rather than only that one: a measure that
+              // changed with the copy would put a layout difference inside the
+              // message comparison.
+              className="relative z-30 mx-auto max-w-3xl"
+            >
+              <h1
+                className="type-display mx-auto max-w-3xl text-center text-neutral-900 [[data-theme=dark]_&]:text-white"
+              >
+                {/* Fixed lockup on every breakpoint, for the shipped headline
+                    and for any test message that sets its own lines. A message
+                    without them balances on its own. */}
+                {headlineLines
+                  ? headlineLines.map((line, i) => (
+                      <Fragment key={line}>
+                        {i > 0 && <br />}
+                        {line}
+                      </Fragment>
+                    ))
+                  : headline}
               </h1>
 
-              {showBody && (
-                <p className="type-lead mx-auto mt-4 max-w-lg text-center text-muted-foreground md:mx-0 md:text-left">
-                  Describe what you need in plain language and Assembly ships a polished, client-ready app — no code, no handoffs.
+              {body && (
+                <p
+                  className="type-lead mx-auto mt-4 max-w-lg text-center text-muted-foreground"
+                >
+                  {body ??
+                    "Describe what you need in plain language and Assembly ships a polished, client-ready app — no code, no handoffs."}
                 </p>
               )}
 
-              <div className="mx-auto mt-8 max-w-xl md:mx-0">
+              <div className="mx-auto mt-8 max-w-xl">
                 {/* The submit pill's two fills, as a custom property the
                     composer reads. Deliberately the nav's primary in both
                     themes — near-black on the light page, white on the dark
@@ -415,6 +508,10 @@ export function HeroV76({
                 <div className="v63-gradient-border v63-ring-solid relative rounded-[18px] [--composer-submit:var(--color-neutral-900)] md:rounded-[22px] [[data-theme=dark]_&]:[--composer-submit:#FFFFFF]">
                   <V66Composer
                     textareaRef={inputRef}
+                    // Reports this composer as the control arm's hero CTA. Left
+                    // unset the shared composer stays silent, which is what the
+                    // page-bottom CTA wants.
+                    ctaSurface={variant ? "control-composer" : undefined}
                     typewriter
                     // Always accented — the arrow routes to onboarding even
                     // with an empty box, so it never reads as disabled.
@@ -653,6 +750,8 @@ export function HeroV76({
           </div>
         </div>
       </section>
+      </>
+      )}
     </>
   );
 }

@@ -11,7 +11,7 @@ import {
 } from "@/lib/powered-by-attribution";
 
 /**
- * The page a client lands on from the "Built on Assembly" badge in a firm's
+ * The page a client lands on from the "Powered by Assembly" badge in a firm's
  * portal, login screen or email footer. It is written for someone who has never
  * heard of us and has just used the product without knowing it, so the page
  * carries one action and nothing to weigh it against.
@@ -39,11 +39,13 @@ function Hero({
         <h1 className="type-display mt-7 text-balance text-foreground">
           {firm
             ? `${firm.name} runs their client experience on Assembly`
-            : "Firms run their client experience on Assembly"}
+            : "Businesses run their client experience on Assembly"}
         </h1>
 
         <p className="type-lead mx-auto mt-5 max-w-lg text-balance text-muted-foreground">
-          You just used it. Build one for your business.
+          Assembly is an AI app builder and client experience platform for
+          service businesses. Manage every client, from onboarding to
+          invoicing, in one place.
         </p>
 
         <div className="mt-8">

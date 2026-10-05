@@ -28,7 +28,7 @@ export function BuiltOnCta({
       onClick={() => trackBuiltOn(BUILT_ON_EVENTS.ctaClicked, event)}
       className={`${PRIMARY_BUTTON} mx-auto block w-full max-w-xs sm:inline-block sm:w-auto ${className}`}
     >
-      Get started
+      Build your own
     </a>
   );
 }
