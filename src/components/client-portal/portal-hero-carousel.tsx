@@ -8,6 +8,7 @@ import {
   PortalSidebar,
 } from "@/components/client-portal/segment-mock";
 import { IconArrowUp } from "@/components/home/build-step-visual";
+import { IconChevronDown, IconPlus } from "@/components/home/mock-icons";
 import { getTemplateBySlug } from "@/lib/templates";
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -221,6 +222,47 @@ function fitFor(panelW: number, viewportH: number): Fit {
 
 export function PortalHeroCarousel() {
   const [active, setActive] = useState(0);
+  // The row opens on the choice the page is actually making — your own app, or
+  // one that already exists — rather than on four app names a cold reader has
+  // no reason to tell apart yet. "Select a template" opens the names out in
+  // place; going back to "Your own app" folds them away, so the control always
+  // shows the fork you are currently on rather than growing once and staying
+  // grown.
+  const [expanded, setExpanded] = useState(false);
+  // The mock behind the header already crossfades; the title and its line
+  // swapped on the same click with no transition at all, which is the jump.
+  // Held one step behind the selection and swapped at the midpoint, so the
+  // text fades out, changes, and fades back in.
+  //
+  // Driven from the click rather than from an effect watching `active`: a
+  // setState in an effect body is a cascading render, and the selection is
+  // already an event we own.
+  const [shownTitle, setShownTitle] = useState(0);
+  const [titleOut, setTitleOut] = useState(false);
+  const titleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(
+    () => () => {
+      if (titleTimer.current) clearTimeout(titleTimer.current);
+    },
+    [],
+  );
+  const selectTab = (i: number) => {
+    setActive(i);
+    if (i === shownTitle) return;
+    if (titleTimer.current) clearTimeout(titleTimer.current);
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
+      setShownTitle(i);
+      return;
+    }
+    setTitleOut(true);
+    titleTimer.current = setTimeout(() => {
+      setShownTitle(i);
+      setTitleOut(false);
+    }, 160);
+  };
+
+  const shown = ITEMS[shownTitle] ?? ITEMS[0];
+
   const [fit, setFit] = useState<Fit | null>(null);
   const [headerH, setHeaderH] = useState(0);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -286,10 +328,16 @@ export function PortalHeroCarousel() {
         className="px-6 pt-6 md:px-10 md:pt-8"
         aria-live="polite"
       >
-        <p className="text-base text-foreground">{current.title}</p>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {current.description}
-        </p>
+        <div
+          className={`transition-opacity duration-150 ease-out motion-reduce:transition-none ${
+            titleOut ? "opacity-0" : "opacity-100"
+          }`}
+        >
+          <p className="text-base text-foreground">{shown.title}</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {shown.description}
+          </p>
+        </div>
       </div>
 
       <div
@@ -364,38 +412,94 @@ export function PortalHeroCarousel() {
             aria-label="Apps in the portal"
             className="flex items-center gap-0.5 rounded-full border border-border p-1 [[data-theme=dark]_&]:border-white/15"
           >
-            {ITEMS.map((item, i) => (
-              <button
-                key={item.key}
-                type="button"
-                role="tab"
-                aria-selected={i === active}
-                aria-controls="portal-hero-panel"
-                onClick={(e) => {
-                  setActive(i);
-                  revealTab(e.currentTarget);
-                }}
-                onKeyDown={(e) => {
-                  const dir =
-                    e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
-                  if (!dir) return;
-                  const next = (i + dir + ITEMS.length) % ITEMS.length;
-                  setActive(next);
-                  const tabs = e.currentTarget.parentElement?.children;
-                  const el = tabs?.[next] as HTMLElement | undefined;
-                  el?.focus();
-                  if (el) revealTab(el);
-                }}
-                tabIndex={i === active ? 0 : -1}
-                className={`shrink-0 whitespace-nowrap rounded-full border px-3.5 py-1 text-sm transition-colors duration-300 ${
-                  i === active
-                    ? "border-border bg-background text-foreground shadow-[0_1px_2px_rgba(16,24,40,0.06)] [[data-theme=dark]_&]:border-white/15 [[data-theme=dark]_&]:bg-white/[0.06]"
-                    : "border-transparent text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {item.title}
-              </button>
-            ))}
+            {/* Every pill stays mounted and the hidden ones collapse to no
+                width, so opening and closing the row is one width transition
+                rather than two pills vanishing and three appearing in the same
+                frame. The track's own width follows the sum, so it grows and
+                shrinks with them. */}
+            {[
+              { key: ITEMS[0].key, title: ITEMS[0].title, index: 0 as number | null },
+              {
+                key: "select-template",
+                title: "Select a template",
+                index: null as number | null,
+              },
+              ...ITEMS.slice(1).map((item, i) => ({
+                key: item.key,
+                title: item.title,
+                index: (i + 1) as number | null,
+              })),
+            ].map(({ key, title, index }, i, all) => {
+              const isOpener = index === null;
+              const shownPill = isOpener ? !expanded : expanded || index === 0;
+              // Arrow keys walk only what is on screen.
+              const row = all.filter((t) =>
+                t.index === null ? !expanded : expanded || t.index === 0,
+              );
+              const selected = index !== null && index === active;
+              // The closed row's second pill is not a tab, it is the control
+              // that reveals them, so it carries no selected state.
+              const open = () => {
+                if (index === null) {
+                  setExpanded(true);
+                  selectTab(1);
+                  return;
+                }
+                // Back to your own app, and the template names fold away.
+                if (index === 0) setExpanded(false);
+                selectTab(index);
+              };
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  role="tab"
+                  aria-selected={selected}
+                  aria-controls="portal-hero-panel"
+                  aria-expanded={index === null ? false : undefined}
+                  onClick={(e) => {
+                    open();
+                    revealTab(e.currentTarget);
+                  }}
+                  onKeyDown={(e) => {
+                    const dir =
+                      e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+                    if (!dir) return;
+                    const here = row.findIndex((t) => t.key === key);
+                    const nextI = (here + dir + row.length) % row.length;
+                    const target = row[nextI];
+                    if (target.index === null) {
+                      setExpanded(true);
+                      selectTab(1);
+                    } else {
+                      if (target.index === 0) setExpanded(false);
+                      selectTab(target.index);
+                    }
+                    const el = e.currentTarget.parentElement?.querySelector<HTMLElement>(
+                      `[data-pill="${target.key}"]`,
+                    );
+                    el?.focus();
+                    if (el) revealTab(el);
+                  }}
+                  data-pill={key}
+                  aria-hidden={!shownPill}
+                  tabIndex={
+                    shownPill && (selected || (isOpener && active !== 0)) ? 0 : -1
+                  }
+                  className={`overflow-hidden whitespace-nowrap rounded-full border text-sm transition-[max-width,opacity,padding,color,background-color,border-color] duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+                    shownPill
+                      ? "max-w-[18rem] px-3.5 py-1 opacity-100"
+                      : "pointer-events-none max-w-0 border-transparent px-0 py-1 opacity-0"
+                  } ${
+                    selected
+                      ? "border-border bg-background text-foreground shadow-[0_1px_2px_rgba(16,24,40,0.06)] [[data-theme=dark]_&]:border-white/15 [[data-theme=dark]_&]:bg-white/[0.06]"
+                      : "border-transparent text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {title}
+                </button>
+              );
+            })}
           </div>
         </div>
       ) : null}
@@ -551,7 +655,17 @@ function PromptMock() {
         <p className="min-h-[44px] text-[15px] leading-[1.6] text-foreground sm:min-h-[72px]">
           Build a retainer tracker my clients can check their hours in.
         </p>
-        <div className="mt-4 flex justify-end">
+        {/* The composer's own controls, as the product draws them: attach and
+            the model it will build with, gathered at the submit end rather
+            than split across the foot. */}
+        <div className="mt-4 flex items-center justify-end gap-2.5">
+          <span className="flex size-8 items-center justify-center rounded-lg text-muted-foreground [&>svg]:size-4">
+            <IconPlus />
+          </span>
+          <span className="flex items-center gap-1 text-[13px] leading-none text-muted-foreground">
+            Sonnet 5.5
+            <IconChevronDown className="size-[11px]" />
+          </span>
           <span className="flex size-8 items-center justify-center rounded-lg bg-foreground text-background">
             <IconArrowUp className="size-4" />
           </span>
