@@ -85,7 +85,7 @@ export function BuilderAlternatives() {
             href={comparison.href}
             className="inline-block rounded-lg border border-border px-4 py-1.5 text-sm text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground"
           >
-            {comparison.label} &rarr;
+            {comparison.label}
           </Link>
         ))}
       </div>

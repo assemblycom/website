@@ -37,7 +37,7 @@ const PILLARS: Pillar[] = [
         value: "A live close-status dashboard in under an hour",
       },
       {
-        label: "AdvertAI Marketing",
+        label: "Advertai Marketing",
         value: "A complete Message Center their team lives in",
       },
     ],
@@ -149,7 +149,7 @@ const ADVERTAI_STORY: CustomerStory = {
   quote:
     "We've been able to build out apps in just a few weeks that I don't know if we could have done within five to ten years before Assembly.",
   name: "Garrett Leonard",
-  firm: "Founder, AdvertAI Marketing",
+  firm: "Advertai Marketing",
   image: "/images/customers/advertai-marketing.jpg",
   intro:
     "An 11-person web design agency. The founder built the Message Center his team works in all day, and retired five tools along the way.",
@@ -159,7 +159,7 @@ const ADVERTAI_STORY: CustomerStory = {
     { value: "Built by the founder", label: "No developer hired" },
   ],
   href: "/customers/advertai-marketing",
-  linkLabel: "Read AdvertAI's story",
+  linkLabel: "Read Advertai's story",
 };
 
 // Built from the same entries the accordion renders, so the questions a crawler
@@ -284,14 +284,12 @@ export default function AiAppBuilderPage() {
           </>
         }
         subheading="Skip the five-figure custom build. Describe what your business needs, or start from a template."
-        submitLabel="Start building for free"
+        // The page opens on a composer; closing on a second one asks the same
+        // question twice. Two buttons instead, the pair the hero opens with.
+        composer={false}
+        primaryCta={{ label: "Start building for free", href: SIGNUP_URL }}
         secondaryCta={{ label: "Book demo", href: DEMO_URL }}
         planChips={false}
-        promptExamples={[
-          "a year-end document checklist my clients can upload to",
-          "a time tracker my team logs billable hours in",
-          "an approval flow for client creative",
-        ]}
       />
     </>
   );

@@ -12,6 +12,8 @@ export function CTA({
   secondaryCta,
   planChips = true,
   promptExamples,
+  composer = true,
+  primaryCta,
 }: {
   // Overrides the default close for a page whose argument ends somewhere else
   // (e.g. the AI app builder page closes on what you would build today).
@@ -26,6 +28,14 @@ export function CTA({
   planChips?: boolean;
   /** Page-specific examples, completing "Build …", for both the typewriter and the Ideas menu. */
   promptExamples?: string[];
+  /**
+   * Off for a page that closes on a plain pair of buttons rather than a second
+   * prompt box. The builder page already opens on a composer, and a page that
+   * both opens and closes on the same control asks the same question twice.
+   */
+  composer?: boolean;
+  /** The filled action, when `composer` is off. */
+  primaryCta?: { label: string; href: string };
 } = {}) {
   // Dark sheet flowing into the black footer below; the green wordmark panel is
   // revealed beneath (square top, footer rounds the bottom).
@@ -71,6 +81,30 @@ export function CTA({
             {subheading}
           </p>
         ) : null}
+        {!composer ? (
+          // Two actions in one row, the same pair and the same classes the
+          // page's hero opens with, so the top and bottom of the page close on
+          // one control rather than two different ones.
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+            {primaryCta ? (
+              <a
+                href={primaryCta.href}
+                className="rounded-lg bg-foreground px-5 py-2.5 text-center text-sm text-background transition-opacity hover:opacity-90"
+              >
+                {primaryCta.label}
+              </a>
+            ) : null}
+            {secondaryCta ? (
+              <a
+                href={secondaryCta.href}
+                className="rounded-lg border border-foreground/20 bg-transparent px-5 py-2.5 text-center text-sm text-foreground transition-colors hover:bg-foreground/5 [[data-theme=dark]_&]:border-white/25 [[data-theme=dark]_&]:text-white"
+              >
+                {secondaryCta.label}
+              </a>
+            ) : null}
+          </div>
+        ) : null}
+        {composer ? (
         <div className="mx-auto mt-8 max-w-xl text-left">
           {/* Same animated gradient border as the hero composer up top. Every
               prop below must stay in step with hero-v76's composer — the two
@@ -159,6 +193,7 @@ export function CTA({
             </ul>
           ) : null}
         </div>
+        ) : null}
       </div>
     </section>
   );
