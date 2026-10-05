@@ -94,7 +94,16 @@ function NavRow({
  * hero carousel wraps it around the mocks that do not build one in, so every
  * screen in that set reads as the same portal.
  */
-export function PortalSidebar({ app }: { app: string }) {
+export function PortalSidebar({
+  app,
+  brand = "Brandmages",
+}: {
+  /** The firm's own app, added to the stock nav below. Omit for a portal
+      that has no such app — the point the problem section makes. */
+  app?: string;
+  /** Whose portal this is. The generic one in the problem section is nobody's. */
+  brand?: string;
+}) {
   return (
     <div
       className={`hidden w-[136px] shrink-0 flex-col gap-[2px] border-r bg-muted px-2 py-2.5 sm:flex ${LINE} [[data-theme=dark]_&]:bg-white/[0.04]`}
@@ -104,19 +113,27 @@ export function PortalSidebar({ app }: { app: string }) {
           <IconBrandMark className="size-[8px]" />
         </span>
         <span className="truncate text-[10.5px] leading-none text-foreground">
-          Brandmages
+          {brand}
         </span>
         <IconChevronDown className="size-[9px] shrink-0 text-muted-foreground" />
       </span>
       <NavRow icon={<IconGlobe className="size-[11px]" />} label="Home" />
       <NavRow icon={<IconChat className="size-[11px]" />} label="Messages" />
       <NavRow icon={<IconFile className="size-[11px]" />} label="Files" />
-      <NavRow icon={<IconCard className="size-[11px]" />} label="Billing" />
+      {/* With no app of its own, the stock nav's last row carries the
+          selection — otherwise the sidebar has nothing open. */}
       <NavRow
-        icon={<IconDocuments className="size-[11px]" />}
-        label={app}
-        active
+        icon={<IconCard className="size-[11px]" />}
+        label="Billing"
+        active={!app}
       />
+      {app ? (
+        <NavRow
+          icon={<IconDocuments className="size-[11px]" />}
+          label={app}
+          active
+        />
+      ) : null}
     </div>
   );
 }
@@ -449,148 +466,98 @@ export function EmbedMock() {
   );
 }
 
-// ── The problem section's picture — the before/after diptych ─────────────
-// The brief's own: a desaturated generic portal with the firm's real tools
-// orbiting it as tabs, beside the Brandmages portal with the Intake app in the
-// sidebar where those tabs used to be. One word under each.
+// ── The problem section's pictures — the before/after pair ───────────────
+// The brief's own diptych: a generic portal with the firm's real tools orbiting
+// it as tabs it cannot absorb, beside the Brandmages portal with the Intake app
+// sitting in the sidebar where those tabs used to be.
 //
-// Two small panels rather than one full portal screen, because the claim is a
-// comparison: a single screen can show what fits, but only a pair can show
-// what almost does. Both are drawn at the same size and the same chrome, so
-// the only differences the eye finds are the ones that carry the argument.
-const GENERIC_NAV = ["Home", "Messages", "Files", "Billing"];
-const BRAND_NAV = ["Home", "Messages", "Files", "Billing"];
-// The work that has nowhere to live in the portal on the left.
-const ORBIT_TOOLS = ["Intake sheet", "Email thread", "Shared drive"];
+// Two full portal screens rather than two miniatures. They were drawn small
+// enough to sit inside one card, which made them 8px type nobody could read;
+// at a tray's width they are the same chrome every other screen on this page
+// runs, so the only differences the eye finds are the ones carrying the
+// argument. The left one is held back in opacity and desaturated by the
+// section, not here — a mock should not know it is the bad example.
 
-/** One panel of the diptych: portal chrome at a size that fits beside itself. */
-function MiniPortal({
-  brand,
-  nav,
-  active,
-  children,
-}: {
-  brand: string;
-  nav: string[];
-  active?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div
-      className={`flex h-full overflow-hidden rounded-lg border bg-background ${LINE}`}
-    >
-      <div
-        className={`flex w-[78px] shrink-0 flex-col gap-[1px] border-r bg-muted px-1.5 py-2 ${LINE} [[data-theme=dark]_&]:bg-white/[0.04]`}
-      >
-        <span className="flex items-center gap-1 px-1 pb-2">
-          <span className="flex size-[12px] items-center justify-center rounded-[2px] bg-foreground text-background">
-            <IconBrandMark className="size-[7px]" />
-          </span>
-          <span className="truncate text-[8.5px] leading-none text-foreground">
-            {brand}
-          </span>
-        </span>
-        {nav.map((label) => (
-          <span
-            key={label}
-            className="truncate rounded-[3px] px-1 py-[3.5px] text-[8.5px] leading-none text-muted-foreground"
-          >
-            {label}
-          </span>
-        ))}
-        {active ? (
-          <span
-            className={`truncate rounded-[3px] border bg-background px-1 py-[3.5px] text-[8.5px] leading-none text-foreground ${LINE}`}
-          >
-            {active}
-          </span>
-        ) : null}
-      </div>
-      <div className="flex min-w-0 flex-1 flex-col p-2">{children}</div>
-    </div>
-  );
-}
+/** The work that has nowhere to live in the portal a firm bought. */
+const ORBIT_TOOLS = [
+  "Partner intake sheet",
+  "Onboarding email thread",
+  "Rate card drive",
+];
 
-/** A field as the intake app draws it: label over a filled row. */
-function MiniField({ label, value }: { label: string; value: string }) {
-  return (
-    <div>
-      <span className="block text-[8px] leading-none text-muted-foreground">
-        {label}
-      </span>
-      <div
-        className={`mt-1 flex h-[18px] items-center truncate rounded-[4px] border px-1.5 text-[9px] leading-none text-foreground ${LINE}`}
-      >
-        {value}
-      </div>
-    </div>
-  );
-}
-
-export function AlmostFitsMock() {
+export function GenericPortalMock() {
   return (
     <div
       aria-hidden
-      className="pointer-events-none grid h-full select-none grid-cols-2 gap-3 sm:gap-4"
+      className="pointer-events-none flex h-full select-none bg-background"
     >
-      {/* Desaturated, and held back in opacity rather than drawn in a second
-          set of greys: a muted copy of the same chrome stays correct in both
-          themes, where hardcoded greys would only be right in one. */}
-      <figure className="flex min-h-0 flex-col opacity-55 grayscale">
-        <div className="min-h-0 flex-1">
-          <MiniPortal brand="Generic portal" nav={GENERIC_NAV}>
-            <span className="text-[9px] leading-none text-foreground">
-              Billing
-            </span>
-            {/* The work the portal has no app for, orbiting it as the tabs it
-                actually lives in. */}
-            <div className="mt-2 flex flex-col gap-1">
-              {ORBIT_TOOLS.map((tool) => (
-                <span
-                  key={tool}
-                  className={`flex items-center justify-between gap-1 truncate rounded-[4px] border border-dashed px-1.5 py-[5px] text-[8.5px] leading-none text-muted-foreground ${LINE}`}
-                >
-                  {tool}
-                  <IconGlobe className="size-[8px] shrink-0" />
-                </span>
-              ))}
-            </div>
-            <span className="mt-auto w-fit rounded-[4px] bg-muted px-1.5 py-[5px] text-[8px] leading-none text-muted-foreground [[data-theme=dark]_&]:bg-white/[0.08]">
-              Request a feature
-            </span>
-          </MiniPortal>
-        </div>
-        <figcaption className="mt-3 text-center text-[11px] leading-none text-muted-foreground">
-          Almost fits
-        </figcaption>
-      </figure>
-
-      <figure className="flex min-h-0 flex-col">
-        <div className="min-h-0 flex-1">
-          <MiniPortal
-            brand="Brandmages"
-            nav={BRAND_NAV}
-            active="Partner intake"
-          >
-            <span className="flex items-center justify-between gap-1">
-              <span className="truncate text-[9px] leading-none text-foreground">
-                Partner intake
+      <PortalSidebar brand="Generic portal" />
+      <div className="flex min-w-0 flex-1 flex-col">
+        <AppHeader title="Billing" />
+        <div className="flex min-h-0 flex-1 flex-col px-4 py-3.5">
+          <span className="block text-[10px] leading-none text-muted-foreground">
+            Everything else
+          </span>
+          {/* Dashed, because none of these is an app the portal holds — they
+              are the tabs the work actually lives in, parked beside it. */}
+          <div className="mt-2.5 flex flex-col gap-1.5">
+            {ORBIT_TOOLS.map((tool) => (
+              <span
+                key={tool}
+                className={`flex items-center justify-between gap-2 truncate rounded-[5px] border border-dashed px-2.5 py-[9px] text-[11px] leading-none text-muted-foreground ${LINE}`}
+              >
+                {tool}
+                <IconGlobe className="size-[11px] shrink-0" />
               </span>
-              <span className={NEUTRAL}>Your app</span>
-            </span>
-            <div className="mt-2 flex flex-col gap-1.5">
-              <MiniField label="Property" value="Hotel Corvina" />
-              <MiniField label="Rate agreement" value="2026 preferred" />
-            </div>
-            <span className="mt-auto w-fit rounded-[4px] bg-foreground px-1.5 py-[5px] text-[8px] leading-none text-background">
-              Submit partner
-            </span>
-          </MiniPortal>
+            ))}
+          </div>
+          <span className="mt-auto w-fit rounded-[5px] bg-muted px-2.5 py-[7px] text-[10px] leading-none text-muted-foreground [[data-theme=dark]_&]:bg-white/[0.08]">
+            Request a feature
+          </span>
         </div>
-        <figcaption className="mt-3 text-center text-[11px] leading-none text-foreground">
-          Fits
-        </figcaption>
-      </figure>
+      </div>
+    </div>
+  );
+}
+
+const INTAKE_FIELDS: { label: string; value: string }[] = [
+  { label: "Property", value: "Hotel Corvina, Lisbon" },
+  { label: "Rate agreement", value: "2026 preferred" },
+  { label: "Onboarding owner", value: "Dana Whitfield" },
+];
+
+export function IntakeAppMock() {
+  return (
+    <div
+      aria-hidden
+      className="pointer-events-none flex h-full select-none bg-background"
+    >
+      <PortalSidebar app="Partner intake" />
+      <div className="flex min-w-0 flex-1 flex-col">
+        <AppHeader
+          title="Partner intake"
+          meta={<span className={NEUTRAL}>Your app</span>}
+        />
+        <div className="flex min-h-0 flex-1 flex-col px-4 py-3.5">
+          <div className="flex flex-col gap-2.5">
+            {INTAKE_FIELDS.map((field) => (
+              <div key={field.label}>
+                <span className="block text-[10px] leading-none text-muted-foreground">
+                  {field.label}
+                </span>
+                <div
+                  className={`mt-1.5 flex h-[28px] items-center rounded-[5px] border px-2.5 text-[11px] leading-none text-foreground ${LINE}`}
+                >
+                  {field.value}
+                </div>
+              </div>
+            ))}
+          </div>
+          <span className="mt-auto w-fit rounded-[5px] bg-foreground px-2.5 py-[7px] text-[10px] leading-none text-background">
+            Submit partner
+          </span>
+        </div>
+      </div>
     </div>
   );
 }

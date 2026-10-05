@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { IconBolt, IconGlobe, IconSync } from "@/components/home/mock-icons";
 import { Reveal } from "@/components/ui/reveal";
-import { EmbedMock } from "@/components/client-portal/segment-mock";
 import { API_REFERENCE_URL, GUIDE_URL } from "@/lib/constants";
 
 /**
@@ -50,7 +49,9 @@ const WAYS: {
 
 export function PortalStack() {
   return (
-    <section className="border-y border-border bg-muted/40 [[data-theme=dark]_&]:border-[#383838] [[data-theme=dark]_&]:bg-white/[0.02]">
+    // Top rule only: the page draws a GridDivider under this section, and a
+    // border-b here put a second hairline a few pixels above it.
+    <section className="border-t border-border bg-muted/40 [[data-theme=dark]_&]:border-[#383838] [[data-theme=dark]_&]:bg-white/[0.02]">
       <Reveal>
         {/* No right padding from lg up: the picture runs off the rail and past
             the viewport's edge, so it reads as a portal that continues rather
@@ -81,7 +82,7 @@ export function PortalStack() {
                     // without the labels being indented out of the column.
                     className="group -mx-3 flex items-start gap-3 rounded-xl px-3 py-2.5 transition-colors hover:bg-foreground/[0.04] [[data-theme=dark]_&]:hover:bg-white/[0.04]"
                   >
-                    <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-background text-muted-foreground transition-colors group-hover:text-foreground [&>svg]:size-[18px] [[data-theme=dark]_&]:bg-white/[0.06]">
+                    <span className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-border bg-background text-muted-foreground transition-colors group-hover:text-foreground [&>svg]:size-[18px] [[data-theme=dark]_&]:border-[#383838] [[data-theme=dark]_&]:bg-white/[0.06]">
                       <Icon />
                     </span>
                     <span className="min-w-0">
@@ -98,11 +99,17 @@ export function PortalStack() {
             </ul>
           </div>
 
-          {/* Cropped right and bottom, the same window the cards above use,
-              at the size a section gives it rather than a card. */}
-          <div className="-mr-6 h-[380px] overflow-hidden rounded-tl-2xl rounded-bl-2xl border-b border-l border-t border-border shadow-[0_1px_2px_rgba(16,24,40,0.04),0_24px_56px_-32px_rgba(16,24,40,0.3)] md:-mr-10 lg:mr-0 lg:h-[440px] lg:rounded-bl-none lg:border-b-0 [[data-theme=dark]_&]:border-[#383838] [[data-theme=dark]_&]:shadow-[0_24px_56px_-32px_rgba(0,0,0,0.65)]">
-            <EmbedMock />
-          </div>
+          {/* The shot has not been made yet, so the slot holds its proportions
+              rather than filling with a mock that would have to be unbuilt
+              later. Solid --muted, not the dashed VisualSlot the page uses
+              elsewhere: that frame is muted at 40% and so is this band, so it
+              would be an empty space marked by nothing. The art direction
+              rides in `title` for whoever makes the shot. */}
+          <div
+            aria-hidden
+            title="Stack visual — an outside tool running as an app inside the portal: Assembly's sidebar with a scheduler open in the content area, marked Embedded, cropped right so the screen continues past the rail."
+            className="h-[300px] rounded-2xl bg-muted md:h-[380px] lg:h-[440px] lg:rounded-r-none [[data-theme=dark]_&]:bg-white/[0.06]"
+          />
         </div>
       </Reveal>
     </section>
