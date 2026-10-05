@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { Reveal } from "@/components/ui/reveal";
 import {
   GenericPortalMock,
@@ -17,8 +16,12 @@ import {
  * sharing a row. It is a comparison of two screens, and a comparison squeezed
  * into half a rail is two thumbnails: the screens were drawn at 8px type to
  * fit. Full width they are the same chrome every other screen on this page
- * runs, and the quote reads better as the thing that closes the section than
- * as a column beside it.
+ * runs.
+ *
+ * The Capital One quote that closed the section is out for now. The page
+ * already carries three peer quotes in PortalProof, and a fourth here made
+ * the section end on testimony rather than on the picture that is its
+ * argument.
  *
  * The screens sit in one tray and run off its bottom edge, so the pair reads as
  * two windows onto the same idea rather than two framed pictures.
@@ -152,32 +155,6 @@ export function PortalProblem() {
             </Screen>
           </div>
         </div>
-
-        {/* The brief's proof for the claim above, closing the section: a firm
-            that lived the problem before it had somewhere to put it. Quoted
-            from the published Capital One case study rather than retyped, so
-            the wording on this page and the wording on the story cannot drift,
-            and the attribution links to the story it came from. */}
-        <figure className="mt-12 md:mt-16">
-          <blockquote className="type-h3 mx-auto max-w-3xl text-balance text-center text-foreground">
-            &ldquo;Before Assembly, we were managing hotel partners through
-            Google spreadsheets and long email chains. It became hard to scale
-            and created friction for everyone.&rdquo;
-          </blockquote>
-          <figcaption className="type-caption mt-6 text-center">
-            <Link
-              href="/customers/capital-one-luxury-travel"
-              className="group inline-block"
-            >
-              <span className="block text-foreground transition-colors group-hover:underline group-hover:underline-offset-4">
-                Phillip LaRue
-              </span>
-              <span className="mt-0.5 block text-muted-foreground">
-                Sr. Director of Luxury Travel, Capital One
-              </span>
-            </Link>
-          </figcaption>
-        </figure>
       </Reveal>
     </section>
   );
