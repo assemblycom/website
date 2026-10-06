@@ -5,7 +5,7 @@ import { GridDivider, GridRails } from "@/components/ui/grid-lines";
 import { PortalSocialProof } from "@/components/client-portal/portal-social-proof";
 import { PortalProblem } from "@/components/client-portal/portal-problem";
 import { PortalReadyMade } from "@/components/client-portal/portal-ready-made";
-import { PortalBuild } from "@/components/client-portal/portal-build";
+import { BUILD_STEPS, PortalBuild } from "@/components/client-portal/portal-build";
 import { PortalTailor } from "@/components/client-portal/portal-tailor";
 import { PortalStack } from "@/components/client-portal/portal-stack";
 import { PortalTrust } from "@/components/client-portal/portal-trust";
@@ -141,7 +141,16 @@ export default function ClientPortalPage() {
         <PortalReadyMade />
         <GridDivider />
 
-        <PortalBuild />
+        {/* Three cards, not five. Describe, Plan, Build is the arc; Iterate
+            and Secured were a fourth and fifth beat on a rail that then had to
+            be stepped through to be seen at all. Nothing is lost by cutting
+            them here — the "built by Assembly, never by the AI" claim the
+            Secured card made has its own section further down this page
+            (PortalTrust), where it is the heading rather than a footnote.
+
+            Sliced from BUILD_STEPS rather than restated, so this page's
+            captions cannot drift from the full set. */}
+        <PortalBuild steps={BUILD_STEPS.slice(0, 3)} />
         <GridDivider />
 
         {/* No divider after this one: the segment grid closes on its own

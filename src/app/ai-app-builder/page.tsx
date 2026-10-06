@@ -37,16 +37,6 @@ const PILLARS: Pillar[] = [
   {
     heading: "Build client-facing apps and internal tools, all in one place",
     body: "Describe it once. Client apps land in your client experience, team tools in your dashboard.",
-    facts: [
-      {
-        label: "Collective CPA",
-        value: "A live close-status dashboard in under an hour",
-      },
-      {
-        label: "Advertai Marketing",
-        value: "A complete Message Center their team lives in",
-      },
-    ],
     // The built app sitting in the client's own sidebar, which is the claim.
     // A landscape screen like the other three: the build rail's portrait cards
     // are the wrong shape for this frame, and they already run below.
@@ -55,25 +45,12 @@ const PILLARS: Pillar[] = [
   {
     heading: "One CRM. Every app connects to it",
     body: "Contacts, companies, and custom fields come built in. Each client only sees what they're allowed to see.",
-    // Not customer numbers — this claim has none, and inventing them would put
-    // a figure on the page nobody could stand behind. These restate what the
-    // platform ships, which is what the claim is about.
-    facts: [
-      { label: "Built in", value: "Contacts, companies, custom fields" },
-      { label: "Per client", value: "Only what they are allowed to see" },
-    ],
     // The home page's CRM shot: contacts, companies and a custom field.
     visual: <TeamCrmVisual />,
   },
   {
     heading: "Secure logins, permissions, and billing come built in",
     body: "Built and maintained by Assembly. Nothing reaches your clients until you make it visible.",
-    // Both rows are claims the site already makes, on /security and in this
-    // page's own FAQ, rather than new ones written for this slot.
-    facts: [
-      { label: "Sign-in", value: "Google or a one-click email link" },
-      { label: "Certified", value: "SOC 2 Type II, GDPR and CCPA aligned" },
-    ],
     // The onboarding screen, which carries the "Access: client only" control —
     // permissions as something the platform already decides.
     visual: <OnboardingMock />,
@@ -81,13 +58,6 @@ const PILLARS: Pillar[] = [
   {
     heading: "Your clients already have a branded home. New apps land in it",
     body: "Your logo and colors, not ours. Every new app picks them up automatically.",
-    facts: [
-      {
-        label: "Why customers choose Assembly",
-        value: "Branding, the number 3 reason",
-      },
-      { label: "Raised in", value: "27% of sales calls" },
-    ],
     // The home page's branded-portal shot: the firm's logo and colours.
     visual: <BrandPortalVisual />,
   },

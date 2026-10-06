@@ -3,12 +3,6 @@ import { GRID_LINE } from "@/components/ui/grid-lines";
 export interface Pillar {
   heading: string;
   body: string;
-  /**
-   * The two or three facts that back the claim, shown as label/value rows under
-   * the copy rather than as a paragraph in it. A cleared first-party number
-   * belongs here; prose does not.
-   */
-  facts: { label: string; value: string }[];
   /** The product shot that backs the claim. */
   visual: React.ReactNode;
 }
@@ -55,7 +49,6 @@ export function BuilderPillars({ pillars }: { pillars: Pillar[] }) {
               <p className="mt-4 max-w-md text-pretty text-muted-foreground">
                 {pillar.body}
               </p>
-              <FactList facts={pillar.facts} />
             </div>
 
             {/* Held off the top and left and running off the bottom and the
@@ -76,24 +69,5 @@ export function BuilderPillars({ pillars }: { pillars: Pillar[] }) {
         </div>
       ))}
     </section>
-  );
-}
-
-function FactList({ facts }: { facts?: Pillar["facts"] }) {
-  if (!facts?.length) return null;
-  return (
-    <dl
-      className={`mt-8 divide-y ${GRID_LINE} divide-border [[data-theme=dark]_&]:divide-[#383838]`}
-    >
-      {facts.map((fact) => (
-        <div
-          key={fact.label}
-          className="flex items-baseline justify-between gap-6 py-3 first:pt-0"
-        >
-          <dt className="text-sm text-muted-foreground">{fact.label}</dt>
-          <dd className="text-right text-sm text-foreground">{fact.value}</dd>
-        </div>
-      ))}
-    </dl>
   );
 }

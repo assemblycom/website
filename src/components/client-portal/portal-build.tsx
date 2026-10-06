@@ -10,8 +10,14 @@ import {
   SecuredCard,
 } from "@/components/client-portal/portal-build-cards";
 
-// The handoff's section 5 captions, in its wording.
-const STEPS = [
+/**
+ * The handoff's section 5 captions, in its wording.
+ *
+ * Exported so a page can run a PREFIX of them rather than restating the copy:
+ * /client-portal takes the first three, and taking them from here is what
+ * stops its wording drifting from the full set.
+ */
+export const BUILD_STEPS = [
   {
     name: "Describe",
     // Two lines, like the other four. One line long, this caption left the
@@ -67,7 +73,7 @@ const STEPS = [
 export function PortalBuild({
   heading = "Build the features unique to your firm.",
   body = "Tell us what you want, approve the plan, and a real app lands in your portal with logins, permissions, and branding already handled.",
-  steps = STEPS,
+  steps = BUILD_STEPS,
   cta = { label: "Describe your first app", href: SIGNUP_URL },
   chips,
   link,
@@ -76,7 +82,7 @@ export function PortalBuild({
 }: {
   heading?: string;
   body?: string;
-  steps?: typeof STEPS;
+  steps?: typeof BUILD_STEPS;
   cta?: { label: string; href: string };
   /** Examples of what gets built, under the rail. */
   chips?: string[];

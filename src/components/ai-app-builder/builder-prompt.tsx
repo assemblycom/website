@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { IconPlus } from "@/components/home/mock-icons";
 import { IconArrowUp } from "@/components/home/build-step-visual";
-import { SIGNUP_URL } from "@/lib/constants";
+import { LOGIN_URL, SIGNUP_URL } from "@/lib/constants";
 
 // ─────────────────────────────────────────────────────────────────────────
 // BUILDER PROMPT — the composer under /ai-app-builder's headline.
@@ -45,6 +45,27 @@ export function BuilderPrompt({
   model?: string;
 } = {}) {
   const [value, setValue] = useState("");
+  // The attach control's popover. Attaching a file is a signed-in action, so
+  // the glyph answers with what it would do and the way to get there rather
+  // than opening a file picker that cannot lead anywhere.
+  const [attachOpen, setAttachOpen] = useState(false);
+  const attach = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!attachOpen) return;
+    const onDown = (e: PointerEvent) => {
+      if (!attach.current?.contains(e.target as Node)) setAttachOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setAttachOpen(false);
+    };
+    document.addEventListener("pointerdown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("pointerdown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [attachOpen]);
 
   const go = () => {
     window.location.href = SIGNUP_URL;
@@ -86,12 +107,43 @@ export function BuilderPrompt({
           className="block w-full resize-none bg-transparent text-[15px] leading-[1.6] text-foreground outline-none placeholder:text-muted-foreground"
         />
         <div className="mt-4 flex items-center justify-between gap-2.5">
-          <span
-            aria-hidden
-            className="flex size-8 items-center justify-center rounded-lg text-muted-foreground [&>svg]:size-4"
-          >
-            <IconPlus />
-          </span>
+          <div ref={attach} className="relative">
+            <button
+              type="button"
+              onClick={() => setAttachOpen((open) => !open)}
+              aria-expanded={attachOpen}
+              aria-label="More features"
+              className="flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground [&>svg]:size-4 [[data-theme=dark]_&]:hover:bg-white/[0.08]"
+            >
+              <IconPlus />
+            </button>
+            {attachOpen ? (
+              // Above the glyph, not below it: the composer sits low in a hero
+              // that fills the viewport, and a panel hanging off its bottom
+              // edge opened below the fold.
+              <div
+                role="dialog"
+                aria-label="More features"
+                className="absolute bottom-[calc(100%+8px)] left-0 z-20 w-[272px] rounded-2xl border border-border bg-background p-4 text-left shadow-[0_1px_2px_rgba(16,24,40,0.04),0_18px_40px_-20px_rgba(16,24,40,0.28)] [[data-theme=dark]_&]:border-[#383838] [[data-theme=dark]_&]:bg-[var(--surface-2)] [[data-theme=dark]_&]:shadow-[0_18px_44px_-20px_rgba(0,0,0,0.7)]"
+              >
+                <p className="text-[15px] leading-snug text-foreground">
+                  Unlock more features
+                </p>
+                <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+                  Attach files and images, apply themes, connect integrations,
+                  and more by logging in.
+                </p>
+                <div className="mt-4 flex justify-end">
+                  <a
+                    href={LOGIN_URL}
+                    className="rounded-lg bg-foreground px-4 py-2 text-sm text-background transition-opacity hover:opacity-90"
+                  >
+                    Log in
+                  </a>
+                </div>
+              </div>
+            ) : null}
+          </div>
           <div className="flex items-center gap-2.5">
             {/* No chevron: this is not a menu waiting to be opened, and a caret
                 invites a click that goes somewhere else entirely. */}

@@ -60,7 +60,10 @@ export function CardRail({
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [atStart, setAtStart] = useState(true);
-  const [atEnd, setAtEnd] = useState(false);
+  // Starts true, so a rail whose cards all fit never flashes a pair of arrows
+  // on first paint and then drops them. sync() runs on mount and corrects it
+  // within the frame for a rail that really does step.
+  const [atEnd, setAtEnd] = useState(true);
 
   const sync = useCallback(() => {
     const el = ref.current;
@@ -79,6 +82,9 @@ export function CardRail({
     observer.observe(el);
     return () => observer.disconnect();
   }, [sync]);
+
+  // Both ends at once means the whole set is on screen already.
+  const steppable = !(atStart && atEnd);
 
   // ── Drag to scroll ────────────────────────────────────────────────────
   // Touch and trackpad already drag this rail natively; a mouse did not, so on
@@ -126,7 +132,8 @@ export function CardRail({
     // Back to the stylesheet's smooth, which the arrow buttons rely on.
     if (el) el.style.scrollBehavior = "";
     try {
-      if (el?.hasPointerCapture(e.pointerId)) el.releasePointerCapture(e.pointerId);
+      if (el?.hasPointerCapture(e.pointerId))
+        el.releasePointerCapture(e.pointerId);
     } catch {}
     // Kept until the click that follows this release has been swallowed below.
     if (drag.current?.moved) requestAnimationFrame(() => (drag.current = null));
@@ -200,30 +207,41 @@ export function CardRail({
       {/* In their own row under the rail. They were tried on the rail's
           vertical centre at its right edge, which is where the reference puts
           them — but the reference's cards stop short of the column and ours
-          run to it, so the arrow sat on top of the last card. */}
-      <div className="mt-10 flex items-center justify-end gap-4">
-        {lead ? <div className="mr-auto">{lead}</div> : null}
-        <div className="flex shrink-0 items-center gap-2">
-          <button
-            type="button"
-            onClick={() => step(-1)}
-            disabled={atStart}
-            aria-label="Previous"
-            className={ARROW}
-          >
-            <Chevron direction="prev" />
-          </button>
-          <button
-            type="button"
-            onClick={() => step(1)}
-            disabled={atEnd}
-            aria-label="Next"
-            className={ARROW}
-          >
-            <Chevron direction="next" />
-          </button>
+          run to it, so the arrow sat on top of the last card.
+
+          The row goes entirely when there is nothing to step through and no
+          lead to carry: at the start AND the end at once means every card is
+          already on screen, and two permanently disabled arrows under a
+          complete set are a control that only ever says no. A rail of three on
+          a desktop is the case that brought this up, but it is true of any of
+          them at a width where they all fit. */}
+      {steppable || lead ? (
+        <div className="mt-10 flex items-center justify-end gap-4">
+          {lead ? <div className="mr-auto">{lead}</div> : null}
+          {steppable ? (
+            <div className="flex shrink-0 items-center gap-2">
+              <button
+                type="button"
+                onClick={() => step(-1)}
+                disabled={atStart}
+                aria-label="Previous"
+                className={ARROW}
+              >
+                <Chevron direction="prev" />
+              </button>
+              <button
+                type="button"
+                onClick={() => step(1)}
+                disabled={atEnd}
+                aria-label="Next"
+                className={ARROW}
+              >
+                <Chevron direction="next" />
+              </button>
+            </div>
+          ) : null}
         </div>
-      </div>
+      ) : null}
     </div>
   );
 }
@@ -292,25 +310,25 @@ export function RailCard({
 }) {
   const copy = (
     <>
-        {/* Index, dash and name are one line in one face and ONE colour —
+      {/* Index, dash and name are one line in one face and ONE colour —
             toning the index down made the kicker read as two labels. The em
             dash is the separator the blog's post meta line uses. */}
-        {name ? (
-          // PP Mori, sentence case. It was type-eyebrow — ABC Diatype Mono in
-          // all caps — which on a card whose body is set in the page's own
-          // face read as a label stuck on from another system.
-          <p className="mb-2 flex min-w-0 items-baseline gap-2 text-sm text-muted-foreground">
-            {index ? (
-              <>
-                <span className="shrink-0 tabular-nums">{index}</span>
-                <span aria-hidden className="shrink-0">
-                  &mdash;
-                </span>
-              </>
-            ) : null}
-            <span className="truncate">{name}</span>
-          </p>
-        ) : null}
+      {name ? (
+        // PP Mori, sentence case. It was type-eyebrow — ABC Diatype Mono in
+        // all caps — which on a card whose body is set in the page's own
+        // face read as a label stuck on from another system.
+        <p className="mb-2 flex min-w-0 items-baseline gap-2 text-sm text-muted-foreground">
+          {index ? (
+            <>
+              <span className="shrink-0 tabular-nums">{index}</span>
+              <span aria-hidden className="shrink-0">
+                &mdash;
+              </span>
+            </>
+          ) : null}
+          <span className="truncate">{name}</span>
+        </p>
+      ) : null}
       <p className="text-pretty text-foreground">{caption}</p>
     </>
   );
@@ -341,7 +359,9 @@ export function RailCard({
               for which card wants which. */}
           <div
             className={
-              picture === "center" ? "absolute inset-0" : "relative min-h-0 flex-1"
+              picture === "center"
+                ? "absolute inset-0"
+                : "relative min-h-0 flex-1"
             }
             // The crop dissolves into the card instead of stopping on its
             // edge mid-row — the same move the mocks already make on their
@@ -354,7 +374,9 @@ export function RailCard({
               className={`absolute inset-x-0 aspect-[340/453] ${
                 picture === "fit" ? "top-1/2 -translate-y-1/2" : "top-0"
               }`}
-              style={picture === "fit" ? { marginTop: PICTURE_NUDGE } : undefined}
+              style={
+                picture === "fit" ? { marginTop: PICTURE_NUDGE } : undefined
+              }
             >
               {children}
             </div>
