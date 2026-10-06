@@ -281,7 +281,12 @@ export default function MarketingAgencyClientPortalPage() {
         <GridRails />
 
         {/* 8. Proof. One firm, not three: this handoff tells a single story at
-            length, so the band runs as one block rather than three columns. */}
+            length, so the band runs as one block rather than three columns.
+
+            No picture slot here. The section closes on the quote — the logo,
+            the claim and the words are the proof, and an empty panel under
+            them only pushed the one thing this section has to say further up
+            the page. V8 can take the slot back when it exists. */}
         <PortalProof
           heading="Five tools replaced. Five apps built."
           body="Advertai Marketing, an 11-person agency, built its own message center, design feedback app, and SEO dashboard on Assembly, and is retiring Markup.io, Bright Local, and Keyword.com."
@@ -296,13 +301,6 @@ export default function MarketingAgencyClientPortalPage() {
               href: "/customers/advertai-marketing",
             },
           ]}
-          visual={
-            <div
-              aria-hidden
-              title="V8 — the agency proof shot. Art direction pending."
-              className="mt-12 h-[400px] rounded-3xl bg-[var(--surface)] md:h-[500px]"
-            />
-          }
         />
         <GridDivider />
 
