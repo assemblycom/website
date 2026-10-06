@@ -324,8 +324,13 @@ export function StudioNav({
   const darkDisabled = softGlass
     ? "text-foreground/90"
     : "text-muted-foreground";
+  // rounded-lg, not rounded-full: these links draw no background, so the radius
+  // is only ever seen as the focus ring — and the global focus outline takes
+  // each element's own radius. At rounded-full, tabbing to Log in drew a pill
+  // beside the rounded-lg rings on Book a demo and Get started sitting right
+  // next to it. Same radius as those two now, so the row is one shape.
   const linkBase =
-    "whitespace-nowrap rounded-full px-2 py-1.5 text-sm transition-colors lg:px-3";
+    "whitespace-nowrap rounded-lg px-2 py-1.5 text-sm transition-colors lg:px-3";
   const linkRest = lightContent ? "text-white/70 hover:text-white" : darkLink;
   const linkCls = `${linkBase} ${linkRest}`;
   // The page you're on reads at full strength while the rest sit back — the
@@ -406,7 +411,8 @@ export function StudioNav({
     );
   };
 
-  const disabledCls = `cursor-default whitespace-nowrap rounded-full px-2 py-1.5 text-sm lg:px-3 ${lightContent ? "text-white/50" : darkDisabled}`;
+  // Matches linkBase above, for the same reason.
+  const disabledCls = `cursor-default whitespace-nowrap rounded-lg px-2 py-1.5 text-sm lg:px-3 ${lightContent ? "text-white/50" : darkDisabled}`;
   const ctaCls = `whitespace-nowrap rounded-lg px-4 py-1.5 text-sm transition-[background-color,color,opacity] hover:opacity-90 ${
     theme === "light"
       ? "bg-neutral-900 text-white"
