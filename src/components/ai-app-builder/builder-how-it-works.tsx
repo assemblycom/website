@@ -20,11 +20,20 @@ import {
  * card — the chapter's own CTA is the way out of this part of the page, and a
  * button on every step would ask four times.
  */
-const STEPS = [
+const STEPS: {
+  name: string;
+  body: string;
+  visual: React.ReactNode;
+  picture?: "fit" | "center" | "below";
+}[] = [
   {
     name: "Describe",
     body: "Say what you want, or start from a template.",
     visual: <DescribeCard />,
+    // The shortest scene in the set — a composer and nothing else. Centred in
+    // the space under the copy it read as sitting on the card's floor, and it
+    // is small enough to clear the caption from the card's own centre line.
+    picture: "center" as const,
   },
   {
     name: "Plan",
@@ -35,6 +44,10 @@ const STEPS = [
     name: "Build",
     body: "Client apps land in your client experience, team tools in your dashboard.",
     visual: <BuildCard />,
+    // The one scene drawn larger than the card — a 560x372 portal shot that
+    // bleeds off the right. Centred it reaches up over this caption, so it
+    // starts under the copy and crops at the foot instead.
+    picture: "below" as const,
   },
   {
     name: "Iterate",
@@ -54,6 +67,7 @@ export function BuilderHowItWorks() {
               index={`Step ${i + 1}`}
               name={step.name}
               caption={step.body}
+              picture={step.picture}
               copyInside
             >
               {step.visual}

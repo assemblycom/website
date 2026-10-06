@@ -90,6 +90,36 @@
   --mock-negative-bg: #fbeceb;
   --mock-negative-fg: #b8443a;
 
+  /* ── Mock chrome surfaces (LIGHT) ───────────────────────────────────────
+     The product mocks drawn inside rail cards (portal-build-cards) used to
+     reach for --background / --muted / raw white directly. That works in
+     light, where the card ground is --surface #f5f5f5 and a panel laid on it
+     goes UP to white — but it inverts in dark, where --background is the
+     page's near-black and a panel on #191919 went DOWN to #0a0a0a. The window
+     sank into the card instead of lifting off it, which is why the composer
+     and the plan list were barely readable.
+
+     So the mocks read these instead, and each theme decides which DIRECTION a
+     step goes: in light a well is a step down, in dark it is a step up. The
+     component only ever says "window", "well", "line" — see the dark block for
+     the other half. These light values are exactly what rendered before the
+     tokens existed, so light is unchanged. */
+  --mock-window: #ffffff;
+  /* The faint recess on a window: table heads, the row in play. Was
+     bg-muted/60 over white. */
+  --mock-well: #fafbfc;
+  /* The solid one: segmented tracks, progress troughs, the chat bubble. */
+  --mock-well-2: #f6f7f9;
+  --mock-line: #e8e9ec;
+  --mock-ink: #101114;
+  --mock-ink-soft: #6b7079;
+  /* Anything that must sit ABOVE a well — only the segmented thumb so far. */
+  --mock-raise: #ffffff;
+  /* The client's own branded nav slab. Carries the firm's colour, not ours,
+     so it stays a dark slab in both themes; dark drops it below the window so
+     it still reads as a separate object rather than merging with it. */
+  --mock-brand: #171717;
+
   /* The proposal masthead. It carries no colour of its own in either theme: the
      band is the page's own ground and a hairline closes it, rather than a slab in
      a different shade. Kept as tokens so the band and every ink on it stay one
@@ -140,6 +170,35 @@
   --mock-warning-fg: #cdb37a;
   --mock-negative-bg: rgba(224, 122, 113, 0.14);
   --mock-negative-fg: #d9928b;
+
+  /* ── Mock chrome surfaces (DARK) ────────────────────────────────────────
+     Rebuilt on the layering Linear uses in dark: surfaces step UP from the
+     ground and never back down, and each nested level is lighter than the one
+     holding it. Linear's own scale runs #08090a → #1c1c1f → #232326 → #28282c
+     with hairlines at #34343a and primary text at #f7f8f8.
+
+     Ours is the same shape against our ground:
+       --background #0a0a0a  the page
+       --surface    #191919  the rail card
+       --mock-window         the panel on the card      ← lifts, never sinks
+       --mock-well / well-2  recesses inside the panel  ← also lift, in dark
+
+     Kept to equal-RGB neutrals rather than copying Linear's slight blue cast,
+     because this scale is declared neutral on purpose further up (any blue
+     reads cheap on OLED). Ink is lifted off the body --foreground #d9d9d9,
+     which went muddy once it sat on a lifted panel instead of the near-black
+     ground. */
+  --mock-window: #212121;
+  --mock-well: #292929;
+  --mock-well-2: #303030;
+  --mock-line: #3a3a3a;
+  --mock-ink: #ededed;
+  --mock-ink-soft: #9a9a9a;
+  --mock-raise: #3d3d3d;
+  /* Below the window, not above it: the brand slab is the firm's colour and
+     has to stay a distinct object, which it cannot do at #171717 against a
+     #212121 panel. */
+  --mock-brand: #121212;
 
   /* The masthead on the dark ground: the page's own black, with the ink at full
      white rather than the softened --foreground the body copy uses, because the

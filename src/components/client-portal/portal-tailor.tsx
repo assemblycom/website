@@ -68,7 +68,7 @@ export function PortalTailor({
               Clients review and sign off on deliverables round by round.
             </p>
             <div
-              className={`-mr-6 mt-8 min-h-[276px] flex-1 overflow-hidden rounded-tl-xl border-l border-t border-border shadow-[0_1px_2px_rgba(16,24,40,0.04),0_18px_40px_-28px_rgba(16,24,40,0.28)] md:-mr-10 md:mt-10 [[data-theme=dark]_&]:border-[#383838] [[data-theme=dark]_&]:shadow-[0_18px_44px_-28px_rgba(0,0,0,0.6)]`}
+              className={`-mr-6 mt-8 min-h-[276px] flex-1 overflow-hidden rounded-tl-xl border-l border-t border-[var(--mock-line)] shadow-[0_1px_2px_rgba(16,24,40,0.04),0_18px_40px_-28px_rgba(16,24,40,0.28)] md:-mr-10 md:mt-10 [[data-theme=dark]_&]:shadow-[0_18px_44px_-28px_rgba(0,0,0,0.6)]`}
             >
               <ApprovalsMock />
             </div>
@@ -108,7 +108,7 @@ export function PortalTailor({
               Saves progress across steps, next to a secure data room.
             </p>
             <div
-              className={`-mr-6 mt-8 min-h-[248px] flex-1 overflow-hidden rounded-tl-xl border-l border-t border-border md:-mr-10 md:mt-10 [[data-theme=dark]_&]:border-[#383838]`}
+              className={`-mr-6 mt-8 min-h-[248px] flex-1 overflow-hidden rounded-tl-xl border-l border-t border-[var(--mock-line)] md:-mr-10 md:mt-10`}
             >
               <OnboardingMock />
             </div>

@@ -477,7 +477,7 @@ export default function AccountingClientPortalPage() {
           ways={[]}
           visualTitle="V6 — the portal showing an embedded Google Sheet (Harbor Dental PLLC, 2026 payroll summary), with thin connectors out to Google Sheets, Google Drive, OneDrive, Calendly, Jotform, Typeform, and one-way arrows to QuickBooks and Xero. Behind a dotted line at the far right, a neutral tile reading 'Your tax and accounting software'."
         />
-        <GridDivider />
+
 
         {/* 7. Trust. The seal band drops the HIPAA mark, per the handoff's V8:
             this page states the HIPAA boundary in the FAQ rather than claiming

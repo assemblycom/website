@@ -65,12 +65,18 @@ export function PortalStack({
   visualTitle?: string;
 } = {}) {
   return (
-    // Top rule only: the page draws a GridDivider under this section, and a
-    // border-b here put a second hairline a few pixels above it.
+    // Ruled top AND bottom, and both full-bleed, because the band is.
+    //
+    // It used to carry the top rule only and let the page's GridDivider close
+    // it, but that divider is capped to the 1200px column while this section's
+    // tint runs to the viewport — so past 1200px the band's foot had no line
+    // in either gutter and simply stopped, while its head ran edge to edge.
+    // Every page that uses this section drops its GridDivider underneath in
+    // exchange, so there is still exactly one hairline here.
     // Half-strength. A full-bleed band carries far more area than a tray or a
     // card, so the same grey reads a step darker across it; at 50% it sits
     // between the page and the slot inside it, which is what a band is for.
-    <section className="border-t border-border bg-[var(--surface)]/50 [[data-theme=dark]_&]:border-[#383838]">
+    <section className="border-y border-border bg-[var(--surface)]/50 [[data-theme=dark]_&]:border-[#383838]">
       <Reveal>
         {/* No right padding from lg up: the picture runs off the rail and past
             the viewport's edge, so it reads as a portal that continues rather

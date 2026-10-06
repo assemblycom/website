@@ -34,13 +34,13 @@ import {
 const W = 340;
 const H = 453;
 
-const LINE = "border-border [[data-theme=dark]_&]:border-[#383838]";
-const WINDOW = `overflow-hidden rounded-xl border bg-background shadow-[0_1px_2px_rgba(16,24,40,0.04),0_8px_24px_-18px_rgba(16,24,40,0.14)] ${LINE} [[data-theme=dark]_&]:shadow-[0_8px_24px_-18px_rgba(0,0,0,0.5)]`;
-const BRAND_SIDEBAR = "bg-neutral-900 text-white";
-const TABLE_HEAD = `flex items-center gap-3 border-b bg-muted/60 px-3.5 py-2 text-[11.5px] leading-none text-muted-foreground ${LINE} [[data-theme=dark]_&]:bg-white/[0.04]`;
+const LINE = "border-[var(--mock-line)]";
+const WINDOW = `overflow-hidden rounded-xl border bg-[var(--mock-window)] text-[color:var(--mock-ink)] shadow-[0_1px_2px_rgba(16,24,40,0.04),0_8px_24px_-18px_rgba(16,24,40,0.14)] ${LINE} [[data-theme=dark]_&]:shadow-[0_8px_24px_-18px_rgba(0,0,0,0.5)]`;
+const BRAND_SIDEBAR = "bg-[var(--mock-brand)] text-white";
+const TABLE_HEAD = `flex items-center gap-3 border-b bg-[var(--mock-well)] px-3.5 py-2 text-[11.5px] leading-none text-[color:var(--mock-ink-soft)] ${LINE}`;
 const CHIP = "rounded px-1.5 py-[4px] text-[11px] leading-none";
 const POSITIVE = `${CHIP} bg-[var(--mock-positive-bg)] text-[color:var(--mock-positive-fg)]`;
-const NEUTRAL = `${CHIP} bg-muted text-muted-foreground [[data-theme=dark]_&]:bg-white/[0.08]`;
+const NEUTRAL = `${CHIP} bg-[var(--mock-well-2)] text-[color:var(--mock-ink-soft)]`;
 
 // Every hover move hangs off this, so "no motion" is one rule rather than
 // four separate ones that can drift.
@@ -114,23 +114,23 @@ export function DescribeCard() {
         {/* The body the switch controls: the thing you would type, or the
             working apps you could start from instead. */}
         {tab === 0 ? (
-          <p className="text-[14px] leading-[1.5] text-foreground">
+          <p className="text-[14px] leading-[1.5] text-[color:var(--mock-ink)]">
             Add a project tracker each client sees for their own project.
             {/* The site's own caret blink (--animate-caret, the one the hero
                 typewriter uses), run only while the card is hovered: at rest
                 it is a resting insertion point, on hover someone is typing.
                 No MOVE here — a transition-all fights the keyframes. */}
-            <span className="ml-[1px] inline-block h-[14px] w-[1.5px] translate-y-[2px] bg-foreground motion-safe:group-hover/card:animate-caret" />
+            <span className="ml-[1px] inline-block h-[14px] w-[1.5px] translate-y-[2px] bg-[var(--mock-ink)] motion-safe:group-hover/card:animate-caret" />
           </p>
         ) : (
           <div className="flex flex-col gap-2">
             {TEMPLATES.map(({ name, icon }, i) => (
               <span
                 key={name}
-                className={`${MOVE} flex items-center gap-2.5 rounded-md border px-2.5 py-2.5 text-[13px] leading-none text-foreground group-hover/card:translate-x-[2px] ${LINE}`}
+                className={`${MOVE} flex items-center gap-2.5 rounded-md border px-2.5 py-2.5 text-[13px] leading-none text-[color:var(--mock-ink)] group-hover/card:translate-x-[2px] ${LINE}`}
                 style={{ transitionDelay: `${i * 70}ms` }}
               >
-                <span className="flex shrink-0 items-center justify-center text-muted-foreground [&>svg]:size-[15px]">
+                <span className="flex shrink-0 items-center justify-center text-[color:var(--mock-ink-soft)] [&>svg]:size-[15px]">
                   {icon}
                 </span>
                 <span className="min-w-0 flex-1 truncate">{name}</span>
@@ -146,16 +146,16 @@ export function DescribeCard() {
           <div
             role="radiogroup"
             aria-label="Where the app starts"
-            className="relative grid grid-cols-2 rounded-[7px] bg-muted p-[2px] text-[11px] [[data-theme=dark]_&]:bg-white/[0.08]"
+            className="relative grid grid-cols-2 rounded-[7px] bg-[var(--mock-well-2)] p-[2px] text-[11px]"
           >
             <span
               aria-hidden
-              className={`pointer-events-none absolute inset-y-[2px] left-[2px] z-10 w-[calc(50%-2px)] overflow-hidden rounded-[5px] bg-background shadow-[0_1px_2px_rgba(16,24,40,0.1)] transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+              className={`pointer-events-none absolute inset-y-[2px] left-[2px] z-10 w-[calc(50%-2px)] overflow-hidden rounded-[5px] bg-[var(--mock-raise)] shadow-[0_1px_2px_rgba(16,24,40,0.1)] transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
                 tab === 1 ? "translate-x-full" : ""
               }`}
             >
               <span
-                className={`absolute inset-0 grid w-[200%] grid-cols-2 text-foreground transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+                className={`absolute inset-0 grid w-[200%] grid-cols-2 text-[color:var(--mock-ink)] transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
                   tab === 1 ? "-translate-x-1/2" : ""
                 }`}
               >
@@ -175,7 +175,7 @@ export function DescribeCard() {
                 role="radio"
                 aria-checked={tab === i}
                 onClick={() => setTab(i)}
-                className="relative whitespace-nowrap rounded-[5px] px-2 py-[5px] text-center text-muted-foreground transition-colors hover:text-foreground"
+                className="relative whitespace-nowrap rounded-[5px] px-2 py-[5px] text-center text-[color:var(--mock-ink-soft)] transition-colors hover:text-[color:var(--mock-ink)]"
               >
                 {label}
               </button>
@@ -183,7 +183,7 @@ export function DescribeCard() {
           </div>
 
           <span
-            className={`${MOVE} flex size-[24px] shrink-0 items-center justify-center rounded-[5px] bg-foreground text-background group-hover/card:scale-110`}
+            className={`${MOVE} flex size-[24px] shrink-0 items-center justify-center rounded-[5px] bg-[var(--mock-ink)] text-[color:var(--mock-window)] group-hover/card:scale-110`}
           >
             <IconArrowUp className="size-[12px]" />
           </span>
@@ -237,7 +237,7 @@ function Ring({ value }: { value: number }) {
         r={r}
         fill="none"
         strokeWidth="2"
-        className="stroke-border [[data-theme=dark]_&]:stroke-[#383838]"
+        className="stroke-[var(--mock-line)]"
       />
       <circle
         cx="8"
@@ -247,7 +247,7 @@ function Ring({ value }: { value: number }) {
         strokeWidth="2"
         strokeLinecap="round"
         strokeDasharray={`${c * value} ${c}`}
-        className="stroke-foreground"
+        className="stroke-[var(--mock-ink)]"
       />
     </svg>
   );
@@ -259,10 +259,10 @@ export function PlanCard() {
       <div className={`flex flex-col ${WINDOW}`}>
         <div className={`flex items-center gap-2.5 border-b px-4 py-3 ${LINE}`}>
           <Ring value={DONE / PLAN_ITEMS.length} />
-          <span className="flex-1 truncate text-[14px] leading-none text-foreground">
+          <span className="flex-1 truncate text-[14px] leading-none text-[color:var(--mock-ink)]">
             Plan
           </span>
-          <span className="shrink-0 text-[12px] leading-none text-muted-foreground">
+          <span className="shrink-0 text-[12px] leading-none text-[color:var(--mock-ink-soft)]">
             {DONE} of {PLAN_ITEMS.length}
           </span>
         </div>
@@ -274,7 +274,7 @@ export function PlanCard() {
             <div
               key={label}
               className={`flex items-center gap-2.5 border-b px-4 py-[11px] last:border-b-0 ${LINE} ${
-                next ? "bg-muted/60 [[data-theme=dark]_&]:bg-white/[0.04]" : ""
+                next ? "bg-[var(--mock-well)]" : ""
               }`}
             >
               {/* Three states, as the reference draws them: filled with a check
@@ -285,12 +285,12 @@ export function PlanCard() {
                 the column lines up and no mark looks heavier than another. */}
               <span className="flex size-[18px] shrink-0 items-center justify-center">
                 {done ? (
-                  <span className="flex size-[16px] items-center justify-center rounded-full bg-foreground text-background">
+                  <span className="flex size-[16px] items-center justify-center rounded-full bg-[var(--mock-ink)] text-[color:var(--mock-window)]">
                     <IconCheck className="size-[10px]" />
                   </span>
                 ) : next ? (
                   <span
-                    className={`${MOVE} size-[16px] rounded-full border-2 border-muted-foreground/70 group-hover/card:border-foreground`}
+                    className={`${MOVE} size-[16px] rounded-full border-2 border-[var(--mock-ink-soft)] group-hover/card:border-[var(--mock-ink)]`}
                   />
                 ) : (
                   <span
@@ -300,7 +300,7 @@ export function PlanCard() {
               </span>
               <span
                 className={`min-w-0 flex-1 truncate text-[13.5px] leading-none ${
-                  done ? "text-muted-foreground" : "text-foreground"
+                  done ? "text-[color:var(--mock-ink-soft)]" : "text-[color:var(--mock-ink)]"
                 }`}
               >
                 {label}
@@ -367,7 +367,7 @@ export function BuildCard() {
 
         <div className="flex min-w-0 flex-1 flex-col px-4 pt-3.5">
           <div className="flex items-center justify-between gap-3">
-            <span className="whitespace-nowrap text-[14px] leading-none text-foreground">
+            <span className="whitespace-nowrap text-[14px] leading-none text-[color:var(--mock-ink)]">
               Project tracker
             </span>
             <span className={`${NEUTRAL} whitespace-nowrap`}>
@@ -378,12 +378,12 @@ export function BuildCard() {
           <div
             className={`mt-3 flex items-center gap-3 rounded-lg border px-3.5 py-2.5 ${LINE}`}
           >
-            <span className="whitespace-nowrap text-[11.5px] leading-none text-muted-foreground">
+            <span className="whitespace-nowrap text-[11.5px] leading-none text-[color:var(--mock-ink-soft)]">
               2 of 4 complete
             </span>
-            <span className="h-1 flex-1 overflow-hidden rounded-full bg-muted [[data-theme=dark]_&]:bg-white/[0.08]">
+            <span className="h-1 flex-1 overflow-hidden rounded-full bg-[var(--mock-well-2)]">
               <span
-                className={`${MOVE} block h-full w-[18%] rounded-full bg-foreground group-hover/card:w-1/2`}
+                className={`${MOVE} block h-full w-[18%] rounded-full bg-[var(--mock-ink)] group-hover/card:w-1/2`}
               />
             </span>
           </div>
@@ -399,10 +399,10 @@ export function BuildCard() {
                 key={name}
                 className={`flex items-center gap-3 border-b px-3.5 py-[9px] last:border-b-0 ${LINE}`}
               >
-                <span className="w-[164px] shrink-0 whitespace-nowrap text-[13px] leading-none text-foreground">
+                <span className="w-[164px] shrink-0 whitespace-nowrap text-[13px] leading-none text-[color:var(--mock-ink)]">
                   {name}
                 </span>
-                <span className="w-[84px] shrink-0 whitespace-nowrap text-[11px] leading-none text-muted-foreground">
+                <span className="w-[84px] shrink-0 whitespace-nowrap text-[11px] leading-none text-[color:var(--mock-ink-soft)]">
                   {owner}
                 </span>
                 <span className="w-[82px] shrink-0">
@@ -452,13 +452,13 @@ export function IterateCard() {
   return (
     <Scene>
       <div className={`flex flex-col ${WINDOW}`}>
-        <p className="shrink-0 bg-muted px-4 py-3 text-[14px] leading-[1.5] text-foreground [[data-theme=dark]_&]:bg-white/[0.08]">
+        <p className="shrink-0 bg-[var(--mock-well-2)] px-4 py-3 text-[14px] leading-[1.5] text-[color:var(--mock-ink)]">
           Add a due date to every project.
         </p>
         <div className="px-4 py-4">
           <div className={`overflow-hidden rounded-lg border ${LINE}`}>
             <div
-              className={`flex items-center gap-2 border-b bg-muted/60 px-3 py-2 text-[11.5px] leading-none text-muted-foreground ${LINE} [[data-theme=dark]_&]:bg-white/[0.04]`}
+              className={`flex items-center gap-2 border-b bg-[var(--mock-well)] px-3 py-2 text-[11.5px] leading-none text-[color:var(--mock-ink-soft)] ${LINE}`}
             >
               <span className="flex-1">Client</span>
               <span
@@ -476,11 +476,11 @@ export function IterateCard() {
                 key={client}
                 className={`flex items-center gap-2 border-b px-3 py-[11px] last:border-b-0 ${LINE}`}
               >
-                <span className="flex-1 truncate text-[13px] leading-none text-foreground">
+                <span className="flex-1 truncate text-[13px] leading-none text-[color:var(--mock-ink)]">
                   {client}
                 </span>
                 <span
-                  className={`${MOVE} w-0 overflow-hidden whitespace-nowrap text-right text-[11px] leading-none text-muted-foreground opacity-0 group-hover/card:w-[58px] group-hover/card:opacity-100`}
+                  className={`${MOVE} w-0 overflow-hidden whitespace-nowrap text-right text-[11px] leading-none text-[color:var(--mock-ink-soft)] opacity-0 group-hover/card:w-[58px] group-hover/card:opacity-100`}
                   style={{ transitionDelay: `${i * 70}ms` }}
                 >
                   {due}
@@ -519,17 +519,17 @@ export function SecuredCard() {
             key={who}
             className={`flex items-center gap-2 border-b px-3.5 py-[13px] ${LINE}`}
           >
-            <span className="flex size-[16px] shrink-0 items-center justify-center rounded-full bg-foreground text-background">
+            <span className="flex size-[16px] shrink-0 items-center justify-center rounded-full bg-[var(--mock-ink)] text-[color:var(--mock-window)]">
               <IconCheck className="size-[10px]" />
             </span>
-            <span className="flex-1 truncate text-[13px] leading-none text-foreground">
+            <span className="flex-1 truncate text-[13px] leading-none text-[color:var(--mock-ink)]">
               {who}
             </span>
             <span className={NEUTRAL}>{access}</span>
           </div>
         ))}
         <div className="px-3.5 py-3">
-          <p className="text-[11.5px] leading-[1.5] text-muted-foreground">
+          <p className="text-[11.5px] leading-[1.5] text-[color:var(--mock-ink-soft)]">
             Built and maintained by Assembly.
           </p>
         </div>

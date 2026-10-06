@@ -74,11 +74,12 @@ const EDGE_R = "md:pr-2 lg:pr-3";
  * starts. The capability column takes no rule: it opens on the page's left
  * rail, which is already a line.
  *
- * The wash is square, not a rounded card: it runs to the rail like the rules do,
- * and a rounded fill inside a grid built entirely from lines read as a stray
- * object sitting on top of it. The last row keeps its rule for the same reason —
- * the page closes this section on the table's own line rather than a
- * `GridDivider`, so dropping it left the block open at the foot.
+ * The table is framed and rounded, and the wash runs to that frame rather than
+ * being a rounded card of its own floating inside it — the fill still reaches
+ * the edge on every side, it is the frame that turns the corner. The foot stays
+ * closed: the page ends this section on the table's own edge rather than a
+ * `GridDivider`, and that edge is now the frame's bottom instead of the last
+ * row's rule.
  */
 export function BuilderAlternatives() {
   return (
@@ -152,16 +153,20 @@ export function BuilderAlternatives() {
         ))}
       </ul>
 
-      {/* The frame's two outer sides. The cells draw the rules between columns
-          and rows, so the table had a top and a bottom and nothing down either
-          flank — the banded last column in particular just stopped.
-          
-          Square, and not clipped. A radius here needed overflow-hidden to
-          round the cells inside it, and that clipped the header row's own top
-          rule at both corners: the frame curved away while the rule ran
-          straight into it, which read as a broken corner. A table is a grid of
-          straight lines; its outer corners can be too. */}
-      <div className={`mt-12 hidden border-x md:block ${GRID_LINE} ${BLEED}`}>
+      {/* The frame, all four sides, rounded and clipping the cells inside it.
+          The cells draw the rules BETWEEN columns and rows; the frame draws
+          the outside.
+
+          A radius was tried here once before and taken out again, because the
+          header row kept its own top rule and the last row its own bottom one
+          while the frame curved away from them — the rule ran straight into
+          the corner and read as broken. The fix is not to go square, it is to
+          stop drawing those two rules twice: the frame IS the table's top and
+          bottom now, so the head only rules below itself and the last row
+          rules not at all. Nothing straight meets the curve. */}
+      <div
+        className={`mt-12 hidden overflow-hidden rounded-2xl border md:block ${GRID_LINE} ${BLEED}`}
+      >
         <table className="w-full table-fixed border-collapse text-left">
           <caption className="sr-only">
             Building in-house, a standalone AI app builder, and Assembly
@@ -174,13 +179,14 @@ export function BuilderAlternatives() {
             <col className="w-[24%]" />
           </colgroup>
           <thead>
-            {/* Ruled top and bottom: every body row is bounded, and a header
-                left open made the table read as a fragment. The row carries a
-                half-strength `--muted` — the same token the Assembly column
-                uses, at 50%, so the head reads as a band without inventing a
-                tint and the own column still steps up from it at full strength
-                in both themes. */}
-            <tr className={`border-y ${GRID_LINE}`}>
+            {/* Ruled underneath only — the frame above it is the table's top
+                edge, and a second rule there would be the one that collides
+                with the rounded corner. The row carries a half-strength
+                `--muted` — the same token the Assembly column uses, at 50%, so
+                the head reads as a band without inventing a tint and the own
+                column still steps up from it at full strength in both
+                themes. */}
+            <tr className={`border-b ${GRID_LINE}`}>
               {/* The band is on the three named columns, not the row. The
                   first cell heads nothing — it sits above the capability
                   labels — so tinting it made the band look like it started in
@@ -206,7 +212,7 @@ export function BuilderAlternatives() {
           </thead>
           <tbody>
             {ROWS.map((row) => (
-              <tr key={row.label} className={`border-b ${GRID_LINE}`}>
+              <tr key={row.label} className={`border-b last:border-b-0 ${GRID_LINE}`}>
                 <th
                   scope="row"
                   className={`py-6 pr-8 align-top font-normal ${EDGE_L}`}

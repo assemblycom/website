@@ -150,8 +150,6 @@ export default function ClientPortalPage() {
             stutter. */}
         <PortalStack />
 
-        <GridDivider />
-
         <PortalTrust />
         <GridDivider />
       </div>

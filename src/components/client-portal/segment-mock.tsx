@@ -57,11 +57,11 @@ export function IconUpload({ className }: { className?: string }) {
 const CHIP = "rounded px-1.5 py-[3px] text-[9px] leading-none";
 const POSITIVE = `${CHIP} bg-[var(--mock-positive-bg)] text-[color:var(--mock-positive-fg)]`;
 const WARNING = `${CHIP} bg-[var(--mock-warning-bg)] text-[color:var(--mock-warning-fg)]`;
-const NEUTRAL = `${CHIP} bg-muted text-muted-foreground [[data-theme=dark]_&]:bg-white/[0.08]`;
+const NEUTRAL = `${CHIP} bg-muted text-[color:var(--mock-ink-soft)] [[data-theme=dark]_&]:bg-white/[0.08]`;
 
-const LINE = "border-border [[data-theme=dark]_&]:border-[#383838]";
+const LINE = "border-[var(--mock-line)]";
 /** The white panel the app is drawn on, wherever a card shows one. */
-const PANEL = `bg-background ${LINE}`;
+const PANEL = `bg-[var(--mock-window)] text-[color:var(--mock-ink)] ${LINE}`;
 
 function NavRow({
   icon,
@@ -82,8 +82,8 @@ function NavRow({
             // mark in a mock whose subject is elsewhere. Full-strength type
             // against muted siblings is the whole signal: it is the only
             // black row in the column.
-            "text-foreground"
-          : "text-muted-foreground"
+            "text-[color:var(--mock-ink)]"
+          : "text-[color:var(--mock-ink-soft)]"
       }`}
     >
       <span className="flex size-[11px] shrink-0 items-center justify-center">
@@ -118,10 +118,10 @@ export function PortalSidebar({
         <span className="flex size-[15px] items-center justify-center rounded-[3px] bg-foreground text-background">
           <IconBrandMark className="size-[8px]" />
         </span>
-        <span className="truncate text-[10.5px] leading-none text-foreground">
+        <span className="truncate text-[10.5px] leading-none text-[color:var(--mock-ink)]">
           {brand}
         </span>
-        <IconChevronDown className="size-[9px] shrink-0 text-muted-foreground" />
+        <IconChevronDown className="size-[9px] shrink-0 text-[color:var(--mock-ink-soft)]" />
       </span>
       <NavRow icon={<IconGlobe className="size-[11px]" />} label="Home" />
       <NavRow icon={<IconChat className="size-[11px]" />} label="Messages" />
@@ -150,7 +150,7 @@ function AppHeader({ title, meta }: { title: string; meta?: React.ReactNode }) {
     <div
       className={`flex items-center justify-between gap-3 border-b px-4 py-3 ${LINE}`}
     >
-      <span className="truncate text-[12px] leading-none text-foreground">
+      <span className="truncate text-[12px] leading-none text-[color:var(--mock-ink)]">
         {title}
       </span>
       {meta}
@@ -175,11 +175,11 @@ function Row({
     >
       {lead}
       <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
-        <span className="truncate text-[10.5px] leading-none text-foreground">
+        <span className="truncate text-[10.5px] leading-none text-[color:var(--mock-ink)]">
           {label}
         </span>
         {sub ? (
-          <span className="truncate text-[9px] leading-none text-muted-foreground">
+          <span className="truncate text-[9px] leading-none text-[color:var(--mock-ink-soft)]">
             {sub}
           </span>
         ) : null}
@@ -202,7 +202,7 @@ export function ApprovalsMock() {
   return (
     <div
       aria-hidden
-      className="pointer-events-none flex h-full select-none bg-background"
+      className="pointer-events-none flex h-full select-none bg-[var(--mock-window)] text-[color:var(--mock-ink)]"
     >
       <PortalSidebar app="Approvals" />
       <div className="flex min-w-0 flex-1 flex-col">
@@ -234,7 +234,7 @@ export function ApprovalsMock() {
               Approve
             </span>
             <span
-              className={`rounded-[4px] border px-2.5 py-[6px] text-[10px] leading-none text-muted-foreground ${LINE}`}
+              className={`rounded-[4px] border px-2.5 py-[6px] text-[10px] leading-none text-[color:var(--mock-ink-soft)] ${LINE}`}
             >
               Request changes
             </span>
@@ -278,10 +278,10 @@ export function ProgressMock() {
               style={{ width: `${(done / total) * 100}%` }}
             />
             <div className="relative flex h-full items-center justify-between gap-3 px-3">
-              <span className="truncate text-[13px] leading-none text-foreground">
+              <span className="truncate text-[13px] leading-none text-[color:var(--mock-ink)]">
                 {client}
               </span>
-              <span className="shrink-0 text-[13px] leading-none tabular-nums text-muted-foreground">
+              <span className="shrink-0 text-[13px] leading-none tabular-nums text-[color:var(--mock-ink-soft)]">
                 {done}/{total}
               </span>
             </div>
@@ -305,13 +305,13 @@ export function DocumentsStatsMock() {
   return (
     <div
       aria-hidden
-      className={`pointer-events-none flex h-full select-none flex-col gap-4 rounded-xl border bg-background p-4 ${LINE}`}
+      className={`pointer-events-none flex h-full select-none flex-col gap-4 rounded-xl border bg-[var(--mock-window)] text-[color:var(--mock-ink)] p-4 ${LINE}`}
     >
       <div>
-        <p className="text-[11.5px] leading-none text-muted-foreground">
+        <p className="text-[11.5px] leading-none text-[color:var(--mock-ink-soft)]">
           Documents received
         </p>
-        <p className="mt-2 text-[24px] leading-none text-foreground">8 of 12</p>
+        <p className="mt-2 text-[24px] leading-none text-[color:var(--mock-ink)]">8 of 12</p>
       </div>
 
       {/* No axis rule: with the columns all starting from the same edge the
@@ -325,7 +325,7 @@ export function DocumentsStatsMock() {
           {UPLOADS.map((n, i) => (
             <div key={i} className="flex h-full flex-1 flex-col justify-end">
               {n === peak ? (
-                <span className="mb-1 text-center text-[10.5px] leading-none tabular-nums text-muted-foreground">
+                <span className="mb-1 text-center text-[10.5px] leading-none tabular-nums text-[color:var(--mock-ink-soft)]">
                   {n}
                 </span>
               ) : null}
@@ -340,7 +340,7 @@ export function DocumentsStatsMock() {
             </div>
           ))}
         </div>
-        <div className="flex items-center justify-between pt-3 text-[10.5px] leading-none text-muted-foreground">
+        <div className="flex items-center justify-between pt-3 text-[10.5px] leading-none text-[color:var(--mock-ink-soft)]">
           <span>Nov 4</span>
           <span>Dec 9</span>
         </div>
@@ -360,7 +360,7 @@ export function DocumentsMock() {
   return (
     <div
       aria-hidden
-      className="pointer-events-none flex h-full select-none bg-background"
+      className="pointer-events-none flex h-full select-none bg-[var(--mock-window)] text-[color:var(--mock-ink)]"
     >
       <PortalSidebar app="Documents" />
       <div className="flex min-w-0 flex-1 flex-col">
@@ -378,7 +378,7 @@ export function DocumentsMock() {
               <span className="h-1 w-10 overflow-hidden rounded-full bg-muted [[data-theme=dark]_&]:bg-white/[0.08]">
                 <span className="block h-full w-2/3 rounded-full bg-foreground" />
               </span>
-              <span className="text-[10px] leading-none text-muted-foreground">
+              <span className="text-[10px] leading-none text-[color:var(--mock-ink-soft)]">
                 8 of 12
               </span>
             </span>
@@ -398,7 +398,7 @@ export function DocumentsMock() {
               label="Bank statements, Q4"
               trailing={
                 <span
-                  className={`flex items-center gap-1 rounded-[4px] border px-2 py-[5px] text-[9px] leading-none text-foreground ${LINE}`}
+                  className={`flex items-center gap-1 rounded-[4px] border px-2 py-[5px] text-[9px] leading-none text-[color:var(--mock-ink)] ${LINE}`}
                 >
                   <IconUpload className="size-[9px]" />
                   Upload
@@ -428,7 +428,7 @@ export function EmbedMock() {
   return (
     <div
       aria-hidden
-      className="pointer-events-none flex h-full select-none bg-background"
+      className="pointer-events-none flex h-full select-none bg-[var(--mock-window)] text-[color:var(--mock-ink)]"
     >
       <PortalSidebar app="Book a call" />
       <div className="flex min-w-0 flex-1 flex-col">
@@ -437,14 +437,14 @@ export function EmbedMock() {
           meta={<span className={NEUTRAL}>Embedded</span>}
         />
         <div className="min-h-0 flex-1 px-4 py-3.5">
-          <span className="block text-[9.5px] leading-none text-muted-foreground">
+          <span className="block text-[9.5px] leading-none text-[color:var(--mock-ink-soft)]">
             March 2026
           </span>
           <div className="mt-2.5 grid grid-cols-3 gap-1.5">
             {SLOT_DAYS.map((day) => (
               <span
                 key={day}
-                className={`flex items-center justify-center rounded-[5px] border py-[7px] text-[10px] leading-none text-foreground ${LINE}`}
+                className={`flex items-center justify-center rounded-[5px] border py-[7px] text-[10px] leading-none text-[color:var(--mock-ink)] ${LINE}`}
               >
                 {day}
               </span>
@@ -459,7 +459,7 @@ export function EmbedMock() {
                 className={`flex items-center justify-center rounded-[5px] py-[7px] text-[10px] leading-none ${
                   i === 0
                     ? "bg-foreground text-background"
-                    : `border text-foreground ${LINE}`
+                    : `border text-[color:var(--mock-ink)] ${LINE}`
                 }`}
               >
                 {time}
@@ -495,13 +495,13 @@ export function GenericPortalMock() {
   return (
     <div
       aria-hidden
-      className="pointer-events-none flex h-full select-none bg-background"
+      className="pointer-events-none flex h-full select-none bg-[var(--mock-window)] text-[color:var(--mock-ink)]"
     >
       <PortalSidebar brand="Generic portal" />
       <div className="flex min-w-0 flex-1 flex-col">
         <AppHeader title="Billing" />
         <div className="flex min-h-0 flex-1 flex-col px-4 py-3.5">
-          <span className="block text-[10px] leading-none text-muted-foreground">
+          <span className="block text-[10px] leading-none text-[color:var(--mock-ink-soft)]">
             Everything else
           </span>
           {/* Dashed, because none of these is an app the portal holds — they
@@ -510,14 +510,14 @@ export function GenericPortalMock() {
             {ORBIT_TOOLS.map((tool) => (
               <span
                 key={tool}
-                className={`flex items-center justify-between gap-2 truncate rounded-[5px] border border-dashed px-2.5 py-[9px] text-[11px] leading-none text-muted-foreground ${LINE}`}
+                className={`flex items-center justify-between gap-2 truncate rounded-[5px] border border-dashed px-2.5 py-[9px] text-[11px] leading-none text-[color:var(--mock-ink-soft)] ${LINE}`}
               >
                 {tool}
                 <IconGlobe className="size-[11px] shrink-0" />
               </span>
             ))}
           </div>
-          <span className="mt-auto w-fit rounded-[5px] bg-muted px-2.5 py-[7px] text-[10px] leading-none text-muted-foreground [[data-theme=dark]_&]:bg-white/[0.08]">
+          <span className="mt-auto w-fit rounded-[5px] bg-muted px-2.5 py-[7px] text-[10px] leading-none text-[color:var(--mock-ink-soft)] [[data-theme=dark]_&]:bg-white/[0.08]">
             Request a feature
           </span>
         </div>
@@ -536,7 +536,7 @@ export function IntakeAppMock() {
   return (
     <div
       aria-hidden
-      className="pointer-events-none flex h-full select-none bg-background"
+      className="pointer-events-none flex h-full select-none bg-[var(--mock-window)] text-[color:var(--mock-ink)]"
     >
       <PortalSidebar app="Partner intake" />
       <div className="flex min-w-0 flex-1 flex-col">
@@ -548,11 +548,11 @@ export function IntakeAppMock() {
           <div className="flex flex-col gap-2.5">
             {INTAKE_FIELDS.map((field) => (
               <div key={field.label}>
-                <span className="block text-[10px] leading-none text-muted-foreground">
+                <span className="block text-[10px] leading-none text-[color:var(--mock-ink-soft)]">
                   {field.label}
                 </span>
                 <div
-                  className={`mt-1.5 flex h-[28px] items-center rounded-[5px] border px-2.5 text-[11px] leading-none text-foreground ${LINE}`}
+                  className={`mt-1.5 flex h-[28px] items-center rounded-[5px] border px-2.5 text-[11px] leading-none text-[color:var(--mock-ink)] ${LINE}`}
                 >
                   {field.value}
                 </div>
@@ -589,7 +589,7 @@ function Panel({
     <div
       className={`min-w-0 overflow-hidden rounded-lg border p-3 ${PANEL} ${className}`}
     >
-      <p className="truncate text-[10px] leading-none text-muted-foreground">
+      <p className="truncate text-[10px] leading-none text-[color:var(--mock-ink-soft)]">
         {title}
       </p>
       {children}
@@ -613,11 +613,11 @@ export function OnboardingMock() {
       // each other, so the whole screen sank into the page and only the panels
       // read as anything. On white it is unmistakably an app screen; the panels
       // keep their hairline borders, which is separation enough.
-      className="pointer-events-none grid h-full select-none grid-cols-1 content-start gap-2.5 bg-background p-2.5 sm:grid-cols-[1.55fr_1fr]"
+      className="pointer-events-none grid h-full select-none grid-cols-1 content-start gap-2.5 bg-[var(--mock-window)] text-[color:var(--mock-ink)] p-2.5 sm:grid-cols-[1.55fr_1fr]"
     >
       {/* Where this client is up to. */}
       <Panel title="Client onboarding">
-        <p className="mt-2 text-[13px] leading-none text-foreground">
+        <p className="mt-2 text-[13px] leading-none text-[color:var(--mock-ink)]">
           Engagement letter
         </p>
         {/* One continuous track, filled to where this client has got to —
@@ -642,7 +642,7 @@ export function OnboardingMock() {
               <span
                 key={s}
                 className={`truncate text-[8.5px] leading-none ${
-                  i <= 1 ? "text-foreground" : "text-muted-foreground"
+                  i <= 1 ? "text-[color:var(--mock-ink)]" : "text-[color:var(--mock-ink-soft)]"
                 }`}
               >
                 {s}
@@ -654,7 +654,7 @@ export function OnboardingMock() {
 
       {/* The reassurance the copy promises: nothing typed is lost. */}
       <Panel title="Progress">
-        <p className="mt-2 text-[20px] leading-none text-foreground">2 of 4</p>
+        <p className="mt-2 text-[20px] leading-none text-[color:var(--mock-ink)]">2 of 4</p>
         <span className={`mt-2.5 inline-flex ${POSITIVE}`}>Saved</span>
       </Panel>
 
@@ -663,21 +663,21 @@ export function OnboardingMock() {
         <div className="mt-1">
           <Row
             lead={
-              <IconFile className="size-[12px] shrink-0 text-muted-foreground" />
+              <IconFile className="size-[12px] shrink-0 text-[color:var(--mock-ink-soft)]" />
             }
             label="Deed of trust.pdf"
             trailing={<span className={POSITIVE}>Uploaded</span>}
           />
           <Row
             lead={
-              <IconFile className="size-[12px] shrink-0 text-muted-foreground" />
+              <IconFile className="size-[12px] shrink-0 text-[color:var(--mock-ink-soft)]" />
             }
             label="Proof of identity.pdf"
             trailing={<span className={POSITIVE}>Uploaded</span>}
           />
           <Row
             lead={
-              <IconFile className="size-[12px] shrink-0 text-muted-foreground" />
+              <IconFile className="size-[12px] shrink-0 text-[color:var(--mock-ink-soft)]" />
             }
             label="Signed letter"
             trailing={<span className={WARNING}>Awaiting</span>}
@@ -688,8 +688,8 @@ export function OnboardingMock() {
       {/* Last in, first out: stacked, this one is below the crop anyway, and
           it carries the least — a line and two placeholder bars. */}
       <Panel title="Access" className="hidden sm:block">
-        <div className="mt-2 flex items-center gap-1.5 text-[10px] leading-none text-foreground">
-          <IconLock className="size-[11px] text-muted-foreground" />
+        <div className="mt-2 flex items-center gap-1.5 text-[10px] leading-none text-[color:var(--mock-ink)]">
+          <IconLock className="size-[11px] text-[color:var(--mock-ink-soft)]" />
           Client only
         </div>
         <div className="mt-2.5 flex flex-col gap-1.5">

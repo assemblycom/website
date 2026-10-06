@@ -255,7 +255,7 @@ export default function MarketingAgencyClientPortalPage() {
           ways={[]}
           visualTitle="V6 — the agency stack shot. Art direction pending."
         />
-        <GridDivider />
+
 
         {/* 7. Trust. No rows here: this handoff makes the security case in its
             paragraph rather than in drawers a reader opens, so the right column

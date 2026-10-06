@@ -130,7 +130,13 @@ export function PortalProof({
                   // Half-strength: at full --surface the fill was as dark as
                   // the trays elsewhere on the page, which on a card made of
                   // nothing but type read as the card being disabled.
-                  className={`pointer-events-none absolute inset-y-0 right-0 -z-10 rounded-xl bg-[var(--surface)]/60 opacity-0 transition-opacity duration-200 group-hover:opacity-100 motion-reduce:transition-none ${
+                  //
+                  // Square. The cell it fills is bounded by the grid's own
+                  // hairlines, so a rounded fill pulled away from them at all
+                  // four corners and read as a card laid on the grid rather
+                  // than the column lighting up — the same reason the
+                  // comparison table's wash runs to its frame.
+                  className={`pointer-events-none absolute inset-y-0 right-0 -z-10 bg-[var(--surface)]/60 opacity-0 transition-opacity duration-200 group-hover:opacity-100 motion-reduce:transition-none ${
                     i === 0 ? "-left-4" : "left-0"
                   }`}
                 />

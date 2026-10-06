@@ -76,6 +76,67 @@ export function CardRail({
     return () => observer.disconnect();
   }, [sync]);
 
+  // ── Drag to scroll ────────────────────────────────────────────────────
+  // Touch and trackpad already drag this rail natively; a mouse did not, so on
+  // a desktop the arrows were the only way through it and the cards looked
+  // draggable without being so. This adds the mouse case only — pointerType
+  // "touch" is left alone, because intercepting it would replace the browser's
+  // own momentum and rubber-banding with a worse version of both.
+  const drag = useRef<{ x: number; left: number; moved: boolean } | null>(null);
+  const [dragging, setDragging] = useState(false);
+
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    const el = ref.current;
+    if (!el || e.pointerType === "touch" || e.button !== 0) return;
+    drag.current = { x: e.clientX, left: el.scrollLeft, moved: false };
+    // Imperatively, not through the className below: smooth scrolling animates
+    // towards each scrollLeft we assign, so the rail would lag the pointer and
+    // never catch up — and a React state flip only lands a frame later, which
+    // is exactly the frames the drag starts on.
+    el.style.scrollBehavior = "auto";
+    setDragging(true);
+  };
+
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    const el = ref.current;
+    const d = drag.current;
+    if (!el || !d) return;
+    const dx = e.clientX - d.x;
+    // Capture only once the pointer has travelled far enough to be a drag
+    // rather than a click, so a plain click on a card still reaches the card.
+    if (!d.moved && Math.abs(dx) < 4) return;
+    if (!d.moved) {
+      d.moved = true;
+      // Capture keeps the drag alive when the pointer leaves the rail. It
+      // throws if the pointer is no longer active, which the drag itself does
+      // not depend on — so losing it is not a reason to drop the scroll.
+      try {
+        el.setPointerCapture(e.pointerId);
+      } catch {}
+    }
+    el.scrollLeft = d.left - dx;
+  };
+
+  const endDrag = (e: React.PointerEvent<HTMLDivElement>) => {
+    const el = ref.current;
+    // Back to the stylesheet's smooth, which the arrow buttons rely on.
+    if (el) el.style.scrollBehavior = "";
+    try {
+      if (el?.hasPointerCapture(e.pointerId)) el.releasePointerCapture(e.pointerId);
+    } catch {}
+    // Kept until the click that follows this release has been swallowed below.
+    if (drag.current?.moved) requestAnimationFrame(() => (drag.current = null));
+    else drag.current = null;
+    setDragging(false);
+  };
+
+  // A drag that ends on top of a card would otherwise fire that card's click.
+  const onClickCapture = (e: React.MouseEvent) => {
+    if (!drag.current?.moved) return;
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
   // One card plus its gap, read off the DOM rather than recomputed from the
   // breakpoint, so the step stays right wherever the card widths are set.
   const step = (direction: 1 | -1) => {
@@ -102,6 +163,11 @@ export function CardRail({
         <div
           ref={ref}
           onScroll={sync}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={endDrag}
+          onPointerCancel={endDrag}
+          onClickCapture={onClickCapture}
           role="group"
           aria-label={label}
           // overflow-y-hidden is load-bearing, not tidying: `overflow-x: auto`
@@ -114,7 +180,14 @@ export function CardRail({
           // vertical scroll that merely passes over the rail — which is the
           // scroll getting caught and pulled back. Proximity snaps when you
           // are already near a card and leaves the scroll alone otherwise.
-          className="flex snap-x snap-proximity gap-4 overflow-x-auto overflow-y-hidden overscroll-x-contain scroll-smooth [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          //
+          // While dragging, the cursor becomes the grabbing hand and text
+          // selection is off — a drag across two cards would otherwise select
+          // their captions. Smooth scrolling is turned off for the drag too,
+          // but imperatively in onPointerDown; see there for why.
+          className={`flex snap-x snap-proximity gap-4 overflow-x-auto overflow-y-hidden overscroll-x-contain scroll-smooth [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${
+            dragging ? "cursor-grabbing select-none" : "cursor-grab"
+          }`}
         >
           {children}
         </div>
@@ -151,6 +224,17 @@ export function CardRail({
   );
 }
 
+// Where the cropped picture gives out. Opaque for most of its run, then a
+// short band to nothing — the whole fade happens inside the overflow, so no
+// row that fits is dimmed on its way past.
+const PICTURE_FADE = "linear-gradient(to bottom, #000 0 76%, transparent 99%)";
+
+// How far "fit" raises a scene off the centre of the space under the copy.
+// Dead centre of that space reads low, because the space is itself the bottom
+// two thirds of the card; a small nudge up is enough to settle it without
+// walking into the caption.
+const PICTURE_NUDGE = "-1rem";
+
 /**
  * One card in the rail: a 3:4 picture with its caption beneath, the shape the
  * reference rails settle on. Three across from lg, two from md, one on a
@@ -161,12 +245,35 @@ export function RailCard({
   index,
   name,
   copyInside = false,
+  picture = "fit",
   children,
 }: {
   caption: string;
   /** Shown faint ahead of `name`, e.g. "Step 1". */
   index?: string;
   name?: string;
+  /**
+   * Where the picture sits inside a `copyInside` card. Which one a card wants
+   * follows from how tall its scene is against the space the caption leaves —
+   * there is no single offset that serves all three, which is why this is a
+   * choice rather than a constant.
+   *
+   * "fit" (the default) centres the scene in the space under the copy, less a
+   * small nudge up. For a scene that fits that space, which is most of them.
+   *
+   * "center" lays the picture over the WHOLE card, so the scene lands on the
+   * card's own centre line. For a scene short enough that it still clears the
+   * caption there — the composer, which otherwise reads as sitting low because
+   * the space under the copy is the bottom two thirds of the card.
+   *
+   * "below" starts the scene under the caption and lets it run off the card's
+   * bottom edge. For a scene drawn LARGER than the card: centred, it reaches
+   * up over the caption, and it is a window onto something bigger anyway, so
+   * cropping it at the foot is the point rather than a failure.
+   *
+   * All three fade out at the bottom.
+   */
+  picture?: "fit" | "center" | "below";
   /**
    * Puts the heading and caption inside the card, above the picture, which is
    * then cropped by the card's own bottom edge. The default keeps them under
@@ -208,7 +315,9 @@ export function RailCard({
     return (
       <div className="group/card w-[78%] shrink-0 snap-start sm:w-[62%] md:w-[calc((100%-1rem)/2)] lg:w-[calc((100%-2rem)/3)]">
         <div className="relative flex aspect-[3/4] w-full select-none flex-col overflow-hidden rounded-3xl bg-[var(--surface)]">
-          <div className="shrink-0 px-6 pb-4 pt-6 md:px-7 md:pt-7">{copy}</div>
+          <div className="relative z-10 shrink-0 px-6 pb-4 pt-6 md:px-7 md:pt-7">
+            {copy}
+          </div>
           {/* The picture runs the card's full width at its own 340x453 ratio
               and crops on the card's bottom edge, so it reads as a window onto
               something larger.
@@ -220,8 +329,29 @@ export function RailCard({
               middle of it. Given a box of their own proportions pinned to the
               card's width, they scale by width instead and the overflow is the
               crop. */}
-          <div className="relative min-h-0 flex-1">
-            <div className="absolute inset-x-0 top-0 aspect-[340/453]">
+          {/* Every scene used to be pinned to the top of the space the copy
+              leaves, and the whole 340x453 box then overflowed only downwards
+              — so a short scene was pushed onto the card's bottom edge with
+              the entire gap above it, and a tall one lost its last row off the
+              end. `picture` is what replaced that one behaviour; see the prop
+              for which card wants which. */}
+          <div
+            className={
+              picture === "center" ? "absolute inset-0" : "relative min-h-0 flex-1"
+            }
+            // The crop dissolves into the card instead of stopping on its
+            // edge mid-row — the same move the mocks already make on their
+            // right edge when they bleed. A mask, not a gradient overlay, so
+            // it fades to whatever the card's ground is and needs no second
+            // value for dark.
+            style={{ WebkitMaskImage: PICTURE_FADE, maskImage: PICTURE_FADE }}
+          >
+            <div
+              className={`absolute inset-x-0 aspect-[340/453] ${
+                picture === "fit" ? "top-1/2 -translate-y-1/2" : "top-0"
+              }`}
+              style={picture === "fit" ? { marginTop: PICTURE_NUDGE } : undefined}
+            >
               {children}
             </div>
           </div>
