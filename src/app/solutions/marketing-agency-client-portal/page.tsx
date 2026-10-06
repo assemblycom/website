@@ -15,6 +15,7 @@ import { FAQ, type FAQEntry } from "@/components/home/faq";
 import { serializeJsonLd } from "@/lib/json-ld";
 import { DEMO_URL, SIGNUP_URL } from "@/lib/constants";
 import { PAGE_SEO, pageMetadata } from "@/lib/seo";
+import { unbreakable } from "@/components/ui/unbreakable";
 
 export const metadata: Metadata = pageMetadata(
   PAGE_SEO.marketingAgencyClientPortal,
@@ -138,8 +139,12 @@ export default function MarketingAgencyClientPortalPage() {
       <section className="pb-16 pt-24 md:pb-24 md:pt-32">
         <div className="mx-auto max-w-[1400px] px-6 md:px-10">
           <div className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-start lg:gap-x-16">
+            {/* unbreakable, so "know-how" and "AI-built" stay whole: balancing
+                was splitting the first at its hyphen and leaving the line on
+                "know-", which reads as a typo in a headline. The helper the
+                post titles and the comparison headings already use. */}
             <h1 className="type-display max-w-[30ch] text-balance lg:col-start-1">
-              Turn your agency&rsquo;s know-how into AI-built apps
+              {unbreakable("Turn your agency\u2019s know-how into AI-built apps")}
             </h1>
             <p className="type-lead max-w-[34rem] text-pretty text-muted-foreground lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:pt-2">
               Assembly gives your agency a branded client portal for reports,
@@ -172,21 +177,21 @@ export default function MarketingAgencyClientPortalPage() {
 
               The V1 art direction below is kept so it is not lost with the
               placeholder that carried it: V1 — the agency hero shot. */}
-          {/* Narrower than the page and centred, with no bottom padding: the
-              screen runs off the tray's foot rather than sitting inside it.
-              The tray ran the full 1400 measure and closed under the shot,
-              which made a screen with a short round of creative in it read as
-              mostly empty page. */}
-          <div className="mx-auto mt-12 max-w-[980px] overflow-hidden rounded-3xl bg-[var(--surface)] p-4 pb-0 md:mt-16 md:p-6 md:pb-0">
-            {/* The frame is shorter than the screen inside it, which is the
-                crop: the nav, the round and the decision are all above the
-                fold and the thread carries on past it.
+          {/* Narrower than the page and centred, and the grey carries on all
+              four sides of the screen rather than hugging it as a 16px border.
+              The tray ran the full 1400 measure with 24px of padding and no
+              bottom at all, which left the grey reading as an outline on the
+              shot instead of as the ground it sits on. */}
+          <div className="mx-auto mt-12 max-w-[980px] overflow-hidden rounded-3xl bg-[var(--surface)] p-6 md:mt-16 md:p-12">
+            {/* The window is shorter than the screen inside it, which is the
+                crop: the nav, the round and the decision are all above its
+                foot and the thread carries on past it.
 
-                540, measured rather than picked — the thread's last line sits
-                at 568, so the edge lands a third of the way through it. At 620
-                the crop fell past everything and the shot ended on 50px of
-                blank panel, which is the thing a bleed is supposed to avoid. */}
-            <div className="relative h-[440px] overflow-hidden rounded-t-xl md:h-[540px]">
+                520, measured rather than picked — the thread's last line sits
+                at 568, so the edge lands a third of the way through it. Taller
+                and the crop falls past everything and the shot ends on blank
+                panel, which is the thing a crop is supposed to avoid. */}
+            <div className="relative h-[420px] overflow-hidden rounded-xl md:h-[520px]">
               <div className="absolute inset-x-0 top-0 h-[860px]">
                 <AgencyHeroVisual />
               </div>
