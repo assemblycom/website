@@ -19,7 +19,7 @@ import { BrandPortalVisual } from "@/components/home/brand-portal-visual";
 import { BuilderHowItWorks } from "@/components/ai-app-builder/builder-how-it-works";
 import { BuilderAlternatives } from "@/components/ai-app-builder/builder-alternatives";
 import { BuilderTemplates } from "@/components/ai-app-builder/builder-templates";
-import { BuilderHeroVisual } from "@/components/ai-app-builder/builder-hero-visual";
+import { PortalHeroCarousel } from "@/components/client-portal/portal-hero-carousel";
 import { GridDivider, GridRails } from "@/components/ui/grid-lines";
 import { DEMO_URL, SIGNUP_URL } from "@/lib/constants";
 import { PAGE_SEO, pageMetadata } from "@/lib/seo";
@@ -242,7 +242,13 @@ export default function AiAppBuilderPage() {
             </div>
           </div>
 
-          <BuilderHeroVisual />
+          {/* The portal carousel, not this page's own two-card build demo.
+              Swapped with /client-portal: the carousel opens on the screens a
+              built app actually becomes, which is the promise the headline
+              above makes, and the build demo moved to the portal page where
+              "plus an AI app builder for the work that is only yours" is the
+              half of the pitch that needed a picture. */}
+          <PortalHeroCarousel />
         </div>
       </section>
 

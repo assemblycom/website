@@ -11,7 +11,7 @@ import { PortalStack } from "@/components/client-portal/portal-stack";
 import { PortalTrust } from "@/components/client-portal/portal-trust";
 import { PortalPricing } from "@/components/client-portal/portal-pricing";
 import { PortalProof } from "@/components/client-portal/portal-proof";
-import { PortalHeroCarousel } from "@/components/client-portal/portal-hero-carousel";
+import { BuilderHeroVisual } from "@/components/ai-app-builder/builder-hero-visual";
 import { DEMO_URL, SIGNUP_URL } from "@/lib/constants";
 import { PAGE_SEO, pageMetadata } from "@/lib/seo";
 
@@ -119,7 +119,12 @@ export default function ClientPortalPage() {
             </div>
           </div>
 
-          <PortalHeroCarousel />
+          {/* The build demo, swapped in from /ai-app-builder. Its two cards
+              are this page's two claims side by side — describe the work only
+              your firm does, and watch it land live for the team and the
+              client — which is the half of the headline the carousel of
+              finished screens was not showing. */}
+          <BuilderHeroVisual />
           {/* Credibility right under the product shot, before the argument
               starts. */}
           <PortalSocialProof />
