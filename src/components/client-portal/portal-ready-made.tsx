@@ -68,14 +68,34 @@ const PICKS: {
   },
 ];
 
-export function PortalReadyMade() {
-  const cards = PICKS.map((pick) => ({
+/**
+ * Copy and picks are props so a vertical page can run the same rail over its
+ * own set. Defaults are /client-portal's, which calls this with no props.
+ */
+export function PortalReadyMade({
+  id,
+  heading = "Start with what every firm needs.",
+  body = "Choose from 30+ pre-made app templates, all added to a branded portal ready for your clients to use. Every one is a working app: install it, use it, or tell the builder what to change.",
+  picks = PICKS,
+  link = { label: "Browse templates", href: "/templates" },
+}: {
+  /** An anchor, for a section above that jumps here. */
+  id?: string;
+  heading?: string;
+  body?: string;
+  picks?: typeof PICKS;
+  link?: { label: string; href: string };
+} = {}) {
+  const cards = picks.map((pick) => ({
     ...pick,
     href: `/templates/${pick.slug}`,
   }));
 
   return (
-    <section className="mx-auto max-w-[1200px] px-6 py-16 md:px-10 md:py-24">
+    <section
+      id={id}
+      className="mx-auto max-w-[1200px] px-6 py-16 md:px-10 md:py-24"
+    >
       <Reveal>
         {/* The link sits under the copy rather than off to the right of
             it. Floated right it was level with the second line of the
@@ -83,19 +103,13 @@ export function PortalReadyMade() {
             control belonging to the section's edge rather than as the
             sentence's own next step. */}
         <div className="max-w-2xl">
-          <h2 className="type-h2 text-balance">
-            Start with what every firm needs.
-          </h2>
-          <p className="mt-4 max-w-2xl text-muted-foreground">
-            Choose from 30+ pre-made app templates, all added to a branded
-            portal ready for your clients to use. Every one is a working app:
-            install it, use it, or tell the builder what to change.
-          </p>
+          <h2 className="type-h2 text-balance">{heading}</h2>
+          <p className="mt-4 max-w-2xl text-muted-foreground">{body}</p>
           <Link
-            href="/templates"
+            href={link.href}
             className="mt-6 inline-block rounded-lg border border-border px-4 py-1.5 text-sm text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground"
           >
-            Browse templates
+            {link.label}
           </Link>
         </div>
 

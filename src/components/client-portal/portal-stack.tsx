@@ -47,7 +47,23 @@ const WAYS: {
   },
 ];
 
-export function PortalStack() {
+/**
+ * Copy and the row set are props. A page whose brief states the integrations in
+ * one paragraph passes `ways: []` and the list drops out entirely, leaving the
+ * claim and the picture — which is what /solutions/accounting-client-portal
+ * does, since its copy names the tools outright rather than linking on.
+ */
+export function PortalStack({
+  heading = "Keep the tools you already use",
+  body = "Embed what your clients already use, connect what you run, and automate the busywork. Every app connects to the same client records.",
+  ways = WAYS,
+  visualTitle = "Stack visual — an outside tool running as an app inside the portal: Assembly's sidebar with a scheduler open in the content area, marked Embedded, cropped right so the screen continues past the rail.",
+}: {
+  heading?: string;
+  body?: string;
+  ways?: typeof WAYS;
+  visualTitle?: string;
+} = {}) {
   return (
     // Top rule only: the page draws a GridDivider under this section, and a
     // border-b here put a second hairline a few pixels above it.
@@ -58,21 +74,16 @@ export function PortalStack() {
             than a screenshot centred in a band. */}
         <div className="mx-auto grid max-w-[1200px] items-center gap-10 px-6 py-16 md:px-10 md:py-24 lg:grid-cols-2 lg:gap-16 lg:pr-0">
           <div className="max-w-xl">
-            <h2 className="type-h2 text-balance">
-              Keep the tools you already use
-            </h2>
-            <p className="mt-5 text-muted-foreground">
-              Embed what your clients already use, connect what you run, and
-              automate the busywork. Every app connects to the same client
-              records.
-            </p>
+            <h2 className="type-h2 text-balance">{heading}</h2>
+            <p className="mt-5 text-muted-foreground">{body}</p>
 
             {/* Each row goes somewhere instead of opening a drawer, so the
                 section hands the reader on. No rules and an icon in a filled
                 square: a short list of destinations reads as a set, where
                 hairlines would make it a table with three entries in it. */}
+            {ways.length ? (
             <ul className="mt-10 flex flex-col gap-1">
-              {WAYS.map(({ label, body, href, icon: Icon }) => (
+              {ways.map(({ label, body, href, icon: Icon }) => (
                 <li key={label}>
                   <Link
                     href={href}
@@ -97,6 +108,7 @@ export function PortalStack() {
                 </li>
               ))}
             </ul>
+            ) : null}
           </div>
 
           {/* The shot has not been made yet, so the slot holds its proportions
@@ -107,7 +119,7 @@ export function PortalStack() {
               rides in `title` for whoever makes the shot. */}
           <div
             aria-hidden
-            title="Stack visual — an outside tool running as an app inside the portal: Assembly's sidebar with a scheduler open in the content area, marked Embedded, cropped right so the screen continues past the rail."
+            title={visualTitle}
             className="h-[300px] rounded-2xl bg-muted md:h-[380px] lg:h-[440px] lg:rounded-r-none [[data-theme=dark]_&]:bg-white/[0.06]"
           />
         </div>

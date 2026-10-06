@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Reveal } from "@/components/ui/reveal";
 import {
   GenericPortalMock,
@@ -107,7 +108,26 @@ function Screen({
   );
 }
 
-export function PortalProblem() {
+/**
+ * Copy is props so the vertical pages can run the same picture under their own
+ * argument. Everything defaults to /client-portal's wording, so that page calls
+ * this with no props and is unchanged.
+ */
+export function PortalProblem({
+  heading = "Off-the-shelf portals make you fit the software. Not here.",
+  body,
+  sides = SIDES,
+  quote,
+  link,
+}: {
+  heading?: string;
+  /** A lead under the heading. /client-portal deliberately has none. */
+  body?: string;
+  sides?: { label: string; body: string }[];
+  /** Quoted from case-studies.ts, so the page and the story cannot drift. */
+  quote?: { text: string; attribution: string; href: string };
+  link?: { label: string; href: string };
+} = {}) {
   return (
     <section className="mx-auto max-w-[1200px] px-6 py-16 md:px-10 md:py-24">
       <Reveal>
@@ -116,9 +136,10 @@ export function PortalProblem() {
             it pointed at a section this one is the set-up for — so the reader
             met two sentences and a button before the picture that is the
             actual argument. */}
-        <h2 className="type-h2 max-w-2xl text-balance">
-          Off-the-shelf portals make you fit the software. Not here.
-        </h2>
+        <h2 className="type-h2 max-w-2xl text-balance">{heading}</h2>
+        {body ? (
+          <p className="mt-5 max-w-xl text-muted-foreground">{body}</p>
+        ) : null}
 
         {/* Above the tray in two columns, in the pair's reading order. They
             stopped being captions aligned under their own screen once the
@@ -126,7 +147,7 @@ export function PortalProblem() {
             stand in any more, so they read as the before and after of one
             picture, which is what the picture now is. */}
         <div className="mt-14 grid gap-6 md:mt-16 md:grid-cols-2 md:gap-5">
-          {SIDES.map((side) => (
+          {sides.map((side) => (
             <div key={side.label} className="max-w-sm">
               <p className="text-base leading-snug text-foreground">
                 {side.label}
@@ -155,6 +176,33 @@ export function PortalProblem() {
             </Screen>
           </div>
         </div>
+
+        {/* Quote and jump link close the section, under the picture that is its
+            argument rather than above it. On /client-portal both are absent and
+            the section ends on the tray, which is why they are optional. */}
+        {quote ? (
+          <figure className="mt-12 max-w-2xl">
+            <blockquote className="text-pretty text-foreground">
+              &ldquo;{quote.text}&rdquo;
+            </blockquote>
+            <figcaption className="type-caption mt-3 text-muted-foreground">
+              <Link
+                href={quote.href}
+                className="transition-colors hover:text-foreground"
+              >
+                {quote.attribution}
+              </Link>
+            </figcaption>
+          </figure>
+        ) : null}
+        {link ? (
+          <Link
+            href={link.href}
+            className="mt-8 inline-block rounded-lg border border-border px-4 py-1.5 text-sm text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground"
+          >
+            {link.label}
+          </Link>
+        ) : null}
       </Reveal>
     </section>
   );

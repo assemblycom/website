@@ -53,6 +53,16 @@ export const PAGE_SEO = {
       "Assembly is the client portal with ready-made apps for messaging, billing, files, and contracts, plus an AI app builder to customize your own.",
     path: "/client-portal",
   },
+  // The vertical cut of /client-portal, on the slug the nine CMS solutions
+  // pages used to serve. The title names the audience rather than the product,
+  // because the search this page answers is "client portal for accountants"
+  // and not "what is a client portal".
+  accountingClientPortal: {
+    title: "Client Portal for Accounting Firms",
+    description:
+      "A branded client portal for accounting firms, with ready-made apps for files, e-signatures, and invoices, plus AI that builds the rest. Book a demo.",
+    path: "/solutions/accounting-client-portal",
+  },
   vsLovable: {
     title: "Assembly vs Lovable: The Client-Facing AI App Builder",
     description:

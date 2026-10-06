@@ -45,17 +45,42 @@ const STORIES = [
   },
 ];
 
-export function PortalProof() {
+/**
+ * Copy and the three firms are props, so a vertical page can run its own peers
+ * through the same band. `specialty` and `stats` are what a vertical adds: on
+ * /client-portal the three firms stand for the whole customer base, where a
+ * vertical page has to say that these are firms like yours.
+ *
+ * `stats` reuses the site's stat chip — mono, uppercase, rounded-md on muted —
+ * the same object the case-study pages and the customers strip already carry.
+ */
+export function PortalProof({
+  heading = "Firms that stopped settling.",
+  body = "See how firms replaced rigid tools with a portal they built around their own workflow.",
+  stories = STORIES,
+  linkLabel,
+}: {
+  heading?: string;
+  body?: string;
+  stories?: {
+    slug: string;
+    quote: string;
+    name: string;
+    role: string;
+    href: string;
+    specialty?: string;
+    stats?: string[];
+  }[];
+  /** A named link per card, where the brief asks for one. */
+  linkLabel?: string;
+} = {}) {
   return (
     <section className="mx-auto max-w-[1200px] px-6 py-16 md:px-10 md:py-24">
       <Reveal>
         <div className="text-center">
-          <h2 className="type-h2 mx-auto max-w-3xl text-balance">
-            Firms that stopped settling.
-          </h2>
+          <h2 className="type-h2 mx-auto max-w-3xl text-balance">{heading}</h2>
           <p className="mx-auto mt-5 max-w-2xl text-balance text-muted-foreground">
-            See how firms replaced rigid tools with a portal they built around
-            their own workflow.
+            {body}
           </p>
         </div>
 
@@ -64,7 +89,7 @@ export function PortalProof() {
             side. Stacked below that, each card keeps its own top rule so the
             set still reads as divided. */}
         <div className="mt-12 grid md:grid-cols-3">
-          {STORIES.map((story) => (
+          {stories.map((story) => (
             <Link
               key={story.href}
               href={story.href}
@@ -79,6 +104,23 @@ export function PortalProof() {
               <span className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-muted p-2.5 text-foreground/80 [[data-theme=dark]_&]:bg-white/[0.06]">
                 <CustomerLogo slug={story.slug} fit />
               </span>
+              {story.specialty ? (
+                <p className="type-caption mt-4 text-muted-foreground">
+                  {story.specialty}
+                </p>
+              ) : null}
+              {story.stats?.length ? (
+                <ul className="mt-3 flex flex-wrap gap-1.5">
+                  {story.stats.map((stat) => (
+                    <li
+                      key={stat}
+                      className="rounded-md bg-muted px-3 py-1.5 font-mono text-[11px] uppercase leading-none tracking-wide text-muted-foreground [[data-theme=dark]_&]:bg-white/[0.06]"
+                    >
+                      {stat}
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
               <blockquote className="mt-6 text-pretty text-foreground">
                 &ldquo;{story.quote}&rdquo;
               </blockquote>
@@ -87,6 +129,11 @@ export function PortalProof() {
                 <p className="type-caption mt-0.5 text-muted-foreground">
                   {story.role}
                 </p>
+                {linkLabel ? (
+                  <p className="mt-3 text-sm text-muted-foreground transition-colors group-hover:text-foreground">
+                    {linkLabel}
+                  </p>
+                ) : null}
               </div>
             </Link>
           ))}

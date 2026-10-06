@@ -65,24 +65,38 @@ const TIERS: Tier[] = [
   },
 ];
 
-export function PortalPricing() {
+/**
+ * Two shapes from one section. /client-portal passes nothing and gets the four
+ * priced cards. A page whose brief lists the plans as one line each passes
+ * `plans`, and the section renders those instead — no figures, because a page
+ * that does not explain a price should not print one it would have to keep in
+ * step with /pricing.
+ */
+export function PortalPricing({
+  heading = "Start free. Build as you grow.",
+  body = "The free plan never expires and includes real, publishable apps. Paid plans add contacts, apps, your own domain, and more as your firm grows.",
+  link = { label: "See full pricing", href: "/pricing" },
+  plans,
+}: {
+  heading?: string;
+  body?: string;
+  link?: { label: string; href: string };
+  /** One line per plan, in place of the priced cards. */
+  plans?: { name: string; line: string }[];
+} = {}) {
   return (
     <section className="mx-auto max-w-[1200px] px-6 py-16 md:px-10 md:py-24">
       <Reveal>
         <div className="text-center">
-          <h2 className="type-h2 mx-auto max-w-3xl text-balance">
-            Start free. Build as you grow.
-          </h2>
+          <h2 className="type-h2 mx-auto max-w-3xl text-balance">{heading}</h2>
           <p className="mx-auto mt-4 max-w-2xl text-balance text-muted-foreground">
-            The free plan never expires and includes real, publishable apps.
-            Paid plans add contacts, apps, your own domain, and more as your
-            firm grows.
+            {body}
           </p>
           <Link
-            href="/pricing"
+            href={link.href}
             className="mt-6 inline-block rounded-lg border border-border px-4 py-1.5 text-sm text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground"
           >
-            See full pricing
+            {link.label}
           </Link>
         </div>
 
@@ -92,6 +106,26 @@ export function PortalPricing() {
             card is the same object — the recommended plan is marked only by its
             filled button, so none of the four outshouts the rest, the same
             restraint the full pricing table keeps. */}
+        {plans ? (
+          /* One row per plan: the name, then what that plan adds. Rows rather
+             than cards, because five cards of one sentence each is five mostly
+             empty boxes, and these carry no price to anchor a card on. */
+          <ul className="mx-auto mt-12 max-w-3xl divide-y divide-border [[data-theme=dark]_&]:divide-[#383838]">
+            {plans.map((plan) => (
+              <li
+                key={plan.name}
+                className="flex flex-col gap-1 py-4 text-left sm:flex-row sm:gap-6"
+              >
+                <span className="shrink-0 text-foreground sm:w-40">
+                  {plan.name}
+                </span>
+                <span className="text-sm leading-relaxed text-muted-foreground">
+                  {plan.line}
+                </span>
+              </li>
+            ))}
+          </ul>
+        ) : (
         <div className="mt-12 grid gap-4 min-[560px]:grid-cols-2 lg:grid-cols-4">
           {TIERS.map((tier) => (
             <div
@@ -137,6 +171,7 @@ export function PortalPricing() {
             </div>
           ))}
         </div>
+        )}
       </Reveal>
     </section>
   );

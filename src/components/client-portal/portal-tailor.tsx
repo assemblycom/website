@@ -20,17 +20,18 @@ const BODY = "mt-2 text-sm leading-relaxed text-muted-foreground";
  * user interviews say buyers need most, so both are stated plainly rather than
  * left to the visual.
  */
-export function PortalTailor() {
+/** Heading and lead are props; the four cards are the same picture either way. */
+export function PortalTailor({
+  heading = "One portal. A different experience for every client",
+  body = "Control which apps each client and company sees, brand it on your own domain, and give each segment the workflow it actually needs.",
+}: { heading?: string; body?: string } = {}) {
   return (
     <section className="mx-auto max-w-[1200px] px-6 py-16 md:px-10 md:py-24">
       <Reveal>
         <div className="text-center">
-          <h2 className="type-h2 mx-auto max-w-3xl text-balance">
-            One portal. A different experience for every client
-          </h2>
+          <h2 className="type-h2 mx-auto max-w-3xl text-balance">{heading}</h2>
           <p className="mx-auto mt-4 max-w-2xl text-balance text-muted-foreground">
-            Control which apps each client and company sees, brand it on your
-            own domain, and give each segment the workflow it actually needs.
+            {body}
           </p>
         </div>
 

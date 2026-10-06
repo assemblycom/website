@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Reveal } from "@/components/ui/reveal";
 import { SIGNUP_URL } from "@/lib/constants";
 import { CardRail, RailCard } from "@/components/ui/card-rail";
@@ -55,7 +56,30 @@ const STEPS = [
  * and a sequence reads better as four pictures you move through than as one
  * picture with the steps listed underneath it.
  */
-export function PortalBuild() {
+/**
+ * Copy, steps and the closing action are props. A vertical page runs its own
+ * sequence through the same rail: /solutions/accounting-client-portal carries
+ * three steps rather than five, because its trust section states the "built by
+ * Assembly, not by the AI" beat that the fifth card makes here.
+ */
+export function PortalBuild({
+  heading = "Build the features unique to your firm.",
+  body = "Tell us what you want, approve the plan, and a real app lands in your portal with logins, permissions, and branding already handled.",
+  steps = STEPS,
+  cta = { label: "Describe your first app", href: SIGNUP_URL },
+  chips,
+  link,
+  railLabel = "How building works",
+}: {
+  heading?: string;
+  body?: string;
+  steps?: typeof STEPS;
+  cta?: { label: string; href: string };
+  /** Examples of what gets built, under the rail. */
+  chips?: string[];
+  link?: { label: string; href: string };
+  railLabel?: string;
+} = {}) {
   return (
     <section
       id="build"
@@ -63,24 +87,21 @@ export function PortalBuild() {
     >
       <Reveal>
         <div className="text-center">
-          <h2 className="type-h2 mx-auto max-w-3xl text-balance">
-            Build the features unique to your firm.
-          </h2>
+          <h2 className="type-h2 mx-auto max-w-3xl text-balance">{heading}</h2>
           <p className="mx-auto mt-4 max-w-2xl text-balance text-muted-foreground">
-            Tell us what you want, approve the plan, and a real app lands in
-            your portal with logins, permissions, and branding already handled.
+            {body}
           </p>
           <a
-            href={SIGNUP_URL}
+            href={cta.href}
             className="mt-6 inline-block rounded-lg bg-foreground px-5 py-2.5 text-center text-sm text-background transition-opacity hover:opacity-90"
           >
-            Describe your first app
+            {cta.label}
           </a>
         </div>
 
         <div className="mt-12">
-          <CardRail label="How building works">
-            {STEPS.map((step, i) => (
+          <CardRail label={railLabel}>
+            {steps.map((step, i) => (
               <RailCard
                 key={step.name}
                 index={`Step ${i + 1}`}
@@ -92,6 +113,32 @@ export function PortalBuild() {
             ))}
           </CardRail>
         </div>
+
+        {/* Examples under the rail, as the site's mono chip rather than a new
+            pill: these are labels for things the builder makes, the same object
+            the filters and tags elsewhere already are. */}
+        {chips?.length ? (
+          <ul className="mt-8 flex flex-wrap items-center justify-center gap-1.5">
+            {chips.map((label) => (
+              <li
+                key={label}
+                className="rounded-md bg-muted px-3 py-1.5 font-mono text-[11px] uppercase leading-none tracking-wide text-muted-foreground [[data-theme=dark]_&]:bg-white/[0.06]"
+              >
+                {label}
+              </li>
+            ))}
+          </ul>
+        ) : null}
+        {link ? (
+          <div className="mt-8 text-center">
+            <Link
+              href={link.href}
+              className="inline-block rounded-lg border border-border px-4 py-1.5 text-sm text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground"
+            >
+              {link.label}
+            </Link>
+          </div>
+        ) : null}
       </Reveal>
     </section>
   );
