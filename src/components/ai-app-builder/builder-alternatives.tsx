@@ -51,12 +51,14 @@ const ROWS: { label: string; cells: [string, string, string] }[] = [
   },
 ];
 
-// Pulls the table out past the section's padding so every rule ends on the
-// page's vertical rail, then puts the same inset back on the outer cells so the
-// text still clears the lines. Matches the claims block above.
-const BLEED = "md:-mx-10";
-const EDGE_L = "md:pl-10 lg:pl-12";
-const EDGE_R = "md:pr-10 lg:pr-12";
+// The table sits inside the section's own padding rather than being pulled out
+// to the rails. Bled, its banded last column ran to the very edge of the page
+// on both sides, which read as a table that had escaped the layout instead of
+// one sitting in it — and it was the only block on the page doing that. The
+// outer cells keep a little extra inset so their text clears the frame.
+const BLEED = "";
+const EDGE_L = "md:pl-2 lg:pl-3";
+const EDGE_R = "md:pr-2 lg:pr-3";
 
 /**
  * The two options a buyer who already wants an app actually weighs, plus ours.
