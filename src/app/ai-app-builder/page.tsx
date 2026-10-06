@@ -10,6 +10,12 @@ import {
   type Pillar,
 } from "@/components/ai-app-builder/builder-pillars";
 import { BuilderChapter } from "@/components/ai-app-builder/builder-chapter";
+import {
+  BuildCard,
+  SecuredCard,
+} from "@/components/client-portal/portal-build-cards";
+import { TeamCrmVisual } from "@/components/home/team-crm-visual";
+import { BrandPortalVisual } from "@/components/home/brand-portal-visual";
 import { BuilderHowItWorks } from "@/components/ai-app-builder/builder-how-it-works";
 import { BuilderAlternatives } from "@/components/ai-app-builder/builder-alternatives";
 import { BuilderTemplates } from "@/components/ai-app-builder/builder-templates";
@@ -41,31 +47,22 @@ const PILLARS: Pillar[] = [
         value: "A complete Message Center their team lives in",
       },
     ],
-    visual: {
-      label: "Pillar 1 visual",
-      description:
-        "Two apps side by side that visibly came from one chat panel. Left: a client-facing onboarding checklist inside a branded client experience, its own accent colour and a client logo placeholder. Right: a team-only reporting dashboard in Assembly chrome. Small labels: Your clients, Your team.",
-    },
+    // The app landing in both places at once, which is the claim.
+    visual: <BuildCard />,
   },
   {
     heading: "One CRM. Every app connects to it",
     body: "Contacts, companies, and custom fields come built in. Each client only sees what they're allowed to see.",
     facts: [],
-    visual: {
-      label: "Pillar 2 visual",
-      description:
-        "Lead with the CRM: a contact list in Assembly chrome with companies and a custom field visible. Then the same list feeding two client experiences side by side, Company A seeing its own data and Company B seeing something else.",
-    },
+    // The home page's CRM shot: contacts, companies and a custom field.
+    visual: <TeamCrmVisual />,
   },
   {
     heading: "Secure logins, permissions, and billing come built in",
     body: "Built and maintained by Assembly. Nothing reaches your clients until you make it visible.",
     facts: [],
-    visual: {
-      label: "Pillar 3 visual",
-      description:
-        "A client sign-in screen next to a simple Who can see this control listing team roles and a client, both isolated on a clean background and carrying a small Part of Assembly mark, visually separate from the app content they protect. No MFA jargon in the art.",
-    },
+    // The build rail's security card: logins and permissions as platform.
+    visual: <SecuredCard />,
   },
   {
     heading: "Your clients already have a branded home. New apps land in it",
@@ -77,11 +74,8 @@ const PILLARS: Pillar[] = [
       },
       { label: "Raised in", value: "27% of sales calls" },
     ],
-    visual: {
-      label: "Pillar 4 visual",
-      description:
-        "The identical app rendered twice, side by side, once carrying one business's logo and accent colour and once another's. Same layout and components, only the branding changed. The sales-call stat sits beneath as a pull stat.",
-    },
+    // The home page's branded-portal shot: the firm's logo and colours.
+    visual: <BrandPortalVisual />,
   },
 ];
 

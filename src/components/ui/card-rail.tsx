@@ -98,41 +98,52 @@ export function CardRail({
           vertical padding cancelled by a negative margin, so the clip is
           horizontal only and shadows still breathe above and below. The arrow
           is what says there is more. */}
-      <div className="-my-4 overflow-hidden py-4">
-        <div
-          ref={ref}
-          onScroll={sync}
-          role="group"
-          aria-label={label}
-          className="flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-        >
-          {children}
+      {/* The arrows ride on the rail's own vertical centre, at its right edge,
+          rather than sitting in a row underneath it. Under the cards they were
+          a control you had to look away from the rail to find; beside them
+          they are where the next card is coming from. An unavailable one is
+          hidden rather than dimmed — at the start of a rail there is no
+          previous card, and a greyed button is still a button to read. */}
+      <div className="relative">
+        <div className="-my-4 overflow-hidden py-4">
+          <div
+            ref={ref}
+            onScroll={sync}
+            role="group"
+            aria-label={label}
+            className="flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          >
+            {children}
+          </div>
+        </div>
+
+        <div className="pointer-events-none absolute inset-y-0 right-0 hidden items-center md:flex">
+          <div className="flex translate-x-1/2 items-center gap-2">
+            <button
+              type="button"
+              onClick={() => step(-1)}
+              aria-label="Previous"
+              className={`${ARROW} pointer-events-auto transition-opacity ${
+                atStart ? "invisible opacity-0" : "opacity-100"
+              }`}
+            >
+              <Chevron direction="prev" />
+            </button>
+            <button
+              type="button"
+              onClick={() => step(1)}
+              aria-label="Next"
+              className={`${ARROW} pointer-events-auto transition-opacity ${
+                atEnd ? "invisible opacity-0" : "opacity-100"
+              }`}
+            >
+              <Chevron direction="next" />
+            </button>
+          </div>
         </div>
       </div>
 
-      <div className="mt-10 flex items-center justify-end gap-4">
-        {lead ? <div className="mr-auto">{lead}</div> : null}
-        <div className="flex shrink-0 items-center gap-2">
-          <button
-            type="button"
-            onClick={() => step(-1)}
-            disabled={atStart}
-            aria-label="Previous"
-            className={ARROW}
-          >
-            <Chevron direction="prev" />
-          </button>
-          <button
-            type="button"
-            onClick={() => step(1)}
-            disabled={atEnd}
-            aria-label="Next"
-            className={ARROW}
-          >
-            <Chevron direction="next" />
-          </button>
-        </div>
-      </div>
+      {lead ? <div className="mt-10">{lead}</div> : null}
     </div>
   );
 }
@@ -171,7 +182,10 @@ export function RailCard({
             toning the index down made the kicker read as two labels. The em
             dash is the separator the blog's post meta line uses. */}
         {name ? (
-          <p className="type-eyebrow mb-2 flex min-w-0 items-baseline gap-2 text-muted-foreground">
+          // PP Mori, sentence case. It was type-eyebrow — ABC Diatype Mono in
+          // all caps — which on a card whose body is set in the page's own
+          // face read as a label stuck on from another system.
+          <p className="mb-2 flex min-w-0 items-baseline gap-2 text-sm text-muted-foreground">
             {index ? (
               <>
                 <span className="shrink-0 tabular-nums">{index}</span>

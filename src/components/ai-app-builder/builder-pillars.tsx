@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { GRID_LINE } from "@/components/ui/grid-lines";
-import { VisualSlot } from "@/components/ui/visual-slot";
 
 export interface Pillar {
   heading: string;
@@ -13,7 +12,8 @@ export interface Pillar {
    * first-party number belongs here; prose does not.
    */
   facts: { label: string; value: string }[];
-  visual: { label: string; description: string };
+  /** The product shot that backs the claim. */
+  visual: React.ReactNode;
 }
 
 /**
@@ -39,22 +39,47 @@ export function BuilderPillars({ pillars }: { pillars: Pillar[] }) {
   const items = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
-    // Whichever claim is nearest the middle of the viewport is the one being
-    // read, so that is the one the pinned column shows.
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const inView = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-        if (!inView) return;
-        const i = items.current.indexOf(inView.target as HTMLDivElement);
-        if (i !== -1) setActive(i);
-      },
-      { rootMargin: "-40% 0px -40% 0px", threshold: [0, 0.5, 1] },
-    );
-    const observed = items.current.filter((el) => el !== null);
-    observed.forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
+    // Whichever claim's middle is nearest the middle of the viewport is the one
+    // being read, so that is the one the pinned column shows.
+    //
+    // Measured on scroll rather than watched with an IntersectionObserver. The
+    // observer sorted the intersecting entries by ratio inside a -40%/-40%
+    // band, which is only a fifth of the viewport: a claim taller than that
+    // band never fills it, so two neighbours could report near-identical
+    // ratios and the winner flipped on a few pixels of scroll. It also only
+    // fired on threshold crossings, so between two of them the picture sat on
+    // the previous claim while you were already reading the next one — the
+    // image and the words visibly out of step. Distance from the centre line
+    // is a total order, so there is always exactly one answer.
+    let frame = 0;
+    const pick = () => {
+      frame = 0;
+      const middle = window.innerHeight / 2;
+      let best = 0;
+      let bestDistance = Infinity;
+      items.current.forEach((el, i) => {
+        if (!el) return;
+        const { top, height } = el.getBoundingClientRect();
+        const distance = Math.abs(top + height / 2 - middle);
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          best = i;
+        }
+      });
+      setActive(best);
+    };
+    const onScroll = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(pick);
+    };
+    pick();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      if (frame) cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
   }, [pillars.length]);
 
   const current = pillars[active] ?? pillars[0];
@@ -91,12 +116,9 @@ export function BuilderPillars({ pillars }: { pillars: Pillar[] }) {
               {/* Phone: the visual and its facts belong to their own claim, in
                   reading order. */}
               <div className="md:hidden">
-                <VisualSlot
-                  className="mt-8"
-                  label={pillar.visual.label}
-                  description={pillar.visual.description}
-                  ratio="4 / 3"
-                />
+                <div className="relative mt-8 aspect-[4/3] overflow-hidden rounded-2xl bg-[var(--surface)]">
+                  {pillar.visual}
+                </div>
                 <FactList facts={pillar.facts} />
               </div>
             </div>
@@ -109,17 +131,21 @@ export function BuilderPillars({ pillars }: { pillars: Pillar[] }) {
           className={`hidden md:block md:-mr-10 md:w-[56%] md:border-l md:pl-6 md:pr-10 lg:pl-8 lg:pr-12 ${GRID_LINE}`}
         >
           <div className="sticky top-24 py-20">
-            <div className="relative" style={{ aspectRatio: "1 / 1" }}>
+            {/* All four are mounted and cross-faded, so the one coming in is
+                already laid out and nothing reflows mid-switch. 300ms, not
+                500: at half a second the outgoing shot was still fading while
+                the next claim was being read. */}
+            <div className="relative overflow-hidden rounded-2xl bg-[var(--surface)] aspect-square">
               {pillars.map((pillar, i) => (
-                <VisualSlot
+                <div
                   key={pillar.heading}
-                  label={pillar.visual.label}
-                  description={pillar.visual.description}
-                  ratio="1 / 1"
-                  className={`absolute inset-0 transition-opacity duration-500 ${
+                  aria-hidden={i !== active}
+                  className={`absolute inset-0 transition-opacity duration-300 motion-reduce:transition-none ${
                     i === active ? "opacity-100" : "opacity-0"
                   }`}
-                />
+                >
+                  {pillar.visual}
+                </div>
               ))}
             </div>
             {/* The facts sit under the visual, the way a spec list does: label
