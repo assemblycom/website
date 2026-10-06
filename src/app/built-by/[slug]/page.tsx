@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
 import { BuiltOnPage } from "@/components/built-on/built-on-page";
 import { getFirmBranding } from "@/lib/firm-branding";
-import { IS_LIVE_SITE, SITE_NAME, SITE_URL } from "@/lib/constants";
+import { SITE_NAME, SITE_URL } from "@/lib/constants";
 import { OG_IMAGE, ogImageForFirm } from "@/lib/og";
 import { shareAttribution } from "@/lib/powered-by-attribution";
 
@@ -67,10 +66,6 @@ export default async function BuiltBy({
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  // Held on staging, since the generator that hands firms this link does not
-  // exist yet. Delete these two lines to ship it.
-  if (IS_LIVE_SITE) redirect("/");
-
   const { slug } = await params;
   return (
     <BuiltOnPage
