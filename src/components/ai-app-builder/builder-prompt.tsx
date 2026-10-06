@@ -118,25 +118,35 @@ export function BuilderPrompt({
               <IconPlus />
             </button>
             {attachOpen ? (
-              // Above the glyph, not below it: the composer sits low in a hero
-              // that fills the viewport, and a panel hanging off its bottom
-              // edge opened below the fold.
+              // Below the glyph, which is where a menu hangs from its control.
+              // It was tried above, on the grounds that the composer sits low
+              // in a hero that fills the viewport — but the panel opens from
+              // the + and a menu that drops upward from a control near the
+              // foot of a page reads as a tooltip rather than something you
+              // opened.
               <div
                 role="dialog"
                 aria-label="More features"
-                className="absolute bottom-[calc(100%+8px)] left-0 z-20 w-[272px] rounded-2xl border border-border bg-background p-4 text-left shadow-[0_1px_2px_rgba(16,24,40,0.04),0_18px_40px_-20px_rgba(16,24,40,0.28)] [[data-theme=dark]_&]:border-[#383838] [[data-theme=dark]_&]:bg-[var(--surface-2)] [[data-theme=dark]_&]:shadow-[0_18px_44px_-20px_rgba(0,0,0,0.7)]"
+                className="absolute left-0 top-[calc(100%+6px)] z-20 w-[256px] rounded-xl border border-border bg-background p-3.5 text-left shadow-[0_1px_2px_rgba(16,24,40,0.04),0_18px_40px_-20px_rgba(16,24,40,0.28)] [[data-theme=dark]_&]:border-[#383838] [[data-theme=dark]_&]:bg-[var(--surface-2)] [[data-theme=dark]_&]:shadow-[0_18px_44px_-20px_rgba(0,0,0,0.7)]"
               >
-                <p className="text-[15px] leading-snug text-foreground">
+                <p className="text-sm leading-snug text-foreground">
                   Unlock more features
                 </p>
-                <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
-                  Attach files and images, apply themes, connect integrations,
-                  and more by logging in.
+                {/* Three lines of copy made the panel taller than the composer
+                    it hangs off. The "by logging in" is cut because the button
+                    under it already says that, and "and more" was promising
+                    nothing in particular.
+
+                    Everything here is a step below the page's own sizes: this
+                    is a menu off a glyph, not a card, and at body size it had
+                    the weight of something the reader had to deal with. */}
+                <p className="mt-1 text-[13px] leading-[1.45] text-muted-foreground">
+                  Attach files, apply themes, and connect integrations.
                 </p>
-                <div className="mt-4 flex justify-end">
+                <div className="mt-3 flex justify-end">
                   <a
                     href={LOGIN_URL}
-                    className="rounded-lg bg-foreground px-4 py-2 text-sm text-background transition-opacity hover:opacity-90"
+                    className="rounded-lg bg-foreground px-3 py-1.5 text-[13px] leading-none text-background transition-opacity hover:opacity-90"
                   >
                     Log in
                   </a>

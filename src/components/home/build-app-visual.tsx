@@ -141,7 +141,13 @@ export function NavItem({
         active ? "bg-border/70" : ""
       } ${muted ? "text-muted-foreground" : "text-foreground"}`}
     >
-      <span className="[&>svg]:size-[16px] flex shrink-0 items-center justify-center text-muted-foreground">
+      {/* No colour of its own: the glyph inherits the row, so it matches its
+          label in all three states. It used to be pinned to
+          --muted-foreground while the label took --foreground, which made
+          every ordinary row a dark word with a grey mark beside it — and only
+          the muted rows, where both happened to land on the same token,
+          looked right. */}
+      <span className="flex shrink-0 items-center justify-center [&>svg]:size-[16px]">
         {icon}
       </span>
       <span className="min-w-0 flex-1 truncate text-[length:var(--mock-nav-size,11.5px)] leading-none">
@@ -154,7 +160,10 @@ export function NavItem({
 
 export function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <p className="px-1.5 pb-1 pt-[18px] text-[length:var(--mock-section-size,10px)] leading-none text-muted-foreground">
+    // 4px under the label was half the gap above it, so "Apps" sat closer to
+    // the row it heads than to the group it is separating from — it read as a
+    // caption on Home rather than as the heading of everything below.
+    <p className="px-1.5 pb-2.5 pt-[18px] text-[length:var(--mock-section-size,10px)] leading-none text-muted-foreground">
       {children}
     </p>
   );

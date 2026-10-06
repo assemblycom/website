@@ -3,12 +3,11 @@ import { CardRail, RailCard } from "@/components/ui/card-rail";
 import {
   BuildCard,
   DescribeCard,
-  IterateCard,
   PlanCard,
 } from "@/components/client-portal/portal-build-cards";
 
 /**
- * How it works, as four cards rather than one empty frame over a rail.
+ * How it works, as three cards rather than one empty frame over a rail.
  *
  * It was a 16:9 slot waiting on a picture that does not exist, with the four
  * steps as captions beneath it — so the section's whole middle was a dashed
@@ -49,17 +48,17 @@ const STEPS: {
     // starts under the copy and crops at the foot instead.
     picture: "below" as const,
   },
-  {
-    name: "Iterate",
-    body: "Keep chatting to change anything, before launch or six months later.",
-    visual: <IterateCard />,
-  },
 ];
 
 export function BuilderHowItWorks() {
   return (
     <section className="mx-auto max-w-[1200px] px-6 py-14 md:px-10 md:py-20">
       <Reveal>
+        {/* Three, matching /client-portal's rail: Describe, Plan, Build is
+            the arc. Iterate was a fourth beat that pushed the set past what
+            fits across, so the rail had to be stepped through to be seen at
+            all — and "keep chatting to change anything" is the one of the four
+            a reader will assume anyway. */}
         <CardRail label="How building works">
           {STEPS.map((step, i) => (
             <RailCard

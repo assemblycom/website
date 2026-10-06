@@ -35,7 +35,9 @@ export const metadata: Metadata = pageMetadata(PAGE_SEO.aiAppBuilder);
  */
 const PILLARS: Pillar[] = [
   {
+    eyebrow: "Apps",
     heading: "Build client-facing apps and internal tools, all in one place",
+    cta: { label: "Browse templates", href: "/templates" },
     body: "Describe it once. Client apps land in your client experience, team tools in your dashboard.",
     // The built app sitting in the client's own sidebar, which is the claim.
     // A landscape screen like the other three: the build rail's portrait cards
@@ -43,20 +45,26 @@ const PILLARS: Pillar[] = [
     visual: <IntakeAppMock />,
   },
   {
+    eyebrow: "CRM",
     heading: "One CRM. Every app connects to it",
+    cta: { label: "See the client experience", href: "/client-portal" },
     body: "Contacts, companies, and custom fields come built in. Each client only sees what they're allowed to see.",
     // The home page's CRM shot: contacts, companies and a custom field.
     visual: <TeamCrmVisual />,
   },
   {
+    eyebrow: "Security",
     heading: "Secure logins, permissions, and billing come built in",
+    cta: { label: "How security works", href: "/security" },
     body: "Built and maintained by Assembly. Nothing reaches your clients until you make it visible.",
     // The onboarding screen, which carries the "Access: client only" control —
     // permissions as something the platform already decides.
     visual: <OnboardingMock />,
   },
   {
+    eyebrow: "Branding",
     heading: "Your clients already have a branded home. New apps land in it",
+    cta: { label: "See real firms' portals", href: "/customers" },
     body: "Your logo and colors, not ours. Every new app picks them up automatically.",
     // The home page's branded-portal shot: the firm's logo and colours.
     visual: <BrandPortalVisual />,

@@ -67,23 +67,33 @@ function NavRow({
   icon,
   label,
   active = false,
+  branded = false,
 }: {
   icon: React.ReactNode;
   label: string;
   active?: boolean;
+  branded?: boolean;
 }) {
   return (
     <span
       className={`flex items-center gap-1.5 rounded-md px-1.5 py-[5px] text-[10px] leading-none ${
-        active
-          ? // Ink, not a pill. A filled row on a --muted sidebar drew a hard
-            // edge that read as a border around it rather than as the row
-            // being picked — and at half strength it was still the loudest
-            // mark in a mock whose subject is elsewhere. Full-strength type
-            // against muted siblings is the whole signal: it is the only
-            // black row in the column.
-            "text-[color:var(--mock-ink)]"
-          : "text-[color:var(--mock-ink-soft)]"
+        branded
+          ? // On the brand slab the row cannot be marked by ink alone — white
+            // against white/60 is a smaller step than black against grey — so
+            // the picked row takes a quiet fill, the way the client nav in the
+            // build rail's own portal shot does.
+            active
+            ? "bg-white/[0.12] text-white"
+            : "text-white/60"
+          : active
+            ? // Ink, not a pill. A filled row on a --muted sidebar drew a hard
+              // edge that read as a border around it rather than as the row
+              // being picked — and at half strength it was still the loudest
+              // mark in a mock whose subject is elsewhere. Full-strength type
+              // against muted siblings is the whole signal: it is the only
+              // black row in the column.
+              "text-[color:var(--mock-ink)]"
+            : "text-[color:var(--mock-ink-soft)]"
       }`}
     >
       <span className="flex size-[11px] shrink-0 items-center justify-center">
@@ -103,41 +113,86 @@ function NavRow({
 export function PortalSidebar({
   app,
   brand = "Brandmages",
+  branded = false,
 }: {
   /** The firm's own app, added to the stock nav below. Omit for a portal
       that has no such app — the point the problem section makes. */
   app?: string;
   /** Whose portal this is. The generic one in the problem section is nobody's. */
   brand?: string;
+  /**
+   * Draws the nav in the firm's own colour rather than the neutral grey.
+   *
+   * It is off by default because most screens in this set are illustrating
+   * what an app DOES, where a brand slab is just contrast nobody asked about.
+   * The problem section is the exception: there this screen stands beside a
+   * generic portal and the whole argument is that one of them is yours, which
+   * a grey nav on both sides quietly contradicts.
+   */
+  branded?: boolean;
 }) {
   return (
     <div
-      className={`hidden w-[136px] shrink-0 flex-col gap-[2px] border-r bg-muted px-2 py-2.5 sm:flex ${LINE} [[data-theme=dark]_&]:bg-white/[0.04]`}
+      className={`hidden w-[136px] shrink-0 flex-col gap-[2px] border-r px-2 py-2.5 sm:flex ${LINE} ${
+        branded
+          ? "bg-[var(--mock-brand)]"
+          : "bg-muted [[data-theme=dark]_&]:bg-white/[0.04]"
+      }`}
     >
       <span className="flex items-center gap-1.5 px-1.5 pb-2.5">
-        <span className="flex size-[15px] items-center justify-center rounded-[3px] bg-foreground text-background">
+        {/* The firm's mark on a white tile, which is their file rather than
+            our chrome, so it is the same on the brand slab and off it. */}
+        <span
+          className={`flex size-[15px] items-center justify-center rounded-[3px] ${
+            branded
+              ? "bg-white text-black"
+              : "bg-foreground text-background"
+          }`}
+        >
           <IconBrandMark className="size-[8px]" />
         </span>
-        <span className="truncate text-[10.5px] leading-none text-[color:var(--mock-ink)]">
+        <span
+          className={`truncate text-[10.5px] leading-none ${
+            branded ? "text-white" : "text-[color:var(--mock-ink)]"
+          }`}
+        >
           {brand}
         </span>
-        <IconChevronDown className="size-[9px] shrink-0 text-[color:var(--mock-ink-soft)]" />
+        <IconChevronDown
+          className={`size-[9px] shrink-0 ${
+            branded ? "text-white/60" : "text-[color:var(--mock-ink-soft)]"
+          }`}
+        />
       </span>
-      <NavRow icon={<IconGlobe className="size-[11px]" />} label="Home" />
-      <NavRow icon={<IconChat className="size-[11px]" />} label="Messages" />
-      <NavRow icon={<IconFile className="size-[11px]" />} label="Files" />
+      <NavRow
+        icon={<IconGlobe className="size-[11px]" />}
+        label="Home"
+        branded={branded}
+      />
+      <NavRow
+        icon={<IconChat className="size-[11px]" />}
+        label="Messages"
+        branded={branded}
+      />
+      <NavRow
+        icon={<IconFile className="size-[11px]" />}
+        label="Files"
+        branded={branded}
+      />
       {/* With no app of its own, the stock nav's last row carries the
           selection — otherwise the sidebar has nothing open. */}
       <NavRow
         icon={<IconCard className="size-[11px]" />}
         label="Billing"
         active={!app}
+        branded={branded}
       />
       {app ? (
         <NavRow
           icon={<IconDocuments className="size-[11px]" />}
           label={app}
           active
+          branded={branded}
         />
       ) : null}
     </div>
@@ -517,9 +572,10 @@ export function GenericPortalMock() {
               </span>
             ))}
           </div>
-          <span className="mt-auto w-fit rounded-[5px] bg-muted px-2.5 py-[7px] text-[10px] leading-none text-[color:var(--mock-ink-soft)] [[data-theme=dark]_&]:bg-white/[0.08]">
-            Request a feature
-          </span>
+          {/* No button. These screens are cropped by the tray they sit in, so
+              a control pinned to the bottom of one was half-cut as often as
+              not — and a picture of a button that cannot be pressed is a
+              promise the mock does not keep. The list above is the point. */}
         </div>
       </div>
     </div>
@@ -532,13 +588,22 @@ const INTAKE_FIELDS: { label: string; value: string }[] = [
   { label: "Onboarding owner", value: "Dana Whitfield" },
 ];
 
-export function IntakeAppMock() {
+export function IntakeAppMock({
+  /** Draws the client's nav in the firm's colour. See PortalSidebar. */
+  branded = false,
+  /**
+   * The submit control at the foot of the form. Off where the screen is
+   * cropped by a tray — a button half-cut by the edge of its own picture reads
+   * as a rendering fault rather than as a window onto something larger.
+   */
+  action = true,
+}: { branded?: boolean; action?: boolean } = {}) {
   return (
     <div
       aria-hidden
       className="pointer-events-none flex h-full select-none bg-[var(--mock-window)] text-[color:var(--mock-ink)]"
     >
-      <PortalSidebar app="Partner intake" />
+      <PortalSidebar app="Partner intake" branded={branded} />
       <div className="flex min-w-0 flex-1 flex-col">
         <AppHeader
           title="Partner intake"
@@ -559,9 +624,11 @@ export function IntakeAppMock() {
               </div>
             ))}
           </div>
-          <span className="mt-auto w-fit rounded-[5px] bg-foreground px-2.5 py-[7px] text-[10px] leading-none text-background">
-            Submit partner
-          </span>
+          {action ? (
+            <span className="mt-auto w-fit rounded-[5px] bg-foreground px-2.5 py-[7px] text-[10px] leading-none text-background">
+              Submit partner
+            </span>
+          ) : null}
         </div>
       </div>
     </div>

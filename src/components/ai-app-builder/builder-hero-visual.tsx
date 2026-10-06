@@ -19,7 +19,6 @@
 import { useEffect, useRef, useState } from "react";
 import { MockFit } from "@/components/templates/mock-fit";
 import {
-  IconMark,
   NavItem,
   SectionLabel,
 } from "@/components/home/build-app-visual";
@@ -71,19 +70,18 @@ const STATUS_COL = "flex w-[78px] shrink-0 justify-center";
 // A hovered table row takes the same tint as the table head, so it reads as
 // part of the table rather than as a new colour. Both views use it: the
 // sidebar rows already answered the pointer and the rows beside them did not.
-const ROW_HOVER =
-  "transition-colors hover:bg-[var(--mock-well)]";
+const ROW_HOVER = "transition-colors hover:bg-[var(--mock-well)]";
 
-// How long the planner spends thinking once the prompt is sent.
+// How long the plan takes to come back once the prompt is sent.
 const THINKING_MS = 2800;
 // The card's widening transition, matched below on the grid. A replay started
 // by the opening click waits this out so the two moves read in order.
 const EXPAND_MS = 560;
 
-// idle  — the card at rest: the prompt sitting in the box, nothing sent.
-// thinking — the builder working.
-// planned — a plan is waiting, so the Requirements bar is on the box.
-type Phase = "idle" | "thinking" | "planned";
+// idle    — the card at rest: the prompt sitting in the box, nothing sent.
+// sent     — the prompt has left the box and is a message in the thread.
+// planned  — the requirements have come back under it.
+type Phase = "idle" | "sent" | "planned";
 
 /**
  * Opens at rest — just the prompt in the box — and runs the build only on the
@@ -98,7 +96,7 @@ function useBuildDemo() {
   const queued = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    if (phase !== "thinking") return;
+    if (phase !== "sent") return;
     const id = setTimeout(() => setPhase("planned"), THINKING_MS);
     return () => clearTimeout(id);
   }, [phase]);
@@ -134,31 +132,15 @@ function useBuildDemo() {
       return;
     }
     if (delay <= 0) {
-      setPhase("thinking");
+      setPhase("sent");
       return;
     }
-    queued.current = setTimeout(() => setPhase("thinking"), delay);
+    queued.current = setTimeout(() => setPhase("sent"), delay);
   };
 
   return { phase, play, stop };
 }
 
-// Fade in only: the outgoing state drops out at once, so two states never
-// overlap mid-transition.
-const fade = (visible: boolean) =>
-  visible
-    ? "opacity-100 transition-opacity duration-500 ease-out"
-    : "pointer-events-none opacity-0";
-
-/** The product's loading line while the planner works: its animated mark, then "Thinking...". */
-function ThinkingLine() {
-  return (
-    <p className="flex items-center gap-2 text-[14px] leading-[1.5] text-muted-foreground">
-      <IconMark animated className="size-[13px] text-foreground" />
-      Thinking...
-    </p>
-  );
-}
 
 // The result card's two views, with the brief's labels for each side.
 const VIEWS = ["Your team", "Your clients"] as const;
@@ -234,7 +216,7 @@ export function BuilderHeroVisual() {
               }
               play();
             }}
-            disabled={phase === "thinking"}
+            disabled={phase === "sent"}
             aria-label="Replay the builder writing the plan"
             className="absolute inset-0 z-10 cursor-pointer rounded-[28px] focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-default"
           />
@@ -282,27 +264,21 @@ export function BuilderHeroVisual() {
               white window stops the chat reading as a screenshot pasted onto
               the card: it is the card.
 
-              And the thread above the box is gone with it. The request used to
-              sit in a bubble of its own, repeating as a message what the box
-              below already held as text, with the card's whole middle empty
-              between them. One box, centred, holding the prompt — the card is
-              the thing you type into, which is what "Describe it" promises. */}
-            <div className="flex h-full flex-col justify-center">
-              {/* Kept at its own height whether or not the line is in it, so
-                the box does not jump when the builder starts and finishes. */}
-              <div className="relative h-[21px] shrink-0">
-                <div
-                  className={`absolute inset-x-0 top-0 ${fade(phase === "thinking")}`}
-                >
-                  <ThinkingLine />
-                </div>
-              </div>
+              The thread above the box is back, but not as it was. It was once
+              a bubble repeating as a message what the box below still held as
+              text, with the card's whole middle empty between them — the same
+              sentence twice and nothing to look at. Now the prompt LEAVES the
+              box when it is sent, so it is in one place at a time, and what
+              fills the space is the plan that came back rather than air.
+
+              No "Thinking…" line either. A spinner is the product telling you
+              to wait; this card has three seconds to show what the builder
+              does, and sending a message and getting requirements back IS
+              that. The wait is the gap between the two, which needs no
+              caption. */}
+            <div className="flex h-full flex-col justify-center gap-3">
+              <Thread phase={phase} />
               <Composer phase={phase} />
-              {/* Balances the thinking line's reserved row above the box, so
-                  the box itself is on the centre line rather than 10px under
-                  it. Both are held whether or not the line is showing, so
-                  nothing moves when the builder starts and finishes. */}
-              <div aria-hidden className="h-[21px] shrink-0" />
             </div>
           </div>
         </div>
@@ -336,14 +312,23 @@ export function BuilderHeroVisual() {
               // for the near-black ground, not for this lifted panel.
               className={`relative h-[760px] w-full overflow-hidden rounded-tl-xl border-l border-t bg-[var(--mock-window)] text-[color:var(--mock-ink)] shadow-[0_8px_24px_-18px_rgba(16,24,40,0.14)] ${LINE}`}
             >
-              {/* The card clips this screen, which left the last row cut
-                  through the middle of its type — a hard edge that reads as a
-                  rendering fault rather than as a crop. A short fade to the
-                  card's own ground ends it instead. Over the screen, under
-                  nothing: it is the last thing drawn. */}
+              {/* The card clips this screen on two sides, which left the last
+                  row cut through the middle of its type and the status column
+                  sliced down its length — hard edges that read as a rendering
+                  fault rather than as a crop. A short fade to the card's own
+                  ground ends each instead. Over the screen, under nothing:
+                  they are the last things drawn.
+
+                  Two layers rather than one corner gradient: a single diagonal
+                  would have dimmed the middle of the table, which is the part
+                  worth reading. */}
               <div
                 aria-hidden
                 className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-20 bg-gradient-to-b from-transparent to-[var(--surface)]"
+              />
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-r from-transparent to-[var(--surface)]"
               />
               <div className="relative h-full">
                 {VIEWS.map((label, i) => (
@@ -504,6 +489,90 @@ function ViewToggle({
   );
 }
 
+/** What the builder comes back with, read off the prompt above it. */
+const REQUIREMENTS = [
+  "A checklist of the documents you ask for",
+  "Clients upload, replace, and see what is outstanding",
+  "Your team sees every client's progress",
+];
+
+/**
+ * The thread above the box: the prompt once it has been sent, and the
+ * requirements that come back under it.
+ *
+ * Both open on their own height rather than fading in — at rest neither is
+ * there at all, and an element with no height has nothing to fade. The rows
+ * carry each from nothing to its full height, so the card grows a message and
+ * then a plan instead of blinking them on.
+ */
+function Thread({ phase }: { phase: Phase }) {
+  const sent = phase !== "idle";
+  const planned = phase === "planned";
+  return (
+    <div aria-hidden className="flex flex-col gap-2.5">
+      {/* The prompt, now a message. It is NOT a copy of what the box holds —
+          the box empties when this appears, so the sentence is in one place at
+          a time. */}
+      <div
+        className={`grid transition-[grid-template-rows] duration-[400ms] ease-out motion-reduce:transition-none ${
+          sent ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+        }`}
+      >
+        <div className="min-h-0 overflow-hidden">
+          <p className="ml-auto w-fit max-w-[88%] rounded-xl rounded-br-[5px] bg-[var(--mock-well-2)] px-3 py-2 text-[13.5px] leading-[1.45] text-[color:var(--mock-ink)]">
+            {PROMPT}
+          </p>
+        </div>
+      </div>
+
+      {/* The plan. The Approve pill used to sit on the composer as a bar; it
+          belongs on the thing being approved. */}
+      <div
+        className={`grid transition-[grid-template-rows] duration-500 ease-out motion-reduce:transition-none ${
+          planned ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+        }`}
+      >
+        <div className="min-h-0 overflow-hidden">
+          <div
+            className={`overflow-hidden rounded-lg border bg-[var(--mock-window)] ${LINE}`}
+          >
+            <div
+              className={`flex items-center justify-between border-b py-1.5 pl-3 pr-2 ${LINE}`}
+            >
+              <span className="flex items-center gap-2 text-[13px] leading-none text-[color:var(--mock-ink)]">
+                <IconCheckCircleOutline className="size-[13px]" />
+                Requirements
+              </span>
+              {/* Hover only: it is a picture of the button, so it does nothing. */}
+              <span
+                className={`pointer-events-auto flex cursor-default items-center rounded-[4px] border bg-[var(--mock-well-2)] px-3 py-[5px] text-[13px] leading-none text-[color:var(--mock-ink)] transition-colors hover:bg-[var(--mock-window)] ${LINE}`}
+              >
+                Approve
+              </span>
+            </div>
+            <ul className="flex flex-col">
+              {REQUIREMENTS.map((line, i) => (
+                <li
+                  key={line}
+                  // One at a time, behind the panel opening, so the list reads
+                  // as being written rather than as having been there.
+                  className={`flex items-start gap-2 border-b px-3 py-2 text-[13px] leading-[1.4] text-[color:var(--mock-ink)] transition-opacity duration-300 last:border-b-0 motion-reduce:transition-none ${LINE} ${
+                    planned ? "opacity-100" : "opacity-0"
+                  }`}
+                  style={{ transitionDelay: `${260 + i * 110}ms` }}
+                >
+                  <IconCheckCircleOutline className="mt-[2px] size-[13px] shrink-0 text-[color:var(--mock-ink-soft)]" />
+                  {line}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /**
  * The builder's message box, and at rest the whole card: the prompt is in it as
  * typed text rather than above it as a sent message. Once a plan is waiting the
@@ -518,16 +587,21 @@ function ViewToggle({
  * the rest of the mock uses.
  */
 function Composer({ phase }: { phase: Phase }) {
-  const planned = phase === "planned";
+  const sent = phase !== "idle";
   const box = (
     <div className="px-3.5 pb-2.5 pt-3">
       {/* Takes typing so the box feels real, but nothing sends: Enter and the
           arrow are inert. Out of the tab order, as the mock around it is
           hidden from assistive tech. */}
+      {/* Keyed on whether the prompt has been sent, so React remounts the
+          field and it genuinely empties rather than keeping the old text. The
+          sentence belongs to the thread once it has been sent; leaving it here
+          too was the thing that made the old bubble read as a duplicate. */}
       <textarea
-        rows={3}
+        key={sent ? "sent" : "idle"}
+        rows={sent ? 2 : 3}
         tabIndex={-1}
-        defaultValue={PROMPT}
+        defaultValue={sent ? "" : PROMPT}
         placeholder="Describe what you want to build"
         onKeyDown={(e) => {
           if (e.key === "Enter") e.preventDefault();
@@ -577,42 +651,6 @@ function Composer({ phase }: { phase: Phase }) {
         <div
           className={`overflow-hidden rounded-lg border bg-[var(--mock-window)] ${LINE}`}
         >
-        {/* Opened on its own height rather than faded in: at rest the row is
-            not there at all, and an element with no height has no fade to
-            play. The grid rows carry it from nothing to its full height, so
-            the box grows a bar instead of blinking one on.
-
-            The Approve pill sets that height, so slimming the bar is mostly
-            slimming the pill. Label drops to the pill's size too — at 14px
-            against a 13px button the row read top-heavy. */}
-        <div
-          className={`grid transition-[grid-template-rows] duration-500 ease-out ${
-            planned ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
-          }`}
-        >
-          {/* The clipping wrapper is its own element: a grid item's
-              min-height resolves to auto, so a padded flex row put straight
-              into the 0fr track keeps its own height and spills out of the
-              box instead of collapsing into it. */}
-          <div
-            className={`min-h-0 overflow-hidden ${planned ? "" : "pointer-events-none"}`}
-          >
-            <div
-              className={`flex items-center justify-between border-b py-1.5 pl-3 pr-2 ${LINE}`}
-            >
-              <span className="flex items-center gap-2 text-[13px] leading-none text-[color:var(--mock-ink)]">
-                <IconCheckCircleOutline className="size-[13px]" />
-                Requirements
-              </span>
-              {/* Hover only: it is a picture of the button, so it does nothing. */}
-              <span
-                className={`pointer-events-auto flex cursor-default items-center rounded-[4px] border bg-[var(--mock-well-2)] px-3 py-[5px] text-[13px] leading-none text-[color:var(--mock-ink)] transition-colors hover:bg-[var(--mock-window)] ${LINE}`}
-              >
-                Approve
-              </span>
-            </div>
-          </div>
-        </div>
           {box}
         </div>
       </div>

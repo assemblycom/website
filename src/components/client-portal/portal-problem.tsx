@@ -72,13 +72,17 @@ const SIDES: { label: string; body: string }[] = [
  * came forward with nothing under it to say so, and the pair read flat exactly
  * half the time.
  *
+ * Kept soft: wider blur, more negative spread and roughly half the ink it
+ * carried at first. The lift only has to say which screen is in front, and at
+ * full strength it was a dark band down the seam between them.
+ *
  * Both strings are written out whole because Tailwind scans source for complete
  * class names and cannot see one assembled from parts.
  */
 const LIFT_RIGHT =
-  "shadow-[18px_0_40px_-18px_rgba(16,24,40,0.28),0_2px_8px_-2px_rgba(16,24,40,0.1)] [[data-theme=dark]_&]:shadow-[18px_0_40px_-20px_rgba(0,0,0,0.75)]";
+  "shadow-[22px_0_48px_-26px_rgba(16,24,40,0.16),0_2px_8px_-4px_rgba(16,24,40,0.06)] [[data-theme=dark]_&]:shadow-[22px_0_48px_-26px_rgba(0,0,0,0.5)]";
 const LIFT_LEFT =
-  "shadow-[-18px_0_40px_-18px_rgba(16,24,40,0.28),0_2px_8px_-2px_rgba(16,24,40,0.1)] [[data-theme=dark]_&]:shadow-[-18px_0_40px_-20px_rgba(0,0,0,0.75)]";
+  "shadow-[-22px_0_48px_-26px_rgba(16,24,40,0.16),0_2px_8px_-4px_rgba(16,24,40,0.06)] [[data-theme=dark]_&]:shadow-[-22px_0_48px_-26px_rgba(0,0,0,0.5)]";
 
 function Screen({
   selected,
@@ -168,6 +172,11 @@ function Screen({
  * it stays picked — there is no "back to default", since every state here is a
  * legitimate one to leave the picture in.
  */
+// Where the tray gives out on the right. Opaque for most of its width, then a
+// short band to nothing — the fade happens inside the overflow, so no screen
+// that fits is dimmed on its way past.
+const TRAY_FADE = "linear-gradient(to right, #000 0 88%, transparent 100%)";
+
 function ScreenPair() {
   // Which screen is in front. It persists: pointing at one brings it forward
   // and it stays there, so you can actually look at the screen you raised.
@@ -180,7 +189,12 @@ function ScreenPair() {
         <GenericPortalMock />
       </Screen>
       <Screen selected={selected === 1} overlaps onSelect={() => setSelected(1)}>
-        <IntakeAppMock />
+        {/* Branded, where the same screen elsewhere on the site is not. This
+            pair IS the argument — a portal that is nobody's beside one that is
+            yours — and with a neutral nav on both sides the right-hand screen
+            was making the case in its labels while quietly contradicting it in
+            its colour. */}
+        <IntakeAppMock branded action={false} />
       </Screen>
     </div>
   );
@@ -255,7 +269,19 @@ export function PortalProblem({
             radius down there had nothing to round: it clipped two notches out
             of the screens instead, which read as a rendering fault rather
             than as a corner. */}
-        <div className="mt-8 overflow-hidden rounded-t-3xl bg-[var(--surface)] p-4 pb-0 md:mt-10 md:p-6 md:pb-0">
+        {/* The right edge fades rather than cutting. The pair is wider than
+            the tray on purpose — these are windows onto screens that continue
+            — but a straight vertical slice through a table mid-row reads as a
+            rendering fault, the same way the bottom did before it was faded. A
+            mask, so it dissolves to whatever the tray's own ground is and
+            needs no second value for dark. */}
+        <div
+          className="mt-8 overflow-hidden rounded-t-3xl bg-[var(--surface)] p-4 pb-0 md:mt-10 md:p-6 md:pb-0"
+          style={{
+            WebkitMaskImage: TRAY_FADE,
+            maskImage: TRAY_FADE,
+          }}
+        >
           {screens ?? <ScreenPair />}
         </div>
 

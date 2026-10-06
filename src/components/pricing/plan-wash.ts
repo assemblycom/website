@@ -15,9 +15,15 @@
 // source for complete class names, so they cannot be assembled from parts.
 // ─────────────────────────────────────────────────────────────────────────
 
-/** The recommended plan. Blue to 180px, then out. */
+/**
+ * The recommended plan. Held back and kept short: at full #7DA4FF running
+ * 180px it was a solid blue slab over the price and most of the perk list,
+ * which made the card look like a different product rather than the same card
+ * with a mark on it. Starting at 45% and gone by 120px, it reads as a wash
+ * behind the plan name and nothing below it.
+ */
 export const PLAN_WASH_BRAND =
-  "[background:linear-gradient(to_bottom,#7DA4FF,transparent_180px)] [[data-theme=dark]_&]:[background:linear-gradient(to_bottom,rgba(125,164,255,0.28),transparent_170px)]";
+  "[background:linear-gradient(to_bottom,rgba(125,164,255,0.45),transparent_120px)] [[data-theme=dark]_&]:[background:linear-gradient(to_bottom,rgba(125,164,255,0.22),transparent_120px)]";
 
 /**
  * Every other plan. Palette tokens, not hand-mixed grays: light takes --muted,
@@ -27,7 +33,7 @@ export const PLAN_WASH_BRAND =
  * rather than a new gray, and matching the brand wash's 170px fade.
  */
 export const PLAN_WASH_NEUTRAL =
-  "[background:linear-gradient(to_bottom,var(--muted),transparent_180px)] [[data-theme=dark]_&]:[background:linear-gradient(to_bottom,color-mix(in_srgb,var(--border)_55%,transparent),transparent_170px)]";
+  "[background:linear-gradient(to_bottom,var(--muted),transparent_120px)] [[data-theme=dark]_&]:[background:linear-gradient(to_bottom,color-mix(in_srgb,var(--border)_55%,transparent),transparent_120px)]";
 
 /**
  * /pricing only. Its cards are a subgrid that runs taller than the card block's,
@@ -35,9 +41,9 @@ export const PLAN_WASH_NEUTRAL =
  * above, which it overrides from lg up.
  */
 export const PLAN_WASH_BRAND_LG =
-  "lg:[background:linear-gradient(to_bottom,#7DA4FF,transparent_224px)]";
+  "lg:[background:linear-gradient(to_bottom,rgba(125,164,255,0.45),transparent_160px)]";
 export const PLAN_WASH_NEUTRAL_LG =
-  "lg:[background:linear-gradient(to_bottom,var(--muted),transparent_224px)]";
+  "lg:[background:linear-gradient(to_bottom,var(--muted),transparent_160px)]";
 
 /**
  * The recommended card's own edge: brand blue at the top, gone by the middle,

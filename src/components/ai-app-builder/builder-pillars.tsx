@@ -1,15 +1,25 @@
+import Link from "next/link";
 import { GRID_LINE } from "@/components/ui/grid-lines";
 
 export interface Pillar {
+  /**
+   * The category this claim belongs to, in two words or fewer. Set in the
+   * site's own eyebrow — mono, uppercase — so the four rows are scannable as a
+   * list of subjects before any of them is read as a sentence.
+   */
+  eyebrow: string;
   heading: string;
   body: string;
+  /** Where the claim is shown in full. One per row, under the copy. */
+  cta: { label: string; href: string };
   /** The product shot that backs the claim. */
   visual: React.ReactNode;
 }
 
 /**
- * The four message pillars, each one a row of its own: the claim and its facts
- * on the left, the shot that backs it on the right.
+ * The four message pillars, each one a row of its own: an eyebrow naming the
+ * subject, the claim, the line under it and a way to see it in full on the
+ * left; the shot that backs it on the right.
  *
  * It used to be a scrolling left column against ONE pinned shot that
  * cross-faded to whichever claim was nearest the middle of the viewport. That
@@ -43,12 +53,24 @@ export function BuilderPillars({ pillars }: { pillars: Pillar[] }) {
         >
           <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-16">
             <div>
-              <h3 className="type-h3 text-balance leading-[1.2]">
+              <p className="type-eyebrow text-muted-foreground">
+                {pillar.eyebrow}
+              </p>
+              <h3 className="type-h3 mt-4 text-balance leading-[1.2]">
                 {pillar.heading}
               </h3>
               <p className="mt-4 max-w-md text-pretty text-muted-foreground">
                 {pillar.body}
               </p>
+              {/* The site's secondary button, not a new one. Each row now ends
+                  somewhere instead of asking the reader to carry four claims
+                  to the single action at the foot of the page. */}
+              <Link
+                href={pillar.cta.href}
+                className="mt-6 inline-block rounded-lg border border-foreground/20 bg-transparent px-5 py-2.5 text-sm text-foreground transition-colors hover:bg-foreground/5 [[data-theme=dark]_&]:border-white/25"
+              >
+                {pillar.cta.label}
+              </Link>
             </div>
 
             {/* Held off the top and left and running off the bottom and the
