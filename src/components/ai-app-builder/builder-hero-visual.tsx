@@ -486,7 +486,7 @@ function Composer({ phase }: { phase: Phase }) {
           arrow are inert. Out of the tab order, as the mock around it is
           hidden from assistive tech. */}
       <textarea
-        rows={2}
+        rows={3}
         tabIndex={-1}
         defaultValue={PROMPT}
         placeholder="Describe what you want to build"
@@ -495,9 +495,20 @@ function Composer({ phase }: { phase: Phase }) {
         }}
         className="pointer-events-auto block w-full resize-none bg-transparent text-[14px] leading-[1.4] text-foreground outline-none placeholder:text-muted-foreground/60"
       />
-      <div className="flex items-center justify-end">
-        <span className="pointer-events-auto flex size-[26px] cursor-default items-center justify-center rounded-[4px] bg-foreground text-background transition-opacity hover:opacity-85">
-          <IconArrowUp className="size-[13px]" />
+      {/* The product's own composer footer: attach on the left, the model and
+          send on the right. Without them the box was a bare field with one
+          button floating in it, which is not what anyone types into. */}
+      <div className="flex items-center justify-between">
+        <span className="pointer-events-auto flex size-[26px] cursor-default items-center justify-center rounded-[4px] text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
+          <IconPlus className="size-[13px]" />
+        </span>
+        <span className="flex items-center gap-2">
+          <span className="text-[12px] leading-none text-muted-foreground">
+            Opus 5
+          </span>
+          <span className="pointer-events-auto flex size-[26px] cursor-default items-center justify-center rounded-[4px] bg-foreground text-background transition-opacity hover:opacity-85">
+            <IconArrowUp className="size-[13px]" />
+          </span>
         </span>
       </div>
     </div>
@@ -508,9 +519,15 @@ function Composer({ phase }: { phase: Phase }) {
     // send button a screen away from the words. 560px is the measure the
     // site's other composer already runs at.
     <div className="mx-auto w-full max-w-[560px] pt-3">
-      <div
-        className={`overflow-hidden rounded-lg border bg-background ${LINE}`}
-      >
+      {/* Double outline: a soft second rule held off the box, the way a focused
+          input reads in the product. One border on a grey card was a single
+          thin line doing all the work of saying "this is the thing you type
+          into"; the outer ring gives it an edge you can see from across the
+          hero. */}
+      <div className="rounded-[13px] p-[3px] ring-1 ring-foreground/[0.06]">
+        <div
+          className={`overflow-hidden rounded-lg border bg-background ${LINE}`}
+        >
         {/* Opened on its own height rather than faded in: at rest the row is
             not there at all, and an element with no height has no fade to
             play. The grid rows carry it from nothing to its full height, so
@@ -547,7 +564,8 @@ function Composer({ phase }: { phase: Phase }) {
             </div>
           </div>
         </div>
-        {box}
+          {box}
+        </div>
       </div>
     </div>
   );

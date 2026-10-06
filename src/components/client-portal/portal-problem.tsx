@@ -63,12 +63,19 @@ const SIDES: { label: string; body: string }[] = [
  */
 function Screen({
   selected,
+  ringed,
   overlaps,
   onSelect,
   children,
 }: {
   /** The one in front: full colour, shadowed, and at rest height. */
   selected: boolean;
+  /**
+   * Draws the outline. Only once the reader has actually pointed at a screen:
+   * on arrival nothing has been picked, and an outline on the one that happens
+   * to open in front reads as a selection the reader did not make.
+   */
+  ringed: boolean;
   /** The second of the pair, which slides left over the first. */
   overlaps?: boolean;
   onSelect: () => void;
@@ -110,7 +117,7 @@ function Screen({
       <div
         aria-hidden
         className={`pointer-events-none absolute -inset-1 z-10 rounded-t-[15px] border border-b-0 border-foreground/20 transition duration-200 motion-reduce:transition-none ${
-          selected ? "scale-100 opacity-100" : "scale-[0.985] opacity-0"
+          ringed ? "scale-100 opacity-100" : "scale-[0.985] opacity-0"
         }`}
       />
       {/* The frame is opaque whichever screen is in front. The dimming used to
@@ -153,15 +160,29 @@ function Screen({
  */
 function ScreenPair() {
   const [selected, setSelected] = useState(1);
+  // Nothing is picked until the reader picks it. The pair still opens stacked
+  // — built app in front, generic one behind, stepped and muted — because that
+  // is the section's argument at rest, and depth is not selection. The outline
+  // is what says "picked", so it waits.
+  const [touched, setTouched] = useState(false);
+  const pick = (i: number) => {
+    setSelected(i);
+    setTouched(true);
+  };
   return (
     <div className="flex">
-      <Screen selected={selected === 0} onSelect={() => setSelected(0)}>
+      <Screen
+        selected={selected === 0}
+        ringed={touched && selected === 0}
+        onSelect={() => pick(0)}
+      >
         <GenericPortalMock />
       </Screen>
       <Screen
         selected={selected === 1}
+        ringed={touched && selected === 1}
         overlaps
-        onSelect={() => setSelected(1)}
+        onSelect={() => pick(1)}
       >
         <IntakeAppMock />
       </Screen>

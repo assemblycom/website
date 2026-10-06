@@ -100,7 +100,7 @@ export function PortalProof({
             single ? "mt-12" : "mt-12 grid md:grid-cols-3"
           }
         >
-          {stories.map((story) => (
+          {stories.map((story, i) => (
             <Link
               key={story.href}
               href={story.href}
@@ -120,7 +120,19 @@ export function PortalProof({
               {!single ? (
                 <span
                   aria-hidden
-                  className="pointer-events-none absolute inset-y-0 -inset-x-4 -z-10 rounded-xl bg-[var(--surface)] opacity-0 transition-opacity duration-200 group-hover:opacity-100 motion-reduce:transition-none"
+                  // Inside its own cell, so it stops at the hairline between
+                  // the columns instead of painting over it — -inset-x-4 ran
+                  // the fill across the divider and swallowed it. The first
+                  // card is the exception: it has no divider on its left and
+                  // drops its padding to land on the rail, so there the fill
+                  // reaches out rather than hugging the type.
+                  //
+                  // Half-strength: at full --surface the fill was as dark as
+                  // the trays elsewhere on the page, which on a card made of
+                  // nothing but type read as the card being disabled.
+                  className={`pointer-events-none absolute inset-y-0 right-0 -z-10 rounded-xl bg-[var(--surface)]/60 opacity-0 transition-opacity duration-200 group-hover:opacity-100 motion-reduce:transition-none ${
+                    i === 0 ? "-left-4" : "left-0"
+                  }`}
                 />
               ) : null}
               {/* Same-size tile per firm. `fit` is what the logo component
@@ -129,7 +141,12 @@ export function PortalProof({
                   in a 48px square at their own proportions. Free-standing, each
                   logo renders at its own declared width, and the three marks
                   were visibly different sizes across the row. */}
-              <span className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-muted p-2.5 text-foreground/80 [[data-theme=dark]_&]:bg-white/[0.06]">
+              {/* The tile goes white and the mark to full strength on hover.
+                  At rest the tile is a grey square on a white card and the
+                  mark sits back at 80%; once the hover fill comes in behind
+                  it, that grey is the same value as the fill, so the tile
+                  vanished and took the logo's contrast with it. */}
+              <span className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-muted p-2.5 text-foreground/80 transition-colors group-hover:bg-background group-hover:text-foreground [[data-theme=dark]_&]:bg-white/[0.06] [[data-theme=dark]_&]:group-hover:bg-white/[0.12]">
                 <CustomerLogo slug={story.slug} fit />
               </span>
               {story.specialty ? (

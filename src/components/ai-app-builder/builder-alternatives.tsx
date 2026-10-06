@@ -152,15 +152,16 @@ export function BuilderAlternatives() {
         ))}
       </ul>
 
-      {/* The frame's two outer sides. The cells draw the rules between
-          columns and rows, so the table had a top and a bottom and nothing
-          down either flank — the banded last column in particular just
-          stopped. The wrapper closes it, and the radius keeps the corners
-          from being the only hard right angles in a page of rounded
-          surfaces. */}
-      <div
-        className={`mt-12 hidden overflow-hidden rounded-xl border-x md:block ${GRID_LINE} ${BLEED}`}
-      >
+      {/* The frame's two outer sides. The cells draw the rules between columns
+          and rows, so the table had a top and a bottom and nothing down either
+          flank — the banded last column in particular just stopped.
+          
+          Square, and not clipped. A radius here needed overflow-hidden to
+          round the cells inside it, and that clipped the header row's own top
+          rule at both corners: the frame curved away while the rule ran
+          straight into it, which read as a broken corner. A table is a grid of
+          straight lines; its outer corners can be too. */}
+      <div className={`mt-12 hidden border-x md:block ${GRID_LINE} ${BLEED}`}>
         <table className="w-full table-fixed border-collapse text-left">
           <caption className="sr-only">
             Building in-house, a standalone AI app builder, and Assembly

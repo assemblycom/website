@@ -208,11 +208,23 @@ export function RailCard({
     return (
       <div className="group/card w-[78%] shrink-0 snap-start sm:w-[62%] md:w-[calc((100%-1rem)/2)] lg:w-[calc((100%-2rem)/3)]">
         <div className="relative flex aspect-[3/4] w-full select-none flex-col overflow-hidden rounded-3xl bg-[var(--surface)]">
-          <div className="shrink-0 p-6 md:p-7">{copy}</div>
-          {/* The picture takes whatever height the copy leaves and runs off the
-              card's bottom edge, so it reads as a window into the product
-              rather than a framed thumbnail sitting in a box. */}
-          <div className="relative min-h-0 flex-1">{children}</div>
+          <div className="shrink-0 px-6 pb-4 pt-6 md:px-7 md:pt-7">{copy}</div>
+          {/* The picture runs the card's full width at its own 340x453 ratio
+              and crops on the card's bottom edge, so it reads as a window onto
+              something larger.
+              
+              The ratio box is what makes that work. These mocks are drawn at a
+              fixed design size and scaled to fit whatever box they are given;
+              handed the short, wide space the copy leaves over, they fit to its
+              height and came out a third of the card wide, floating in the
+              middle of it. Given a box of their own proportions pinned to the
+              card's width, they scale by width instead and the overflow is the
+              crop. */}
+          <div className="relative min-h-0 flex-1">
+            <div className="absolute inset-x-0 top-0 aspect-[340/453]">
+              {children}
+            </div>
+          </div>
         </div>
       </div>
     );

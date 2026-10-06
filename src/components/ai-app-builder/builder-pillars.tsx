@@ -116,8 +116,8 @@ export function BuilderPillars({ pillars }: { pillars: Pillar[] }) {
               {/* Phone: the visual and its facts belong to their own claim, in
                   reading order. */}
               <div className="md:hidden">
-                <div className="relative mt-8 aspect-[16/9.6] overflow-hidden rounded-2xl bg-[var(--surface)] p-4">
-                  <div className="h-full overflow-hidden rounded-xl">
+                <div className="relative mt-8 aspect-[16/9.6] overflow-hidden rounded-2xl bg-[var(--surface)]">
+                  <div className="absolute left-4 top-4 h-[108%] w-[108%] overflow-hidden rounded-tl-xl">
                     {pillar.visual}
                   </div>
                 </div>
@@ -156,7 +156,16 @@ export function BuilderPillars({ pillars }: { pillars: Pillar[] }) {
                   // read as a stray band rather than as the tray it is. Held
                   // off every edge, the shot sits ON the grey the way the
                   // product shots elsewhere on the site do.
-                  className={`absolute inset-5 overflow-hidden rounded-xl transition-opacity duration-300 motion-reduce:transition-none md:inset-6 ${
+                  // Held off the top and left, running off the bottom and the
+                  // right, so the shot reads as a window onto a screen that
+                  // continues past the frame.
+                  //
+                  // 108%, not 128%. These two are the home page's own
+                  // components, not fixed-size art: they carry real responsive
+                  // rules, and at 128% the CRM crossed a breakpoint — its table
+                  // columns collided and the name ran over the company. The
+                  // crop has to stay inside the width band they were drawn for.
+                  className={`absolute left-5 top-5 h-[108%] w-[108%] overflow-hidden rounded-tl-xl transition-opacity duration-300 motion-reduce:transition-none md:left-6 md:top-6 ${
                     i === active ? "opacity-100" : "opacity-0"
                   }`}
                 >

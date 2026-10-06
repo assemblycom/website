@@ -14,7 +14,9 @@ import {
 const STEPS = [
   {
     name: "Describe",
-    body: "Say what you want, or start from a template.",
+    // Two lines, like the other four. One line long, this caption left the
+    // first card's foot sitting above the rest of the rail's.
+    body: "Say what you want, or start from one of 30+ working templates.",
     visual: <DescribeCard />,
   },
   {
