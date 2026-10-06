@@ -39,7 +39,7 @@ import { LOGIN_URL, SIGNUP_URL } from "@/lib/constants";
 
 export function BuilderPrompt({
   placeholder = "Describe the app your firm needs…",
-  model = "Opus 5",
+  model = "Auto",
 }: {
   placeholder?: string;
   model?: string;
@@ -84,7 +84,7 @@ export function BuilderPrompt({
         e.preventDefault();
         go();
       }}
-      className="v63-gradient-border v63-ring-solid v63-spin-on-hover relative mx-auto mt-10 w-full max-w-[640px] rounded-[20px] bg-background p-[5px] [[data-theme=dark]_&]:bg-[var(--surface)]"
+      className="v63-gradient-border v63-ring-solid v63-spin-on-hover relative mx-auto mt-14 w-full max-w-[640px] md:mt-16 rounded-[20px] bg-background p-[5px] [[data-theme=dark]_&]:bg-[var(--surface)]"
     >
       <div className="group rounded-[15px] border border-border bg-background p-4 sm:p-5 [[data-theme=dark]_&]:border-[#383838] [[data-theme=dark]_&]:bg-[var(--mock-window)]">
         {/* The empty run under the first line is the point: it says there is
@@ -145,8 +145,12 @@ export function BuilderPrompt({
             ) : null}
           </div>
           <div className="flex items-center gap-2.5">
-            {/* No chevron: this is not a menu waiting to be opened, and a caret
-                invites a click that goes somewhere else entirely. */}
+            {/* "Auto" rather than a model name. The builder chooses per job,
+                and a named model on a marketing page is a fact with a shelf
+                life — it dates the shot the day the default moves.
+
+                No chevron: this is not a menu waiting to be opened, and a
+                caret invites a click that goes somewhere else entirely. */}
             <span className="text-[13px] leading-none text-muted-foreground">
               {model}
             </span>
