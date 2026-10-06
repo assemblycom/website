@@ -223,15 +223,21 @@ export function BuilderAlternatives() {
                   <td
                     key={COLUMNS[i].name}
                     className={`border-l px-6 py-6 align-top ${GRID_LINE} ${
-                      // The answer cells step one rung further up than the
-                      // header above them, in dark only. --muted is a quiet
-                      // wash on white and the column reads fine; on the
-                      // near-black ground it barely separated from the two
-                      // alternatives beside it. The HEADER keeps --muted, so
-                      // the column still opens on the same tone it always did
-                      // and only its answers are lifted.
+                      // The answer cells are a LIGHTER wash than the header
+                      // above them: the column still reads as one block, but
+                      // the title is what carries the tone and the answers sit
+                      // back from it rather than matching it rung for rung.
+                      // Half-strength --muted, which is the same value the two
+                      // alternative columns' own headers use, so this is a tone
+                      // the table already has rather than a fourth grey.
+                      //
+                      // Dark is untouched and deliberately so: there the cells
+                      // step UP to --surface-2, because --muted is a quiet wash
+                      // on white but on the near-black ground it barely
+                      // separated from the two alternatives beside it. Lighten
+                      // the light value, leave the dark one alone.
                       i === OWN
-                        ? `bg-muted ${EDGE_R} [[data-theme=dark]_&]:bg-[var(--surface-2)]`
+                        ? `bg-muted/50 ${EDGE_R} [[data-theme=dark]_&]:bg-[var(--surface-2)]`
                         : ""
                     }`}
                   >

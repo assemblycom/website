@@ -71,6 +71,8 @@ export function BrandedPortalVisual({
   apps = ADDED,
   title = "Year-end docs",
   children,
+  quietPane = false,
+  appHeader = true,
 }: {
   brand?: string;
   /** The firm's own apps, under the stock rows. The last one is open. */
@@ -79,11 +81,33 @@ export function BrandedPortalVisual({
   title?: string;
   /** The open app's screen. Defaults to the document checklist below. */
   children?: React.ReactNode;
+  /**
+   * Knocks the app pane back so the branded nav carries the shot.
+   *
+   * For a frame where the NAV is the claim and the pane beside it is only
+   * evidence that the nav is attached to a real screen — /ai-app-builder's
+   * branding pillar. Opacity rather than a paler set of inks: it recedes the
+   * pane by the same amount in both themes and cannot be the wrong colour in
+   * either, where a hand-picked grey would have to be chosen twice.
+   */
+  quietPane?: boolean;
+  /**
+   * Draws the open app's own title bar above its screen. Off where the pane is
+   * only evidence that the nav is attached to something: a titled bar is the
+   * app announcing itself, which is a second heading inside a card that already
+   * has one, and the hairline under it cut a line across the shot right where
+   * the eye should have been travelling to the nav.
+   */
+  appHeader?: boolean;
 } = {}) {
   return (
     <div
       aria-hidden
-      className={`flex h-full select-none overflow-hidden rounded-xl border bg-[var(--mock-window)] text-[color:var(--mock-ink)] ${LINE}`}
+      // Open at the foot: this screen runs off the bottom of its card, so a
+      // radius and a hairline down there closed a window that is meant to
+      // carry on past the edge — the corners curled away from the card's own
+      // and the brand slab ended in a rounded stub.
+      className={`flex h-full select-none overflow-hidden rounded-t-xl border border-b-0 bg-[var(--mock-window)] text-[color:var(--mock-ink)] ${LINE}`}
     >
       {/* The firm's colour, not ours. --mock-brand is the one token that holds
           its value across both themes, because it stands for the client's own
@@ -103,27 +127,35 @@ export function BrandedPortalVisual({
           <NavRow key={label} icon={icon} label={label} />
         ))}
 
-        {/* The group heading is what makes the claim legible: these rows are
-            not stock, they are what this firm had built. */}
-        <span className="px-2 pb-1.5 pt-4 text-[10.5px] uppercase tracking-wide text-white/40">
-          Apps
-        </span>
-        {apps.map(({ icon, label }, i) => (
-          <NavRow
-            key={label}
-            icon={icon}
-            label={label}
-            active={i === apps.length - 1}
-          />
-        ))}
+        {/* The firm's own apps. They carried an "APPS" group heading, which is
+            gone: in a shot this size a line of 10.5px caps at 40% white was a
+            label about the nav rather than part of it. The break in the stack
+            says the same thing — these rows are not stock — without spending a
+            row of type on saying it. */}
+        <div className="mt-4 flex flex-col gap-[2px]">
+          {apps.map(({ icon, label }, i) => (
+            <NavRow
+              key={label}
+              icon={icon}
+              label={label}
+              active={i === apps.length - 1}
+            />
+          ))}
+        </div>
       </div>
 
-      <div className="flex min-w-0 flex-1 flex-col">
-        <div className={`border-b px-5 py-3.5 ${LINE}`}>
-          <span className="text-[14px] leading-none text-[color:var(--mock-ink)]">
-            {title}
-          </span>
-        </div>
+      <div
+        className={`flex min-w-0 flex-1 flex-col ${
+          quietPane ? "opacity-55" : ""
+        }`}
+      >
+        {appHeader ? (
+          <div className={`border-b px-5 py-3.5 ${LINE}`}>
+            <span className="text-[14px] leading-none text-[color:var(--mock-ink)]">
+              {title}
+            </span>
+          </div>
+        ) : null}
         {/* The default is three fields and nothing else. The app's content is
             not the claim on /ai-app-builder — what is being shown is WHERE the
             app lands — and anything busier pulls the eye off the nav beside

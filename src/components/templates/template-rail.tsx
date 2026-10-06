@@ -57,7 +57,11 @@ export function TemplateRail({ cards }: { cards: TemplateRailCard[] }) {
               reads as a recess rather than as a second surface colour. */}
           <span className="size-14 shrink-0 rounded-lg bg-[var(--surface-2)]" />
           <span className="min-w-0 flex-1">
-            <span className="block truncate text-sm font-medium text-foreground">
+            {/* Regular, not 500. The rank here is already carried by INK —
+                full foreground over the muted description under it — and
+                adding weight on top of that made the title read as bold
+                against everything else on the page, which is set at 400. */}
+            <span className="block truncate text-sm text-foreground">
               {card.title}
             </span>
             {/* One line, hard. The descriptions are written to fit; the

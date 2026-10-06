@@ -120,6 +120,15 @@
      it still reads as a separate object rather than merging with it. */
   --mock-brand: #171717;
 
+  /* macOS window buttons, for a mock that draws a browser window. Deliberately
+     NOT redefined in the dark block: these are the operating system's own
+     colours and are the same in a dark window as in a light one, so the dark
+     block inheriting them from here is the correct behaviour rather than an
+     oversight. They are the one place in the mock family that carries hue. */
+  --mock-traffic-red: #ff5f57;
+  --mock-traffic-amber: #febc2e;
+  --mock-traffic-green: #28c840;
+
   /* The proposal masthead. It carries no colour of its own in either theme: the
      band is the page's own ground and a hairline closes it, rather than a slab in
      a different shade. Kept as tokens so the band and every ink on it stay one

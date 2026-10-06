@@ -35,7 +35,6 @@ const PILLARS: Pillar[] = [
   {
     eyebrow: "Apps",
     heading: "Build client-facing apps and internal tools, all in one place",
-    cta: { label: "Browse templates", href: "/templates" },
     body: "Describe it once. Client apps land in your client experience, team tools in your dashboard.",
     // The built app sitting in the client's own sidebar, which is the claim.
     // A landscape screen like the other three: the build rail's portrait cards
@@ -45,7 +44,6 @@ const PILLARS: Pillar[] = [
   {
     eyebrow: "CRM",
     heading: "One CRM. Every app connects to it",
-    cta: { label: "See the client experience", href: "/client-portal" },
     body: "Contacts, companies, and custom fields come built in. Each client only sees what they're allowed to see.",
     // The home page's CRM shot: contacts, companies and a custom field.
     visual: <TeamCrmVisual />,
@@ -53,7 +51,6 @@ const PILLARS: Pillar[] = [
   {
     eyebrow: "Security",
     heading: "Secure logins, permissions, and billing come built in",
-    cta: { label: "How security works", href: "/security" },
     body: "Built and maintained by Assembly. Nothing reaches your clients until you make it visible.",
     // The firm's own sign-in: their mark, their domain, no platform badge.
     // The claim leads on secure LOGINS, and this is the first thing a client
@@ -69,14 +66,18 @@ const PILLARS: Pillar[] = [
   {
     eyebrow: "Branding",
     heading: "Your clients already have a branded home. New apps land in it",
-    cta: { label: "See real firms' portals", href: "/customers" },
     body: "Your logo and colors, not ours. Every new app picks them up automatically.",
     // The CLIENT's nav, in the firm's colour, with the apps the firm has added
     // listed under the stock rows. It was the home page's branded-portal shot,
     // which is the team's dashboard — CRM, Team, Customize, and a table of six
     // clients' time entries — so a card about where the client's apps land was
     // showing a screen no client ever opens.
-    visual: <BrandedPortalVisual />,
+    visual: <BrandedPortalVisual quietPane appHeader={false} />,
+    // The firm's branded nav IS this claim; the app pane beside it only shows
+    // the nav is attached to a real screen. So the pane dissolves into the card
+    // on the right instead of being cut off by it, and the slab is what the eye
+    // lands on.
+    fadeRight: true,
   },
 ];
 
@@ -262,7 +263,10 @@ export default function AiAppBuilderPage() {
         {/* Chapter 2 — the mechanism behind the claims, then the decision the
             reader is actually weighing. The two belong together: the comparison
             only lands once you know how a build works. */}
-        <BuilderChapter heading="How it works" tightBottom />
+        {/* Split, so this title ranges left like the chapter above it and like
+            the control and panel below it. Centred, it was the one thing in
+            the region that did not start on the page's left line. */}
+        <BuilderChapter heading="How it works" tightBottom split />
         <BuilderHowItWorks />
 
         {/* Separates the mechanism from the comparison it sets up. */}

@@ -1,5 +1,8 @@
+"use client";
+
+import { useState } from "react";
 import { Reveal } from "@/components/ui/reveal";
-import { CardRail, RailCard } from "@/components/ui/card-rail";
+import { SegmentedTabs } from "@/components/ui/segmented-tabs";
 import {
   BuildCard,
   DescribeCard,
@@ -7,76 +10,111 @@ import {
 } from "@/components/client-portal/portal-build-cards";
 
 /**
- * How it works, as three cards rather than one empty frame over a rail.
+ * How it works, as a segmented control over one large panel.
  *
- * It was a 16:9 slot waiting on a picture that does not exist, with the four
- * steps as captions beneath it — so the section's whole middle was a dashed
- * rectangle, and the steps were text under a hole.
+ * It was three cards across, which showed all three beats at once but gave
+ * each of them a third of the measure — so every scene was drawn at 340px,
+ * small enough that the composer, the plan list and the portal shot were all
+ * reading as thumbnails of themselves. One panel at a time means one scene at
+ * roughly 520px, which is the size these mocks were drawn for.
  *
- * The cards are the rail /client-portal's build section already runs, in its
- * copy-inside arrangement: the step names the beat, the line says what happens,
- * and the picture under it runs off the card's bottom edge. No action on a
- * card — the chapter's own CTA is the way out of this part of the page, and a
- * button on every step would ask four times.
+ * The trade is real and worth naming: Describe → Plan → Build is a SEQUENCE,
+ * and a sequence behind tabs is two thirds hidden on arrival. The control
+ * carries the step numbers for exactly that reason — "Step 1 Describe" reads
+ * as an arc even while only one panel is open, where bare category names
+ * ("Describe", "Plan", "Build") would read as three alternatives.
  */
-const STEPS: {
-  name: string;
-  body: string;
-  visual: React.ReactNode;
-  picture?: "fit" | "center" | "below";
-}[] = [
+const STEPS = [
   {
+    value: "describe",
+    step: "Step 1",
     name: "Describe",
     body: "Say what you want, or start from a template.",
     visual: <DescribeCard />,
-    // The shortest scene in the set — a composer and nothing else. Centred in
-    // the space under the copy it read as sitting on the card's floor, and it
-    // is small enough to clear the caption from the card's own centre line.
-    picture: "center" as const,
   },
   {
+    value: "plan",
+    step: "Step 2",
     name: "Plan",
     body: "Approve or edit the plan before anything is built.",
     visual: <PlanCard />,
   },
   {
+    value: "build",
+    step: "Step 3",
     name: "Build",
     body: "Client apps land in your client experience, team tools in your dashboard.",
     visual: <BuildCard />,
-    // The one scene drawn larger than the card — a 560x372 portal shot that
-    // bleeds off the right. Centred it reaches up over this caption, so it
-    // starts under the copy and crops at the foot instead.
-    picture: "below" as const,
   },
 ];
 
 export function BuilderHowItWorks() {
+  const [active, setActive] = useState(STEPS[0].value);
+  const current = STEPS.find((s) => s.value === active) ?? STEPS[0];
+
+  // Tight on top. The chapter above sets `tightBottom`, which takes ITS bottom
+  // padding to zero precisely so this section's own top padding is the only
+  // gap — at py-14/20 that was still 56/80px of empty page between a two-word
+  // title and the control it introduces. The bottom keeps the full step, since
+  // what follows is a different chapter.
   return (
-    <section className="mx-auto max-w-[1200px] px-6 py-14 md:px-10 md:py-20">
+    <section className="mx-auto max-w-[1200px] px-6 pb-14 pt-6 md:px-10 md:pb-20 md:pt-8">
       <Reveal>
-        {/* Three, matching /client-portal's rail: Describe, Plan, Build is
-            the arc. Iterate was a fourth beat that pushed the set past what
-            fits across, so the rail had to be stepped through to be seen at
-            all — and "keep chatting to change anything" is the one of the four
-            a reader will assume anyway. */}
-        {/* A grid, not the scroller. Three cards fit across at every width
-            this section is read at, so there was nothing to step to and
-            nothing to drag — only a grab cursor offering to move a set that
-            was already all on screen. */}
-        <CardRail label="How building works" layout="grid">
-          {STEPS.map((step, i) => (
-            <RailCard
-              key={step.name}
-              index={`Step ${i + 1}`}
-              name={step.name}
-              caption={step.body}
-              picture={step.picture}
-              copyInside
-            >
-              {step.visual}
-            </RailCard>
-          ))}
-        </CardRail>
+        {/* Ranged left, with the chapter heading above it — see the `split`
+            on that BuilderChapter. The whole region reads left: the pillars
+            above, the panel below and its copy all start on the same line, and
+            a centred control between them was the one thing that did not. */}
+        <SegmentedTabs
+          label="How building works"
+          idBase="how-it-works"
+          value={active}
+          onChange={setActive}
+          options={STEPS.map((s) => ({
+            value: s.value,
+            label: (
+              <>
+                <span className="hidden sm:inline">{s.step}:&nbsp;</span>
+                {s.name}
+              </>
+            ),
+          }))}
+        />
+
+        <div
+          role="tabpanel"
+          id={`how-it-works-panel-${current.value}`}
+          aria-labelledby={`how-it-works-tab-${current.value}`}
+          className="mt-6 overflow-hidden rounded-3xl bg-[var(--surface)]"
+        >
+          {/* Keyed on the step so the contents REMOUNT on switch and play the
+              site's own fade rather than swapping hard. Keyed here and not on
+              the panel itself so the panel's own box stays put — a remounting
+              frame would flash its background through the fade. */}
+          <div key={current.value} className="animate-fade-in">
+            <div className="px-6 pt-7 md:px-10 md:pt-9">
+              <h3 className="type-h4 leading-[1.25]">{current.name}</h3>
+              <p className="mt-2 max-w-xl text-pretty text-sm leading-relaxed text-muted-foreground">
+                {current.body}
+              </p>
+            </div>
+
+            {/* Capped and centred. The scenes are MockFit covers, so they scale
+                to whatever width they are given — uncapped in a 1200px panel
+                they would blow up past the size their type was drawn at. 520px
+                is about the size these were designed for. Running to the
+                panel's foot, like every other screen on this page.
+
+                HEIGHT is what sizes these, not width: the scenes are portrait
+                (340x453) and MockFit fits the whole design box, so a wider slot
+                alone changes nothing — it only adds grey either side. The slot
+                is tall enough to draw them at about the size they were designed
+                at, and the cap keeps a 1200px panel from blowing them up past
+                the size their type was set for. */}
+            <div className="relative mx-auto mt-6 h-[380px] w-full max-w-[560px] md:mt-8 md:h-[480px]">
+              {current.visual}
+            </div>
+          </div>
+        </div>
       </Reveal>
     </section>
   );

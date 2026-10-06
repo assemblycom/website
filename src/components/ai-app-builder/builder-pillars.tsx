@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 export interface Pillar {
   /**
    * The category this claim belongs to, in two words or fewer. Not shown: it
@@ -9,8 +7,6 @@ export interface Pillar {
   eyebrow: string;
   heading: string;
   body: string;
-  /** Where the claim is shown in full. One per card, under the copy. */
-  cta: { label: string; href: string };
   /** The product shot that backs the claim. */
   visual: React.ReactNode;
   /**
@@ -26,6 +22,12 @@ export interface Pillar {
    * where a crop takes away the thing you are meant to be looking at.
    */
   visualContained?: boolean;
+  /**
+   * Fades the shot out on its right rather than letting the card cut it off.
+   * For a screen where one END of it is the claim — the branded nav slab — and
+   * the pane beside it is only there to show the nav is attached to something.
+   */
+  fadeRight?: boolean;
 }
 
 /**
@@ -113,7 +115,6 @@ function FeatureCard({
         <p className="mt-3 max-w-xl text-pretty text-sm leading-relaxed text-muted-foreground">
           {pillar.body}
         </p>
-        <CardLink cta={pillar.cta} />
       </div>
 
       {/* Held off the top and left and running off the bottom and the right, so
@@ -122,14 +123,40 @@ function FeatureCard({
           and must end on the same line, so the taller copy decides the row and
           the shorter one's picture takes up the slack. */}
       {pillar.visualContained ? (
-        /* Whole, inside the card's own padding. The cropping frame below is
-           the default and is right for a screen that continues past the edge;
-           it is wrong for one that is a single object with a middle. */
-        <div className="mt-7 min-h-[260px] flex-1 px-6 pb-6 md:mt-8 md:min-h-[300px] md:px-8 md:pb-8">
+        /* Whole across its width, inside the card's own side padding — the
+           cropping frame below is right for a screen that continues past the
+           edge, and wrong for one that is a single object with a middle.
+           But it still runs OFF the card's foot like its three siblings: no
+           bottom padding here, and the screen leaves its own bottom edge open
+           (see LoginScreen's `framed`), so it reads as a window onto something
+           that carries on rather than as a picture parked in a box. The form
+           itself is never cropped — the window ends exactly on the card's
+           edge, so the mark, the field and the button are all still there. */
+        <div className="mt-7 min-h-[260px] flex-1 px-6 md:mt-8 md:min-h-[300px] md:px-8">
           {pillar.visual}
         </div>
       ) : (
-        <div className="relative mt-7 min-h-[260px] flex-1 md:mt-8 md:min-h-[300px]">
+        <div
+          className={`relative mt-7 min-h-[260px] flex-1 md:mt-8 md:min-h-[300px] ${
+            pillar.fadeRight
+              ? // Dissolved into the card on the right rather than cut off by
+                // it. A mask, not an overlay: it takes the screen's own pixels
+                // to transparent so the card's --surface shows through, which
+                // costs nothing in dark mode and cannot be the wrong colour in
+                // either theme.
+                // On THIS box, not on the shot inside it: the shot is laid out
+                // at a fixed 760px and cropped by the card, so a mask there
+                // puts its whole gradient off-screen past the card's edge. This
+                // box is the card's own width, which is the width the fade has
+                // to be measured against.
+                // Full strength across the left two thirds, so the slab being
+                // pointed at stays solid, then away over the last third — a
+                // fade that starts at the halfway mark reads as a blur over the
+                // whole shot rather than as an edge.
+                "[mask-image:linear-gradient(to_right,#000_62%,rgba(0,0,0,0.55)_84%,transparent_100%)]"
+              : ""
+          }`}
+        >
           <div
             className={`absolute left-6 top-0 overflow-hidden rounded-tl-xl md:left-8 ${
               span === "wide" ? "right-0 h-[130%]" : "h-full"
@@ -145,46 +172,6 @@ function FeatureCard({
         </div>
       )}
     </div>
-  );
-}
-
-/**
- * The way on from a card: a ruled label with an arrow, not a button.
- *
- * It was the page's own outlined secondary button, which is sized for a hero —
- * at px-5 py-2.5 behind a --foreground/20 rule it was the heaviest object on a
- * card whose heading is 20px, and four of them down the section read as the
- * point rather than as the way to the point. A rule under the words carries
- * the same affordance at a fraction of the weight, and each claim still ends
- * somewhere instead of asking the reader to carry four of them to the single
- * action at the foot of the page.
- *
- * The rule is the element's own bottom border rather than an underline, so it
- * runs under the arrow as well as the words and sits clear of the descenders.
- * The arrow steps right on hover — the one bit of movement here, and it is the
- * direction the link goes. self-start because the card is a flex column: a
- * stretched flex item would run the rule the whole width of the card.
- */
-function CardLink({ cta }: { cta: Pillar["cta"] }) {
-  return (
-    <Link
-      href={cta.href}
-      className="group mt-7 inline-flex items-center gap-2 self-start border-b border-foreground pb-1.5 text-sm text-foreground"
-    >
-      {cta.label}
-      <svg
-        viewBox="0 0 24 24"
-        aria-hidden
-        className="size-4 transition-transform duration-300 ease-out group-hover:translate-x-1 motion-reduce:transition-none"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.75"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M4 12h15m-6-6 6 6-6 6" />
-      </svg>
-    </Link>
   );
 }
 
