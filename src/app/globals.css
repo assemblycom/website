@@ -3444,3 +3444,44 @@ html:not([data-authed]) .auth-only {
   mask-composite: exclude;
   pointer-events: none;
 }
+
+/* ── The builder making a change, inside a mock ───────────────────────────
+   A spinner that runs while something opens and then retires, so the change
+   reads as work being DONE rather than as a column that was always there and
+   merely hidden.
+
+   Same spin + fade pair as .v69-status-load above; it needs its own selector
+   because the rail's cards are a NAMED Tailwind group (`group/card`), which
+   `.group:hover` does not match. The element is opacity-0 at rest, so nothing
+   shows until the pointer arrives.
+
+   Under reduced motion the mark simply never appears: the column still opens,
+   which is the information; the spinner is only the story about who opened
+   it. */
+@keyframes mockBuildSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes mockBuildFade {
+  0% {
+    opacity: 0;
+  }
+  12%,
+  68% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.group\/card:hover .mock-building {
+  animation:
+    mockBuildSpin 0.85s linear infinite,
+    mockBuildFade 1.5s ease-out both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .group\/card:hover .mock-building {
+    animation: none;
+  }
+}

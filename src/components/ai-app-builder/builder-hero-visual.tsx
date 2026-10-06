@@ -110,6 +110,20 @@ function useBuildDemo() {
     [],
   );
 
+  /**
+   * Drops the demo back to rest and cancels anything queued.
+   *
+   * Collapsing the card used to leave it running: the replay had been started
+   * on the card, not on the view, so the thread carried on writing its plan
+   * inside a panel the reader had just narrowed and stopped looking at — and
+   * reopening it landed mid-animation rather than at the beginning.
+   */
+  const stop = () => {
+    if (queued.current) clearTimeout(queued.current);
+    queued.current = null;
+    setPhase("idle");
+  };
+
   const play = (delay = 0) => {
     if (queued.current) clearTimeout(queued.current);
     const reduce = window.matchMedia?.(
@@ -126,7 +140,7 @@ function useBuildDemo() {
     queued.current = setTimeout(() => setPhase("thinking"), delay);
   };
 
-  return { phase, play };
+  return { phase, play, stop };
 }
 
 // Fade in only: the outgoing state drops out at once, so two states never
@@ -165,10 +179,18 @@ const CARD_PAD = "p-6 md:p-8";
 const HEAD_ROW = "flex min-h-[40px] items-center";
 
 export function BuilderHeroVisual() {
-  const { phase, play } = useBuildDemo();
+  const { phase, play, stop } = useBuildDemo();
   // Manual only: the reader chooses which side to look at.
   const [view, setView] = useState(0);
   const [active, setActive] = useState<"chat" | "live">("live");
+  // The demo belongs to the chat card, so it runs only while that card is the
+  // open one. Narrowing it stops the replay rather than letting it play on
+  // behind a panel nobody is looking at.
+  useEffect(() => {
+    if (active !== "chat") stop();
+    // `stop` is recreated each render and would re-fire this on every one.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [active]);
   // Kept apart from `active` so the phone opens on the prompt, in reading
   // order, without changing which card desktop widens first.
   const [shown, setShown] = useState(0);
@@ -228,7 +250,11 @@ export function BuilderHeroVisual() {
           <div
             className={`${HEAD_ROW} absolute inset-x-6 top-6 z-10 hidden md:inset-x-8 md:top-8 lg:flex`}
           >
-            <p className="type-h4 text-foreground">Describe it</p>
+            {/* type-body, not type-h4. These are the cards' NAMES, not headings —
+                the page's own h1 is right above them — and at 18px each one sat
+                alone at the top of a tall card reading as a second title. 15px
+                is the step /templates uses for exactly this job. */}
+            <p className="type-body text-foreground">Describe it</p>
           </div>
           {/* Above the card's replay button so Approve and Send can show a
             hover; everything else lets the pointer through to the button. */}
@@ -279,7 +305,7 @@ export function BuilderHeroVisual() {
           <div
             className={`${HEAD_ROW} flex-wrap justify-between gap-3 ${CARD_PAD} pb-0 md:pb-0`}
           >
-            <p className="type-h4 hidden text-foreground lg:block">
+            <p className="type-body hidden text-foreground lg:block">
               Live for your team and your clients
             </p>
             <ViewToggle options={VIEWS} view={view} onSelect={setView} />
@@ -510,7 +536,9 @@ function Composer({ phase }: { phase: Phase }) {
           <span className="text-[12px] leading-none text-[color:var(--mock-ink-soft)]">
             Opus 5
           </span>
-          <span className="pointer-events-auto flex size-[26px] cursor-default items-center justify-center rounded-[4px] bg-foreground text-background transition-opacity hover:opacity-85">
+          {/* The mock's own ink, not the page's: this button sits on a lifted
+              panel, and --foreground is tuned for the near-black ground. */}
+          <span className="pointer-events-auto flex size-[26px] cursor-default items-center justify-center rounded-[4px] bg-[var(--mock-ink)] text-[color:var(--mock-window)] transition-opacity hover:opacity-85">
             <IconArrowUp className="size-[13px]" />
           </span>
         </span>
@@ -523,12 +551,20 @@ function Composer({ phase }: { phase: Phase }) {
     // send button a screen away from the words. 560px is the measure the
     // site's other composer already runs at.
     <div className="mx-auto w-full max-w-[560px] pt-3">
-      {/* Double outline: a soft second rule held off the box, the way a focused
-          input reads in the product. One border on a grey card was a single
-          thin line doing all the work of saying "this is the thing you type
-          into"; the outer ring gives it an edge you can see from across the
-          hero. */}
-      <div className="rounded-[13px] p-[3px] ring-1 ring-foreground/[0.06]">
+      {/* Double outline, in LIGHT only: a soft second rule held off the box,
+          the way a focused input reads in the product. One border on a grey
+          card was a single thin line doing all the work of saying "this is the
+          thing you type into"; the outer ring gives it an edge you can see
+          from across the hero.
+
+          Dark does not need it and is worse for it. There the box already
+          lifts a full step off the card (--mock-window on --surface) and
+          carries a #3a3a3a hairline, so it reads from across the hero on its
+          own — and a second pale rule standing 3px off it read as a halo
+          around the composer rather than as the composer's own edge, the same
+          way the picked screen's old outline did. The padding stays, so the
+          box keeps its position either way. */}
+      <div className="rounded-[13px] p-[3px] ring-1 ring-foreground/[0.06] [[data-theme=dark]_&]:ring-transparent">
         <div
           className={`overflow-hidden rounded-lg border bg-[var(--mock-window)] ${LINE}`}
         >

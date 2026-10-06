@@ -40,8 +40,12 @@ function Chevron({ direction }: { direction: "prev" | "next" }) {
   );
 }
 
+// Squared off, not round. The rails, cards and tables on these pages are all
+// built from straight edges and a soft radius; two circles under them read as
+// buttons borrowed from somewhere else. rounded-xl is the radius the site's
+// own square controls use.
 const ARROW =
-  "flex size-11 shrink-0 items-center justify-center rounded-full border border-border text-foreground transition-[color,border-color,opacity] hover:border-foreground/30 disabled:pointer-events-none disabled:opacity-30 [[data-theme=dark]_&]:border-white/15 [[data-theme=dark]_&]:hover:border-white/30";
+  "flex size-11 shrink-0 items-center justify-center rounded-xl border border-border text-foreground transition-[color,border-color,opacity] hover:border-foreground/30 disabled:pointer-events-none disabled:opacity-30 [[data-theme=dark]_&]:border-white/15 [[data-theme=dark]_&]:hover:border-white/30";
 
 export function CardRail({
   label,

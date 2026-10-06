@@ -445,6 +445,45 @@ function ClientNavRow({
   );
 }
 
+/**
+ * The builder working, as a quarter-ring spinning in place.
+ *
+ * Same geometry as the plan card's Ring and the row marks it matches — 16px
+ * outer, 2px stroke — so every circle in this family is one circle. The spin
+ * and the retire are in globals.css (.mock-building), because they have to
+ * key off the CARD's hover rather than this element's own.
+ */
+function BusyRing({ className = "" }: { className?: string }) {
+  const r = 7;
+  const c = 2 * Math.PI * r;
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      aria-hidden
+      className={`mock-building size-[13px] shrink-0 opacity-0 ${className}`}
+    >
+      <circle
+        cx="8"
+        cy="8"
+        r={r}
+        fill="none"
+        strokeWidth="2"
+        className="stroke-[var(--mock-line)]"
+      />
+      <circle
+        cx="8"
+        cy="8"
+        r={r}
+        fill="none"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeDasharray={`${c * 0.28} ${c}`}
+        className="stroke-[color:var(--mock-ink-soft)]"
+      />
+    </svg>
+  );
+}
+
 // ── 4. Iterate ───────────────────────────────────────────────────────────
 // Hover applies the change: the revision is sent and the column it asked for
 // appears in the table.
@@ -461,6 +500,11 @@ export function IterateCard() {
               className={`flex items-center gap-2 border-b bg-[var(--mock-well)] px-3 py-2 text-[11.5px] leading-none text-[color:var(--mock-ink-soft)] ${LINE}`}
             >
               <span className="flex-1">Client</span>
+              {/* The spinner leads the new column in and then retires, so the
+                  card shows the builder DOING the change the line above it
+                  asked for — at rest the table simply has no Due date, which
+                  is the before. */}
+              <BusyRing />
               <span
                 className={`${MOVE} w-0 overflow-hidden whitespace-nowrap text-right opacity-0 group-hover/card:w-[58px] group-hover/card:opacity-100`}
               >
@@ -481,7 +525,12 @@ export function IterateCard() {
                 </span>
                 <span
                   className={`${MOVE} w-0 overflow-hidden whitespace-nowrap text-right text-[11px] leading-none text-[color:var(--mock-ink-soft)] opacity-0 group-hover/card:w-[58px] group-hover/card:opacity-100`}
-                  style={{ transitionDelay: `${i * 70}ms` }}
+                  // Held back behind the spinner rather than starting with it.
+                  // The dates used to land in the same instant the column was
+                  // asked for, which read as a column that had been there all
+                  // along; arriving one at a time while the ring is still
+                  // turning, they read as values being written into it.
+                  style={{ transitionDelay: `${260 + i * 90}ms` }}
                 >
                   {due}
                 </span>
