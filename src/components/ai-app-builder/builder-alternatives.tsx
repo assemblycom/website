@@ -223,7 +223,16 @@ export function BuilderAlternatives() {
                   <td
                     key={COLUMNS[i].name}
                     className={`border-l px-6 py-6 align-top ${GRID_LINE} ${
-                      i === OWN ? `bg-muted ${EDGE_R}` : ""
+                      // The answer cells step one rung further up than the
+                      // header above them, in dark only. --muted is a quiet
+                      // wash on white and the column reads fine; on the
+                      // near-black ground it barely separated from the two
+                      // alternatives beside it. The HEADER keeps --muted, so
+                      // the column still opens on the same tone it always did
+                      // and only its answers are lifted.
+                      i === OWN
+                        ? `bg-muted ${EDGE_R} [[data-theme=dark]_&]:bg-[var(--surface-2)]`
+                        : ""
                     }`}
                   >
                     {/* Our column in full-strength text. Set in the same

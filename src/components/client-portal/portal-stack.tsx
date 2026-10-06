@@ -87,12 +87,18 @@ export function PortalStack({
             <p className="mt-5 text-muted-foreground">{body}</p>
 
             {/* Each row goes somewhere instead of opening a drawer, so the
-                section hands the reader on. No rules and an icon in a filled
-                square: a short list of destinations reads as a set, where
-                hairlines would make it a table with three entries in it. */}
+                section hands the reader on. No rules, and a filled square
+                ahead of each one: a short list of destinations reads as a set,
+                where hairlines would make it a table with three entries in it.
+
+                The square is empty for now — the glyphs that were in it are
+                held back pending art. It still earns its place: it is what
+                indents the two lines of copy into a column and gives the row
+                something to start on. `ways` keeps carrying an `icon` so
+                nothing downstream has to change when they come back. */}
             {ways.length ? (
             <ul className="mt-10 flex flex-col gap-1">
-              {ways.map(({ label, body, href, icon: Icon }) => (
+              {ways.map(({ label, body, href }) => (
                 <li key={label}>
                   <Link
                     href={href}
@@ -102,9 +108,14 @@ export function PortalStack({
                     // without the labels being indented out of the column.
                     className="group -mx-3 flex items-start gap-3 rounded-xl px-3 py-2.5 transition-colors hover:bg-foreground/[0.04] [[data-theme=dark]_&]:hover:bg-white/[0.04]"
                   >
-                    <span className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-border bg-background text-muted-foreground transition-colors group-hover:text-foreground [&>svg]:size-[18px] [[data-theme=dark]_&]:border-[#383838] [[data-theme=dark]_&]:bg-white/[0.06]">
-                      <Icon />
-                    </span>
+                    <span
+                      aria-hidden
+                      // A filled square, no outline. With a glyph in it the
+                      // hairline was the tile's edge; empty, the outline WAS
+                      // the object, so each row opened on a little drawn box
+                      // rather than on a quiet block of tone.
+                      className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted [&>svg]:size-[18px] [[data-theme=dark]_&]:bg-white/[0.06]"
+                    />
                     <span className="min-w-0">
                       <span className="block text-[15px] text-foreground">
                         {label}

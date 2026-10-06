@@ -35,7 +35,19 @@ export function TemplateRail({ cards }: { cards: TemplateRailCard[] }) {
           // resolves against whatever is behind it, so the row was a different
           // colour again on a tinted band. Hover firms up the outline instead
           // of darkening the fill, the same move the builder hero's cards make.
-          className="group flex items-center gap-4 rounded-xl bg-[var(--surface)] p-3 ring-1 ring-transparent transition-[box-shadow] hover:ring-foreground/10"
+          //
+          // The two themes answer the pointer differently, because the same
+          // move does not read the same on both. On white, firming the outline
+          // is enough. In dark it is not: --foreground at a tenth is a
+          // near-black card's ink against a near-black ground, so it was
+          // invisible — and winding it up until it showed just drew a bright
+          // ring around the row, which is a selected state, not a hover.
+          //
+          // So dark lifts the SURFACE instead, one step up the scale it
+          // already has (--surface to --surface-2), and takes no ring at all.
+          // That is the move the rest of this page's dark mode makes: a
+          // surface answering by getting lighter.
+          className="group flex items-center gap-4 rounded-xl bg-[var(--surface)] p-3 ring-1 ring-transparent transition-[box-shadow,background-color] hover:ring-foreground/10 [[data-theme=dark]_&]:hover:bg-[var(--surface-2)] [[data-theme=dark]_&]:hover:ring-transparent"
         >
           {/* The template shot goes here once the art exists. It takes the
               full `--muted` against the row's half-strength fill, so the slot

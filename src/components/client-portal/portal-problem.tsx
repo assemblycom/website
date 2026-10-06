@@ -57,25 +57,18 @@ const SIDES: { label: string; body: string }[] = [
  * them is in front; the back one is held back in opacity and desaturated,
  * which says which of them is the past.
  *
- * The ring is the hover: a soft rule blooming from just inside the frame, and
- * the hovered screen comes to the front. Nothing is clickable — it answers the
- * pointer and that is all it does.
+ * Picking is the hover: the picked screen's own frame draws up, and it comes
+ * to the front. Nothing is clickable — it answers the pointer and that is all
+ * it does.
  */
 function Screen({
   selected,
-  ringed,
   overlaps,
   onSelect,
   children,
 }: {
   /** The one in front: full colour, shadowed, and at rest height. */
   selected: boolean;
-  /**
-   * Draws the outline. Only once the reader has actually pointed at a screen:
-   * on arrival nothing has been picked, and an outline on the one that happens
-   * to open in front reads as a selection the reader did not make.
-   */
-  ringed: boolean;
   /** The second of the pair, which slides left over the first. */
   overlaps?: boolean;
   onSelect: () => void;
@@ -106,27 +99,27 @@ function Screen({
         overlaps ? "-ml-[24%]" : ""
       } ${selected ? "z-10" : "translate-y-2 md:translate-y-3"}`}
     >
-      {/* A hairline, not a 4px band. At 4px and 7% ink the ring was a soft halo
-          wide enough to read as a second frame around the screen; one pixel at
-          20% is an outline, which is what this wants to be.
+      {/* Hovering lights the screen's OWN border rather than drawing a second
+          line around it. There used to be a separate layer at -inset-1 carrying
+          the state, which sat 4px off the frame on three sides and read as a
+          halo bounding the screen rather than as the screen itself being
+          picked — two edges where the picture has one. The frame is already a
+          border on three sides, so the state is a colour on it.
 
-          Open at the bottom, and square there, like the screen it outlines.
-          Rounded on all four corners it closed the frame off just above the
-          tray's edge, so it drew two curves across the bottom of a picture
-          whose whole point is that the screens run off it. */}
-      <div
-        aria-hidden
-        className={`pointer-events-none absolute -inset-1 z-10 rounded-t-[15px] border border-b-0 border-foreground/20 transition duration-200 motion-reduce:transition-none ${
-          ringed ? "scale-100 opacity-100" : "scale-[0.985] opacity-0"
-        }`}
-      />
-      {/* The frame is opaque whichever screen is in front. The dimming used to
+          It is group-hover rather than React state, so the lit edge lasts
+          exactly as long as the pointer is on the screen. The SELECTION still
+          persists — whichever screen you last pointed at stays in front, which
+          is the whole reason this is not a plain hover — but a frame left lit
+          on a screen nobody is pointing at reads as a control waiting to be
+          used rather than as the picture at rest.
+
+          The frame is opaque whichever screen is in front. The dimming used to
           sit here, which made the whole screen translucent — so whenever it
           came forward you could read the other one straight through it. It is
-          on the layer inside now, over a white ground that hides whatever is
+          on the layer inside now, over a ground that hides whatever is
           behind. */}
       <div
-        className={`h-[300px] overflow-hidden rounded-t-xl border-l border-r border-t border-border bg-background md:h-[400px] [[data-theme=dark]_&]:border-[#383838] ${
+        className={`h-[300px] overflow-hidden rounded-t-xl border-l border-r border-t border-border bg-background transition-colors duration-200 group-hover:border-foreground/30 motion-reduce:transition-none md:h-[400px] [[data-theme=dark]_&]:border-[#383838] [[data-theme=dark]_&]:group-hover:border-white/35 ${
           selected
             ? "shadow-[-18px_0_40px_-24px_rgba(16,24,40,0.3),0_1px_2px_rgba(16,24,40,0.05)] [[data-theme=dark]_&]:shadow-[-18px_0_40px_-24px_rgba(0,0,0,0.7)]"
             : ""
@@ -159,31 +152,17 @@ function Screen({
  * legitimate one to leave the picture in.
  */
 function ScreenPair() {
+  // Which screen is in front. It persists: pointing at one brings it forward
+  // and it stays there, so you can actually look at the screen you raised.
+  // The lit frame does NOT persist — that is plain hover on the screen itself,
+  // so nothing is outlined once the pointer leaves the picture.
   const [selected, setSelected] = useState(1);
-  // Nothing is picked until the reader picks it. The pair still opens stacked
-  // — built app in front, generic one behind, stepped and muted — because that
-  // is the section's argument at rest, and depth is not selection. The outline
-  // is what says "picked", so it waits.
-  const [touched, setTouched] = useState(false);
-  const pick = (i: number) => {
-    setSelected(i);
-    setTouched(true);
-  };
   return (
     <div className="flex">
-      <Screen
-        selected={selected === 0}
-        ringed={touched && selected === 0}
-        onSelect={() => pick(0)}
-      >
+      <Screen selected={selected === 0} onSelect={() => setSelected(0)}>
         <GenericPortalMock />
       </Screen>
-      <Screen
-        selected={selected === 1}
-        ringed={touched && selected === 1}
-        overlaps
-        onSelect={() => pick(1)}
-      >
+      <Screen selected={selected === 1} overlaps onSelect={() => setSelected(1)}>
         <IntakeAppMock />
       </Screen>
     </div>

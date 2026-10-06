@@ -3407,3 +3407,40 @@ html:not([data-authed]) .auth-only {
   outline: 2px solid rgb(255 255 255 / 0.7);
   outline-offset: 3px;
 }
+
+/* ── The recommended plan's edge ──────────────────────────────────────────
+   A gradient that starts on the brand blue at the card's top and is gone by
+   its middle, rather than a flat blue line round all four sides. The aurora
+   wash behind the card fades out downwards; an edge that did not left the
+   card ringed, with a bright blue hairline still running under the button
+   long after the wash it belongs to had gone.
+
+   Same mechanism as .v63-gradient-border above — a transparent border painted
+   by a border-box background, with a padding-box mask punching out the middle
+   — because that is the one variant in this codebase that keeps rounded
+   corners clean in Chrome. Only the gradient differs: linear and fading, not
+   conic and spinning.
+
+   Dark only. On white the neutral hairline is already right, and a blue edge
+   there reads as a focused form field rather than a recommendation. The card
+   keeps its ordinary border underneath, so the foot is the same hairline as
+   every other card's. */
+[data-theme="dark"] .plan-edge-brand::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid transparent;
+  background: linear-gradient(
+      to bottom,
+      rgba(125, 164, 255, 0.55),
+      rgba(125, 164, 255, 0) 55%
+    )
+    border-box;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) padding-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}

@@ -49,22 +49,22 @@ const PROMPT = "Build a year-end document checklist my clients can upload to.";
 // the foreground, and the sidebar is the brand itself, near-black with white
 // type in both themes, the way a firm's portal carries its colour.
 const BRAND_FILL = "bg-foreground text-background";
-const BRAND_SIDEBAR = "bg-neutral-900 text-white";
+const BRAND_SIDEBAR = "bg-[var(--mock-brand)] text-white";
 
-const LINE = "border-border [[data-theme=dark]_&]:border-[#383838]";
+const LINE = "border-[var(--mock-line)]";
 // A light lift only: the windows sit on a grey card, so a soft edge is enough
 // to separate them without a heavy drop shadow underneath.
-const WINDOW = `overflow-hidden rounded-xl border bg-background shadow-[0_1px_2px_rgba(16,24,40,0.04),0_8px_24px_-18px_rgba(16,24,40,0.14)] ${LINE} [[data-theme=dark]_&]:shadow-[0_8px_24px_-18px_rgba(0,0,0,0.5)]`;
+const WINDOW = `overflow-hidden rounded-xl border bg-[var(--mock-window)] text-[color:var(--mock-ink)] shadow-[0_1px_2px_rgba(16,24,40,0.04),0_8px_24px_-18px_rgba(16,24,40,0.14)] ${LINE} [[data-theme=dark]_&]:shadow-[0_8px_24px_-18px_rgba(0,0,0,0.5)]`;
 // The result views' shared furniture, after the dashboards they stand in for:
 // a page header, then white panels on the screen's grey ground, tables with a
 // tinted label row.
-const PANEL = `mt-4 overflow-hidden rounded-lg border bg-background ${LINE}`;
-const TABLE_HEAD = `flex items-center gap-3 border-b bg-muted/60 px-3.5 py-2 text-[11.5px] leading-none text-muted-foreground ${LINE} [[data-theme=dark]_&]:bg-white/[0.04]`;
+const PANEL = `mt-4 overflow-hidden rounded-lg border bg-[var(--mock-window)] ${LINE}`;
+const TABLE_HEAD = `flex items-center gap-3 border-b bg-[var(--mock-well)] px-3.5 py-2 text-[11.5px] leading-none text-[color:var(--mock-ink-soft)] ${LINE}`;
 
 const CHIP = "rounded px-1.5 py-[4px] text-[11px] leading-none";
 const POSITIVE = `${CHIP} bg-[var(--mock-positive-bg)] text-[color:var(--mock-positive-fg)]`;
 const WARNING = `${CHIP} bg-[var(--mock-warning-bg)] text-[color:var(--mock-warning-fg)]`;
-const NEUTRAL = `${CHIP} bg-muted text-muted-foreground [[data-theme=dark]_&]:bg-white/[0.08]`;
+const NEUTRAL = `${CHIP} bg-[var(--mock-well-2)] text-[color:var(--mock-ink-soft)]`;
 // The column keeps a fixed width so the header lines up; the pill inside hugs
 // its label.
 const STATUS_COL = "flex w-[78px] shrink-0 justify-center";
@@ -72,7 +72,7 @@ const STATUS_COL = "flex w-[78px] shrink-0 justify-center";
 // part of the table rather than as a new colour. Both views use it: the
 // sidebar rows already answered the pointer and the rows beside them did not.
 const ROW_HOVER =
-  "transition-colors hover:bg-muted/60 [[data-theme=dark]_&]:hover:bg-white/[0.04]";
+  "transition-colors hover:bg-[var(--mock-well)]";
 
 // How long the planner spends thinking once the prompt is sent.
 const THINKING_MS = 2800;
@@ -295,7 +295,11 @@ export function BuilderHeroVisual() {
             className="mt-6 min-h-[280px] flex-1 pl-6 [contain:size] md:pl-8 lg:min-h-0"
           >
             <div
-              className={`relative h-[760px] w-full overflow-hidden rounded-tl-xl border-l border-t bg-neutral-50 shadow-[0_8px_24px_-18px_rgba(16,24,40,0.14)] [[data-theme=dark]_&]:bg-background ${LINE}`}
+              // The mock ink is set on the canvas, not only on the leaves: most of
+              // what is drawn inside sets no colour of its own and inherits,
+              // and what it was inheriting was the PAGE's --foreground — tuned
+              // for the near-black ground, not for this lifted panel.
+              className={`relative h-[760px] w-full overflow-hidden rounded-tl-xl border-l border-t bg-[var(--mock-window)] text-[color:var(--mock-ink)] shadow-[0_8px_24px_-18px_rgba(16,24,40,0.14)] ${LINE}`}
             >
               {/* The card clips this screen, which left the last row cut
                   through the middle of its type — a hard edge that reads as a
@@ -493,17 +497,17 @@ function Composer({ phase }: { phase: Phase }) {
         onKeyDown={(e) => {
           if (e.key === "Enter") e.preventDefault();
         }}
-        className="pointer-events-auto block w-full resize-none bg-transparent text-[14px] leading-[1.4] text-foreground outline-none placeholder:text-muted-foreground/60"
+        className="pointer-events-auto block w-full resize-none bg-transparent text-[14px] leading-[1.4] text-[color:var(--mock-ink)] outline-none placeholder:text-[color:var(--mock-ink-soft)]/60"
       />
       {/* The product's own composer footer: attach on the left, the model and
           send on the right. Without them the box was a bare field with one
           button floating in it, which is not what anyone types into. */}
       <div className="flex items-center justify-between">
-        <span className="pointer-events-auto flex size-[26px] cursor-default items-center justify-center rounded-[4px] text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
+        <span className="pointer-events-auto flex size-[26px] cursor-default items-center justify-center rounded-[4px] text-[color:var(--mock-ink-soft)] transition-colors hover:bg-[var(--mock-well)] hover:text-[color:var(--mock-ink)]">
           <IconPlus className="size-[13px]" />
         </span>
         <span className="flex items-center gap-2">
-          <span className="text-[12px] leading-none text-muted-foreground">
+          <span className="text-[12px] leading-none text-[color:var(--mock-ink-soft)]">
             Opus 5
           </span>
           <span className="pointer-events-auto flex size-[26px] cursor-default items-center justify-center rounded-[4px] bg-foreground text-background transition-opacity hover:opacity-85">
@@ -526,7 +530,7 @@ function Composer({ phase }: { phase: Phase }) {
           hero. */}
       <div className="rounded-[13px] p-[3px] ring-1 ring-foreground/[0.06]">
         <div
-          className={`overflow-hidden rounded-lg border bg-background ${LINE}`}
+          className={`overflow-hidden rounded-lg border bg-[var(--mock-window)] ${LINE}`}
         >
         {/* Opened on its own height rather than faded in: at rest the row is
             not there at all, and an element with no height has no fade to
@@ -551,13 +555,13 @@ function Composer({ phase }: { phase: Phase }) {
             <div
               className={`flex items-center justify-between border-b py-1.5 pl-3 pr-2 ${LINE}`}
             >
-              <span className="flex items-center gap-2 text-[13px] leading-none text-foreground">
+              <span className="flex items-center gap-2 text-[13px] leading-none text-[color:var(--mock-ink)]">
                 <IconCheckCircleOutline className="size-[13px]" />
                 Requirements
               </span>
               {/* Hover only: it is a picture of the button, so it does nothing. */}
               <span
-                className={`pointer-events-auto flex cursor-default items-center rounded-[4px] border bg-muted px-3 py-[5px] text-[13px] leading-none text-foreground transition-colors hover:bg-background ${LINE} [[data-theme=dark]_&]:bg-white/[0.08] [[data-theme=dark]_&]:hover:bg-white/[0.12]`}
+                className={`pointer-events-auto flex cursor-default items-center rounded-[4px] border bg-[var(--mock-well-2)] px-3 py-[5px] text-[13px] leading-none text-[color:var(--mock-ink)] transition-colors hover:bg-[var(--mock-window)] ${LINE}`}
               >
                 Approve
               </span>
@@ -628,13 +632,13 @@ function TeamDashboard({ live }: { live: boolean }) {
   return (
     <div className="flex h-full">
       <div
-        className={`flex w-[164px] shrink-0 flex-col border-r bg-muted px-1.5 py-2 [--mock-nav-size:13px] [--mock-nav-row:28px] [--mock-section-size:11px] ${LINE} [[data-theme=dark]_&]:bg-white/[0.04] [&>div:not(:first-child)]:h-[28px] [&>div:not(:first-child)]:transition-colors [&>div:not(:first-child):hover]:bg-border/50`}
+        className={`flex w-[164px] shrink-0 flex-col border-r bg-[var(--mock-well)] px-1.5 py-2 [--mock-nav-size:13px] [--mock-nav-row:28px] [--mock-section-size:11px] ${LINE} [&>div:not(:first-child)]:h-[28px] [&>div:not(:first-child)]:transition-colors [&>div:not(:first-child):hover]:bg-border/50`}
       >
         <div className="flex items-center gap-1.5 px-1.5 pb-2 pt-0.5">
           <span className="flex size-[16px] items-center justify-center rounded-[3px] bg-foreground text-background">
             <IconBrandMark className="size-[9px]" />
           </span>
-          <span className="text-[13px] leading-none text-foreground">
+          <span className="text-[13px] leading-none text-[color:var(--mock-ink)]">
             BrandMages
           </span>
         </div>
@@ -658,10 +662,10 @@ function TeamDashboard({ live }: { live: boolean }) {
                 key={label}
                 className={`px-3.5 py-3 ${i ? `border-l ${LINE}` : ""}`}
               >
-                <p className="text-[11.5px] leading-none text-muted-foreground">
+                <p className="text-[11.5px] leading-none text-[color:var(--mock-ink-soft)]">
                   {label}
                 </p>
-                <p className="mt-2 text-[18px] leading-none text-foreground">
+                <p className="mt-2 text-[18px] leading-none text-[color:var(--mock-ink)]">
                   {value}
                 </p>
               </div>
@@ -680,21 +684,21 @@ function TeamDashboard({ live }: { live: boolean }) {
                 className={`flex items-center gap-3 border-b px-3.5 py-[11px] last:border-b-0 ${ROW_HOVER} ${LINE}`}
               >
                 <span className="flex min-w-0 flex-1 flex-col gap-[4px]">
-                  <span className="truncate text-[13px] leading-none text-foreground">
+                  <span className="truncate text-[13px] leading-none text-[color:var(--mock-ink)]">
                     {row.name}
                   </span>
-                  <span className="truncate text-[11px] leading-none text-muted-foreground">
+                  <span className="truncate text-[11px] leading-none text-[color:var(--mock-ink-soft)]">
                     {row.firm}
                   </span>
                 </span>
                 <span className="hidden w-[92px] items-center gap-2 @[420px]:flex">
-                  <span className="h-1 flex-1 overflow-hidden rounded-full bg-muted [[data-theme=dark]_&]:bg-white/[0.08]">
+                  <span className="h-1 flex-1 overflow-hidden rounded-full bg-[var(--mock-well-2)]">
                     <span
                       className="block h-full rounded-full bg-foreground"
                       style={{ width: `${(row.done / 12) * 100}%` }}
                     />
                   </span>
-                  <span className="text-[11px] leading-none text-muted-foreground">
+                  <span className="text-[11px] leading-none text-[color:var(--mock-ink-soft)]">
                     {row.done}/12
                   </span>
                 </span>
@@ -774,13 +778,13 @@ function ClientView() {
       <div className="min-w-0 flex-1 pl-5 pt-5">
         <div>
           <div className={`${PANEL} mt-0! px-3.5 py-3`}>
-            <p className="text-[11.5px] leading-none text-muted-foreground">
+            <p className="text-[11.5px] leading-none text-[color:var(--mock-ink-soft)]">
               Documents received
             </p>
-            <p className="mt-2 text-[18px] leading-none text-foreground">
+            <p className="mt-2 text-[18px] leading-none text-[color:var(--mock-ink)]">
               8 of 12
             </p>
-            <div className="mt-3 h-1 w-full overflow-hidden rounded-full bg-muted [[data-theme=dark]_&]:bg-white/[0.08]">
+            <div className="mt-3 h-1 w-full overflow-hidden rounded-full bg-[var(--mock-well-2)]">
               <span
                 className={`block h-full w-2/3 rounded-full ${BRAND_FILL}`}
               />
@@ -796,7 +800,7 @@ function ClientView() {
                 key={label}
                 className={`flex items-center justify-between gap-3 border-b px-3.5 py-[12px] last:border-b-0 ${ROW_HOVER} ${LINE}`}
               >
-                <span className="truncate text-[13px] leading-none text-foreground">
+                <span className="truncate text-[13px] leading-none text-[color:var(--mock-ink)]">
                   {label}
                 </span>
                 <span className={STATUS_COL}>
