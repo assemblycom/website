@@ -39,6 +39,7 @@ export function PortalTrust({
   claims = CLAIMS,
   link = { label: "Visit the Trust Center", href: TRUST_CENTER_URL },
   omitSeals,
+  visual,
 }: {
   heading?: string;
   body?: string;
@@ -46,6 +47,11 @@ export function PortalTrust({
   link?: { label: string; href: string };
   /** Seal titles to leave out of the compliance band. */
   omitSeals?: string[];
+  /**
+   * Fills the right column when `claims` is empty — for a brief that makes the
+   * security case in its paragraph rather than in rows a reader opens.
+   */
+  visual?: React.ReactNode;
 } = {}) {
   const external = link.href.startsWith("http");
   return (
@@ -70,6 +76,7 @@ export function PortalTrust({
 
           {/* The same accordion treatment as the stack section above, so the
               two sets of rows on this page read as one control. */}
+          {claims.length ? (
           <div
             className={[
               "[&>div>div>*]:pl-5 [&>div>div>*]:pr-5",
@@ -84,6 +91,9 @@ export function PortalTrust({
               flushTop={false}
             />
           </div>
+          ) : (
+            visual
+          )}
         </div>
 
         {/* The certifications close the argument the rows just made. Pulled

@@ -59,6 +59,7 @@ export function PortalProof({
   body = "See how firms replaced rigid tools with a portal they built around their own workflow.",
   stories = STORIES,
   linkLabel,
+  visual,
 }: {
   heading?: string;
   body?: string;
@@ -73,7 +74,13 @@ export function PortalProof({
   }[];
   /** A named link per card, where the brief asks for one. */
   linkLabel?: string;
+  /** The picture beside a single story. Ignored when there are three. */
+  visual?: React.ReactNode;
 } = {}) {
+  // One story is not a third of a band — it is the band. The divided columns
+  // exist to make three peers read as one set; with one firm there is no set,
+  // so it runs as a single block on the measure the rest of the page uses.
+  const single = stories.length === 1;
   return (
     <section className="mx-auto max-w-[1200px] px-6 py-16 md:px-10 md:py-24">
       <Reveal>
@@ -88,12 +95,20 @@ export function PortalProof({
             rule only appears from md, where the three actually sit side by
             side. Stacked below that, each card keeps its own top rule so the
             set still reads as divided. */}
-        <div className="mt-12 grid md:grid-cols-3">
+        <div
+          className={
+            single ? "mt-12" : "mt-12 grid md:grid-cols-3"
+          }
+        >
           {stories.map((story) => (
             <Link
               key={story.href}
               href={story.href}
-              className={`group flex flex-col border-t px-0 py-8 transition-colors hover:bg-muted/40 md:border-l md:border-t-0 md:px-8 md:py-2 md:first:border-l-0 md:first:pl-0 md:last:pr-0 ${GRID_LINE} [[data-theme=dark]_&]:hover:bg-white/[0.03]`}
+              className={
+                single
+                  ? "group mx-auto flex max-w-2xl flex-col items-center text-center"
+                  : `group flex flex-col border-t px-0 py-8 transition-colors hover:bg-muted/40 md:border-l md:border-t-0 md:px-8 md:py-2 md:first:border-l-0 md:first:pl-0 md:last:pr-0 ${GRID_LINE} [[data-theme=dark]_&]:hover:bg-white/[0.03]`
+              }
             >
               {/* Same-size tile per firm. `fit` is what the logo component
                   builds for this: the mask contains inside whatever box the
@@ -121,10 +136,12 @@ export function PortalProof({
                   ))}
                 </ul>
               ) : null}
-              <blockquote className="mt-6 text-pretty text-foreground">
+              <blockquote
+                className={`mt-6 text-pretty text-foreground ${single ? "type-lead" : ""}`}
+              >
                 &ldquo;{story.quote}&rdquo;
               </blockquote>
-              <div className="mt-auto pt-6">
+              <div className={single ? "pt-6" : "mt-auto pt-6"}>
                 <p className="text-sm text-foreground">{story.name}</p>
                 <p className="type-caption mt-0.5 text-muted-foreground">
                   {story.role}
@@ -138,6 +155,7 @@ export function PortalProof({
             </Link>
           ))}
         </div>
+        {single ? visual : null}
       </Reveal>
     </section>
   );
