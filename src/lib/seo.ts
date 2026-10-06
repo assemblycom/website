@@ -63,6 +63,16 @@ export const PAGE_SEO = {
       "A branded client portal for accounting firms, with ready-made apps for files, e-signatures, and invoices, plus AI that builds the rest. Book a demo.",
     path: "/solutions/accounting-client-portal",
   },
+  // The agency cut of /client-portal, on the slug the CMS page used to serve.
+  // Title and description are the ones that URL is already indexed under,
+  // carried over from the frozen CMS record rather than rewritten — this page
+  // is a rebuild of a page that already ranks, not a new one.
+  marketingAgencyClientPortal: {
+    title: "Client Portal for Marketing Agencies",
+    description:
+      "A branded client portal for marketing agencies, with ready-made apps for approvals, reports, proposals, and files, plus AI that builds the rest. Book a demo.",
+    path: "/solutions/marketing-agency-client-portal",
+  },
   vsLovable: {
     title: "Assembly vs Lovable: The Client-Facing AI App Builder",
     description:

@@ -69,6 +69,7 @@ export function PortalBuild({
   cta = { label: "Describe your first app", href: SIGNUP_URL },
   chips,
   link,
+  visual,
   railLabel = "How building works",
 }: {
   heading?: string;
@@ -79,6 +80,12 @@ export function PortalBuild({
   chips?: string[];
   /** The secondary action, beside the primary one. */
   link?: { label: string; href: string };
+  /**
+   * One picture in place of the rail, for a brief that states the mechanism in
+   * a paragraph rather than stepping through it. Passing `steps: []` drops the
+   * rail; this takes its place.
+   */
+  visual?: React.ReactNode;
   railLabel?: string;
 } = {}) {
   return (
@@ -110,6 +117,7 @@ export function PortalBuild({
           </div>
         </div>
 
+        {steps.length ? (
         <div className="mt-12">
           <CardRail label={railLabel}>
             {steps.map((step, i) => (
@@ -124,6 +132,8 @@ export function PortalBuild({
             ))}
           </CardRail>
         </div>
+        ) : null}
+        {visual}
 
         {/* Examples under the rail, as the site's mono chip rather than a new
             pill: these are labels for things the builder makes, the same object
