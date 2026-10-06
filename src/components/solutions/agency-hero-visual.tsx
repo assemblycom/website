@@ -35,6 +35,32 @@ const ASSETS = [
   { name: "Social cutdowns", when: "Uploaded yesterday" },
 ];
 
+/**
+ * What the round has been like so far, under the decision it is waiting on.
+ *
+ * It is here because the screen BLEEDS off the foot of its frame: with the
+ * assets and two buttons and nothing else, the shot was a third of a screen
+ * and two thirds of empty white, which is not a window onto anything. The
+ * thread runs past the crop, which is what says the app continues.
+ */
+const THREAD = [
+  {
+    who: "Dana Whitfield",
+    when: "2 days ago",
+    says: "Cut 03 is close. Can we hold the end card a beat longer?",
+  },
+  {
+    who: "Priya Raman",
+    when: "Yesterday",
+    says: "Reuploaded with the longer end card and the new strapline.",
+  },
+  {
+    who: "Dana Whitfield",
+    when: "Yesterday",
+    says: "Key art variant B for the hero placements, please.",
+  },
+];
+
 export function AgencyHeroVisual() {
   return (
     <BrandedPortalVisual
@@ -72,6 +98,32 @@ export function AgencyHeroVisual() {
           >
             Request changes
           </span>
+        </div>
+
+        <p className="mb-3 mt-7 text-[11px] uppercase tracking-wide text-[color:var(--mock-ink-soft)]">
+          Activity
+        </p>
+        <div className="flex flex-col gap-4">
+          {THREAD.map(({ who, when, says }) => (
+            <div key={says} className="flex gap-2.5">
+              <span className="mt-[1px] flex size-[22px] shrink-0 items-center justify-center rounded-full bg-[var(--mock-well-2)] text-[10px] leading-none text-[color:var(--mock-ink-soft)]">
+                {who.charAt(0)}
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="flex items-baseline gap-2">
+                  <span className="truncate text-[12px] leading-none text-[color:var(--mock-ink)]">
+                    {who}
+                  </span>
+                  <span className="shrink-0 text-[11px] leading-none text-[color:var(--mock-ink-soft)]">
+                    {when}
+                  </span>
+                </span>
+                <span className="mt-1.5 block text-[12.5px] leading-[1.45] text-[color:var(--mock-ink-soft)]">
+                  {says}
+                </span>
+              </span>
+            </div>
+          ))}
         </div>
       </div>
     </BrandedPortalVisual>

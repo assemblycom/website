@@ -172,12 +172,17 @@ export default function MarketingAgencyClientPortalPage() {
 
               The V1 art direction below is kept so it is not lost with the
               placeholder that carried it: V1 — the agency hero shot. */}
-          <div className="mt-12 overflow-hidden rounded-3xl bg-[var(--surface)] p-4 md:mt-16 md:p-6">
-            {/* Tall enough to show the nav and a full round of creative, and
-                cropped on the right like every other shot on the site: a
-                window onto a screen that continues. */}
-            <div className="relative h-[330px] overflow-hidden rounded-xl md:h-[370px]">
-              <div className="absolute inset-y-0 left-0 w-[1280px]">
+          {/* Narrower than the page and centred, with no bottom padding: the
+              screen runs off the tray's foot rather than sitting inside it.
+              The tray ran the full 1400 measure and closed under the shot,
+              which made a screen with a short round of creative in it read as
+              mostly empty page. */}
+          <div className="mx-auto mt-12 max-w-[980px] overflow-hidden rounded-3xl bg-[var(--surface)] p-4 pb-0 md:mt-16 md:p-6 md:pb-0">
+            {/* The frame is shorter than the screen inside it, which is the
+                crop: the nav, the round and the decision are all above the
+                fold and the thread carries on past it. */}
+            <div className="relative h-[380px] overflow-hidden rounded-t-xl md:h-[440px]">
+              <div className="absolute inset-x-0 top-0 h-[660px]">
                 <AgencyHeroVisual />
               </div>
             </div>
