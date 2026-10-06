@@ -172,10 +172,20 @@ function Screen({
  * it stays picked — there is no "back to default", since every state here is a
  * legitimate one to leave the picture in.
  */
-// Where the tray gives out on the right. Opaque for most of its width, then a
-// short band to nothing — the fade happens inside the overflow, so no screen
-// that fits is dimmed on its way past.
-const TRAY_FADE = "linear-gradient(to right, #000 0 88%, transparent 100%)";
+// Where the screens give out on the tray's two open edges.
+//
+// These sit on the SCREENS, not on the tray. They used to be one mask on the
+// tray itself, which faded the tray's own grey along with the windows inside
+// it — so the right of the card dissolved into the page instead of the UI
+// dissolving into the card, and the card lost its edge.
+//
+// Eased rather than two stops: a corner in the alpha curve is a visible line,
+// which is the thing a fade is here to avoid. Both run to 100% so nothing is
+// cut at the end.
+const screenFade = (direction: "to right" | "to bottom") =>
+  `linear-gradient(${direction}, #000 0 58%, rgba(0,0,0,0.96) 68%, ` +
+  `rgba(0,0,0,0.85) 76%, rgba(0,0,0,0.66) 83%, rgba(0,0,0,0.42) 89%, ` +
+  `rgba(0,0,0,0.2) 95%, transparent 100%)`;
 
 function ScreenPair() {
   // Which screen is in front. It persists: pointing at one brings it forward
@@ -262,27 +272,40 @@ export function PortalProblem({
         </div>
         ) : null}
 
-        {/* One tray under both, with the screens running off its bottom. No
-            bottom padding: the crop is the point, and a tray that closes under
-            them would make them two pictures sitting on a shelf. */}
-        {/* Top corners only. The screens run to the tray's bottom edge, so a
-            radius down there had nothing to round: it clipped two notches out
-            of the screens instead, which read as a rendering fault rather
-            than as a corner. */}
-        {/* The right edge fades rather than cutting. The pair is wider than
-            the tray on purpose — these are windows onto screens that continue
-            — but a straight vertical slice through a table mid-row reads as a
-            rendering fault, the same way the bottom did before it was faded. A
-            mask, so it dissolves to whatever the tray's own ground is and
-            needs no second value for dark. */}
-        <div
-          className="mt-8 overflow-hidden rounded-t-3xl bg-[var(--surface)] p-4 pb-0 md:mt-10 md:p-6 md:pb-0"
-          style={{
-            WebkitMaskImage: TRAY_FADE,
-            maskImage: TRAY_FADE,
-          }}
-        >
-          {screens ?? <ScreenPair />}
+        {/* One tray under both, with the screens running off its bottom and
+            right. No bottom padding: the crop is the point, and a tray that
+            closed under them would make them two pictures sitting on a shelf.
+
+            Rounded on ALL FOUR corners now. It was rounded-t-3xl, because the
+            screens ran to the tray's bottom edge and a radius down there had
+            nothing to round — it clipped two notches out of them instead. That
+            is no longer true: the screens are masked to fade before they reach
+            the bottom, so what sits in the bottom corners is the tray's own
+            grey and there is a corner to round.
+
+            The mask moved OFF this element and onto the screens inside it. On
+            the tray it faded the grey ground too, so the card's right edge
+            dissolved into the page — the thing fading should be the UI, not
+            the surface it sits on. */}
+        <div className="mt-8 overflow-hidden rounded-3xl bg-[var(--surface)] p-4 pb-0 md:mt-10 md:p-6 md:pb-0">
+          {/* Two nested masks rather than one composited pair: the screens run
+              off both the right and the bottom, and nesting intersects the two
+              without relying on mask-composite. */}
+          <div
+            style={{
+              WebkitMaskImage: screenFade("to right"),
+              maskImage: screenFade("to right"),
+            }}
+          >
+            <div
+              style={{
+                WebkitMaskImage: screenFade("to bottom"),
+                maskImage: screenFade("to bottom"),
+              }}
+            >
+              {screens ?? <ScreenPair />}
+            </div>
+          </div>
         </div>
 
         {/* Quote and jump link close the section, under the picture that is its

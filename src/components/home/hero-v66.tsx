@@ -230,7 +230,7 @@ function openGetStarted(value: string, ctaSurface?: string) {
 // diverge again — "Get started" for a visitor, "Open Assembly" for a customer.
 const TYPED_SUBMIT_LABEL = "Build in Assembly";
 
-export function V66Composer({ glow = true, surfaceClassName = "bg-white ring-1 ring-black/[0.06]", surfaceRadiusClass = "rounded-[22px]", minHeightClass = "min-h-[188px]", tone = "light", typewriter = false, mutedControls = false, submitLabel, authedSubmitLabel, typewriterExamples, submitDark = false, themeAuto = false, accent = LIME, hidePlus = false, hideHowTo = false, howToLabel = "How it works", howToSide = "left", promptPicker = false, promptPickerLabel = "Select a prompt", promptPickerSide = "left", promptPickerUp = false, promptItems, plusItems, compact = false, minimalControls = false, plusAsAttach = false, footerLeading, showSubmit = true, submitDisabled, textDimmed = false, splitFooter = false, value: valueProp, onValueChange, textareaRef, ctaSurface }: { glow?: boolean; surfaceClassName?: string; surfaceRadiusClass?: string; minHeightClass?: string; tone?: "light" | "dark"; typewriter?: boolean; mutedControls?: boolean; submitLabel?: string; authedSubmitLabel?: string; typewriterExamples?: string[]; submitDark?: boolean; themeAuto?: boolean; accent?: string; hidePlus?: boolean; hideHowTo?: boolean; howToLabel?: string; howToSide?: "left" | "right"; promptPicker?: boolean; promptPickerLabel?: string; promptPickerSide?: "left" | "right"; promptPickerUp?: boolean; promptItems?: (string | { label: string; prompt: string })[]; plusItems?: { label: string; icon: "attach" | "transfer" }[]; compact?: boolean; minimalControls?: boolean; plusAsAttach?: boolean; footerLeading?: React.ReactNode; showSubmit?: boolean; submitDisabled?: boolean; textDimmed?: boolean; splitFooter?: boolean; value?: string; onValueChange?: (v: string) => void; textareaRef?: React.Ref<HTMLTextAreaElement>; /** Names this composer as a hero CTA in the test readout. Only the hero passes it. */ ctaSurface?: string } = {}) {
+export function V66Composer({ placeholder = "Describe the workflow you want to turn into an app…", glow = true, surfaceClassName = "bg-white ring-1 ring-black/[0.06]", surfaceRadiusClass = "rounded-[22px]", minHeightClass = "min-h-[188px]", tone = "light", typewriter = false, mutedControls = false, submitLabel, authedSubmitLabel, typewriterExamples, submitDark = false, themeAuto = false, accent = LIME, hidePlus = false, hideHowTo = false, howToLabel = "How it works", howToSide = "left", promptPicker = false, promptPickerLabel = "Select a prompt", promptPickerSide = "left", promptPickerUp = false, promptItems, plusItems, compact = false, minimalControls = false, plusAsAttach = false, footerLeading, showSubmit = true, submitDisabled, textDimmed = false, splitFooter = false, value: valueProp, onValueChange, textareaRef, ctaSurface }: { glow?: boolean; surfaceClassName?: string; surfaceRadiusClass?: string; minHeightClass?: string; tone?: "light" | "dark"; typewriter?: boolean; mutedControls?: boolean; submitLabel?: string; authedSubmitLabel?: string; typewriterExamples?: string[]; submitDark?: boolean; themeAuto?: boolean; accent?: string; hidePlus?: boolean; hideHowTo?: boolean; howToLabel?: string; howToSide?: "left" | "right"; promptPicker?: boolean; promptPickerLabel?: string; promptPickerSide?: "left" | "right"; promptPickerUp?: boolean; promptItems?: (string | { label: string; prompt: string })[]; plusItems?: { label: string; icon: "attach" | "transfer" }[]; compact?: boolean; minimalControls?: boolean; plusAsAttach?: boolean; footerLeading?: React.ReactNode; showSubmit?: boolean; submitDisabled?: boolean; textDimmed?: boolean; splitFooter?: boolean; value?: string; onValueChange?: (v: string) => void; textareaRef?: React.Ref<HTMLTextAreaElement>; /** Names this composer as a hero CTA in the test readout. Only the hero passes it. */ ctaSurface?: string; /** The static placeholder, shown when the typewriter is off. */ placeholder?: string } = {}) {
 
   // Prompt-picker entries. Default: the shared "Build a …" examples. A hero can
   // pass `promptItems` as plain strings (shown and inserted verbatim) or as
@@ -422,7 +422,18 @@ export function V66Composer({ glow = true, surfaceClassName = "bg-white ring-1 r
   const badgeCls = dark ? "bg-white/70 text-neutral-900" : "bg-neutral-900 text-white";
   // Menu takes the page ground tone (not white) so it reads as part of the
   // canvas instead of a bright card floating over it.
-  const menuSurfaceCls = dark ? "border-white/15 bg-[#262626]" : "border-black/[0.06] bg-[#f7f8fa]";
+  // Every menu that hangs off this composer: the prompt picker, the attach
+  // popover and the model list.
+  //
+  // Light is WHITE, not the #f7f8fa the composer's own surface takes. It was
+  // that grey, which is the one colour it cannot be: the CTA and the builder
+  // hero both fill their composer with #f7f8fa, so a menu opening over that
+  // footer was the same value as the thing behind it and the only edge was a
+  // 6%-black hairline. White is the one tone guaranteed to sit above every
+  // surface the composer is given, and the border is taken up to 10% so the
+  // edge still holds where the menu overhangs the page rather than the box.
+  // Dark already lifts — #262626 on a near-black composer — and is left alone.
+  const menuSurfaceCls = dark ? "border-white/15 bg-[#262626]" : "border-black/[0.10] bg-white";
   const menuItemCls = dark ? "text-white/90 hover:bg-white/[0.08]" : "text-neutral-800 hover:bg-black/[0.04]";
   const menuIconCls = dark ? "text-white/50" : "text-neutral-500";
 
@@ -621,7 +632,7 @@ export function V66Composer({ glow = true, surfaceClassName = "bg-white ring-1 r
             rows={compact ? 2 : 3}
             maxLength={MAX_PROMPT_LENGTH}
             aria-label="Describe what to build"
-            placeholder={typewriter || previewing ? "" : "Describe the workflow you want to turn into an app…"}
+            placeholder={typewriter || previewing ? "" : placeholder}
             // Grows to fit the prompt up to MAX_TEXTAREA_H, then scrolls; the
             // mask fades whichever edge still hides text so nothing hard-clips.
             style={{

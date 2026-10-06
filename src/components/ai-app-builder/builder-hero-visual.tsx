@@ -276,7 +276,13 @@ export function BuilderHeroVisual() {
               does, and sending a message and getting requirements back IS
               that. The wait is the gap between the two, which needs no
               caption. */}
-            <div className="flex h-full flex-col justify-center gap-3">
+            {/* ONE measure for the three things stacked here. The composer
+                used to cap itself at 560px while the thread above it ran the
+                card's full width, so the sent message, the plan and the box
+                were three different widths in a column — which is what made
+                the card read as unorganised rather than as one conversation.
+                The cap lives here now and the composer inherits it. */}
+            <div className="mx-auto flex h-full w-full max-w-[560px] flex-col justify-center gap-3">
               <Thread phase={phase} />
               <Composer phase={phase} />
             </div>
@@ -324,11 +330,13 @@ export function BuilderHeroVisual() {
                   worth reading. */}
               <div
                 aria-hidden
-                className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-20 bg-gradient-to-b from-transparent to-[var(--surface)]"
+                className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-36"
+                style={{ backgroundImage: edgeFade("to bottom") }}
               />
               <div
                 aria-hidden
-                className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-r from-transparent to-[var(--surface)]"
+                className="pointer-events-none absolute inset-y-0 right-0 z-10 w-28"
+                style={{ backgroundImage: edgeFade("to right") }}
               />
               <div className="relative h-full">
                 {VIEWS.map((label, i) => (
@@ -497,6 +505,31 @@ const REQUIREMENTS = [
 ];
 
 /**
+ * The fade that ends the cropped screen on the card's bottom and right edges.
+ *
+ * It was `from-transparent to-[var(--surface)]` over 80px (bottom) and 96px
+ * (right) — a two-stop linear ramp, which has a corner in its alpha curve at
+ * each end. A corner in the curve is a visible line, so the fade meant to hide
+ * a hard crop drew a soft band with its own hard edges instead, and over only
+ * 80px the table rows went from fully readable to gone fast enough to read as
+ * a cut rather than a dissolve.
+ *
+ * Eased and longer: the stops approximate an ease-in, so the screen gives way
+ * slowly at first and the rate never changes sharply enough to show. Built
+ * from --surface through color-mix rather than a hardcoded value, so it stays
+ * the card's own ground in both themes.
+ */
+function edgeFade(direction: "to bottom" | "to right") {
+  const mix = (pct: number) =>
+    `color-mix(in srgb, var(--surface) ${pct}%, transparent)`;
+  return (
+    `linear-gradient(${direction}, transparent 0%, ${mix(4)} 18%, ` +
+    `${mix(12)} 32%, ${mix(24)} 44%, ${mix(40)} 56%, ${mix(58)} 67%, ` +
+    `${mix(75)} 77%, ${mix(88)} 86%, ${mix(96)} 94%, var(--surface) 100%)`
+  );
+}
+
+/**
  * The thread above the box: the prompt once it has been sent, and the
  * requirements that come back under it.
  *
@@ -519,7 +552,12 @@ function Thread({ phase }: { phase: Phase }) {
         }`}
       >
         <div className="min-h-0 overflow-hidden">
-          <p className="ml-auto w-fit max-w-[88%] rounded-xl rounded-br-[5px] bg-[var(--mock-well-2)] px-3 py-2 text-[13.5px] leading-[1.45] text-[color:var(--mock-ink)]">
+          {/* 72%, not 88%, and 13px rather than 13.5px. At the old cap a
+              one-line prompt ran almost the full measure, so the bubble had
+              the width of the plan card under it and the two read as one
+              block; pulled in, it is visibly a message and the plan is
+              visibly the answer. */}
+          <p className="ml-auto w-fit max-w-[72%] rounded-xl rounded-br-[5px] bg-[var(--mock-well-2)] px-3 py-2 text-[13px] leading-[1.45] text-[color:var(--mock-ink)]">
             {PROMPT}
           </p>
         </div>
@@ -556,7 +594,12 @@ function Thread({ phase }: { phase: Phase }) {
                   key={line}
                   // One at a time, behind the panel opening, so the list reads
                   // as being written rather than as having been there.
-                  className={`flex items-start gap-2 border-b px-3 py-2 text-[13px] leading-[1.4] text-[color:var(--mock-ink)] transition-opacity duration-300 last:border-b-0 motion-reduce:transition-none ${LINE} ${
+                  // A step below the header above them: the bar names the
+                  // thing, the rows are its contents. At the same size and
+                  // the same ink as "Requirements" there was no order to the
+                  // card at all — five rows of identical type, one of which
+                  // happened to have a button on it.
+                  className={`flex items-start gap-2 border-b px-3 py-[7px] text-[12.5px] leading-[1.4] text-[color:var(--mock-ink-soft)] transition-opacity duration-300 last:border-b-0 motion-reduce:transition-none ${LINE} ${
                     planned ? "opacity-100" : "opacity-0"
                   }`}
                   style={{ transitionDelay: `${260 + i * 110}ms` }}
@@ -629,11 +672,11 @@ function Composer({ phase }: { phase: Phase }) {
     </div>
   );
   return (
-    // Capped and centred. The card widens when it is picked, and an uncapped
-    // box widened with it — one short prompt stretched across 700px, with the
-    // send button a screen away from the words. 560px is the measure the
-    // site's other composer already runs at.
-    <div className="mx-auto w-full max-w-[560px] pt-3">
+    // The 560px cap it used to set itself now sits on the column above, so
+    // the box shares a measure with the message and the plan rather than being
+    // the only capped thing in the stack. 560px is the measure the site's
+    // other composer already runs at.
+    <div className="w-full pt-3">
       {/* Double outline, in LIGHT only: a soft second rule held off the box,
           the way a focused input reads in the product. One border on a grey
           card was a single thin line doing all the work of saying "this is the
@@ -730,7 +773,7 @@ function TeamDashboard({ live }: { live: boolean }) {
         <SectionLabel>Apps</SectionLabel>
         <NavItem icon={<IconGlobe />} label="Home" />
         <NavItem icon={<IconChat />} label="Messages" />
-        <NavItem icon={<IconApp />} label="Year-end documents" active={live} />
+        <NavItem icon={<IconApp />} label="Year-end docs" active={live} />
         <NavItem icon={<IconPlus />} label="Add App" muted />
       </div>
       <div className="@container min-w-0 flex-1 pl-5 pt-5">
@@ -839,7 +882,7 @@ function ClientView() {
           { icon: <IconChat />, label: "Messages" },
           { icon: <IconFile />, label: "Files" },
           { icon: <IconCard />, label: "Invoices" },
-          { icon: <IconApp />, label: "Year-end documents", active: true },
+          { icon: <IconApp />, label: "Year-end docs", active: true },
         ].map(({ icon, label, active }) => (
           <div
             key={label}

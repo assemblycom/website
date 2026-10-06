@@ -396,10 +396,13 @@ function SplitHero({
     // nav and the other product heroes.
     <section className="mx-auto grid max-w-[1400px] lg:min-h-[min(760px,calc(100svh-120px))] lg:grid-cols-2">
       <div className="flex flex-col justify-end px-6 pb-12 pt-24 md:px-10 md:pb-16 lg:pt-16">
-        <span className="text-sm text-muted-foreground">
-          Assembly vs {page.competitor}
-        </span>
-        <h1 className="type-display mt-4 max-w-[17ch] text-balance">
+        {/* No "Assembly vs <competitor>" line above the h1. The headline
+            already names the competitor ("The client-facing alternative to
+            Lovable"), the nav crumb and the page title both say it again, and
+            a small grey restatement directly above it read as a label on the
+            headline rather than as context for it. The centred hero below
+            keeps its chip — that one carries a page with no other framing. */}
+        <h1 className="type-display max-w-[17ch] text-balance">
           {page.hero.h1}
         </h1>
         <p className="type-lead mt-6 max-w-lg text-pretty text-muted-foreground">

@@ -6,6 +6,7 @@ import {
   DocumentsMock,
   OnboardingMock,
   PortalSidebar,
+  ProgressMock,
 } from "@/components/client-portal/segment-mock";
 import { IconArrowUp } from "@/components/home/build-step-visual";
 import { IconPlus } from "@/components/home/mock-icons";
@@ -92,6 +93,36 @@ const ITEMS: Item[] = [
   // rather than one of the others because the three kept are the ones the page
   // argues for further down. ProgressMock is untouched in segment-mock.tsx and
   // drops back in here if the row ever has room.
+].filter((item): item is Item => item !== null);
+
+/**
+ * The agency cut, for /solutions/marketing-agency-client-portal.
+ *
+ * Same four slots, chosen to name what that page's lead actually promises —
+ * "a branded client portal for reports, approvals, invoices, and files. Use AI
+ * to build what sets your agency apart, from analytics dashboards to design
+ * review apps." A hero shot whose apps are not the apps the sentence above it
+ * lists is a picture of a different product.
+ *
+ * So: the AI build leads (what sets your agency apart), design approvals is
+ * the design review app, the engagement dashboard is the analytics one, and
+ * document collection is files. The portal is already Brandmages — a
+ * marketing agency — which is why this set reads straight here and why the
+ * accounting page notes the default set as the wrong vertical for it.
+ */
+const AGENCY_ITEMS: Item[] = [
+  ITEMS[0],
+  templateItem("design-approvals", "fill", <ApprovalsMock />),
+  templateItem(
+    "client-engagement-dashboard",
+    "fill",
+    <WithSidebar app="Dashboard">
+      <div className="h-full px-4 py-3.5">
+        <ProgressMock />
+      </div>
+    </WithSidebar>,
+  ),
+  templateItem("document-collection", "fill", <DocumentsMock />),
 ].filter((item): item is Item => item !== null);
 
 // ── How big the window is drawn ──────────────────────────────────────────
@@ -220,7 +251,15 @@ function fitFor(panelW: number, viewportH: number): Fit {
   };
 }
 
-export function PortalHeroCarousel() {
+export function PortalHeroCarousel({
+  /**
+   * Which set of apps the panel shows. "default" is the general portal set
+   * /client-portal and the accounting page run; "agency" is the set named by
+   * the marketing-agency page's own lead. See AGENCY_ITEMS.
+   */
+  set = "default",
+}: { set?: "default" | "agency" } = {}) {
+  const items = set === "agency" ? AGENCY_ITEMS : ITEMS;
   const [active, setActive] = useState(0);
   // The row opens on the choice the page is actually making — your own app, or
   // one that already exists — rather than on four app names a cold reader has
@@ -261,7 +300,7 @@ export function PortalHeroCarousel() {
     }, 160);
   };
 
-  const shown = ITEMS[shownTitle] ?? ITEMS[0];
+  const shown = items[shownTitle] ?? items[0];
 
   const [fit, setFit] = useState<Fit | null>(null);
   const [headerH, setHeaderH] = useState(0);
@@ -294,7 +333,7 @@ export function PortalHeroCarousel() {
   // panel is hidden until `fit` lands, so these only set the shape of an
   // invisible box.
   const F = fit ?? fitFor(1320, 900);
-  const current = ITEMS[active];
+  const current = items[active];
 
   /**
    * What the bare composer keeps clear at the foot of the shot.
@@ -355,7 +394,7 @@ export function PortalHeroCarousel() {
         className="relative"
         style={{ height: F.h * F.scale + F.padY }}
       >
-        {ITEMS.map((item, i) => (
+        {items.map((item, i) => (
           <div
             key={item.key}
             aria-hidden={i !== active}
@@ -423,8 +462,8 @@ export function PortalHeroCarousel() {
                 shrinks with them. */}
             {[
               {
-                key: ITEMS[0].key,
-                title: ITEMS[0].title,
+                key: items[0].key,
+                title: items[0].title,
                 index: 0 as number | null,
               },
               {
@@ -432,7 +471,7 @@ export function PortalHeroCarousel() {
                 title: "Select a template",
                 index: null as number | null,
               },
-              ...ITEMS.slice(1).map((item, i) => ({
+              ...items.slice(1).map((item, i) => ({
                 key: item.key,
                 title: item.title,
                 index: (i + 1) as number | null,
@@ -548,17 +587,17 @@ export function PortalHeroCarousel() {
           <StepButton
             direction="prev"
             onClick={() =>
-              setActive((i) => (i - 1 + ITEMS.length) % ITEMS.length)
+              setActive((i) => (i - 1 + items.length) % items.length)
             }
           />
           {/* Tabular figures so the row does not shift width as the number
             changes under the thumb. */}
           <p className="text-sm tabular-nums text-muted-foreground" aria-hidden>
-            {active + 1} / {ITEMS.length}
+            {active + 1} / {items.length}
           </p>
           <StepButton
             direction="next"
-            onClick={() => setActive((i) => (i + 1) % ITEMS.length)}
+            onClick={() => setActive((i) => (i + 1) % items.length)}
           />
         </div>
       )}

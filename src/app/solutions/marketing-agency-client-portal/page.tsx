@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { GridDivider, GridRails } from "@/components/ui/grid-lines";
+import { PortalHeroCarousel } from "@/components/client-portal/portal-hero-carousel";
 import { PortalSocialProof } from "@/components/client-portal/portal-social-proof";
 import { PortalProblem } from "@/components/client-portal/portal-problem";
 import { PortalReadyMade } from "@/components/client-portal/portal-ready-made";
@@ -163,11 +164,17 @@ export default function MarketingAgencyClientPortalPage() {
             </div>
           </div>
 
-          <div
-            aria-hidden
-            title="V1 — the agency hero shot. Art direction pending."
-            className="mt-12 h-[400px] rounded-[28px] bg-[var(--surface)] md:mt-16 md:h-[500px]"
-          />
+          {/* V1's slot, filled by the portal carousel rather than held open.
+              The panel's portal is Brandmages — a marketing agency — so unlike
+              on the accounting page this is the right vertical rather than a
+              neutral stand-in, and it is given the agency set: the four apps
+              the lead above it actually names (AI-built, design approvals, the
+              engagement dashboard, document collection) instead of the general
+              portal four. See AGENCY_ITEMS in portal-hero-carousel.tsx.
+
+              The V1 art direction below is kept so it is not lost with the
+              placeholder that carried it: V1 — the agency hero shot. */}
+          <PortalHeroCarousel set="agency" />
           <PortalSocialProof />
         </div>
       </section>

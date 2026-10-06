@@ -12,6 +12,7 @@ export function CTA({
   secondaryCta,
   planChips = true,
   promptExamples,
+  promptPicker = true,
   composer = true,
   primaryCta,
 }: {
@@ -28,6 +29,12 @@ export function CTA({
   planChips?: boolean;
   /** Page-specific examples, completing "Build …", for both the typewriter and the Ideas menu. */
   promptExamples?: string[];
+  /**
+   * Off for a page that has already shown the same starter prompts further
+   * up, where a second menu of them is a list the visitor has read already.
+   * The typewriter placeholder stays either way.
+   */
+  promptPicker?: boolean;
   /**
    * Off for a page that closes on a plain pair of buttons rather than a second
    * prompt box. The builder page already opens on a composer, and a page that
@@ -128,7 +135,7 @@ export function CTA({
               compact
               minimalControls
               splitFooter
-              promptPicker
+              promptPicker={promptPicker}
               promptPickerLabel="Ideas"
               promptPickerSide="left"
               promptItems={

@@ -203,6 +203,10 @@ export default function ClientPortalPage() {
         // The free plan and the no-card point are both already made by the
         // pricing section further up this page, so the chips restated them.
         planChips={false}
+        // Same reason: the ready-made and tailor sections above already walk
+        // through what you'd build here, so an Ideas menu of the same prompts
+        // is a list the visitor has read by the time they reach the close.
+        promptPicker={false}
       />
     </>
   );

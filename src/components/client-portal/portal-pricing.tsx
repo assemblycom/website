@@ -4,7 +4,6 @@ import { Reveal } from "@/components/ui/reveal";
 import { APP_URL, DEMO_URL, DEMO_CTA_LABEL } from "@/lib/constants";
 import {
   PLAN_EDGE_BRAND,
-  PLAN_WASH_BRAND,
   PLAN_WASH_NEUTRAL,
 } from "@/components/pricing/plan-wash";
 
@@ -124,9 +123,9 @@ export function PortalPricing({
             in plan-wash.ts — the four cards here and the table there are the
             same object and were being drawn two different ways, which in dark
             left this block as flat outlines on the near-black while the table
-            had a lit top edge. The recommended plan takes the brand blue and
-            the tinted edge; the rest take the neutral at the same lengths, so
-            the set still reads as four of one thing. */}
+            had a lit top edge. The three ordinary plans take the neutral wash;
+            the recommended one takes the tinted edge alone, its wash removed
+            below. */}
         <div className="mt-12 grid gap-4 min-[560px]:grid-cols-2 lg:grid-cols-4">
           {tiers.map((tier) => (
             <div
@@ -138,12 +137,18 @@ export function PortalPricing({
                 tier.recommended ? PLAN_EDGE_BRAND : ""
               }`}
             >
-              <div
-                aria-hidden
-                className={`pointer-events-none absolute inset-0 -z-10 ${
-                  tier.recommended ? PLAN_WASH_BRAND : PLAN_WASH_NEUTRAL
-                }`}
-              />
+              {/* The recommended card is deliberately left plain: at this
+                  card's height the brand wash covered the price and the top of
+                  the perk list, reading as a blue panel rather than a mark on
+                  the top edge. The other three keep their neutral wash, and
+                  /pricing's table keeps both — the shared values in
+                  plan-wash.ts are untouched. */}
+              {!tier.recommended && (
+                <div
+                  aria-hidden
+                  className={`pointer-events-none absolute inset-0 -z-10 ${PLAN_WASH_NEUTRAL}`}
+                />
+              )}
               <h3 className="text-lg">{tier.name}</h3>
               <p className="mt-2 text-3xl leading-none">{tier.price}</p>
               <p className="mt-2 text-xs text-muted-foreground">

@@ -246,16 +246,45 @@ export function CardRail({
   );
 }
 
-// Where the cropped picture gives out. Opaque for most of its run, then a
-// short band to nothing — the whole fade happens inside the overflow, so no
-// row that fits is dimmed on its way past.
-const PICTURE_FADE = "linear-gradient(to bottom, #000 0 76%, transparent 99%)";
+// Where the cropped picture gives out. Opaque for most of its run, then away
+// to nothing — the whole fade happens inside the overflow, so no row that fits
+// is dimmed on its way past.
+//
+// Eased and LONG, and both halves of that matter.
+//
+// Eased: two stops (#000 to 76%, then transparent at 99%) put a corner in the
+// alpha curve at 76% and another at 99%. On a flat dark panel like the Build
+// card's sidebar, a corner in the curve is a visible horizontal line, so the
+// "fade" announced itself twice instead of smoothing. These stops approximate
+// an ease-out — small alpha steps where the fade begins, larger ones once it
+// is already moving — so no point along the run changes rate sharply enough
+// to read as an edge. It finishes at 100% rather than 99%, since that last 1%
+// was a hard cut of whatever alpha remained.
+//
+// Long: easing alone was not enough. A near-black panel dissolving over white
+// is the highest-contrast thing this mask ever has to do, and compressed into
+// the last quarter of the card even a smooth ramp reads as a grey band laid
+// over the art. Starting at 20% spreads the same ramp over four fifths of the
+// run, which is slow enough that no single stretch of it reads as a feature
+// of the picture. The early stops are deliberately tiny — 1% of alpha by a
+// third of the way down — so the content up there is not visibly dimmed to
+// buy that length.
+const PICTURE_FADE =
+  "linear-gradient(to bottom, #000 0 20%, rgba(0,0,0,0.99) 31%, rgba(0,0,0,0.96) 40%, rgba(0,0,0,0.91) 48%, rgba(0,0,0,0.84) 56%, rgba(0,0,0,0.74) 63%, rgba(0,0,0,0.62) 70%, rgba(0,0,0,0.49) 77%, rgba(0,0,0,0.35) 84%, rgba(0,0,0,0.22) 90%, rgba(0,0,0,0.11) 95%, rgba(0,0,0,0.04) 98%, transparent 100%)";
 
 // How far "fit" raises a scene off the centre of the space under the copy.
 // Dead centre of that space reads low, because the space is itself the bottom
 // two thirds of the card; a small nudge up is enough to settle it without
 // walking into the caption.
 const PICTURE_NUDGE = "-1rem";
+
+// The same move for "below", which starts at the top of the space the copy
+// leaves rather than centred in it. That start sat low — the caption is three
+// lines on the Build card and only two on the others, so the scene began
+// wherever the longest caption ended and left a band of empty card above it.
+// Raising it closes that band; the overflow at the foot is cropped and faded
+// either way, so the scene loses nothing by starting higher.
+const PICTURE_NUDGE_BELOW = "-2.25rem";
 
 /**
  * One card in the rail: a 3:4 picture with its caption beneath, the shape the
@@ -375,7 +404,11 @@ export function RailCard({
                 picture === "fit" ? "top-1/2 -translate-y-1/2" : "top-0"
               }`}
               style={
-                picture === "fit" ? { marginTop: PICTURE_NUDGE } : undefined
+                picture === "fit"
+                  ? { marginTop: PICTURE_NUDGE }
+                  : picture === "below"
+                    ? { marginTop: PICTURE_NUDGE_BELOW }
+                    : undefined
               }
             >
               {children}
