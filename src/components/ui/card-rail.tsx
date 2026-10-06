@@ -146,20 +146,27 @@ export function RailCard({
   caption,
   index,
   name,
+  copyInside = false,
   children,
 }: {
   caption: string;
   /** Shown faint ahead of `name`, e.g. "Step 1". */
   index?: string;
   name?: string;
+  /**
+   * Puts the heading and caption inside the card, above the picture, which is
+   * then cropped by the card's own bottom edge. The default keeps them under
+   * the card, which is what /client-portal's build rail runs.
+   *
+   * It is the same card either way — only where the copy sits changes, so the
+   * two rails stay one component rather than becoming two drawings of one
+   * thing.
+   */
+  copyInside?: boolean;
   children: React.ReactNode;
 }) {
-  return (
-    <div className="group/card w-[78%] shrink-0 snap-start sm:w-[62%] md:w-[calc((100%-1rem)/2)] lg:w-[calc((100%-2rem)/3)]">
-      <div className="relative aspect-[3/4] w-full select-none overflow-hidden rounded-3xl bg-[var(--surface)]">
-        {children}
-      </div>
-      <div className="mt-4 px-1">
+  const copy = (
+    <>
         {/* Index, dash and name are one line in one face and ONE colour —
             toning the index down made the kicker read as two labels. The em
             dash is the separator the blog's post meta line uses. */}
@@ -176,8 +183,30 @@ export function RailCard({
             <span className="truncate">{name}</span>
           </p>
         ) : null}
-        <p className="text-pretty text-foreground">{caption}</p>
+      <p className="text-pretty text-foreground">{caption}</p>
+    </>
+  );
+
+  if (copyInside) {
+    return (
+      <div className="group/card w-[78%] shrink-0 snap-start sm:w-[62%] md:w-[calc((100%-1rem)/2)] lg:w-[calc((100%-2rem)/3)]">
+        <div className="relative flex aspect-[3/4] w-full select-none flex-col overflow-hidden rounded-3xl bg-[var(--surface)]">
+          <div className="shrink-0 p-6 md:p-7">{copy}</div>
+          {/* The picture takes whatever height the copy leaves and runs off the
+              card's bottom edge, so it reads as a window into the product
+              rather than a framed thumbnail sitting in a box. */}
+          <div className="relative min-h-0 flex-1">{children}</div>
+        </div>
       </div>
+    );
+  }
+
+  return (
+    <div className="group/card w-[78%] shrink-0 snap-start sm:w-[62%] md:w-[calc((100%-1rem)/2)] lg:w-[calc((100%-2rem)/3)]">
+      <div className="relative aspect-[3/4] w-full select-none overflow-hidden rounded-3xl bg-[var(--surface)]">
+        {children}
+      </div>
+      <div className="mt-4 px-1">{copy}</div>
     </div>
   );
 }

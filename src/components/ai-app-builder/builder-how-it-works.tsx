@@ -1,45 +1,65 @@
 import { Reveal } from "@/components/ui/reveal";
-import { StepRail, type RailStep } from "@/components/ui/step-rail";
-import { VisualSlot } from "@/components/ui/visual-slot";
+import { CardRail, RailCard } from "@/components/ui/card-rail";
+import {
+  BuildCard,
+  DescribeCard,
+  IterateCard,
+  PlanCard,
+} from "@/components/client-portal/portal-build-cards";
 
-// Four steps side by side, so they are read as a set rather than in turn: the
-// copy is cut to one length, roughly 60 to 70 characters, which holds at three
-// lines from 1024 up. What a step needs beyond that is carried by the pillars
-// above or the FAQ.
-const STEPS: RailStep[] = [
+/**
+ * How it works, as four cards rather than one empty frame over a rail.
+ *
+ * It was a 16:9 slot waiting on a picture that does not exist, with the four
+ * steps as captions beneath it — so the section's whole middle was a dashed
+ * rectangle, and the steps were text under a hole.
+ *
+ * The cards are the rail /client-portal's build section already runs, in its
+ * copy-inside arrangement: the step names the beat, the line says what happens,
+ * and the picture under it runs off the card's bottom edge. No action on a
+ * card — the chapter's own CTA is the way out of this part of the page, and a
+ * button on every step would ask four times.
+ */
+const STEPS = [
   {
     name: "Describe",
     body: "Say what you want, or start from a template.",
+    visual: <DescribeCard />,
   },
   {
     name: "Plan",
     body: "Approve or edit the plan before anything is built.",
+    visual: <PlanCard />,
   },
   {
     name: "Build",
     body: "Client apps land in your client experience, team tools in your dashboard.",
+    visual: <BuildCard />,
   },
   {
     name: "Iterate",
     body: "Keep chatting to change anything, before launch or six months later.",
+    visual: <IterateCard />,
   },
 ];
 
-/**
- * How it works: one frame of the build, then the four steps as a single rail
- * beneath it.
- */
 export function BuilderHowItWorks() {
   return (
     <section className="mx-auto max-w-[1200px] px-6 py-14 md:px-10 md:py-20">
       <Reveal>
-        <VisualSlot
-          className="mb-12"
-          ratio="16 / 9"
-          label="How it works"
-          description="The build in one frame: a prompt and its clarifying question on the left, the Plan card mid-approval in the centre, and the finished app open in the workspace on the right. Real product chrome, no robot or circuit imagery."
-        />
-        <StepRail steps={STEPS} />
+        <CardRail label="How building works">
+          {STEPS.map((step, i) => (
+            <RailCard
+              key={step.name}
+              index={`Step ${i + 1}`}
+              name={step.name}
+              caption={step.body}
+              copyInside
+            >
+              {step.visual}
+            </RailCard>
+          ))}
+        </CardRail>
       </Reveal>
     </section>
   );
