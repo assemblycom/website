@@ -55,14 +55,25 @@ const PILLARS: Pillar[] = [
   {
     heading: "One CRM. Every app connects to it",
     body: "Contacts, companies, and custom fields come built in. Each client only sees what they're allowed to see.",
-    facts: [],
+    // Not customer numbers — this claim has none, and inventing them would put
+    // a figure on the page nobody could stand behind. These restate what the
+    // platform ships, which is what the claim is about.
+    facts: [
+      { label: "Built in", value: "Contacts, companies, custom fields" },
+      { label: "Per client", value: "Only what they are allowed to see" },
+    ],
     // The home page's CRM shot: contacts, companies and a custom field.
     visual: <TeamCrmVisual />,
   },
   {
     heading: "Secure logins, permissions, and billing come built in",
     body: "Built and maintained by Assembly. Nothing reaches your clients until you make it visible.",
-    facts: [],
+    // Both rows are claims the site already makes, on /security and in this
+    // page's own FAQ, rather than new ones written for this slot.
+    facts: [
+      { label: "Sign-in", value: "Google or a one-click email link" },
+      { label: "Certified", value: "SOC 2 Type II, GDPR and CCPA aligned" },
+    ],
     // The onboarding screen, which carries the "Access: client only" control —
     // permissions as something the platform already decides.
     visual: <OnboardingMock />,
@@ -262,10 +273,13 @@ export default function AiAppBuilderPage() {
         {/* Separates the mechanism from the comparison it sets up. */}
         <GridDivider />
 
-        {/* No divider after this one: the table closes on its own rule, which
-            already runs rail to rail, and a second line below it read as a
-            doubled break. */}
         <BuilderAlternatives />
+
+        {/* The table used to close on its own rule, which ran rail to rail, so
+            a divider here was a doubled break. It sits inside the section's
+            padding now and closes on its own frame, so the region below it was
+            left opening on nothing. */}
+        <GridDivider />
 
         {/* Chapter 3 — the reader now believes it works and wants a way in.
             The templates section carries its own heading, so no chapter title

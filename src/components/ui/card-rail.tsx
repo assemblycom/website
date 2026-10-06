@@ -104,7 +104,17 @@ export function CardRail({
           onScroll={sync}
           role="group"
           aria-label={label}
-          className="flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          // overflow-y-hidden is load-bearing, not tidying: `overflow-x: auto`
+          // against a visible y makes the browser compute y to auto too, so
+          // this was a vertical scroll container as well as a horizontal one,
+          // and a page scroll that landed on it could be swallowed by it.
+          //
+          // snap-proximity, not mandatory: mandatory means the browser must
+          // always come to rest on a snap point, so it re-snaps during a
+          // vertical scroll that merely passes over the rail — which is the
+          // scroll getting caught and pulled back. Proximity snaps when you
+          // are already near a card and leaves the scroll alone otherwise.
+          className="flex snap-x snap-proximity gap-4 overflow-x-auto overflow-y-hidden overscroll-x-contain scroll-smooth [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {children}
         </div>

@@ -179,7 +179,12 @@ export function BuilderAlternatives() {
                 uses, at 50%, so the head reads as a band without inventing a
                 tint and the own column still steps up from it at full strength
                 in both themes. */}
-            <tr className={`bg-muted/50 border-y ${GRID_LINE}`}>
+            <tr className={`border-y ${GRID_LINE}`}>
+              {/* The band is on the three named columns, not the row. The
+                  first cell heads nothing — it sits above the capability
+                  labels — so tinting it made the band look like it started in
+                  the wrong place, a quarter of the table wide before the first
+                  word of it. */}
               <th scope="col" className={`pb-5 pr-8 ${EDGE_L}`}>
                 <span className="sr-only">Capability</span>
               </th>
@@ -190,7 +195,7 @@ export function BuilderAlternatives() {
                   className={`border-l px-6 pb-5 pt-5 text-sm font-normal ${GRID_LINE} ${
                     i === OWN
                       ? `bg-muted text-foreground ${EDGE_R}`
-                      : "text-muted-foreground"
+                      : "bg-muted/50 text-muted-foreground"
                   }`}
                 >
                   {column.name}
