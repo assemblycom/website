@@ -177,12 +177,13 @@ export default function MarketingAgencyClientPortalPage() {
 
               The V1 art direction below is kept so it is not lost with the
               placeholder that carried it: V1 — the agency hero shot. */}
-          {/* Narrower than the page and centred, and the grey carries on all
-              four sides of the screen rather than hugging it as a 16px border.
-              The tray ran the full 1400 measure with 24px of padding and no
-              bottom at all, which left the grey reading as an outline on the
-              shot instead of as the ground it sits on. */}
-          <div className="mx-auto mt-12 max-w-[980px] overflow-hidden rounded-3xl bg-[var(--surface)] p-6 md:mt-16 md:p-12">
+          {/* The page's own measure, like the accounting page's hero panel
+              beside it: capped at 980 the tray read as short next to a shot
+              that runs 1320, however tall it was. The grey carries on all four
+              sides of the screen rather than hugging it as a 16px border —
+              with 24px of padding and no bottom at all it was an outline drawn
+              on the shot rather than the ground the shot sits on. */}
+          <div className="mt-12 overflow-hidden rounded-3xl bg-[var(--surface)] p-6 md:mt-16 md:p-12">
             {/* The window is shorter than the screen inside it, which is the
                 crop: the nav, the round and the decision are all above its
                 foot and the thread carries on past it.
