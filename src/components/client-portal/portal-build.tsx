@@ -77,6 +77,7 @@ export function PortalBuild({
   cta?: { label: string; href: string };
   /** Examples of what gets built, under the rail. */
   chips?: string[];
+  /** The secondary action, beside the primary one. */
   link?: { label: string; href: string };
   railLabel?: string;
 } = {}) {
@@ -91,12 +92,22 @@ export function PortalBuild({
           <p className="mx-auto mt-4 max-w-2xl text-balance text-muted-foreground">
             {body}
           </p>
-          <a
-            href={cta.href}
-            className="mt-6 inline-block rounded-lg bg-foreground px-5 py-2.5 text-center text-sm text-background transition-opacity hover:opacity-90"
-          >
-            {cta.label}
-          </a>
+          <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <a
+              href={cta.href}
+              className="w-full rounded-lg bg-foreground px-5 py-3 text-center text-sm text-background transition-opacity hover:opacity-90 sm:w-auto sm:py-2.5"
+            >
+              {cta.label}
+            </a>
+            {link ? (
+              <Link
+                href={link.href}
+                className="w-full rounded-lg border border-foreground/20 bg-transparent px-5 py-3 text-center text-sm text-foreground transition-colors hover:bg-foreground/5 sm:w-auto sm:py-2.5 [[data-theme=dark]_&]:border-white/25"
+              >
+                {link.label}
+              </Link>
+            ) : null}
+          </div>
         </div>
 
         <div className="mt-12">
@@ -128,16 +139,6 @@ export function PortalBuild({
               </li>
             ))}
           </ul>
-        ) : null}
-        {link ? (
-          <div className="mt-8 text-center">
-            <Link
-              href={link.href}
-              className="inline-block rounded-lg border border-border px-4 py-1.5 text-sm text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground"
-            >
-              {link.label}
-            </Link>
-          </div>
         ) : null}
       </Reveal>
     </section>

@@ -12,7 +12,7 @@ import { PortalStack } from "@/components/client-portal/portal-stack";
 import { PortalTrust } from "@/components/client-portal/portal-trust";
 import { PortalPricing } from "@/components/client-portal/portal-pricing";
 import { PortalProof } from "@/components/client-portal/portal-proof";
-import { DEMO_URL, SIGNUP_URL } from "@/lib/constants";
+import { APP_URL, DEMO_URL, SIGNUP_URL } from "@/lib/constants";
 import { PAGE_SEO, pageMetadata } from "@/lib/seo";
 import { serializeJsonLd } from "@/lib/json-ld";
 
@@ -84,7 +84,11 @@ const ACCOUNTING_APPS = [
 const BUILD_STEPS = [
   {
     name: "Describe it",
-    body: "Tell the AI what your practice needs, like a month-end close tracker or an estimated payment tracker.",
+    // Two lines, like the other two: the rail's feet stop lining up the moment
+    // one caption is deeper than the rest. Shortened at the lead-in rather than
+    // at the examples, so both trackers survive — with the chips gone from this
+    // section they are the only place the page names what gets built.
+    body: "Tell the AI what you need, like a month-end close or estimated payment tracker.",
   },
   {
     name: "Answer a few questions",
@@ -133,7 +137,6 @@ const ACCOUNTING_STORIES = [
   {
     slug: "collective-cpa",
     specialty: "Collective CPA & Advisors · Accounting and advisory",
-    stats: ["200+ tax clients migrated", "Drive migration in one week"],
     quote:
       "We had more tax returns in the door, ready to start being prepped, earlier than ever this year than in our entire history.",
     name: "Kyle Pearson",
@@ -143,7 +146,6 @@ const ACCOUNTING_STORIES = [
   {
     slug: "sargent-cpa",
     specialty: "Sargent CPAs · Bookkeeping, tax, and advisory",
-    stats: ["100+ clients, one experience", "2 custom apps built with AI"],
     quote:
       "You can build it any way you want and make it perfect for your clients and your business.",
     name: "Anthony Drozd",
@@ -153,7 +155,6 @@ const ACCOUNTING_STORIES = [
   {
     slug: "orca-accounting",
     specialty: "Orca Accounting · Bookkeeping and CFO services",
-    stats: ["75% faster onboarding"],
     quote: "Every client said this was such an easy onboarding experience.",
     name: "Leah McCool",
     role: "Founder @ Orca Accounting",
@@ -161,20 +162,71 @@ const ACCOUNTING_STORIES = [
   },
 ];
 
-/** Section 9. Plan lines rather than prices: this page never explains a figure,
- *  and /pricing is one click away. */
-const PLAN_LINES = [
-  { name: "Free", line: "Real apps for your first clients." },
-  { name: "Starter", line: "More contacts, plus the API and MCP connector." },
+/**
+ * Section 9. /client-portal's priced cards, with this handoff's fifth plan
+ * added. Names, prices and perks are the live /pricing figures — the perks are
+ * that page's wording cut to what the handoff names for each plan, so the two
+ * pages cannot say different things about the same tier. Enterprise prices on
+ * application, so its card carries the demo action rather than a figure.
+ */
+const ACCOUNTING_TIERS = [
+  {
+    name: "Free",
+    price: "$0",
+    cadence: "Free forever",
+    perksLabel: "Includes:",
+    perks: ["5 active contacts", "3 apps"],
+    cta: "Get started",
+    href: APP_URL,
+  },
+  {
+    name: "Starter",
+    price: "$29",
+    cadence: "per month, billed annually",
+    perksLabel: "Everything in Free, plus:",
+    perks: ["50 active contacts", "API and MCP connector"],
+    cta: "Get started",
+    href: APP_URL,
+  },
   {
     name: "Professional",
-    line: "Your own domain, badge removal, app visibility, and automations.",
+    price: "$99",
+    cadence: "per month, billed annually",
+    perksLabel: "Everything in Starter, plus:",
+    perks: [
+      "Custom domain",
+      "Assembly badge removed",
+      "App visibility",
+      "Automation builder",
+    ],
+    cta: "Get started",
+    href: APP_URL,
+    recommended: true,
   },
   {
     name: "Advanced",
-    line: "HIPAA BAA, audit log, client access permissions, enforced MFA, and multi-company contacts.",
+    price: "$499",
+    cadence: "per month, billed annually",
+    perksLabel: "Everything in Professional, plus:",
+    perks: [
+      "HIPAA BAA",
+      "Audit log",
+      "Client access permissions",
+      "Enforced MFA",
+      "Multi-company contacts",
+    ],
+    cta: "Book a demo",
+    href: DEMO_URL,
   },
-  { name: "Enterprise", line: "Custom SSO and a dedicated success manager." },
+  {
+    name: "Enterprise",
+    price: "Custom",
+    cadence: "Priced on application",
+    perksLabel: "Everything in Advanced, plus:",
+    perks: ["Custom SSO", "Dedicated success manager"],
+    cta: "Talk to us",
+    href: DEMO_URL,
+  },
 ];
 
 /**
@@ -393,11 +445,6 @@ export default function AccountingClientPortalPage() {
           }))}
           railLabel="How building works"
           cta={{ label: "Start free", href: SIGNUP_URL }}
-          chips={[
-            "Month-end close tracker",
-            "Estimated payment tracker",
-            "Team capacity board (Internal)",
-          ]}
           // OPEN: the handoff leaves this target to the web lead — /ai-app-builder
           // if it is live, otherwise /blog/assembly-studio. /ai-app-builder is new
           // in this same PR, so the two ship together or not at all.
@@ -468,7 +515,7 @@ export default function AccountingClientPortalPage() {
         <PortalPricing
           heading="Plans that match the scale of your firm"
           body="Start free with real apps. Upgrade for your own domain, automations, and client access permissions."
-          plans={PLAN_LINES}
+          tiers={ACCOUNTING_TIERS}
           link={{ label: "See pricing", href: "/pricing" }}
         />
         <GridDivider />
@@ -478,7 +525,9 @@ export default function AccountingClientPortalPage() {
         <GridRails />
         {/* 10. FAQ. */}
         <FAQ
-          heading="Questions firms ask before switching"
+          // A non-breaking space ties "before" to "switching" so the pair wraps
+          // together, rather than a hard <br /> that would break badly narrower.
+          heading={"Questions firms ask before\u00A0switching"}
           items={ACCOUNTING_FAQS}
           variant="divided"
           dottedRules

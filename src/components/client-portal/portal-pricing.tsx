@@ -66,24 +66,27 @@ const TIERS: Tier[] = [
 ];
 
 /**
- * Two shapes from one section. /client-portal passes nothing and gets the four
- * priced cards. A page whose brief lists the plans as one line each passes
- * `plans`, and the section renders those instead — no figures, because a page
- * that does not explain a price should not print one it would have to keep in
- * step with /pricing.
+ * One shape, two copies of it. Every page runs the same priced cards; a page
+ * whose plan set differs passes its own `tiers`, and the grid takes a column
+ * per card so four and five both sit in one row.
+ *
+ * A rows-and-lines variant lived here briefly for the accounting page and is
+ * gone: pricing is one object on this site, and a second treatment of it on a
+ * vertical page makes the same plans look like different plans.
  */
 export function PortalPricing({
   heading = "Start free. Build as you grow.",
   body = "The free plan never expires and includes real, publishable apps. Paid plans add contacts, apps, your own domain, and more as your firm grows.",
   link = { label: "See full pricing", href: "/pricing" },
-  plans,
+  tiers = TIERS,
 }: {
   heading?: string;
   body?: string;
   link?: { label: string; href: string };
-  /** One line per plan, in place of the priced cards. */
-  plans?: { name: string; line: string }[];
+  tiers?: Tier[];
 } = {}) {
+  // Written out rather than interpolated so Tailwind sees the whole class name.
+  const columns = tiers.length === 5 ? "lg:grid-cols-5" : "lg:grid-cols-4";
   return (
     <section className="mx-auto max-w-[1200px] px-6 py-16 md:px-10 md:py-24">
       <Reveal>
@@ -106,28 +109,10 @@ export function PortalPricing({
             card is the same object — the recommended plan is marked only by its
             filled button, so none of the four outshouts the rest, the same
             restraint the full pricing table keeps. */}
-        {plans ? (
-          /* One row per plan: the name, then what that plan adds. Rows rather
-             than cards, because five cards of one sentence each is five mostly
-             empty boxes, and these carry no price to anchor a card on. */
-          <ul className="mx-auto mt-12 max-w-3xl divide-y divide-border [[data-theme=dark]_&]:divide-[#383838]">
-            {plans.map((plan) => (
-              <li
-                key={plan.name}
-                className="flex flex-col gap-1 py-4 text-left sm:flex-row sm:gap-6"
-              >
-                <span className="shrink-0 text-foreground sm:w-40">
-                  {plan.name}
-                </span>
-                <span className="text-sm leading-relaxed text-muted-foreground">
-                  {plan.line}
-                </span>
-              </li>
-            ))}
-          </ul>
-        ) : (
-        <div className="mt-12 grid gap-4 min-[560px]:grid-cols-2 lg:grid-cols-4">
-          {TIERS.map((tier) => (
+        <div
+          className={`mt-12 grid gap-4 min-[560px]:grid-cols-2 ${columns}`}
+        >
+          {tiers.map((tier) => (
             <div
               key={tier.name}
               className="flex flex-col rounded-2xl border border-border p-6 [[data-theme=dark]_&]:border-[#383838]"
@@ -171,7 +156,6 @@ export function PortalPricing({
             </div>
           ))}
         </div>
-        )}
       </Reveal>
     </section>
   );
