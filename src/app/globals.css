@@ -3485,3 +3485,26 @@ html:not([data-authed]) .auth-only {
     animation: none;
   }
 }
+
+/* ── The composer ring, at rest until pointed at ──────────────────────────
+   A modifier for .v63-gradient-border, not a change to it: the home hero and
+   the CTA both run that ring spinning continuously and are meant to, because
+   each is the one live entry point on its page. /ai-app-builder's hero prompt
+   sits under a headline that is already doing the talking, so it holds the
+   sweep at its resting angle — the colour is still there, it simply is not
+   moving — and runs it while the pointer is on the box.
+
+   Paused rather than un-set, so the gradient keeps its angle instead of
+   snapping back to 0deg when the pointer leaves. */
+.v63-spin-on-hover::before {
+  animation-play-state: paused;
+}
+.v63-spin-on-hover:hover::before {
+  animation-play-state: running;
+}
+@media (prefers-reduced-motion: reduce) {
+  .v63-spin-on-hover::before,
+  .v63-spin-on-hover:hover::before {
+    animation-play-state: paused;
+  }
+}

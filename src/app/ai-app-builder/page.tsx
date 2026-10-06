@@ -19,7 +19,7 @@ import { BrandPortalVisual } from "@/components/home/brand-portal-visual";
 import { BuilderHowItWorks } from "@/components/ai-app-builder/builder-how-it-works";
 import { BuilderAlternatives } from "@/components/ai-app-builder/builder-alternatives";
 import { BuilderTemplates } from "@/components/ai-app-builder/builder-templates";
-import { PortalHeroCarousel } from "@/components/client-portal/portal-hero-carousel";
+import { BuilderPrompt } from "@/components/ai-app-builder/builder-prompt";
 import { GridDivider, GridRails } from "@/components/ui/grid-lines";
 import { DEMO_URL, SIGNUP_URL } from "@/lib/constants";
 import { PAGE_SEO, pageMetadata } from "@/lib/seo";
@@ -210,45 +210,43 @@ export default function AiAppBuilderPage() {
           in the closing CTA, so a visitor is invited to type only after reading
           the argument. Claim on the left with its actions, detail set against
           it on the right; on a phone they stack. */}
-      <section className="pb-16 pt-24 md:pb-24 md:pt-32">
-        <div className="mx-auto max-w-[1400px] px-6 md:px-10">
-          {/* Stacked, the detail reads straight after the headline and the
-              actions close the block; side by side it moves to the right
-              column and the actions stay under the claim. */}
-          <div className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-start lg:gap-x-16">
-            <h1 className="type-display max-w-[16ch] text-balance">
+      {/* Holds the viewport on its own. The hero is three things — a claim, a
+          line under it and the box you type into — and with the next section's
+          heading showing beneath them the page opened on two competing titles.
+          Min-height rather than more padding, so it fills whatever screen it
+          lands on instead of being tuned for one; svh rather than vh, because
+          on mobile vh is the tallest the viewport ever gets and the browser
+          chrome then eats the bottom of it. 5rem is the sticky nav above. */}
+      <section className="flex min-h-[calc(100svh-5rem)] items-center pb-20 pt-16 md:pb-28 md:pt-20">
+        <div className="mx-auto w-full max-w-[1400px] px-6 md:px-10">
+          {/* Centred, with the composer under the claim rather than a split
+              header and a picture beside it. This page's subject IS the box
+              you type into, so the hero puts it on the centre line and lets
+              the headline sit over it — the layout every builder's own front
+              door uses. The other product pages keep the split header, because
+              their subject is a portal rather than a prompt. */}
+          <div className="mx-auto max-w-3xl text-center">
+            <h1 className="type-display mx-auto max-w-[18ch] text-balance">
               The AI app builder made for service businesses
             </h1>
             {/* Kept to about three lines so it balances the headline; the own-
                 domain point is carried by the branding pillar further down. */}
-            <p className="type-lead max-w-[34rem] text-pretty text-muted-foreground lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:pt-2">
+            <p className="type-lead mx-auto mt-5 max-w-[42rem] text-pretty text-muted-foreground">
               Describe what you want. Assembly builds a working app with logins,
               permissions, and your branding built in, for agencies,
               accountants, consultants, and other service businesses.
             </p>
-            <div className="flex flex-wrap items-center gap-3">
-              <a
-                href={SIGNUP_URL}
-                className="rounded-lg bg-foreground px-5 py-2.5 text-center text-sm text-background transition-opacity hover:opacity-90"
-              >
-                Start building for free
-              </a>
-              <a
-                href={DEMO_URL}
-                className="rounded-lg border border-foreground/20 bg-transparent px-5 py-2.5 text-center text-sm text-foreground transition-colors hover:bg-foreground/5"
-              >
-                Book demo
-              </a>
-            </div>
           </div>
 
-          {/* The portal carousel, not this page's own two-card build demo.
-              Swapped with /client-portal: the carousel opens on the screens a
-              built app actually becomes, which is the promise the headline
-              above makes, and the build demo moved to the portal page where
-              "plus an AI app builder for the work that is only yours" is the
-              half of the pitch that needed a picture. */}
-          <PortalHeroCarousel />
+          <BuilderPrompt />
+
+          {/* No button row under the box. "Start building for free" IS the
+              arrow inside the composer — repeating it immediately underneath
+              asked the same question twice — and the demo is carried by the
+              nav's own Book a demo, which is on every page including this
+              one. */}
+
+
         </div>
       </section>
 

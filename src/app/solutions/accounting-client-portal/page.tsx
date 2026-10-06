@@ -3,6 +3,7 @@ import { CTA } from "@/components/home/cta";
 import { FAQ, type FAQEntry } from "@/components/home/faq";
 import { GridDivider, GridRails } from "@/components/ui/grid-lines";
 import { PortalSocialProof } from "@/components/client-portal/portal-social-proof";
+import { PortalHeroCarousel } from "@/components/client-portal/portal-hero-carousel";
 import { PortalProblem } from "@/components/client-portal/portal-problem";
 import { PortalReadyMade } from "@/components/client-portal/portal-ready-made";
 import { PortalBuild } from "@/components/client-portal/portal-build";
@@ -358,18 +359,31 @@ export default function AccountingClientPortalPage() {
             </div>
           </div>
 
-          {/* V1's slot, held open rather than filled. /client-portal's carousel
-              stood here first, but it runs that page's marketing firm — a
-              campaign approval flow and a retainer tracker — which on an
-              accounting page is not a neutral stand-in but the wrong vertical's
-              content. A muted panel says "picture pending"; that one said
-              something untrue. Same solid --muted the stack section's slot
-              uses, with the art direction in `title` for whoever builds it. */}
-          <div
-            aria-hidden
-            title="V1 — left 40%: the Assembly build panel headed 'Build with AI', with the message 'Build an estimated tax payment tracker. Clients see scheduled and paid amounts; send a reminder 7 days before each due date.', a plan card titled 'Plan: Estimated payment tracker' (fields: quarter, jurisdiction, amount, due date, status; who sees it: each client sees only their own; team view: all clients; reminder: 7 days before due) and an 'Approve plan' button. Right 60%: a browser at portal.ledgerline.com, sidebar Home / Messages / Files / Contracts / Payments / Tasks / Estimated payments (new, faint brass highlight), main panel for Delgado Household showing 'Q3 federal · $4,200 · Scheduled Sep 15' and 'Q2 federal · $4,200 · Paid Jun 14'. Static."
-            className="mt-12 h-[400px] rounded-[28px] bg-[var(--surface)] md:mt-16 md:h-[500px]"
-          />
+          {/* V1's slot, now filled by the portal carousel rather than held
+              open. It stood here once before and was taken out again, because
+              it runs a marketing firm's content — Brandmages in the sidebar, a
+              content approval flow among the four apps — which on an
+              accounting page is the wrong vertical rather than a neutral
+              stand-in. That is still true of one of its four screens, so this
+              wants either an accounting set or the real V1 art before the page
+              ships; a picture of the right SHAPE beats an empty panel in the
+              meantime, which is the call made here.
+
+              The V1 art direction is kept below so it is not lost with the
+              placeholder that carried it. */}
+          <PortalHeroCarousel />
+          {/* V1 — left 40%: the Assembly build panel headed "Build with AI",
+              with the message "Build an estimated tax payment tracker. Clients
+              see scheduled and paid amounts; send a reminder 7 days before each
+              due date.", a plan card titled "Plan: Estimated payment tracker"
+              (fields: quarter, jurisdiction, amount, due date, status; who sees
+              it: each client sees only their own; team view: all clients;
+              reminder: 7 days before due) and an "Approve plan" button. Right
+              60%: a browser at portal.ledgerline.com, sidebar Home / Messages /
+              Files / Contracts / Payments / Tasks / Estimated payments (new,
+              faint brass highlight), main panel for Delgado Household showing
+              "Q3 federal · $4,200 · Scheduled Sep 15" and "Q2 federal · $4,200
+              · Paid Jun 14". Static. */}
           <PortalSocialProof />
         </div>
       </section>
