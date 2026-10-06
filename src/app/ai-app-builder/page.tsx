@@ -150,13 +150,21 @@ const BUILDER_FAQS: FAQEntry[] = [
 ];
 
 /**
- * The featured story the brief names for this page, in its approved wording.
- * The quote names Assembly alone, as the published case study does, since
- * Studio is no longer a product name.
+ * The featured story the brief names for this page.
+ *
+ * NOTE: the quote is a tightened paraphrase, not Garrett's published wording.
+ * He said "We’ve been able to build out apps in just a few weeks that I don’t
+ * know if we could have done within five to ten years before Assembly"
+ * (case-studies.ts). It is shortened here on the site owner’s instruction;
+ * since it sits in quotation marks under his name, it wants his sign-off
+ * before this ships.
+ *
+ * The homepage carries a third wording of the same sentence (testimonials.tsx),
+ * so one customer is currently quoted three ways across the site.
  */
 const ADVERTAI_STORY: CustomerStory = {
   quote:
-    "We've been able to build out apps in just a few weeks that I don't know if we could have done within five to ten years before Assembly.",
+    "We’ve built apps in a few weeks that I don’t think we could have done in 5 to 10 years before Assembly.",
   name: "Garrett Leonard",
   firm: "Advertai Marketing",
   image: "/images/customers/advertai-marketing.jpg",
