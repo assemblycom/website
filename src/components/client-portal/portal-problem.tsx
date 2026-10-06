@@ -61,6 +61,25 @@ const SIDES: { label: string; body: string }[] = [
  * to the front. Nothing is clickable — it answers the pointer and that is all
  * it does.
  */
+/**
+ * The lift the front screen carries, cast on the side where the two actually
+ * overlap.
+ *
+ * It used to be one leftward shadow on whichever screen was selected, which is
+ * right for the second screen — it slides left over the first, so its left edge
+ * is the one standing proud. On the FIRST screen that same shadow fell away
+ * into empty page: the edge doing the covering is its right one, so the screen
+ * came forward with nothing under it to say so, and the pair read flat exactly
+ * half the time.
+ *
+ * Both strings are written out whole because Tailwind scans source for complete
+ * class names and cannot see one assembled from parts.
+ */
+const LIFT_RIGHT =
+  "shadow-[18px_0_40px_-18px_rgba(16,24,40,0.28),0_2px_8px_-2px_rgba(16,24,40,0.1)] [[data-theme=dark]_&]:shadow-[18px_0_40px_-20px_rgba(0,0,0,0.75)]";
+const LIFT_LEFT =
+  "shadow-[-18px_0_40px_-18px_rgba(16,24,40,0.28),0_2px_8px_-2px_rgba(16,24,40,0.1)] [[data-theme=dark]_&]:shadow-[-18px_0_40px_-20px_rgba(0,0,0,0.75)]";
+
 function Screen({
   selected,
   overlaps,
@@ -120,9 +139,7 @@ function Screen({
           behind. */}
       <div
         className={`h-[300px] overflow-hidden rounded-t-xl border-l border-r border-t border-border bg-background transition-colors duration-200 group-hover:border-foreground/30 motion-reduce:transition-none md:h-[400px] [[data-theme=dark]_&]:border-[#383838] [[data-theme=dark]_&]:group-hover:border-white/35 ${
-          selected
-            ? "shadow-[-18px_0_40px_-24px_rgba(16,24,40,0.3),0_1px_2px_rgba(16,24,40,0.05)] [[data-theme=dark]_&]:shadow-[-18px_0_40px_-24px_rgba(0,0,0,0.7)]"
-            : ""
+          selected ? (overlaps ? LIFT_LEFT : LIFT_RIGHT) : ""
         }`}
       >
         {/* Desaturated and held back in opacity rather than drawn in a second

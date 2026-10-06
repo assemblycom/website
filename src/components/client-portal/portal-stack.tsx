@@ -114,7 +114,13 @@ export function PortalStack({
                       // hairline was the tile's edge; empty, the outline WAS
                       // the object, so each row opened on a little drawn box
                       // rather than on a quiet block of tone.
-                      className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted [&>svg]:size-[18px] [[data-theme=dark]_&]:bg-white/[0.06]"
+                      // --surface-2, not --muted, in light. This band is
+                      // --surface at half strength over white, which lands
+                      // within a point or two of --muted — so an empty tile on
+                      // it was very nearly the band itself and the rows opened
+                      // on nothing. --surface-2 is the scale's own next rung
+                      // down, which is what a recess on a surface takes.
+                      className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[var(--surface-2)] [&>svg]:size-[18px] [[data-theme=dark]_&]:bg-white/[0.06]"
                     />
                     <span className="min-w-0">
                       <span className="block text-[15px] text-foreground">
