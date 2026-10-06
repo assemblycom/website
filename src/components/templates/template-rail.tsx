@@ -29,13 +29,21 @@ export function TemplateRail({ cards }: { cards: TemplateRailCard[] }) {
         <Link
           key={card.href}
           href={card.href}
-          className="group flex items-center gap-4 rounded-xl bg-muted/50 p-3 transition-colors hover:bg-muted [[data-theme=dark]_&]:bg-white/[0.03] [[data-theme=dark]_&]:hover:bg-white/[0.06]"
+          // The page's own grey, not a third one. These rows carried bg-muted
+          // at half opacity with bg-muted on hover, which put two more greys on
+          // a page whose picture slots are all --surface — and half-opacity
+          // resolves against whatever is behind it, so the row was a different
+          // colour again on a tinted band. Hover firms up the outline instead
+          // of darkening the fill, the same move the builder hero's cards make.
+          className="group flex items-center gap-4 rounded-xl bg-[var(--surface)] p-3 ring-1 ring-transparent transition-[box-shadow] hover:ring-foreground/10"
         >
           {/* The template shot goes here once the art exists. It takes the
               full `--muted` against the row's half-strength fill, so the slot
               is the darker element — the way a real thumbnail will be once
               there is one. White on the lighter row read as a hole. */}
-          <span className="size-14 shrink-0 rounded-lg bg-muted [[data-theme=dark]_&]:bg-white/[0.07]" />
+          {/* The art slot: one defined step into the surface it sits on, so it
+              reads as a recess rather than as a second surface colour. */}
+          <span className="size-14 shrink-0 rounded-lg bg-[var(--surface-2)]" />
           <span className="min-w-0 flex-1">
             <span className="block truncate text-sm font-medium text-foreground">
               {card.title}

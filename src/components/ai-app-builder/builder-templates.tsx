@@ -61,12 +61,6 @@ export function BuilderTemplates() {
     (pick) => ({
       ...pick,
       href: `/templates/${pick.slug}`,
-      chips: [
-        { label: pick.vertical },
-        // The brief wants at least one team-only tool visible in the rail, so
-        // the internal template says so on the row.
-        ...(pick.internal ? [{ label: "Internal", outlined: true }] : []),
-      ],
     }),
   );
 

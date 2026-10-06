@@ -59,6 +59,10 @@
      shade from one section to the next. Light and dark are declared in their
      own blocks and must stay that way. */
   --surface: #f5f5f5;
+  /* One step down from --surface, for a recess sitting ON a surface: the art
+     slot in a template row, and anything else nested inside a grey panel.
+     Two rungs is the whole scale — a slot either is the surface or sits in it. */
+  --surface-2: #e9e9e9;
   --font-pp-mori: "PP Mori", system-ui, sans-serif;
   --font-diatype-mono: "ABC Diatype Mono", ui-monospace, monospace;
 
@@ -126,6 +130,7 @@
   /* See --surface in :root. Dark's own value, not a translucent white, so it
      does not change with whatever it happens to sit on. */
   --surface: #191919;
+  --surface-2: #242424;
 
   /* Mock status pills go translucent so they sit on dark surfaces without
      glowing; fg stays desaturated to match the neutral-gray dark scale. */

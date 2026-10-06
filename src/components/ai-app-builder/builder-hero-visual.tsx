@@ -295,8 +295,17 @@ export function BuilderHeroVisual() {
             className="mt-6 min-h-[280px] flex-1 pl-6 [contain:size] md:pl-8 lg:min-h-0"
           >
             <div
-              className={`h-[760px] w-full overflow-hidden rounded-tl-xl border-l border-t bg-neutral-50 shadow-[0_8px_24px_-18px_rgba(16,24,40,0.14)] [[data-theme=dark]_&]:bg-background ${LINE}`}
+              className={`relative h-[760px] w-full overflow-hidden rounded-tl-xl border-l border-t bg-neutral-50 shadow-[0_8px_24px_-18px_rgba(16,24,40,0.14)] [[data-theme=dark]_&]:bg-background ${LINE}`}
             >
+              {/* The card clips this screen, which left the last row cut
+                  through the middle of its type — a hard edge that reads as a
+                  rendering fault rather than as a crop. A short fade to the
+                  card's own ground ends it instead. Over the screen, under
+                  nothing: it is the last thing drawn. */}
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-20 bg-gradient-to-b from-transparent to-[var(--surface)]"
+              />
               <div className="relative h-full">
                 {VIEWS.map((label, i) => (
                   <div
@@ -494,7 +503,11 @@ function Composer({ phase }: { phase: Phase }) {
     </div>
   );
   return (
-    <div className="pt-3">
+    // Capped and centred. The card widens when it is picked, and an uncapped
+    // box widened with it — one short prompt stretched across 700px, with the
+    // send button a screen away from the words. 560px is the measure the
+    // site's other composer already runs at.
+    <div className="mx-auto w-full max-w-[560px] pt-3">
       <div
         className={`overflow-hidden rounded-lg border bg-background ${LINE}`}
       >

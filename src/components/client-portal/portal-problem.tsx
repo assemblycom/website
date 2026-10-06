@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import { Reveal } from "@/components/ui/reveal";
 import {
@@ -59,34 +62,56 @@ const SIDES: { label: string; body: string }[] = [
  * pointer and that is all it does.
  */
 function Screen({
-  dimmed,
-  front,
+  selected,
+  overlaps,
+  onSelect,
   children,
 }: {
-  dimmed?: boolean;
-  front?: boolean;
+  /** The one in front: full colour, shadowed, and at rest height. */
+  selected: boolean;
+  /** The second of the pair, which slides left over the first. */
+  overlaps?: boolean;
+  onSelect: () => void;
   children: React.ReactNode;
 }) {
   return (
     <div
-      // The back screen sits a few pixels lower than the front one. With both
-      // tops on the same line the pair read as one wide window split down the
-      // middle; dropping the one behind gives the overlap somewhere to land,
-      // so the stack reads as two windows. Small on purpose — enough to see,
-      // not enough to look like a misalignment.
+      // Pointing at a screen picks it, and it stays picked until the other one
+      // is pointed at. It used to be a plain :hover, which meant the moment the
+      // pointer left, whatever you had raised dropped back behind — you could
+      // never actually look at the screen you had just brought forward.
+      //
+      // The step follows the stack, not the screen. Whichever is selected sits
+      // at rest; the other drops a few pixels. With both tops on the same line
+      // the pair read as one wide window split down the middle, and with the
+      // step pinned to one side the screen you had just raised sat lower than
+      // the one behind it, so the depth read backwards.
       //
       // A transform, not a margin. A margin pushed the tray 12px taller, which
       // lifted BOTH screens off its bottom edge — and the screens running off
-      // that edge is the whole point of the picture. A transform moves the
-      // screen without touching the layout, so the tray still measures the
-      // front screen and the back one is simply clipped 12px further down.
-      className={`group relative w-[62%] shrink-0 hover:z-20 ${
-        front ? "z-10 -ml-[24%]" : "translate-y-2 md:translate-y-3"
-      }`}
+      // that edge is the whole point of the picture. A transform moves them
+      // without touching the layout, so the tray keeps measuring one screen's
+      // height and the stepped one is simply clipped further down.
+      onMouseEnter={onSelect}
+      onFocus={onSelect}
+      onClick={onSelect}
+      className={`group relative w-[62%] shrink-0 cursor-default transition-transform duration-200 motion-reduce:transition-none ${
+        overlaps ? "-ml-[24%]" : ""
+      } ${selected ? "z-10" : "translate-y-2 md:translate-y-3"}`}
     >
+      {/* A hairline, not a 4px band. At 4px and 7% ink the ring was a soft halo
+          wide enough to read as a second frame around the screen; one pixel at
+          20% is an outline, which is what this wants to be.
+
+          Open at the bottom, and square there, like the screen it outlines.
+          Rounded on all four corners it closed the frame off just above the
+          tray's edge, so it drew two curves across the bottom of a picture
+          whose whole point is that the screens run off it. */}
       <div
         aria-hidden
-        className="pointer-events-none absolute -inset-1 z-10 scale-[0.985] rounded-[15px] border-4 border-foreground/[0.07] opacity-0 transition duration-200 group-hover:scale-100 group-hover:opacity-100 motion-reduce:transition-none"
+        className={`pointer-events-none absolute -inset-1 z-10 rounded-t-[15px] border border-b-0 border-foreground/20 transition duration-200 motion-reduce:transition-none ${
+          selected ? "scale-100 opacity-100" : "scale-[0.985] opacity-0"
+        }`}
       />
       {/* The frame is opaque whichever screen is in front. The dimming used to
           sit here, which made the whole screen translucent — so whenever it
@@ -95,26 +120,51 @@ function Screen({
           behind. */}
       <div
         className={`h-[300px] overflow-hidden rounded-t-xl border-l border-r border-t border-border bg-background md:h-[400px] [[data-theme=dark]_&]:border-[#383838] ${
-          front
+          selected
             ? "shadow-[-18px_0_40px_-24px_rgba(16,24,40,0.3),0_1px_2px_rgba(16,24,40,0.05)] [[data-theme=dark]_&]:shadow-[-18px_0_40px_-24px_rgba(0,0,0,0.7)]"
             : ""
         }`}
       >
         {/* Desaturated and held back in opacity rather than drawn in a second
             set of greys: a muted copy of the same chrome stays correct in both
-            themes, where hardcoded greys would only be right in one. It comes
-            back to full strength under the pointer, because a reader who has
-            reached for it is asking to read it. */}
+            themes, where hardcoded greys would only be right in one. Whichever
+            screen is behind takes it, so the pair always reads one-in-front —
+            the same treatment the left screen carries at rest, now following
+            the selection rather than fixed to one side. */}
         <div
           className={`h-full transition duration-300 motion-reduce:transition-none ${
-            dimmed
-              ? "opacity-55 grayscale group-hover:opacity-100 group-hover:grayscale-0"
-              : ""
+            selected ? "" : "opacity-55 grayscale"
           }`}
         >
           {children}
         </div>
       </div>
+    </div>
+  );
+}
+
+/**
+ * The pair, and which of the two is in front.
+ *
+ * It opens on the built app, because that is the half the section is arguing
+ * for; the generic portal is the before. Pointing at either one picks it and
+ * it stays picked — there is no "back to default", since every state here is a
+ * legitimate one to leave the picture in.
+ */
+function ScreenPair() {
+  const [selected, setSelected] = useState(1);
+  return (
+    <div className="flex">
+      <Screen selected={selected === 0} onSelect={() => setSelected(0)}>
+        <GenericPortalMock />
+      </Screen>
+      <Screen
+        selected={selected === 1}
+        overlaps
+        onSelect={() => setSelected(1)}
+      >
+        <IntakeAppMock />
+      </Screen>
     </div>
   );
 }
@@ -189,16 +239,7 @@ export function PortalProblem({
             of the screens instead, which read as a rendering fault rather
             than as a corner. */}
         <div className="mt-8 overflow-hidden rounded-t-3xl bg-[var(--surface)] p-4 pb-0 md:mt-10 md:p-6 md:pb-0">
-          {screens ?? (
-            <div className="flex">
-              <Screen dimmed>
-                <GenericPortalMock />
-              </Screen>
-              <Screen front>
-                <IntakeAppMock />
-              </Screen>
-            </div>
-          )}
+          {screens ?? <ScreenPair />}
         </div>
 
         {/* Quote and jump link close the section, under the picture that is its

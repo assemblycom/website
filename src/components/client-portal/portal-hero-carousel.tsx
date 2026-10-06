@@ -320,7 +320,11 @@ export function PortalHeroCarousel() {
       // moment one is touched and the fade stops at a visible edge. Same two
       // values as before — dark is what white/6 over the page ground composited
       // to — each in its own theme block.
-      className="relative mt-12 overflow-hidden rounded-[28px] bg-[var(--portal-ground)] [--portal-ground:#f5f5f5] md:mt-16 [[data-theme=dark]_&]:[--portal-ground:#191919]"
+      // --portal-ground is the shared --surface now. It held its own #f5f5f5 /
+      // #191919 pair, which happened to match in light and drifted in dark; the
+      // dissolve gradient below still reads the name, so it is re-pointed
+      // rather than removed.
+      className="relative mt-12 overflow-hidden rounded-[28px] bg-[var(--surface)] [--portal-ground:var(--surface)] md:mt-16"
       style={{ opacity: fit ? 1 : 0 }}
     >
       <div

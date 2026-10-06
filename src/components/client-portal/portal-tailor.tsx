@@ -6,8 +6,10 @@ import {
   ProgressMock,
 } from "@/components/client-portal/segment-mock";
 
-/** Shared by every card in the set. */
-const CARD = "rounded-3xl bg-muted [[data-theme=dark]_&]:bg-white/[0.04]";
+/** Shared by every card in the set. The page's one panel grey — these were on
+ *  --muted, which is a different grey from the tray and the template rows a
+ *  section away, close enough to read as a mistake rather than a choice. */
+const CARD = "rounded-3xl bg-[var(--surface)]";
 const PAD = "p-6 md:p-10";
 const TITLE = "text-base leading-snug";
 const BODY = "mt-2 text-sm leading-relaxed text-muted-foreground";

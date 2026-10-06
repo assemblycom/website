@@ -67,7 +67,7 @@ export function PortalStack({
   return (
     // Top rule only: the page draws a GridDivider under this section, and a
     // border-b here put a second hairline a few pixels above it.
-    <section className="border-t border-border bg-muted/40 [[data-theme=dark]_&]:border-[#383838] [[data-theme=dark]_&]:bg-white/[0.02]">
+    <section className="border-t border-border bg-[var(--surface)] [[data-theme=dark]_&]:border-[#383838]">
       <Reveal>
         {/* No right padding from lg up: the picture runs off the rail and past
             the viewport's edge, so it reads as a portal that continues rather

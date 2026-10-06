@@ -107,9 +107,22 @@ export function PortalProof({
               className={
                 single
                   ? "group mx-auto flex max-w-2xl flex-col items-center text-center"
-                  : `group flex flex-col border-t px-0 py-8 transition-colors hover:bg-muted/40 md:border-l md:border-t-0 md:px-8 md:py-2 md:first:border-l-0 md:first:pl-0 md:last:pr-0 ${GRID_LINE} [[data-theme=dark]_&]:hover:bg-white/[0.03]`
+                  : `group relative flex flex-col border-t px-0 py-8 md:border-l md:border-t-0 md:px-8 md:py-2 md:first:border-l-0 md:first:pl-0 md:last:pr-0 ${GRID_LINE}`
               }
             >
+              {/* The hover fill, as a layer rather than the link's own
+                  background. The first and last cards drop their outer padding
+                  so the text lands on the rails, which left the fill hugging
+                  the type with nothing to the left of it on the first card.
+                  An inset layer is padded the same on every card whatever the
+                  padding under it is doing, and it carries the page's grey
+                  rather than a fourth tint of --muted. */}
+              {!single ? (
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute inset-y-0 -inset-x-4 -z-10 rounded-xl bg-[var(--surface)] opacity-0 transition-opacity duration-200 group-hover:opacity-100 motion-reduce:transition-none"
+                />
+              ) : null}
               {/* Same-size tile per firm. `fit` is what the logo component
                   builds for this: the mask contains inside whatever box the
                   parent gives it, so a wide wordmark and a tall crest both sit
