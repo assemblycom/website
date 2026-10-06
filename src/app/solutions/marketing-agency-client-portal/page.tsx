@@ -183,16 +183,17 @@ export default function MarketingAgencyClientPortalPage() {
               sides of the screen rather than hugging it as a 16px border —
               with 24px of padding and no bottom at all it was an outline drawn
               on the shot rather than the ground the shot sits on. */}
-          <div className="mt-12 overflow-hidden rounded-3xl bg-[var(--surface)] p-6 md:mt-16 md:p-12">
-            {/* The window is shorter than the screen inside it, which is the
-                crop: the nav, the round and the decision are all above its
-                foot and the thread carries on past it.
+          <div className="mt-12 overflow-hidden rounded-3xl bg-[var(--surface)] p-6 pb-0 md:mt-16 md:p-12 md:pb-0">
+            {/* Narrower than the tray and centred in it, running to the tray's
+                bottom edge: the grey is the ground on three sides and the
+                screen gives out on the fourth.
 
-                520, measured rather than picked — the thread's last line sits
-                at 568, so the edge lands a third of the way through it. Taller
-                and the crop falls past everything and the shot ends on blank
-                panel, which is the thing a crop is supposed to avoid. */}
-            <div className="relative h-[420px] overflow-hidden rounded-xl md:h-[520px]">
+                The window is shorter than the screen inside it, which is the
+                crop: the nav, the round and the decision are all above its
+                foot and the thread carries on past it. The heights carry the
+                48px the bottom padding used to hold, so the tray is the same
+                size it was. */}
+            <div className="relative mx-auto h-[468px] max-w-[1040px] overflow-hidden rounded-t-xl md:h-[568px]">
               <div className="absolute inset-x-0 top-0 h-[860px]">
                 <AgencyHeroVisual />
               </div>
