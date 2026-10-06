@@ -14,15 +14,12 @@
 
 "use client";
 
-import { useState } from "react";
 import { MockFit } from "@/components/templates/mock-fit";
+import { fadeMask } from "@/components/ui/fade-mask";
 import { IconArrowUp } from "@/components/home/build-step-visual";
 import {
   IconApp,
   IconCheck,
-  IconChecks,
-  IconDocuments,
-  IconForm,
   IconBrandMark,
   IconCard,
   IconChat,
@@ -69,14 +66,18 @@ function Scene({
             ? {
                 width: W,
                 height: H,
-                // The crop dissolves instead of stopping dead — the same move
-                // the hero makes at the foot of its shot. A mask rather than a
-                // gradient overlay, so it fades to whatever the card's ground
-                // is and needs no second value for dark.
-                WebkitMaskImage:
-                  "linear-gradient(to right, #000 0 68%, transparent 97%)",
-                maskImage:
-                  "linear-gradient(to right, #000 0 68%, transparent 97%)",
+                // The right edge only. It was a two-stop ramp that changed rate
+                // hard enough to draw a vertical line down the card; the shared
+                // eased curve is what fixed that — see fade-mask.ts.
+                //
+                // The BOTTOM is a straight crop, deliberately. A fade was tried
+                // there and this card is the worst case for one: its sidebar is
+                // near-black over a light card, so any ramp across it is a grey
+                // wash with the sidebar's own shape, and it read as the artwork
+                // being wrong rather than as the picture giving out. The card's
+                // edge cutting the screen says "this continues" on its own.
+                WebkitMaskImage: fadeMask("to right", 52),
+                maskImage: fadeMask("to right", 52),
               }
             : { width: W, height: H }
         }
@@ -92,96 +93,30 @@ function Scene({
   );
 }
 
-// ── 1. Describe ──────────────────────────────────────────────────────────
-// The step's own fork: start from nothing, or start from something. The
-// segmented control is the site's existing one (pricing's billing toggle),
-// thumb and clipped label strip included, so this is not a second kind of
-// switch. Two tabs rather than four: at the rail's card width a row of
-// template names cannot be read, so the names live in the body instead.
-const TEMPLATES = [
-  { name: "Content approval flow", icon: <IconChecks /> },
-  { name: "Client onboarding wizard", icon: <IconForm /> },
-  { name: "Document collector", icon: <IconDocuments /> },
-];
-
-const TABS = ["Your own app", "Template"] as const;
-
+// ── 1. Describe ──────────────────────────────────────────────
+// The composer, and nothing else. It carried a segmented control that switched
+// the body between a typed sentence and three starter templates — a second
+// claim ("or start from a template") riding on the step that is about saying
+// what you want, and the only control in a rail of otherwise still pictures.
+// The templates have their own section further down the page, so the step is
+// left to make one point.
 export function DescribeCard() {
-  const [tab, setTab] = useState(0);
   return (
     <Scene>
       <div className={`flex flex-col ${WINDOW} p-4`}>
-        {/* The body the switch controls: the thing you would type, or the
-            working apps you could start from instead. */}
-        {tab === 0 ? (
-          <p className="text-[14px] leading-[1.5] text-[color:var(--mock-ink)]">
-            Add a project tracker each client sees for their own project.
-            {/* The site's own caret blink (--animate-caret, the one the hero
-                typewriter uses), run only while the card is hovered: at rest
-                it is a resting insertion point, on hover someone is typing.
-                No MOVE here — a transition-all fights the keyframes. */}
-            <span className="ml-[1px] inline-block h-[14px] w-[1.5px] translate-y-[2px] bg-[var(--mock-ink)] motion-safe:group-hover/card:animate-caret" />
-          </p>
-        ) : (
-          <div className="flex flex-col gap-2">
-            {TEMPLATES.map(({ name, icon }, i) => (
-              <span
-                key={name}
-                className={`${MOVE} flex items-center gap-2.5 rounded-md border px-2.5 py-2.5 text-[13px] leading-none text-[color:var(--mock-ink)] group-hover/card:translate-x-[2px] ${LINE}`}
-                style={{ transitionDelay: `${i * 70}ms` }}
-              >
-                <span className="flex shrink-0 items-center justify-center text-[color:var(--mock-ink-soft)] [&>svg]:size-[15px]">
-                  {icon}
-                </span>
-                <span className="min-w-0 flex-1 truncate">{name}</span>
-              </span>
-            ))}
-          </div>
-        )}
+        <p className="text-[14px] leading-[1.5] text-[color:var(--mock-ink)]">
+          Add a project tracker each client sees for their own project.
+          {/* The site's own caret blink (--animate-caret, the one the hero
+              typewriter uses), run only while the card is hovered: at rest
+              it is a resting insertion point, on hover someone is typing.
+              No MOVE here — a transition-all fights the keyframes. */}
+          <span className="ml-[1px] inline-block h-[14px] w-[1.5px] translate-y-[2px] bg-[var(--mock-ink)] motion-safe:group-hover/card:animate-caret" />
+        </p>
 
-        {/* The switch lives on the composer's control row, where the product
-            puts its composer controls, rather than floating above the box as
-            a second piece of chrome. */}
-        <div className="mt-6 flex items-center justify-between gap-2">
-          <div
-            role="radiogroup"
-            aria-label="Where the app starts"
-            className="relative grid grid-cols-2 rounded-[7px] bg-[var(--mock-well-2)] p-[2px] text-[11px]"
-          >
-            <span
-              aria-hidden
-              className={`pointer-events-none absolute inset-y-[2px] left-[2px] z-10 w-[calc(50%-2px)] overflow-hidden rounded-[5px] bg-[var(--mock-raise)] shadow-[0_1px_2px_rgba(16,24,40,0.1)] transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
-                tab === 1 ? "translate-x-full" : ""
-              }`}
-            >
-              <span
-                className={`absolute inset-0 grid w-[200%] grid-cols-2 text-[color:var(--mock-ink)] transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
-                  tab === 1 ? "-translate-x-1/2" : ""
-                }`}
-              >
-                {TABS.map((label) => (
-                  <span
-                    key={label}
-                    className="flex items-center justify-center whitespace-nowrap"
-                  >
-                    {label}
-                  </span>
-                ))}
-              </span>
-            </span>
-            {TABS.map((label, i) => (
-              <button
-                key={label}
-                role="radio"
-                aria-checked={tab === i}
-                onClick={() => setTab(i)}
-                className="relative whitespace-nowrap rounded-[5px] px-2 py-[5px] text-center text-[color:var(--mock-ink-soft)] transition-colors hover:text-[color:var(--mock-ink)]"
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-
+        {/* The composer's control row, where the product puts it. With the
+            switch gone the send button is on its own, so the row is laid out
+            from the right rather than split between two ends. */}
+        <div className="mt-6 flex items-center justify-end">
           <span
             className={`${MOVE} flex size-[24px] shrink-0 items-center justify-center rounded-[5px] bg-[var(--mock-ink)] text-[color:var(--mock-window)] group-hover/card:scale-110`}
           >
@@ -267,31 +202,31 @@ export function PlanCard() {
           </span>
         </div>
 
-        {PLAN_ITEMS.map(({ label, done }, i) => {
-          // The first unsettled row: the one the builder is asking about now.
-          const next = !done && (PLAN_ITEMS[i - 1]?.done ?? true);
+        {PLAN_ITEMS.map(({ label, done }) => {
           return (
             <div
               key={label}
-              className={`flex items-center gap-2.5 border-b px-4 py-[11px] last:border-b-0 ${LINE} ${
-                next ? "bg-[var(--mock-well)]" : ""
-              }`}
+              // Hover is per ROW, not per card. One row used to be marked as
+              // "the one in play" — a tint and a heavier ring on the first
+              // unsettled item — which picked a row out of a list where
+              // nothing had been picked yet, and left the reader with a state
+              // they could not change. Now the two open requirements look the
+              // same as each other and the pointer is what lights one up.
+              //
+              // --mock-well-2, the solid well, not --mock-well: the faint one
+              // is two percent off white and a hover nobody can see is not a
+              // hover state.
+              className={`flex items-center gap-2.5 border-b px-4 py-[11px] transition-colors last:border-b-0 hover:bg-[var(--mock-well-2)] ${LINE}`}
             >
-              {/* Three states, as the reference draws them: filled with a check
-                for settled, a crisp open circle for the one in play, and a
-                dashed faint circle for the ones still queued. One washed-out
-                ring doing both of the last two jobs read as a blob rather
-                than as a state. All three share the 16px outer diameter, so
-                the column lines up and no mark looks heavier than another. */}
+              {/* Two states, not three: filled with a check for settled, a
+                dashed faint circle for everything still open. All of them
+                share the 16px outer diameter, so the column lines up and no
+                mark looks heavier than another. */}
               <span className="flex size-[18px] shrink-0 items-center justify-center">
                 {done ? (
                   <span className="flex size-[16px] items-center justify-center rounded-full bg-[var(--mock-ink)] text-[color:var(--mock-window)]">
                     <IconCheck className="size-[10px]" />
                   </span>
-                ) : next ? (
-                  <span
-                    className={`${MOVE} size-[16px] rounded-full border-2 border-[var(--mock-ink-soft)] group-hover/card:border-[var(--mock-ink)]`}
-                  />
                 ) : (
                   <span
                     className={`size-[16px] rounded-full border border-dashed ${LINE}`}
@@ -365,18 +300,15 @@ export function BuildCard() {
           <ClientNavRow icon={<IconApp />} label="Project tracker" active />
         </div>
 
-        <div className="flex min-w-0 flex-1 flex-col px-4 pt-3.5">
-          <div className="flex items-center justify-between gap-3">
-            <span className="whitespace-nowrap text-[14px] leading-none text-[color:var(--mock-ink)]">
-              Project tracker
-            </span>
-            <span className={`${NEUTRAL} whitespace-nowrap`}>
-              Meridian Corp
-            </span>
-          </div>
-
+        {/* No app title across the top. The nav row beside it is lit and says
+            "Project tracker" an inch to the left, so the screen opened by
+            naming itself twice. The client chip that shared that row goes with
+            it: this card is cropped at the right, so the chip was off the
+            frame anyway, and alone on a row it reads as a stray pill rather
+            than as whose project this is. */}
+        <div className="flex min-w-0 flex-1 flex-col px-4 pt-4">
           <div
-            className={`mt-3 flex items-center gap-3 rounded-lg border px-3.5 py-2.5 ${LINE}`}
+            className={`flex items-center gap-3 rounded-lg border px-3.5 py-2.5 ${LINE}`}
           >
             <span className="whitespace-nowrap text-[11.5px] leading-none text-[color:var(--mock-ink-soft)]">
               2 of 4 complete

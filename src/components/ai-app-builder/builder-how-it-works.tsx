@@ -59,7 +59,11 @@ export function BuilderHowItWorks() {
             fits across, so the rail had to be stepped through to be seen at
             all — and "keep chatting to change anything" is the one of the four
             a reader will assume anyway. */}
-        <CardRail label="How building works">
+        {/* A grid, not the scroller. Three cards fit across at every width
+            this section is read at, so there was nothing to step to and
+            nothing to drag — only a grab cursor offering to move a set that
+            was already all on screen. */}
+        <CardRail label="How building works" layout="grid">
           {STEPS.map((step, i) => (
             <RailCard
               key={step.name}

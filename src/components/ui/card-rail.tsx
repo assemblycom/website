@@ -14,7 +14,15 @@
 // paint, where a transform-based track would be stuck on frame one.
 // ─────────────────────────────────────────────────────────────────────────
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { fadeMask } from "@/components/ui/fade-mask";
 
 /** Matches the gap below, in px, so an arrow step lands a card on the edge. */
 const GAP_PX = 16;
@@ -47,16 +55,50 @@ function Chevron({ direction }: { direction: "prev" | "next" }) {
 const ARROW =
   "flex size-11 shrink-0 items-center justify-center rounded-xl border border-border text-foreground transition-[color,border-color,opacity] hover:border-foreground/30 disabled:pointer-events-none disabled:opacity-30 [[data-theme=dark]_&]:border-white/15 [[data-theme=dark]_&]:hover:border-white/30";
 
+/**
+ * How the set is laid out, read by the cards inside it.
+ *
+ * "rail" is the scroller: cards sized as a fraction of the viewport so the
+ * next one peeks, stepped by the arrows and dragged by the mouse. "grid" is a
+ * plain responsive grid — no scroller, no drag, no arrows — for a set that
+ * fits across the column at every width it is shown at. A rail is a promise
+ * that there is more than you can see; three cards on a desktop is not that,
+ * and the grab cursor and the drag were offering to move something that had
+ * nowhere to go.
+ *
+ * It travels by context rather than as a prop on every card, because the cards
+ * are handed to CardRail as children — the call sites would otherwise each
+ * have to pass the layout twice and keep the two in step.
+ */
+type RailLayout = "rail" | "grid";
+const LayoutContext = createContext<RailLayout>("rail");
+
+/**
+ * How wide one card is.
+ *
+ * In the rail it is a fraction of the SCROLLER — 78% on a phone so the next
+ * card peeks and the row reads as continuing — and it never shrinks, because
+ * shrinking is what a flex row does to cards that do not fit.
+ *
+ * In the grid the track owns the width and the card simply fills its cell.
+ */
+const RAIL_W =
+  "w-[78%] shrink-0 snap-start sm:w-[62%] md:w-[calc((100%-1rem)/2)] lg:w-[calc((100%-2rem)/3)]";
+const GRID_W = "w-full";
+
 export function CardRail({
   label,
   children,
   lead,
+  layout = "rail",
 }: {
   /** Names the rail for screen readers, e.g. "How building works". */
   label: string;
   children: React.ReactNode;
   /** Sits at the foot opposite the arrows — usually the section's CTA. */
   lead?: React.ReactNode;
+  /** See RailLayout. "grid" for a set that always fits across. */
+  layout?: RailLayout;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [atStart, setAtStart] = useState(true);
@@ -158,6 +200,27 @@ export function CardRail({
     el.scrollBy({ left: by * direction, behavior: "smooth" });
   };
 
+  // The grid cut. Every hook above still runs — they are cheap, and a
+  // conditional hook is not a thing — but none of their state reaches the DOM
+  // here: there is no scroller to observe, nothing to drag, and both arrows
+  // would be permanently disabled, which is a control that only ever says no.
+  if (layout === "grid") {
+    return (
+      <LayoutContext.Provider value="grid">
+        <div>
+          <div
+            role="group"
+            aria-label={label}
+            className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+          >
+            {children}
+          </div>
+          {lead ? <div className="mt-10">{lead}</div> : null}
+        </div>
+      </LayoutContext.Provider>
+    );
+  }
+
   return (
     <div>
       {/* Clipped at the section's measure, not bled past it. The scroller used
@@ -248,29 +311,18 @@ export function CardRail({
 
 // Where the cropped picture gives out. Opaque for most of its run, then away
 // to nothing — the whole fade happens inside the overflow, so no row that fits
-// is dimmed on its way past.
+// is dimmed on its way past. The curve itself lives in fadeMask; see there for
+// why it is eased and why it is long.
 //
-// Eased and LONG, and both halves of that matter.
-//
-// Eased: two stops (#000 to 76%, then transparent at 99%) put a corner in the
-// alpha curve at 76% and another at 99%. On a flat dark panel like the Build
-// card's sidebar, a corner in the curve is a visible horizontal line, so the
-// "fade" announced itself twice instead of smoothing. These stops approximate
-// an ease-out — small alpha steps where the fade begins, larger ones once it
-// is already moving — so no point along the run changes rate sharply enough
-// to read as an edge. It finishes at 100% rather than 99%, since that last 1%
-// was a hard cut of whatever alpha remained.
-//
-// Long: easing alone was not enough. A near-black panel dissolving over white
-// is the highest-contrast thing this mask ever has to do, and compressed into
-// the last quarter of the card even a smooth ramp reads as a grey band laid
-// over the art. Starting at 20% spreads the same ramp over four fifths of the
-// run, which is slow enough that no single stretch of it reads as a feature
-// of the picture. The early stops are deliberately tiny — 1% of alpha by a
-// third of the way down — so the content up there is not visibly dimmed to
-// buy that length.
-const PICTURE_FADE =
-  "linear-gradient(to bottom, #000 0 20%, rgba(0,0,0,0.99) 31%, rgba(0,0,0,0.96) 40%, rgba(0,0,0,0.91) 48%, rgba(0,0,0,0.84) 56%, rgba(0,0,0,0.74) 63%, rgba(0,0,0,0.62) 70%, rgba(0,0,0,0.49) 77%, rgba(0,0,0,0.35) 84%, rgba(0,0,0,0.22) 90%, rgba(0,0,0,0.11) 95%, rgba(0,0,0,0.04) 98%, transparent 100%)";
+// It starts early and finishes well short of the bottom. These scenes are
+// drawn at a fixed size and centred in the box, so the last thing in one — the
+// plan window's rounded foot, the composer's control row — stops short of the
+// box's own bottom edge. A ramp that only reaches nothing AT that edge leaves
+// the art's own floor sitting at half alpha: faint, but still a rounded corner
+// and a hairline drawn on the card with nothing below them. Ending at 78% puts
+// that floor inside the part of the ramp that is already nothing, so the
+// picture gives out into the card instead of stopping on it.
+const PICTURE_FADE = fadeMask("to bottom", 8, 78);
 
 // How far "fit" raises a scene off the centre of the space under the copy.
 // Dead centre of that space reads low, because the space is itself the bottom
@@ -337,23 +389,24 @@ export function RailCard({
   copyInside?: boolean;
   children: React.ReactNode;
 }) {
+  const width = useContext(LayoutContext) === "grid" ? GRID_W : RAIL_W;
   const copy = (
     <>
-      {/* Index, dash and name are one line in one face and ONE colour —
-            toning the index down made the kicker read as two labels. The em
-            dash is the separator the blog's post meta line uses. */}
+      {/* Index and name are one line in one face and ONE colour — toning the
+            index down made the kicker read as two labels.
+
+            "Step 1: Describe", with a colon. It was an em dash, borrowed from
+            the blog's post meta line, where the two halves are peers; here
+            they are not. The number names the step and the word says what it
+            is, which is a label and its value — and a dash set with space
+            either side left the two reading as separate items on one row. */}
       {name ? (
         // PP Mori, sentence case. It was type-eyebrow — ABC Diatype Mono in
         // all caps — which on a card whose body is set in the page's own
         // face read as a label stuck on from another system.
-        <p className="mb-2 flex min-w-0 items-baseline gap-2 text-sm text-muted-foreground">
+        <p className="mb-2 flex min-w-0 items-baseline gap-1.5 text-sm text-muted-foreground">
           {index ? (
-            <>
-              <span className="shrink-0 tabular-nums">{index}</span>
-              <span aria-hidden className="shrink-0">
-                &mdash;
-              </span>
-            </>
+            <span className="shrink-0 tabular-nums">{index}:</span>
           ) : null}
           <span className="truncate">{name}</span>
         </p>
@@ -364,7 +417,7 @@ export function RailCard({
 
   if (copyInside) {
     return (
-      <div className="group/card w-[78%] shrink-0 snap-start sm:w-[62%] md:w-[calc((100%-1rem)/2)] lg:w-[calc((100%-2rem)/3)]">
+      <div className={`group/card ${width}`}>
         <div className="relative flex aspect-[3/4] w-full select-none flex-col overflow-hidden rounded-3xl bg-[var(--surface)]">
           <div className="relative z-10 shrink-0 px-6 pb-4 pt-6 md:px-7 md:pt-7">
             {copy}
@@ -397,7 +450,26 @@ export function RailCard({
             // right edge when they bleed. A mask, not a gradient overlay, so
             // it fades to whatever the card's ground is and needs no second
             // value for dark.
-            style={{ WebkitMaskImage: PICTURE_FADE, maskImage: PICTURE_FADE }}
+            //
+            // "fit" ONLY, because it is the only one with anything to dissolve:
+            // its scene is taller than the space the copy leaves and runs past
+            // it top and bottom.
+            //
+            // "below" is drawn LARGER than the card and is meant to be cut by
+            // its edge, and it is the one scene with a near-black panel running
+            // the full height — so the ramp came out as a grey wash in the
+            // shape of that panel, reading as the artwork being wrong rather
+            // than as the picture running on past the frame.
+            //
+            // "center" has a short scene laid over the whole card with room to
+            // spare on every side. There is no crop there to hide, so a fade
+            // only took the bottom off a composer that was sitting complete in
+            // the middle of the card.
+            style={
+              picture === "fit"
+                ? { WebkitMaskImage: PICTURE_FADE, maskImage: PICTURE_FADE }
+                : undefined
+            }
           >
             <div
               className={`absolute inset-x-0 aspect-[340/453] ${
@@ -420,7 +492,7 @@ export function RailCard({
   }
 
   return (
-    <div className="group/card w-[78%] shrink-0 snap-start sm:w-[62%] md:w-[calc((100%-1rem)/2)] lg:w-[calc((100%-2rem)/3)]">
+    <div className={`group/card ${width}`}>
       <div className="relative aspect-[3/4] w-full select-none overflow-hidden rounded-3xl bg-[var(--surface)]">
         {children}
       </div>

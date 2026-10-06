@@ -893,22 +893,12 @@ html[data-theme="dark"] body {
     border-width 0.45s cubic-bezier(0.25, 1, 0.5, 1),
     filter 0.45s ease;
 }
-.v63-gradient-border {
-  transition: box-shadow 0.5s cubic-bezier(0.25, 1, 0.5, 1);
-}
-/* Hover — the ring thickens just slightly and a soft, single-tone brand-blue
-   bloom settles behind the box. Kept restrained on purpose: no brightness/
-   saturation pump (that read garish on white) and a calmer spin, so it feels
-   premium rather than lit-up. */
-.v63-gradient-border:hover {
-  box-shadow: 0 12px 40px -16px rgba(111, 150, 240, 0.2);
-}
-.v63-gradient-border:hover::before {
-  /* Subtle hover only — a faint brightness lift; the soft bloom below carries
-     it. Ring thickness is left unchanged: animating border-width doesn't
-     interpolate smoothly with the mask, which made the hover feel janky. */
-  filter: brightness(1.03);
-}
+/* No hover glow in light mode. There was a brand-blue bloom behind the box
+   (box-shadow 0 12px 40px -16px) and a brightness lift on the ring. On white
+   the bloom had nothing to sit on and read as a coloured smudge under the
+   composer rather than as the box reacting — and the ring is already the
+   thing that says this is live. The ring stays; nothing lights up around it.
+   Dark's hover is unaffected: it lives entirely in the ring (see below). */
 /* Focus — while typing, the ring calms down: slow spin, dimmed, thin. */
 .v63-gradient-border:focus-within::before {
   border-width: 1.5px;
@@ -916,18 +906,13 @@ html[data-theme="dark"] body {
   opacity: 0.5;
   animation-duration: 20s;
 }
-.v63-gradient-border:focus-within {
-  box-shadow: none;
-}
 /* Dark-mode hover lives entirely in the RING: the sweep speeds up and pumps
-   brightness + saturation. No bloom behind the box — a drop-shadow glow under
-   the composer reads as a stray gradient sitting on the ground, and the effect
-   is meant to be the gradient edge reacting, not the box lighting up its
-   surroundings. Ring thickness is deliberately not animated either: animating
-   the transparent border's width doesn't interpolate smoothly with the mask. */
-html[data-theme="dark"] .v63-gradient-border:hover {
-  box-shadow: none;
-}
+   brightness + saturation. Never a bloom behind the box — a drop-shadow glow
+   under the composer reads as a stray gradient sitting on the ground, which is
+   why light has none either. The effect is the gradient edge reacting, not the
+   box lighting up its surroundings. Ring thickness is deliberately not animated
+   either: animating the transparent border's width doesn't interpolate smoothly
+   with the mask. */
 html[data-theme="dark"] .v63-gradient-border:hover::before {
   filter: brightness(1.28) saturate(1.15);
   animation-duration: 2.6s;

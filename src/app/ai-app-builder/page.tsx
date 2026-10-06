@@ -10,12 +10,10 @@ import {
   type Pillar,
 } from "@/components/ai-app-builder/builder-pillars";
 import { BuilderChapter } from "@/components/ai-app-builder/builder-chapter";
-import {
-  IntakeAppMock,
-  OnboardingMock,
-} from "@/components/client-portal/segment-mock";
+import { IntakeAppMock } from "@/components/client-portal/segment-mock";
+import { BrandedLoginScreen } from "@/components/comparison/branded-login-hero-visual";
 import { TeamCrmVisual } from "@/components/home/team-crm-visual";
-import { BrandPortalVisual } from "@/components/home/brand-portal-visual";
+import { BrandedPortalVisual } from "@/components/ai-app-builder/branded-portal-visual";
 import { BuilderHowItWorks } from "@/components/ai-app-builder/builder-how-it-works";
 import { BuilderAlternatives } from "@/components/ai-app-builder/builder-alternatives";
 import { BuilderTemplates } from "@/components/ai-app-builder/builder-templates";
@@ -57,17 +55,28 @@ const PILLARS: Pillar[] = [
     heading: "Secure logins, permissions, and billing come built in",
     cta: { label: "How security works", href: "/security" },
     body: "Built and maintained by Assembly. Nothing reaches your clients until you make it visible.",
-    // The onboarding screen, which carries the "Access: client only" control —
-    // permissions as something the platform already decides.
-    visual: <OnboardingMock />,
+    // The firm's own sign-in: their mark, their domain, no platform badge.
+    // The claim leads on secure LOGINS, and this is the first thing a client
+    // meets. It was the onboarding screen, which carried an "Access: client
+    // only" control a few hundred pixels in — a picture of permissions, with
+    // nothing in it about signing in at all.
+    visual: <BrandedLoginScreen />,
+    // Whole, not cropped. A sign-in is one object with a middle — the mark,
+    // the title, the field, the button — and cropping it on the card's edges
+    // cut off the half of it the claim is about.
+    visualContained: true,
   },
   {
     eyebrow: "Branding",
     heading: "Your clients already have a branded home. New apps land in it",
     cta: { label: "See real firms' portals", href: "/customers" },
     body: "Your logo and colors, not ours. Every new app picks them up automatically.",
-    // The home page's branded-portal shot: the firm's logo and colours.
-    visual: <BrandPortalVisual />,
+    // The CLIENT's nav, in the firm's colour, with the apps the firm has added
+    // listed under the stock rows. It was the home page's branded-portal shot,
+    // which is the team's dashboard — CRM, Team, Customize, and a table of six
+    // clients' time entries — so a card about where the client's apps land was
+    // showing a screen no client ever opens.
+    visual: <BrandedPortalVisual />,
   },
 ];
 
@@ -239,8 +248,12 @@ export default function AiAppBuilderPage() {
 
         {/* Chapter 1 — the four claims. */}
         <BuilderChapter
-          heading="What AI app builders promise. What Assembly proves"
+          heading="What AI app builders promise. What Assembly proves."
           intro="Plenty of tools can generate something that looks like an app. Assembly builds one your clients and your team can actually use."
+          // The hero's split, not a centred block: this chapter heads the
+          // bento below it, and a centred title over a left-ranged grid of
+          // cards read as two different pages meeting.
+          split
         />
         <BuilderPillars pillars={PILLARS} />
 

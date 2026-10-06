@@ -127,7 +127,15 @@ export function PortalBuild({
 
         {steps.length ? (
         <div className="mt-12">
-          <CardRail label={railLabel}>
+          {/* A grid once the set fits across, a rail when it does not. The
+              three-step cut this page runs has nowhere to scroll on a desktop,
+              so the grab cursor and the drag were offering to move something
+              that was already all there; the five-step cut still needs the
+              scroller. */}
+          <CardRail
+            label={railLabel}
+            layout={steps.length <= 3 ? "grid" : "rail"}
+          >
             {steps.map((step, i) => (
               <RailCard
                 key={step.name}

@@ -2,10 +2,7 @@ import Link from "next/link";
 import { CheckIcon } from "@/components/ui/check-icon";
 import { Reveal } from "@/components/ui/reveal";
 import { APP_URL, DEMO_URL, DEMO_CTA_LABEL } from "@/lib/constants";
-import {
-  PLAN_EDGE_BRAND,
-  PLAN_WASH_NEUTRAL,
-} from "@/components/pricing/plan-wash";
+import { PLAN_EDGE_BRAND } from "@/components/pricing/plan-wash";
 
 /**
  * A teaser, not a matrix: the full plan comparison is /pricing, and this
@@ -130,25 +127,22 @@ export function PortalPricing({
           {tiers.map((tier) => (
             <div
               key={tier.name}
-              // isolate + overflow-hidden is what the wash needs: it sits on a
-              // -z-10 layer, which without its own stacking context would go
-              // behind the card instead of behind the card's contents.
+              // isolate + overflow-hidden still stand for the recommended
+              // card's edge, which is a masked gradient border.
               className={`relative isolate flex flex-col overflow-hidden rounded-2xl border border-border p-6 [[data-theme=dark]_&]:border-[#383838] ${
                 tier.recommended ? PLAN_EDGE_BRAND : ""
               }`}
             >
-              {/* The recommended card is deliberately left plain: at this
-                  card's height the brand wash covered the price and the top of
-                  the perk list, reading as a blue panel rather than a mark on
-                  the top edge. The other three keep their neutral wash, and
-                  /pricing's table keeps both — the shared values in
-                  plan-wash.ts are untouched. */}
-              {!tier.recommended && (
-                <div
-                  aria-hidden
-                  className={`pointer-events-none absolute inset-0 -z-10 ${PLAN_WASH_NEUTRAL}`}
-                />
-              )}
+              {/* No wash. Every card carried a grey one fading out by 120px,
+                  which at this block's card height sat behind the plan name
+                  and the price and read as the top of the card being a shade
+                  dirtier than the rest of it rather than as a mark on it. A
+                  flat card and a hairline is the whole object; what separates
+                  the recommended plan is the filled button, which is the thing
+                  the reader is being pointed at anyway.
+
+                  /pricing's own table is untouched and still runs both washes
+                  — the shared values in plan-wash.ts stay as they are. */}
               <h3 className="text-lg">{tier.name}</h3>
               <p className="mt-2 text-3xl leading-none">{tier.price}</p>
               <p className="mt-2 text-xs text-muted-foreground">

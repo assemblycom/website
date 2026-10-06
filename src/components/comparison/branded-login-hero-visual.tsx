@@ -46,6 +46,26 @@ export function BrandedLoginHeroVisual() {
   );
 }
 
+/**
+ * The firm's own side of that pair, on its own: their mark, their domain, no
+ * platform badge. /ai-app-builder's security pillar shows this as the first
+ * thing a client meets — the claim there is "secure logins come built in", and
+ * the sign-in is what that looks like.
+ */
+export function BrandedLoginScreen() {
+  return (
+    <LoginScreen
+      domain="portal.brandmages.com"
+      mark={
+        <span className="flex size-11 items-center justify-center rounded-xl bg-foreground text-background">
+          <IconBrandMark className="size-5" />
+        </span>
+      }
+      title="Sign in to Brandmages"
+    />
+  );
+}
+
 function LoginScreen({
   domain,
   mark,
@@ -74,7 +94,10 @@ function LoginScreen({
           {domain}
         </span>
       </div>
-      <div className="flex flex-1 flex-col items-center justify-center px-8">
+      {/* Capped. The column is the width of a sign-in form, not of whatever
+          frame it is dropped into — on a wide card the email field and the
+          button stretched to 700px and stopped reading as a form. */}
+      <div className="mx-auto flex w-full max-w-[320px] flex-1 flex-col items-center justify-center px-8">
         {mark}
         <p className="mt-5 text-[18px] text-foreground">{title}</p>
         <div className="mt-6 w-full rounded-lg border border-border px-3.5 py-2.5 text-[13px] text-muted-foreground [[data-theme=dark]_&]:border-white/15">

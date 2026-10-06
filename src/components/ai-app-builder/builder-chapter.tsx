@@ -15,6 +15,7 @@ export function BuilderChapter({
   heading,
   intro,
   tightBottom = false,
+  split = false,
 }: {
   /** The site's tag chip. Omitted where the brief approves no eyebrow copy. */
   eyebrow?: string;
@@ -22,6 +23,13 @@ export function BuilderChapter({
   intro?: string;
   /** Set when the next section carries its own top padding, so the two do not stack. */
   tightBottom?: boolean;
+  /**
+   * The page hero's arrangement: heading on the left of the measure, the line
+   * that supports it on the right, both ranged left. Centred is the default
+   * and is right for a chapter that is only a title ("How it works"), where
+   * there is no second column for a split to use.
+   */
+  split?: boolean;
 }) {
   // Slightly more room below than above, so the title clears the section it
   // introduces rather than sitting tight on it. Both were a step deeper
@@ -33,7 +41,8 @@ export function BuilderChapter({
   return (
     <section
       className={cn(
-        "mx-auto max-w-[1200px] px-6 pt-14 text-center md:px-10 md:pt-20",
+        "mx-auto max-w-[1200px] px-6 pt-14 md:px-10 md:pt-20",
+        !split && "text-center",
         tightBottom ? "pb-0" : "pb-16 md:pb-24",
       )}
     >
@@ -47,19 +56,39 @@ export function BuilderChapter({
             </span>
           </p>
         ) : null}
-        <h2
+        {/* Split runs the page hero's own grid, so a chapter opening a section
+            and the page opening itself are the same shape rather than two
+            kinds of header. The intro is held off the top of the heading's
+            first line rather than centred against it, so the two columns share
+            a baseline at the top. */}
+        <div
           className={cn(
-            "type-h2 mx-auto max-w-3xl text-balance",
-            eyebrow && "mt-4",
+            split &&
+              "grid gap-6 lg:grid-cols-[1.15fr_0.85fr] lg:items-start lg:gap-x-16",
           )}
         >
-          {heading}
-        </h2>
-        {intro ? (
-          <p className="mx-auto mt-5 max-w-2xl text-balance text-muted-foreground">
-            {intro}
-          </p>
-        ) : null}
+          <h2
+            className={cn(
+              "type-h2 text-balance",
+              split ? "max-w-[22ch]" : "mx-auto max-w-3xl",
+              eyebrow && "mt-4",
+            )}
+          >
+            {heading}
+          </h2>
+          {intro ? (
+            <p
+              className={cn(
+                "text-pretty text-muted-foreground",
+                split
+                  ? "max-w-[34rem] lg:pt-2"
+                  : "mx-auto mt-5 max-w-2xl text-balance",
+              )}
+            >
+              {intro}
+            </p>
+          ) : null}
+        </div>
       </Reveal>
     </section>
   );

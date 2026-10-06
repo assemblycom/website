@@ -45,6 +45,22 @@ function templateItem(
 }
 
 /**
+ * The lead panel: the one app in the set that has no template, because it is
+ * the one you describe. Both the line under the title and the sentence in the
+ * box are per-set — see AGENCY_ITEMS for why that matters.
+ */
+function promptItem(description: string, prompt: string): Item {
+  // Copy review: the label, its line and the prompt are mine, not the brief's.
+  return {
+    key: "your-own",
+    title: "Your own app",
+    description,
+    frame: "bare",
+    mock: <PromptMock prompt={prompt} />,
+  };
+}
+
+/**
  * Puts the client's nav down the left of a mock that does not carry one.
  * ApprovalsMock builds its own; these two were drawn as bare screens, so in a
  * set meant to read as four views of ONE portal they looked like three
@@ -68,15 +84,14 @@ function WithSidebar({
 }
 
 const ITEMS: Item[] = [
-  {
-    key: "your-own",
-    // Copy review: the label, its line and the prompt in PromptMock are mine,
-    // not the brief's.
-    title: "Your own app",
-    description: "Described in a sentence, built by AI",
-    frame: "bare" as const,
-    mock: <PromptMock />,
-  },
+  promptItem(
+    "Described in a sentence, built by AI",
+    // Deliberately the plainest app in the set: /client-portal and the
+    // accounting page both run this one, so the sentence has to be a job any
+    // firm recognises. It used to be an agency's retainer tracker — agency
+    // vocabulary, on a page about an accounting practice.
+    "Build a project tracker each client can check their own project in.",
+  ),
   templateItem("content-approval-flow", "fill", <ApprovalsMock />),
   templateItem(
     "client-onboarding-wizard",
@@ -111,7 +126,16 @@ const ITEMS: Item[] = [
  * accounting page notes the default set as the wrong vertical for it.
  */
 const AGENCY_ITEMS: Item[] = [
-  ITEMS[0],
+  // Its OWN lead panel, not the default one. This is the panel the page opens
+  // on — the first thing anyone sees of the product here — and sharing it made
+  // the agency hero open on the identical picture and the identical sentence
+  // as the accounting page, which is what "the same page twice" looks like
+  // however much the three behind it differ. The three that follow are named
+  // by this page's own lead; the one in front of them should be too.
+  promptItem(
+    "The app that sets your agency apart, in a sentence",
+    "Build a retainer tracker my clients can check their hours in.",
+  ),
   templateItem("design-approvals", "fill", <ApprovalsMock />),
   templateItem(
     "client-engagement-dashboard",
@@ -713,7 +737,7 @@ function Window({ item, foot }: { item: Item; foot: number }) {
  * The builder's composer with a request for an app no template covers, set
  * straight on the panel: the point is that building starts from a sentence.
  */
-function PromptMock() {
+function PromptMock({ prompt }: { prompt: string }) {
   return (
     <div aria-hidden className="flex h-full select-none items-center">
       {/* Capped and centred rather than full width. The window grew to 880px,
@@ -725,7 +749,7 @@ function PromptMock() {
           shot rather than a hint. */}
       <div className="mx-auto w-full max-w-[560px] rounded-2xl bg-background p-4 shadow-[0_1px_2px_rgba(16,24,40,0.04)] sm:p-5 [[data-theme=dark]_&]:bg-white/[0.06]">
         <p className="min-h-[44px] text-[15px] leading-[1.6] text-foreground sm:min-h-[72px]">
-          Build a retainer tracker my clients can check their hours in.
+          {prompt}
         </p>
         {/* The composer's own controls, split across the foot as the product
             draws them: attach on the left edge, the model it will build with

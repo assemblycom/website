@@ -42,6 +42,18 @@ const CHAT_W = 480;
 const CHAT_H = 500;
 const LIVE_W = 720;
 
+/**
+ * The sentence the box writes — one, not a set.
+ *
+ * It has to be THIS one, because the card beside it is the app this sentence
+ * asks for: "Year-end docs" in the portal's own nav, with every client's
+ * upload status beside it. The two cards are one claim read left to right —
+ * you describe it, and that is what your clients get — so a box cycling
+ * through three prompts broke it twice over: it ended on an app the picture
+ * does not show, and it offered a choice where the point is a consequence.
+ *
+ * So: change this line and the Live card beside it has to change with it.
+ */
 const PROMPT = "Build a year-end document checklist my clients can upload to.";
 
 // Brandmages' brand colour is black, so the client side runs on ink: fills take
@@ -72,8 +84,6 @@ const STATUS_COL = "flex w-[78px] shrink-0 justify-center";
 // sidebar rows already answered the pointer and the rows beside them did not.
 const ROW_HOVER = "transition-colors hover:bg-[var(--mock-well)]";
 
-// How long the plan takes to come back once the prompt is sent.
-const THINKING_MS = 2800;
 // The card's widening transition, matched below on the grid. A replay started
 // by the opening click waits this out so the two moves read in order.
 const EXPAND_MS = 560;
@@ -81,25 +91,29 @@ const EXPAND_MS = 560;
 // idle    — the card at rest: the prompt sitting in the box, nothing sent.
 // sent     — the prompt has left the box and is a message in the thread.
 // planned  — the requirements have come back under it.
-type Phase = "idle" | "sent" | "planned";
+type Phase = "idle" | "typing";
 
 /**
- * Opens at rest — just the prompt in the box — and runs the build only on the
- * reader's click, rather than looping on its own. A reduced-motion visitor
- * lands straight on the planned state.
+ * Opens at rest — an empty box with its placeholder — and types the prompt out
+ * on the reader's click, rather than looping on its own.
+ *
+ * It used to run a three-beat thread: the sentence left the box as a message,
+ * three seconds passed, and a Requirements card with an Approve button came
+ * back. That was the product's whole plan-and-approve flow squeezed into a
+ * hero card, and it spent most of its height on the answer rather than on the
+ * thing this card is named for. The card says "Describe it", so what it shows
+ * is the describing.
  *
  * `play` takes a delay so the click that opens the card can also start the
- * run: the card widens first, then the build runs, instead of both at once.
+ * run: the card widens first, then the typing starts, instead of both at once.
+ * `run` increments on every play, which is what restarts the composer's run:
+ * a replay rubs out whatever is in the box and writes the line again, rather
+ * than resuming on a finished one.
  */
 function useBuildDemo() {
   const [phase, setPhase] = useState<Phase>("idle");
+  const [run, setRun] = useState(0);
   const queued = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => {
-    if (phase !== "sent") return;
-    const id = setTimeout(() => setPhase("planned"), THINKING_MS);
-    return () => clearTimeout(id);
-  }, [phase]);
 
   useEffect(
     () => () => {
@@ -108,14 +122,7 @@ function useBuildDemo() {
     [],
   );
 
-  /**
-   * Drops the demo back to rest and cancels anything queued.
-   *
-   * Collapsing the card used to leave it running: the replay had been started
-   * on the card, not on the view, so the thread carried on writing its plan
-   * inside a panel the reader had just narrowed and stopped looking at — and
-   * reopening it landed mid-animation rather than at the beginning.
-   */
+  /** Drops the demo back to rest and cancels anything queued. */
   const stop = () => {
     if (queued.current) clearTimeout(queued.current);
     queued.current = null;
@@ -124,21 +131,16 @@ function useBuildDemo() {
 
   const play = (delay = 0) => {
     if (queued.current) clearTimeout(queued.current);
-    const reduce = window.matchMedia?.(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-    if (reduce) {
-      setPhase("planned");
-      return;
-    }
+    setRun((n) => n + 1);
+    setPhase("idle");
     if (delay <= 0) {
-      setPhase("sent");
+      setPhase("typing");
       return;
     }
-    queued.current = setTimeout(() => setPhase("sent"), delay);
+    queued.current = setTimeout(() => setPhase("typing"), delay);
   };
 
-  return { phase, play, stop };
+  return { phase, run, play, stop };
 }
 
 
@@ -161,7 +163,7 @@ const CARD_PAD = "p-6 md:p-8";
 const HEAD_ROW = "flex min-h-[40px] items-center";
 
 export function BuilderHeroVisual() {
-  const { phase, play, stop } = useBuildDemo();
+  const { phase, run, play, stop } = useBuildDemo();
   // Manual only: the reader chooses which side to look at.
   const [view, setView] = useState(0);
   const [active, setActive] = useState<"chat" | "live">("live");
@@ -216,7 +218,6 @@ export function BuilderHeroVisual() {
               }
               play();
             }}
-            disabled={phase === "sent"}
             aria-label="Replay the builder writing the plan"
             className="absolute inset-0 z-10 cursor-pointer rounded-[28px] focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-default"
           />
@@ -282,9 +283,8 @@ export function BuilderHeroVisual() {
                 were three different widths in a column — which is what made
                 the card read as unorganised rather than as one conversation.
                 The cap lives here now and the composer inherits it. */}
-            <div className="mx-auto flex h-full w-full max-w-[560px] flex-col justify-center gap-3">
-              <Thread phase={phase} />
-              <Composer phase={phase} />
+            <div className="mx-auto flex h-full w-full max-w-[560px] flex-col justify-center">
+              <Composer run={run} typing={phase === "typing"} />
             </div>
           </div>
         </div>
@@ -497,13 +497,6 @@ function ViewToggle({
   );
 }
 
-/** What the builder comes back with, read off the prompt above it. */
-const REQUIREMENTS = [
-  "A checklist of the documents you ask for",
-  "Clients upload, replace, and see what is outstanding",
-  "Your team sees every client's progress",
-];
-
 /**
  * The fade that ends the cropped screen on the card's bottom and right edges.
  *
@@ -530,93 +523,6 @@ function edgeFade(direction: "to bottom" | "to right") {
 }
 
 /**
- * The thread above the box: the prompt once it has been sent, and the
- * requirements that come back under it.
- *
- * Both open on their own height rather than fading in — at rest neither is
- * there at all, and an element with no height has nothing to fade. The rows
- * carry each from nothing to its full height, so the card grows a message and
- * then a plan instead of blinking them on.
- */
-function Thread({ phase }: { phase: Phase }) {
-  const sent = phase !== "idle";
-  const planned = phase === "planned";
-  return (
-    <div aria-hidden className="flex flex-col gap-2.5">
-      {/* The prompt, now a message. It is NOT a copy of what the box holds —
-          the box empties when this appears, so the sentence is in one place at
-          a time. */}
-      <div
-        className={`grid transition-[grid-template-rows] duration-[400ms] ease-out motion-reduce:transition-none ${
-          sent ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
-        }`}
-      >
-        <div className="min-h-0 overflow-hidden">
-          {/* 72%, not 88%, and 13px rather than 13.5px. At the old cap a
-              one-line prompt ran almost the full measure, so the bubble had
-              the width of the plan card under it and the two read as one
-              block; pulled in, it is visibly a message and the plan is
-              visibly the answer. */}
-          <p className="ml-auto w-fit max-w-[72%] rounded-xl rounded-br-[5px] bg-[var(--mock-well-2)] px-3 py-2 text-[13px] leading-[1.45] text-[color:var(--mock-ink)]">
-            {PROMPT}
-          </p>
-        </div>
-      </div>
-
-      {/* The plan. The Approve pill used to sit on the composer as a bar; it
-          belongs on the thing being approved. */}
-      <div
-        className={`grid transition-[grid-template-rows] duration-500 ease-out motion-reduce:transition-none ${
-          planned ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
-        }`}
-      >
-        <div className="min-h-0 overflow-hidden">
-          <div
-            className={`overflow-hidden rounded-lg border bg-[var(--mock-window)] ${LINE}`}
-          >
-            <div
-              className={`flex items-center justify-between border-b py-1.5 pl-3 pr-2 ${LINE}`}
-            >
-              <span className="flex items-center gap-2 text-[13px] leading-none text-[color:var(--mock-ink)]">
-                <IconCheckCircleOutline className="size-[13px]" />
-                Requirements
-              </span>
-              {/* Hover only: it is a picture of the button, so it does nothing. */}
-              <span
-                className={`pointer-events-auto flex cursor-default items-center rounded-[4px] border bg-[var(--mock-well-2)] px-3 py-[5px] text-[13px] leading-none text-[color:var(--mock-ink)] transition-colors hover:bg-[var(--mock-window)] ${LINE}`}
-              >
-                Approve
-              </span>
-            </div>
-            <ul className="flex flex-col">
-              {REQUIREMENTS.map((line, i) => (
-                <li
-                  key={line}
-                  // One at a time, behind the panel opening, so the list reads
-                  // as being written rather than as having been there.
-                  // A step below the header above them: the bar names the
-                  // thing, the rows are its contents. At the same size and
-                  // the same ink as "Requirements" there was no order to the
-                  // card at all — five rows of identical type, one of which
-                  // happened to have a button on it.
-                  className={`flex items-start gap-2 border-b px-3 py-[7px] text-[12.5px] leading-[1.4] text-[color:var(--mock-ink-soft)] transition-opacity duration-300 last:border-b-0 motion-reduce:transition-none ${LINE} ${
-                    planned ? "opacity-100" : "opacity-0"
-                  }`}
-                  style={{ transitionDelay: `${260 + i * 110}ms` }}
-                >
-                  <IconCheckCircleOutline className="mt-[2px] size-[13px] shrink-0 text-[color:var(--mock-ink-soft)]" />
-                  {line}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/**
  * The builder's message box, and at rest the whole card: the prompt is in it as
  * typed text rather than above it as a sent message. Once a plan is waiting the
  * Requirements bar with Approve opens on top of it as the frame's first row, as
@@ -629,28 +535,88 @@ function Thread({ phase }: { phase: Phase }) {
  * bordered surface and the bar is a row inside it, separated by the same rule
  * the rest of the mock uses.
  */
-function Composer({ phase }: { phase: Phase }) {
-  const sent = phase !== "idle";
+/** How fast the box erases and writes. Erasing is quicker than typing — it is
+ *  a line being cleared, not a line being composed. */
+const ERASE_MS = 14;
+const TYPE_MS = 32;
+/** The beat the empty box is held for between the two. */
+const TURNAROUND_MS = 260;
+
+function Composer({ run, typing }: { run: number; typing: boolean }) {
+  // Empty at rest, showing its placeholder, so the first thing the card does
+  // is the thing it is named for: the sentence is written in front of you
+  // rather than already sitting there. A replay rubs it out and writes it
+  // again from nothing.
+  const [text, setText] = useState("");
+  // What is on screen right now, readable from inside the run below without
+  // making `text` a dependency of it — which would restart the run on every
+  // character it wrote.
+  const shown = useRef("");
+  const show = (value: string) => {
+    shown.current = value;
+    setText(value);
+  };
+
+  useEffect(() => {
+    if (!typing) return;
+    const next = PROMPT;
+    let timer: ReturnType<typeof setTimeout>;
+    let i = shown.current.length;
+    let erasing = i > 0;
+    // Both branches below write through a timer rather than straight from the
+    // effect body, so the run is a subscription to a clock rather than a
+    // cascading render.
+    const tick = () => {
+      if (erasing) {
+        i -= 1;
+        show(shown.current.slice(0, i));
+        if (i > 0) {
+          timer = setTimeout(tick, ERASE_MS);
+          return;
+        }
+        erasing = false;
+        timer = setTimeout(tick, TURNAROUND_MS);
+        return;
+      }
+      i += 1;
+      show(next.slice(0, i));
+      if (i < next.length) timer = setTimeout(tick, TYPE_MS);
+    };
+    // Reduced motion gets the destination and none of the journey.
+    timer = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
+      ? setTimeout(() => show(next), 0)
+      : setTimeout(tick, 120);
+    return () => clearTimeout(timer);
+  }, [typing, run]);
+
   const box = (
     <div className="px-3.5 pb-2.5 pt-3">
-      {/* Takes typing so the box feels real, but nothing sends: Enter and the
-          arrow are inert. Out of the tab order, as the mock around it is
-          hidden from assistive tech. */}
-      {/* Keyed on whether the prompt has been sent, so React remounts the
-          field and it genuinely empties rather than keeping the old text. The
-          sentence belongs to the thread once it has been sent; leaving it here
-          too was the thing that made the old bubble read as a duplicate. */}
-      <textarea
-        key={sent ? "sent" : "idle"}
-        rows={sent ? 2 : 3}
-        tabIndex={-1}
-        defaultValue={sent ? "" : PROMPT}
-        placeholder="Describe what you want to build"
-        onKeyDown={(e) => {
-          if (e.key === "Enter") e.preventDefault();
-        }}
-        className="pointer-events-auto block w-full resize-none bg-transparent text-[14px] leading-[1.4] text-[color:var(--mock-ink)] outline-none placeholder:text-[color:var(--mock-ink-soft)]/60"
-      />
+      {/* A still, not a field. It was a textarea you could type into, which
+          fought the replay button covering the card — a click on the box was
+          the one click that did not replay — and the card is aria-hidden
+          anyway, so nothing was reachable there on purpose.
+
+          Three lines of height held open whether or not there is text in it,
+          so the card does not change height as the sentence is rubbed out and
+          a longer or shorter one takes its place. */}
+      <p className="min-h-[59px] text-[14px] leading-[1.4] text-[color:var(--mock-ink)]">
+        {/* The placeholder belongs to rest, not to the run: between rubbing
+            the old line out and writing the new one the box is empty for a
+            beat, and the placeholder flashing into that gap read as the field
+            resetting rather than as someone retyping. */}
+        {text ||
+          (typing ? null : (
+            <span className="text-[color:var(--mock-ink-soft)]/60">
+              Describe what you want to build
+            </span>
+          ))}
+        {/* The site's own caret blink, on only while a line is being written
+            or cleared. At rest the sentence is a sentence, not a field still
+            waiting for the rest of it. */}
+        {typing ? (
+          <span className="ml-[1px] inline-block h-[14px] w-[1.5px] translate-y-[2px] bg-[var(--mock-ink)] motion-safe:animate-caret" />
+        ) : null}
+      </p>
       {/* The product's own composer footer: attach on the left, the model and
           send on the right. Without them the box was a bare field with one
           button floating in it, which is not what anyone types into. */}
@@ -677,25 +643,15 @@ function Composer({ phase }: { phase: Phase }) {
     // the only capped thing in the stack. 560px is the measure the site's
     // other composer already runs at.
     <div className="w-full pt-3">
-      {/* Double outline, in LIGHT only: a soft second rule held off the box,
-          the way a focused input reads in the product. One border on a grey
-          card was a single thin line doing all the work of saying "this is the
-          thing you type into"; the outer ring gives it an edge you can see
-          from across the hero.
-
-          Dark does not need it and is worse for it. There the box already
-          lifts a full step off the card (--mock-window on --surface) and
-          carries a #3a3a3a hairline, so it reads from across the hero on its
-          own — and a second pale rule standing 3px off it read as a halo
-          around the composer rather than as the composer's own edge, the same
-          way the picked screen's old outline did. The padding stays, so the
-          box keeps its position either way. */}
-      <div className="rounded-[13px] p-[3px] ring-1 ring-foreground/[0.06] [[data-theme=dark]_&]:ring-transparent">
-        <div
-          className={`overflow-hidden rounded-lg border bg-[var(--mock-window)] ${LINE}`}
-        >
-          {box}
-        </div>
+      {/* Fill and rule, no cast. The panel is --mock-window inside the mock's
+          own hairline, which is what every other window on these pages is made
+          of; a drop shadow under it was a second way of saying the same thing
+          and, on a card this large, a grey smudge across the ground under the
+          box. */}
+      <div
+        className={`overflow-hidden rounded-xl border bg-[var(--mock-window)] ${LINE}`}
+      >
+        {box}
       </div>
     </div>
   );

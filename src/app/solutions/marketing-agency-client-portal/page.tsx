@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { GridDivider, GridRails } from "@/components/ui/grid-lines";
-import { PortalHeroCarousel } from "@/components/client-portal/portal-hero-carousel";
+import { AgencyHeroVisual } from "@/components/solutions/agency-hero-visual";
 import { PortalSocialProof } from "@/components/client-portal/portal-social-proof";
 import { PortalProblem } from "@/components/client-portal/portal-problem";
 import { PortalReadyMade } from "@/components/client-portal/portal-ready-made";
@@ -164,17 +164,25 @@ export default function MarketingAgencyClientPortalPage() {
             </div>
           </div>
 
-          {/* V1's slot, filled by the portal carousel rather than held open.
-              The panel's portal is Brandmages — a marketing agency — so unlike
-              on the accounting page this is the right vertical rather than a
-              neutral stand-in, and it is given the agency set: the four apps
-              the lead above it actually names (AI-built, design approvals, the
-              engagement dashboard, document collection) instead of the general
-              portal four. See AGENCY_ITEMS in portal-hero-carousel.tsx.
+          {/* V1's slot. NOT the portal carousel the other two pages run: that
+              panel, its four app names and its "Your own app / Select a
+              template" control are the same hero /client-portal opens on, so
+              this page opened on a picture a visitor had already seen. This is
+              the agency's own portal, open on the app its lead names first.
 
               The V1 art direction below is kept so it is not lost with the
               placeholder that carried it: V1 — the agency hero shot. */}
-          <PortalHeroCarousel set="agency" />
+          <div className="mt-12 overflow-hidden rounded-3xl bg-[var(--surface)] p-4 md:mt-16 md:p-6">
+            {/* Tall enough to show the nav and a full round of creative, and
+                cropped on the right like every other shot on the site: a
+                window onto a screen that continues. */}
+            <div className="relative h-[330px] overflow-hidden rounded-xl md:h-[370px]">
+              <div className="absolute inset-y-0 left-0 w-[1280px]">
+                <AgencyHeroVisual />
+              </div>
+            </div>
+          </div>
+
           <PortalSocialProof />
         </div>
       </section>
