@@ -253,8 +253,17 @@ export function BuilderHeroVisual() {
             {/* type-body, not type-h4. These are the cards' NAMES, not headings —
                 the page's own h1 is right above them — and at 18px each one sat
                 alone at the top of a tall card reading as a second title. 15px
-                is the step /templates uses for exactly this job. */}
-            <p className="type-body text-foreground">Describe it</p>
+                is the step /templates uses for exactly this job.
+
+                And muted, not full ink. At --foreground the label was set in
+                exactly the same colour as the type INSIDE the mock under it,
+                so it read as another line of that app's UI rather than as a
+                caption naming it. Stepping it back to --muted-foreground is
+                what separates the two — the label is the quieter thing,
+                because the screen it names is the subject. A token rather than
+                an opacity, so it holds its contrast against both themes'
+                card instead of thinning towards whatever is behind it. */}
+            <p className="type-body text-muted-foreground">Describe it</p>
           </div>
           {/* Above the card's replay button so Approve and Send can show a
             hover; everything else lets the pointer through to the button. */}
@@ -305,7 +314,7 @@ export function BuilderHeroVisual() {
           <div
             className={`${HEAD_ROW} flex-wrap justify-between gap-3 ${CARD_PAD} pb-0 md:pb-0`}
           >
-            <p className="type-body hidden text-foreground lg:block">
+            <p className="type-body hidden text-muted-foreground lg:block">
               Live for your team and your clients
             </p>
             <ViewToggle options={VIEWS} view={view} onSelect={setView} />
