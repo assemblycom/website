@@ -69,8 +69,13 @@ function Screen({
 }) {
   return (
     <div
+      // The back screen sits a few pixels lower than the front one. With both
+      // tops on the same line the pair read as one wide window split down the
+      // middle; dropping the one behind gives the overlap somewhere to land,
+      // so the stack reads as two windows. Small on purpose — enough to see,
+      // not enough to look like a misalignment.
       className={`group relative w-[62%] shrink-0 hover:z-20 ${
-        front ? "z-10 -ml-[24%]" : ""
+        front ? "z-10 -ml-[24%]" : "mt-2 md:mt-3"
       }`}
     >
       <div
