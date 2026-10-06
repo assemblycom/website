@@ -152,7 +152,15 @@ export function BuilderAlternatives() {
         ))}
       </ul>
 
-      <div className={`mt-12 hidden md:block ${BLEED}`}>
+      {/* The frame's two outer sides. The cells draw the rules between
+          columns and rows, so the table had a top and a bottom and nothing
+          down either flank — the banded last column in particular just
+          stopped. The wrapper closes it, and the radius keeps the corners
+          from being the only hard right angles in a page of rounded
+          surfaces. */}
+      <div
+        className={`mt-12 hidden overflow-hidden rounded-xl border-x md:block ${GRID_LINE} ${BLEED}`}
+      >
         <table className="w-full table-fixed border-collapse text-left">
           <caption className="sr-only">
             Building in-house, a standalone AI app builder, and Assembly
