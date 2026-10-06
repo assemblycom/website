@@ -156,7 +156,7 @@ const CARD =
 // Both cards share one grey; the clicked card is marked by width, not colour,
 // and hover only firms up the outline.
 const cardTone = (active: boolean) =>
-  `bg-neutral-100 ring-1 [[data-theme=dark]_&]:bg-white/[0.06] ${
+  `bg-[var(--surface)] ring-1 ${
     active
       ? "ring-black/[0.06] hover:ring-black/[0.12] [[data-theme=dark]_&]:ring-white/10 [[data-theme=dark]_&]:hover:ring-white/20"
       : "ring-transparent hover:ring-black/[0.08] [[data-theme=dark]_&]:hover:ring-white/15"
@@ -216,16 +216,25 @@ export function BuilderHeroVisual() {
             aria-label="Replay the builder writing the plan"
             className="absolute inset-0 z-10 cursor-pointer rounded-[28px] focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-default"
           />
-          {/* Same row height as the toggle's row beside it, so both mocks start
-            on one line. Below lg the switch above already names the card. */}
-          <div className={`${HEAD_ROW} hidden lg:flex`}>
+          {/* Same row height and the same top edge as the toggle's row beside
+            it, so both mocks start on one line. Below lg the switch above
+            already names the card.
+
+            Out of the flow, though, unlike that one: this card's whole content
+            is a single box that should sit on the card's centre line. In flow
+            the heading and its margin took 64px off the top of the space the
+            box centres in, so the box sat ~95px below the middle of the card
+            while the heading above it had an empty third to itself. */}
+          <div
+            className={`${HEAD_ROW} absolute inset-x-6 top-6 z-10 hidden md:inset-x-8 md:top-8 lg:flex`}
+          >
             <p className="type-h4 text-foreground">Describe it</p>
           </div>
           {/* Above the card's replay button so Approve and Send can show a
             hover; everything else lets the pointer through to the button. */}
           <div
             aria-hidden
-            className="pointer-events-none relative z-20 min-h-0 select-none lg:mt-6 lg:flex-1"
+            className="pointer-events-none relative z-20 min-h-0 select-none lg:flex-1"
           >
             {/* No MockFit and no window: the composer lays out at the card's
               own width, at its own type size.
@@ -254,6 +263,11 @@ export function BuilderHeroVisual() {
                 </div>
               </div>
               <Composer phase={phase} />
+              {/* Balances the thinking line's reserved row above the box, so
+                  the box itself is on the centre line rather than 10px under
+                  it. Both are held whether or not the line is showing, so
+                  nothing moves when the builder starts and finishes. */}
+              <div aria-hidden className="h-[21px] shrink-0" />
             </div>
           </div>
         </div>
