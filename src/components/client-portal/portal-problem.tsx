@@ -74,8 +74,14 @@ function Screen({
       // middle; dropping the one behind gives the overlap somewhere to land,
       // so the stack reads as two windows. Small on purpose — enough to see,
       // not enough to look like a misalignment.
+      //
+      // A transform, not a margin. A margin pushed the tray 12px taller, which
+      // lifted BOTH screens off its bottom edge — and the screens running off
+      // that edge is the whole point of the picture. A transform moves the
+      // screen without touching the layout, so the tray still measures the
+      // front screen and the back one is simply clipped 12px further down.
       className={`group relative w-[62%] shrink-0 hover:z-20 ${
-        front ? "z-10 -ml-[24%]" : "mt-2 md:mt-3"
+        front ? "z-10 -ml-[24%]" : "translate-y-2 md:translate-y-3"
       }`}
     >
       <div
