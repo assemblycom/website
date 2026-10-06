@@ -156,7 +156,7 @@ export function RailCard({
 }) {
   return (
     <div className="group/card w-[78%] shrink-0 snap-start sm:w-[62%] md:w-[calc((100%-1rem)/2)] lg:w-[calc((100%-2rem)/3)]">
-      <div className="relative aspect-[3/4] w-full select-none overflow-hidden rounded-3xl bg-neutral-100 [[data-theme=dark]_&]:bg-white/[0.06]">
+      <div className="relative aspect-[3/4] w-full select-none overflow-hidden rounded-3xl bg-[var(--surface)]">
         {children}
       </div>
       <div className="mt-4 px-1">

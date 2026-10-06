@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { CTA } from "@/components/home/cta";
 import { FAQ, type FAQEntry } from "@/components/home/faq";
 import { GridDivider, GridRails } from "@/components/ui/grid-lines";
@@ -166,8 +165,11 @@ const ACCOUNTING_STORIES = [
  * Section 9. /client-portal's priced cards, with this handoff's fifth plan
  * added. Names, prices and perks are the live /pricing figures — the perks are
  * that page's wording cut to what the handoff names for each plan, so the two
- * pages cannot say different things about the same tier. Enterprise prices on
- * application, so its card carries the demo action rather than a figure.
+ * pages cannot say different things about the same tier.
+ *
+ * Enterprise is not here: it carries no price and two perks, and as a fifth
+ * card it cost the other four a fifth of their width each. It runs as the row
+ * under the grid instead.
  */
 const ACCOUNTING_TIERS = [
   {
@@ -216,15 +218,6 @@ const ACCOUNTING_TIERS = [
       "Multi-company contacts",
     ],
     cta: "Book a demo",
-    href: DEMO_URL,
-  },
-  {
-    name: "Enterprise",
-    price: "Custom",
-    cadence: "Priced on application",
-    perksLabel: "Everything in Advanced, plus:",
-    perks: ["Custom SSO", "Dedicated success manager"],
-    cta: "Talk to us",
     href: DEMO_URL,
   },
 ];
@@ -375,7 +368,7 @@ export default function AccountingClientPortalPage() {
           <div
             aria-hidden
             title="V1 — left 40%: the Assembly build panel headed 'Build with AI', with the message 'Build an estimated tax payment tracker. Clients see scheduled and paid amounts; send a reminder 7 days before each due date.', a plan card titled 'Plan: Estimated payment tracker' (fields: quarter, jurisdiction, amount, due date, status; who sees it: each client sees only their own; team view: all clients; reminder: 7 days before due) and an 'Approve plan' button. Right 60%: a browser at portal.ledgerline.com, sidebar Home / Messages / Files / Contracts / Payments / Tasks / Estimated payments (new, faint brass highlight), main panel for Delgado Household showing 'Q3 federal · $4,200 · Scheduled Sep 15' and 'Q2 federal · $4,200 · Paid Jun 14'. Static."
-            className="mt-12 h-[400px] rounded-[28px] bg-muted md:mt-16 md:h-[500px] [[data-theme=dark]_&]:bg-white/[0.06]"
+            className="mt-12 h-[400px] rounded-[28px] bg-[var(--surface)] md:mt-16 md:h-[500px]"
           />
           <PortalSocialProof />
         </div>
@@ -467,7 +460,7 @@ export default function AccountingClientPortalPage() {
             <div
               aria-hidden
               title="V5 — two portal.ledgerline.com sidebars in identical Ledgerline chrome. Left, Delgado Household: Home, Files, Estimated payments, Messages. Right, Harbor Dental PLLC: Home, Files, Payroll documents, Payments, Messages. Above the right sidebar, an entity switcher open to show Harbor Dental PLLC and Oakwood Ventures LLC under one signed-in contact, Dana Reyes. A locked-folder icon beside '2025 Returns (view only)'. Static."
-              className="mt-12 h-[400px] rounded-3xl bg-muted md:mt-14 md:h-[500px] [[data-theme=dark]_&]:bg-white/[0.06]"
+              className="mt-12 h-[400px] rounded-3xl bg-[var(--surface)] md:mt-14 md:h-[500px]"
             />
           }
         />
@@ -507,7 +500,6 @@ export default function AccountingClientPortalPage() {
           heading="Firms that built the practice they wanted"
           body="Advisory, tax, and bookkeeping firms run their client experience on Assembly."
           stories={ACCOUNTING_STORIES}
-          linkLabel="Read the story"
         />
         <GridDivider />
 
@@ -516,6 +508,11 @@ export default function AccountingClientPortalPage() {
           heading="Plans that match the scale of your firm"
           body="Start free with real apps. Upgrade for your own domain, automations, and client access permissions."
           tiers={ACCOUNTING_TIERS}
+          aside={{
+            name: "Enterprise",
+            line: "Custom SSO and a dedicated success manager.",
+            cta: { label: "Talk to us", href: DEMO_URL },
+          }}
           link={{ label: "See pricing", href: "/pricing" }}
         />
         <GridDivider />
@@ -548,24 +545,6 @@ export default function AccountingClientPortalPage() {
         secondaryCta={{ label: "Start free", href: SIGNUP_URL }}
       />
 
-      {/* The "also see" row, above the footer. */}
-      <section className="px-6 pb-16 md:px-10">
-        <div className="mx-auto flex max-w-[1200px] flex-wrap items-center justify-center gap-x-6 gap-y-2 border-t border-border pt-8 [[data-theme=dark]_&]:border-[#383838]">
-          <span className="type-caption text-muted-foreground">Also see</span>
-          <Link
-            href="/client-portal"
-            className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-          >
-            Client portal
-          </Link>
-          <Link
-            href="/solutions/marketing-agency-client-portal"
-            className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-          >
-            Client portal for marketing agencies
-          </Link>
-        </div>
-      </section>
     </>
   );
 }

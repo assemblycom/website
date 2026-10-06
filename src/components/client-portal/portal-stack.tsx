@@ -120,7 +120,7 @@ export function PortalStack({
           <div
             aria-hidden
             title={visualTitle}
-            className="h-[300px] rounded-2xl bg-muted md:h-[380px] lg:h-[440px] lg:rounded-r-none [[data-theme=dark]_&]:bg-white/[0.06]"
+            className="h-[300px] rounded-2xl bg-[var(--surface)] md:h-[380px] lg:h-[440px] lg:rounded-r-none"
           />
         </div>
       </Reveal>

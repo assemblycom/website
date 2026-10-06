@@ -79,14 +79,22 @@ export function PortalPricing({
   body = "The free plan never expires and includes real, publishable apps. Paid plans add contacts, apps, your own domain, and more as your firm grows.",
   link = { label: "See full pricing", href: "/pricing" },
   tiers = TIERS,
+  aside,
 }: {
   heading?: string;
   body?: string;
   link?: { label: string; href: string };
   tiers?: Tier[];
+  /**
+   * A plan that is not a priced card — no figure, no perk list, just a name, a
+   * line and a way to start the conversation. It sits as one row under the
+   * grid rather than as a fifth column: a fifth card costs the other four a
+   * fifth of their width each, and at that width the perk labels wrap and the
+   * shorter cards are mostly empty. It is also honest about the object, since
+   * what this plan offers is a conversation rather than a price.
+   */
+  aside?: { name: string; line: string; cta: { label: string; href: string } };
 } = {}) {
-  // Written out rather than interpolated so Tailwind sees the whole class name.
-  const columns = tiers.length === 5 ? "lg:grid-cols-5" : "lg:grid-cols-4";
   return (
     <section className="mx-auto max-w-[1200px] px-6 py-16 md:px-10 md:py-24">
       <Reveal>
@@ -109,9 +117,7 @@ export function PortalPricing({
             card is the same object — the recommended plan is marked only by its
             filled button, so none of the four outshouts the rest, the same
             restraint the full pricing table keeps. */}
-        <div
-          className={`mt-12 grid gap-4 min-[560px]:grid-cols-2 ${columns}`}
-        >
+        <div className="mt-12 grid gap-4 min-[560px]:grid-cols-2 lg:grid-cols-4">
           {tiers.map((tier) => (
             <div
               key={tier.name}
@@ -156,6 +162,23 @@ export function PortalPricing({
             </div>
           ))}
         </div>
+
+        {aside ? (
+          <div className="mt-4 flex flex-col items-start gap-4 rounded-2xl border border-border p-6 text-left sm:flex-row sm:items-center sm:justify-between [[data-theme=dark]_&]:border-[#383838]">
+            <div>
+              <h3 className="text-lg">{aside.name}</h3>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {aside.line}
+              </p>
+            </div>
+            <a
+              href={aside.cta.href}
+              className="w-full shrink-0 rounded-lg border border-foreground/20 bg-transparent px-5 py-2 text-center text-sm text-foreground transition-colors hover:bg-foreground/5 sm:w-auto [[data-theme=dark]_&]:border-white/25"
+            >
+              {aside.cta.label}
+            </a>
+          </div>
+        ) : null}
       </Reveal>
     </section>
   );

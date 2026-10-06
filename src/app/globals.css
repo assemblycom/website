@@ -52,6 +52,13 @@
      overrides --card/--card-foreground inline per theme. */
   --card: #ffffff;
   --card-foreground: #0a0a0a;
+  /* The one grey every picture slot sits on — the tray under a product shot,
+     a rail card's panel, a placeholder holding a slot open. These had drifted
+     apart (bg-muted, bg-neutral-100, --portal-ground, and four different
+     white/[0.0x] in dark), so the same kind of surface read as a different
+     shade from one section to the next. Light and dark are declared in their
+     own blocks and must stay that way. */
+  --surface: #f5f5f5;
   --font-pp-mori: "PP Mori", system-ui, sans-serif;
   --font-diatype-mono: "ABC Diatype Mono", ui-monospace, monospace;
 
@@ -116,6 +123,9 @@
   --accent-foreground: #f2f2f2;
   --card: #151515;
   --card-foreground: #d9d9d9;
+  /* See --surface in :root. Dark's own value, not a translucent white, so it
+     does not change with whatever it happens to sit on. */
+  --surface: #191919;
 
   /* Mock status pills go translucent so they sit on dark surfaces without
      glowing; fg stays desaturated to match the neutral-gray dark scale. */
