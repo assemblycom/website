@@ -180,9 +180,14 @@ export default function MarketingAgencyClientPortalPage() {
           <div className="mx-auto mt-12 max-w-[980px] overflow-hidden rounded-3xl bg-[var(--surface)] p-4 pb-0 md:mt-16 md:p-6 md:pb-0">
             {/* The frame is shorter than the screen inside it, which is the
                 crop: the nav, the round and the decision are all above the
-                fold and the thread carries on past it. */}
-            <div className="relative h-[380px] overflow-hidden rounded-t-xl md:h-[440px]">
-              <div className="absolute inset-x-0 top-0 h-[660px]">
+                fold and the thread carries on past it.
+
+                540, measured rather than picked — the thread's last line sits
+                at 568, so the edge lands a third of the way through it. At 620
+                the crop fell past everything and the shot ended on 50px of
+                blank panel, which is the thing a bleed is supposed to avoid. */}
+            <div className="relative h-[440px] overflow-hidden rounded-t-xl md:h-[540px]">
+              <div className="absolute inset-x-0 top-0 h-[860px]">
                 <AgencyHeroVisual />
               </div>
             </div>

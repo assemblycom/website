@@ -59,6 +59,16 @@ const THREAD = [
     when: "Yesterday",
     says: "Key art variant B for the hero placements, please.",
   },
+  {
+    who: "Priya Raman",
+    when: "Yesterday",
+    says: "Variant B it is. Social cutdowns are in the same folder.",
+  },
+  {
+    who: "Dana Whitfield",
+    when: "Today",
+    says: "Looks right. Sending to the brand team for a last read.",
+  },
 ];
 
 export function AgencyHeroVisual() {
