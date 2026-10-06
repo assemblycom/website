@@ -12,11 +12,6 @@ import { PortalStack } from "@/components/client-portal/portal-stack";
 import { PortalTrust } from "@/components/client-portal/portal-trust";
 import { PortalPricing } from "@/components/client-portal/portal-pricing";
 import { PortalProof } from "@/components/client-portal/portal-proof";
-import {
-  BuildCard,
-  DescribeCard,
-  PlanCard,
-} from "@/components/client-portal/portal-build-cards";
 import { DEMO_URL, SIGNUP_URL } from "@/lib/constants";
 import { PAGE_SEO, pageMetadata } from "@/lib/seo";
 import { serializeJsonLd } from "@/lib/json-ld";
@@ -99,6 +94,13 @@ const BUILD_STEPS = [
     name: "Approve and it appears",
     body: "The app shows up in your client experience with logins, permissions, and your branding in place.",
   },
+];
+
+/** V4's three beats, as art direction for the cards that hold their slots. */
+const V4_BEATS = [
+  "V4 beat 1 — the build panel with the message 'Build a month-end close tracker. Each client sees which documents are still missing and when their books will close.'",
+  "V4 beat 2 — a question chip from the builder, 'Should clients see your team's internal close steps?', with the answer 'No, only what they owe' selected.",
+  "V4 beat 3 — the plan card (fields: month, missing documents, target close date, status; who sees it: each client sees only their own; team view: all clients) with 'Approve plan', then a 'Month-end close' item appearing in Harbor Dental PLLC's sidebar on portal.ledgerline.com, showing 'September close · 2 documents missing · Target Oct 10'.",
 ];
 
 /** Section 7. Four rows, in the handoff's order. */
@@ -285,14 +287,9 @@ export default function AccountingClientPortalPage() {
       <section className="pb-16 pt-24 md:pb-24 md:pt-32">
         <div className="mx-auto max-w-[1400px] px-6 md:px-10">
           <div className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-start lg:gap-x-16">
-            <div className="lg:col-start-1">
-              <p className="type-eyebrow text-muted-foreground">
-                Client portal for accounting firms
-              </p>
-              <h1 className="type-display mt-4 max-w-[30ch] text-balance">
-                Your AI-native accounting firm starts here
-              </h1>
-            </div>
+            <h1 className="type-display max-w-[30ch] text-balance lg:col-start-1">
+              Your AI-native accounting firm starts here
+            </h1>
             <p className="type-lead max-w-[34rem] text-pretty text-muted-foreground lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:pt-2">
               Assembly gives your firm a branded client portal with ready-made
               apps for files, e-signatures, invoices, and messages. Describe the
@@ -326,7 +323,7 @@ export default function AccountingClientPortalPage() {
           <div
             aria-hidden
             title="V1 — left 40%: the Assembly build panel headed 'Build with AI', with the message 'Build an estimated tax payment tracker. Clients see scheduled and paid amounts; send a reminder 7 days before each due date.', a plan card titled 'Plan: Estimated payment tracker' (fields: quarter, jurisdiction, amount, due date, status; who sees it: each client sees only their own; team view: all clients; reminder: 7 days before due) and an 'Approve plan' button. Right 60%: a browser at portal.ledgerline.com, sidebar Home / Messages / Files / Contracts / Payments / Tasks / Estimated payments (new, faint brass highlight), main panel for Delgado Household showing 'Q3 federal · $4,200 · Scheduled Sep 15' and 'Q2 federal · $4,200 · Paid Jun 14'. Static."
-            className="mt-14 h-[320px] rounded-3xl bg-muted md:mt-16 md:h-[440px] lg:h-[520px] [[data-theme=dark]_&]:bg-white/[0.06]"
+            className="mt-12 h-[400px] rounded-[28px] bg-muted md:mt-16 md:h-[500px] [[data-theme=dark]_&]:bg-white/[0.06]"
           />
           <PortalSocialProof />
         </div>
@@ -340,6 +337,20 @@ export default function AccountingClientPortalPage() {
         <PortalProblem
           heading="Every tool you add is one more login"
           body="Contracts in one place, files in another, invoices in a third. Your clients feel every seam, usually right before a deadline."
+          // The two captions ("Almost fits" / "Fits") are /client-portal's, and
+          // this handoff has none — the section is heading, body, picture,
+          // quote, link. They were inherited by leaving the default in place.
+          sides={[]}
+          // V2's slot: the tray at the height it has on /client-portal, with
+          // nothing drawn in it. The default screens run that page's firm, so
+          // on this page they showed a marketing portal and a Lisbon hotel.
+          screens={
+            <div
+              aria-hidden
+              title="V2 — left: four desaturated, angled browser windows labelled Proposal, Drive, Invoice and Email, each with a different sign-in screen. Right: one full-colour portal.ledgerline.com window showing Harbor Dental PLLC's task list — 'Upload Q3 payroll reports', 'Sign 2026 engagement letter', 'Pay invoice #1042, $450.00'. Static."
+              className="h-[300px] md:h-[400px]"
+            />
+          }
           quote={{
             // Quoted from the published Sargent CPAs study, first sentence only,
             // as the handoff shortens it. See src/lib/case-studies.ts.
@@ -365,16 +376,20 @@ export default function AccountingClientPortalPage() {
         <PortalBuild
           heading="AI builds what your practice software never shipped"
           body="Describe what you want. Assembly shows a plan and builds after you approve."
-          // V4's three beats are the handoff's; the cards under them are
-          // /client-portal's existing describe / plan / build visuals, standing
-          // in until V4 is built.
+          // V4's three beats. The cards hold their shape and draw nothing:
+          // /client-portal's describe / plan / build visuals stood here first,
+          // but they run that page's firm building a project tracker, which is
+          // neither this vertical nor these three steps. The rail's own panel
+          // supplies the grey; each step's art direction rides in `title`.
           steps={BUILD_STEPS.map((step, i) => ({
             ...step,
-            visual: [
-              <DescribeCard key="describe" />,
-              <PlanCard key="plan" />,
-              <BuildCard key="build" />,
-            ][i],
+            visual: (
+              <div
+                aria-hidden
+                className="h-full w-full"
+                title={V4_BEATS[i]}
+              />
+            ),
           }))}
           railLabel="How building works"
           cta={{ label: "Start free", href: SIGNUP_URL }}
@@ -397,6 +412,17 @@ export default function AccountingClientPortalPage() {
         <PortalTailor
           heading="One firm, a different view for every client"
           body="Clients can belong to several entities and switch between them with one login. Custom fields decide which apps each client sees."
+          // V5's slot. The four cards that stand here on /client-portal are that
+          // page's own firm and its own argument; this handoff asks for one
+          // picture. Sized like the hero's slot rather than the grid's 866px,
+          // because one picture is not four cards' worth of height.
+          visual={
+            <div
+              aria-hidden
+              title="V5 — two portal.ledgerline.com sidebars in identical Ledgerline chrome. Left, Delgado Household: Home, Files, Estimated payments, Messages. Right, Harbor Dental PLLC: Home, Files, Payroll documents, Payments, Messages. Above the right sidebar, an entity switcher open to show Harbor Dental PLLC and Oakwood Ventures LLC under one signed-in contact, Dana Reyes. A locked-folder icon beside '2025 Returns (view only)'. Static."
+              className="mt-12 h-[400px] rounded-3xl bg-muted md:mt-14 md:h-[500px] [[data-theme=dark]_&]:bg-white/[0.06]"
+            />
+          }
         />
 
         {/* 6. Keep your stack.

@@ -24,7 +24,18 @@ const BODY = "mt-2 text-sm leading-relaxed text-muted-foreground";
 export function PortalTailor({
   heading = "One portal. A different experience for every client",
   body = "Control which apps each client and company sees, brand it on your own domain, and give each segment the workflow it actually needs.",
-}: { heading?: string; body?: string } = {}) {
+  visual,
+}: {
+  heading?: string;
+  body?: string;
+  /**
+   * One picture in place of the four cards. The grid is /client-portal's
+   * argument — four apps of four different shapes, to prove they do not look
+   * alike. A page whose handoff asks for a single picture here passes it, and
+   * the four cards (which name that page's own firm) do not come with it.
+   */
+  visual?: React.ReactNode;
+} = {}) {
   return (
     <section className="mx-auto max-w-[1200px] px-6 py-16 md:px-10 md:py-24">
       <Reveal>
@@ -35,6 +46,8 @@ export function PortalTailor({
           </p>
         </div>
 
+        {visual ?? (
+        <>
         {/* Four cards of four different shapes. Same-size cards each holding
             the same screenshot argue the opposite of what the heading says, so
             the set varies by width, by how much chrome each picture carries,
@@ -99,6 +112,8 @@ export function PortalTailor({
             </div>
           </div>
         </div>
+        </>
+        )}
       </Reveal>
     </section>
   );

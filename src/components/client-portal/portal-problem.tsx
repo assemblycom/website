@@ -117,13 +117,22 @@ export function PortalProblem({
   heading = "Off-the-shelf portals make you fit the software. Not here.",
   body,
   sides = SIDES,
+  screens,
   quote,
   link,
 }: {
   heading?: string;
   /** A lead under the heading. /client-portal deliberately has none. */
   body?: string;
+  /** Empty drops the two captions entirely, for a page whose brief has none. */
   sides?: { label: string; body: string }[];
+  /**
+   * What sits in the tray. Defaults to the two overlapping portal screens.
+   * A page whose own picture is not built yet passes a plain block of the same
+   * height, so the tray holds its shape with nothing drawn in it — better than
+   * showing another vertical's portal, which is a claim rather than a gap.
+   */
+  screens?: React.ReactNode;
   /** Quoted from case-studies.ts, so the page and the story cannot drift. */
   quote?: { text: string; attribution: string; href: string };
   link?: { label: string; href: string };
@@ -146,6 +155,7 @@ export function PortalProblem({
             screens began to overlap — there is no column for a caption to
             stand in any more, so they read as the before and after of one
             picture, which is what the picture now is. */}
+        {sides.length ? (
         <div className="mt-14 grid gap-6 md:mt-16 md:grid-cols-2 md:gap-5">
           {sides.map((side) => (
             <div key={side.label} className="max-w-sm">
@@ -158,6 +168,7 @@ export function PortalProblem({
             </div>
           ))}
         </div>
+        ) : null}
 
         {/* One tray under both, with the screens running off its bottom. No
             bottom padding: the crop is the point, and a tray that closes under
@@ -167,14 +178,16 @@ export function PortalProblem({
             of the screens instead, which read as a rendering fault rather
             than as a corner. */}
         <div className="mt-8 overflow-hidden rounded-t-3xl bg-muted p-4 pb-0 md:mt-10 md:p-6 md:pb-0 [[data-theme=dark]_&]:bg-white/[0.04]">
-          <div className="flex">
-            <Screen dimmed>
-              <GenericPortalMock />
-            </Screen>
-            <Screen front>
-              <IntakeAppMock />
-            </Screen>
-          </div>
+          {screens ?? (
+            <div className="flex">
+              <Screen dimmed>
+                <GenericPortalMock />
+              </Screen>
+              <Screen front>
+                <IntakeAppMock />
+              </Screen>
+            </div>
+          )}
         </div>
 
         {/* Quote and jump link close the section, under the picture that is its
