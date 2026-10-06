@@ -11,9 +11,9 @@ import {
 } from "@/components/ai-app-builder/builder-pillars";
 import { BuilderChapter } from "@/components/ai-app-builder/builder-chapter";
 import {
-  BuildCard,
-  SecuredCard,
-} from "@/components/client-portal/portal-build-cards";
+  IntakeAppMock,
+  OnboardingMock,
+} from "@/components/client-portal/segment-mock";
 import { TeamCrmVisual } from "@/components/home/team-crm-visual";
 import { BrandPortalVisual } from "@/components/home/brand-portal-visual";
 import { BuilderHowItWorks } from "@/components/ai-app-builder/builder-how-it-works";
@@ -47,8 +47,10 @@ const PILLARS: Pillar[] = [
         value: "A complete Message Center their team lives in",
       },
     ],
-    // The app landing in both places at once, which is the claim.
-    visual: <BuildCard />,
+    // The built app sitting in the client's own sidebar, which is the claim.
+    // A landscape screen like the other three: the build rail's portrait cards
+    // are the wrong shape for this frame, and they already run below.
+    visual: <IntakeAppMock />,
   },
   {
     heading: "One CRM. Every app connects to it",
@@ -61,8 +63,9 @@ const PILLARS: Pillar[] = [
     heading: "Secure logins, permissions, and billing come built in",
     body: "Built and maintained by Assembly. Nothing reaches your clients until you make it visible.",
     facts: [],
-    // The build rail's security card: logins and permissions as platform.
-    visual: <SecuredCard />,
+    // The onboarding screen, which carries the "Access: client only" control —
+    // permissions as something the platform already decides.
+    visual: <OnboardingMock />,
   },
   {
     heading: "Your clients already have a branded home. New apps land in it",

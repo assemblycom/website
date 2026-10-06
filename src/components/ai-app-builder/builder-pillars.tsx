@@ -116,8 +116,10 @@ export function BuilderPillars({ pillars }: { pillars: Pillar[] }) {
               {/* Phone: the visual and its facts belong to their own claim, in
                   reading order. */}
               <div className="md:hidden">
-                <div className="relative mt-8 aspect-[4/3] overflow-hidden rounded-2xl bg-[var(--surface)]">
-                  {pillar.visual}
+                <div className="relative mt-8 aspect-[16/9.6] overflow-hidden rounded-2xl bg-[var(--surface)] p-4">
+                  <div className="h-full overflow-hidden rounded-xl">
+                    {pillar.visual}
+                  </div>
                 </div>
                 <FactList facts={pillar.facts} />
               </div>
@@ -130,17 +132,31 @@ export function BuilderPillars({ pillars }: { pillars: Pillar[] }) {
         <div
           className={`hidden md:block md:-mr-10 md:w-[56%] md:border-l md:pl-6 md:pr-10 lg:pl-8 lg:pr-12 ${GRID_LINE}`}
         >
-          <div className="sticky top-24 py-20">
+          {/* pt-14 matches the claims' own md:pt-14, so the shot's top edge
+              starts on the same line as the first claim's heading rather than
+              24px below it. */}
+          <div className="sticky top-24 pb-20 pt-14">
             {/* All four are mounted and cross-faded, so the one coming in is
                 already laid out and nothing reflows mid-switch. 300ms, not
                 500: at half a second the outgoing shot was still fading while
-                the next claim was being read. */}
-            <div className="relative overflow-hidden rounded-2xl bg-[var(--surface)] aspect-square">
+                the next claim was being read.
+
+                16:9.6, the shape the product shots are drawn at. A square
+                frame left a third of itself empty under the widest of them and
+                squeezed the CRM's columns until the names truncated — these
+                are screens, and screens are wider than they are tall. */}
+            <div className="relative aspect-[16/9.6] overflow-hidden rounded-2xl bg-[var(--surface)]">
               {pillars.map((pillar, i) => (
                 <div
                   key={pillar.heading}
                   aria-hidden={i !== active}
-                  className={`absolute inset-0 transition-opacity duration-300 motion-reduce:transition-none ${
+                  // Inset, not inset-0. Every one of these shots paints its own
+                  // white ground, so filling the frame hid the frame — the grey
+                  // showed only in the gaps the shot happened not to reach, and
+                  // read as a stray band rather than as the tray it is. Held
+                  // off every edge, the shot sits ON the grey the way the
+                  // product shots elsewhere on the site do.
+                  className={`absolute inset-5 overflow-hidden rounded-xl transition-opacity duration-300 motion-reduce:transition-none md:inset-6 ${
                     i === active ? "opacity-100" : "opacity-0"
                   }`}
                 >

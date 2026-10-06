@@ -98,52 +98,45 @@ export function CardRail({
           vertical padding cancelled by a negative margin, so the clip is
           horizontal only and shadows still breathe above and below. The arrow
           is what says there is more. */}
-      {/* The arrows ride on the rail's own vertical centre, at its right edge,
-          rather than sitting in a row underneath it. Under the cards they were
-          a control you had to look away from the rail to find; beside them
-          they are where the next card is coming from. An unavailable one is
-          hidden rather than dimmed — at the start of a rail there is no
-          previous card, and a greyed button is still a button to read. */}
-      <div className="relative">
-        <div className="-my-4 overflow-hidden py-4">
-          <div
-            ref={ref}
-            onScroll={sync}
-            role="group"
-            aria-label={label}
-            className="flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-          >
-            {children}
-          </div>
-        </div>
-
-        <div className="pointer-events-none absolute inset-y-0 right-0 hidden items-center md:flex">
-          <div className="flex translate-x-1/2 items-center gap-2">
-            <button
-              type="button"
-              onClick={() => step(-1)}
-              aria-label="Previous"
-              className={`${ARROW} pointer-events-auto transition-opacity ${
-                atStart ? "invisible opacity-0" : "opacity-100"
-              }`}
-            >
-              <Chevron direction="prev" />
-            </button>
-            <button
-              type="button"
-              onClick={() => step(1)}
-              aria-label="Next"
-              className={`${ARROW} pointer-events-auto transition-opacity ${
-                atEnd ? "invisible opacity-0" : "opacity-100"
-              }`}
-            >
-              <Chevron direction="next" />
-            </button>
-          </div>
+      <div className="-my-4 overflow-hidden py-4">
+        <div
+          ref={ref}
+          onScroll={sync}
+          role="group"
+          aria-label={label}
+          className="flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
+          {children}
         </div>
       </div>
 
-      {lead ? <div className="mt-10">{lead}</div> : null}
+      {/* In their own row under the rail. They were tried on the rail's
+          vertical centre at its right edge, which is where the reference puts
+          them — but the reference's cards stop short of the column and ours
+          run to it, so the arrow sat on top of the last card. */}
+      <div className="mt-10 flex items-center justify-end gap-4">
+        {lead ? <div className="mr-auto">{lead}</div> : null}
+        <div className="flex shrink-0 items-center gap-2">
+          <button
+            type="button"
+            onClick={() => step(-1)}
+            disabled={atStart}
+            aria-label="Previous"
+            className={ARROW}
+          >
+            <Chevron direction="prev" />
+          </button>
+          <button
+            type="button"
+            onClick={() => step(1)}
+            disabled={atEnd}
+            aria-label="Next"
+            className={ARROW}
+          >
+            <Chevron direction="next" />
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

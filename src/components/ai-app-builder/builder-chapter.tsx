@@ -24,15 +24,17 @@ export function BuilderChapter({
   tightBottom?: boolean;
 }) {
   // Slightly more room below than above, so the title clears the section it
-  // introduces rather than sitting tight on it — except where the section
+  // introduces rather than sitting tight on it. Both were a step deeper
+  // (96/144 either side), which on a block holding two lines and a sentence
+  // left most of a screen empty around them — except where the section
   // below carries its own top padding. There, this adds nothing: `tightBottom`
   // used to still pay 40/64px on top of the next section's 56/80, which put
   // 144px of empty page between the title and the thing it titles.
   return (
     <section
       className={cn(
-        "mx-auto max-w-[1200px] px-6 pt-16 text-center md:px-10 md:pt-24",
-        tightBottom ? "pb-0" : "pb-24 md:pb-36",
+        "mx-auto max-w-[1200px] px-6 pt-14 text-center md:px-10 md:pt-20",
+        tightBottom ? "pb-0" : "pb-16 md:pb-24",
       )}
     >
       <Reveal>
