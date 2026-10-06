@@ -1,8 +1,5 @@
 import type { Metadata } from "next";
 import { BuiltOnPage } from "@/components/built-on/built-on-page";
-import type { BuiltOnFirm } from "@/lib/built-on-firms";
-import { redirect } from "next/navigation";
-import { IS_LIVE_SITE } from "@/lib/constants";
 import { getFirmBranding } from "@/lib/firm-branding";
 import { attributionFromSearchParams } from "@/lib/powered-by-attribution";
 import { PAGE_SEO, pageMetadata } from "@/lib/seo";
@@ -24,34 +21,16 @@ export default async function PoweredBy({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  // Held on staging while the badge that feeds this page is still being built.
-  // Production promotes by fast-forwarding main, which takes every commit, so a
-  // page that is not ready has to hold itself back. Same guard /about uses.
-  // Delete these two lines and the page goes live with the next release.
-  if (IS_LIVE_SITE) redirect("/");
-
   const attribution = attributionFromSearchParams(await searchParams);
 
   return (
     <BuiltOnPage
-      // A workspace we can neither look up nor name gets the generic page
-      // rather than a half-personalized one naming nobody.
-      firm={await resolveFirm(attribution.ref, attribution.firm)}
+      // Only a firm the workspace lookup vouches for is named. The heading says
+      // that firm runs on Assembly, and the `firm` param is anyone's to write,
+      // so a lookup that misses gets the generic page. The param still travels
+      // to signup with the rest of the attribution.
+      firm={await getFirmBranding(attribution.ref)}
       attribution={attribution}
     />
   );
-}
-
-/**
- * The firm to name. The workspace lookup wins; the badge's own `firm` param is
- * the fallback, so a lookup that misses still gets a named heading, just
- * without the firm's logo or colours.
- */
-async function resolveFirm(
-  ref?: string,
-  firmName?: string,
-): Promise<BuiltOnFirm | undefined> {
-  const found = await getFirmBranding(ref);
-  if (found) return found;
-  return firmName ? { id: ref ?? "", name: firmName } : undefined;
 }
