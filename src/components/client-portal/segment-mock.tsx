@@ -38,15 +38,6 @@ const STROKE = {
   strokeLinejoin: "round" as const,
 };
 
-function IconLock({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 20 20" className={className} aria-hidden>
-      <rect x="4" y="8.75" width="12" height="8" rx="2" {...STROKE} />
-      <path d="M6.9 8.75V6.4a3.1 3.1 0 0 1 6.2 0v2.35" {...STROKE} />
-    </svg>
-  );
-}
-
 export function IconUpload({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 20 20" className={className} aria-hidden>
@@ -221,9 +212,17 @@ function AppHeader({
     <div
       className={`flex items-center justify-between gap-3 border-b px-4 py-3 ${LINE}`}
     >
-      {/* 11px. At 12 the app's name was the largest type in the window —
-          larger than the content it names — which made every screen in this
-          set open on its own title rather than on what it holds. */}
+      {/* 10.5px — the set's label size, the same step as a row label, the
+          sidebar and the tab strips.
+
+          It was 12 first, then 11, both of which left the app's name the
+          largest type in the window — larger than the content it names — so
+          every screen opened on its own title rather than on what it holds.
+          11 was close enough to the 10.5 everywhere else to look like a
+          mistake rather than a step: half a pixel is not a hierarchy, it is a
+          wobble. The trail and the title carry their rank in COLOUR (soft vs
+          ink) and in position, which is enough, and the row now sits flush
+          with the tabs directly beneath it. */}
       <span className="flex min-w-0 items-center gap-1.5">
         {crumb ? (
           <>
@@ -231,13 +230,13 @@ function AppHeader({
                 navigation, and without it the screen is a dead end you can
                 only leave through the nav. Muted against the title, so the
                 page you are ON is still the thing you read first. */}
-            <span className="shrink-0 truncate text-[11px] leading-none text-[color:var(--mock-ink-soft)]">
+            <span className="shrink-0 truncate text-[10.5px] leading-none text-[color:var(--mock-ink-soft)]">
               {crumb}
             </span>
             <IconChevronRight className="size-[9px] shrink-0 text-[color:var(--mock-ink-soft)]" />
           </>
         ) : null}
-        <span className="truncate text-[11px] leading-none text-[color:var(--mock-ink)]">
+        <span className="truncate text-[10.5px] leading-none text-[color:var(--mock-ink)]">
           {title}
         </span>
       </span>
@@ -341,10 +340,10 @@ export function ApprovalsMock() {
           <div
             className={`-mx-4 flex shrink-0 items-end gap-4 border-b px-4 ${LINE}`}
           >
-            <span className="-mb-px border-b border-[var(--mock-ink)] pb-2 text-[10px] leading-none text-[color:var(--mock-ink)]">
+            <span className="-mb-px border-b border-[var(--mock-ink)] pb-2 text-[10.5px] leading-none text-[color:var(--mock-ink)]">
               Current round
             </span>
-            <span className="-mb-px flex items-center gap-1.5 border-b border-transparent pb-2 text-[10px] leading-none text-[color:var(--mock-ink-soft)]">
+            <span className="-mb-px flex items-center gap-1.5 border-b border-transparent pb-2 text-[10.5px] leading-none text-[color:var(--mock-ink-soft)]">
               Previous rounds
               {/* The count is the whole reason the tab is there: a second round
                   means there was a first one to compare against. */}
@@ -993,6 +992,36 @@ export function IntakeAppMock({
 // shows that where a single list would flatten it.
 const STEPS = ["Your details", "Engagement letter", "Documents", "Review"];
 
+// Two people, not five. The list is the proof that "Client only" resolves to
+// somebody, and two names carry that as well as ten — while the panel is
+// 216px wide and sits under a crop, so a longer list would be showing its own
+// scrollbar rather than its contents.
+//
+// One client and one person from the firm, in that order: the client is the
+// subject of the screen, and a list that opened on the firm would be saying
+// who is working on them rather than who can see it.
+const ACCESS = [
+  { initials: "MR", name: "Marta Reyes", role: "Client" },
+  { initials: "JO", name: "James Okafor", role: "Partner" },
+];
+
+/**
+ * The initials tile — the default avatar a person gets before anyone uploads a
+ * photo, which is most of them.
+ *
+ * Ink at 10% rather than a grey, so the tile steps off whatever it sits on in
+ * either theme; on a well colour a fixed grey was the same tone twice and the
+ * avatar vanished. Same values as the portal bar's workspace tile and the
+ * build cards' client tile.
+ */
+function Initials({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="flex size-[14px] shrink-0 items-center justify-center rounded-[3px] bg-[var(--mock-ink)]/10 text-[7px] leading-none text-[color:var(--mock-ink-soft)]">
+      {children}
+    </span>
+  );
+}
+
 /** One white panel on the tray. */
 function Panel({
   title,
@@ -1137,23 +1166,57 @@ export function OnboardingMock() {
         <p className="mt-2 text-[13px] leading-none text-[color:var(--mock-ink)]">
           Engagement letter
         </p>
-        {/* One continuous track, filled to where this client has got to —
-            the same bar the document checklist uses, so the two screens show
-            progress the same way.
+        {/* One segment per step, on the SAME GRID as the step names.
 
-            It was four separate segments in four different greys (black, 45%
-            black, and two at the muted tone), which at 3px with gaps between
-            them read as a row of loading placeholders rather than as one
-            measure of how far along something is. A single track with a filled
-            run has an obvious start, end and position. */}
+            This was four segments once before and was replaced by a single
+            continuous track, because those segments were drawn in four
+            different greys (black, 45% black, and two at the muted tone) on
+            their own measure, which at 3px with gaps between them read as a
+            row of loading placeholders rather than as a measure of anything.
+
+            The fault was not that it was segmented — it was that the segments
+            answered to nothing. grid-cols-4 gap-1.5 here is the identical grid
+            the names use below, so every bar is literally its own step's
+            width, sitting directly over the word it belongs to. Read down from
+            a bar and you land on its name; read up from a name and you see
+            whether it is done. A continuous track cannot do that: it shows how
+            far along the client is as a fraction, but not which of the four
+            named things that fraction is standing on, and a wizard's whole
+            subject is the named things.
+
+            TWO tones, not four. Done and current are filled; not-yet is ink
+            at 12%. The old version's four greys implied four states on a
+            control that has two, which is most of why it looked broken — and
+            the current step is already called out in the line above and in the
+            names below, so the bar does not need a third tone to say it a
+            third time.
+
+            The empty tone is INK AT 12%, not bg-muted. Segmented, the unfilled
+            bars are carrying something the continuous track never asked them
+            to: they are the only thing saying there are four steps at all, so
+            they have to be visible rather than merely present. bg-muted is
+            #f6f7f9 against a #fcfcfd panel — six points apart, which rendered
+            as a bar that stopped halfway and nothing after it. A percentage of
+            the ink token resolves against whichever theme is up, so one value
+            holds in both instead of a light hex and a dark override that can
+            drift apart. */}
         <div className="mt-3">
-          <div className="h-1 w-full overflow-hidden rounded-full bg-muted [[data-theme=dark]_&]:bg-white/[0.08]">
-            <span className="block h-full w-1/2 rounded-full bg-foreground" />
+          <div className="grid grid-cols-4 gap-1.5">
+            {STEPS.map((s, i) => (
+              <span
+                key={s}
+                className={`h-1 rounded-full ${
+                  i <= 1 ? "bg-foreground" : "bg-[var(--mock-ink)]/12"
+                }`}
+              />
+            ))}
           </div>
-          {/* Hidden on a phone: at four across a 300px screen every name
-              truncated to a stub, and a row of stubs reads as damage. The track
-              still carries how far along this is, and "Engagement letter" above
-              names the step. */}
+          {/* The NAMES are hidden on a phone, not the bars. At four across a
+              300px screen every name truncated to a stub, and a row of stubs
+              reads as damage. The bars survive that width intact — four of
+              them, two filled, is still legible at 60px apiece — and
+              "Engagement letter" above names the step the client is on, which
+              is the one name that matters while they are in it. */}
           <div className="mt-2 hidden grid-cols-4 gap-1.5 sm:grid">
             {STEPS.map((s, i) => (
               <span
@@ -1181,41 +1244,68 @@ export function OnboardingMock() {
 
       {/* Cropped by the card edge. */}
       <Panel title="Secure data room">
+        {/* No leading file icon. Three identical glyphs down the left of three
+            rows is a column of the same mark repeated — it separates nothing,
+            because every row is a file and the panel already says so. The
+            names carry their own extensions, and dropping the icons gives the
+            names the row's left edge, which is where the eye starts. */}
         <div className="mt-1">
           <Row
-            lead={
-              <IconFile className="size-[12px] shrink-0 text-[color:var(--mock-ink-soft)]" />
-            }
             label="Deed of trust.pdf"
             trailing={<span className={POSITIVE}>Uploaded</span>}
           />
           <Row
-            lead={
-              <IconFile className="size-[12px] shrink-0 text-[color:var(--mock-ink-soft)]" />
-            }
             label="Proof of identity.pdf"
             trailing={<span className={POSITIVE}>Uploaded</span>}
           />
           <Row
-            lead={
-              <IconFile className="size-[12px] shrink-0 text-[color:var(--mock-ink-soft)]" />
-            }
             label="Signed letter"
             trailing={<span className={WARNING}>Awaiting</span>}
           />
         </div>
       </Panel>
 
-      {/* Last in, first out: stacked, this one is below the crop anyway, and
-          it carries the least — a line and two placeholder bars. */}
+      {/* Who can see this onboarding.
+      
+          It used to be the rule line and two grey bars. The bars were standing
+          in for content nobody had decided on, which is the one thing a mock
+          on a marketing page cannot afford: every other panel here shows a
+          real screen, so a panel of placeholders reads as the product being
+          unfinished rather than as the picture being cropped.
+      
+          Naming the people is the whole panel. "Client only" was the rule
+          stated in words, and a claim about a set of people is answered by
+          showing the set — so the panel lists them, which is the same move the
+          Secure data room panel makes (a heading, then the actual files)
+          rather than a sentence about what it contains.
+
+          Built from the parts already in this file: Row for the lines, and the
+          initials-on-a-tile avatar the portal bar and the build cards use. A
+          new row shape here would have been a third way of drawing a person on
+          one screen. */}
       <Panel title="Access" className="hidden sm:block">
-        <div className="mt-2 flex items-center gap-1.5 text-[10px] leading-none text-[color:var(--mock-ink)]">
-          <IconLock className="size-[11px] text-[color:var(--mock-ink-soft)]" />
-          Client only
-        </div>
-        <div className="mt-2.5 flex flex-col gap-1.5">
-          <span className="h-1.5 w-full rounded-full bg-muted [[data-theme=dark]_&]:bg-white/[0.08]" />
-          <span className="h-1.5 w-2/3 rounded-full bg-muted [[data-theme=dark]_&]:bg-white/[0.08]" />
+        {/* No "Client only" line above the names any more. With the list in
+            place it was the same fact twice — the rule, and then the set it
+            resolves to — and the rule said it less precisely. The names are
+            the stronger form of the claim, so the restatement goes. */}
+        <div className="mt-2">
+          {/* The role is the reason the person is in the list, so it sits where
+              the file panel puts its status: at the end of the row, muted, as
+              the answer to the name rather than as a second heading. Plain
+              type and not a chip — these are not states, and a pill here would
+              be the third chip shape on the board. */}
+          {ACCESS.map(({ initials, name, role }) => (
+            <Row
+              key={name}
+              lead={<Initials>{initials}</Initials>}
+              label={name}
+              trailing={
+                <span className="shrink-0 text-[9px] leading-none text-[color:var(--mock-ink-soft)]">
+                  {role}
+                </span>
+              }
+            />
+          ))}
         </div>
       </Panel>
     </div>
