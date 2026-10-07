@@ -129,7 +129,18 @@ export function PortalPricing({
           {tiers.map((tier) => (
             <div
               key={tier.name}
-              className="relative flex flex-col overflow-hidden rounded-2xl border border-border p-6 [[data-theme=dark]_&]:border-[#383838]"
+              // bg-card, the ground every other pricing card on the site
+              // already stands on. These had none at all — a hairline around
+              // nothing — so in dark they were the page showing through four
+              // outlines rather than four objects sitting on it. /pricing's
+              // table has always used it; this block simply never got it.
+              //
+              // The token, so each theme answers for itself: dark lifts to
+              // #151515 off a #0a0a0a page, which is the step that makes a card
+              // a card. In light --card is #ffffff on a white page, so nothing
+              // moves there — correct, because on white the hairline already
+              // draws the box and a tint would be a second way of saying it.
+              className="relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card p-6 [[data-theme=dark]_&]:border-[#383838]"
             >
               {/* No wash. Every card carried a grey one fading out by 120px,
                   which at this block's card height sat behind the plan name
@@ -182,7 +193,11 @@ export function PortalPricing({
         </div>
 
         {aside ? (
-          <div className="mt-4 flex flex-col items-start gap-4 rounded-2xl border border-border p-6 text-left sm:flex-row sm:items-center sm:justify-between [[data-theme=dark]_&]:border-[#383838]">
+          // Same ground as the four cards above it. It is the fifth plan in
+          // everything but position, so a plain outline here while they sat on
+          // a card would have made it look like a footnote about them rather
+          // than one of them.
+          <div className="mt-4 flex flex-col items-start gap-4 rounded-2xl border border-border bg-card p-6 text-left sm:flex-row sm:items-center sm:justify-between [[data-theme=dark]_&]:border-[#383838]">
             <div>
               <h3 className="text-lg">{aside.name}</h3>
               <p className="mt-1 text-sm text-muted-foreground">{aside.line}</p>
