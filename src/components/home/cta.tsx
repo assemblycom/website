@@ -4,6 +4,15 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { V66Composer } from "./hero-v66";
 import { PROMPT_IDEAS } from "./prompt-ideas";
 import { useTheme } from "@/components/theme/theme-provider";
+import { APP_URL, DEMO_URL, SIGNUP_URL } from "@/lib/constants";
+
+// The hero's own button pair (see hero-big.tsx), minus its experiment
+// tracking — so the page's close is the same control its top opens with.
+const PRIMARY_CTA =
+  "inline-flex w-full shrink-0 items-center justify-center whitespace-nowrap rounded-lg bg-foreground px-4 py-3 text-center text-sm text-background transition-opacity hover:opacity-90 sm:w-auto sm:py-2 md:px-5 md:py-2.5 [[data-theme=dark]_&]:bg-white [[data-theme=dark]_&]:text-neutral-900";
+
+const SECONDARY_CTA =
+  "inline-flex w-full shrink-0 items-center justify-center whitespace-nowrap rounded-lg border border-foreground/20 bg-transparent px-4 py-3 text-center text-sm text-foreground transition-colors hover:bg-foreground/5 sm:w-auto sm:py-2 md:px-5 md:py-2.5 [[data-theme=dark]_&]:border-white/25 [[data-theme=dark]_&]:text-white";
 
 export function CTA({
   heading,
@@ -13,7 +22,7 @@ export function CTA({
   planChips = true,
   promptExamples,
   promptPicker = true,
-  composer = true,
+  composer = false,
   primaryCta,
 }: {
   // Overrides the default close for a page whose argument ends somewhere else
@@ -36,9 +45,14 @@ export function CTA({
    */
   promptPicker?: boolean;
   /**
-   * Off for a page that closes on a plain pair of buttons rather than a second
-   * prompt box. The builder page already opens on a composer, and a page that
-   * both opens and closes on the same control asks the same question twice.
+   * The second prompt box, OFF BY DEFAULT since the release that dropped it
+   * from the homepage: the footer now ends the page the way the hero opens it,
+   * on a pair of buttons.
+   *
+   * It is still here rather than deleted because the builder page closes on
+   * one deliberately — that page is about describing an app, so the field is
+   * its argument rather than a repeat of it. Everywhere else the default is
+   * what the site ships.
    */
   composer?: boolean;
   /** The filled action, when `composer` is off. */
@@ -77,38 +91,60 @@ export function CTA({
         >
           {heading ?? (
             <>
-              Build the firm
+              Build the business
               <br />
               only you can build
             </>
           )}
         </h2>
-        {subheading ? (
-          <p className="type-lead mx-auto mt-5 max-w-xl text-balance text-muted-foreground">
-            {subheading}
-          </p>
-        ) : null}
+        {/* The lead the release wrote, for any page that does not bring its
+            own. It used to render only when a page passed one, which left the
+            default close as a heading and a control with nothing between
+            them. */}
+        <p className="type-lead mx-auto mt-5 max-w-2xl text-pretty text-muted-foreground">
+          {subheading ?? (
+            <>
+              Stop stitching together tools that were never meant to work
+              together.
+              {/* Each sentence on its own line from md up; narrower screens
+                  wrap naturally. */}
+              <br className="hidden md:inline" />
+              Run everything and build anything in one place.
+            </>
+          )}
+        </p>
         {!composer ? (
           // Two actions in one row, the same pair and the same classes the
           // page's hero opens with, so the top and bottom of the page close on
           // one control rather than two different ones.
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+          <div className="mx-auto mt-10 flex w-full max-w-sm flex-col gap-3 sm:w-auto sm:max-w-none sm:flex-row sm:items-center sm:justify-center">
             {primaryCta ? (
-              <a
-                href={primaryCta.href}
-                className="rounded-lg bg-foreground px-5 py-2.5 text-center text-sm text-background transition-opacity hover:opacity-90"
-              >
+              // A page that names its own action states one destination, so
+              // there is no signed-in variant to swap in — the label is that
+              // page's sentence rather than the site's standing offer.
+              <a href={primaryCta.href} className={PRIMARY_CTA}>
                 {primaryCta.label}
               </a>
-            ) : null}
-            {secondaryCta ? (
-              <a
-                href={secondaryCta.href}
-                className="rounded-lg border border-foreground/20 bg-transparent px-5 py-2.5 text-center text-sm text-foreground transition-colors hover:bg-foreground/5 [[data-theme=dark]_&]:border-white/25 [[data-theme=dark]_&]:text-white"
-              >
-                {secondaryCta.label}
-              </a>
-            ) : null}
+            ) : (
+              <>
+                {/* Signed in, the primary opens the workspace instead of
+                    signup: both ship and `data-authed` picks one before paint
+                    (globals.css). */}
+                <a href={SIGNUP_URL} className={`unauth-only ${PRIMARY_CTA}`}>
+                  Get started
+                </a>
+                <a href={APP_URL} className={`auth-only ${PRIMARY_CTA}`}>
+                  Open Assembly
+                </a>
+              </>
+            )}
+            {/* The second action always ships. It used to render only when a
+                page passed one, so the default close came down to a single
+                button — and "Book demo" is the other half of the offer the
+                hero makes at the top of the same page. */}
+            <a href={secondaryCta?.href ?? DEMO_URL} className={SECONDARY_CTA}>
+              {secondaryCta?.label ?? "Book demo"}
+            </a>
           </div>
         ) : null}
         {composer ? (

@@ -1,6 +1,6 @@
 import { Fragment } from "react";
 import { AppMarkGlyph, type AppMark, type MarkTint } from "./app-marks";
-import { SIGNUP_URL, DEMO_URL } from "@/lib/constants";
+import { APP_URL, SIGNUP_URL, DEMO_URL } from "@/lib/constants";
 import { trackHeroCta } from "./hero-experiment";
 
 // The "big type" arm of the hero test (see src/lib/hero-variants.ts): oversized
@@ -129,6 +129,9 @@ function BigHeadline({
   );
 }
 
+const PRIMARY_CTA =
+  "inline-flex w-full shrink-0 items-center justify-center whitespace-nowrap rounded-lg bg-foreground px-4 py-3 text-center text-sm text-background transition-opacity hover:opacity-90 sm:w-auto sm:py-2 md:px-5 md:py-2.5 [[data-theme=dark]_&]:bg-white [[data-theme=dark]_&]:text-neutral-900";
+
 export function HeroBig({
   headline,
   body,
@@ -210,9 +213,15 @@ export function HeroBig({
             // The nav uses bg-white/text-neutral-900 on a dark top; this is the
             // same pair, written as a data-theme variant so it is right on the
             // first paint.
-            className="inline-flex w-full shrink-0 items-center justify-center whitespace-nowrap rounded-lg bg-foreground px-4 py-3 text-center text-sm text-background transition-opacity hover:opacity-90 sm:w-auto sm:py-2 md:px-5 md:py-2.5 [[data-theme=dark]_&]:bg-white [[data-theme=dark]_&]:text-neutral-900"
+            className={`unauth-only ${PRIMARY_CTA}`}
           >
             Get started
+          </a>
+          {/* Signed-in visitors are never enrolled in the test, so this one
+              carries no arm and no tracking. Both ship and `data-authed` picks
+              one before paint (see globals.css). */}
+          <a href={APP_URL} className={`auth-only ${PRIMARY_CTA}`}>
+            Open Assembly
           </a>
           <a
             href={DEMO_URL}

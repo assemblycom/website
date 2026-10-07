@@ -437,7 +437,7 @@ export function HeroV76({
           <HeroArmLinks arm={variant.arm} />
         </>
       )}
-      {layout === "bigtype" ? (
+      {layout === "v2" ? (
         <HeroBig
           headline={message.h1}
           lines={message.big.lines}

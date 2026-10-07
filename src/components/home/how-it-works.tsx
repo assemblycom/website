@@ -174,14 +174,15 @@ export function HowItWorks() {
             (left) and supporting copy (right) sharing a row so the copy lines
             up with the heading, not the eyebrow. */}
         <div className="mx-auto max-w-[1100px]">
-          <p className="type-eyebrow text-muted-foreground">How it works</p>
+          <p className="type-eyebrow text-muted-foreground">App builder</p>
           <div className="mt-4 grid gap-y-5 md:grid-cols-2 md:items-start md:gap-x-12">
             <h2 className="type-h2 max-w-lg text-balance text-foreground">
               Go from idea to a working app in four steps
             </h2>
             <p className="type-lead max-w-lg text-pretty text-muted-foreground">
-              Describe what you want in plain language, approve the plan, and get
-              a real app live in your workspace, then keep refining it by chat.
+              Describe what you want, approve the plan, and publish. Your app goes
+              live in your workspace with sign-in, permissions, and branding
+              already handled. Then keep refining it by chat.
             </p>
           </div>
         </div>

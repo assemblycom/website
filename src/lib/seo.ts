@@ -18,9 +18,9 @@ export { OG_IMAGE } from "./og";
 // sitemap all read from here, so the copy can only be written once.
 export const PAGE_SEO = {
   home: {
-    title: "Assembly AI App Builder",
+    title: "CRM, Client Portal & AI App Builder for Firms | Assembly",
     description:
-      "Vibe code the apps your firm needs, and they launch production-ready — secure, authenticated, and built for professional services firms, not a throwaway prototype.",
+      "Assembly gives service firms a CRM, a branded client experience, 30+ ready-made apps, and an AI app builder for what's missing. Free forever plan.",
     path: "/",
   },
   customers: {

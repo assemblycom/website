@@ -3,7 +3,7 @@ import { SESSION_COOKIE } from "@/lib/auth-script";
 import {
   armFromQuery,
   HERO_COOKIE,
-  parseArm,
+  migrateArm,
   randomArm,
   type Arm,
 } from "@/lib/hero-variants";
@@ -71,9 +71,8 @@ export function middleware(request: NextRequest) {
   // Reviewing a specific arm, via ?copy=&layout=. Writes the cookie too, so
   // clicking around the site afterwards stays in the arm being looked at.
   const forced = armFromQuery(searchParams);
-  const existing = parseArm(request.cookies.get(HERO_COOKIE)?.value)
-    ? (request.cookies.get(HERO_COOKIE)!.value as Arm)
-    : null;
+  const held = request.cookies.get(HERO_COOKIE)?.value;
+  const existing = migrateArm(held);
 
   const arm: Arm = forced ?? existing ?? randomArm();
 
@@ -84,7 +83,7 @@ export function middleware(request: NextRequest) {
   // Written on every enrolled request rather than only on the first: it is what
   // refreshes the ninety days, and it repairs a cookie that was tampered with
   // or left over from an arm that no longer exists.
-  if (arm !== existing) {
+  if (arm !== held) {
     response.cookies.set(HERO_COOKIE, arm, {
       maxAge: COOKIE_MAX_AGE,
       path: "/",
