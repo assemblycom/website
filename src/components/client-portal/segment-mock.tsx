@@ -72,7 +72,17 @@ const NEUTRAL = `${CHIP} bg-muted text-[color:var(--mock-ink-soft)] [[data-theme
 
 const LINE = "border-[var(--mock-line)]";
 /** The white panel the app is drawn on, wherever a card shows one. */
-const PANEL = `bg-[var(--mock-window)] text-[color:var(--mock-ink)] ${LINE}`;
+// The ordinary panel ground: a half step off the board, not the board itself.
+//
+// Flat --mock-window, these were the same tone as the surface behind them and
+// were held together only by their hairlines — four outlines on one field. A
+// slight lift makes each one an object. It is deliberately HALF of the step
+// panel's --mock-well: that panel is the thing to read first, and it can only
+// be stepped forward of these if these are not standing at the same height.
+//
+// Grey, with no hue in it. The board already tried a blue wash and lost it —
+// colour on a panel ground reads as the panel meaning something.
+const PANEL = `bg-[var(--mock-well-soft)] text-[color:var(--mock-ink)] ${LINE}`;
 
 // The tinted ground, for the ONE panel that gets it.
 //
