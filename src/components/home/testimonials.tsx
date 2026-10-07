@@ -1,221 +1,161 @@
-"use client";
-
-import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Section } from "@/components/ui/section";
 
 // ─────────────────────────────────────────────────────────────────────────
-// CUSTOMER STORIES — the expanding quote row from the earlier homepage, back
-// in place of the single featured story: with the logo reel gone, one firm was
-// the only social proof on the page. Recognisable names (Capital One) sit next
-// to firms like the reader's, and every card links to its full story.
+// CUSTOMER STORIES — one featured story, composed editorially: attribution
+// leads, then a large pull quote, a portrait pinned upper-right, and the
+// stats as a descending "bar chart" (tallest → shortest). The story link
+// floats in the whitespace above the shortest bar. Same copy as before —
+// only the composition changed.
+//
+// Carried by Advertai Marketing, the first Assembly firm with a full
+// story behind it — the attribution, portrait, and stats are theirs, and the
+// link goes to their case study rather than the customers index.
 // ─────────────────────────────────────────────────────────────────────────
 
-const TESTIMONIALS = [
-  {
-    quote:
-      "We’ve built out apps within weeks that I doubt we could have done within five to ten years before.",
-    author: "Garrett Leonard",
-    company: "Advertai Marketing",
-    slug: "advertai-marketing",
-  },
-  {
-    quote:
-      "Assembly flows directly into our internal quality control processes. Instead of duplicating work across systems, everything is connected, saving our team time and ensuring we always have the most accurate, up-to-date information.",
-    author: "Phillip LaRue",
-    company: "Capital One",
-    slug: "capital-one-luxury-travel",
-  },
-  {
-    quote:
-      "Assembly was the only solution that let us flexibly build our own version of a client portal, uniting elements of their technology with existing external core applications that we wanted to keep using.",
-    author: "Kyle Pearson",
-    company: "Collective CPA",
-    slug: "collective-cpa",
-  },
-  {
-    quote:
-      "We've definitely reduced inquiries by owners by at least 50%. It probably saved the cost of a whole extra administrator from my company.",
-    author: "Rachel Hugenschmidt",
-    company: "Jungle Luxe",
-    slug: "jungle-luxe",
-  },
-];
+const FEATURED = {
+  quote:
+    "We’ve built out apps within weeks that I doubt we could have done within five to ten years before.",
+  name: "Garrett",
+  firm: "Advertai Marketing",
+  image: "/images/customers/advertai-marketing.jpg",
+  stats: [
+    // The number is the claim; the caption only has to say what it counts. Set
+    // in mono caps, every extra word is a long line under a short headline.
+    { value: "5 weeks", label: "Development to launch" },
+    { value: "200+ clients", label: "Using applications" },
+    { value: "5+ tools", label: "Consolidated and saved" },
+  ],
+  href: "/customers/advertai-marketing",
+};
+
+// Descending bar heights (md+) so the row reads as a small chart and leaves
+// empty space above the last bar for the story link to sit in.
+const BAR_HEIGHTS = ["md:h-[280px]", "md:h-[228px]", "md:h-[186px]"];
 
 export function Testimonials() {
-  const [active, setActive] = useState(0);
-
   return (
-    // px-0 on the Section so the measure below owns the horizontal inset and
-    // the row lines up with the sections around it.
+    // px-0 on the Section so the measure below owns the horizontal inset: this
+    // section's edges have to land on the same line as the one under it, and
+    // 1100px inside the Section's own padding sat 10px short on either side.
     <Section id="testimonials" className="px-0 py-16 md:py-24">
-      <div className="mx-auto max-w-[1200px] px-6 md:px-10">
-        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-          <h2 className="type-h2 text-foreground">What our customers say</h2>
+      <div className="relative mx-auto max-w-[1200px] px-6 md:px-10">
+        {/* Portrait — pinned upper-right (desktop only).
+            right-10, not right-0: absolute offsets resolve against the padding
+            box, so right-0 parked it on the measure's outer edge — 40px past the
+            column every other element in the section lines up on. */}
+        <div className="absolute right-10 top-0 hidden size-32 overflow-hidden rounded-xl bg-muted [[data-theme=dark]_&]:bg-white/[0.06] md:block lg:size-36">
+          <Image
+            src={FEATURED.image}
+            alt=""
+            fill
+            // Declared well above the 144px box: object-cover scales the source
+            // by its short side, so the file has to be wider than the frame
+            // before the crop, and a retina screen doubles that again. At 144
+            // the optimizer returned a file narrower than the crop needed and
+            // the portrait was visibly soft. Quality has to be one of the values
+            // in next.config's `qualities` — anything else falls back to 75.
+            sizes="288px"
+            quality={90}
+            className="object-cover"
+          />
+        </div>
+
+        {/* Avatar on mobile — sits inline above the attribution. */}
+        <div className="relative mb-5 size-32 overflow-hidden rounded-xl bg-muted [[data-theme=dark]_&]:bg-white/[0.06] md:hidden">
+          <Image
+            src={FEATURED.image}
+            alt=""
+            fill
+            sizes="256px"
+            quality={90}
+            className="object-cover"
+          />
+        </div>
+
+        {/* Attribution leads the section — small caps in the mono face, the
+            colour shift (not a divider glyph) separates name from role. */}
+        <p className="type-eyebrow text-foreground md:pr-44">
+          {FEATURED.name}
+          <span className="ml-3 text-muted-foreground">{FEATURED.firm}</span>
+        </p>
+
+        {/* Pull quote — the hero of the section. type-h2 (28 → 36px) rather
+            than the hand-set 27/38 it used to carry: those were a step off the
+            scale in both directions, and the desktop end was running larger
+            than the section needs. The class brings its own weight (400, so PP
+            Mori doesn't map to SemiBold), tracking and leading. */}
+        {/* Desktop only: the opening mark hangs in the margin (negative
+            first-line indent, so it applies to that line alone). Punctuation
+            carries almost no visual weight, and with it in the column the word
+            the quote opens on sat a glyph short of the name above it. On a
+            phone the marks come off entirely — the column is narrow enough that
+            a hanging glyph reads as a stray character and every wrapped line
+            looked indented against it. The blockquote already says it's a
+            quote. */}
+        <blockquote className="type-h2 mt-5 max-w-3xl text-foreground md:pr-44 md:[text-indent:-0.4em]">
+          <span className="hidden md:inline">&ldquo;</span>
+          {FEATURED.quote}
+          <span className="hidden md:inline">&rdquo;</span>
+        </blockquote>
+
+        {/* On a phone the bars and the story link are ringed as one block, so
+            the link reads as the end of the proof rather than a stray line
+            under it. `md:contents` dissolves this wrapper at desktop, where the
+            bars are a chart and the link floats in the whitespace beside them —
+            so the grouping costs the desktop layout nothing. */}
+        <div className="mt-12 flex flex-col gap-3 rounded-lg border border-border p-3 md:contents">
+          {/* Stats. On mobile they stack as full-width rows (value left, label
+              right) so the labels get room instead of wrapping in cramped
+              columns. At md+ they become the descending bar chart — tallest to
+              shortest — with the story link floating above the last bar. */}
+          <div className="flex flex-col gap-3 md:mt-16 md:flex-row md:items-end md:gap-5">
+            {FEATURED.stats.map((s, i) => (
+              <div
+                key={s.label}
+                // bg-muted (the palette's light gray) rather than a warm off-white
+                // cream, which read as a different family from the rest of the page.
+                // No dark override either: the #262626 it used to carry sat a
+                // step above the FAQ cards, so the two blocks of the same kind
+                // read as different surfaces on the same page.
+                className={`flex flex-col items-start gap-2.5 rounded-lg bg-muted p-5 md:flex-1 md:justify-between md:gap-0 md:p-6 ${BAR_HEIGHTS[i]}`}
+              >
+                {/* A step down below md: at 22px over a 12px mono label the
+                    pair filled a phone-width block edge to edge and read as a
+                    headline rather than a figure. Desktop is untouched. */}
+                <p className="type-h3 leading-none text-foreground max-md:text-[18px]">
+                  {s.value}
+                </p>
+                {/* Small caps label in the mono face — standing in for ABC
+                  Diatype Caplock, which isn't in our bundled fonts yet. On
+                  mobile it sits below the value with the full box width. */}
+                {/* Muted in both themes: at full-strength ink the caption read
+                    as loud as the figure above it, which is the mark the block
+                    exists for. */}
+                <p className="type-eyebrow leading-snug text-muted-foreground max-md:text-[10px]">
+                  {s.label}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          {/* Story link — floats in the whitespace above the shortest bar on
+            desktop; the last line inside the ringed block on mobile. */}
           <Link
-            href="/customers"
-            className="type-body group inline-flex items-center gap-1.5 text-foreground"
+            href={FEATURED.href}
+            className="type-body group inline-flex items-center gap-1.5 px-2 pb-1 pt-2 text-foreground md:absolute md:bottom-[210px] md:right-10 md:mt-0 md:p-0 lg:bottom-[218px]"
           >
-            <span>See all customer stories</span>
+            {/* No rule under the text: the arrow beside it already reads as a
+              link, and the underline was a third horizontal line in a block
+              that is mostly horizontal lines. Hover brightens instead. */}
+            <span className="transition-colors group-hover:text-foreground">
+              Read firm&rsquo;s story
+            </span>
             <span className="transition-transform duration-200 group-hover:translate-x-0.5">
               &rarr;
             </span>
           </Link>
-        </div>
-
-        {/* Expanding panels. The active panel widens to reveal the full quote;
-            the others collapse to columns showing the company name. Desktop
-            expands on hover, mobile stacks them as an accordion. */}
-        <div className="mt-12 flex flex-col gap-3 lg:h-[460px] lg:flex-row">
-          {TESTIMONIALS.map((t, i) => {
-            const isActive = i === active;
-            return (
-              <div
-                key={t.company}
-                role="button"
-                tabIndex={0}
-                onClick={() => setActive(i)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    setActive(i);
-                  }
-                }}
-                onMouseEnter={() => setActive(i)}
-                onFocus={() => setActive(i)}
-                aria-expanded={isActive}
-                className={`group relative flex cursor-pointer overflow-hidden rounded-2xl border border-border bg-muted text-left transition-[flex-grow,background-color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-                  isActive
-                    ? "lg:flex-[6]"
-                    : "lg:min-w-[170px] lg:flex-[1] lg:hover:bg-muted/70"
-                }`}
-              >
-                {/* Collapsed label (desktop): photo above the company name. */}
-                <span
-                  className={`pointer-events-none absolute inset-x-0 bottom-0 hidden flex-col gap-3 p-6 transition-opacity duration-300 lg:flex ${
-                    isActive ? "opacity-0" : "opacity-100"
-                  }`}
-                >
-                  <Image
-                    src={`/images/customers/${t.slug}.jpg`}
-                    alt={t.company}
-                    width={56}
-                    height={56}
-                    className="size-14 rounded-xl object-cover"
-                  />
-                  <span className="whitespace-nowrap text-base font-normal text-muted-foreground">
-                    {t.company}
-                  </span>
-                </span>
-
-                {/* Expanded content. A fixed width on desktop keeps the quote
-                    from reflowing while the panel grows, so the expand reads
-                    as a slide. The width is what the open panel gets once the
-                    three collapsed ones and the gaps are taken out. */}
-                <div
-                  className={`flex min-w-0 flex-col transition-opacity duration-300 lg:w-[min(574px,calc(100vw-626px))] lg:shrink-0 lg:flex-row ${
-                    isActive ? "opacity-100 lg:delay-100" : "opacity-100 lg:opacity-0"
-                  }`}
-                >
-                  {/* Portrait from xl up; below that the open panel is too
-                      narrow to hold it beside the quote. */}
-                  <div className="hidden shrink-0 p-3 xl:block">
-                    <Image
-                      src={`/images/customers/${t.slug}.jpg`}
-                      alt={t.author}
-                      width={320}
-                      height={440}
-                      className="h-full w-48 rounded-xl object-cover"
-                    />
-                  </div>
-                  <div className="flex min-w-0 flex-1 flex-col p-5 lg:justify-between lg:p-8">
-                    {/* Mobile header row — the always-visible tap target. */}
-                    <div className="flex items-center gap-3 lg:hidden">
-                      <Image
-                        src={`/images/customers/${t.slug}.jpg`}
-                        alt={t.author}
-                        width={80}
-                        height={80}
-                        className="size-12 shrink-0 rounded-lg object-cover"
-                      />
-                      <span className="flex min-w-0 flex-1 flex-col">
-                        <span className="text-[15px] font-medium">{t.author}</span>
-                        <span className="text-sm text-muted-foreground">
-                          {t.company}
-                        </span>
-                      </span>
-                      <svg
-                        width="16"
-                        height="16"
-                        viewBox="0 0 16 16"
-                        fill="none"
-                        aria-hidden
-                        className={`shrink-0 text-muted-foreground transition-transform duration-300 ${
-                          isActive ? "rotate-180" : ""
-                        }`}
-                      >
-                        <path
-                          d="M4 6l4 4 4-4"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </div>
-                    {/* Quote and story link — collapsible on mobile, always
-                        open on desktop. */}
-                    <div
-                      className={`grid transition-[grid-template-rows] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] lg:block ${
-                        isActive ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
-                      }`}
-                    >
-                      <div className="min-h-0 overflow-hidden">
-                        <p
-                          className={`pt-4 text-base leading-relaxed transition-opacity duration-300 md:text-lg lg:pt-0 lg:opacity-100 ${
-                            isActive ? "opacity-100 delay-100" : "opacity-0"
-                          }`}
-                        >
-                          &ldquo;{t.quote}&rdquo;
-                        </p>
-                        <Link
-                          href={`/customers/${t.slug}`}
-                          onClick={(e) => e.stopPropagation()}
-                          className="type-body group/link mt-4 inline-flex items-center gap-1.5 text-foreground lg:hidden"
-                        >
-                          <span>Read the story</span>
-                          <span className="transition-transform duration-200 group-hover/link:translate-x-0.5">
-                            &rarr;
-                          </span>
-                        </Link>
-                      </div>
-                    </div>
-                    {/* Desktop attribution and story link, anchored at the
-                        foot; on mobile the header row carries the name. */}
-                    <div className="mt-6 hidden items-end justify-between gap-4 lg:flex">
-                      <span className="flex flex-col">
-                        <span className="text-base font-medium">{t.author}</span>
-                        <span className="text-sm text-muted-foreground">
-                          {t.company}
-                        </span>
-                      </span>
-                      <Link
-                        href={`/customers/${t.slug}`}
-                        tabIndex={isActive ? 0 : -1}
-                        className="type-body group/link inline-flex shrink-0 items-center gap-1.5 text-foreground"
-                      >
-                        <span>Read the story</span>
-                        <span className="transition-transform duration-200 group-hover/link:translate-x-0.5">
-                          &rarr;
-                        </span>
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
         </div>
       </div>
     </Section>
