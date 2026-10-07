@@ -136,6 +136,21 @@
   --mock-accent-bg-3: #c4d6ff;
   --mock-accent-bg-4: #dfe8ff;
 
+  /* The project tracker's bar colours, taken from the template itself.
+     
+     Categorical, not a scale: they distinguish one engagement from the next and
+     carry no rank, which is why they are four hues rather than four tints of
+     one. This is the single place on the site where a mock uses colour that is
+     not Haze — a Gantt whose bars are all one colour is a Gantt nobody can
+     follow a row across, and the template's own answer is the right one.
+     
+     All four are mid-tones chosen to carry white type, since the owner's name
+     sits on the bar. */
+  --mock-gantt-1: #3f9185;
+  --mock-gantt-2: #b55561;
+  --mock-gantt-3: #7c2f88;
+  --mock-gantt-4: #7a6fc4;
+
   /* ── Mock chrome surfaces (LIGHT) ───────────────────────────────────────
      The product mocks drawn inside rail cards (portal-build-cards) used to
      reach for --background / --muted / raw white directly. That works in
@@ -271,6 +286,15 @@
   --mock-accent-bg-2: rgba(125, 164, 255, 0.72);
   --mock-accent-bg-3: rgba(125, 164, 255, 0.46);
   --mock-accent-bg-4: rgba(125, 164, 255, 0.28);
+
+  /* See --mock-gantt-1 in :root. Lifted about eight percent, because a mid-tone
+     tuned against a near-white card sits heavy on #212121 — the bar stops
+     reading as a filled shape and starts reading as a hole. The hues are
+     unchanged, so a row is the same colour in either theme. */
+  --mock-gantt-1: #4aa396;
+  --mock-gantt-2: #c4646f;
+  --mock-gantt-3: #9240a0;
+  --mock-gantt-4: #8a80d2;
 
   /* ── Mock chrome surfaces (DARK) ────────────────────────────────────────
      Rebuilt on the layering Linear uses in dark: surfaces step UP from the

@@ -99,7 +99,21 @@ export function PortalTailor({
               <div className={`flex flex-col ${CARD} ${PAD}`}>
                 <p className={TITLE}>A client progress dashboard</p>
                 <p className={BODY}>Milestones and outcomes per engagement.</p>
-                <div className="mt-6 min-h-[264px] flex-1">
+                {/* A DEFINITE height, not flex-1.
+                
+                    The Gantt kept sizing this card. flex-1 with min-h-0 should
+                    have stopped that and did not — the stack is nine bars deep
+                    on purpose, and between the heading and the rows the card
+                    grew to 569px, dragging the approvals card beside it up to
+                    match and putting that whole row half as tall again as the
+                    one below.
+                
+                    265px settles it from the other direction: the box is told
+                    what it is, the stack clips inside it, and the rules run to
+                    its foot because that foot is now a real edge rather than
+                    wherever the content happened to stop. It also puts this row
+                    back in step with the one under it. */}
+                <div className="mt-6 h-[265px] overflow-hidden">
                   <ProgressMock />
                 </div>
               </div>
