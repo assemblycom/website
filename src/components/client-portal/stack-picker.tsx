@@ -68,6 +68,7 @@ const TOOLS: {
     name: "DocuSign",
     does: "Signatures and records",
     how: "Embed",
+    logo: "docusign.png",
   },
   {
     initials: "QB",
