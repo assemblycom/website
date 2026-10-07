@@ -6,8 +6,8 @@ import {
   DocumentsMock,
   OnboardingMock,
   PortalSidebar,
-  ProgressMock,
 } from "@/components/client-portal/segment-mock";
+import { ProgressMock } from "@/components/client-portal/progress-donut";
 import { IconArrowUp } from "@/components/home/build-step-visual";
 import { IconPlus } from "@/components/home/mock-icons";
 import { getTemplateBySlug } from "@/lib/templates";

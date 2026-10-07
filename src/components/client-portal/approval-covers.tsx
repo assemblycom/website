@@ -83,24 +83,57 @@ export function ApprovalCovers() {
             // control inside hidden content must not be a tab stop, or the
             // keyboard lands somewhere a screen reader says does not exist.
             tabIndex={-1}
-            // The picked frame is a DARKER GREY, not ink.
+            // Picked is a TINTED PLATE, not a drawn frame.
             //
-            // At full --mock-ink it was near-black: a hard rule drawn around a
-            // photograph, and the loudest mark on a screen whose entire subject
-            // is the artwork inside the frames. --mock-ink-soft is one step
-            // back and still unmistakable against a plate carrying nothing,
-            // because it is not doing the work alone — the filled box in the
-            // corner is what states the choice, and the frame only has to
-            // agree with it.
+            // It used to be a lighter border — #adb2bb in light, #6b6b6b in
+            // dark — which meant the chosen cover was announced by a rule drawn
+            // around a photograph, on a screen whose entire subject is the
+            // artwork inside the frames. A heavier line is the loudest thing
+            // you can put next to a picture, and it reads as the frame being
+            // emphasised rather than the picture being chosen.
             //
-            // Dark keeps #6b6b6b and is NOT lightened to match. The two
-            // themes run opposite directions here: light steps DOWN from white
-            // toward the hairline, dark steps UP from #2e2e2e. #6b6b6b is
-            // already the gentle end of that range.
-            className={`group/plate pointer-events-auto flex min-h-0 cursor-pointer flex-col overflow-hidden rounded-[4px] border text-left transition-colors ${
+            // A wash under the plate says it without drawing anything. The art
+            // covers most of the card, so what the tint actually colours is the
+            // caption strip under it — which is the right place for it: that
+            // strip is the card's label, and a chosen thing having a coloured
+            // label is a far older idea than a chosen thing having a thicker
+            // outline.
+            //
+            // GREY, from --mock-well-2 — the neutral lift, not a hue.
+            //
+            // A green wash was tried first, on the reasoning that this screen
+            // is an approval and the picked cover is the approved one. It is
+            // the wrong argument here: these two plates are photographs with
+            // their own colour in them, and a tinted strip under one of them
+            // competes with the artwork instead of labelling it. Green also
+            // claims a verdict — approved — when the state is only "this is the
+            // one we are looking at", which is what a selection is.
+            //
+            // --mock-well-2 is the same rung the onboarding board's step panel
+            // stands on, so a chosen thing is lifted the same way in both
+            // pictures, and it moves the right way per theme on its own: up
+            // from black in dark, down from white in light.
+            //
+            // HOVER IS A GROUND TOO, not a firmer rule. With the choice moved
+            // off the border it would have been odd to leave the hover on it —
+            // the plate would answer the cursor in one language and the
+            // selection in another, and the firmer rule would read as the
+            // weaker half of a state the tint had already taken over.
+            //
+            // So the three states are three rungs of one neutral ladder:
+            // nothing, --mock-well on hover, --mock-well-2 when picked. Hover
+            // sits BELOW picked deliberately — pointing at a plate must never
+            // look more committed than having chosen it, and with the hover a
+            // step short the chosen plate stays the brighter one even while the
+            // cursor is on its neighbour.
+            //
+            // The border is now the plain hairline in every state, so it stops
+            // carrying meaning at all and goes back to being the edge of a
+            // plate.
+            className={`group/plate pointer-events-auto flex min-h-0 cursor-pointer flex-col overflow-hidden rounded-[4px] border text-left transition-colors ${LINE} ${
               on
-                ? "border-[#adb2bb] [[data-theme=dark]_&]:border-[#6b6b6b]"
-                : `${LINE} hover:border-[var(--mock-ink-soft)]`
+                ? "bg-[var(--mock-well-2)]"
+                : "hover:bg-[var(--mock-well)]"
             }`}
           >
             {/* The art is 3:4 and the plate is nearly square, so object-cover

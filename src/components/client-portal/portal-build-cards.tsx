@@ -452,7 +452,7 @@ export function PlanCard() {
 // per project carrying whose it is, how far through it is, and what is next.
 // The window is 760 wide against a card that shows about 420 of it, so the
 // third column is cropped — which is what the bleed is for.
-// ONE column, not three. The card shows 320px of the window and 136 of that is
+// ONE column, not three. The card shows 380px of the window and 136 of that is
 // the sidebar, so a three-column board meant two columns cropped — and a column
 // sliced down its length reads as a rendering fault, not as a board continuing.
 // The one column that is left gets the whole width instead, which is enough for
@@ -628,8 +628,17 @@ export function BuildCard() {
           of bare card above a screenshot that is the card's whole subject. At
           412 it begins just under the scene's own top padding, so the window
           reads as filling the frame rather than floating in it. */}
+        {/* 380 WIDE, up from 320, and the extra 60 all goes to the board.
+          The sidebar is fixed at 136, so widening the window is the only way to
+          give the lane more room — and the window already runs off the card's
+          right edge (rounded-tr-none, border-r-0), so the cost is simply that
+          the crop falls further right. Nothing new is hidden: what gets cut is
+          the empty right half of a lane that was already cut.
+
+          It buys the project cards about a third more measure, which is the
+          difference between titles written to fit and titles that fit. */}
         <div
-          style={{ width: 320, height: 412 }}
+          style={{ width: 380, height: 412 }}
           className={`flex shrink-0 ${WINDOW} rounded-b-none rounded-tr-none border-b-0 border-r-0`}
         >
           <div

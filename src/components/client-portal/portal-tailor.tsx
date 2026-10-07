@@ -3,8 +3,8 @@ import {
   ApprovalsMock,
   DocumentsStatsMock,
   OnboardingMock,
-  ProgressMock,
 } from "@/components/client-portal/segment-mock";
+import { ProgressMock } from "@/components/client-portal/progress-donut";
 
 /** Shared by every card in the set. The page's one panel grey — these were on
  *  --muted, which is a different grey from the tray and the template rows a

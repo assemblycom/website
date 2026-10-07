@@ -452,131 +452,6 @@ export function ApprovalsMock() {
   );
 }
 
-// ── 2. Consultants — a chart, no chrome ──────────────────────────────────
-// Progress across engagements is a magnitude per client, so it is a bar list:
-// four rows, one per engagement, each a track filled to its share. Drawn
-// straight onto the card the way the reference draws its artwork, so one card
-// in the set is a chart rather than a window.
-//
-// Labels sit INSIDE the track at full width rather than being the bar itself:
-// with the bar's width carrying the value, the shortest row could not hold
-// "Northwind Group" and every name would have truncated.
-const ENGAGEMENTS = [
-  { client: "Meridian Corp", done: 6, total: 6 },
-  { client: "Oakwood LLC", done: 5, total: 6 },
-  { client: "Bloom Studios", done: 3, total: 6 },
-  { client: "Northwind Group", done: 2, total: 6 },
-];
-
-// NO FIGURES. The rows carried "6/6", "5/6" and so on at the right end, and
-// they were the one thing on this card asking to be read rather than seen.
-//
-// A bar already states a proportion — that is the entire reason to draw one —
-// so the count beside it was the same fact in a second notation, at 13px, on a
-// mock nobody is meant to study. What is left is four lengths and four client
-// names, which is what a glanceable dashboard is.
-//
-// It also removes the awkward part of the hover: the figures had to crossfade
-// between two readings to keep up with the bars growing, which was machinery
-// in service of something the bars were already saying.
-//
-// The bars are drawn in Haze, the brand blue (#7DA4FF on /brand), through
-// --mock-accent-bg.
-//
-// They were grey, which said how far along each engagement is and nothing
-// else; they were then briefly a green/amber/red traffic light, which said far
-// too much. How far through a piece of work a client is is a MAGNITUDE, and
-// the length of the bar already carries it — recolouring that scale as good,
-// warning and bad turns the chart into a judgement about four named clients
-// that nothing on the card supports. One tone leaves the length to do its job
-// and makes the card read as ours.
-//
-// The tokens, not the hex. Haze is a fixed brand value but the TINT of it that
-// works on a card is not: light needs it mixed into white, dark needs it
-// translucent, and only --mock-accent-bg knows which is in force.
-//
-// One RUNG PER ROW, strongest first, the way the brand's charts separate a
-// series by tint rather than by hue. ENGAGEMENTS is ordered by completeness,
-// so the index is the rank — the furthest-along client gets Haze at full and
-// each one behind it steps a shade lighter. Length still carries the number;
-// the tint just stops four bars of one colour reading as one block.
-const BAR_RAMP = [
-  "bg-[var(--mock-accent-bg)]",
-  "bg-[var(--mock-accent-bg-2)]",
-  "bg-[var(--mock-accent-bg-3)]",
-  "bg-[var(--mock-accent-bg-4)]",
-];
-
-// Hover advances the bars, the same move the rail's project card already makes
-// and on the same easing — a dashboard's claim is that the work moves, and a
-// still list of four fixed bars is the one thing that cannot say so.
-//
-// Each row that is NOT already complete gains one milestone. Meridian is at
-// 6/6 and stays there, which is what keeps the move reading as progress rather
-// than as a decorative wobble: the bar that has nowhere to go does not move.
-//
-// Staggered top to bottom so the four read as a cascade rather than as one
-// block resizing. Written out as literal classes for Tailwind's scanner, and
-// the whole thing is motion-safe — the widths simply land at their resting
-// value with no transition under reduced motion.
-const BAR_MOVE =
-  "motion-safe:transition-[width] motion-safe:duration-500 motion-safe:ease-out motion-reduce:transition-none";
-const BAR_DELAY = [
-  "",
-  "motion-safe:delay-[60ms]",
-  "motion-safe:delay-[120ms]",
-  "motion-safe:delay-[180ms]",
-];
-
-export function ProgressMock() {
-  return (
-    <div
-      aria-hidden
-      className="group/progress flex h-full select-none flex-col justify-center"
-    >
-      <div className="flex flex-col gap-2">
-        {ENGAGEMENTS.map(({ client, done, total }, i) => {
-          // The track stays neutral. Tinting it too would make every row a
-          // full-width block of the same blue and the lengths would stop
-          // reading — the bar has to end somewhere visible to be a bar.
-          const rest = (done / total) * 100;
-          const lifted = (Math.min(done + 1, total) / total) * 100;
-          return (
-            <div
-              key={client}
-              className="relative h-[36px] overflow-hidden rounded-md bg-foreground/[0.05] [[data-theme=dark]_&]:bg-white/[0.06]"
-            >
-              <div
-                className={`absolute inset-y-0 left-0 rounded-md w-[var(--bar-rest)] group-hover/progress:w-[var(--bar-lifted)] ${BAR_RAMP[i] ?? ""} ${BAR_MOVE} ${BAR_DELAY[i] ?? ""}`}
-                style={
-                  {
-                    // BOTH widths are handed over as custom properties and
-                    // applied by CLASS. An inline `width` would win against
-                    // the hover rule outright — inline style beats any
-                    // selector — so the bars simply never moved. This way the
-                    // values stay computed and the rules stay literal classes
-                    // the scanner can see, with :hover's specificity deciding
-                    // which one is in force.
-                    "--bar-rest": `${rest}%`,
-                    "--bar-lifted": `${lifted}%`,
-                  } as React.CSSProperties
-                }
-              />
-              {/* One label, left. The figures that used to sit at the right
-                  end are gone — see the note on ENGAGEMENTS. */}
-              <div className="relative flex h-full items-center px-3">
-                <span className="truncate text-[13px] leading-none text-[color:var(--mock-ink)]">
-                  {client}
-                </span>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
 // ── 2b. Accounting — the collection as an analytics tile ─────────────────
 // A SECOND documents picture, for the tailor grid. DocumentsMock below is the
 // portal screen and is what the hero carousel draws, so it is left alone; this
@@ -1208,8 +1083,10 @@ function MobileAppBar({
    * A toolbar inset from the screen's edges reads as another panel, so it has
    * to run the full width — but how far it has to pull out depends on the
    * padding of whatever is holding it, and the two screens using this differ.
-   * The onboarding board sits in a p-2.5 grid and cancels that; the intake
-   * form's column has no padding of its own and needs nothing.
+   * The intake form's column has no padding of its own and needs nothing. The
+   * onboarding board used to pass -mx-2.5 -mt-2.5 to cancel its grid's padding;
+   * the bar now sits above that grid rather than inside it, so there is nothing
+   * left to cancel.
    */
   className?: string;
 }) {
@@ -1260,12 +1137,31 @@ export function OnboardingMock() {
       // each other, so the whole screen sank into the page and only the panels
       // read as anything. On white it is unmistakably an app screen; the panels
       // keep their hairline borders, which is separation enough.
-      className="pointer-events-none grid h-full select-none grid-cols-1 content-start gap-2.5 bg-[var(--mock-window)] text-[color:var(--mock-ink)] p-2.5 sm:grid-cols-[1.55fr_1fr]"
+      className="pointer-events-none flex h-full select-none flex-col bg-[var(--mock-window)] text-[color:var(--mock-ink)]"
     >
-      <MobileAppBar app="Client onboarding" className="-mx-2.5 -mt-2.5" />
+      <MobileAppBar app="Client onboarding" />
+      {/* The same bar the approvals screen carries, for the same reason.
 
-      {/* Where this client is up to. */}
-      {/* "Onboarding progress", and nothing else above the meter.
+          This was the one card in the set that opened straight onto its
+          content: four panels and no chrome above them, so where the approvals
+          card plainly showed an app, this showed a board that could have come
+          from anywhere. The set's argument is that these are all one portal,
+          and a screen with no header is the one that does not make it.
+
+          Crumb AND title, because this board is a record you are deep in — one
+          client's onboarding — which is the case AppHeader's crumb exists for.
+          The client named is the one the Access panel lists first, so the
+          header and the panels describe the same engagement.
+
+          Hidden below sm: MobileAppBar above is the bar at that width, and two
+          headers stacked on a phone would make the chrome taller than the
+          content it introduces. */}
+      <div className="hidden sm:block">
+        <AppHeader crumb="Client onboarding" title="Marta Reyes" />
+      </div>
+      <div className="grid min-h-0 flex-1 grid-cols-1 content-start gap-2.5 p-2.5 sm:grid-cols-[1.55fr_1fr]">
+        {/* Where this client is up to. */}
+        {/* "Onboarding progress", and nothing else above the meter.
       
           It was an eyebrow reading "Client onboarding" with "Engagement letter"
           set large underneath — the app's name, then the current step, stacked
@@ -1278,8 +1174,8 @@ export function OnboardingMock() {
           The step name is not lost: it is in the labels under the meter, where
           the filled run already points at it. Saying it twice, once in 13px,
           was the heading competing with the thing it was heading. */}
-      <Panel title="Onboarding progress" tinted>
-        {/* One segment per step, on the SAME GRID as the step names.
+        <Panel title="Onboarding progress" tinted>
+          {/* One segment per step, on the SAME GRID as the step names.
 
             This was four segments once before and was replaced by a single
             continuous track, because those segments were drawn in four
@@ -1353,47 +1249,47 @@ export function OnboardingMock() {
             stopped halfway and nothing after it. A percentage of the ink token
             resolves against whichever theme is up, so one value holds in both
             instead of a light hex and a dark override that can drift apart. */}
-        <div className="mt-3">
-          <div className="grid grid-cols-4 gap-1.5">
-            {STEPS.map((s, i) => (
-              <span key={s} className="flex gap-[2px]">
-                {TICKS.map((j) => (
-                  <span
-                    key={j}
-                    className={`h-[7px] flex-1 rounded-[1px] ${
-                      i <= 1
-                        ? "bg-[var(--mock-positive-fg)]"
-                        : "bg-[var(--mock-ink)]/12"
-                    }`}
-                  />
-                ))}
-              </span>
-            ))}
-          </div>
-          {/* The NAMES are hidden on a phone, not the bars. At four across a
+          <div className="mt-3">
+            <div className="grid grid-cols-4 gap-1.5">
+              {STEPS.map((s, i) => (
+                <span key={s} className="flex gap-[2px]">
+                  {TICKS.map((j) => (
+                    <span
+                      key={j}
+                      className={`h-[7px] flex-1 rounded-[1px] ${
+                        i <= 1
+                          ? "bg-[var(--mock-positive-fg)]"
+                          : "bg-[var(--mock-ink)]/12"
+                      }`}
+                    />
+                  ))}
+                </span>
+              ))}
+            </div>
+            {/* The NAMES are hidden on a phone, not the bars. At four across a
               300px screen every name truncated to a stub, and a row of stubs
               reads as damage. The bars survive that width intact — four of
               them, two filled, is still legible at 60px apiece — and
               "Engagement letter" above names the step the client is on, which
               is the one name that matters while they are in it. */}
-          <div className="mt-2 hidden grid-cols-4 gap-1.5 sm:grid">
-            {STEPS.map((s, i) => (
-              <span
-                key={s}
-                className={`truncate text-[8.5px] leading-none ${
-                  i <= 1
-                    ? "text-[color:var(--mock-ink)]"
-                    : "text-[color:var(--mock-ink-soft)]"
-                }`}
-              >
-                {s}
-              </span>
-            ))}
+            <div className="mt-2 hidden grid-cols-4 gap-1.5 sm:grid">
+              {STEPS.map((s, i) => (
+                <span
+                  key={s}
+                  className={`truncate text-[8.5px] leading-none ${
+                    i <= 1
+                      ? "text-[color:var(--mock-ink)]"
+                      : "text-[color:var(--mock-ink-soft)]"
+                  }`}
+                >
+                  {s}
+                </span>
+              ))}
+            </div>
           </div>
-        </div>
-      </Panel>
+        </Panel>
 
-      {/* Just the count now.
+        {/* Just the count now.
 
           The "Saved" pill under it was the tallest thing in the top row, and
           because grid items stretch, it was setting the height of the step
@@ -1405,15 +1301,15 @@ export function OnboardingMock() {
           Nothing is lost by dropping it: the meter next door shows two steps
           done, which is the same claim — progress is being kept — made by the
           thing the panel is actually about. */}
-      <Panel title="Progress">
-        <p className="mt-2 text-[20px] leading-none text-[color:var(--mock-ink)]">
-          2 of 4
-        </p>
-      </Panel>
+        <Panel title="Progress">
+          <p className="mt-2 text-[20px] leading-none text-[color:var(--mock-ink)]">
+            2 of 4
+          </p>
+        </Panel>
 
-      {/* Cropped by the card edge. */}
-      <Panel title="Secure data room">
-        {/* The files sit in a RULED BOX — a table, not a loose list.
+        {/* Cropped by the card edge. */}
+        <Panel title="Secure data room">
+          {/* The files sit in a RULED BOX — a table, not a loose list.
 
             Three rows divided by hairlines and nothing else were three lines of
             text that happened to have rules between them; the rules read as
@@ -1437,32 +1333,32 @@ export function OnboardingMock() {
             every row is a file and the panel says so. The names carry their own
             extensions, and without the icons the names start at the column's
             edge, which is where the eye starts. */}
-        <div
-          className={`mt-2 overflow-hidden rounded-[6px] border [&>span]:px-2.5 ${LINE}`}
-        >
-          <Row
-            label="Deed of trust.pdf"
-            trailing={<span className={POSITIVE_QUIET}>Uploaded</span>}
-          />
-          <Row
-            label="Proof of identity.pdf"
-            trailing={<span className={POSITIVE_QUIET}>Uploaded</span>}
-          />
-          <Row
-            label="Source of funds.pdf"
-            trailing={<span className={POSITIVE_QUIET}>Uploaded</span>}
-          />
-          {/* The outstanding one stays LAST. The list is read top to bottom and
+          <div
+            className={`mt-2 overflow-hidden rounded-[6px] border [&>span]:px-2.5 ${LINE}`}
+          >
+            <Row
+              label="Deed of trust.pdf"
+              trailing={<span className={POSITIVE_QUIET}>Uploaded</span>}
+            />
+            <Row
+              label="Proof of identity.pdf"
+              trailing={<span className={POSITIVE_QUIET}>Uploaded</span>}
+            />
+            <Row
+              label="Source of funds.pdf"
+              trailing={<span className={POSITIVE_QUIET}>Uploaded</span>}
+            />
+            {/* The outstanding one stays LAST. The list is read top to bottom and
               the thing still wanted is the thing to end on; sorted any other
               way the panel closes on something already done. */}
-          <Row
-            label="Signed letter"
-            trailing={<span className={WARNING_QUIET}>Awaiting</span>}
-          />
-        </div>
-      </Panel>
+            <Row
+              label="Signed letter"
+              trailing={<span className={WARNING_QUIET}>Awaiting</span>}
+            />
+          </div>
+        </Panel>
 
-      {/* Who can see this onboarding.
+        {/* Who can see this onboarding.
       
           It used to be the rule line and two grey bars. The bars were standing
           in for content nobody had decided on, which is the one thing a mock
@@ -1480,31 +1376,32 @@ export function OnboardingMock() {
           initials-on-a-tile avatar the portal bar and the build cards use. A
           new row shape here would have been a third way of drawing a person on
           one screen. */}
-      <Panel title="Access" className="hidden sm:block">
-        {/* No "Client only" line above the names any more. With the list in
+        <Panel title="Access" className="hidden sm:block">
+          {/* No "Client only" line above the names any more. With the list in
             place it was the same fact twice — the rule, and then the set it
             resolves to — and the rule said it less precisely. The names are
             the stronger form of the claim, so the restatement goes. */}
-        <div className="mt-2">
-          {/* The role is the reason the person is in the list, so it sits where
+          <div className="mt-2">
+            {/* The role is the reason the person is in the list, so it sits where
               the file panel puts its status: at the end of the row, muted, as
               the answer to the name rather than as a second heading. Plain
               type and not a chip — these are not states, and a pill here would
               be the third chip shape on the board. */}
-          {ACCESS.map(({ initials, name, role }) => (
-            <Row
-              key={name}
-              lead={<Initials>{initials}</Initials>}
-              label={name}
-              trailing={
-                <span className="shrink-0 text-[9px] leading-none text-[color:var(--mock-ink-soft)]">
-                  {role}
-                </span>
-              }
-            />
-          ))}
-        </div>
-      </Panel>
+            {ACCESS.map(({ initials, name, role }) => (
+              <Row
+                key={name}
+                lead={<Initials>{initials}</Initials>}
+                label={name}
+                trailing={
+                  <span className="shrink-0 text-[9px] leading-none text-[color:var(--mock-ink-soft)]">
+                    {role}
+                  </span>
+                }
+              />
+            ))}
+          </div>
+        </Panel>
+      </div>
     </div>
   );
 }
