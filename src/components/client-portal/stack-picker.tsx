@@ -25,6 +25,8 @@
 
 import { useState } from "react";
 
+import { SIGNUP_URL } from "@/lib/constants";
+
 // Real products, because the claim is about a firm's existing stack and a list
 // of invented tools would be a list of nothing. Names only, no logos: those are
 // other people's marks, and a lettered tile is what the product itself shows
@@ -110,12 +112,11 @@ export function StackPicker({
 
   return (
     <div
-      // aria-hidden, like the other pictures on this page. Every tool named
-      // here is an example of something the copy beside it already states, so
-      // a screen reader that walked the list would be read the same claim
-      // twice — once as the argument and once as seven product names with no
-      // way to act on any of them.
-      aria-hidden
+      // NOT aria-hidden any more. It was, on the grounds that every tool here
+      // is an example of a claim the copy beside it already makes and there
+      // was nothing to act on — which stopped being true the moment the rows
+      // became links. A hidden list of real destinations is a set of doors a
+      // keyboard can tab into and a screen reader is never told about.
       title={title}
       // A DOUBLE BORDER, drawn the way the hero's frames are.
       //
@@ -143,9 +144,14 @@ export function StackPicker({
       {TOOLS.map(({ initials, name, does, how }, i) => {
         const on = i === active;
         return (
-          <div
+          <a
             key={name}
+            href={SIGNUP_URL}
             onMouseEnter={() => setActive(i)}
+            // Focus selects the row too, so tabbing through shows the same
+            // state pointing does. Without it a keyboard lands on a row that
+            // looks exactly like the six it is not on.
+            onFocus={() => setActive(i)}
             // THE LIST IS AS LONG AS THE PANEL IS TALL.
             //
             // The slot is 300px on a phone, 380 from md and 440 from lg, and
@@ -165,7 +171,7 @@ export function StackPicker({
               on
                 ? "bg-foreground/[0.06] [[data-theme=dark]_&]:bg-white/[0.07]"
                 : ""
-            }`}
+            } focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40`}
           >
             <span
               className={`flex size-8 shrink-0 items-center justify-center rounded-lg text-[11px] leading-none ${PLATE}`}
@@ -178,6 +184,12 @@ export function StackPicker({
             <span className="min-w-0 truncate text-[15px] text-foreground">
               {name}
             </span>
+            {/* The link's name on its own is a product Assembly does not make.
+                "Google Calendar" announced as a link, with no indication of
+                where it leads, is the kind of thing that reads as an outbound
+                link to Google. The destination said out loud, for anyone not
+                reading the button. */}
+            <span className="sr-only">— connect it in Assembly, get started</span>
             {/* WHAT IT DOES at rest, WHAT YOU DO WITH IT on hover.
 
                 The right column carried the mechanism in both states, which
@@ -210,7 +222,7 @@ export function StackPicker({
                 </span>
               )}
             </span>
-          </div>
+          </a>
         );
       })}
     </div>
