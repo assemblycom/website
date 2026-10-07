@@ -19,6 +19,7 @@ import {
   IconChat,
   IconDocuments,
   IconFile,
+  IconArrowUpRight,
   IconGlobe,
 } from "@/components/home/mock-icons";
 
@@ -72,17 +73,6 @@ function NavRow({
   label: string;
   active?: boolean;
   branded?: boolean;
-  /**
-   * What sits on the tile beside the name.
-   *
-   * "logo" is a firm's own mark — correct wherever the screen belongs to
-   * somebody. The generic portal in the problem section belongs to nobody, and
-   * a mark there quietly gave it one: the two screens carried the SAME logo,
-   * so the picture's whole argument ("one of these is yours") was contradicted
-   * by its own chrome. "initial" draws the brand's first letter instead, which
-   * is what every product puts on a workspace that has uploaded nothing.
-   */
-  mark?: "logo" | "initial";
 }) {
   return (
     <span
@@ -127,7 +117,6 @@ export function PortalSidebar({
   app,
   brand = "Brandmages",
   branded = false,
-  mark = "logo",
 }: {
   /** The firm's own app, added to the stock nav below. Omit for a portal
       that has no such app — the point the problem section makes. */
@@ -144,17 +133,6 @@ export function PortalSidebar({
    * a grey nav on both sides quietly contradicts.
    */
   branded?: boolean;
-  /**
-   * What sits on the tile beside the name.
-   *
-   * "logo" is a firm's own mark — correct wherever the screen belongs to
-   * somebody. The generic portal in the problem section belongs to nobody, and
-   * a mark there quietly gave it one: the two screens carried the SAME logo,
-   * so the picture's whole argument ("one of these is yours") was contradicted
-   * by its own chrome. "initial" draws the brand's first letter instead, which
-   * is what every product puts on a workspace that has uploaded nothing.
-   */
-  mark?: "logo" | "initial";
 }) {
   return (
     <div
@@ -169,32 +147,10 @@ export function PortalSidebar({
             our chrome, so it is the same on the brand slab and off it. */}
         <span
           className={`flex size-[15px] items-center justify-center rounded-[3px] ${
-            branded
-              ? "bg-white text-black"
-              : mark === "initial"
-                ? // A placeholder tile, not a brand one: the default avatar a
-                  // workspace gets before anyone uploads anything, which is the
-                  // state this screen is illustrating. At bg-foreground it was
-                  // a solid black tile, the loudest mark in the screen the
-                  // section wants read as the dimmer half.
-                  //
-                  // The mock's own ink at 10%, not --mock-well-2. The wells are
-                  // recesses in a WINDOW, and this tile sits on the SIDEBAR,
-                  // which is already a well — so a well-coloured tile on it was
-                  // the same grey twice and the avatar disappeared. Ink-at-10
-                  // steps off whatever it is on, in either theme, because it
-                  // is drawn from the ink rather than from the ground.
-                  "bg-[var(--mock-ink)]/10 text-[color:var(--mock-ink-soft)]"
-                : "bg-foreground text-background"
+            branded ? "bg-white text-black" : "bg-foreground text-background"
           }`}
         >
-          {mark === "initial" ? (
-            <span className="text-[8px] leading-none">
-              {brand.trim().charAt(0).toUpperCase()}
-            </span>
-          ) : (
-            <IconBrandMark className="size-[8px]" />
-          )}
+          <IconBrandMark className="size-[8px]" />
         </span>
         <span
           className={`truncate text-[10.5px] leading-none ${
@@ -586,37 +542,113 @@ const ORBIT_TOOLS = [
   "Rate card drive",
 ];
 
+/**
+ * The apps the bought portal came with. Four fixed tabs, and that is the set —
+ * which is the caption's whole point ("the portal you bought has the apps it
+ * has"). Deliberately NOT Assembly's own Home / Messages / Files / Billing: a
+ * competitor's product does not share our labels, and a reader who knows the
+ * product would have read the same nav twice.
+ */
+const BOUGHT_TABS = ["Dashboard", "Inbox", "Documents", "Invoices"];
+
+/**
+ * The portal a firm bought from somebody else.
+ *
+ * It used to be drawn in ASSEMBLY's chrome — the same PortalSidebar component
+ * as the screen beside it, the same nav labels, the same icons — with only the
+ * workspace name changed. So the "before" half of the argument was a picture of
+ * our own product wearing a different name, and the comparison read as two
+ * states of one app rather than as somebody else's software against ours.
+ *
+ * Now it is a different product, and says so in its chrome rather than in its
+ * copy:
+ *
+ * - **Tabs across the top, not a sidebar.** This is the single loudest signal,
+ *   and it also happens to be the caption: the apps it has, in a row, with no
+ *   room to add one.
+ * - **No icons on the nav, and a plain wordmark** — no logo tile. Every nav row
+ *   on this site carries an icon, so dropping them reads as another product
+ *   immediately.
+ * - **Squarer corners and a tighter type size** than the Assembly screens,
+ *   which is what an older webapp looks like beside a current one.
+ *
+ * It stays on the --mock-* tokens throughout, so it is a different PRODUCT
+ * rather than a different palette, and it is correct in both themes. It is also
+ * held back in opacity and desaturated by the section, not here — a mock should
+ * not know it is the bad example.
+ */
 export function GenericPortalMock() {
   return (
     <div
       aria-hidden
-      className="pointer-events-none flex h-full select-none bg-[var(--mock-window)] text-[color:var(--mock-ink)]"
+      className="pointer-events-none flex h-full select-none flex-col bg-[var(--mock-window)] text-[color:var(--mock-ink)]"
     >
-      <PortalSidebar brand="Generic" mark="initial" />
-      <div className="flex min-w-0 flex-1 flex-col">
-        <AppHeader title="Billing" />
-        <div className="flex min-h-0 flex-1 flex-col px-4 py-3.5">
-          <span className="block text-[10px] leading-none text-[color:var(--mock-ink-soft)]">
-            Everything else
-          </span>
-          {/* Dashed, because none of these is an app the portal holds — they
-              are the tabs the work actually lives in, parked beside it. */}
-          <div className="mt-2.5 flex flex-col gap-1.5">
-            {ORBIT_TOOLS.map((tool) => (
-              <span
-                key={tool}
-                className={`flex items-center justify-between gap-2 truncate rounded-[5px] border border-dashed px-2.5 py-[9px] text-[11px] leading-none text-[color:var(--mock-ink-soft)] ${LINE}`}
-              >
-                {tool}
-                <IconGlobe className="size-[11px] shrink-0" />
-              </span>
-            ))}
-          </div>
-          {/* No button. These screens are cropped by the tray they sit in, so
-              a control pinned to the bottom of one was half-cut as often as
-              not — and a picture of a button that cannot be pressed is a
-              promise the mock does not keep. The list above is the point. */}
+      {/* The product's own bar. A blank square where a logo would go, and the
+          product's name as plain type — it is nobody's portal, so it carries
+          nobody's mark. */}
+      <div
+        className={`flex items-center gap-2 border-b bg-[var(--mock-well)] px-4 py-2.5 ${LINE}`}
+      >
+        <span className="size-[13px] shrink-0 rounded-[2px] bg-[var(--mock-ink)]/15" />
+        <span className="truncate text-[10.5px] leading-none text-[color:var(--mock-ink-soft)]">
+          Client Portal
+        </span>
+      </div>
+
+      {/* The fixed set, as a tab strip. The open one is marked by an underline
+          sitting on the strip's own rule rather than by a filled pill: the pill
+          is how THIS site marks a picked row, and the two screens should not
+          mark the same idea the same way. */}
+      <div className={`flex items-center gap-5 border-b px-4 ${LINE}`}>
+        {BOUGHT_TABS.map((tab, i) => {
+          const open = i === BOUGHT_TABS.length - 1;
+          return (
+            <span
+              key={tab}
+              className={`-mb-px border-b py-[9px] text-[10.5px] leading-none ${
+                open
+                  ? "border-[var(--mock-ink)] text-[color:var(--mock-ink)]"
+                  : "border-transparent text-[color:var(--mock-ink-soft)]"
+              }`}
+            >
+              {tab}
+            </span>
+          );
+        })}
+      </div>
+
+      <div className="flex min-h-0 flex-1 flex-col px-4 py-3.5">
+        {/* "Everything else" was the label here and it did not say what the
+            rows were — three dashed boxes under a vague heading, each marked
+            with the same icon. This names the one thing they have in common,
+            which is the caption's point: the portal does not hold them. */}
+        <span className="block text-[10px] leading-none text-[color:var(--mock-ink-soft)]">
+          Not in your portal
+        </span>
+        {/* Dashed, because none of these is an app the portal holds — they are
+            the tabs the work actually lives in, parked beside it. Squarer than
+            the Assembly screens' rows, like the rest of this product.
+
+            The mark on the right is an OUT arrow, not the house glyph that was
+            here before (IconGlobe draws a house despite its name, so all three
+            rows carried a home icon, which says nothing about any of them). An
+            out arrow is the one mark everybody reads as "this opens somewhere
+            else", which is exactly what each of these is. */}
+        <div className="mt-2.5 flex flex-col gap-1.5">
+          {ORBIT_TOOLS.map((tool) => (
+            <span
+              key={tool}
+              className={`flex items-center justify-between gap-2 truncate rounded-[3px] border border-dashed px-2.5 py-[9px] text-[11px] leading-none text-[color:var(--mock-ink-soft)] ${LINE}`}
+            >
+              {tool}
+              <IconArrowUpRight className="size-[10px] shrink-0" />
+            </span>
+          ))}
         </div>
+        {/* No button. These screens are cropped by the tray they sit in, so a
+            control pinned to the bottom of one was half-cut as often as not —
+            and a picture of a button that cannot be pressed is a promise the
+            mock does not keep. The list above is the point. */}
       </div>
     </div>
   );
