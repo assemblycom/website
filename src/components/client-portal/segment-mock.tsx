@@ -72,7 +72,12 @@ const NEUTRAL = `${CHIP} bg-muted text-[color:var(--mock-ink-soft)] [[data-theme
 
 const LINE = "border-[var(--mock-line)]";
 /** The white panel the app is drawn on, wherever a card shows one. */
-const PANEL = `bg-[var(--mock-window)] text-[color:var(--mock-ink)] ${LINE}`;
+// The panels carry the tint, not the progress bars and not the board behind
+// them. Colour on the track made the data the loudest thing in the picture;
+// on the panel ground it reads as the surface the app is drawn on, which is
+// what a tint is for. --mock-window-tint holds the mix for each theme, so
+// nothing themed is written here.
+const PANEL = `bg-[var(--mock-window-tint)] text-[color:var(--mock-ink)] ${LINE}`;
 
 function NavRow({
   icon,
@@ -1205,6 +1210,12 @@ export function OnboardingMock() {
             the current step is already called out in the line above and in the
             names below, so the bar does not need a third tone to say it a
             third time.
+
+            The bars stay NEUTRAL. They were put on the Haze ramp once and taken
+            back off: colour on the track makes the progress bar the loudest
+            thing on the board, and the tint this picture wanted belongs to the
+            panel behind it, where it reads as the surface being tinted rather
+            than as the data being coloured.
 
             The empty tone is INK AT 12%, not bg-muted. Segmented, the unfilled
             bars are carrying something the continuous track never asked them

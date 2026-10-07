@@ -126,7 +126,22 @@ export function PortalTailor({
                 panels already do. The rest crops, which is what the card was
                 always doing on its right. */}
                 <div
-                  className={`-mr-6 mt-8 min-h-[180px] flex-1 overflow-hidden rounded-tl-xl border-l border-t border-[var(--mock-line)] max-md:[mask-image:linear-gradient(to_right,#000_0_78%,rgba(0,0,0,0.55)_90%,transparent_100%)] md:-mr-10 md:mt-10 md:min-h-[248px]`}
+                  // .mock-edge — the lit border the AI app builder's hero
+                  // screen wears, on the identical shape: rounded-tl-xl with a
+                  // left and top border and nothing on the other two sides,
+                  // because the board runs off the card there.
+                  //
+                  // Dark only, which is where the class is defined. In light a
+                  // flat --mock-line hairline is already a border against a
+                  // bright card; in dark a single flat grey around a near-black
+                  // panel reads as a line that has been dimmed rather than as
+                  // an edge catching light, which is the whole reason the hero
+                  // has this.
+                  //
+                  // The default 540x400 ellipse is kept — this box is ~583x301,
+                  // close enough to the hero screen's own size that the ramp
+                  // crosses it the same way, so no --mock-edge-w/-h override.
+                  className={`mock-edge -mr-6 mt-8 min-h-[180px] flex-1 overflow-hidden rounded-tl-xl border-l border-t border-[var(--mock-line)] bg-[var(--mock-window)] max-md:[mask-image:linear-gradient(to_right,#000_0_78%,rgba(0,0,0,0.55)_90%,transparent_100%)] md:-mr-10 md:mt-10 md:min-h-[248px]`}
                 >
                   <OnboardingMock />
                 </div>
