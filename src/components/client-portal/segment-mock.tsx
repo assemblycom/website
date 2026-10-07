@@ -103,18 +103,24 @@ const PANEL = `bg-[var(--mock-well-soft)] text-[color:var(--mock-ink)] ${LINE}`;
 
 // The lifted ground, for the ONE panel that gets it.
 //
-// --mock-well-2, not a hue. A blue wash was tried and dropped: colour here
-// reads as a status — the panel meaning something — when all it has to do is
-// be the panel you look at first.
+// The lift is DARK ONLY now. In dark the panel stands a rung above its three
+// neighbours on --mock-well-2; in light it sits on --mock-well-soft, the same
+// ground they use, so nothing marks it out there.
 //
-// It started on --mock-well, one rung down, and that was too close to the
-// half-step the other three sit on to be worth the distinction. -2 is the top
-// of the same neutral ladder and moves the right way in BOTH themes on its
-// own: dark goes up (#292929 → #303030) because lifting a surface off black
-// means more light, light goes down (#f7f8fa → #f2f3f6) because lifting a
-// surface off white means less. One token name, two opposite directions,
-// which is the whole reason to take the rung rather than brighten a value by
-// hand and have to remember to darken the other theme to match.
+// Why light gives it up: lifting a surface off white means going DARKER, and
+// --mock-well-2 is #f2f3f6 against a near-white board — a grey panel among
+// three pale ones, which reads as that panel being disabled or sunken rather
+// than brought forward. The move that means "forward" on black means "back" on
+// white, and there is no value that says forward in both. Dark keeps it,
+// because there the rung does read as a lift (#292929 → #303030).
+//
+// So in light the step panel is distinguished by nothing at all, which is the
+// honest outcome: the meter inside it is already the loudest thing on the
+// board, and on a white ground that is enough.
+//
+// Not a hue either way. A blue wash was tried and dropped — colour here reads
+// as a status, the panel meaning something, when all it has to do is be the
+// panel you look at first.
 // It also catches the light, like the frame around it.
 //
 // .mock-edge again — the hero's lit border, and now the board's outer frame's —
@@ -148,7 +154,7 @@ const PANEL = `bg-[var(--mock-well-soft)] text-[color:var(--mock-ink)] ${LINE}`;
 // colour differs, because those sit on --surface and this sits on the board's
 // --mock-window. 4px total clears the board's 10px gutter and 10px padding, so
 // the ring never meets a neighbour or the frame.
-const PANEL_TINT = `mock-edge [--mock-edge-fill:var(--mock-well-2)] [--mock-edge-w:120%] [--mock-edge-h:150%] bg-[var(--mock-well-2)] text-[color:var(--mock-ink)] [[data-theme=dark]_&]:shadow-[0_0_0_3px_var(--mock-window),0_0_0_4px_var(--mock-line)] ${LINE}`;
+const PANEL_TINT = `mock-edge [--mock-edge-fill:var(--mock-well-2)] [--mock-edge-w:120%] [--mock-edge-h:150%] bg-[var(--mock-well-soft)] [[data-theme=dark]_&]:bg-[var(--mock-well-2)] text-[color:var(--mock-ink)] [[data-theme=dark]_&]:shadow-[0_0_0_3px_var(--mock-window),0_0_0_4px_var(--mock-line)] ${LINE}`;
 
 function NavRow({
   icon,
