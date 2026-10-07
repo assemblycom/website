@@ -33,10 +33,6 @@ export function CTA() {
             Book demo
           </a>
         </div>
-
-        <p className="mt-5 text-sm text-muted-foreground">
-          Free forever plan. No credit card required.
-        </p>
       </div>
     </section>
   );
