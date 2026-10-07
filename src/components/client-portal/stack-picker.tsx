@@ -74,12 +74,14 @@ const TOOLS: {
     name: "QuickBooks",
     does: "Ledger and reconciliation",
     how: "Connect",
+    logo: "quickbooks.png",
   },
   {
     initials: "ZP",
     name: "Zapier",
     does: "Routing between tools",
     how: "Automate",
+    logo: "zapier.svg",
   },
   {
     initials: "CL",
