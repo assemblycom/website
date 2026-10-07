@@ -170,12 +170,10 @@ export function HowItWorks() {
       className="pb-16 pt-16 md:pb-24 md:pt-24"
     >
       <div className="mx-auto max-w-[1600px] px-6 md:px-10">
-        {/* Header, aligned to the block below: eyebrow on top, then heading
-            (left) and supporting copy (right) sharing a row so the copy lines
-            up with the heading, not the eyebrow. */}
+        {/* Header, aligned to the block below: heading (left) and supporting
+            copy (right) sharing a row. */}
         <div className="mx-auto max-w-[1100px]">
-          <p className="type-eyebrow text-muted-foreground">App builder</p>
-          <div className="mt-4 grid gap-y-5 md:grid-cols-2 md:items-start md:gap-x-12">
+          <div className="grid gap-y-5 md:grid-cols-2 md:items-start md:gap-x-12">
             <h2 className="type-h2 max-w-lg text-balance text-foreground">
               Go from idea to a working app in four steps
             </h2>

@@ -12,8 +12,7 @@ import { useEffect, useRef, useState } from "react";
 import { IconBrandMark } from "@/components/home/mock-icons";
 
 // The section heading and body are placeholders: the PRD gives copy for the
-// four tabs and the "Unified platform" eyebrow, not for the header.
-const EYEBROW = "Unified platform";
+// four tabs, not for the header.
 const HEADING = "Everything your firm runs on, in one place";
 const BODY =
   "A CRM for your team, a branded client experience, 30+ ready-made apps, and an AI app builder for everything else.";
@@ -672,11 +671,10 @@ export function ProductionGap() {
   return (
     <section id="production-gap" className="py-16 md:py-24">
       <div className="mx-auto max-w-[1600px] px-6 md:px-10">
-        {/* Header — left-aligned: eyebrow on top, then heading (left) and body
-            (right) sharing a row. */}
+        {/* Header — left-aligned: heading (left) and body (right) sharing a
+            row. */}
         <div className="mx-auto max-w-[1100px]">
-          <p className="type-eyebrow text-muted-foreground">{EYEBROW}</p>
-          <div className="mt-4 grid gap-y-5 md:grid-cols-2 md:items-start md:gap-x-12">
+          <div className="grid gap-y-5 md:grid-cols-2 md:items-start md:gap-x-12">
             {/* Balanced: unbalanced, this heading left "part" alone on a second
                 line at phone widths. No effect on desktop, where it fits one. */}
             <h2 className="type-h2 max-w-lg text-balance text-foreground">
