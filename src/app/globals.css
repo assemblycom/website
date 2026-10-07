@@ -90,6 +90,33 @@
   --mock-negative-bg: #fbeceb;
   --mock-negative-fg: #b8443a;
 
+  /* Haze, the brand blue (#7DA4FF on /brand), as a mock tint.
+     
+     Separate from the status trio above and used differently: those three say
+     good / warning / bad, this one just says "ours". A magnitude — how far
+     through an engagement a client is — is not a status, and colouring it
+     green-to-red turns a progress bar into a judgement the dashboard has not
+     earned. The brand tone carries the bar without claiming anything.
+     
+     A RAMP, not one value: Haze at full strength, then stepped into white in
+     three falling tints. This is how the brand's own charts are drawn — one
+     hue, the series separated by tint, the strongest carrying the largest
+     figure — rather than by handing each series a different hue.
+     
+     It replaces two earlier attempts. A green/amber/red traffic light said far
+     more than a progress chart has earned: how far through a job a client is
+     is a magnitude, not a verdict on the client. One flat Haze fixed that but
+     threw away the ordering the colour could carry for free. The ramp keeps
+     the brand tone AND lets the strongest bar read as the strongest.
+     
+     Mixed into white rather than given an alpha, because in light these sit on
+     two different grounds — the card and the bar's own track — and an alpha
+     would come out as two different colours across one row. */
+  --mock-accent-bg: #7da4ff;
+  --mock-accent-bg-2: #a4bfff;
+  --mock-accent-bg-3: #c4d6ff;
+  --mock-accent-bg-4: #dfe8ff;
+
   /* ── Mock chrome surfaces (LIGHT) ───────────────────────────────────────
      The product mocks drawn inside rail cards (portal-build-cards) used to
      reach for --background / --muted / raw white directly. That works in
@@ -190,6 +217,23 @@
   --mock-negative-bg: rgba(224, 122, 113, 0.14);
   --mock-negative-fg: #d9928b;
 
+  /* See --mock-accent-bg in :root. Haze again, but laid down at 38% rather
+     than at full value, which is NOT a quieter-in-dark preference — it is the
+     label.
+     
+     The row's name sits ON the bar and runs off the end of it onto the track,
+     so one text colour has to work over both. In light that is easy: near-black
+     ink reads on Haze and on the pale track alike. In dark the ink is #ededed,
+     which reads on the dark track and dies on full Haze. At 38% over the card
+     Haze lands around #41537a — still unmistakably the brand blue, and dark
+     enough that the light label holds all the way across. The three tints
+     under it step down from there, so the ramp runs the same direction it does
+     in light while every rung stays darker than the ink sitting on it. */
+  --mock-accent-bg: #7da4ff;
+  --mock-accent-bg-2: rgba(125, 164, 255, 0.72);
+  --mock-accent-bg-3: rgba(125, 164, 255, 0.46);
+  --mock-accent-bg-4: rgba(125, 164, 255, 0.28);
+
   /* ── Mock chrome surfaces (DARK) ────────────────────────────────────────
      Rebuilt on the layering Linear uses in dark: surfaces step UP from the
      ground and never back down, and each nested level is lighter than the one
@@ -285,6 +329,25 @@
   border-color: transparent;
   background-image:
     linear-gradient(var(--mock-window), var(--mock-window)),
+    /* The counter-light at the opposite corner.
+
+       The ramp below runs from the top-left and lands on #212121, so the whole
+       lower-right quadrant of the border arrived at the same flat value and the
+       corner furthest from the light had no falloff left in it — a bezel lit
+       from one side only, which reads as a hairline that has been dimmed rather
+       than as an object catching light.
+
+       White at a few percent, not a second grey: it LIFTS whatever the ramp
+       underneath has already put down, so the two never disagree about a value
+       and the corner stays a continuation of the same edge. It dies out well
+       before the midpoint, so the top-left remains the light. */
+      radial-gradient(
+      ellipse var(--mock-edge-w, 540px) var(--mock-edge-h, 400px) at 100% 100%,
+      rgba(255, 255, 255, 0.05) 0%,
+      rgba(255, 255, 255, 0.028) 35%,
+      rgba(255, 255, 255, 0.008) 62%,
+      transparent 80%
+    ),
     radial-gradient(
       ellipse var(--mock-edge-w, 540px) var(--mock-edge-h, 400px) at 0% 0%,
       #484848 0%,
@@ -295,7 +358,7 @@
       #212121 100%
     );
   background-origin: border-box;
-  background-clip: padding-box, border-box;
+  background-clip: padding-box, border-box, border-box;
 }
 
 @theme inline {

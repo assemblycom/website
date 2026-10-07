@@ -13,18 +13,19 @@
 // than a new icon family or new colours. Decorative only.
 // ─────────────────────────────────────────────────────────────────────────
 
-import Image from "next/image";
+import { ApprovalCovers } from "@/components/client-portal/approval-covers";
 
 import {
   IconBrandMark,
   IconCard,
   IconChat,
+  IconChevronDown,
   IconChevronRight,
-  IconCheck,
   IconDocuments,
   IconFile,
   IconArrowUpRight,
   IconGlobe,
+  IconPlus,
 } from "@/components/home/mock-icons";
 
 // Two glyphs the shared set does not carry, drawn to its light-stroke
@@ -306,30 +307,6 @@ function Row({
 // photo. It is drawn for imagery instead — a dark scrim with a white check and
 // a white hairline, the control every photo picker uses, identical in both
 // themes because the thing behind it is identical in both themes.
-const PICKED_EDGE =
-  "border-[var(--mock-ink-soft)] [[data-theme=dark]_&]:border-[#6b6b6b]";
-const DOT_ON_ART = "border backdrop-blur-[2px]";
-const PICKED_DOT = `${DOT_ON_ART} border-white/50 bg-black/60 text-white`;
-const UNPICKED_DOT = `${DOT_ON_ART} border-white/70 bg-black/25`;
-
-// One of them is already picked, because that is the mechanic this screen is
-// for — you choose the designs you are happy with, and you may choose more than
-// one. With none picked the round was identical frames and a pair of buttons,
-// which is a gallery.
-//
-// TWO, not three. Three meant a 2x2 grid with an orphan on the second row, and
-// splitting the height across two rows left each plate a letterbox — the one
-// shape a catalogue cover is never in. One row of two gives each plate the
-// panel's whole height.
-const COVERS = [
-  {
-    name: "Cover A",
-    src: "/images/mocks/covers/cover-1.jpg",
-    picked: true,
-    comments: 1,
-  },
-  { name: "Cover B", src: "/images/mocks/covers/cover-2.jpg", picked: false },
-];
 
 export function ApprovalsMock() {
   return (
@@ -394,76 +371,11 @@ export function ApprovalsMock() {
                 Shared Jul 30
               </span>
             </div>
-            {/* The designs, two up. Each carries its own select control in the
-                corner, which is what makes this an approval rather than a
-                gallery — you can pick more than one. */}
-            <div className="grid min-h-0 flex-1 grid-cols-2 gap-2 p-2.5">
-              {COVERS.map(({ name, src, picked, comments }) => (
-                <div
-                  key={name}
-                  // The picked one is outlined in ink. A tint behind it was
-                  // tried and is wrong here: the frame holds artwork, and
-                  // washing the artwork is how you say "disabled", not
-                  // "chosen".
-                  className={`flex min-h-0 flex-col overflow-hidden rounded-[4px] border ${
-                    picked ? PICKED_EDGE : LINE
-                  }`}
-                >
-                  {/* The art is 3:4 and the plate is nearly square, so
-                      object-cover crops the TOP AND BOTTOM. Positioned at 28%
-                      rather than centre: these are head-and-shoulders
-                      portraits with the face in the upper half, and a centred
-                      crop takes the forehead off and keeps the sweater. What
-                      goes is background above and knitwear below, which is
-                      what a catalogue crop drops anyway.
-
-                      sizes 480 and quality 90, both deliberately generous.
-                      The plate is about 200px in the DESIGN space, but this
-                      mock is scaled into whatever width its card gets and then
-                      rendered on retina, so the 220px variant it used to ask
-                      for was being drawn at well over its own size and came
-                      out soft. 480 covers the largest card at 2x, and 90
-                      overrides next/image's default 75 — on skin and hair,
-                      75 is where JPEG starts showing in the gradients. */}
-                  <div className="relative min-h-0 flex-1 overflow-hidden bg-[var(--mock-well-2)]">
-                    <Image
-                      src={src}
-                      alt=""
-                      fill
-                      sizes="480px"
-                      quality={90}
-                      className="object-cover object-[50%_28%]"
-                    />
-                    <span
-                      // Picked is drawn in --mock-ink-soft, not --mock-ink.
-                      // At full ink the mark was near-black on a pale plate and
-                      // a near-black rule around the frame — the loudest pair
-                      // of marks on a screen whose subject is the artwork
-                      // inside them. One step back still reads as chosen
-                      // against two frames that carry nothing.
-                      className={`absolute left-1.5 top-1.5 flex size-[11px] items-center justify-center rounded-full ${
-                        picked ? PICKED_DOT : UNPICKED_DOT
-                      }`}
-                    >
-                      {picked ? <IconCheck className="size-[7px]" /> : null}
-                    </span>
-                  </div>
-                  <div
-                    className={`flex items-center justify-between gap-1.5 border-t px-2 py-1.5 text-[9.5px] leading-none text-[color:var(--mock-ink)] ${LINE}`}
-                  >
-                    <span className="truncate">{name}</span>
-                    {comments ? (
-                      <span className="flex shrink-0 items-center gap-0.5 text-[color:var(--mock-ink-soft)]">
-                        <IconChat className="size-[9px]" />
-                        {comments}
-                      </span>
-                    ) : null}
-                  </div>
-                </div>
-              ))}
-            </div>
+            {/* The designs, two up, with the select control in each corner —
+                which is what makes this an approval rather than a gallery.
+                One at a time; see ApprovalCovers for why. */}
+            <ApprovalCovers />
           </div>
-
         </div>
       </div>
     </div>
@@ -486,32 +398,110 @@ const ENGAGEMENTS = [
   { client: "Northwind Group", done: 2, total: 6 },
 ];
 
+// NO FIGURES. The rows carried "6/6", "5/6" and so on at the right end, and
+// they were the one thing on this card asking to be read rather than seen.
+//
+// A bar already states a proportion — that is the entire reason to draw one —
+// so the count beside it was the same fact in a second notation, at 13px, on a
+// mock nobody is meant to study. What is left is four lengths and four client
+// names, which is what a glanceable dashboard is.
+//
+// It also removes the awkward part of the hover: the figures had to crossfade
+// between two readings to keep up with the bars growing, which was machinery
+// in service of something the bars were already saying.
+//
+// The bars are drawn in Haze, the brand blue (#7DA4FF on /brand), through
+// --mock-accent-bg.
+//
+// They were grey, which said how far along each engagement is and nothing
+// else; they were then briefly a green/amber/red traffic light, which said far
+// too much. How far through a piece of work a client is is a MAGNITUDE, and
+// the length of the bar already carries it — recolouring that scale as good,
+// warning and bad turns the chart into a judgement about four named clients
+// that nothing on the card supports. One tone leaves the length to do its job
+// and makes the card read as ours.
+//
+// The tokens, not the hex. Haze is a fixed brand value but the TINT of it that
+// works on a card is not: light needs it mixed into white, dark needs it
+// translucent, and only --mock-accent-bg knows which is in force.
+//
+// One RUNG PER ROW, strongest first, the way the brand's charts separate a
+// series by tint rather than by hue. ENGAGEMENTS is ordered by completeness,
+// so the index is the rank — the furthest-along client gets Haze at full and
+// each one behind it steps a shade lighter. Length still carries the number;
+// the tint just stops four bars of one colour reading as one block.
+const BAR_RAMP = [
+  "bg-[var(--mock-accent-bg)]",
+  "bg-[var(--mock-accent-bg-2)]",
+  "bg-[var(--mock-accent-bg-3)]",
+  "bg-[var(--mock-accent-bg-4)]",
+];
+
+// Hover advances the bars, the same move the rail's project card already makes
+// and on the same easing — a dashboard's claim is that the work moves, and a
+// still list of four fixed bars is the one thing that cannot say so.
+//
+// Each row that is NOT already complete gains one milestone. Meridian is at
+// 6/6 and stays there, which is what keeps the move reading as progress rather
+// than as a decorative wobble: the bar that has nowhere to go does not move.
+//
+// Staggered top to bottom so the four read as a cascade rather than as one
+// block resizing. Written out as literal classes for Tailwind's scanner, and
+// the whole thing is motion-safe — the widths simply land at their resting
+// value with no transition under reduced motion.
+const BAR_MOVE =
+  "motion-safe:transition-[width] motion-safe:duration-500 motion-safe:ease-out motion-reduce:transition-none";
+const BAR_DELAY = [
+  "",
+  "motion-safe:delay-[60ms]",
+  "motion-safe:delay-[120ms]",
+  "motion-safe:delay-[180ms]",
+];
+
 export function ProgressMock() {
   return (
     <div
       aria-hidden
-      className="pointer-events-none flex h-full select-none flex-col justify-center"
+      className="group/progress flex h-full select-none flex-col justify-center"
     >
       <div className="flex flex-col gap-2">
-        {ENGAGEMENTS.map(({ client, done, total }) => (
-          <div
-            key={client}
-            className="relative h-[36px] overflow-hidden rounded-md bg-foreground/[0.05] [[data-theme=dark]_&]:bg-white/[0.06]"
-          >
+        {ENGAGEMENTS.map(({ client, done, total }, i) => {
+          // The track stays neutral. Tinting it too would make every row a
+          // full-width block of the same blue and the lengths would stop
+          // reading — the bar has to end somewhere visible to be a bar.
+          const rest = (done / total) * 100;
+          const lifted = (Math.min(done + 1, total) / total) * 100;
+          return (
             <div
-              className="absolute inset-y-0 left-0 rounded-md bg-foreground/[0.11] [[data-theme=dark]_&]:bg-white/[0.12]"
-              style={{ width: `${(done / total) * 100}%` }}
-            />
-            <div className="relative flex h-full items-center justify-between gap-3 px-3">
-              <span className="truncate text-[13px] leading-none text-[color:var(--mock-ink)]">
-                {client}
-              </span>
-              <span className="shrink-0 text-[13px] leading-none tabular-nums text-[color:var(--mock-ink-soft)]">
-                {done}/{total}
-              </span>
+              key={client}
+              className="relative h-[36px] overflow-hidden rounded-md bg-foreground/[0.05] [[data-theme=dark]_&]:bg-white/[0.06]"
+            >
+              <div
+                className={`absolute inset-y-0 left-0 rounded-md w-[var(--bar-rest)] group-hover/progress:w-[var(--bar-lifted)] ${BAR_RAMP[i] ?? ""} ${BAR_MOVE} ${BAR_DELAY[i] ?? ""}`}
+                style={
+                  {
+                    // BOTH widths are handed over as custom properties and
+                    // applied by CLASS. An inline `width` would win against
+                    // the hover rule outright — inline style beats any
+                    // selector — so the bars simply never moved. This way the
+                    // values stay computed and the rules stay literal classes
+                    // the scanner can see, with :hover's specificity deciding
+                    // which one is in force.
+                    "--bar-rest": `${rest}%`,
+                    "--bar-lifted": `${lifted}%`,
+                  } as React.CSSProperties
+                }
+              />
+              {/* One label, left. The figures that used to sit at the right
+                  end are gone — see the note on ENGAGEMENTS. */}
+              <div className="relative flex h-full items-center px-3">
+                <span className="truncate text-[13px] leading-none text-[color:var(--mock-ink)]">
+                  {client}
+                </span>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
@@ -536,38 +526,45 @@ export function DocumentsStatsMock() {
         <p className="text-[11.5px] leading-none text-[color:var(--mock-ink-soft)]">
           Documents received
         </p>
-        <p className="mt-2 text-[24px] leading-none text-[color:var(--mock-ink)]">8 of 12</p>
+        <p className="mt-2 text-[24px] leading-none text-[color:var(--mock-ink)]">
+          8 of 12
+        </p>
       </div>
 
       {/* No axis rule: with the columns all starting from the same edge the
           baseline is already read, and the line only added a second horizontal
           to a card that has one under the heading. Corners are rounded at both
           ends so each column is a complete shape rather than a strip cut off
-          at the bottom — which is what the rule was there to hide. 6px gutter,
-          one direct label on the peak. */}
+          at the bottom — which is what the rule was there to hide. 6px gutter.
+
+          No date range under it and no figure over the peak either. "8 of 12"
+          is the number this card is making, stated once at full size; a 10.5px
+          "5" above the last column and a "Nov 4 / Dec 9" rule under the chart
+          were two more figures competing with it, both of them detail nobody
+          reads at this size. The shape of the columns is the claim — uploads
+          climbing — and the shape survives losing its labels, which is the
+          test of whether they were carrying anything. */}
       <div className="flex flex-1 flex-col">
         <div className="flex min-h-[86px] flex-1 items-end gap-[6px]">
           {UPLOADS.map((n, i) => (
             <div key={i} className="flex h-full flex-1 flex-col justify-end">
-              {n === peak ? (
-                <span className="mb-1 text-center text-[10.5px] leading-none tabular-nums text-[color:var(--mock-ink-soft)]">
-                  {n}
-                </span>
-              ) : null}
+              {/* The same Haze pair the progress card uses, and the same
+                  reason: the peak was near-black against grey, which made the
+                  one column the card is pointing at read as ink rather than as
+                  a value — the heaviest mark on a card whose heading is set
+                  lighter than it. Full Haze for the peak, a tint of it for the
+                  rest, so the highlight is a step along one hue instead of a
+                  jump to a different kind of mark. */}
               <div
                 className={`w-full rounded-[4px] ${
                   n === peak
-                    ? "bg-foreground"
-                    : "bg-foreground/[0.14] [[data-theme=dark]_&]:bg-white/[0.16]"
+                    ? "bg-[var(--mock-accent-bg)]"
+                    : "bg-[var(--mock-accent-bg-3)]"
                 }`}
                 style={{ height: `${(n / peak) * 100}%` }}
               />
             </div>
           ))}
-        </div>
-        <div className="flex items-center justify-between pt-3 text-[10.5px] leading-none text-[color:var(--mock-ink-soft)]">
-          <span>Nov 4</span>
-          <span>Dec 9</span>
         </div>
       </div>
     </div>
@@ -845,11 +842,45 @@ export function GenericPortalMock() {
   );
 }
 
-const INTAKE_FIELDS: { label: string; value: string }[] = [
+// The intake, as a form rather than as a record.
+//
+// It was three labelled rows with their answers already in them, which reads
+// as a detail view of something somebody else filled in — and this screen is
+// the "Fits" half of an argument about work your firm actually does, so it has
+// to look like work being done. The question-per-card shape is the one every
+// client on earth already recognises as "a form to fill in".
+//
+// The chrome around it does NOT change: sidebar, app header, the portal's own
+// frame. That separation is the whole claim — the familiar form, living inside
+// your portal rather than in a tab beside it. Which is also why none of the
+// borrowed look goes further than the card shape: the OTHER screen in this
+// pair lists "Partner intake sheet", "Onboarding email thread" and "Rate card
+// drive" as the tools this replaces, so leaning any harder on that house style
+// would make the after look like the before.
+//
+// Every answer is TYPED. A radio set was tried for the rate agreement, on the
+// grounds that a choice is what makes a stack of cards read as a form — but it
+// also made the screen a questionnaire, and this app's job is collecting a
+// partner's details, which is typing. Four written answers read as a record
+// being filled in; one radio among them read as a survey that had wandered in.
+const INTAKE_QUESTIONS: { label: string; value: string }[] = [
   { label: "Property", value: "Hotel Corvina, Lisbon" },
   { label: "Rate agreement", value: "2026 preferred" },
   { label: "Onboarding owner", value: "Dana Whitfield" },
+  // The fourth is what turns a short list into a form you are partway down —
+  // three cards and a "Step 1 of 4" would have had the reader counting them
+  // and coming up short.
+  { label: "Billing contact", value: "ap@hotelcorvina.com" },
 ];
+
+// The form's own header, above the questions.
+//
+// It names the section and says where in the sequence you are, which is the
+// one thing the cards alone cannot say: four questions on screen look like the
+// whole job, and the point of this app is that it is a real intake with more
+// behind it. The bar under it is the same Haze the charts on this page use, so
+// the accent means one thing across the set.
+const INTAKE_STEP = { title: "Partner details", step: 1, of: 4 };
 
 export function IntakeAppMock({
   /** Draws the client's nav in the firm's colour. See PortalSidebar. */
@@ -866,33 +897,89 @@ export function IntakeAppMock({
       aria-hidden
       className="pointer-events-none flex h-full select-none bg-[var(--mock-window)] text-[color:var(--mock-ink)]"
     >
-      <PortalSidebar app="Partner intake" branded={branded} />
+      {/* The sidebar goes on a phone and the bar takes over, the same swap the
+          onboarding wizard makes — at that width a 150px nav column against a
+          form is most of the screen spent on navigation nobody is using. */}
+      <div className="hidden sm:flex">
+        <PortalSidebar app="Partner intake" branded={branded} />
+      </div>
       <div className="flex min-w-0 flex-1 flex-col">
+        <MobileAppBar app="Partner intake" />
         {/* No "Your app" chip. The nav row beside it is lit and says the same
             words, the caption above the picture says them again, and alone on
             the header row it read as a stray pill rather than as whose app
             this is. */}
         <AppHeader title="Partner intake" />
-        <div className="flex min-h-0 flex-1 flex-col px-4 py-3.5">
-          <div className="flex flex-col gap-2.5">
-            {INTAKE_FIELDS.map((field) => (
-              <div key={field.label}>
-                <span className="block text-[10px] leading-none text-[color:var(--mock-ink-soft)]">
-                  {field.label}
+        {/* RECESSED, where every other screen's body is the window's own
+            ground. The cards have to sit on something to read as cards, and
+            --mock-well is the step the scale already has for a recess inside a
+            panel — a second white on white would have needed a shadow to
+            separate, which nothing else in this set uses. */}
+        <div className="flex min-h-0 flex-1 flex-col bg-[var(--mock-well)] px-4 py-3.5">
+          {/* Centred on its own measure rather than run to the window's edges.
+              A form is a column you work down; stretched across a wide screen
+              the questions stop being a sequence and the answers end up a long
+              way from what they answer. */}
+          <div className="mx-auto flex w-full max-w-[300px] flex-col gap-2">
+            {/* The form's title card, built the way every form builder
+                builds one: a band of colour across the very top edge, then the
+                name of the form under it.
+
+                The band is what does the work — it is the only full-bleed
+                shape in the column, so the card stops being the first question
+                in the stack and becomes the thing the stack sits under. That
+                was a Haze tint across the whole card first, which said the same
+                thing far more quietly and put the page's accent colour on a
+                screen whose subject is a form, not a chart.
+
+                --mock-ink, not the accent. Black is this screen's own colour —
+                the sidebar, the submit button and the field labels are all
+                drawn in it — and a blue band here was the one thing on the
+                screen borrowed from somewhere else.
+
+                overflow-hidden so the band takes the card's top corners rather
+                than squaring them off. */}
+            <div
+              className={`overflow-hidden rounded-[5px] border bg-[var(--mock-window)] ${LINE}`}
+            >
+              <div className="h-[4px] bg-[var(--mock-ink)]" />
+              <div className="flex items-center justify-between gap-2 p-2.5">
+                <span className="truncate text-[10.5px] leading-none text-[color:var(--mock-ink)]">
+                  {INTAKE_STEP.title}
                 </span>
-                <div
-                  className={`mt-1.5 flex h-[28px] items-center rounded-[4px] border px-2.5 text-[11px] leading-none text-[color:var(--mock-ink)] ${LINE}`}
+                <span className="shrink-0 text-[9.5px] leading-none tabular-nums text-[color:var(--mock-ink-soft)]">
+                  Step {INTAKE_STEP.step} of {INTAKE_STEP.of}
+                </span>
+              </div>
+            </div>
+
+            {INTAKE_QUESTIONS.map((q) => (
+              <div
+                key={q.label}
+                className={`rounded-[5px] border bg-[var(--mock-window)] p-2.5 ${LINE}`}
+              >
+                <span className="block text-[10.5px] leading-none text-[color:var(--mock-ink)]">
+                  {q.label}
+                </span>
+                {/* On a rule rather than in a box — the underline is what says
+                    "this is where you write", and a bordered field inside a
+                    bordered card was two frames around one value. */}
+                <span
+                  className={`mt-2 block truncate border-b pb-1.5 text-[10px] leading-none text-[color:var(--mock-ink-soft)] ${LINE}`}
                 >
-                  {field.value}
-                </div>
+                  {q.value}
+                </span>
               </div>
             ))}
+            {/* The form's own action, at the foot of the column rather than
+                off to one side — a form you work down ends in the button that
+                sends it. */}
+            {action ? (
+              <span className="mt-1 w-fit rounded-[4px] bg-[var(--mock-ink)] px-2.5 py-[6px] text-[10px] leading-none text-[color:var(--mock-window)]">
+                Submit
+              </span>
+            ) : null}
           </div>
-          {action ? (
-            <span className="mt-auto w-fit rounded-[4px] bg-foreground px-2.5 py-[7px] text-[10px] leading-none text-background">
-              Submit partner
-            </span>
-          ) : null}
         </div>
       </div>
     </div>
@@ -911,19 +998,116 @@ function Panel({
   title,
   children,
   className = "",
+  hideTitleOnPhone = false,
 }: {
   title: string;
   children: React.ReactNode;
   className?: string;
+  /**
+   * Drops the panel's own label below sm.
+   *
+   * For the one panel whose title is the same words as the phone bar above it
+   * — the bar names the screen at that width, so the panel repeating it puts
+   * the same phrase twice in forty pixels. From sm the bar is gone and the
+   * label is the only thing naming the panel, so it comes back.
+   */
+  hideTitleOnPhone?: boolean;
 }) {
   return (
     <div
       className={`min-w-0 overflow-hidden rounded-lg border p-3 ${PANEL} ${className}`}
     >
-      <p className="truncate text-[10px] leading-none text-[color:var(--mock-ink-soft)]">
+      <p
+        className={`truncate text-[10px] leading-none text-[color:var(--mock-ink-soft)] ${
+          hideTitleOnPhone ? "hidden sm:block" : ""
+        }`}
+      >
         {title}
       </p>
       {children}
+    </div>
+  );
+}
+
+// ── The onboarding wizard's phone chrome ─────────────────────────────────
+// Below sm this screen is a single column of panels and nothing else, so it
+// opened straight into content with no app around it — a stack of cards, not
+// an app. The other screens in the set carry a sidebar that does that job;
+// this one has none, and a sidebar is the wrong answer on a phone anyway.
+//
+// So it gets the bar the product itself shows at that width: the nav collapsed
+// to a hamburger, the app named with the switcher's chevron beside it, and the
+// row's actions held to the right. sm:hidden, because from sm the two-column
+// layout already reads as a desktop screen and a phone bar on top of it would
+// be two different devices in one picture.
+function IconHamburger({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 20 20" className={className} aria-hidden>
+      <path d="M4.5 6.5h11M4.5 10h11M4.5 13.5h11" {...STROKE} />
+    </svg>
+  );
+}
+
+function IconEllipsis({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 20 20" className={className} aria-hidden>
+      {/* Dots, not a stroked path — at this size a three-dot path set with
+          round caps renders as a dashed line rather than as three marks. */}
+      <circle cx="5.5" cy="10" r="1.1" fill="currentColor" />
+      <circle cx="10" cy="10" r="1.1" fill="currentColor" />
+      <circle cx="14.5" cy="10" r="1.1" fill="currentColor" />
+    </svg>
+  );
+}
+
+// The squared control the bar's buttons wear. rounded-[5px] rather than the
+// window's xl: these are small controls inside a screen, and they follow the
+// radius the mock's own rows and chips use, not the frame's.
+const BAR_BUTTON = `flex size-[26px] shrink-0 items-center justify-center rounded-[5px] border ${LINE}`;
+
+function MobileAppBar({
+  app,
+  className = "",
+}: {
+  app: string;
+  /**
+   * The bleed, which belongs to the CALLER.
+   *
+   * A toolbar inset from the screen's edges reads as another panel, so it has
+   * to run the full width — but how far it has to pull out depends on the
+   * padding of whatever is holding it, and the two screens using this differ.
+   * The onboarding board sits in a p-2.5 grid and cancels that; the intake
+   * form's column has no padding of its own and needs nothing.
+   */
+  className?: string;
+}) {
+  return (
+    <div
+      className={`flex items-center gap-2 border-b px-2.5 py-2 sm:hidden ${LINE} ${className}`}
+    >
+      <span className={`${BAR_BUTTON} text-[color:var(--mock-ink)]`}>
+        <IconHamburger className="size-[13px]" />
+      </span>
+      {/* The app name on the switcher's own quiet fill, so it reads as the
+          control it is rather than as a title that happens to sit there. */}
+      <span className="flex min-w-0 items-center gap-1 rounded-[5px] bg-[var(--mock-well)] px-2 py-[5px]">
+        {/* 13px, the size this file sets a panel title at — the bar names
+            the screen, so it belongs on that step and not a smaller one. */}
+        <span className="truncate text-[13px] leading-none text-[color:var(--mock-ink)]">
+          {app}
+        </span>
+        <IconChevronDown className="size-[11px] shrink-0 text-[color:var(--mock-ink-soft)]" />
+      </span>
+      <span className="ml-auto flex items-center gap-1.5">
+        <span className={`${BAR_BUTTON} text-[color:var(--mock-ink-soft)]`}>
+          <IconEllipsis className="size-[13px]" />
+        </span>
+        {/* The one filled control, the way a primary action is drawn
+            everywhere else in these mocks. */}
+        <span className="flex size-[26px] shrink-0 items-center justify-center rounded-[5px] bg-[var(--mock-ink)] text-[color:var(--mock-window)]">
+          <IconPlus className="size-[12px]" />
+        </span>
+      </span>
     </div>
   );
 }
@@ -946,8 +1130,10 @@ export function OnboardingMock() {
       // keep their hairline borders, which is separation enough.
       className="pointer-events-none grid h-full select-none grid-cols-1 content-start gap-2.5 bg-[var(--mock-window)] text-[color:var(--mock-ink)] p-2.5 sm:grid-cols-[1.55fr_1fr]"
     >
+      <MobileAppBar app="Client onboarding" className="-mx-2.5 -mt-2.5" />
+
       {/* Where this client is up to. */}
-      <Panel title="Client onboarding">
+      <Panel title="Client onboarding" hideTitleOnPhone>
         <p className="mt-2 text-[13px] leading-none text-[color:var(--mock-ink)]">
           Engagement letter
         </p>
@@ -973,7 +1159,9 @@ export function OnboardingMock() {
               <span
                 key={s}
                 className={`truncate text-[8.5px] leading-none ${
-                  i <= 1 ? "text-[color:var(--mock-ink)]" : "text-[color:var(--mock-ink-soft)]"
+                  i <= 1
+                    ? "text-[color:var(--mock-ink)]"
+                    : "text-[color:var(--mock-ink-soft)]"
                 }`}
               >
                 {s}
@@ -985,7 +1173,9 @@ export function OnboardingMock() {
 
       {/* The reassurance the copy promises: nothing typed is lost. */}
       <Panel title="Progress">
-        <p className="mt-2 text-[20px] leading-none text-[color:var(--mock-ink)]">2 of 4</p>
+        <p className="mt-2 text-[20px] leading-none text-[color:var(--mock-ink)]">
+          2 of 4
+        </p>
         <span className={`mt-2.5 inline-flex ${POSITIVE}`}>Saved</span>
       </Panel>
 

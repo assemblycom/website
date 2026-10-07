@@ -17,6 +17,16 @@ import {
  * /client-portal takes the first three, and taking them from here is what
  * stops its wording drifting from the full set.
  */
+// Spelled out, not "Step 1".
+//
+// The kicker is prose — it sits in the page's own face beside a sentence, not
+// in a mono label or a numbered badge — and a numeral in a line of words reads
+// as a count of items rather than as a position in a sequence. "Step Three" is
+// how you would say it out loud, which is the test for a line that is read
+// rather than scanned. Five is as far as any caller goes (see BUILD_STEPS);
+// the index falls back to the numeral rather than breaking if that changes.
+const STEP_WORDS = ["One", "Two", "Three", "Four", "Five"];
+
 export const BUILD_STEPS = [
   {
     name: "Describe",
@@ -126,28 +136,26 @@ export function PortalBuild({
         </div>
 
         {steps.length ? (
-        <div className="mt-12">
-          {/* A grid once the set fits across, a rail when it does not. The
-              three-step cut this page runs has nowhere to scroll on a desktop,
-              so the grab cursor and the drag were offering to move something
-              that was already all there; the five-step cut still needs the
-              scroller. */}
-          <CardRail
-            label={railLabel}
-            layout={steps.length <= 3 ? "grid" : "rail"}
-          >
-            {steps.map((step, i) => (
-              <RailCard
-                key={step.name}
-                index={`Step ${i + 1}`}
-                name={step.name}
-                caption={step.body}
-              >
-                {step.visual}
-              </RailCard>
-            ))}
-          </CardRail>
-        </div>
+          <div className="mt-12">
+            {/* One rail whatever the length. The three-step cut has nowhere to
+              scroll from lg — the card widths there are exactly a three-column
+              track — so it comes out as a complete row with the arrows, the
+              drag and the grab cursor all stood down, while on a phone it is
+              still a row to swipe rather than three tall cards to scroll past.
+              The five-step cut steps at every width. */}
+            <CardRail label={railLabel}>
+              {steps.map((step, i) => (
+                <RailCard
+                  key={step.name}
+                  index={`Step ${STEP_WORDS[i] ?? i + 1}`}
+                  name={step.name}
+                  caption={step.body}
+                >
+                  {step.visual}
+                </RailCard>
+              ))}
+            </CardRail>
+          </div>
         ) : null}
         {visual}
 

@@ -2,6 +2,10 @@
 
 import { useState, type ReactNode } from "react";
 import { Section } from "@/components/ui/section";
+import {
+  DOTTED_RULE_AFTER,
+  DOTTED_RULE_BEFORE,
+} from "@/components/ui/dotted-rule";
 
 export interface FAQLink {
   label: string;
@@ -122,22 +126,6 @@ const FAQS: FAQEntry[] = [
 // on /security).
 type FAQVariant = "cards" | "divided";
 
-/**
- * The divided list's hairline, drawn as a gradient rather than a border.
- *
- * A finer dot than `border-dotted`, which at 1px sets its dots one pixel apart
- * and reads as a broken hairline: 2px marks on a 5px pitch. The colour is mixed
- * off `--foreground` rather than taken from `--border` (at `--border` the dots
- * were pale enough that the rule read as empty space), and mixing keeps it
- * theme-derived, so light and dark each resolve their own value.
- *
- * Written out once per pseudo-element it is drawn on, because Tailwind scans
- * for literal class strings and would not see a prefix joined on at runtime.
- */
-const DOTTED_RULE_BEFORE =
-  "before:bg-[repeating-linear-gradient(to_right,color-mix(in_oklab,var(--foreground)_32%,transparent)_0_2px,transparent_2px_5px)]";
-const DOTTED_RULE_AFTER =
-  "after:bg-[repeating-linear-gradient(to_right,color-mix(in_oklab,var(--foreground)_32%,transparent)_0_2px,transparent_2px_5px)]";
 
 function FAQItem({
   question,

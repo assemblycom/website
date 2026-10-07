@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { QUIET_BUTTON } from "@/components/ui/quiet-button";
 import { CheckIcon } from "@/components/ui/check-icon";
 import { Reveal } from "@/components/ui/reveal";
 import { APP_URL, DEMO_URL, DEMO_CTA_LABEL } from "@/lib/constants";
@@ -103,10 +104,7 @@ export function PortalPricing({
           <p className="mx-auto mt-4 max-w-2xl text-balance text-muted-foreground">
             {body}
           </p>
-          <Link
-            href={link.href}
-            className="mt-6 inline-block rounded-lg border border-border px-4 py-1.5 text-sm text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground"
-          >
+          <Link href={link.href} className={`mt-6 ${QUIET_BUTTON}`}>
             {link.label}
           </Link>
         </div>
@@ -187,9 +185,7 @@ export function PortalPricing({
           <div className="mt-4 flex flex-col items-start gap-4 rounded-2xl border border-border p-6 text-left sm:flex-row sm:items-center sm:justify-between [[data-theme=dark]_&]:border-[#383838]">
             <div>
               <h3 className="text-lg">{aside.name}</h3>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {aside.line}
-              </p>
+              <p className="mt-1 text-sm text-muted-foreground">{aside.line}</p>
             </div>
             <a
               href={aside.cta.href}

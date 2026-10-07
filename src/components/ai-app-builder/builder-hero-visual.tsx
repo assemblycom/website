@@ -200,9 +200,15 @@ export function BuilderHeroVisual() {
     // `stop` is recreated each render and would re-fire this on every one.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active]);
-  // Kept apart from `active` so the phone opens on the prompt, in reading
-  // order, without changing which card desktop widens first.
-  const [shown, setShown] = useState(0);
+  // Kept apart from `active` so the phone can open on a different card from
+  // the one desktop widens first.
+  //
+  // It opens on "See it live", the same card desktop opens widened. Reading
+  // order would put the prompt first, and it did — but the prompt card is the
+  // one whose point is a replay the reader has to ask for, so a phone landed
+  // on a still composer and had to be told there was anything else. The built
+  // portal is the claim; the describing is how it got there.
+  const [shown, setShown] = useState(1);
   // Both cards share one grid cell below lg, so the taller one holds the
   // height and switching never moves the page.
   const cardSlot = (i: number) =>
@@ -791,7 +797,22 @@ function Composer({ run, typing }: { run: number; typing: boolean }) {
         // Dark only, which is where the class lives: in light the plain
         // --mock-line hairline already reads against the white card, and a grey
         // ramp there would be a smudge rather than an edge.
-        className={`mock-edge [--mock-edge-h:150%] [--mock-edge-w:120%] overflow-hidden rounded-xl border bg-[var(--mock-window)] shadow-[0_0_0_3px_var(--surface),0_0_0_4px_var(--mock-line)] ${LINE}`}
+        //
+        // One rung UP the dark scale, --mock-well rather than --mock-window.
+        // That scale is declared as surface #191919 → window #212121 → well
+        // #292929, each level lifting off the one holding it; the composer was
+        // on the first rung, eight points over the card it sits on, which is a
+        // step the eye can measure but not see. The card then read as one
+        // near-black field with a hairline drawn on it rather than as a box
+        // sitting on a card — and this is the hero, where the composer IS the
+        // subject. --mock-well is sixteen points over the card, so the lift
+        // lands, and it is a token already on the page rather than a value
+        // invented for this one element.
+        //
+        // Dark only. In light --mock-window is near-white on a light card and
+        // the step is already read; dropping light onto --mock-well would be
+        // tuning the theme that has no problem.
+        className={`mock-edge [--mock-edge-h:150%] [--mock-edge-w:120%] overflow-hidden rounded-xl border bg-[var(--mock-window)] shadow-[0_0_0_3px_var(--surface),0_0_0_4px_var(--mock-line)] [[data-theme=dark]_&]:bg-[var(--mock-well)] ${LINE}`}
       >
         {box}
       </div>

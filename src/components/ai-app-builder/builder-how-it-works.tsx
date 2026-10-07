@@ -24,24 +24,27 @@ import {
  * as an arc even while only one panel is open, where bare category names
  * ("Describe", "Plan", "Build") would read as three alternatives.
  */
+// Spelled out, matching the rail on /client-portal — the two run the same
+// three beats and a reader moving between the pages should not meet "Step 2"
+// on one and "Step Two" on the other.
 const STEPS = [
   {
     value: "describe",
-    step: "Step 1",
+    step: "Step One",
     name: "Describe",
     body: "Say what you want, or start from a template.",
     visual: <DescribeCard />,
   },
   {
     value: "plan",
-    step: "Step 2",
+    step: "Step Two",
     name: "Plan",
     body: "Approve or edit the plan before anything is built.",
     visual: <PlanCard />,
   },
   {
     value: "build",
-    step: "Step 3",
+    step: "Step Three",
     name: "Build",
     body: "Client apps land in your client experience, team tools in your dashboard.",
     visual: <BuildCard />,

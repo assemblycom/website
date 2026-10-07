@@ -139,7 +139,15 @@ export function SecurityCompliance({
           the two rows runs the full width of the screen instead of stopping
           short of both edges. */}
       <div
-        className={`-mx-6 grid grid-cols-2 gap-px bg-border sm:mx-0 ${columns} [[data-theme=dark]_&]:bg-[#383838]`}
+        // The bed shows through gap-px, so only the rules BETWEEN cells get
+        // drawn — the outer edges get nothing. On a desktop that is right: the
+        // section's own full-bleed rules close it top and bottom. On a phone
+        // the grid runs two-up over two rows and the last row simply stopped,
+        // leaving the block open at the foot with the rule above it still
+        // there. A bottom border below sm closes it, bleeding to the screen
+        // edges like the -mx-6 it sits in and like every other phone-only rule
+        // on the site.
+        className={`-mx-6 grid grid-cols-2 gap-px bg-border max-sm:border-b max-sm:border-border sm:mx-0 ${columns} [[data-theme=dark]_&]:bg-[#383838] [[data-theme=dark]_&]:max-sm:border-[#383838]`}
       >
         {standards.map((s) => (
           <div

@@ -1,4 +1,5 @@
 import { Accordion, type FAQEntry } from "@/components/home/faq";
+import { QUIET_BUTTON } from "@/components/ui/quiet-button";
 import { GRID_LINE } from "@/components/ui/grid-lines";
 import { Reveal } from "@/components/ui/reveal";
 import { SecurityCompliance } from "@/components/security/security-compliance";
@@ -68,7 +69,7 @@ export function PortalTrust({
               {...(external
                 ? { target: "_blank", rel: "noopener noreferrer" }
                 : {})}
-              className="mt-6 inline-block rounded-lg border border-border px-4 py-1.5 text-sm text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground"
+              className={`mt-6 ${QUIET_BUTTON}`}
             >
               {link.label}
             </a>
@@ -77,20 +78,20 @@ export function PortalTrust({
           {/* The same accordion treatment as the stack section above, so the
               two sets of rows on this page read as one control. */}
           {claims.length ? (
-          <div
-            className={[
-              "[&>div>div>*]:pl-5 [&>div>div>*]:pr-5",
-              "[&>div>div]:transition-colors [&>div>div]:hover:bg-muted/50 [[data-theme=dark]_&]:[&>div>div]:hover:bg-white/[0.04]",
-            ].join(" ")}
-          >
-            <Accordion
-              items={claims}
-              twoColumn={false}
-              variant="divided"
-              dottedRules
-              flushTop={false}
-            />
-          </div>
+            <div
+              className={[
+                "[&>div>div>*]:pl-5 [&>div>div>*]:pr-5",
+                "[&>div>div]:transition-colors [&>div>div]:hover:bg-muted/50 [[data-theme=dark]_&]:[&>div>div]:hover:bg-white/[0.04]",
+              ].join(" ")}
+            >
+              <Accordion
+                items={claims}
+                twoColumn={false}
+                variant="divided"
+                dottedRules
+                flushTop={false}
+              />
+            </div>
           ) : (
             visual
           )}

@@ -69,10 +69,34 @@ export function TemplateRail({ cards }: { cards: TemplateRailCard[] }) {
 
               It does not theme, like the artwork on it. A row with no art yet
               keeps the plain --surface-2 recess, which is what the other five
-              are: a slot waiting for a template shot. */}
+              are: a slot waiting for a template shot.
+
+              The PLATE themes even though the artwork on it does not, and the
+              two are separate questions: the icon is drawn near-black for a
+              light tile, which only requires the plate to stay light — not to
+              be the same light in both themes.
+
+              It used to be #e6e7ea flat. That value was picked against light,
+              where it sits fifteen steps under --surface #f5f5f5 and reads as
+              a quiet recess; on dark's #191919 ground the same plate is two
+              hundred steps up, the brightest object in the rail by a distance,
+              pulling the eye to the icon rather than to the name beside it.
+              Dark gets #c8c9cd, thirteen percent down — enough to take the
+              glare off, still unmistakably a light tile, so the near-black
+              artwork keeps the contrast it is drawn for. The blue tint carries
+              through (+4 on blue) rather than being greyed out. It went to
+              #d6d7da first, which was still reading hot against #191919.
+
+              Light keeps #e6e7ea exactly. Dropping it there too would have put
+              the icon plate nineteen steps under --surface-2 #e9e9e9 instead
+              of three, so a row with art would no longer have matched the
+              empty slots beside it — a visible change to the theme that had no
+              problem. */}
           <span
             className={`flex size-14 shrink-0 items-center justify-center rounded-lg ${
-              card.icon ? "bg-[#e6e7ea]" : "bg-[var(--surface-2)]"
+              card.icon
+                ? "bg-[#e6e7ea] [[data-theme=dark]_&]:bg-[#c8c9cd]"
+                : "bg-[var(--surface-2)]"
             }`}
           >
             {card.icon}

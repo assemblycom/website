@@ -14,15 +14,8 @@
 // paint, where a transform-based track would be stuck on frame one.
 // ─────────────────────────────────────────────────────────────────────────
 
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import { fadeMask } from "@/components/ui/fade-mask";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { fadeMask, fadeMaskStyle } from "@/components/ui/fade-mask";
 
 /** Matches the gap below, in px, so an arrow step lands a card on the edge. */
 const GAP_PX = 16;
@@ -56,49 +49,59 @@ const ARROW =
   "flex size-11 shrink-0 items-center justify-center rounded-xl border border-border text-foreground transition-[color,border-color,opacity] hover:border-foreground/30 disabled:pointer-events-none disabled:opacity-30 [[data-theme=dark]_&]:border-white/15 [[data-theme=dark]_&]:hover:border-white/30";
 
 /**
- * How the set is laid out, read by the cards inside it.
- *
- * "rail" is the scroller: cards sized as a fraction of the viewport so the
- * next one peeks, stepped by the arrows and dragged by the mouse. "grid" is a
- * plain responsive grid — no scroller, no drag, no arrows — for a set that
- * fits across the column at every width it is shown at. A rail is a promise
- * that there is more than you can see; three cards on a desktop is not that,
- * and the grab cursor and the drag were offering to move something that had
- * nowhere to go.
- *
- * It travels by context rather than as a prop on every card, because the cards
- * are handed to CardRail as children — the call sites would otherwise each
- * have to pass the layout twice and keep the two in step.
- */
-type RailLayout = "rail" | "grid";
-const LayoutContext = createContext<RailLayout>("rail");
-
-/**
  * How wide one card is.
  *
- * In the rail it is a fraction of the SCROLLER — 78% on a phone so the next
- * card peeks and the row reads as continuing — and it never shrinks, because
- * shrinking is what a flex row does to cards that do not fit.
+ * A fraction of the SCROLLER — 78% on a phone so the next card peeks and the
+ * row reads as continuing — and it never shrinks, because shrinking is what a
+ * flex row does to cards that do not fit.
  *
- * In the grid the track owns the width and the card simply fills its cell.
+ * The desktop widths are exactly a two- and three-column track: two cards plus
+ * one 1rem gap at md, three plus two gaps at lg. So a set of three IS a grid
+ * from lg without being laid out as one — every card is across the column, the
+ * scroller has nothing left to scroll, and the arrows, the drag and the grab
+ * cursor all stand down on their own (see `steppable`).
+ *
+ * This used to be a real `layout="grid"` branch for sets that fit, taken
+ * because a rail of three on a desktop offered a drag that moved nothing. The
+ * objection was right but the cut was too high up: a grid that fits across a
+ * desktop is a single stacked column on a phone, so /client-portal's three
+ * steps became three full-height cards to scroll past rather than a row to
+ * swipe. Standing the affordances down by measurement answers the same
+ * objection at every width instead of at one.
  */
+// Where the fade at each end of the rail leaves full opacity, as a percentage
+// of the rail's width. The two ends are not the same problem, so they do not
+// share a length.
+//
+// AHEAD is the right edge, and it is the one doing real work: a whole card and
+// its caption are cut there, mid-word, and that needs a ramp long enough to
+// read as the row carrying on past the frame. One value for both ends was
+// tried twice and failed in both directions — 88% everywhere reached past the
+// cut and dimmed the first letter of every caption line on the card that is
+// fully on screen, and 96% everywhere fixed that but left about thirteen
+// pixels on a phone, which is not a fade, just a slightly blurred guillotine.
+//
+// BEHIND is the left edge, and it has almost nothing to dissolve: snap-start
+// parks the current card's own left edge ON the rail's edge, so most of the
+// time there is no cut there at all — only a free scroll between snap points
+// puts one. Short is right. It takes the hard edge off that case without
+// touching type that is meant to be read.
+const FADE_AHEAD = 82;
+const FADE_BEHIND = 96;
+
 const RAIL_W =
   "w-[78%] shrink-0 snap-start sm:w-[62%] md:w-[calc((100%-1rem)/2)] lg:w-[calc((100%-2rem)/3)]";
-const GRID_W = "w-full";
 
 export function CardRail({
   label,
   children,
   lead,
-  layout = "rail",
 }: {
   /** Names the rail for screen readers, e.g. "How building works". */
   label: string;
   children: React.ReactNode;
   /** Sits at the foot opposite the arrows — usually the section's CTA. */
   lead?: React.ReactNode;
-  /** See RailLayout. "grid" for a set that always fits across. */
-  layout?: RailLayout;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [atStart, setAtStart] = useState(true);
@@ -128,6 +131,23 @@ export function CardRail({
   // Both ends at once means the whole set is on screen already.
   const steppable = !(atStart && atEnd);
 
+  // ── The cut at each end ───────────────────────────────────────────────
+  // The peeking card is the rail's whole claim that there is more, so it has
+  // to stay — ending the cards short of the column instead would be a tidier
+  // edge that says nothing. But a hard clip cuts the next card's caption
+  // mid-word, and a guillotined line reads as a layout fault rather than as
+  // copy carrying on past the frame.
+  //
+  // So the clip dissolves instead, on the site's own curve. Only on the side
+  // that actually has more: a rail at its start has nothing off to the left to
+  // suggest, and dimming that edge would only make the first card look unwell.
+  // A set that fits gets neither, which is what leaves the three-step cut
+  // reading as a plain row.
+  const edgeMasks = [
+    atStart ? null : fadeMask("to left", FADE_BEHIND),
+    atEnd ? null : fadeMask("to right", FADE_AHEAD),
+  ].filter((m): m is string => m !== null);
+
   // ── Drag to scroll ────────────────────────────────────────────────────
   // Touch and trackpad already drag this rail natively; a mouse did not, so on
   // a desktop the arrows were the only way through it and the cards looked
@@ -140,6 +160,10 @@ export function CardRail({
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     const el = ref.current;
     if (!el || e.pointerType === "touch" || e.button !== 0) return;
+    // Nothing to drag when the whole set is already across the column — at a
+    // width where the rail has become a complete row, a grab that moves
+    // nothing is worse than no grab at all. See `steppable`.
+    if (!steppable) return;
     drag.current = { x: e.clientX, left: el.scrollLeft, moved: false };
     // Imperatively, not through the className below: smooth scrolling animates
     // towards each scrollLeft we assign, so the rail would lag the pointer and
@@ -200,27 +224,6 @@ export function CardRail({
     el.scrollBy({ left: by * direction, behavior: "smooth" });
   };
 
-  // The grid cut. Every hook above still runs — they are cheap, and a
-  // conditional hook is not a thing — but none of their state reaches the DOM
-  // here: there is no scroller to observe, nothing to drag, and both arrows
-  // would be permanently disabled, which is a control that only ever says no.
-  if (layout === "grid") {
-    return (
-      <LayoutContext.Provider value="grid">
-        <div>
-          <div
-            role="group"
-            aria-label={label}
-            className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
-          >
-            {children}
-          </div>
-          {lead ? <div className="mt-10">{lead}</div> : null}
-        </div>
-      </LayoutContext.Provider>
-    );
-  }
-
   return (
     <div>
       {/* Clipped at the section's measure, not bled past it. The scroller used
@@ -233,7 +236,10 @@ export function CardRail({
           vertical padding cancelled by a negative margin, so the clip is
           horizontal only and shadows still breathe above and below. The arrow
           is what says there is more. */}
-      <div className="-my-4 overflow-hidden py-4">
+      <div
+        className="-my-4 overflow-hidden py-4"
+        style={edgeMasks.length ? fadeMaskStyle(edgeMasks) : undefined}
+      >
         <div
           ref={ref}
           onScroll={sync}
@@ -260,7 +266,11 @@ export function CardRail({
           // their captions. Smooth scrolling is turned off for the drag too,
           // but imperatively in onPointerDown; see there for why.
           className={`flex snap-x snap-proximity gap-4 overflow-x-auto overflow-y-hidden overscroll-x-contain scroll-smooth [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${
-            dragging ? "cursor-grabbing select-none" : "cursor-grab"
+            !steppable
+              ? ""
+              : dragging
+                ? "cursor-grabbing select-none"
+                : "cursor-grab"
           }`}
         >
           {children}
@@ -389,10 +399,28 @@ export function RailCard({
   copyInside?: boolean;
   children: React.ReactNode;
 }) {
-  const width = useContext(LayoutContext) === "grid" ? GRID_W : RAIL_W;
   const copy = (
     <>
-      {/* Index and name are one line in one face and ONE colour — toning the
+      {/* The KICKER carries the ink and the caption sits back, which is the
+            reverse of the usual eyebrow.
+
+            Called deliberately. The conventional reading is that the kicker is
+            an index and the sentence is the content, so the sentence should
+            lead — but these cards now carry photographs and a lime gradient
+            above the type, and against that much weight the step name at
+            --muted-foreground was the faintest thing in the column. Leading on
+            it also makes the three cards scan as a sequence first and as three
+            paragraphs second, which is what a numbered rail is for.
+
+            ONE SIZE with the caption too, not just one face. The kicker used
+            to be text-sm against the caption's 16px, which was right while it
+            was a quiet eyebrow — small and grey, the caption leading. Now that
+            the ink has moved to it, a line that is both darker AND smaller
+            than the one under it reads as two different kinds of type rather
+            than as one block. Same size, and colour is the only thing telling
+            them apart.
+
+            Index and name are one line in one face and ONE colour — toning the
             index down made the kicker read as two labels.
 
             "Step 1: Describe", with a colon. It was an em dash, borrowed from
@@ -404,20 +432,20 @@ export function RailCard({
         // PP Mori, sentence case. It was type-eyebrow — ABC Diatype Mono in
         // all caps — which on a card whose body is set in the page's own
         // face read as a label stuck on from another system.
-        <p className="mb-2 flex min-w-0 items-baseline gap-1.5 text-sm text-muted-foreground">
-          {index ? (
-            <span className="shrink-0 tabular-nums">{index}:</span>
-          ) : null}
+        <p className="mb-2 flex min-w-0 items-baseline gap-1.5 text-foreground">
+          {/* No tabular-nums any more: the index is spelled out ("Step Two"),
+              and lining figures do nothing for words. */}
+          {index ? <span className="shrink-0">{index}:</span> : null}
           <span className="truncate">{name}</span>
         </p>
       ) : null}
-      <p className="text-pretty text-foreground">{caption}</p>
+      <p className="text-pretty text-muted-foreground">{caption}</p>
     </>
   );
 
   if (copyInside) {
     return (
-      <div className={`group/card ${width}`}>
+      <div className={`group/card ${RAIL_W}`}>
         <div className="relative flex aspect-[3/4] w-full select-none flex-col overflow-hidden rounded-3xl bg-[var(--surface)]">
           <div className="relative z-10 shrink-0 px-6 pb-4 pt-6 md:px-7 md:pt-7">
             {copy}
@@ -492,7 +520,7 @@ export function RailCard({
   }
 
   return (
-    <div className={`group/card ${width}`}>
+    <div className={`group/card ${RAIL_W}`}>
       <div className="relative aspect-[3/4] w-full select-none overflow-hidden rounded-3xl bg-[var(--surface)]">
         {children}
       </div>

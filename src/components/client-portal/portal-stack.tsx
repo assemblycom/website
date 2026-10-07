@@ -1,5 +1,10 @@
 import Link from "next/link";
-import { IconBolt, IconGlobe, IconSync } from "@/components/home/mock-icons";
+import {
+  IconTemplateAutomations,
+  IconTemplateEmbeds,
+  IconTemplateIntegrations,
+} from "@/components/templates/template-icons";
+
 import { Reveal } from "@/components/ui/reveal";
 import { API_REFERENCE_URL, GUIDE_URL } from "@/lib/constants";
 
@@ -31,19 +36,19 @@ const WAYS: {
     label: "Embeds",
     body: "Drop a tool your clients already open straight into the portal.",
     href: GUIDE_URL,
-    icon: IconGlobe,
+    icon: IconTemplateEmbeds,
   },
   {
     label: "Integrations",
     body: "Connect what your team runs to the same client records.",
     href: API_REFERENCE_URL,
-    icon: IconSync,
+    icon: IconTemplateIntegrations,
   },
   {
     label: "Automations",
     body: "Hand the busywork between them without anyone retyping it.",
     href: GUIDE_URL,
-    icon: IconBolt,
+    icon: IconTemplateAutomations,
   },
 ];
 
@@ -97,43 +102,59 @@ export function PortalStack({
                 something to start on. `ways` keeps carrying an `icon` so
                 nothing downstream has to change when they come back. */}
             {ways.length ? (
-            <ul className="mt-10 flex flex-col gap-1">
-              {ways.map(({ label, body, href }) => (
-                <li key={label}>
-                  <Link
-                    href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    // -mx-3 px-3 so the hover fill extends past the type
-                    // without the labels being indented out of the column.
-                    className="group -mx-3 flex items-start gap-3 rounded-xl px-3 py-2.5 transition-colors hover:bg-foreground/[0.04] [[data-theme=dark]_&]:hover:bg-white/[0.04]"
-                  >
-                    <span
-                      aria-hidden
-                      // A filled square, no outline. With a glyph in it the
-                      // hairline was the tile's edge; empty, the outline WAS
-                      // the object, so each row opened on a little drawn box
-                      // rather than on a quiet block of tone.
-                      // --surface-2, not --muted, in light. This band is
-                      // --surface at half strength over white, which lands
-                      // within a point or two of --muted — so an empty tile on
-                      // it was very nearly the band itself and the rows opened
-                      // on nothing. --surface-2 is the scale's own next rung
-                      // down, which is what a recess on a surface takes.
-                      className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[var(--surface-2)] [&>svg]:size-[18px] [[data-theme=dark]_&]:bg-white/[0.06]"
-                    />
-                    <span className="min-w-0">
-                      <span className="block text-[15px] text-foreground">
-                        {label}
+              <ul className="mt-10 flex flex-col gap-1">
+                {ways.map(({ label, body, href, icon: Icon }) => (
+                  <li key={label}>
+                    <Link
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      // -mx-3 px-3 so the hover fill extends past the type
+                      // without the labels being indented out of the column.
+                      className="group -mx-3 flex items-start gap-3 rounded-xl px-3 py-2.5 transition-colors hover:bg-foreground/[0.04] [[data-theme=dark]_&]:hover:bg-white/[0.04]"
+                    >
+                      <span
+                        aria-hidden
+                        // A filled square, no outline. With a glyph in it the
+                        // hairline was the tile's edge; empty, the outline WAS
+                        // the object, so each row opened on a little drawn box
+                        // rather than on a quiet block of tone.
+                        // --surface-2, not --muted, in light. This band is
+                        // --surface at half strength over white, which lands
+                        // within a point or two of --muted — so an empty tile on
+                        // it was very nearly the band itself and the rows opened
+                        // on nothing. --surface-2 is the scale's own next rung
+                        // down, which is what a recess on a surface takes.
+                        // size-[18px] is gone with the empty tile: it set BOTH
+                        // axes, and these marks are drawn to their own ratios —
+                        // forced square they would have been squashed. Width
+                        // only, height follows.
+                        // The icon PLATE, not a themed recess — the same pair
+                        // the template rail runs (see template-rail.tsx).
+                        //
+                        // It was --surface-2 / white-6%, which is dark in dark
+                        // mode, and these marks are drawn near-black on the
+                        // assumption of a light tile: on a dark recess the
+                        // artwork simply disappeared. The plate stays light in
+                        // both themes and dims one step in dark so it does not
+                        // glare, which is the treatment the other rail already
+                        // settled on.
+                        className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[#e6e7ea] [[data-theme=dark]_&]:bg-[#c8c9cd]"
+                      >
+                        <Icon className="w-[19px]" />
                       </span>
-                      <span className="mt-0.5 block text-sm leading-relaxed text-muted-foreground">
-                        {body}
+                      <span className="min-w-0">
+                        <span className="block text-[15px] text-foreground">
+                          {label}
+                        </span>
+                        <span className="mt-0.5 block text-sm leading-relaxed text-muted-foreground">
+                          {body}
+                        </span>
                       </span>
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             ) : null}
           </div>
 

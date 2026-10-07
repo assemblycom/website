@@ -1,7 +1,15 @@
 import Link from "next/link";
+import { QUIET_BUTTON } from "@/components/ui/quiet-button";
 import { Reveal } from "@/components/ui/reveal";
 import { TemplateRail } from "@/components/templates/template-rail";
-import { IconTemplatePayments } from "@/components/templates/template-icons";
+import {
+  IconTemplateDocuments,
+  IconTemplateLibrary,
+  IconTemplateMessages,
+  IconTemplateOnboarding,
+  IconTemplatePayments,
+  IconTemplateProjects,
+} from "@/components/templates/template-icons";
 
 /**
  * The six templates that mirror the work every firm shares: onboarding,
@@ -37,24 +45,28 @@ const PICKS: {
     title: "Client onboarding wizard",
     description: "Multi-step flow with saved progress.",
     foundation: "Onboarding",
+    icon: <IconTemplateOnboarding className="w-[26px]" />,
   },
   {
     slug: "document-collection",
     title: "Document collector",
     description: "Requested docs with upload checklist.",
     foundation: "Documents",
+    icon: <IconTemplateDocuments className="w-[32px]" />,
   },
   {
     slug: "client-project-tracker",
     title: "Project tracker",
     description: "Milestones per engagement.",
     foundation: "Projects",
+    icon: <IconTemplateProjects className="w-[22px]" />,
   },
   {
     slug: "messaging-app",
     title: "Messages",
     description: "Secure client messaging.",
     foundation: "Messaging",
+    icon: <IconTemplateMessages className="w-[26px]" />,
   },
   {
     slug: "billing-app",
@@ -68,6 +80,7 @@ const PICKS: {
     title: "Client resource library",
     description: "Branded guides for clients.",
     foundation: "Resources",
+    icon: <IconTemplateLibrary className="w-[26px]" />,
   },
 ];
 
@@ -108,10 +121,7 @@ export function PortalReadyMade({
         <div className="max-w-2xl">
           <h2 className="type-h2 text-balance">{heading}</h2>
           <p className="mt-4 max-w-2xl text-muted-foreground">{body}</p>
-          <Link
-            href={link.href}
-            className="mt-6 inline-block rounded-lg border border-border px-4 py-1.5 text-sm text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground"
-          >
+          <Link href={link.href} className={`mt-6 ${QUIET_BUTTON}`}>
             {link.label}
           </Link>
         </div>

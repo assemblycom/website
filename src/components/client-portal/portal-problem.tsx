@@ -1,8 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { QUIET_BUTTON } from "@/components/ui/quiet-button";
 import Link from "next/link";
 import { Reveal } from "@/components/ui/reveal";
+import {
+  DOTTED_RULE_AFTER_MOBILE,
+  DOTTED_RULE_BEFORE_MOBILE,
+} from "@/components/ui/dotted-rule";
 import {
   GenericPortalMock,
   IntakeAppMock,
@@ -154,7 +159,9 @@ function Screen({
             the selection rather than fixed to one side. */}
         <div
           className={`h-full transition duration-300 motion-reduce:transition-none ${
-            selected ? "" : "opacity-55 grayscale [[data-theme=dark]_&]:opacity-[0.85]"
+            selected
+              ? ""
+              : "opacity-55 grayscale [[data-theme=dark]_&]:opacity-[0.85]"
           }`}
         >
           {children}
@@ -190,7 +197,6 @@ const SCREEN_FADE =
   "linear-gradient(to right, #000 0 90%, rgba(0,0,0,0.72) 95%, " +
   "rgba(0,0,0,0.3) 98%, transparent 100%)";
 
-
 function ScreenPair() {
   // Which screen is in front. It persists: pointing at one brings it forward
   // and it stays there, so you can actually look at the screen you raised.
@@ -202,13 +208,17 @@ function ScreenPair() {
       <Screen selected={selected === 0} onSelect={() => setSelected(0)}>
         <GenericPortalMock />
       </Screen>
-      <Screen selected={selected === 1} overlaps onSelect={() => setSelected(1)}>
+      <Screen
+        selected={selected === 1}
+        overlaps
+        onSelect={() => setSelected(1)}
+      >
         {/* Branded, where the same screen elsewhere on the site is not. This
             pair IS the argument — a portal that is nobody's beside one that is
             yours — and with a neutral nav on both sides the right-hand screen
             was making the case in its labels while quietly contradicting it in
             its colour. */}
-        <IntakeAppMock branded action={false} />
+        <IntakeAppMock branded />
       </Screen>
     </div>
   );
@@ -245,7 +255,7 @@ export function PortalProblem({
 } = {}) {
   return (
     <section className="mx-auto max-w-[1200px] px-6 py-16 md:px-10 md:py-24">
-      <Reveal>
+      <Reveal className="flex flex-col">
         {/* Ranged left, and the claim on its own. The lead under it said in
             other words what the heading had just said, and the jump link below
             it pointed at a section this one is the set-up for — so the reader
@@ -261,19 +271,41 @@ export function PortalProblem({
             screens began to overlap — there is no column for a caption to
             stand in any more, so they read as the before and after of one
             picture, which is what the picture now is. */}
+        {/* On a PHONE the pair moves below the tray and becomes a ruled list;
+            from md it goes back above it as two columns.
+
+            Both halves are a reading of the same picture, so on a desktop —
+            where the two columns sit side by side and are taken in together —
+            they belong above it, as the question the picture answers. Stacked
+            on a phone they are not a pair any more, they are two paragraphs in
+            sequence, and two paragraphs before the picture is a wall to get
+            through before the argument starts. Under it they read as the
+            caption they have become.
+
+            Ruled like the FAQ further down this same page, on its own dotted
+            hairline rather than a second one invented here — two dotted rules a
+            screen apart that disagree about pitch read as a mistake. The rules
+            only, though: no chevron and nothing collapsed, because the whole
+            section is the Almost fits / Fits contrast and a contrast you have
+            to tap twice to see is not one. */}
         {sides.length ? (
-        <div className="mt-14 grid gap-6 md:mt-16 md:grid-cols-2 md:gap-5">
-          {sides.map((side) => (
-            <div key={side.label} className="max-w-sm">
-              <p className="text-base leading-snug text-foreground">
-                {side.label}
-              </p>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                {side.body}
-              </p>
-            </div>
-          ))}
-        </div>
+          <div
+            className={`order-2 mt-12 md:order-1 md:mt-16 md:grid md:grid-cols-2 md:gap-5 max-md:relative max-md:after:absolute max-md:after:inset-x-0 max-md:after:bottom-0 max-md:after:h-px max-md:after:content-[''] ${DOTTED_RULE_AFTER_MOBILE}`}
+          >
+            {sides.map((side) => (
+              <div
+                key={side.label}
+                className={`md:max-w-sm max-md:relative max-md:py-5 max-md:before:absolute max-md:before:inset-x-0 max-md:before:top-0 max-md:before:h-px max-md:before:content-[''] ${DOTTED_RULE_BEFORE_MOBILE}`}
+              >
+                <p className="text-base leading-snug text-foreground">
+                  {side.label}
+                </p>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  {side.body}
+                </p>
+              </div>
+            ))}
+          </div>
         ) : null}
 
         {/* One tray under both, with the screens running off its bottom and
@@ -294,7 +326,7 @@ export function PortalProblem({
             grey — a smear in light, buying something the geometry gives for
             free. The bottom is a straight crop against the tray's edge, which
             is what these screens are: windows onto something that continues. */}
-        <div className="mt-8 overflow-hidden rounded-2xl bg-[var(--surface)] p-4 pb-0 md:mt-10 md:rounded-3xl md:p-6 md:pb-0">
+        <div className="order-1 mt-10 overflow-hidden rounded-2xl bg-[var(--surface)] p-4 pb-0 md:order-2 md:mt-10 md:rounded-3xl md:p-6 md:pb-0">
           {/* Two masks, nested rather than two layers on one element: CSS
               composites mask layers by union, so declared together the right
               fade and the bottom fade would each hold the other's edge open
@@ -316,7 +348,7 @@ export function PortalProblem({
             argument rather than above it. On /client-portal both are absent and
             the section ends on the tray, which is why they are optional. */}
         {quote ? (
-          <figure className="mt-12 max-w-2xl">
+          <figure className="order-3 mt-12 max-w-2xl">
             <blockquote className="text-pretty text-foreground">
               &ldquo;{quote.text}&rdquo;
             </blockquote>
@@ -333,7 +365,7 @@ export function PortalProblem({
         {link ? (
           <Link
             href={link.href}
-            className="mt-8 inline-block rounded-lg border border-border px-4 py-1.5 text-sm text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground"
+            className={`order-4 mt-8 sm:self-start ${QUIET_BUTTON}`}
           >
             {link.label}
           </Link>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { QUIET_BUTTON } from "@/components/ui/quiet-button";
 import { Reveal } from "@/components/ui/reveal";
 import { TemplateRail } from "@/components/templates/template-rail";
 import { getTemplateBySlug } from "@/lib/templates";
@@ -78,10 +79,7 @@ export function BuilderTemplates() {
             20+ templates made for businesses like yours. Install one, then
             remix it with the builder.
           </p>
-          <Link
-            href="/templates"
-            className="mt-6 inline-block rounded-lg border border-border px-4 py-1.5 text-sm text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground"
-          >
+          <Link href="/templates" className={`mt-6 ${QUIET_BUTTON}`}>
             Browse all templates
           </Link>
         </div>

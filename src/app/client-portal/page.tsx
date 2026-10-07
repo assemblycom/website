@@ -5,7 +5,10 @@ import { GridDivider, GridRails } from "@/components/ui/grid-lines";
 import { PortalSocialProof } from "@/components/client-portal/portal-social-proof";
 import { PortalProblem } from "@/components/client-portal/portal-problem";
 import { PortalReadyMade } from "@/components/client-portal/portal-ready-made";
-import { BUILD_STEPS, PortalBuild } from "@/components/client-portal/portal-build";
+import {
+  BUILD_STEPS,
+  PortalBuild,
+} from "@/components/client-portal/portal-build";
 import { PortalTailor } from "@/components/client-portal/portal-tailor";
 import { PortalStack } from "@/components/client-portal/portal-stack";
 import { PortalTrust } from "@/components/client-portal/portal-trust";
@@ -85,11 +88,25 @@ export default function ClientPortalPage() {
           the actions close the block. */}
       <section className="pb-16 pt-24 md:pb-24 md:pt-32">
         <div className="mx-auto max-w-[1400px] px-6 md:px-10">
-          <div className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-start lg:gap-x-16">
-            <h1 className="type-display max-w-[16ch] text-balance">
+          {/* CENTRED on a phone, ranged left from md.
+          
+              The split header is a two-column idea: headline on the left, the
+              detail beside it, each holding its own edge. Below lg there are no
+              columns left to hold — the three blocks stack — and a stacked
+              left-ranged hero on a 375px screen is three different ragged right
+              edges down one side of the screen, with the buttons (which are
+              full width here) squared off under them. Centred, the stack reads
+              as one block and the buttons stop looking like the only thing that
+              was laid out.
+              
+              The max-widths go with it: mx-auto on a measure narrower than the
+              column is what actually centres the text, rather than centring
+              only the glyphs inside a left-hugging box. */}
+          <div className="grid gap-8 text-center md:text-left lg:grid-cols-[1.15fr_0.85fr] lg:items-start lg:gap-x-16">
+            <h1 className="type-display mx-auto max-w-[16ch] text-balance md:mx-0">
               The client portal you can build on
             </h1>
-            <p className="type-lead max-w-[34rem] text-pretty text-muted-foreground lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:pt-2">
+            <p className="type-lead mx-auto max-w-[34rem] text-pretty text-muted-foreground md:mx-0 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:pt-2">
               Ready-made apps for the work every firm shares, plus an AI app
               builder for the work that is only yours.
             </p>
@@ -102,7 +119,7 @@ export default function ClientPortalPage() {
                   them full width to md left two very wide buttons on a tablet.
                   Matches the pricing billing toggle's shape (w-full, then
                   w-auto at a breakpoint). */}
-              <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+              <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center md:justify-start">
                 <a
                   href={SIGNUP_URL}
                   className="w-full rounded-lg bg-foreground px-5 py-3 text-center text-sm text-background transition-opacity hover:opacity-90 sm:w-auto sm:py-2.5"

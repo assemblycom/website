@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { QUIET_BUTTON } from "@/components/ui/quiet-button";
 import { Section } from "@/components/ui/section";
 import { getFeaturedTemplates } from "@/lib/templates";
 import { APP_URL } from "@/lib/constants";
@@ -10,9 +11,7 @@ export function Templates() {
     <Section id="templates">
       <div className="flex items-end justify-between">
         <div>
-          <h2 className="type-h2">
-            Start with an app template
-          </h2>
+          <h2 className="type-h2">Start with an app template</h2>
           <p className="mt-4 max-w-2xl text-muted-foreground">
             Pre-built app templates for common use cases. Pick one, customize
             it, ship it to your clients.
@@ -20,7 +19,7 @@ export function Templates() {
         </div>
         <Link
           href="/templates"
-          className="hidden shrink-0 rounded-lg border border-border px-4 py-1.5 text-sm text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground md:inline-block"
+          className={`hidden shrink-0 md:block ${QUIET_BUTTON}`}
         >
           See all
         </Link>
@@ -35,9 +34,7 @@ export function Templates() {
           >
             <div className="aspect-[5/3] overflow-hidden bg-muted" />
             <div className="p-4">
-              <h3 className="text-sm font-medium">
-                {template.title}
-              </h3>
+              <h3 className="text-sm font-medium">{template.title}</h3>
               <p className="mt-1.5 text-sm text-muted-foreground">
                 {template.description}
               </p>
