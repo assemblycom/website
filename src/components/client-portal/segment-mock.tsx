@@ -76,7 +76,10 @@ function NavRow({
 }) {
   return (
     <span
-      className={`flex items-center gap-1.5 rounded-md px-1.5 py-[5px] text-[10px] leading-none ${
+      // 4px, matching the portal nav row wherever it is drawn — see the same
+      // row in branded-portal-visual. rounded-md is 6px, which at this scale
+      // read as a lozenge rather than as a row with its corners taken off.
+      className={`flex items-center gap-1.5 rounded-[4px] px-1.5 py-[5px] text-[10px] leading-none ${
         branded
           ? // On the brand slab the row cannot be marked by ink alone — white
             // against white/60 is a smaller step than black against grey — so

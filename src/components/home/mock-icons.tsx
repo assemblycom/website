@@ -108,6 +108,20 @@ export function IconApp({ className }: IconProps) {
   );
 }
 
+// Year-end docs — approved product glyph (blank book). Normalised with the
+// SAME transform as IconApp above, which it replaces on that row: the source
+// art is 17.5x20 like IconApp's, so translate(3.875 3) scale(0.7) centres it
+// in the 20x20 box at exactly the optical size the row already had.
+export function IconBookBlank({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 20 20" className={className} fill="currentColor">
+      <g transform="translate(3.875 3) scale(0.7)">
+        <path d="M3.4375 0C1.53906 0 0 1.53906 0 3.4375V16.875C0 18.6016 1.39844 20 3.125 20H16.5625C17.082 20 17.5 19.582 17.5 19.0625C17.5 18.543 17.082 18.125 16.5625 18.125H16.25V15.1523C17.0039 14.6484 17.5 13.7891 17.5 12.8125V2.8125C17.5 1.25781 16.2422 0 14.6875 0H3.4375ZM14.375 15.625V18.125H3.125C2.43359 18.125 1.875 17.5664 1.875 16.875C1.875 16.1836 2.43359 15.625 3.125 15.625H14.375ZM3.125 13.75C2.67969 13.75 2.25781 13.8438 1.875 14.0117V3.4375C1.875 2.57422 2.57422 1.875 3.4375 1.875H14.6875C15.207 1.875 15.625 2.29297 15.625 2.8125V12.8125C15.625 13.332 15.207 13.75 14.6875 13.75H3.125Z" />
+      </g>
+    </svg>
+  );
+}
+
 // Add App — approved product glyph (plus).
 export function IconPlus({ className }: IconProps) {
   return (

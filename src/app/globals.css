@@ -200,7 +200,16 @@
   --mock-window: #212121;
   --mock-well: #292929;
   --mock-well-2: #303030;
-  --mock-line: #3a3a3a;
+  /* #2e2e2e, not #3a3a3a. The hairline is a SEPARATION, not a feature, and
+     at #3a on a #212121 panel it was a 25-point step — brighter against its
+     own surface than Linear's #34343a is against #232326, which is the scale
+     this block is built on. Drawn that hard it outlined the mock rather than
+     closing it, and every table rule inside came along with it. 13 points up
+     from the window keeps an edge that reads without announcing itself.
+     Light is unchanged: #e8e9ec on white is already the quiet version of the
+     same idea, and a step DOWN in light is not the same number as a step up
+     in dark. */
+  --mock-line: #2e2e2e;
   --mock-ink: #ededed;
   --mock-ink-soft: #9a9a9a;
   --mock-raise: #3d3d3d;
@@ -220,6 +229,54 @@
   --proposal-ink-soft: rgba(255, 255, 255, 0.75);
   --proposal-ink-faint: rgba(255, 255, 255, 0.5);
   --proposal-ink-fill: rgba(255, 255, 255, 0.15);
+}
+
+/* ── The mock window's edge, in DARK ─────────────────────────────────────
+   A flat hairline all the way round is not how a panel this size is lit.
+   Linear draws the edge as a GRADIENT — brightest along the top, falling
+   away down the sides until it is gone — which reads as light landing on the
+   top lip of a raised surface rather than as an outline someone drew around
+   it. At 160x300 and up, a uniform rule is the giveaway that it is a drawing.
+
+   Done as two backgrounds rather than a border-image: the fill is clipped to
+   the padding box and the ramp to the border box, so the border area shows
+   the ramp and the inside stays --mock-window. The border itself goes
+   transparent and keeps its width, so nothing moves.
+
+   RADIAL from the top-left corner, not a linear ramp. This window draws only
+   two edges — border-l and border-t — and they run perpendicular, so one
+   linear angle cannot fade both: tilt it to carry the top edge out to the
+   right and the left edge stops fading downward, and the other way round.
+   A glow falling off from the corner they meet at is what the effect is
+   anyway — light landing on the top-left lip — and it dies along both.
+
+   The reach is in PIXELS, not percentages, and that is the other half of it:
+   this box is the artwork's own 760px tall and wider than the card, while the
+   card that crops it shows a bit over half the height. Percentage stops are
+   measured against the artwork, so a ramp "finishing at 100%" was only ever
+   half spent by the time the crop arrived, and the edge reached the card's
+   foot still lit. 540x400px is sized to the VISIBLE picture, so the edge is
+   gone before the picture is. Flat --mock-window past that, so the stretch
+   beyond the crop costs nothing.
+
+   DARK ONLY. In light the edge is #e8e9ec on white, which is already a
+   whisper — a ramp there would be invisible at the top and dirty at the
+   bottom. */
+[data-theme="dark"] .mock-edge {
+  border-color: transparent;
+  background-image:
+    linear-gradient(var(--mock-window), var(--mock-window)),
+    radial-gradient(
+      ellipse 540px 400px at 0% 0%,
+      #484848 0%,
+      #3a3a3a 14%,
+      #2f2f2f 32%,
+      #272727 55%,
+      #232323 78%,
+      #212121 100%
+    );
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
 }
 
 @theme inline {

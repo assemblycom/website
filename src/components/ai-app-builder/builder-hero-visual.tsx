@@ -24,12 +24,10 @@ import {
 } from "@/components/home/build-app-visual";
 import { IconArrowUp } from "@/components/home/build-step-visual";
 import {
-  IconApp,
+  IconBookBlank,
   IconBook,
   IconBrandMark,
-  IconCard,
   IconChat,
-  IconFile,
   IconGlobe,
   IconPlus,
   IconUsers,
@@ -60,6 +58,17 @@ const PROMPT = "Build a year-end document checklist my clients can upload to.";
 // the foreground, and the sidebar is the brand itself, near-black with white
 // type in both themes, the way a firm's portal carries its colour.
 const BRAND_FILL = "bg-foreground text-background";
+// The firm's slab. Near-black in light, and in DARK it carries colour instead:
+// at #121212 on a #191919 card it read as absence rather than as a brand, which
+// is the one thing this screen is claiming. Scoped here rather than pushed into
+// --mock-brand, because that token is also the branded nav on /ai-app-builder
+// and in the comparison mocks, and those are not what was asked for.
+//
+// Near-black in both themes, from --mock-brand. Blue was tried here and taken
+// back out: a slab is a large flat FIELD, and a colour that reads as a
+// pleasant accent on a chip glares at 160x300 against a near-black card.
+// Dropped to a deep navy it stopped glaring but also stopped being worth the
+// departure, so the slab stays the firm's own near-black.
 const BRAND_SIDEBAR = "bg-[var(--mock-brand)] text-white";
 
 const LINE = "border-[var(--mock-line)]";
@@ -70,7 +79,7 @@ const WINDOW = `overflow-hidden rounded-xl border bg-[var(--mock-window)] text-[
 // a page header, then white panels on the screen's grey ground, tables with a
 // tinted label row.
 const PANEL = `mt-4 overflow-hidden rounded-lg border bg-[var(--mock-window)] ${LINE}`;
-const TABLE_HEAD = `flex items-center gap-3 border-b bg-[var(--mock-well)] px-3.5 py-2 text-[11.5px] leading-none text-[color:var(--mock-ink-soft)] ${LINE}`;
+const TABLE_HEAD = `flex items-center gap-5 border-b bg-[var(--mock-well)] px-3.5 py-2 text-[11.5px] leading-none text-[color:var(--mock-ink-soft)] ${LINE}`;
 
 const CHIP = "rounded px-1.5 py-[4px] text-[11px] leading-none";
 const POSITIVE = `${CHIP} bg-[var(--mock-positive-bg)] text-[color:var(--mock-positive-fg)]`;
@@ -78,7 +87,7 @@ const WARNING = `${CHIP} bg-[var(--mock-warning-bg)] text-[color:var(--mock-warn
 const NEUTRAL = `${CHIP} bg-[var(--mock-well-2)] text-[color:var(--mock-ink-soft)]`;
 // The column keeps a fixed width so the header lines up; the pill inside hugs
 // its label.
-const STATUS_COL = "flex w-[78px] shrink-0 justify-center";
+const STATUS_COL = "flex w-[78px] shrink-0 justify-start";
 // A hovered table row takes the same tint as the table head, so it reads as
 // part of the table rather than as a new colour. Both views use it: the
 // sidebar rows already answered the pointer and the rows beside them did not.
@@ -294,7 +303,7 @@ export function BuilderHeroVisual() {
           onClick={() => setActive("live")}
         >
           <div
-            className={`${HEAD_ROW} flex-wrap justify-between gap-3 ${CARD_PAD} pb-0 md:pb-0`}
+            className={`${HEAD_ROW} relative z-20 flex-wrap justify-between gap-3 ${CARD_PAD} pb-0 md:pb-0`}
           >
             <p className="type-body hidden text-muted-foreground lg:block">
               Live for your team and your clients
@@ -316,28 +325,26 @@ export function BuilderHeroVisual() {
               // what is drawn inside sets no colour of its own and inherits,
               // and what it was inheriting was the PAGE's --foreground — tuned
               // for the near-black ground, not for this lifted panel.
-              className={`relative h-[760px] w-full overflow-hidden rounded-tl-xl border-l border-t bg-[var(--mock-window)] text-[color:var(--mock-ink)] shadow-[0_8px_24px_-18px_rgba(16,24,40,0.14)] ${LINE}`}
+              className={`mock-edge relative h-[760px] w-full overflow-hidden rounded-tl-xl border-l border-t bg-[var(--mock-window)] text-[color:var(--mock-ink)] shadow-[0_8px_24px_-18px_rgba(16,24,40,0.14)] ${LINE}`}
             >
-              {/* The card clips this screen on two sides, which left the last
-                  row cut through the middle of its type and the status column
-                  sliced down its length — hard edges that read as a rendering
-                  fault rather than as a crop. A short fade to the card's own
-                  ground ends each instead. Over the screen, under nothing:
-                  they are the last things drawn.
+              {/* The card clips this screen on two sides, which left the status
+                  column sliced down its length — a hard edge that reads as a
+                  rendering fault rather than as a crop. A short fade to the
+                  card's own ground ends it instead. Over the screen, under
+                  nothing: it is the last thing drawn.
+
+                  Only the RIGHT edge is handled here. This box is the artwork's
+                  own 760px height, and the card shows about 400px of it, so an
+                  `inset-x-0 bottom-0` layer in here hangs 200-odd px BELOW the
+                  card's crop and is never on screen — which is exactly what
+                  "the bottom doesn't blend" was. The bottom fade is drawn on
+                  the card instead, where the crop actually happens. The right
+                  edge has no such problem: it is `inset-y-0`, so it spans
+                  whatever is visible.
 
                   Two layers rather than one corner gradient: a single diagonal
                   would have dimmed the middle of the table, which is the part
                   worth reading. */}
-              <div
-                aria-hidden
-                className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-36"
-                style={{ backgroundImage: edgeFade("to bottom") }}
-              />
-              <div
-                aria-hidden
-                className="pointer-events-none absolute inset-y-0 right-0 z-10 w-28"
-                style={{ backgroundImage: edgeFade("to right") }}
-              />
               <div className="relative h-full">
                 {VIEWS.map((label, i) => (
                   <div
@@ -354,6 +361,62 @@ export function BuilderHeroVisual() {
               </div>
             </div>
           </WidthScaled>
+          {/* The screen gives out into the card's own ground at the card's own
+              foot. Anchored to the CARD, not to the artwork inside it: the
+              card is what crops the picture, so the card is the only box whose
+              bottom edge the fade can be measured against. Clipped by the
+              card's 28px radius like everything else in it.
+
+              TEAM VIEW ONLY. The client view leads with the firm's near-black
+              brand slab running the full height of the screen, and a fade to
+              the card's light ground across it does not read as the picture
+              giving out — it reads as the slab going grey and dying, which is
+              the highest-contrast thing this ramp can be asked to do. That
+              screen keeps its hard bottom edge. Faded out rather than
+              unmounted, on the same 500ms the two views cross on, so it leaves
+              with the screen it belongs to instead of popping. */}
+          <div
+            aria-hidden
+            className={`pointer-events-none absolute inset-x-0 bottom-0 z-10 h-36 transition-opacity duration-500 motion-reduce:transition-none ${
+              view === 0 ? "opacity-100" : "opacity-0"
+            }`}
+            style={{ backgroundImage: edgeFade("to bottom") }}
+          />
+          {/* The right edge, on the CARD for the same reason the bottom one is:
+              the screen is laid out wider than the card and overflows it by
+              about 40px, so a ramp anchored to the ARTWORK put its strongest
+              stretch past the crop — at the card's edge it was only two thirds
+              through its run, which is why the status chips stayed solid right
+              up to the cut. On the card it finishes where the picture actually
+              ends. Spans the card's full height; the head row above carries
+              z-20 so the toggle stays clear of it. */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-y-0 right-0 z-10 w-28"
+            style={{ backgroundImage: edgeFade("to right") }}
+          />
+          {/* And the dark-only second pass over its tail: the long ramp ends at
+              96% of --surface, invisible on white but 4% of #ededed still
+              reads on #191919. */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-y-0 right-0 z-10 hidden w-14 [[data-theme=dark]_&]:block"
+            style={{ backgroundImage: edgeFade("to right") }}
+          />
+          {/* A second, shorter ramp, DARK ONLY. The one above ends at 96% of
+              --surface a row short of the crop, which is invisible on white
+              but not on #191919: 4% of #ededed ink still reads, so the last
+              row sat there as a legible ghost instead of giving out. Stacking
+              a 64px ramp over the tail of the long one takes that stretch to
+              solid without touching the light ramp, which is already right —
+              see the globals.css note on tuning one theme into the other. */}
+          <div
+            aria-hidden
+            className={`pointer-events-none absolute inset-x-0 bottom-0 z-10 hidden h-16 transition-opacity duration-500 motion-reduce:transition-none [[data-theme=dark]_&]:block ${
+              view === 0 ? "opacity-100" : "opacity-0"
+            }`}
+            style={{ backgroundImage: edgeFade("to bottom") }}
+          />
         </div>
       </div>
       {/* Under the picture rather than above it, so it reads as part of the
@@ -486,7 +549,13 @@ function ViewToggle({
           aria-pressed={i === view}
           className={`whitespace-nowrap rounded-full border px-3.5 py-1 text-sm transition-colors duration-300 ${
             i === view
-              ? "border-border bg-background text-foreground shadow-[0_1px_2px_rgba(16,24,40,0.06)] [[data-theme=dark]_&]:border-white/15 [[data-theme=dark]_&]:bg-white/[0.06]"
+              ? // No border on the thumb in DARK: the track already carries one
+                // 4px outside it, so the pair read as two concentric rings
+                // around one small control. The fill is what marks the thumb
+                // there — lifted to 8% so it still reads once the ring is
+                // gone. Light keeps its border, because a white thumb on a
+                // near-white card has nothing else to separate it.
+                "border-border bg-background text-foreground shadow-[0_1px_2px_rgba(16,24,40,0.06)] [[data-theme=dark]_&]:border-transparent [[data-theme=dark]_&]:bg-white/[0.08] [[data-theme=dark]_&]:shadow-none"
               : "border-transparent text-muted-foreground hover:text-foreground"
           }`}
         >
@@ -580,13 +649,35 @@ function Composer({ run, typing }: { run: number; typing: boolean }) {
       }
       i += 1;
       show(next.slice(0, i));
-      if (i < next.length) timer = setTimeout(tick, TYPE_MS);
+      if (i < next.length) {
+        timer = setTimeout(tick, TYPE_MS);
+        return;
+      }
+      finished = true;
     };
-    // Reduced motion gets the destination and none of the journey.
+    // Whether the sentence got all the way out. A FINISHED run leaves its
+    // sentence standing — that is the card's resting state, and the picture
+    // beside it is the app this sentence asks for. An INTERRUPTED one does
+    // not: leaving half a sentence frozen in the box reads as the demo having
+    // broken, not as a demo at rest. So an interrupted run clears on its way
+    // out and the placeholder comes back.
+    //
+    // This fires whenever `typing` drops — which is what the other card's
+    // toggle does, since the demo is stopped while the chat card is not the
+    // open one.
+    let finished = false;
+    // Reduced motion gets the destination and none of the journey — and that
+    // counts as finished, or it would be wiped the moment anything changed.
     timer = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
-      ? setTimeout(() => show(next), 0)
+      ? setTimeout(() => {
+          show(next);
+          finished = true;
+        }, 0)
       : setTimeout(tick, 120);
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      if (!finished) show("");
+    };
   }, [typing, run]);
 
   const box = (
@@ -624,7 +715,10 @@ function Composer({ run, typing }: { run: number; typing: boolean }) {
         <span className="pointer-events-auto flex size-[26px] cursor-default items-center justify-center rounded-[4px] text-[color:var(--mock-ink-soft)] transition-colors hover:bg-[var(--mock-well)] hover:text-[color:var(--mock-ink)]">
           <IconPlus className="size-[13px]" />
         </span>
-        <span className="flex items-center gap-2">
+        {/* 12px between the model name and the send button, not 8: the button
+            is a filled 26px tile and the label is loose grey type, so at 8 the
+            words sat on the tile's edge and read as part of it. */}
+        <span className="flex items-center gap-3">
           <span className="text-[12px] leading-none text-[color:var(--mock-ink-soft)]">
             Opus 5
           </span>
@@ -647,9 +741,18 @@ function Composer({ run, typing }: { run: number; typing: boolean }) {
           own hairline, which is what every other window on these pages is made
           of; a drop shadow under it was a second way of saying the same thing
           and, on a card this large, a grey smudge across the ground under the
-          box. */}
+          box.
+
+          DOUBLE OUTLINE: the element's own hairline, then a 3px band of the
+          card's ground, then a second hairline — drawn as two spread shadows
+          rather than a ring with an offset, so both lines and the gap between
+          them are declared in one place and both read tokens. The gap is
+          --surface because that is the card this box sits on, in both themes;
+          a hardcoded grey there would show as a band the moment the theme
+          flipped. Shadows are not clipped by the overflow-hidden above, so
+          the outer line survives it. */}
       <div
-        className={`overflow-hidden rounded-xl border bg-[var(--mock-window)] ${LINE}`}
+        className={`overflow-hidden rounded-xl border bg-[var(--mock-window)] shadow-[0_0_0_3px_var(--surface),0_0_0_4px_var(--mock-line)] ${LINE}`}
       >
         {box}
       </div>
@@ -676,38 +779,51 @@ export function IconCheckCircleOutline({ className }: { className?: string }) {
   );
 }
 
+/** How many rows at the foot of the table fall inside the card's bottom fade. */
+const QUIET_ROWS = 2;
+
 /** The team's view, in Assembly's own neutral chrome. */
 function TeamDashboard({ live }: { live: boolean }) {
   const rows = [
     {
       name: "Dana Whitfield",
-      firm: "Whitfield Coffee Co.",
       done: 8,
       status: "In progress",
     },
     {
       name: "Marcus Lee",
-      firm: "Lee & Daughters",
       done: 12,
       status: "Complete",
     },
-    { name: "Priya Raman", firm: "Raman Florals", done: 3, status: "Awaiting" },
+    { name: "Priya Raman", done: 3, status: "Awaiting" },
     {
       name: "Owen Brooks",
-      firm: "Brooks Bicycle Works",
       done: 10,
       status: "In progress",
     },
     {
       name: "Lena Ortiz",
-      firm: "Ortiz Architecture",
       done: 12,
       status: "Complete",
     },
     {
       name: "Sam Patel",
-      firm: "Patel Family Bakery",
       done: 6,
+      status: "In progress",
+    },
+    {
+      name: "Nina Alvarez",
+      done: 12,
+      status: "Complete",
+    },
+    {
+      name: "Tomas Ferreira",
+      done: 5,
+      status: "Awaiting",
+    },
+    {
+      name: "Grace Mwangi",
+      done: 9,
       status: "In progress",
     },
   ];
@@ -716,7 +832,7 @@ function TeamDashboard({ live }: { live: boolean }) {
       <div
         className={`flex w-[164px] shrink-0 flex-col border-r bg-[var(--mock-well)] px-1.5 py-2 [--mock-nav-size:13px] [--mock-nav-row:28px] [--mock-section-size:11px] ${LINE} [&>div:not(:first-child)]:h-[28px] [&>div:not(:first-child)]:transition-colors [&>div:not(:first-child):hover]:bg-border/50`}
       >
-        <div className="flex items-center gap-1.5 px-1.5 pb-2 pt-0.5">
+        <div className="flex items-center gap-1.5 px-1.5 pb-4 pt-3">
           <span className="flex size-[16px] items-center justify-center rounded-[3px] bg-foreground text-background">
             <IconBrandMark className="size-[9px]" />
           </span>
@@ -729,16 +845,44 @@ function TeamDashboard({ live }: { live: boolean }) {
         <SectionLabel>Apps</SectionLabel>
         <NavItem icon={<IconGlobe />} label="Home" />
         <NavItem icon={<IconChat />} label="Messages" />
-        <NavItem icon={<IconApp />} label="Year-end docs" active={live} />
+        <NavItem icon={<IconBookBlank />} label="Year-end docs" active={live} />
         <NavItem icon={<IconPlus />} label="Add App" muted />
       </div>
-      <div className="@container min-w-0 flex-1 pl-5 pt-5">
+      <div className="@container flex min-w-0 flex-1 flex-col">
+        {/* The app's own bar, which this screen had none of: the pane began
+            on a row of stat tiles, so nothing said WHICH app the table
+            belonged to and the sidebar's lit row was carrying that alone.
+
+            It is the AppHeader shape the other mocks in this family already
+            use — name on the left, trailing content on the right, closed by a
+            hairline. Just the app's name: an "Apps >" crumb in front of it
+            spent two thirds of the bar's left side on a word that is already
+            the lit row in the sidebar three inches away. Two actions, not the
+            four a real toolbar carries — at 11px a fourth is a grey tick, and
+            the shot is here to show where an app lands, not to be operated. */}
+        <div
+          className={`flex shrink-0 items-center border-b py-2.5 pl-5 pr-4 ${LINE}`}
+        >
+          <span className="min-w-0 truncate text-[12px] leading-none text-[color:var(--mock-ink)]">
+            Year-end docs
+          </span>
+        </div>
+        <div className="min-h-0 flex-1 pl-5 pt-4">
         <div>
-          <div className={`${PANEL} mt-0! grid grid-cols-3`}>
+          {/* Tinted in DARK only. --mock-window on --mock-window is no step at
+              all, so on the dark card this strip was a hairline rectangle
+              drawn around nothing; --mock-well is the family's own lift (in
+              dark the wells step UP, see globals.css), which separates the
+              summary from the table under it. Light already works — #ffffff
+              inside a #e8e9ec hairline on a grey card is a clear panel — and
+              a tint there would only muddy it. */}
+          <div
+            className={`${PANEL} mt-0! grid grid-cols-3 [[data-theme=dark]_&]:bg-[var(--mock-well)]`}
+          >
             {[
-              ["Clients", "6"],
-              ["Complete", "2"],
-              ["Awaiting", "1"],
+              ["Clients", "9"],
+              ["Complete", "3"],
+              ["Awaiting", "2"],
             ].map(([label, value], i) => (
               <div
                 key={label}
@@ -758,31 +902,42 @@ function TeamDashboard({ live }: { live: boolean }) {
               <span className="flex-1">Client</span>
               {/* Dropped when the card narrows, so names keep their room. */}
               <span className="hidden w-[92px] @[420px]:block">Progress</span>
-              <span className="w-[72px] text-center">Status</span>
+              {/* 78px, matching STATUS_COL on the rows below. It was 72, and
+                  the 6px it was short pulled every column left of it out of
+                  register with its own heading — which is why the bars started
+                  before the "P" of Progress. Ranged left, like the chips. */}
+              <span className="w-[78px]">Status</span>
             </div>
-            {rows.map((row) => (
+            {rows.map((row, i) => {
+              // The last rows sit in the card's bottom fade and are drawn
+              // EMPTY — no name, no count, no status, and no progress bar.
+              // Anything with its own shape survives the fade as a legible
+              // object floating in nothing, which reads as a rendering fault;
+              // the row's border alone reads as the list carrying on past the
+              // edge, which is what the crop is claiming.
+              const quiet = i >= rows.length - QUIET_ROWS;
+              return (
               <div
                 key={row.name}
-                className={`flex items-center gap-3 border-b px-3.5 py-[11px] last:border-b-0 ${ROW_HOVER} ${LINE}`}
+                className={`flex items-center gap-5 border-b px-3.5 py-[7px] last:border-b-0 ${ROW_HOVER} ${LINE}`}
               >
-                <span className="flex min-w-0 flex-1 flex-col gap-[4px]">
-                  <span className="truncate text-[13px] leading-none text-[color:var(--mock-ink)]">
-                    {row.name}
-                  </span>
-                  <span className="truncate text-[11px] leading-none text-[color:var(--mock-ink-soft)]">
-                    {row.firm}
-                  </span>
+                {/* The client's name, and nothing under it. The firm's name
+                    sat below it in --mock-ink-soft, which made every row two
+                    lines deep for a second piece of type nobody reads at this
+                    size — the table is here to show a list of clients with
+                    progress against each, not to be read. */}
+                <span className="min-w-0 flex-1 truncate text-[13px] leading-none text-[color:var(--mock-ink)]">
+                  {quiet ? "" : row.name}
                 </span>
-                <span className="hidden w-[92px] items-center gap-2 @[420px]:flex">
-                  <span className="h-1 flex-1 overflow-hidden rounded-full bg-[var(--mock-well-2)]">
-                    <span
-                      className="block h-full rounded-full bg-foreground"
-                      style={{ width: `${(row.done / 12) * 100}%` }}
-                    />
-                  </span>
-                  <span className="text-[11px] leading-none text-[color:var(--mock-ink-soft)]">
-                    {row.done}/12
-                  </span>
+                <span className="hidden w-[92px] items-center @[420px]:flex">
+                  {quiet ? null : (
+                    <span className="h-[3px] w-[62px] overflow-hidden rounded-full bg-[var(--mock-well-2)]">
+                      <span
+                        className="block h-full rounded-full bg-[color:var(--mock-ink-soft)]"
+                        style={{ width: `${(row.done / 12) * 100}%` }}
+                      />
+                    </span>
+                  )}
                 </span>
                 <span className={STATUS_COL}>
                   <span
@@ -794,12 +949,14 @@ function TeamDashboard({ live }: { live: boolean }) {
                           : NEUTRAL
                     }
                   >
-                    {row.status}
+                    {quiet ? "" : row.status}
                   </span>
                 </span>
               </div>
-            ))}
+              );
+            })}
           </div>
+        </div>
         </div>
       </div>
     </div>
@@ -809,12 +966,12 @@ function TeamDashboard({ live }: { live: boolean }) {
 /** One client's view, inside Brandmages' branded client experience. */
 function ClientView() {
   const items = [
-    { label: "W-2, all employees", state: "Received" },
-    { label: "1099-NEC contractors", state: "Received" },
-    { label: "Bank statements, Q4", state: "Upload" },
-    { label: "Prior-year return", state: "Received" },
-    { label: "Mileage log", state: "Awaiting" },
-    { label: "Charitable donation receipts", state: "Awaiting" },
+    { label: "Signed scope of work", state: "Received" },
+    { label: "PO for next retainer", state: "Received" },
+    { label: "Updated billing contact", state: "Received" },
+    { label: "Campaign spend summary", state: "Upload" },
+    { label: "Asset usage rights renewal", state: "Awaiting" },
+    { label: "Next-year brand plan", state: "Awaiting" },
   ];
   // Drawn on the team view's exact grid (sidebar width, row heights, type
   // sizes), so flipping the toggle changes only the brand and the content.
@@ -823,7 +980,7 @@ function ClientView() {
       <div
         className={`flex w-[164px] shrink-0 flex-col px-1.5 py-2 ${BRAND_SIDEBAR}`}
       >
-        <div className="flex items-center gap-1.5 px-1.5 pb-2 pt-0.5">
+        <div className="flex items-center gap-1.5 px-1.5 pb-4 pt-3">
           {/* The firm's own logo: a black mark on a white tile, the same in
               both themes because it is their file, not our chrome. */}
           <span className="flex size-[16px] items-center justify-center rounded-[3px] bg-white text-black">
@@ -836,15 +993,13 @@ function ClientView() {
         {[
           { icon: <IconGlobe />, label: "Home" },
           { icon: <IconChat />, label: "Messages" },
-          { icon: <IconFile />, label: "Files" },
-          { icon: <IconCard />, label: "Invoices" },
-          { icon: <IconApp />, label: "Year-end docs", active: true },
+          { icon: <IconBookBlank />, label: "Year-end docs", active: true },
         ].map(({ icon, label, active }) => (
           <div
             key={label}
             className={`flex h-[28px] items-center gap-2 rounded px-1.5 transition-colors ${
               active
-                ? "bg-white/[0.12] text-white"
+                ? "bg-white/[0.12] text-white [[data-theme=dark]_&]:bg-white/[0.07]"
                 : "text-white/60 hover:bg-white/[0.06] hover:text-white/90"
             }`}
           >
@@ -857,9 +1012,35 @@ function ClientView() {
           </div>
         ))}
       </div>
-      <div className="min-w-0 flex-1 pl-5 pt-5">
+      <div className="flex min-w-0 flex-1 flex-col">
+        {/* The same bar the team side carries, so the two views are one app
+            seen from two sides rather than two different screens — but with
+            the app's name alone. The team's bar offers Export and Add client,
+            which are the firm's actions; the client's equivalent would be an
+            Upload control, and the rows below already carry one each, against
+            the specific thing being asked for. */}
+        <div
+          className={`flex shrink-0 items-center border-b py-2.5 pl-5 pr-4 ${LINE}`}
+        >
+          <span className="min-w-0 truncate text-[12px] leading-none text-[color:var(--mock-ink)]">
+            Year-end docs
+          </span>
+        </div>
+        {/* pt-7, not pt-4. This screen has no bottom fade — the brand slab
+            washed out under one — so the card crops it on a hard line, and at
+            pt-4 that line fell exactly on a row's 1px bottom border. The
+            border and the card's own 1px ring then sat together and read as a
+            doubled rule. The extra 12px drops the crop into the middle of a
+            row instead, where a cut row reads as a cut row.
+
+            Worth knowing: this is a height coincidence, not a structural fix.
+            If the card's height changes, a different row can land on the
+            crop. The robust answer is the short fade the team side carries. */}
+        <div className="min-h-0 flex-1 pl-5 pt-7">
         <div>
-          <div className={`${PANEL} mt-0! px-3.5 py-3`}>
+          <div
+            className={`${PANEL} mt-0! px-3.5 py-3 [[data-theme=dark]_&]:bg-[var(--mock-well)]`}
+          >
             <p className="text-[11.5px] leading-none text-[color:var(--mock-ink-soft)]">
               Documents received
             </p>
@@ -873,14 +1054,18 @@ function ClientView() {
             </div>
           </div>
           <div className={PANEL}>
-            <div className={TABLE_HEAD}>
+            <div className={`${TABLE_HEAD} pr-16!`}>
               <span className="flex-1">Document</span>
-              <span className="w-[72px] text-center">Status</span>
+              {/* 78px, matching STATUS_COL on the rows below. It was 72, and
+                  the 6px it was short pulled every column left of it out of
+                  register with its own heading — which is why the bars started
+                  before the "P" of Progress. Ranged left, like the chips. */}
+              <span className="w-[78px]">Status</span>
             </div>
             {items.map(({ label, state }) => (
               <div
                 key={label}
-                className={`flex items-center justify-between gap-3 border-b px-3.5 py-[12px] last:border-b-0 ${ROW_HOVER} ${LINE}`}
+                className={`flex items-center justify-between gap-3 border-b px-3.5 py-[12px] pr-16! last:border-b-0 ${ROW_HOVER} ${LINE}`}
               >
                 <span className="truncate text-[13px] leading-none text-[color:var(--mock-ink)]">
                   {label}
@@ -901,6 +1086,7 @@ function ClientView() {
               </div>
             ))}
           </div>
+        </div>
         </div>
       </div>
     </div>

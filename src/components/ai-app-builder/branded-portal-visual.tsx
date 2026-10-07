@@ -54,7 +54,9 @@ function NavRow({
 }) {
   return (
     <span
-      className={`flex items-center gap-2 rounded-[5px] px-2 py-[6px] text-[12px] leading-none ${
+      // 4px, the same as the portal nav row in segment-mock. It was 5 here and
+      // 6 there for no reason anyone recorded; one element, one radius.
+      className={`flex items-center gap-2 rounded-[4px] px-2 py-[6px] text-[12px] leading-none ${
         active ? "bg-white/15 text-white" : "text-white/70"
       }`}
     >
