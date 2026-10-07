@@ -90,6 +90,25 @@
   --mock-negative-bg: #fbeceb;
   --mock-negative-fg: #b8443a;
 
+  /* A quieter cut of the positive/warning pair, for the one mock that shows
+     several status pills at once.
+
+     The pills above are already washes rather than brand colour, but they are
+     sized for a screen that carries ONE of them. The onboarding board carries
+     four in a 580px picture — two Uploaded, an Awaiting and a Saved — and at
+     that density the greens and the amber stop reading as the state of a row
+     and start reading as the board's palette, which is the one thing a mock of
+     somebody else's product should not have.
+
+     Still green and still amber, not grey: Uploaded and Awaiting are opposite
+     answers, and a reader should be able to tell them apart before reading
+     either word. The hue is kept and the chroma is roughly halved, so the
+     pills separate from each other without separating from the panel. */
+  --mock-positive-muted-bg: #eef2ef;
+  --mock-positive-muted-fg: #4f7360;
+  --mock-warning-muted-bg: #f4f1ea;
+  --mock-warning-muted-fg: #7d6c4c;
+
   /* Haze, the brand blue (#7DA4FF on /brand), as a mock tint.
      
      Separate from the status trio above and used differently: those three say
@@ -216,6 +235,17 @@
   --mock-warning-fg: #cdb37a;
   --mock-negative-bg: rgba(224, 122, 113, 0.14);
   --mock-negative-fg: #d9928b;
+
+  /* See --mock-positive-muted-bg in :root. Same job, dark's own values.
+
+     The grounds stay translucent like the full-strength pills above, at 12%
+     rather than 14% — on a dark panel a tint is already most of the way to
+     quiet, so the muting here lives mainly in the foregrounds, which come in
+     off the near-neutral end of the dark scale. */
+  --mock-positive-muted-bg: rgba(150, 196, 168, 0.12);
+  --mock-positive-muted-fg: #9bb6a6;
+  --mock-warning-muted-bg: rgba(206, 186, 143, 0.12);
+  --mock-warning-muted-fg: #b3a68c;
 
   /* See --mock-accent-bg in :root. Haze again, but laid down at 38% rather
      than at full value, which is NOT a quieter-in-dark preference — it is the

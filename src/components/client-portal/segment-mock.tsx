@@ -53,6 +53,21 @@ export function IconUpload({ className }: { className?: string }) {
 const CHIP = "rounded px-1.5 py-[3px] text-[9px] leading-none";
 const POSITIVE = `${CHIP} bg-[var(--mock-positive-bg)] text-[color:var(--mock-positive-fg)]`;
 const WARNING = `${CHIP} bg-[var(--mock-warning-bg)] text-[color:var(--mock-warning-fg)]`;
+
+// The same two pills, quieter — for the onboarding board only.
+//
+// Every other mock in this file shows one or two status pills on a screen.
+// The board shows four at once across two panels, and at that count the full
+// -strength washes were the first thing the eye landed on: a picture of a
+// wizard where the colour belonged to the chips rather than to the steps.
+//
+// A VARIANT, not a second opinion. Both cuts are defined together in
+// globals.css, in each theme's own block, and both are read here as tokens —
+// so the quiet pills cannot drift away from the loud ones, and neither can
+// drift between themes. A local hex here would have given this board a private
+// palette that nothing else could follow.
+const POSITIVE_QUIET = `${CHIP} bg-[var(--mock-positive-muted-bg)] text-[color:var(--mock-positive-muted-fg)]`;
+const WARNING_QUIET = `${CHIP} bg-[var(--mock-warning-muted-bg)] text-[color:var(--mock-warning-muted-fg)]`;
 const NEUTRAL = `${CHIP} bg-muted text-[color:var(--mock-ink-soft)] [[data-theme=dark]_&]:bg-white/[0.08]`;
 
 const LINE = "border-[var(--mock-line)]";
@@ -1239,7 +1254,7 @@ export function OnboardingMock() {
         <p className="mt-2 text-[20px] leading-none text-[color:var(--mock-ink)]">
           2 of 4
         </p>
-        <span className={`mt-2.5 inline-flex ${POSITIVE}`}>Saved</span>
+        <span className={`mt-2.5 inline-flex ${POSITIVE_QUIET}`}>Saved</span>
       </Panel>
 
       {/* Cropped by the card edge. */}
@@ -1252,15 +1267,15 @@ export function OnboardingMock() {
         <div className="mt-1">
           <Row
             label="Deed of trust.pdf"
-            trailing={<span className={POSITIVE}>Uploaded</span>}
+            trailing={<span className={POSITIVE_QUIET}>Uploaded</span>}
           />
           <Row
             label="Proof of identity.pdf"
-            trailing={<span className={POSITIVE}>Uploaded</span>}
+            trailing={<span className={POSITIVE_QUIET}>Uploaded</span>}
           />
           <Row
             label="Signed letter"
-            trailing={<span className={WARNING}>Awaiting</span>}
+            trailing={<span className={WARNING_QUIET}>Awaiting</span>}
           />
         </div>
       </Panel>
