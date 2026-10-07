@@ -1261,6 +1261,24 @@ export function OnboardingMock() {
             names below, so the bar does not need a third tone to say it a
             third time.
 
+            Each step is a RUN OF TICKS, not a solid bar — the meter shape from
+            the reference, where a count is drawn as a row of thin marks rather
+            than as a filled length.
+
+            Done with a MASK rather than by drawing the ticks. The span keeps
+            exactly the background it had, and
+            repeating-linear-gradient(to right, #000 0 2px, transparent 2px 5px)
+            punches the gaps out of it: 2px of mark on a 5px pitch. So the two
+            states are still the same pair of tokens they were as solid bars —
+            the tick shape is applied to the colour instead of being a second
+            place where the colour is decided — and the pattern re-tiles at any
+            width, where a fixed number of tick elements would have gone sparse
+            on a wide card and crowded on a narrow one.
+
+            7px tall, up from 4. A tick has to be taller than it is wide to read
+            as a tick; at the old bar height the marks were square and the row
+            read as a dashed rule.
+
             The bars stay NEUTRAL. They were put on the Haze ramp once and taken
             back off: colour on the track makes the progress bar the loudest
             thing on the board, and the tint this picture wanted belongs to the
@@ -1281,7 +1299,7 @@ export function OnboardingMock() {
             {STEPS.map((s, i) => (
               <span
                 key={s}
-                className={`h-1 rounded-full ${
+                className={`h-[7px] [mask-image:repeating-linear-gradient(to_right,#000_0_2px,transparent_2px_5px)] ${
                   i <= 1 ? "bg-foreground" : "bg-[var(--mock-ink)]/12"
                 }`}
               />
@@ -1320,12 +1338,33 @@ export function OnboardingMock() {
 
       {/* Cropped by the card edge. */}
       <Panel title="Secure data room">
-        {/* No leading file icon. Three identical glyphs down the left of three
-            rows is a column of the same mark repeated — it separates nothing,
-            because every row is a file and the panel already says so. The
-            names carry their own extensions, and dropping the icons gives the
-            names the row's left edge, which is where the eye starts. */}
-        <div className="mt-1">
+        {/* The files sit in a RULED BOX — a table, not a loose list.
+
+            Three rows divided by hairlines and nothing else were three lines of
+            text that happened to have rules between them; the rules read as
+            separators in the panel rather than as the structure of a thing with
+            rows. An outline closes it: the first row has a top, the last has a
+            bottom, and the dividers become interior rules of one object instead
+            of three floating ones.
+
+            It also gives the status pills a right edge to sit against, which is
+            what makes a column look like a column.
+
+            The padding goes on the ROWS, not this box, via [&>span]:px-2.5 —
+            Row's divider is a bottom border on the row itself, so padding the
+            container would have inset the rules along with the text and left
+            the box's own edges orphaned from them. On the rows, the text insets
+            and the rules still run the full width, wall to wall, the way a
+            table's do.
+
+            No leading file icon, from an earlier pass and still right: three
+            identical glyphs down the left of three rows separate nothing, since
+            every row is a file and the panel says so. The names carry their own
+            extensions, and without the icons the names start at the column's
+            edge, which is where the eye starts. */}
+        <div
+          className={`mt-2 overflow-hidden rounded-[6px] border [&>span]:px-2.5 ${LINE}`}
+        >
           <Row
             label="Deed of trust.pdf"
             trailing={<span className={POSITIVE_QUIET}>Uploaded</span>}
