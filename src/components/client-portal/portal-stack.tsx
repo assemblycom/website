@@ -5,7 +5,12 @@ import {
   IconTemplateIntegrations,
 } from "@/components/templates/template-icons";
 
+import {
+  DOTTED_RULE_AFTER,
+  DOTTED_RULE_BEFORE,
+} from "@/components/ui/dotted-rule";
 import { Reveal } from "@/components/ui/reveal";
+import { StackPicker } from "@/components/client-portal/stack-picker";
 import { API_REFERENCE_URL, GUIDE_URL } from "@/lib/constants";
 
 /**
@@ -91,19 +96,34 @@ export function PortalStack({
             <h2 className="type-h2 text-balance">{heading}</h2>
             <p className="mt-5 text-muted-foreground">{body}</p>
 
-            {/* Each row goes somewhere instead of opening a drawer, so the
-                section hands the reader on. No rules, and a filled square
-                ahead of each one: a short list of destinations reads as a set,
-                where hairlines would make it a table with three entries in it.
+            {/* THE DIVIDED LIST, the one this page already draws.
 
-                The square is empty for now — the glyphs that were in it are
-                held back pending art. It still earns its place: it is what
-                indents the two lines of copy into a column and gives the row
-                something to start on. `ways` keeps carrying an `icon` so
-                nothing downstream has to change when they come back. */}
+                These were three rows with a filled icon plate ahead of each —
+                a tile the glyphs had been held back from, so for a while the
+                plate was an empty block whose only job was to indent the copy.
+                The art landed, and the rows still read as a feature grid: three
+                badges down the left of a column that is otherwise type.
+
+                The page has a better shape for a short list of destinations
+                and uses it twice already — the FAQ and the problem section's
+                halves: a dotted hairline between rows, the label at full
+                strength, a chevron on the right edge. It says "these go
+                somewhere" with the thing that goes somewhere rather than with
+                a decoration beside it, and it is the rule this page is ruled
+                with rather than a fourth idea about lists.
+
+                The rule is on each row's `before`, which is what lets the
+                hover fill run the full width without a divider sitting inside
+                it; `after` on the last row closes the list. Shared constants,
+                because two dotted rules on one page that disagree about pitch
+                read as a mistake — see dotted-rule.ts.
+
+                `ways` keeps carrying an `icon` so nothing downstream breaks,
+                and the body copy stays: it is the sentence that distinguishes
+                three words that would otherwise be three nouns. */}
             {ways.length ? (
-              <ul className="mt-10 flex flex-col gap-1">
-                {ways.map(({ label, body, href, icon: Icon }) => (
+              <ul className="mt-10 flex flex-col">
+                {ways.map(({ label, body, href }, i) => (
                   <li key={label}>
                     <Link
                       href={href}
@@ -111,39 +131,15 @@ export function PortalStack({
                       rel="noopener noreferrer"
                       // -mx-3 px-3 so the hover fill extends past the type
                       // without the labels being indented out of the column.
-                      className="group -mx-3 flex items-start gap-3 rounded-xl px-3 py-2.5 transition-colors hover:bg-foreground/[0.04] [[data-theme=dark]_&]:hover:bg-white/[0.04]"
+                      // The rules are pseudo-elements pinned to the padding
+                      // box's edges, so they span that same full width.
+                      className={`group relative -mx-3 flex items-start gap-4 rounded-xl px-3 py-4 transition-colors before:absolute before:inset-x-3 before:top-0 before:h-px before:content-[''] hover:bg-foreground/[0.04] ${DOTTED_RULE_BEFORE} ${
+                        i === ways.length - 1
+                          ? `after:absolute after:inset-x-3 after:bottom-0 after:h-px after:content-[''] ${DOTTED_RULE_AFTER}`
+                          : ""
+                      } [[data-theme=dark]_&]:hover:bg-white/[0.04]`}
                     >
-                      <span
-                        aria-hidden
-                        // A filled square, no outline. With a glyph in it the
-                        // hairline was the tile's edge; empty, the outline WAS
-                        // the object, so each row opened on a little drawn box
-                        // rather than on a quiet block of tone.
-                        // --surface-2, not --muted, in light. This band is
-                        // --surface at half strength over white, which lands
-                        // within a point or two of --muted — so an empty tile on
-                        // it was very nearly the band itself and the rows opened
-                        // on nothing. --surface-2 is the scale's own next rung
-                        // down, which is what a recess on a surface takes.
-                        // size-[18px] is gone with the empty tile: it set BOTH
-                        // axes, and these marks are drawn to their own ratios —
-                        // forced square they would have been squashed. Width
-                        // only, height follows.
-                        // The icon PLATE, not a themed recess — the same pair
-                        // the template rail runs (see template-rail.tsx).
-                        //
-                        // It was --surface-2 / white-6%, which is dark in dark
-                        // mode, and these marks are drawn near-black on the
-                        // assumption of a light tile: on a dark recess the
-                        // artwork simply disappeared. The plate stays light in
-                        // both themes and dims one step in dark so it does not
-                        // glare, which is the treatment the other rail already
-                        // settled on.
-                        className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[#e6e7ea] [[data-theme=dark]_&]:bg-[#c8c9cd]"
-                      >
-                        <Icon className="w-[19px]" />
-                      </span>
-                      <span className="min-w-0">
+                      <span className="min-w-0 flex-1">
                         <span className="block text-[15px] text-foreground">
                           {label}
                         </span>
@@ -151,6 +147,25 @@ export function PortalStack({
                           {body}
                         </span>
                       </span>
+                      {/* The chevron, at the row's far edge rather than beside
+                          the label — it marks where the row ENDS, which is
+                          what makes a list of them read as a column of
+                          destinations. Muted at rest and full strength under
+                          the pointer, so the row answers without moving. */}
+                      <svg
+                        aria-hidden
+                        viewBox="0 0 16 16"
+                        className="mt-[3px] size-4 shrink-0 text-muted-foreground transition-colors group-hover:text-foreground"
+                      >
+                        <path
+                          d="M6 3.5 10.5 8 6 12.5"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
                     </Link>
                   </li>
                 ))}
@@ -158,17 +173,19 @@ export function PortalStack({
             ) : null}
           </div>
 
-          {/* The shot has not been made yet, so the slot holds its proportions
-              rather than filling with a mock that would have to be unbuilt
-              later. Solid --muted, not the dashed VisualSlot the page uses
-              elsewhere: that frame is muted at 40% and so is this band, so it
-              would be an empty space marked by nothing. The art direction
-              rides in `title` for whoever makes the shot. */}
-          <div
-            aria-hidden
-            title={visualTitle}
-            className="h-[300px] rounded-2xl bg-[var(--surface)] md:h-[380px] lg:h-[440px] lg:rounded-r-none"
-          />
+          {/* THE CATALOGUE, in place of the shot that was never made.
+
+              The slot held its proportions for a photograph of one outside
+              tool running inside the portal. That shot would have undersold
+              the claim: the sentence is that the portal meets whatever a firm
+              already runs, and one scheduler in a frame is one scheduler. The
+              picker names a stack instead, and marks each tool with which of
+              the three ways in it arrives by — so the list on the left and the
+              picture on the right describe each other. See stack-picker.tsx.
+
+              `visualTitle` still rides through as the slot's art direction for
+              any page that wants its own picture here. */}
+          <StackPicker title={visualTitle} />
         </div>
       </Reveal>
     </section>
