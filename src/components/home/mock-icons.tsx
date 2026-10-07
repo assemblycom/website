@@ -291,11 +291,19 @@ export function IconDashboard({ className }: IconProps) {
   );
 }
 
+// File — approved product glyph, exported from Figma. Filled, like the rest of
+// the approved set (IconDocuments, IconKey, IconGlobeSolid) and unlike the
+// hand-drawn stroke glyph this replaces, which was a lighter drawing of the
+// same idea sitting in rows beside the filled ones.
+//
+// The export is 15x20 rather than the set's 20x20, so the viewBox pads it to
+// the same 28-unit box AND centres it horizontally (-6.5, not -4) — padded
+// like the others but left-aligned it would have sat a few pixels off centre
+// in a nav row.
 export function IconFile({ className }: IconProps) {
   return (
-    <svg viewBox="0 0 16 16" className={className} {...STROKE}>
-      <path d="M4 2.75h5L12 5.75v7.5H4V2.75Z" />
-      <path d="M9 2.75v3h3" />
+    <svg viewBox="-6.5 -4 28 28" className={className} fill="currentColor">
+      <path d="M6.875 1.875H2.5C2.15625 1.875 1.875 2.15625 1.875 2.5V17.5C1.875 17.8438 2.15625 18.125 2.5 18.125H12.5C12.8438 18.125 13.125 17.8438 13.125 17.5V8.125H9.6875C8.13281 8.125 6.875 6.86719 6.875 5.3125V1.875ZM12.3477 6.25L8.75 2.65234V5.3125C8.75 5.83203 9.16797 6.25 9.6875 6.25H12.3477ZM0 2.5C0 1.12109 1.12109 0 2.5 0H7.71484C8.37891 0 9.01563 0.261719 9.48438 0.730469L14.2695 5.51953C14.7383 5.98828 15 6.625 15 7.28906V17.5C15 18.8789 13.8789 20 12.5 20H2.5C1.12109 20 0 18.8789 0 17.5V2.5Z" />
     </svg>
   );
 }
@@ -363,11 +371,12 @@ export function IconForm({ className }: IconProps) {
   );
 }
 
+// Credit card — approved product glyph, exported from Figma. Filled and in the
+// set's padded 28-unit box, for the same reasons as IconFile above.
 export function IconCard({ className }: IconProps) {
   return (
-    <svg viewBox="0 0 16 16" className={className} {...STROKE}>
-      <rect x="2.5" y="3.75" width="11" height="8.5" rx="1" />
-      <path d="M2.5 6.5h11" />
+    <svg viewBox="-4 -4 28 28" className={className} fill="currentColor">
+      <path d="M17.5 4.375C17.8438 4.375 18.125 4.65625 18.125 5V6.25H1.875V5C1.875 4.65625 2.15625 4.375 2.5 4.375H17.5ZM18.125 8.75V15C18.125 15.3438 17.8438 15.625 17.5 15.625H2.5C2.15625 15.625 1.875 15.3438 1.875 15V8.75H18.125ZM2.5 2.5C1.12109 2.5 0 3.62109 0 5V15C0 16.3789 1.12109 17.5 2.5 17.5H17.5C18.8789 17.5 20 16.3789 20 15V5C20 3.62109 18.8789 2.5 17.5 2.5H2.5ZM3.125 13.4375C3.125 13.957 3.54297 14.375 4.0625 14.375H5.9375C6.45703 14.375 6.875 13.957 6.875 13.4375C6.875 12.918 6.45703 12.5 5.9375 12.5H4.0625C3.54297 12.5 3.125 12.918 3.125 13.4375ZM8.75 13.4375C8.75 13.957 9.16797 14.375 9.6875 14.375H12.1875C12.707 14.375 13.125 13.957 13.125 13.4375C13.125 12.918 12.707 12.5 12.1875 12.5H9.6875C9.16797 12.5 8.75 12.918 8.75 13.4375Z" />
     </svg>
   );
 }

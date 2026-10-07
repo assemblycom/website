@@ -25,33 +25,62 @@ import {
   IconChat,
   IconFile,
   IconGlobe,
+  IconSearch,
 } from "@/components/home/mock-icons";
 
 // 3:4, the rail's card shape.
 const W = 340;
 const H = 453;
 
+const UI_PRIMARY = "text-[11.5px] leading-none";
+const UI_SECONDARY = "text-[10.5px] leading-none";
+const CARD_BODY = "text-[12.5px] leading-[1.4]";
+
 const LINE = "border-[var(--mock-line)]";
 const WINDOW = `overflow-hidden rounded-xl border bg-[var(--mock-window)] text-[color:var(--mock-ink)] shadow-[0_1px_2px_rgba(16,24,40,0.04),0_8px_24px_-18px_rgba(16,24,40,0.14)] ${LINE} [[data-theme=dark]_&]:shadow-[0_8px_24px_-18px_rgba(0,0,0,0.5)]`;
 const BRAND_SIDEBAR = "bg-[var(--mock-brand)] text-white";
-const TABLE_HEAD = `flex items-center gap-3 border-b bg-[var(--mock-well)] px-3.5 py-2 text-[11.5px] leading-none text-[color:var(--mock-ink-soft)] ${LINE}`;
-const CHIP = "rounded px-1.5 py-[4px] text-[11px] leading-none";
-const POSITIVE = `${CHIP} bg-[var(--mock-positive-bg)] text-[color:var(--mock-positive-fg)]`;
+const TABLE_HEAD = `flex items-center gap-3 border-b bg-[var(--mock-well)] px-3.5 py-2 text-[color:var(--mock-ink-soft)] ${UI_SECONDARY} ${LINE}`;
+const CHIP = `rounded px-1.5 py-[4px] ${UI_SECONDARY}`;
 const NEUTRAL = `${CHIP} bg-[var(--mock-well-2)] text-[color:var(--mock-ink-soft)]`;
 
-// A row answering the pointer, shared by every table in the rail so one card's
+// ONE type scale for the whole rail, and TWO sizes in it. Nothing else.
+//
+// The three cards had grown their own: 12.5 and 10.5 in Describe and Plan, 10
+// and 8.5 in the board, because the board was the denser screen and seemed to
+// need its own step. Side by side in a rail that reads as noise rather than as
+// hierarchy — the same kind of row is a different size depending on which card
+// it is in, which is the one thing a set of three pictures must not do.
+//
+// UI_PRIMARY is anything a reader lands on: a nav row, a requirement, a
+// project's title, a column's name. UI_SECONDARY qualifies one of those: a
+// count, a progress figure, whose project it is. CARD_BODY is the one thing in
+// the rail that is a SENTENCE rather than a row — the line being typed in
+// Describe — so it is a step up and carries prose leading.
+//
+// UI_PRIMARY is 11.5, not the 12.5 it started at. At 12.5 a project's title
+// was the same size as the sentence someone types, which made the board's
+// cards read as headlines rather than as rows in a list.
+
+// A row answering the pointer// A row answering the pointer, shared by every table in the rail so one card's
 // rows don't feel live while the next card's feel dead.
 //
 // --mock-well-2, the solid well, not --mock-well: the faint one is two percent
 // off white and a hover nobody can see is not a hover state.
 const ROW_HOVER = "transition-colors hover:bg-[var(--mock-well-2)]";
 
-// The dashed and unfilled circles in this family read off --mock-line, which at
-// #2e2e2e on the dark window is a step small enough to disappear — the mark was
-// simply not there in dark. Lifted here only; light keeps --mock-line, where it
-// is already a visible hairline against white.
-const CIRCLE_TRACK_DARK = "[[data-theme=dark]_&]:border-[#4d4d4d]";
-const CIRCLE_STROKE_DARK = "[[data-theme=dark]_&]:stroke-[#4d4d4d]";
+// The dashed row marks and the unfilled rings they match. Both used to read off
+// --mock-line, which is the hairline that DIVIDES rows — right for a rule a
+// reader should not notice, and too quiet for a mark that is the only thing
+// saying a requirement is still open. It vanished at #2e2e2e on the dark window
+// and was barely there at #e8e9ec on the light one, and a dashed stroke loses
+// more than a solid one does, because half of it is gaps.
+//
+// Each theme gets its own value, a step firmer than --mock-line in both. They
+// are not one value with an opacity on it: light darkens and dark lightens.
+const CIRCLE_TRACK =
+  "border-[#ccd0d6] [[data-theme=dark]_&]:border-[#4d4d4d]";
+const CIRCLE_STROKE =
+  "stroke-[#ccd0d6] [[data-theme=dark]_&]:stroke-[#4d4d4d]";
 
 // Every hover move hangs off this, so "no motion" is one rule rather than
 // four separate ones that can drift.
@@ -62,6 +91,7 @@ const MOVE =
 function Scene({
   children,
   bleed = false,
+  fadeFrom = 52,
 }: {
   children: React.ReactNode;
   /**
@@ -71,6 +101,15 @@ function Scene({
    * as a window onto something larger — which is what it is.
    */
   bleed?: boolean;
+  /**
+   * Where the right-edge fade begins, as a percent of the 340px scene.
+   *
+   * 52 suits a mock whose subject starts at the left edge. The board in step 3
+   * has a sidebar in front of it, so at 52 the fade began 7px into the board
+   * itself and the whole thing was drawn in the ramp. A card that spends its
+   * width getting TO its subject has to start fading later.
+   */
+  fadeFrom?: number;
 }) {
   return (
     <MockFit className="absolute inset-0 [--template-mock-h:453px] [--template-mock-w:340px]">
@@ -90,8 +129,8 @@ function Scene({
                 // wash with the sidebar's own shape, and it read as the artwork
                 // being wrong rather than as the picture giving out. The card's
                 // edge cutting the screen says "this continues" on its own.
-                WebkitMaskImage: fadeMask("to right", 52),
-                maskImage: fadeMask("to right", 52),
+                WebkitMaskImage: fadeMask("to right", fadeFrom),
+                maskImage: fadeMask("to right", fadeFrom),
               }
             : { width: W, height: H }
         }
@@ -117,8 +156,35 @@ function Scene({
 export function DescribeCard() {
   return (
     <Scene>
-      <div className={`flex flex-col ${WINDOW} p-4`}>
-        <p className="text-[14px] leading-[1.5] text-[color:var(--mock-ink)]">
+      {/* Not WINDOW. This box is the same object as the hero's composer, so it
+          wears the hero's treatment: the element's own hairline, a 3px band of
+          the card's ground, then a second hairline — drawn as two spread
+          shadows rather than a ring with an offset, so both lines and the gap
+          between them are declared in one place and all three read tokens.
+          The gap is --surface because that is the rail card this sits on, in
+          both themes; a hardcoded grey would show the moment the theme flipped.
+
+          WINDOW's drop shadow goes with it. A cast under the box and a double
+          outline around it are two ways of saying the same thing, and on this
+          card the cast was a grey smudge on the ground rather than a lift. */}
+      <div
+        // .mock-edge, the same lit border the hero's composer and the Live
+        // screen beside it wear: a radial falling from the top-left corner into
+        // the card's ground, painted into the border itself. This box is the
+        // same object as the hero's composer, so it catches the light the same
+        // way.
+        //
+        // Sized in PERCENT, like the hero's. The class defaults to a 540x400
+        // ellipse, tuned to a 760px-tall screen; on a box this small the whole
+        // border sits inside the bright end of it and comes out flat. At 120%
+        // the ramp always ends a fifth past the right edge, whatever width the
+        // rail gives the card.
+        //
+        // Dark only, which is where the class lives — in light the plain
+        // --mock-line hairline already reads against the card.
+        className={`mock-edge [--mock-edge-h:150%] [--mock-edge-w:120%] flex flex-col overflow-hidden rounded-xl border bg-[var(--mock-window)] p-4 text-[color:var(--mock-ink)] shadow-[0_0_0_3px_var(--surface),0_0_0_4px_var(--mock-line)] ${LINE}`}
+      >
+        <p className={`text-[color:var(--mock-ink)] ${CARD_BODY}`}>
           Add a project tracker each client sees for their own project.
           {/* The site's own caret blink (--animate-caret, the one the hero
               typewriter uses), run only while the card is hovered: at rest
@@ -132,9 +198,9 @@ export function DescribeCard() {
             from the right rather than split between two ends. */}
         <div className="mt-6 flex items-center justify-end">
           <span
-            className={`${MOVE} flex size-[24px] shrink-0 items-center justify-center rounded-[5px] bg-[var(--mock-ink)] text-[color:var(--mock-window)] group-hover/card:scale-110`}
+            className={`${MOVE} flex size-[20px] shrink-0 items-center justify-center rounded-[4px] bg-[var(--mock-ink)] text-[color:var(--mock-window)] group-hover/card:scale-110`}
           >
-            <IconArrowUp className="size-[12px]" />
+            <IconArrowUp className="size-[10px]" />
           </span>
         </div>
       </div>
@@ -186,7 +252,7 @@ function Ring({ value }: { value: number }) {
         r={r}
         fill="none"
         strokeWidth="2"
-        className={`stroke-[var(--mock-line)] ${CIRCLE_STROKE_DARK}`}
+        className={CIRCLE_STROKE}
       />
       <circle
         cx="8"
@@ -206,12 +272,22 @@ export function PlanCard() {
   return (
     <Scene>
       <div className={`flex flex-col ${WINDOW}`}>
-        <div className={`flex items-center gap-2.5 border-b px-4 py-3 ${LINE}`}>
+        {/* The header takes the well's tint. On --mock-window it was the same
+            white as the rows under it, so the card opened on five identical
+            bands and the one naming the thing had nothing marking it as the
+            header — the rule under it was doing that job alone. */}
+        <div
+          className={`flex items-center gap-2.5 border-b bg-[var(--mock-well)] px-4 py-3 ${LINE}`}
+        >
           <Ring value={DONE / PLAN_ITEMS.length} />
-          <span className="flex-1 truncate text-[14px] leading-none text-[color:var(--mock-ink)]">
+          <span
+            className={`flex-1 truncate text-[color:var(--mock-ink)] ${UI_PRIMARY}`}
+          >
             Plan
           </span>
-          <span className="shrink-0 text-[12px] leading-none text-[color:var(--mock-ink-soft)]">
+          <span
+            className={`shrink-0 text-[color:var(--mock-ink-soft)] ${UI_SECONDARY}`}
+          >
             {DONE} of {PLAN_ITEMS.length}
           </span>
         </div>
@@ -243,12 +319,12 @@ export function PlanCard() {
                   </span>
                 ) : (
                   <span
-                    className={`size-[16px] rounded-full border border-dashed ${LINE} ${CIRCLE_TRACK_DARK}`}
+                    className={`size-[16px] rounded-full border border-dashed ${CIRCLE_TRACK}`}
                   />
                 )}
               </span>
               <span
-                className={`min-w-0 flex-1 truncate text-[13.5px] leading-none ${
+                className={`min-w-0 flex-1 truncate ${UI_PRIMARY} ${
                   done ? "text-[color:var(--mock-ink-soft)]" : "text-[color:var(--mock-ink)]"
                 }`}
               >
@@ -263,101 +339,194 @@ export function PlanCard() {
 }
 
 // ── 3. Build ─────────────────────────────────────────────────────────────
-// Hover lands the app: the new row drops into the nav and the rest makes room.
-// What the client sees: their own project, not a roster. "Each client sees
-// only their own project" is the plan the step before approved, so a list of
-// four firms here would contradict it.
-const MILESTONES = [
-  { name: "Kickoff and scope", owner: "Dana W.", state: "Complete" },
-  { name: "Discovery workshop", owner: "Dana W.", state: "Complete" },
-  { name: "Draft delivery", owner: "Marcus L.", state: "In review" },
-  { name: "Final sign-off", owner: "Marcus L.", state: "To do" },
-];
+// The app that was planned, open in the TEAM's dashboard.
+//
+// It used to draw one client's own milestones inside the branded portal, on the
+// grounds that "each client sees their own project" is what step 2 approved.
+// True, but that plan has a second line — "your team sees all projects" — and
+// this step's caption says the app lands in your dashboard AND portal. The hero
+// at the top of the page already shows the portal side, so this shows the other
+// half rather than a second picture of the same one. A roster of other firms
+// inside one client's branded portal would have contradicted the plan outright,
+// which is why the nav is the team's neutral one here, not the brand slab.
+//
+// Drawn as the board the product actually ships: three status columns, a card
+// per project carrying whose it is, how far through it is, and what is next.
+// The window is 760 wide against a card that shows about 420 of it, so the
+// third column is cropped — which is what the bleed is for.
+// ONE column, not three. The card shows 320px of the window and 136 of that is
+// the sidebar, so a three-column board meant two columns cropped — and a column
+// sliced down its length reads as a rendering fault, not as a board continuing.
+// The one column that is left gets the whole width instead, which is enough for
+// a project card to carry its client, its name and its progress at a readable
+// size. A board is recognisable from one column; it is not recognisable from
+// three slivers.
+const BOARD = {
+  name: "Active",
+  count: 21,
+  cards: [
+    // Titles are written to FIT the column at the rail's shared type size.
+    // They were a step longer, from when the board ran smaller type than the
+    // cards beside it; back on one scale, two of them truncated mid-word, and a
+    // truncated project name in a mock is just a smaller mistake than a second
+    // type size.
+    { who: "Lumen Analytics", initials: "LA", title: "Series B Data Room", done: 1, of: 4 },
+    { who: "Cascade Outdoor", initials: "CO", title: "Catalog Launch", done: 1, of: 4 },
+    { who: "Brookline Media", initials: "BM", title: "Media Strategy", done: 2, of: 5 },
+  ],
+};
 
-const CLIENT_NAV = [
+/** The nav beside the board. Four rows and the app, which is as many as fit
+    before the board loses the width it needs. */
+const TEAM_NAV = [
   { icon: <IconGlobe />, label: "Home" },
   { icon: <IconChat />, label: "Messages" },
   { icon: <IconFile />, label: "Files" },
-  { icon: <IconCard />, label: "Invoices" },
+  { icon: <IconCard />, label: "Billing" },
 ];
+
+/**
+ * One project on the board.
+ *
+ * Three lines and no more: whose it is, what it is, how far through it is. It
+ * carried a fourth — the next task and its date, on a divided footer — and at
+ * this card's width that row was the first thing the crop cut, so every card
+ * ended on half a sentence behind a fade. The board's job here is to be
+ * recognisably a board, not to be read.
+ */
+function ProjectCard({
+  who,
+  initials,
+  title,
+  done,
+  of,
+  lead = false,
+}: {
+  who: string;
+  initials: string;
+  title: string;
+  done: number;
+  of: number;
+  /** The one card whose bar advances on hover — see the card's hover move. */
+  lead?: boolean;
+}) {
+  return (
+    <div
+      className={`overflow-hidden rounded-[5px] border bg-[var(--mock-window)] px-2 py-[7px] ${LINE}`}
+    >
+      <div className="flex items-center gap-1.5">
+        {/* The client's initials on a plain tile — the default avatar a record
+            gets before anyone uploads a logo, which is most of them. */}
+        <span className="flex size-[14px] shrink-0 items-center justify-center rounded-[3px] bg-[var(--mock-ink)]/10 text-[7px] leading-none text-[color:var(--mock-ink-soft)]">
+          {initials}
+        </span>
+        <span
+          className={`min-w-0 flex-1 truncate text-[color:var(--mock-ink-soft)] ${UI_SECONDARY}`}
+        >
+          {who}
+        </span>
+      </div>
+      {/* Stepped back in dark. --mock-ink is #ededed there, so a column of
+          project names was the brightest type on the card — brighter than the
+          nav beside it and the page's own headline above it. Light's #101114
+          on a near-white card is an ordinary reading contrast and keeps it. */}
+      <p
+        className={`mt-1.5 truncate text-[color:var(--mock-ink)] [[data-theme=dark]_&]:text-[#b8b8b8] ${UI_PRIMARY}`}
+      >
+        {title}
+      </p>
+      <div className="mt-2 flex items-center gap-1.5">
+        <span className="h-[3px] flex-1 overflow-hidden rounded-full bg-[var(--mock-well-2)]">
+          <span
+            className={`block h-full rounded-full bg-[var(--mock-ink)] ${
+              lead ? `${MOVE} group-hover/card:w-[62%]` : ""
+            }`}
+            style={{ width: `${(done / of) * 100}%` }}
+          />
+        </span>
+        <span
+          className={`shrink-0 text-[color:var(--mock-ink-soft)] ${UI_SECONDARY}`}
+        >
+          {done}/{of}
+        </span>
+      </div>
+    </div>
+  );
+}
 
 export function BuildCard() {
   return (
-    <Scene bleed>
-      {/* The client's portal, in the firm's colour. No Clients, no Billing, no
-          Add App — those are the team's, and a client never sees them.
-          
-          This is the PUBLISHED state, start to finish. Gating the nav row
-          behind hover while the panel already showed the tracker had the card
-          claiming the app was hidden and open at the same time, which is not
-          a state the product has. The hover is a small settle, not a claim. */}
+    // fadeFrom 100 — the right-edge fade is OFF for this card. That ramp exists
+    // to dissolve art that overruns the card, and nothing overruns it any more:
+    // the window is drawn at exactly the width the card shows. With a single
+    // column the fade had nothing to soften and everything to spoil, dimming
+    // the only column on screen from 82% of its width onward.
+    <Scene bleed fadeFrom={100}>
+      {/* 320 wide, which is exactly what the card shows — the scene is 340 and
+          the bleed insets it by 20. So the board is cropped on the BOTTOM only,
+          where a cut row still reads as a list continuing, and not on the right,
+          where a cut column read as a mistake.
+
+          The sidebar is 136 — narrower than the 150 the other mocks carry,
+          because every pixel it takes comes off the board, but not the 110 it
+          was: at 110 it truncated its own labels ("Brandmag…", "Project t…"),
+          and a nav that cannot show its words is worse than a narrower board. */}
       <div
-        style={{ width: 560, height: 372 }}
+        style={{ width: 320, height: 372 }}
         className={`flex shrink-0 ${WINDOW} rounded-b-none rounded-tr-none border-b-0 border-r-0`}
       >
         <div
-          className={`flex w-[150px] shrink-0 flex-col px-2 py-2.5 ${BRAND_SIDEBAR}`}
+          className={`flex w-[136px] shrink-0 flex-col px-2 py-2.5 ${BRAND_SIDEBAR}`}
         >
           <span className="flex items-center gap-1.5 px-1.5 pb-3 pt-0.5">
-            {/* The firm's own logo: a black mark on a white tile, the same in
-                both themes because it is their file, not our chrome. */}
-            <span className="flex size-[16px] items-center justify-center rounded-[3px] bg-white text-black">
-              <IconBrandMark className="size-[9px]" />
+            <span className="flex size-[14px] items-center justify-center rounded-[3px] bg-white text-black">
+              <IconBrandMark className="size-[8px]" />
             </span>
-            <span className="truncate text-[13px] leading-none text-white">
+            <span className={`truncate text-white ${UI_PRIMARY}`}>
               Brandmages
             </span>
           </span>
-          {CLIENT_NAV.map(({ icon, label }) => (
+          {TEAM_NAV.map(({ icon, label }) => (
             <ClientNavRow key={label} icon={icon} label={label} />
           ))}
           <ClientNavRow icon={<IconApp />} label="Project tracker" active />
         </div>
 
-        {/* No app title across the top. The nav row beside it is lit and says
-            "Project tracker" an inch to the left, so the screen opened by
-            naming itself twice. The client chip that shared that row goes with
-            it: this card is cropped at the right, so the chip was off the
-            frame anyway, and alone on a row it reads as a stray pill rather
-            than as whose project this is. */}
-        <div className="flex min-w-0 flex-1 flex-col px-4 pt-4">
-          <div
-            className={`flex items-center gap-3 rounded-lg border px-3.5 py-2.5 ${LINE}`}
-          >
-            <span className="whitespace-nowrap text-[11.5px] leading-none text-[color:var(--mock-ink-soft)]">
-              2 of 4 complete
-            </span>
-            <span className="h-1 flex-1 overflow-hidden rounded-full bg-[var(--mock-well-2)]">
-              <span
-                className={`${MOVE} block h-full w-[18%] rounded-full bg-[var(--mock-ink)] group-hover/card:w-1/2`}
-              />
+        <div className="flex min-w-0 flex-1 flex-col">
+          {/* No title bar. It carried the app's name and nothing else, and the
+              lit row in the nav an inch to its left says the same words — so
+              the screen opened by naming itself twice and spent a bar's height
+              on the repeat. The same bar came off the hero's two screens for
+              the same reason. */}
+          {/* Search alone. Filters sat beside it and was the first thing the
+              crop took, so the row ended on half a control. */}
+          <div className="flex shrink-0 items-center px-3 pt-2.5">
+            <span
+              className={`flex h-[22px] w-[120px] items-center gap-1.5 rounded-[4px] border px-2 text-[color:var(--mock-ink-soft)] ${UI_SECONDARY} ${LINE}`}
+            >
+              <IconSearch className="size-[9px] shrink-0" />
+              Search
             </span>
           </div>
 
-          <div className={`mt-3 overflow-hidden rounded-lg border ${LINE}`}>
-            <div className={TABLE_HEAD}>
-              <span className="w-[164px] shrink-0">Milestone</span>
-              <span className="w-[84px] shrink-0">Owner</span>
-              <span className="w-[82px] shrink-0">Status</span>
-            </div>
-            {MILESTONES.map(({ name, owner, state }) => (
-              <div
-                key={name}
-                className={`flex items-center gap-3 border-b px-3.5 py-[9px] last:border-b-0 ${ROW_HOVER} ${LINE}`}
-              >
-                <span className="w-[164px] shrink-0 whitespace-nowrap text-[13px] leading-none text-[color:var(--mock-ink)]">
-                  {name}
+          <div className="flex min-h-0 flex-1 px-3 pt-2.5">
+            <div className="flex min-w-0 flex-1 flex-col gap-1.5 rounded-t-[6px] bg-[var(--mock-well)] p-1.5">
+              <div className="flex items-center gap-1.5 px-0.5 pt-0.5">
+                <span
+                  className={`text-[color:var(--mock-ink)] ${UI_PRIMARY}`}
+                >
+                  {BOARD.name}
                 </span>
-                <span className="w-[84px] shrink-0 whitespace-nowrap text-[11px] leading-none text-[color:var(--mock-ink-soft)]">
-                  {owner}
-                </span>
-                <span className="w-[82px] shrink-0">
-                  <span className={state === "Complete" ? POSITIVE : NEUTRAL}>
-                    {state}
-                  </span>
+                <span
+                  className={`text-[color:var(--mock-ink-soft)] ${UI_SECONDARY}`}
+                >
+                  {BOARD.count}
                 </span>
               </div>
-            ))}
+              {BOARD.cards.map((card, i) => (
+                <ProjectCard key={card.title} {...card} lead={i === 0} />
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -381,16 +550,19 @@ function ClientNavRow({
       // white/60 is too small a step — so it takes the same quiet fill the
       // picked row wears, one stop down. The picked row is already at its
       // fill and does not move.
-      className={`flex h-[28px] items-center gap-2 rounded px-1.5 transition-colors ${
+      className={`flex h-[24px] items-center gap-1.5 rounded-[4px] px-1.5 transition-colors ${
         active
           ? "bg-white/[0.12] text-white"
           : "text-white/60 hover:bg-white/[0.07] hover:text-white"
       }`}
     >
-      <span className="flex shrink-0 items-center justify-center [&>svg]:size-[16px]">
+      <span className="flex shrink-0 items-center justify-center [&>svg]:size-[13px]">
         {icon}
       </span>
-      <span className="min-w-0 flex-1 truncate text-[13px] leading-none">
+      {/* On the board's scale, like everything else in that card. At 13px these
+          rows were the largest type in the mock — larger than the app's own
+          name beside them — and "Project tracker" truncated in its own nav. */}
+      <span className={`min-w-0 flex-1 truncate ${UI_PRIMARY}`}>
         {label}
       </span>
     </span>
@@ -420,7 +592,7 @@ function BusyRing({ className = "" }: { className?: string }) {
         r={r}
         fill="none"
         strokeWidth="2"
-        className={`stroke-[var(--mock-line)] ${CIRCLE_STROKE_DARK}`}
+        className={CIRCLE_STROKE}
       />
       <circle
         cx="8"
@@ -443,13 +615,13 @@ export function IterateCard() {
   return (
     <Scene>
       <div className={`flex flex-col ${WINDOW}`}>
-        <p className="shrink-0 bg-[var(--mock-well-2)] px-4 py-3 text-[14px] leading-[1.5] text-[color:var(--mock-ink)]">
+        <p className={`shrink-0 bg-[var(--mock-well-2)] px-4 py-3 text-[color:var(--mock-ink)] ${CARD_BODY}`}>
           Add a due date to every project.
         </p>
         <div className="px-4 py-4">
           <div className={`overflow-hidden rounded-lg border ${LINE}`}>
             <div
-              className={`flex items-center gap-2 border-b bg-[var(--mock-well)] px-3 py-2 text-[11.5px] leading-none text-[color:var(--mock-ink-soft)] ${LINE}`}
+              className={`flex items-center gap-2 border-b bg-[var(--mock-well)] px-3 py-2 text-[color:var(--mock-ink-soft)] ${UI_SECONDARY} ${LINE}`}
             >
               <span className="flex-1">Client</span>
               {/* The spinner leads the new column in and then retires, so the
@@ -472,11 +644,11 @@ export function IterateCard() {
                 key={client}
                 className={`flex items-center gap-2 border-b px-3 py-[11px] last:border-b-0 ${ROW_HOVER} ${LINE}`}
               >
-                <span className="flex-1 truncate text-[13px] leading-none text-[color:var(--mock-ink)]">
+                <span className={`flex-1 truncate text-[color:var(--mock-ink)] ${UI_PRIMARY}`}>
                   {client}
                 </span>
                 <span
-                  className={`${MOVE} w-0 overflow-hidden whitespace-nowrap text-right text-[11px] leading-none text-[color:var(--mock-ink-soft)] opacity-0 group-hover/card:w-[58px] group-hover/card:opacity-100`}
+                  className={`${MOVE} w-0 overflow-hidden whitespace-nowrap text-right text-[color:var(--mock-ink-soft)] ${UI_SECONDARY} opacity-0 group-hover/card:w-[58px] group-hover/card:opacity-100`}
                   // Held back behind the spinner rather than starting with it.
                   // The dates used to land in the same instant the column was
                   // asked for, which read as a column that had been there all
@@ -523,14 +695,14 @@ export function SecuredCard() {
             <span className="flex size-[16px] shrink-0 items-center justify-center rounded-full bg-[var(--mock-ink)] text-[color:var(--mock-window)]">
               <IconCheck className="size-[10px]" />
             </span>
-            <span className="flex-1 truncate text-[13px] leading-none text-[color:var(--mock-ink)]">
+            <span className={`flex-1 truncate text-[color:var(--mock-ink)] ${UI_PRIMARY}`}>
               {who}
             </span>
             <span className={NEUTRAL}>{access}</span>
           </div>
         ))}
         <div className="px-3.5 py-3">
-          <p className="text-[11.5px] leading-[1.5] text-[color:var(--mock-ink-soft)]">
+          <p className="text-[10.5px] leading-[1.5] text-[color:var(--mock-ink-soft)]">
             Built and maintained by Assembly.
           </p>
         </div>

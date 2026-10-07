@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Reveal } from "@/components/ui/reveal";
 import { TemplateRail } from "@/components/templates/template-rail";
+import { IconTemplatePayments } from "@/components/templates/template-icons";
 
 /**
  * The six templates that mirror the work every firm shares: onboarding,
@@ -29,6 +30,7 @@ const PICKS: {
   title: string;
   description: string;
   foundation: string;
+  icon?: React.ReactNode;
 }[] = [
   {
     slug: "client-onboarding-wizard",
@@ -59,6 +61,7 @@ const PICKS: {
     title: "Payments",
     description: "Branded invoices clients can pay.",
     foundation: "Payments",
+    icon: <IconTemplatePayments className="w-[28px]" />,
   },
   {
     slug: "client-resource-library",

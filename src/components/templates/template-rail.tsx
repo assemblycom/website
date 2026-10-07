@@ -20,6 +20,13 @@ export type TemplateRailCard = {
   description: string;
   /** Mono uppercase tags under the row's text; the site's standard tag chip. */
   chips?: { label: string; outlined?: boolean }[];
+  /**
+   * A mark for the art slot, for the rows that have one drawn. Without it the
+   * slot stays the plain recess it has always been — a row with art and a row
+   * without must still be the same object, so the art goes INSIDE the slot
+   * rather than replacing it.
+   */
+  icon?: React.ReactNode;
 };
 
 export function TemplateRail({ cards }: { cards: TemplateRailCard[] }) {
@@ -55,7 +62,21 @@ export function TemplateRail({ cards }: { cards: TemplateRailCard[] }) {
               there is one. White on the lighter row read as a hole. */}
           {/* The art slot: one defined step into the surface it sits on, so it
               reads as a recess rather than as a second surface colour. */}
-          <span className="size-14 shrink-0 rounded-lg bg-[var(--surface-2)]" />
+          {/* The slot IS the icon's plate when there is one. An app icon is
+              drawn for a light tile — that is why the artwork is near-black and
+              white — so a row that carries one turns its slot into that tile
+              rather than nesting a second square inside the recess.
+
+              It does not theme, like the artwork on it. A row with no art yet
+              keeps the plain --surface-2 recess, which is what the other five
+              are: a slot waiting for a template shot. */}
+          <span
+            className={`flex size-14 shrink-0 items-center justify-center rounded-lg ${
+              card.icon ? "bg-[#e6e7ea]" : "bg-[var(--surface-2)]"
+            }`}
+          >
+            {card.icon}
+          </span>
           <span className="min-w-0 flex-1">
             {/* Regular, not 500. The rank here is already carried by INK —
                 full foreground over the muted description under it — and

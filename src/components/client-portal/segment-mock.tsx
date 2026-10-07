@@ -13,10 +13,14 @@
 // than a new icon family or new colours. Decorative only.
 // ─────────────────────────────────────────────────────────────────────────
 
+import Image from "next/image";
+
 import {
   IconBrandMark,
   IconCard,
   IconChat,
+  IconChevronRight,
+  IconCheck,
   IconDocuments,
   IconFile,
   IconArrowUpRight,
@@ -81,13 +85,14 @@ function NavRow({
       // read as a lozenge rather than as a row with its corners taken off.
       className={`flex items-center gap-1.5 rounded-[4px] px-1.5 py-[5px] text-[10px] leading-none ${
         branded
-          ? // On the brand slab the row cannot be marked by ink alone — white
-            // against white/60 is a smaller step than black against grey — so
-            // the picked row takes a quiet fill, the way the client nav in the
-            // build rail's own portal shot does.
+          ? // One colour for every row on the slab, picked or not. Two tones of
+            // white plus a fill was the state said twice, and at five rows the
+            // brighter one read as the only label that mattered rather than as
+            // the one you are on. The fill carries it alone, which is what a
+            // nav does — you are never on more than one.
             active
-            ? "bg-white/[0.12] text-white"
-            : "text-white/60"
+            ? "bg-white/[0.12] text-white/90"
+            : "text-white/90"
           : active
             ? // Ink, not a pill. A filled row on a --muted sidebar drew a hard
               // edge that read as a border around it rather than as the row
@@ -196,13 +201,44 @@ export function PortalSidebar({
 }
 
 /** An app's title bar, with whatever state belongs beside the title. */
-function AppHeader({ title, meta }: { title: string; meta?: React.ReactNode }) {
+function AppHeader({
+  title,
+  meta,
+  crumb,
+}: {
+  title: string;
+  meta?: React.ReactNode;
+  /**
+   * What this screen sits under, shown as a trail in front of the title.
+   *
+   * Only for a screen you can be DEEP in. Most of these mocks are a single
+   * page reached from the nav, where a crumb would be a path of length one.
+   */
+  crumb?: string;
+}) {
   return (
     <div
       className={`flex items-center justify-between gap-3 border-b px-4 py-3 ${LINE}`}
     >
-      <span className="truncate text-[12px] leading-none text-[color:var(--mock-ink)]">
-        {title}
+      {/* 11px. At 12 the app's name was the largest type in the window —
+          larger than the content it names — which made every screen in this
+          set open on its own title rather than on what it holds. */}
+      <span className="flex min-w-0 items-center gap-1.5">
+        {crumb ? (
+          <>
+            {/* The way back. It was cut as copy, which was wrong — a trail is
+                navigation, and without it the screen is a dead end you can
+                only leave through the nav. Muted against the title, so the
+                page you are ON is still the thing you read first. */}
+            <span className="shrink-0 truncate text-[11px] leading-none text-[color:var(--mock-ink-soft)]">
+              {crumb}
+            </span>
+            <IconChevronRight className="size-[9px] shrink-0 text-[color:var(--mock-ink-soft)]" />
+          </>
+        ) : null}
+        <span className="truncate text-[11px] leading-none text-[color:var(--mock-ink)]">
+          {title}
+        </span>
       </span>
       {meta}
     </div>
@@ -240,56 +276,194 @@ function Row({
   );
 }
 
-function Thumb() {
-  return (
-    <span className="size-[26px] shrink-0 rounded bg-muted [[data-theme=dark]_&]:bg-white/[0.08]" />
-  );
-}
-
 // ── 1. Agencies — the whole portal, sidebar and all ───────────────────────
 // The only card that shows the chrome. It is the section's first claim, that
 // this is one portal, so it is the one that needs to show a portal.
+//
+// Drawn as the approvals screen the product actually ships: a round, the
+// designs in it, and the two decisions you can make about them. It used to be
+// a file list with Approve underneath, which is a different app — approving a
+// ROUND of designs is the thing this template is for, and a list of uploads
+// said "files" instead.
+//
+// What the real screen carries and this does NOT: the "All approvals" crumb
+// above the title, and the two paragraphs under the round header explaining
+// what changed and that you may pick more than one. Both are a product
+// teaching its user, and this is a picture of the product — at this size they
+// would be four lines of grey no one reads, pushing the designs themselves off
+// the bottom of the card.
+// The picked cover's two marks, and they are drawn against two different
+// things — which is why they do not share a colour.
+//
+// THE FRAME is chrome: it sits on the card, so it reads the mock's own ink and
+// takes a step down in dark, where --mock-ink-soft resolves to a #9a9a9a ring
+// that was brighter than anything else on a dark card.
+//
+// THE TICK is not chrome. It sits on a PHOTOGRAPH, which can be any tone and
+// has no theme, so theming it off the surface was the mistake behind both
+// rounds of this: at --mock-ink it was a hard black disc on a pale plate, and
+// stepped back for dark it became a grey disc with a grey check on a grey
+// photo. It is drawn for imagery instead — a dark scrim with a white check and
+// a white hairline, the control every photo picker uses, identical in both
+// themes because the thing behind it is identical in both themes.
+const PICKED_EDGE =
+  "border-[var(--mock-ink-soft)] [[data-theme=dark]_&]:border-[#6b6b6b]";
+const DOT_ON_ART = "border backdrop-blur-[2px]";
+const PICKED_DOT = `${DOT_ON_ART} border-white/50 bg-black/60 text-white`;
+const UNPICKED_DOT = `${DOT_ON_ART} border-white/70 bg-black/25`;
+
+// One of them is already picked, because that is the mechanic this screen is
+// for — you choose the designs you are happy with, and you may choose more than
+// one. With none picked the round was identical frames and a pair of buttons,
+// which is a gallery.
+//
+// TWO, not three. Three meant a 2x2 grid with an orphan on the second row, and
+// splitting the height across two rows left each plate a letterbox — the one
+// shape a catalogue cover is never in. One row of two gives each plate the
+// panel's whole height.
+const COVERS = [
+  {
+    name: "Cover A",
+    src: "/images/mocks/covers/cover-1.jpg",
+    picked: true,
+    comments: 1,
+  },
+  { name: "Cover B", src: "/images/mocks/covers/cover-2.jpg", picked: false },
+];
+
 export function ApprovalsMock() {
   return (
     <div
       aria-hidden
       className="pointer-events-none flex h-full select-none bg-[var(--mock-window)] text-[color:var(--mock-ink)]"
     >
-      <PortalSidebar app="Approvals" />
+      {/* The firm's own colour. This is the card that claims the portal is
+          yours, so the nav it shows should be yours — a neutral grey slab here
+          was the one screen in the set making that claim in words only. */}
+      <PortalSidebar app="Approvals" branded />
       <div className="flex min-w-0 flex-1 flex-col">
-        <AppHeader
-          title="Spring campaign"
-          meta={<span className={NEUTRAL}>Round 2</span>}
-        />
-        <div className="min-h-0 flex-1 px-4 py-3.5">
-          {/* No status chips on this one: the row's state is carried by the
-              Approve and Request changes buttons below, and three coloured
-              tags in a card this size were the loudest thing on the page. */}
-          <Row
-            lead={<Thumb />}
-            label="Launch film, cut 03"
-            sub="Uploaded 2 days ago"
-          />
-          <Row
-            lead={<Thumb />}
-            label="Key art, variants A–C"
-            sub="Uploaded yesterday"
-          />
-          <Row
-            lead={<Thumb />}
-            label="Social cutdowns"
-            sub="Uploaded yesterday"
-          />
-          <div className="mt-3.5 flex items-center gap-2">
-            <span className="rounded-[4px] bg-foreground px-2.5 py-[6px] text-[10px] leading-none text-background">
-              Approve
+        {/* No chip. "Decision needed" restated the pair of buttons at the foot
+            of the round, and alone on the header row it read as a stray pill
+            rather than as the screen's state. */}
+        <AppHeader crumb="Approvals" title="Spring catalogue covers" />
+        <div className="flex min-h-0 flex-1 flex-col px-4 pt-2.5">
+          {/* The round you are in, and the ones behind it. Underlined rather
+              than filled: a pill here would be a second chip shape on a screen
+              whose job is to show a round.
+
+              -mx-4 px-4 runs the strip's rule to both edges of the window while
+              the labels stay on the content's measure — a tab rule that stops
+              short of the frame reads as a divider inside the page rather than
+              as the edge of the tab bar.
+
+              items-END, not centre, and every tab carries a bottom border —
+              transparent on the ones not picked. Centred, the active tab's
+              border sat wherever its own box ended, which was a pixel or two
+              ABOVE the strip's grey rule, so the screen showed two lines. At
+              the end, with -mb-px, the black lands exactly on the grey. */}
+          <div
+            className={`-mx-4 flex shrink-0 items-end gap-4 border-b px-4 ${LINE}`}
+          >
+            <span className="-mb-px border-b border-[var(--mock-ink)] pb-2 text-[10px] leading-none text-[color:var(--mock-ink)]">
+              Current round
             </span>
-            <span
-              className={`rounded-[4px] border px-2.5 py-[6px] text-[10px] leading-none text-[color:var(--mock-ink-soft)] ${LINE}`}
-            >
-              Request changes
+            <span className="-mb-px flex items-center gap-1.5 border-b border-transparent pb-2 text-[10px] leading-none text-[color:var(--mock-ink-soft)]">
+              Previous rounds
+              {/* The count is the whole reason the tab is there: a second round
+                  means there was a first one to compare against. */}
+              <span className="rounded-[3px] bg-[var(--mock-well-2)] px-1 py-[2px] text-[8.5px] leading-none">
+                1
+              </span>
             </span>
           </div>
+
+          {/* The panel fills the window rather than sizing to its contents, so
+              the plates inside it can take whatever height is left after the
+              header, the tabs and its own header. A fixed plate height was a
+              guess that only held at one card size. */}
+          <div
+            className={`mb-4 mt-3 flex min-h-0 flex-1 flex-col overflow-hidden rounded-[4px] border ${LINE}`}
+          >
+            <div
+              className={`flex shrink-0 items-center justify-between gap-2 border-b bg-[var(--mock-well)] px-2.5 py-2 ${LINE}`}
+            >
+              <span className="text-[10px] leading-none text-[color:var(--mock-ink)]">
+                Round 2
+              </span>
+              <span className="text-[9.5px] leading-none text-[color:var(--mock-ink-soft)]">
+                Shared Jul 30
+              </span>
+            </div>
+            {/* The designs, two up. Each carries its own select control in the
+                corner, which is what makes this an approval rather than a
+                gallery — you can pick more than one. */}
+            <div className="grid min-h-0 flex-1 grid-cols-2 gap-2 p-2.5">
+              {COVERS.map(({ name, src, picked, comments }) => (
+                <div
+                  key={name}
+                  // The picked one is outlined in ink. A tint behind it was
+                  // tried and is wrong here: the frame holds artwork, and
+                  // washing the artwork is how you say "disabled", not
+                  // "chosen".
+                  className={`flex min-h-0 flex-col overflow-hidden rounded-[4px] border ${
+                    picked ? PICKED_EDGE : LINE
+                  }`}
+                >
+                  {/* The art is 3:4 and the plate is nearly square, so
+                      object-cover crops the TOP AND BOTTOM. Positioned at 28%
+                      rather than centre: these are head-and-shoulders
+                      portraits with the face in the upper half, and a centred
+                      crop takes the forehead off and keeps the sweater. What
+                      goes is background above and knitwear below, which is
+                      what a catalogue crop drops anyway.
+
+                      sizes 480 and quality 90, both deliberately generous.
+                      The plate is about 200px in the DESIGN space, but this
+                      mock is scaled into whatever width its card gets and then
+                      rendered on retina, so the 220px variant it used to ask
+                      for was being drawn at well over its own size and came
+                      out soft. 480 covers the largest card at 2x, and 90
+                      overrides next/image's default 75 — on skin and hair,
+                      75 is where JPEG starts showing in the gradients. */}
+                  <div className="relative min-h-0 flex-1 overflow-hidden bg-[var(--mock-well-2)]">
+                    <Image
+                      src={src}
+                      alt=""
+                      fill
+                      sizes="480px"
+                      quality={90}
+                      className="object-cover object-[50%_28%]"
+                    />
+                    <span
+                      // Picked is drawn in --mock-ink-soft, not --mock-ink.
+                      // At full ink the mark was near-black on a pale plate and
+                      // a near-black rule around the frame — the loudest pair
+                      // of marks on a screen whose subject is the artwork
+                      // inside them. One step back still reads as chosen
+                      // against two frames that carry nothing.
+                      className={`absolute left-1.5 top-1.5 flex size-[11px] items-center justify-center rounded-full ${
+                        picked ? PICKED_DOT : UNPICKED_DOT
+                      }`}
+                    >
+                      {picked ? <IconCheck className="size-[7px]" /> : null}
+                    </span>
+                  </div>
+                  <div
+                    className={`flex items-center justify-between gap-1.5 border-t px-2 py-1.5 text-[9.5px] leading-none text-[color:var(--mock-ink)] ${LINE}`}
+                  >
+                    <span className="truncate">{name}</span>
+                    {comments ? (
+                      <span className="flex shrink-0 items-center gap-0.5 text-[color:var(--mock-ink-soft)]">
+                        <IconChat className="size-[9px]" />
+                        {comments}
+                      </span>
+                    ) : null}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
@@ -381,7 +555,7 @@ export function DocumentsStatsMock() {
                 </span>
               ) : null}
               <div
-                className={`w-full rounded-[6px] ${
+                className={`w-full rounded-[4px] ${
                   n === peak
                     ? "bg-foreground"
                     : "bg-foreground/[0.14] [[data-theme=dark]_&]:bg-white/[0.16]"
@@ -495,7 +669,7 @@ export function EmbedMock() {
             {SLOT_DAYS.map((day) => (
               <span
                 key={day}
-                className={`flex items-center justify-center rounded-[5px] border py-[7px] text-[10px] leading-none text-[color:var(--mock-ink)] ${LINE}`}
+                className={`flex items-center justify-center rounded-[4px] border py-[7px] text-[10px] leading-none text-[color:var(--mock-ink)] ${LINE}`}
               >
                 {day}
               </span>
@@ -507,7 +681,7 @@ export function EmbedMock() {
                 key={time}
                 // The first slot reads as the one being taken, so the panel
                 // has a subject rather than four identical rows.
-                className={`flex items-center justify-center rounded-[5px] py-[7px] text-[10px] leading-none ${
+                className={`flex items-center justify-center rounded-[4px] py-[7px] text-[10px] leading-none ${
                   i === 0
                     ? "bg-foreground text-background"
                     : `border text-[color:var(--mock-ink)] ${LINE}`
@@ -655,7 +829,7 @@ export function GenericPortalMock() {
           {ORBIT_TOOLS.map((tool) => (
             <span
               key={tool}
-              className={`flex items-center justify-between gap-2 truncate rounded-[3px] border border-dashed px-2.5 py-[9px] text-[11px] leading-none text-[color:var(--mock-ink-soft)] ${LINE}`}
+              className={`flex items-center justify-between gap-2 truncate rounded-[4px] border border-dashed px-2.5 py-[9px] text-[11px] leading-none text-[color:var(--mock-ink-soft)] ${LINE}`}
             >
               {tool}
               <IconArrowUpRight className="size-[10px] shrink-0" />
@@ -707,7 +881,7 @@ export function IntakeAppMock({
                   {field.label}
                 </span>
                 <div
-                  className={`mt-1.5 flex h-[28px] items-center rounded-[5px] border px-2.5 text-[11px] leading-none text-[color:var(--mock-ink)] ${LINE}`}
+                  className={`mt-1.5 flex h-[28px] items-center rounded-[4px] border px-2.5 text-[11px] leading-none text-[color:var(--mock-ink)] ${LINE}`}
                 >
                   {field.value}
                 </div>
@@ -715,7 +889,7 @@ export function IntakeAppMock({
             ))}
           </div>
           {action ? (
-            <span className="mt-auto w-fit rounded-[5px] bg-foreground px-2.5 py-[7px] text-[10px] leading-none text-background">
+            <span className="mt-auto w-fit rounded-[4px] bg-foreground px-2.5 py-[7px] text-[10px] leading-none text-background">
               Submit partner
             </span>
           ) : null}

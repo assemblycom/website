@@ -104,12 +104,22 @@
      component only ever says "window", "well", "line" — see the dark block for
      the other half. These light values are exactly what rendered before the
      tokens existed, so light is unchanged. */
-  --mock-window: #ffffff;
+  /* Off-white, not #ffffff. These panels are large and they sit on --surface
+     (#f5f5f5), so at pure white the window was the brightest thing on the page
+     — brighter than the page itself — and a mock read as a hole cut in the card
+     rather than as a screen lying on it. A couple of levels down is enough to
+     seat it.
+
+     The wells move with it. The ladder is what carries meaning here — window
+     above well above well-2 above line — so dropping the top and leaving the
+     rest would have closed the gap between a panel and the recesses in it until
+     a table head stopped reading as one. Same steps, two levels lower. */
+  --mock-window: #fcfcfd;
   /* The faint recess on a window: table heads, the row in play. Was
      bg-muted/60 over white. */
-  --mock-well: #fafbfc;
+  --mock-well: #f7f8fa;
   /* The solid one: segmented tracks, progress troughs, the chat bubble. */
-  --mock-well-2: #f6f7f9;
+  --mock-well-2: #f2f3f6;
   --mock-line: #e8e9ec;
   --mock-ink: #101114;
   --mock-ink-soft: #6b7079;

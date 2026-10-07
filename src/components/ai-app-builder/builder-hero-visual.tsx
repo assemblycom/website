@@ -82,12 +82,28 @@ const PANEL = `mt-4 overflow-hidden rounded-lg border bg-[var(--mock-window)] ${
 const TABLE_HEAD = `flex items-center gap-5 border-b bg-[var(--mock-well)] px-3.5 py-2 text-[11.5px] leading-none text-[color:var(--mock-ink-soft)] ${LINE}`;
 
 const CHIP = "rounded px-1.5 py-[4px] text-[11px] leading-none";
-const POSITIVE = `${CHIP} bg-[var(--mock-positive-bg)] text-[color:var(--mock-positive-fg)]`;
-const WARNING = `${CHIP} bg-[var(--mock-warning-bg)] text-[color:var(--mock-warning-fg)]`;
+// One chip for every state in this hero. The green/amber pair that used to sit
+// beside it is gone, not merely unused: the --mock-positive-* / --mock-warning-*
+// tokens are still there for the mocks that want them, and leaving dead
+// constants here would invite the colour back a status at a time.
 const NEUTRAL = `${CHIP} bg-[var(--mock-well-2)] text-[color:var(--mock-ink-soft)]`;
 // The column keeps a fixed width so the header lines up; the pill inside hugs
 // its label.
 const STATUS_COL = "flex w-[78px] shrink-0 justify-start";
+// The name column in the Live card's two tables — client names on the team
+// side, document names on the client side.
+//
+// --mock-ink at full strength is #ededed on a #212121 window and #101114 on
+// white, so a column of names was the loudest type in the hero in either theme
+// — brighter than the page's own h1 a few hundred pixels above it. Both themes
+// step down, and each is written in its own block: they are different numbers
+// moving in opposite directions, not one value with an opacity on it.
+//
+// Both tables take it, because they are the two faces of ONE card — tone one
+// and not the other and the toggle jumps between them.
+const ROW_NAME =
+  "text-[#585c64] [[data-theme=dark]_&]:text-[#b2b2b2]";
+
 // A hovered table row takes the same tint as the table head, so it reads as
 // part of the table rather than as a new colour. Both views use it: the
 // sidebar rows already answered the pointer and the rows beside them did not.
@@ -555,7 +571,7 @@ function ViewToggle({
                 // there — lifted to 8% so it still reads once the ring is
                 // gone. Light keeps its border, because a white thumb on a
                 // near-white card has nothing else to separate it.
-                "border-border bg-background text-foreground shadow-[0_1px_2px_rgba(16,24,40,0.06)] [[data-theme=dark]_&]:border-transparent [[data-theme=dark]_&]:bg-white/[0.08] [[data-theme=dark]_&]:shadow-none"
+                "border-border bg-background text-foreground [[data-theme=dark]_&]:border-transparent [[data-theme=dark]_&]:bg-white/[0.08]"
               : "border-transparent text-muted-foreground hover:text-foreground"
           }`}
         >
@@ -712,8 +728,12 @@ function Composer({ run, typing }: { run: number; typing: boolean }) {
           send on the right. Without them the box was a bare field with one
           button floating in it, which is not what anyone types into. */}
       <div className="flex items-center justify-between">
-        <span className="pointer-events-auto flex size-[26px] cursor-default items-center justify-center rounded-[4px] text-[color:var(--mock-ink-soft)] transition-colors hover:bg-[var(--mock-well)] hover:text-[color:var(--mock-ink)]">
-          <IconPlus className="size-[13px]" />
+        {/* 22px, not 26. The pair sat more than twice the height of the 12px
+            label between them, so the send tile was the heaviest object in a
+            card whose subject is the sentence above it. At 22 it still reads
+            as a control and the row reads as a footer. */}
+        <span className="pointer-events-auto flex size-[22px] cursor-default items-center justify-center rounded-[4px] text-[color:var(--mock-ink-soft)] transition-colors hover:bg-[var(--mock-well)] hover:text-[color:var(--mock-ink)]">
+          <IconPlus className="size-[11px]" />
         </span>
         {/* 12px between the model name and the send button, not 8: the button
             is a filled 26px tile and the label is loose grey type, so at 8 the
@@ -724,8 +744,8 @@ function Composer({ run, typing }: { run: number; typing: boolean }) {
           </span>
           {/* The mock's own ink, not the page's: this button sits on a lifted
               panel, and --foreground is tuned for the near-black ground. */}
-          <span className="pointer-events-auto flex size-[26px] cursor-default items-center justify-center rounded-[4px] bg-[var(--mock-ink)] text-[color:var(--mock-window)] transition-opacity hover:opacity-85">
-            <IconArrowUp className="size-[13px]" />
+          <span className="pointer-events-auto flex size-[22px] cursor-default items-center justify-center rounded-[4px] bg-[var(--mock-ink)] text-[color:var(--mock-window)] transition-opacity hover:opacity-85">
+            <IconArrowUp className="size-[11px]" />
           </span>
         </span>
       </div>
@@ -758,15 +778,20 @@ function Composer({ run, typing }: { run: number; typing: boolean }) {
         // one box on this side and the one screen on that side should catch the
         // light the same way.
         //
-        // Sized for THIS box. The default ellipse is tuned to that screen's
-        // 760px height; on something 100px tall and 560px wide the whole border
-        // sits inside the bright end of it and comes out flat, so the falloff
-        // is scaled to run across the composer instead.
+        // Sized for THIS box, and in PERCENT rather than px. The default
+        // ellipse is tuned to that screen's 760px height, and on something
+        // 100px tall the whole border sits inside the bright end of it and
+        // comes out flat. A px override only moved the problem: this card is
+        // fluid and trades width with the one beside it, so a fixed ramp faded
+        // out halfway along the top edge at one width and not at all at
+        // another. At 120% the ramp always ends a fifth past the right edge, so
+        // the top stays lit most of the way across and gives out in the same
+        // place whatever width the card is.
         //
         // Dark only, which is where the class lives: in light the plain
         // --mock-line hairline already reads against the white card, and a grey
         // ramp there would be a smudge rather than an edge.
-        className={`mock-edge [--mock-edge-h:160px] [--mock-edge-w:420px] overflow-hidden rounded-xl border bg-[var(--mock-window)] shadow-[0_0_0_3px_var(--surface),0_0_0_4px_var(--mock-line)] ${LINE}`}
+        className={`mock-edge [--mock-edge-h:150%] [--mock-edge-w:120%] overflow-hidden rounded-xl border bg-[var(--mock-window)] shadow-[0_0_0_3px_var(--surface),0_0_0_4px_var(--mock-line)] ${LINE}`}
       >
         {box}
       </div>
@@ -844,13 +869,18 @@ function TeamDashboard({ live }: { live: boolean }) {
   return (
     <div className="flex h-full">
       <div
-        className={`flex w-[164px] shrink-0 flex-col border-r bg-[var(--mock-well)] px-1.5 py-2 [--mock-nav-size:13px] [--mock-nav-row:28px] [--mock-section-size:11px] ${LINE} [&>div:not(:first-child)]:h-[28px] [&>div:not(:first-child)]:transition-colors [&>div:not(:first-child):hover]:bg-border/50`}
+        // A step down from 13/28/11. Those were already above NavItem's own
+        // defaults, which put the nav's labels at the same size as the table's
+        // client names across the pane — so the furniture read as loud as the
+        // content it frames. 12/26/10 lands back level with the table and
+        // leaves the names the largest thing on the screen.
+        className={`flex w-[164px] shrink-0 flex-col border-r bg-[var(--mock-well)] px-1.5 py-2 [--mock-nav-size:12px] [--mock-nav-row:26px] [--mock-section-size:10px] ${LINE} [&>div:not(:first-child)]:h-[26px] [&>div:not(:first-child)]:transition-colors [&>div:not(:first-child):hover]:bg-border/50`}
       >
         <div className="flex items-center gap-1.5 px-1.5 pb-4 pt-3">
           <span className="flex size-[16px] items-center justify-center rounded-[3px] bg-foreground text-background">
             <IconBrandMark className="size-[9px]" />
           </span>
-          <span className="text-[13px] leading-none text-[color:var(--mock-ink)]">
+          <span className="text-[12px] leading-none text-[color:var(--mock-ink)]">
             BrandMages
           </span>
         </div>
@@ -867,20 +897,12 @@ function TeamDashboard({ live }: { live: boolean }) {
             on a row of stat tiles, so nothing said WHICH app the table
             belonged to and the sidebar's lit row was carrying that alone.
 
-            It is the AppHeader shape the other mocks in this family already
-            use — name on the left, trailing content on the right, closed by a
-            hairline. Just the app's name: an "Apps >" crumb in front of it
-            spent two thirds of the bar's left side on a word that is already
-            the lit row in the sidebar three inches away. Two actions, not the
-            four a real toolbar carries — at 11px a fourth is a grey tick, and
-            the shot is here to show where an app lands, not to be operated. */}
-        <div
-          className={`flex shrink-0 items-center border-b py-2.5 pl-5 pr-4 ${LINE}`}
-        >
-          <span className="min-w-0 truncate text-[12px] leading-none text-[color:var(--mock-ink)]">
-            Year-end docs
-          </span>
-        </div>
+            NO TITLE BAR. It carried the app's name and nothing else, and the
+            name was already the lit row in the sidebar an inch to its left —
+            so the screen opened by saying what it is twice, and spent a full
+            bar's height on the repeat. The sidebar names the app; the panels
+            below are what the shot is here to show. The same bar is gone from
+            the client view, because the two are one app seen from two sides. */}
         <div className="min-h-0 flex-1 pl-5 pt-4">
         <div>
           {/* Tinted in DARK only. --mock-window on --mock-window is no step at
@@ -940,7 +962,9 @@ function TeamDashboard({ live }: { live: boolean }) {
                     lines deep for a second piece of type nobody reads at this
                     size — the table is here to show a list of clients with
                     progress against each, not to be read. */}
-                <span className="min-w-0 flex-1 truncate text-[13px] leading-none text-[color:var(--mock-ink)]">
+                <span
+                  className={`min-w-0 flex-1 truncate text-[13px] leading-none ${ROW_NAME}`}
+                >
                   {quiet ? "" : row.name}
                 </span>
                 <span className="hidden w-[92px] items-center @[420px]:flex">
@@ -954,15 +978,14 @@ function TeamDashboard({ live }: { live: boolean }) {
                   )}
                 </span>
                 <span className={STATUS_COL}>
-                  <span
-                    className={
-                      row.status === "Complete"
-                        ? POSITIVE
-                        : row.status === "Awaiting"
-                          ? WARNING
-                          : NEUTRAL
-                    }
-                  >
+                  {/* One neutral chip for every state. The column used to run
+                      green / amber / grey, which put the only colour in the
+                      whole hero in its furthest-right column — the eye went to
+                      a status pill rather than to the app the card is showing,
+                      and the three colours implied a reading ("green is good,
+                      amber is late") that this picture is not making. The chip
+                      shape still says "this is a state"; the word says which. */}
+                  <span className={NEUTRAL}>
                     {quiet ? "" : row.status}
                   </span>
                 </span>
@@ -1027,30 +1050,22 @@ function ClientView() {
         ))}
       </div>
       <div className="flex min-w-0 flex-1 flex-col">
-        {/* The same bar the team side carries, so the two views are one app
-            seen from two sides rather than two different screens — but with
-            the app's name alone. The team's bar offers Export and Add client,
-            which are the firm's actions; the client's equivalent would be an
-            Upload control, and the rows below already carry one each, against
-            the specific thing being asked for. */}
-        <div
-          className={`flex shrink-0 items-center border-b py-2.5 pl-5 pr-4 ${LINE}`}
-        >
-          <span className="min-w-0 truncate text-[12px] leading-none text-[color:var(--mock-ink)]">
-            Year-end docs
-          </span>
-        </div>
-        {/* pt-7, not pt-4. This screen has no bottom fade — the brand slab
-            washed out under one — so the card crops it on a hard line, and at
-            pt-4 that line fell exactly on a row's 1px bottom border. The
-            border and the card's own 1px ring then sat together and read as a
-            doubled rule. The extra 12px drops the crop into the middle of a
-            row instead, where a cut row reads as a cut row.
+        {/* No title bar here either — see the team side. The branded nav beside
+            it already names the app, in white on the firm's own slab, which is
+            the loudest label on the screen. */}
+        {/* pt-4, the same inset the team view uses. The two are one app seen
+            from two sides, sitting in one card behind a toggle, so a deeper
+            top inset on this one made the whole screen drop when you flipped
+            to it.
 
-            Worth knowing: this is a height coincidence, not a structural fix.
-            If the card's height changes, a different row can land on the
-            crop. The robust answer is the short fade the team side carries. */}
-        <div className="min-h-0 flex-1 pl-5 pt-7">
+            It was 12px deeper to keep the card's bottom crop off a row's 1px
+            border, where that border and the card's own ring read as a doubled
+            rule. That was a height coincidence rather than a structural fix,
+            and the height it depended on is gone — the title bar above this
+            went with the team side's, so every row now sits a bar higher. If a
+            doubled rule shows up at the crop again, the answer is the short
+            fade the team side carries, not a different inset here. */}
+        <div className="min-h-0 flex-1 pl-5 pt-4">
         <div>
           <div
             className={`${PANEL} mt-0! px-3.5 py-3 [[data-theme=dark]_&]:bg-[var(--mock-well)]`}
@@ -1081,21 +1096,15 @@ function ClientView() {
                 key={label}
                 className={`flex items-center justify-between gap-3 border-b px-3.5 py-[12px] pr-16! last:border-b-0 ${ROW_HOVER} ${LINE}`}
               >
-                <span className="truncate text-[13px] leading-none text-[color:var(--mock-ink)]">
+                <span className={`truncate text-[13px] leading-none ${ROW_NAME}`}>
                   {label}
                 </span>
                 <span className={STATUS_COL}>
-                  <span
-                    className={
-                      state === "Received"
-                        ? POSITIVE
-                        : state === "Awaiting"
-                          ? WARNING
-                          : `${CHIP} ${BRAND_FILL}`
-                    }
-                  >
-                    {state}
-                  </span>
+                  {/* Neutral throughout, matching the team view — including
+                      "Upload", which was a filled brand chip. It was the one
+                      solid dark mark in the table and read as a button the
+                      reader could press, in a mock where nothing is pressable. */}
+                  <span className={NEUTRAL}>{state}</span>
                 </span>
               </div>
             ))}
