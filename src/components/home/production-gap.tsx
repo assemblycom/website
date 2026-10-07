@@ -36,7 +36,7 @@ const REGIONS = [
   {
     id: "sidebar",
     tag: "Ready-made apps",
-    header: "30+ ready-made apps to choose from",
+    header: "30+ ready-made apps",
     body: "Assembly includes apps for intake, onboarding, proposals, payments, project tracking, and more, and each app can be remixed to fit what you want.",
   },
   {
