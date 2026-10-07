@@ -14,6 +14,7 @@
 // ─────────────────────────────────────────────────────────────────────────
 
 import { ApprovalCovers } from "@/components/client-portal/approval-covers";
+import { fadeMask } from "@/components/ui/fade-mask";
 
 import {
   IconBrandMark,
@@ -83,8 +84,6 @@ const WARNING = `${CHIP} bg-[var(--mock-warning-bg)] text-[color:var(--mock-warn
 // so the quiet pills cannot drift away from the loud ones, and neither can
 // drift between themes. A local hex here would have given this board a private
 // palette that nothing else could follow.
-const POSITIVE_QUIET = `${CHIP} bg-[var(--mock-positive-muted-bg)] text-[color:var(--mock-positive-muted-fg)]`;
-const WARNING_QUIET = `${CHIP} bg-[var(--mock-warning-muted-bg)] text-[color:var(--mock-warning-muted-fg)]`;
 const NEUTRAL = `${CHIP} bg-muted text-[color:var(--mock-ink-soft)] [[data-theme=dark]_&]:bg-white/[0.08]`;
 
 const LINE = "border-[var(--mock-line)]";
@@ -478,69 +477,154 @@ export function ApprovalsMock() {
   );
 }
 
-// ── 2b. Accounting — the collection, as the act of collecting ────────────
+// ── 2b. Accounting — the collection, as what came back ───────────────────
 // A SECOND documents picture, for the tailor grid. DocumentsMock below is the
 // portal screen and is what the hero carousel draws, so it is left alone; this
 // one exists because beside the onboarding board the row-and-chip screen read
 // as the same card twice.
 //
-// It was a headline figure over a column chart — uploads per week, climbing.
-// The shape was fine and it said nothing the card's own heading did not: a
-// count of documents received, drawn twice. What the card is selling is the
-// COLLECTING — "a per-client checklist with upload tracking" — and the moment
-// that describes is a client putting a file in, which a bar chart of last
-// month's totals is the one picture that cannot show.
+// Its third form. It was a headline figure over a column chart — uploads per
+// week, climbing — which said nothing the card's heading did not. Then it was
+// the drop target alone, on the argument that the card sells the COLLECTING
+// and the moment that describes is a client putting a file in.
 //
-// So it is the drop target, and only that — a well with its own ground, which
-// reads as somewhere to put something without a glyph to announce it.
+// That was half the sentence. "A per-client checklist with upload tracking" is
+// a list of things asked for and what came back against each, and an empty
+// drop well shows neither: it is the same invitation whoever the client is and
+// whatever they owe, so the one card in the set that could show a per-client
+// state showed a blank. Three answered questions is the picture — the document
+// asked for, the file that arrived, and when — which is also the form the
+// product renders a completed upload field in.
 //
-// The border is SOLID. It was dashed, which is the convention for a drop zone
-// and the reason it went in; but this card already sits inside a dashed-free
-// set, and at mock scale a dashed hairline on a filled panel reads as a dotted
-// seam rather than as an invitation. The fill is what says "put it here"; the
-// edge only has to close the shape. The
-// arrow that sat above the copy was the third thing in a box that says "drop
-// files to upload" in words directly underneath.
+// NAMED THE WAY THIS SET NAMES THINGS. They were real-looking filenames —
+// "FY2026-engagement-letter-signed.pdf", "FY2025-form-1120.pdf" — and they
+// were wrong twice over. They are the longest strings on the board, so three
+// of them in a narrow card is a column of hyphenated machine text; and no
+// other screen in the set talks like that. The approvals window names its
+// subject "Spring catalogue covers" and its plates "Cover A" and "Cover B",
+// which is how a person refers to the thing, and the stamp beside it is
+// "Shared Jul 30" rather than a full timestamp. These follow it: the document
+// the slot asked for, and the day it landed.
 //
-// Two upload rows sat under it for a while, a landed file and one still going,
-// on the reasoning that "tracking" was half the sentence. They made the card
-// busy in the wrong way: a dropzone with a list beneath it is a file manager,
-// and the thing worth showing here is the invitation, not the log. The well
-// gets the whole card instead, which is also how it reads at a glance from
-// across the grid.
+// NO FILE GLYPH on the rows. The product draws one and it is right there,
+// where a row is one of many in a scrolling list and the icon is the column
+// that says what kind of thing each row is. Here there are three rows, every
+// one is a file, each is labelled with the document it answers, and the names
+// carry their own extensions — so the glyph would be the same mark three times
+// saying what three labels already say.
+const SUBMITTED = [
+  { file: "Engagement letter.pdf", at: "Submitted Jun 17" },
+  { file: "Trial balance.pdf", at: "Submitted Jun 19" },
+  { file: "Prior-year return.pdf", at: "Submitted Jun 21" },
+  // THE FOURTH IS THE ONE THAT FADES. Three rows ending cleanly said the
+  // checklist had three things on it; a fourth going under says there are
+  // more, which is what "a per-client checklist" is claiming. It carries real
+  // content rather than being a blank strip, because the fade has to look like
+  // the picture continuing, not like a row that failed to load.
+  { file: "Bank statements.pdf", at: "Submitted Jun 23" },
+];
+
+/**
+ * The file-type mark, from the product's own icon file — a page outline with
+ * the extension lettered into its foot.
+ *
+ * Two things changed on the way in. The source paints `fill="black"`, which is
+ * a hardcoded themed colour and would sit as a black mark on a near-black
+ * panel in dark; it reads `currentColor` here so the tile's own token carries
+ * it. And the source clips to a 22.5x20 rect while the lettering runs to
+ * y=21.4, so the bottom of "PDF" was cut off — the viewBox is opened to clear
+ * the glyph and the clip dropped.
+ */
+function IconFilePdf({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 23.5 21.5" className={className} aria-hidden>
+      <path d="M8.125 1.875H3.75C3.40625 1.875 3.125 2.15625 3.125 2.5V17.5C3.125 17.8438 3.40625 18.125 3.75 18.125H6.875V20H3.75C2.37109 20 1.25 18.8789 1.25 17.5V2.5C1.25 1.12109 2.37109 0 3.75 0H8.96484C9.62891 0 10.2656 0.261719 10.7344 0.730469L15.5195 5.51953C15.9883 5.98828 16.25 6.625 16.25 7.28906V13.1289H14.375V8.12891H10.9375C9.38281 8.12891 8.125 6.87109 8.125 5.31641V1.87891V1.875ZM13.5977 6.25L10 2.65234V5.3125C10 5.83203 10.418 6.25 10.9375 6.25H13.5977ZM9.375 14.8438H10.625C11.918 14.8438 12.9688 15.8945 12.9688 17.1875C12.9688 18.4805 11.918 19.5312 10.625 19.5312H10.1562V20.625C10.1562 21.0547 9.80469 21.4062 9.375 21.4062C8.94531 21.4062 8.59375 21.0547 8.59375 20.625V15.625C8.59375 15.1953 8.94531 14.8438 9.375 14.8438ZM10.625 17.9688C11.0547 17.9688 11.4062 17.6172 11.4062 17.1875C11.4062 16.7578 11.0547 16.4062 10.625 16.4062H10.1562V17.9688H10.625ZM14.375 14.8438H15.625C16.7461 14.8438 17.6562 15.7539 17.6562 16.875V19.375C17.6562 20.4961 16.7461 21.4062 15.625 21.4062H14.375C13.9453 21.4062 13.5938 21.0547 13.5938 20.625V15.625C13.5938 15.1953 13.9453 14.8438 14.375 14.8438ZM15.625 19.8438C15.8828 19.8438 16.0938 19.6328 16.0938 19.375V16.875C16.0938 16.6172 15.8828 16.4062 15.625 16.4062H15.1562V19.8438H15.625ZM18.5938 15.625C18.5938 15.1953 18.9453 14.8438 19.375 14.8438H21.25C21.6797 14.8438 22.0312 15.1953 22.0312 15.625C22.0312 16.0547 21.6797 16.4062 21.25 16.4062H20.1562V17.3438H21.25C21.6797 17.3438 22.0312 17.6953 22.0312 18.125C22.0312 18.5547 21.6797 18.9062 21.25 18.9062H20.1562V20.625C20.1562 21.0547 19.8047 21.4062 19.375 21.4062C18.9453 21.4062 18.5938 21.0547 18.5938 20.625V15.625Z" fill="currentColor" />
+    </svg>
+  );
+}
+
 export function DocumentsStatsMock() {
   return (
     <div
       aria-hidden
-      // No h-full. The card stretched to whatever the grid row gave it, which is
-      // set by the taller cards beside it — so shortening the well just moved
-      // the empty space below it and left a white box trailing under the drop
-      // target. Sized to its contents, the card ends where the well ends.
-      className={`pointer-events-none flex select-none flex-col gap-3 rounded-xl border bg-[var(--mock-window)] text-[color:var(--mock-ink)] p-4 ${LINE}`}
+      // NO WHITE PANEL AROUND THEM, and no title above them.
+      //
+      // The rows sat in a bordered window with a "Year-end documents" eyebrow,
+      // the way the other mocks in this set are framed — and this is the one
+      // card in the set that is artwork rather than a screen, like the Gantt
+      // beside it. A frame around three rows made them look like a cropped
+      // screenshot of a panel; without it they are three answered questions
+      // sitting on the card, which is what the card is about. The card's own
+      // heading already names them, so the eyebrow was saying it twice.
+      //
+      // The per-row labels go with it. "ENGAGEMENT LETTER" over
+      // "FY2026-engagement-letter-signed.pdf" is the filename read twice, and
+      // three of them turned a short list into a stack of six lines where
+      // every other one was a heading.
+      //
+      // No h-full: sized to its contents, so the card ends where the last row
+      // ends rather than trailing empty ground under it.
+      // DRAWN LARGER THAN THE FRAMED MOCKS, on purpose.
+      //
+      // The other cards in this set are windows: their type is sized to look
+      // right inside a screenshot, so 10.5px reads as an app's own UI seen at
+      // a distance. This card has no frame — three rows sit directly on it —
+      // so there is no screenshot for the eye to scale them against, and at
+      // that size they read as small rather than as far away. A step up puts
+      // them at the size the card itself is drawn at.
+      className="pointer-events-none flex select-none flex-col gap-2"
+      // THE LAST ROW DISSOLVES, and this is the edge a fade belongs on.
+      //
+      // The Gantt's right edge refused one: four saturated bars running into
+      // the cut, so any ramp took the colour out of the artwork itself. These
+      // are near-white rows on a pale card — barely any contrast to lose — so
+      // the ramp reads as the list carrying on past the card rather than as
+      // the rows going pale.
+      //
+      // Starting at 76 puts the whole of it inside the fourth row, so the
+      // three above are untouched and the one that fades is a whole row doing
+      // it. The number tracks the gap: four rows on a 8px gap put the last
+      // one's top edge at ~77% of the stack, and a ramp that began above that
+      // would take the bottom off the third row as well. The shared curve, as
+      // everywhere else — see fade-mask.ts.
+      style={{
+        WebkitMaskImage: fadeMask("to bottom", 76),
+        maskImage: fadeMask("to bottom", 76),
+      }}
     >
-      <p className="text-[10px] leading-none text-[color:var(--mock-ink-soft)]">
-        Year-end documents
-      </p>
+      {SUBMITTED.map(({ file, at }) => (
+        <div
+          key={file}
+          className={`flex items-center gap-3 rounded-lg border bg-[var(--mock-window)] px-3 py-2.5 ${LINE}`}
+        >
+          {/* FRAMED, not loose on the row.
 
-      {/* The well. Dashed because that is what a drop target has looked like
-          for fifteen years, and flex-1 so it takes the height the columns used
-          to — a dropzone that is not the biggest thing on the card reads as a
-          field in a form rather than as somewhere to put something. */}
-      <div
-        // No flex-1. It used to take whatever height the card had left, and on
-        // a card sized for a column chart that was most of it — a drop target
-        // tall enough to lose its own label in the middle of. A well is read by
-        // its shape, not its area, so it gets a height of its own and the card
-        // closes up around it.
-        className={`flex flex-col items-center justify-center gap-2 rounded-lg border bg-[var(--mock-well)] px-4 py-10 text-center ${LINE}`}
-      >
-        <span className="text-[10.5px] leading-none text-[color:var(--mock-ink)]">
-          Drop files to upload
-        </span>
-        <span className="text-[9.5px] leading-none text-[color:var(--mock-ink-soft)]">
-          PDF, XLSX or CSV, up to 25 MB
-        </span>
-      </div>
+            The mark on its own would be a glyph floating in the pill's left
+            padding at whatever size its page outline happened to be. A tile
+            gives it an edge to sit in and a fixed footprint, so three rows line
+            their text up on one column whatever the extension is.
+
+            The tile is the QUIET GROUND, not white: the pill it sits on is
+            already the window colour, and a white tile on a white pill is a
+            tile you cannot see. The reference inverts the same relationship —
+            white mark on a grey row — so this keeps the figure and the ground
+            a step apart, which is the part that matters, and does it in tokens
+            so it holds in both themes. */}
+          <span
+            className={`flex size-[32px] shrink-0 items-center justify-center rounded-lg border bg-[var(--mock-well)] text-[color:var(--mock-ink)] ${LINE}`}
+          >
+            <IconFilePdf className="h-[16px] w-[17px]" />
+          </span>
+          <span className="flex min-w-0 flex-col gap-[5px]">
+            <span className="truncate text-[11px] leading-none text-[color:var(--mock-ink)]">
+              {file}
+            </span>
+            <span className="truncate text-[9.5px] leading-none text-[color:var(--mock-ink-soft)]">
+              {at}
+            </span>
+          </span>
+        </div>
+      ))}
     </div>
   );
 }
@@ -964,52 +1048,63 @@ export function IntakeAppMock({
 // running off the card. The onboarding app is several things at once — where
 // the client is up to, what is signed, what is still missing — and a board
 // shows that where a single list would flatten it.
-const STEPS = ["Your details", "Engagement letter", "Documents", "Review"];
+// The STEP NAMES ARE THE FORM'S OWN. They were invented for this mock —
+// "Engagement letter", "Documents" — which described a plausible wizard rather
+// than the one the product ships. The response view names its steps Welcome,
+// Your details, Goals and Review, so those are the four here; a marketing
+// picture of a screen should be recognisable to somebody who has opened it.
+const STEPS = ["Welcome", "Your details", "Goals", "Review"];
 
 // Ticks per step in the progress meter.
 //
-// Fourteen across a ~73px step, with a 2px gap: the marks come out about 3.3px,
-// so each stays a mark rather than a hairline, and the space between them is
-// narrower than the mark itself. At twelve-on-3px the gap matched the mark and
-// the run read as a row of separate blocks; a meter wants to read as one object
-// made of divisions, which means the marks have to sit closer together than
-// they are wide.
-const TICKS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+// TWENTY-EIGHT, doubled from fourteen when the meter took the whole board.
+// Fourteen was tuned for a step ~73px wide, where it gave marks of about 3.3px
+// against a 2px gap — narrow enough to read as marks, close enough together to
+// read as one run. Merged into the full-width panel a step is ~155px, and the
+// same fourteen marks stretched to 9px apiece: wider than they are tall, which
+// is a row of blocks rather than a meter.
+//
+// Doubling the count holds the PITCH rather than the number. The marks come
+// back to ~3.6px on the same 2px gap, so the meter looks the same at twice the
+// width — which is the property that matters, since this panel is the one on
+// the board whose width moves with the card.
+const TICKS = Array.from({ length: 28 }, (_, i) => i);
 
-// Three people, not five. The list is the proof that the access rule resolves
-// to somebody, and three names carry that as well as ten — while the panel is
-// 216px wide, so a longer list would be showing its own scrollbar rather than
-// its contents.
+// The timestamps the response view carries under its meter: when the form was
+// started, when it was last touched, and whether it has been reopened since.
 //
-// Three rather than two because the row above lost its "Saved" pill and got
-// shorter; the panels below take that height back, so the board keeps its
-// proportions instead of ending on a band of empty ground.
+// It was a list of three people with their roles, which was a reasonable panel
+// and was not on the screen — the form response has no access list, it has a
+// record of its own history. A board that shows the product's own fields is
+// the point of the card.
 //
-// The client first, then the firm: the client is the subject of the screen,
-// and a list that opened on the firm would be saying who is working on them
-// rather than who can see it.
-const ACCESS = [
-  { initials: "MR", name: "Marta Reyes", role: "Client" },
-  { initials: "JO", name: "James Okafor", role: "Partner" },
-  { initials: "PS", name: "Priya Shah", role: "Associate" },
+// THREE rows, as before: the panel is ~216px wide, and the proportion the
+// board was tuned to is three rows under the count beside it. "Completed" is
+// the fourth field on the screen and is left out here on purpose — the meter
+// next door shows two of four steps done, so a completion date would be the
+// one thing on the board contradicting the rest of it.
+//
+// An em dash for Reopened, exactly as the screen draws an empty field: a blank
+// cell would read as the mock having run out of content.
+const ACTIVITY = [
+  { label: "Started", value: "Aug 9, 2026" },
+  { label: "Last activity", value: "Aug 11, 2026" },
+  { label: "Reopened", value: "\u2014" },
 ];
 
-/**
- * The initials tile — the default avatar a person gets before anyone uploads a
- * photo, which is most of them.
- *
- * Ink at 10% rather than a grey, so the tile steps off whatever it sits on in
- * either theme; on a well colour a fixed grey was the same tone twice and the
- * avatar vanished. Same values as the portal bar's workspace tile and the
- * build cards' client tile.
- */
-function Initials({ children }: { children: React.ReactNode }) {
-  return (
-    <span className="flex size-[14px] shrink-0 items-center justify-center rounded-[3px] bg-[var(--mock-ink)]/10 text-[7px] leading-none text-[color:var(--mock-ink-soft)]">
-      {children}
-    </span>
-  );
-}
+// The answers the client gave on the step the meter is standing on. Labels as
+// the form asks them, values as they came back.
+//
+// THREE of them, the same count as the activity panel beside it: the fourth
+// field on the screen is the company website, and a URL is the one value here
+// long enough to crowd its own label at this width. Dropping it also squares
+// the two boxes, so the lower row reads as one band rather than as two lists
+// of different lengths.
+const DETAILS = [
+  { label: "Full name", value: "Renee Castillo" },
+  { label: "Best email", value: "renee.castillo@magnacompany.com" },
+  { label: "Phone number", value: "(585) 172-7456" },
+];
 
 /** One white panel on the tray. */
 function Panel({
@@ -1180,7 +1275,7 @@ export function OnboardingMock() {
       // board already makes by cropping its bottom row.
       className="pointer-events-none flex h-full select-none flex-col bg-[var(--mock-window)] text-[color:var(--mock-ink)] sm:w-full sm:min-w-[660px] sm:shrink-0"
     >
-      <MobileAppBar app="Client onboarding" />
+      <MobileAppBar app="Onboarding Form" />
       {/* The same bar the approvals screen carries, for the same reason.
 
           This was the one card in the set that opened straight onto its
@@ -1191,31 +1286,75 @@ export function OnboardingMock() {
 
           Crumb AND title, because this board is a record you are deep in — one
           client's onboarding — which is the case AppHeader's crumb exists for.
-          The client named is the one the Access panel lists first, so the
-          header and the panels describe the same engagement.
+          The trail names where the form lives, not the record — the panel
+          directly under it opens on "Magna Company", so a header carrying the
+          company too would be the same name twice in forty pixels. Chrome
+          says which form; the record says whose.
 
           Hidden below sm: MobileAppBar above is the bar at that width, and two
           headers stacked on a phone would make the chrome taller than the
           content it introduces. */}
       <div className="hidden sm:block">
-        <AppHeader crumb="Client onboarding" title="Marta Reyes" />
+        <AppHeader crumb="Forms" title="Onboarding Form" />
       </div>
       <div className="grid min-h-0 flex-1 grid-cols-1 content-start gap-2.5 p-2.5 sm:grid-cols-[1.55fr_1fr]">
-        {/* Where this client is up to. */}
-        {/* "Onboarding progress", and nothing else above the meter.
-      
-          It was an eyebrow reading "Client onboarding" with "Engagement letter"
-          set large underneath — the app's name, then the current step, stacked
-          as a title and a subtitle. Two problems. The eyebrow repeated the
-          phone bar directly above it and the board it sits on, so it named the
-          app for the third time in one picture; and the big step name was the
-          largest type on the board, which made the panel look like a document
-          header when what it holds is a progress meter.
+        {/* ONE PANEL ACROSS THE TOP, the record's header with its meter under
+          it — the shape the response view itself has.
 
-          The step name is not lost: it is in the labels under the meter, where
-          the filled run already points at it. Saying it twice, once in 13px,
-          was the heading competing with the thing it was heading. */}
-        <Panel title="Onboarding progress" tinted>
+          It was two: a meter panel and a "Steps completed — 2 of 4" panel
+          beside it. The count was the weaker of the pair by a long way. It
+          restated what the meter directly to its left already showed, and it
+          cost a full grid column to do it, which is why the meter — the thing
+          the board is built around — was drawn at two thirds of the width it
+          wanted. Merged, the meter gets the whole board and the count goes
+          under it as a line of text, which is where the screen puts it.
+
+          What the second column bought instead is the HEADER: the company, the
+          form's state, and the one action the record carries. That is what
+          sits above the meter in the product, and it is what makes the picture
+          a record of something rather than a progress bar on its own.
+
+          The panel markup is written out rather than going through Panel,
+          because Panel's contract is an eyebrow title and then content — and
+          this one's heading is a company with an avatar, a chip and a button
+          in the same row. Same classes as Panel otherwise, down to the radius
+          and the p-3, so it sits in the board as one of its panels. */}
+        <div
+          className={`min-w-0 overflow-hidden rounded-lg border p-3 sm:col-span-2 ${PANEL_TINT}`}
+        >
+          <div className="flex items-center gap-2.5">
+            {/* The company's tile. Ink at 10%, the value every other avatar in
+              these mocks uses, and the initials nudged down half a cap height
+              for the same reason the Gantt's are — flex centring lines up the
+              text's box, which puts two capitals in its top half. */}
+            <span className="flex size-[22px] shrink-0 items-center justify-center rounded-[5px] bg-[var(--mock-ink)]/10 text-[9px] leading-none text-[color:var(--mock-ink-soft)]">
+              <span className="block translate-y-[0.1em]">RC</span>
+            </span>
+            {/* THE CLIENT, and nothing under it.
+
+              The company's name was here first, with the form's state and name
+              beneath it as a subtitle. The subtitle went because both lines
+              were already said elsewhere on the panel — the chip's state is
+              what the meter three lines down is a picture of, and the form is
+              named in the trail directly above. The company went because the
+              record is one person's response: the name that belongs at the top
+              of it is whoever filled it in, which is the name the details
+              panel answers with. */}
+            <span className="min-w-0 truncate text-[11px] leading-none text-[color:var(--mock-ink)]">
+              Renee Castillo
+            </span>
+            {/* The action, held to the right the way the product holds it.
+              Outlined rather than filled: it is the record's secondary move —
+              take a copy away — and the board has no primary action on it to
+              outrank. Hidden below sm, where the panel is ~300px and a button
+              beside a company name would push the name to a stub. */}
+            <span
+              className={`ml-auto hidden shrink-0 items-center rounded-[5px] border px-2 py-[5px] text-[9.5px] leading-none text-[color:var(--mock-ink)] sm:flex ${LINE} bg-[var(--mock-window)]`}
+            >
+              Download PDF
+            </span>
+          </div>
+
           {/* One segment per step, on the SAME GRID as the step names.
 
             This was four segments once before and was replaced by a single
@@ -1328,126 +1467,72 @@ export function OnboardingMock() {
               ))}
             </div>
           </div>
-        </Panel>
 
-        {/* Just the count now.
-
-          The "Saved" pill under it was the tallest thing in the top row, and
-          because grid items stretch, it was setting the height of the step
-          panel beside it — which is how that panel ended up with a band of
-          empty ground under its meter. The pill was the least of the four
-          things on the board and it was dictating the geometry of the most
-          important one.
-
-          Nothing is lost by dropping it: the meter next door shows two steps
-          done, which is the same claim — progress is being kept — made by the
-          thing the panel is actually about. */}
-        <Panel title="Progress">
-          <p className="mt-2 text-[20px] leading-none text-[color:var(--mock-ink)]">
-            2 of 4
-          </p>
-        </Panel>
+        </div>
 
         {/* Cropped by the card edge. */}
-        <Panel title="Secure data room">
-          {/* The files sit in a RULED BOX — a table, not a loose list.
+        {/* The ANSWERS, which is what the response view is for.
 
-            Three rows divided by hairlines and nothing else were three lines of
-            text that happened to have rules between them; the rules read as
-            separators in the panel rather than as the structure of a thing with
-            rows. An outline closes it: the first row has a top, the last has a
-            bottom, and the dividers become interior rules of one object instead
-            of three floating ones.
+          It was a secure data room — four filenames with Uploaded pills. A
+          good-looking panel for a screen this app does not show here: the
+          onboarding response is a form, and what a form holds is what the
+          client typed. Showing files instead meant the one panel with room for
+          real content was the one carrying invented content.
 
-            It also gives the status pills a right edge to sit against, which is
-            what makes a column look like a column.
-
-            The padding goes on the ROWS, not this box, via [&>span]:px-2.5 —
-            Row's divider is a bottom border on the row itself, so padding the
-            container would have inset the rules along with the text and left
-            the box's own edges orphaned from them. On the rows, the text insets
-            and the rules still run the full width, wall to wall, the way a
-            table's do.
-
-            No leading file icon, from an earlier pass and still right: three
-            identical glyphs down the left of three rows separate nothing, since
-            every row is a file and the panel says so. The names carry their own
-            extensions, and without the icons the names start at the column's
-            edge, which is where the eye starts. */}
+          Same ruled box as before, down to the 6px radius and the
+          [&>span]:px-2.5 that pads the rows rather than the container, so the
+          rules run wall to wall. Only what is in the rows has changed. */}
+        <Panel title="Your details">
           <div
             className={`mt-2 overflow-hidden rounded-[6px] border [&>span]:px-2.5 ${LINE}`}
           >
-            <Row
-              label="Deed of trust.pdf"
-              trailing={<span className={POSITIVE_QUIET}>Uploaded</span>}
-            />
-            <Row
-              label="Proof of identity.pdf"
-              trailing={<span className={POSITIVE_QUIET}>Uploaded</span>}
-            />
-            <Row
-              label="Source of funds.pdf"
-              trailing={<span className={POSITIVE_QUIET}>Uploaded</span>}
-            />
-            {/* The outstanding one stays LAST. The list is read top to bottom and
-              the thing still wanted is the thing to end on; sorted any other
-              way the panel closes on something already done. */}
-            <Row
-              label="Signed letter"
-              trailing={<span className={WARNING_QUIET}>Awaiting</span>}
-            />
+            {/* The QUESTION on the left in ink, the ANSWER on the right in the
+              soft tone. The screen stacks them the other way up — label above,
+              answer below, the answer the louder of the two — which at this
+              size would be eight lines of type in a four-row box. One line per
+              field keeps the box the height the board was tuned to, and
+              label-then-value across the row is the shape the panel beside it
+              already uses, so the board reads as one screen rather than two. */}
+            {DETAILS.map(({ label, value }) => (
+              <Row
+                key={label}
+                label={label}
+                trailing={
+                  <span className="shrink-0 truncate text-[9.5px] leading-none text-[color:var(--mock-ink-soft)]">
+                    {value}
+                  </span>
+                }
+              />
+            ))}
           </div>
         </Panel>
 
-        {/* Who can see this onboarding.
-      
-          It used to be the rule line and two grey bars. The bars were standing
-          in for content nobody had decided on, which is the one thing a mock
-          on a marketing page cannot afford: every other panel here shows a
-          real screen, so a panel of placeholders reads as the product being
-          unfinished rather than as the picture being cropped.
-      
-          Naming the people is the whole panel. "Client only" was the rule
-          stated in words, and a claim about a set of people is answered by
-          showing the set — so the panel lists them, which is the same move the
-          Secure data room panel makes (a heading, then the actual files)
-          rather than a sentence about what it contains.
+        {/* When it was started, last touched and whether it was reopened — the
+          stamps the response view sets under its meter.
 
-          Built from the parts already in this file: Row for the lines, and the
-          initials-on-a-tile avatar the portal bar and the build cards use. A
-          new row shape here would have been a third way of drawing a person on
-          one screen. */}
-        <Panel title="Access" className="hidden sm:block">
-          {/* No "Client only" line above the names any more. With the list in
-            place it was the same fact twice — the rule, and then the set it
-            resolves to — and the rule said it less precisely. The names are
-            the stronger form of the claim, so the restatement goes. */}
-          {/* Ruled like the data room's files, and for the same reason: three
-            rows divided by hairlines and nothing else are three lines of text
-            that happen to have rules between them. The outline closes it, so
-            the dividers become interior rules of one object and the roles on
-            the right get an edge to sit against.
+          This was an Access panel listing three people and their roles. The
+          names were well drawn and were not on this screen; what the product
+          puts here is the form's own history, which is also the better
+          companion to the meter above it: one panel says how far along, this
+          one says since when.
 
-            Identical classes to that panel's box, down to the 6px radius and
-            the [&>span]:px-2.5 that pads the rows rather than the container —
-            two lists on one board drawn two ways would be the inconsistency
-            this file keeps arguing against. */}
+          The initials tiles go with them. An avatar on a row of dates would be
+          decoration, and the row is a field and its value — the same shape the
+          details panel uses, which is the point. */}
+        <Panel title="Activity" className="hidden sm:block">
+          {/* Identical classes to the details box above it. Two lists on one
+            board drawn two ways would be the inconsistency this file keeps
+            arguing against. */}
           <div
             className={`mt-2 overflow-hidden rounded-[6px] border [&>span]:px-2.5 ${LINE}`}
           >
-            {/* The role is the reason the person is in the list, so it sits where
-              the file panel puts its status: at the end of the row, muted, as
-              the answer to the name rather than as a second heading. Plain
-              type and not a chip — these are not states, and a pill here would
-              be the third chip shape on the board. */}
-            {ACCESS.map(({ initials, name, role }) => (
+            {ACTIVITY.map(({ label, value }) => (
               <Row
-                key={name}
-                lead={<Initials>{initials}</Initials>}
-                label={name}
+                key={label}
+                label={label}
                 trailing={
                   <span className="shrink-0 text-[9.5px] leading-none text-[color:var(--mock-ink-soft)]">
-                    {role}
+                    {value}
                   </span>
                 }
               />

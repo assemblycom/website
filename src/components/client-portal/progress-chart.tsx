@@ -60,11 +60,11 @@ const BAR_TONE = [
   "bg-[var(--mock-gantt-4)]",
 ];
 
-// The week scale. Rules at the column edges, dates in the middle of the columns
-// they name — which is where a Gantt puts them, and why the dates are offset
-// from the rules by half a column rather than sitting on them.
+// The week scale: rules at the column edges. The dated strip above them is
+// gone — at this size the labels were the one piece of the snippet that had to
+// be read rather than recognised, and the card is a likeness, not a schedule
+// anybody reads a date off.
 const RULES = [0, 20, 40, 60, 80, 100];
-const WEEKS = ["Jul 7", "Jul 14", "Jul 21", "Jul 28", "Aug 4"];
 
 export function ProgressMock() {
   return (
@@ -82,30 +82,17 @@ export function ProgressMock() {
           frame by enough that the longest bar is plainly mid-stride when the
           card ends. */}
       <div className="flex h-full w-full min-w-[560px] flex-col">
-        {/* The scale. Dates at 10/30/50/70/90 — the centre of each column the
-          rules cut, so every label names the span under it rather than the line
-          beside it. A relative strip rather than a flex row, because the labels
-          have to agree with the rules below them to the pixel, and flex would
-          space them by their own widths instead. */}
-        <div className="relative h-[14px] shrink-0">
-          {WEEKS.map((w, i) => (
-            <span
-              key={w}
-              className="absolute top-0 -translate-x-1/2 whitespace-nowrap text-[9.5px] leading-none text-[color:var(--mock-ink-soft)]"
-              style={{ left: `${10 + i * 20}%` }}
-            >
-              {w}
-            </span>
-          ))}
-        </div>
-
-        {/* The group. One word, and the only thing on the card set in ink rather
-          than the soft tone — a Gantt is read as bands of work under a heading,
-          and without it the bars are a drawing instead of a list of something. */}
-        <div
-          className={`mt-1.5 shrink-0 border-t pt-2 text-[10.5px] leading-none text-[color:var(--mock-ink)] ${"border-[var(--mock-line)]"}`}
-        >
-          Active
+        {/* The group, as a TAG rather than a heading with a rule under it.
+          Same type as before — sentence case, the set's scale, no mono and no
+          caps — on a slightly darker ground with rounded corners, so it reads
+          as the label on a band of work the way the board labels one. Inline,
+          so the chip is the width of the word; the full-width heading plus
+          hairline it replaces was a second horizontal line competing with the
+          timeline's own. */}
+        <div className="shrink-0">
+          <span className="inline-block rounded-md bg-[var(--mock-ink)]/[0.08] px-2 py-1 text-[10.5px] leading-none text-[color:var(--mock-ink)]">
+            Active
+          </span>
         </div>
 
         {/* The bars, and the rules behind them. flex-1 with min-h-0 so this takes
@@ -140,8 +127,24 @@ export function ProgressMock() {
                   itself rather than in a column beside it, which is what keeps
                   the timeline the full width of the card. White disc, because it
                   has to read on both tones. */}
+                {/* OPTICALLY centred, not box-centred.
+                  
+                    Flex centring lines up the text's BOX, and with leading-none
+                    that box puts the baseline on the disc's centre line — so
+                    two capitals, which have no descender to balance them, sit
+                    entirely in the top half. Measured here: the ink sat 2.8px
+                    high in a 21px disc, which at this size is the difference
+                    between an avatar and a mistake.
+                  
+                    Half the cap height back down, in em so it holds if the
+                    type does. CSS cannot yet trim a line box to its caps
+                    anywhere it matters (text-box-trim is Chrome-only), so the
+                    nudge is the fix. */}
                 <span className="flex size-[21px] shrink-0 items-center justify-center rounded-full bg-white text-[8px] leading-none text-[color:#101114]">
-                  {initials}
+                  {/* The nudge is on the TEXT, not on the disc. On the disc it
+                    moved the white circle down the bar along with its letters,
+                    which is the same misalignment one level up. */}
+                  <span className="block translate-y-[0.1em]">{initials}</span>
                 </span>
                 <span className="truncate text-[10.5px] leading-none text-white">
                   {name}

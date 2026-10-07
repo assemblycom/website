@@ -96,7 +96,10 @@ export function PortalTailor({
               {/* The one card that is artwork rather than a window: progress is a
               shape, not a screen, so the diagram is drawn straight onto the
               card with no frame around it. */}
-              <div className={`flex flex-col ${CARD} ${PAD}`}>
+              {/* overflow-hidden, now that the mock runs to the card's right
+              and bottom edges: without it the bars would carry on past the
+              rounded corners instead of being cut by them. */}
+              <div className={`flex flex-col overflow-hidden ${CARD} ${PAD}`}>
                 <p className={TITLE}>A client progress dashboard</p>
                 <p className={BODY}>Milestones and outcomes per engagement.</p>
                 {/* A DEFINITE height, not flex-1.
@@ -113,7 +116,31 @@ export function PortalTailor({
                     its foot because that foot is now a real edge rather than
                     wherever the content happened to stop. It also puts this row
                     back in step with the one under it. */}
-                <div className="mt-6 h-[265px] overflow-hidden">
+                {/* BLED TO TWO OF THE CARD'S OWN EDGES, right and bottom.
+                
+                    The crop is the point of this mock — the bars carry on past
+                    the frame and the stack carries on below it — and inset by
+                    the card's padding it cropped against nothing, leaving a
+                    band of empty card to the right of a timeline that claimed
+                    to continue and a gap under rules that claimed to run down.
+                    Negative margins the width of PAD put both cuts on the
+                    card's edge, where a crop can read as one.
+                
+                    THE CARD IS NOT TALLER FOR IT. The box grows by the bottom
+                    padding (265 → 289, and → 305 from md) and gives exactly
+                    that back as -mb, so what it contributes to the column is
+                    the same 265px it always did. */}
+                {/* NO FADE ON THE RIGHT EDGE. The shared ramp was tried
+                here at both a short and a long run and neither worked: the
+                bars are four saturated blocks running horizontally INTO the
+                edge, so any mask takes the colour out of the one thing the
+                picture is made of, and the result reads as the artwork going
+                pale rather than as the frame cropping it. A straight cut says
+                "this continues" without touching the art — which is the
+                argument the build card's bottom edge already settled. */}
+                <div
+                  className="-mb-6 -mr-6 mt-6 h-[289px] overflow-hidden md:-mb-10 md:-mr-10 md:h-[305px]"
+                >
                   <ProgressMock />
                 </div>
               </div>
@@ -144,8 +171,13 @@ export function PortalTailor({
                 className={`flex flex-col overflow-hidden lg:col-span-2 ${CARD} ${PAD} pb-0 md:pb-0`}
               >
                 <p className={TITLE}>A per-client onboarding wizard</p>
+                {/* The data room went with the mock's old panels — the board
+                now shows the form's own answers and its activity stamps — so
+                the line follows it. What the picture shows is a part-finished
+                intake whose answers are already on the record. */}
                 <p className={`${BODY} max-w-md`}>
-                  Saves progress across steps, next to a secure data room.
+                  Saves progress across steps and keeps every answer on the
+                  record.
                 </p>
                 {/* A HEIGHT CAP from md, so the board crops at the bottom as
                 well as the right.
