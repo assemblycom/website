@@ -117,7 +117,10 @@ const PANEL = `bg-[var(--mock-well-soft)] text-[color:var(--mock-ink)] ${LINE}`;
 // light, and a ramp on a white card has nothing to fall into.
 //
 // DOUBLE OUTLINE, as two spread shadows rather than a second element: 3px of
-// the board's own ground, then 1px of the hairline. The first ring is what
+// the board's own ground, then 1px of the hairline. DARK ONLY — on a light
+// board --mock-window is #fcfcfd, so the ring laid a second hairline a few
+// pixels outside the panel's own and read as the border drawn twice by
+// mistake. In dark the gap is a real tone and the pair works. The first ring is what
 // makes it double — without a gap in the board's colour the two lines would
 // meet and read as one thick border, which is heavier than either and says
 // nothing. With it, the card looks mounted on the board rather than cut out of
@@ -128,7 +131,7 @@ const PANEL = `bg-[var(--mock-well-soft)] text-[color:var(--mock-ink)] ${LINE}`;
 // colour differs, because those sit on --surface and this sits on the board's
 // --mock-window. 4px total clears the board's 10px gutter and 10px padding, so
 // the ring never meets a neighbour or the frame.
-const PANEL_TINT = `mock-edge [--mock-edge-fill:var(--mock-well-2)] [--mock-edge-w:120%] [--mock-edge-h:150%] bg-[var(--mock-well-2)] text-[color:var(--mock-ink)] shadow-[0_0_0_3px_var(--mock-window),0_0_0_4px_var(--mock-line)] ${LINE}`;
+const PANEL_TINT = `mock-edge [--mock-edge-fill:var(--mock-well-2)] [--mock-edge-w:120%] [--mock-edge-h:150%] bg-[var(--mock-well-2)] text-[color:var(--mock-ink)] [[data-theme=dark]_&]:shadow-[0_0_0_3px_var(--mock-window),0_0_0_4px_var(--mock-line)] ${LINE}`;
 
 function NavRow({
   icon,
@@ -480,7 +483,11 @@ export function DocumentsStatsMock() {
   return (
     <div
       aria-hidden
-      className={`pointer-events-none flex h-full select-none flex-col gap-3 rounded-xl border bg-[var(--mock-window)] text-[color:var(--mock-ink)] p-4 ${LINE}`}
+      // No h-full. The card stretched to whatever the grid row gave it, which is
+      // set by the taller cards beside it — so shortening the well just moved
+      // the empty space below it and left a white box trailing under the drop
+      // target. Sized to its contents, the card ends where the well ends.
+      className={`pointer-events-none flex select-none flex-col gap-3 rounded-xl border bg-[var(--mock-window)] text-[color:var(--mock-ink)] p-4 ${LINE}`}
     >
       <p className="text-[11.5px] leading-none text-[color:var(--mock-ink-soft)]">
         Year-end documents
@@ -1129,7 +1136,13 @@ export function OnboardingMock() {
       // each other, so the whole screen sank into the page and only the panels
       // read as anything. On white it is unmistakably an app screen; the panels
       // keep their hairline borders, which is separation enough.
-      className="pointer-events-none flex h-full select-none flex-col bg-[var(--mock-window)] text-[color:var(--mock-ink)]"
+      // WIDER THAN ITS FRAME from sm, so the right-hand column runs off the
+      // card's edge the way the project tracker's lane does. The frame around
+      // this already bleeds right and clips, so the only effect is that the
+      // panels are drawn at the size they were designed for instead of being
+      // squeezed into the ~583px the card happens to have — the same trade the
+      // board already makes by cropping its bottom row.
+      className="pointer-events-none flex h-full select-none flex-col bg-[var(--mock-window)] text-[color:var(--mock-ink)] sm:w-[660px] sm:shrink-0"
     >
       <MobileAppBar app="Client onboarding" />
       {/* The same bar the approvals screen carries, for the same reason.
@@ -1373,7 +1386,19 @@ export function OnboardingMock() {
             place it was the same fact twice — the rule, and then the set it
             resolves to — and the rule said it less precisely. The names are
             the stronger form of the claim, so the restatement goes. */}
-          <div className="mt-2">
+          {/* Ruled like the data room's files, and for the same reason: three
+            rows divided by hairlines and nothing else are three lines of text
+            that happen to have rules between them. The outline closes it, so
+            the dividers become interior rules of one object and the roles on
+            the right get an edge to sit against.
+
+            Identical classes to that panel's box, down to the 6px radius and
+            the [&>span]:px-2.5 that pads the rows rather than the container —
+            two lists on one board drawn two ways would be the inconsistency
+            this file keeps arguing against. */}
+          <div
+            className={`mt-2 overflow-hidden rounded-[6px] border [&>span]:px-2.5 ${LINE}`}
+          >
             {/* The role is the reason the person is in the list, so it sits where
               the file panel puts its status: at the end of the row, muted, as
               the answer to the name rather than as a second heading. Plain

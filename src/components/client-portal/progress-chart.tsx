@@ -31,10 +31,21 @@
 // which is what the footer now says.
 const DONE = [0, 1, 2, 3, 4, 6, 6, 6, 7, 8, 9, 10, 10, 11];
 
-// The site's stat chip, lifted whole from the customers strip and the
-// case-study pages rather than restyled for this card.
+// The site's stat chip, with two deliberate departures from the version on the
+// customers strip and the case-study pages.
+//
+// PP MORI, not the mono face. The mono is right where a chip sits in a wall of
+// body copy and needs to read as data; here the chip is the only type under a
+// chart, with nothing to distinguish itself from, and the mono just made it
+// look like a different component had wandered in.
+//
+// AND A BORDER. bg-muted is #f6f7f9 against a card that is near-white, so the
+// chip was a word floating on a shape nobody could see — it needs an edge to be
+// a chip at all. The hairline is the same --border every other box on the page
+// draws itself with, so the shape arrives from the palette rather than being
+// invented to solve this.
 const STAT =
-  "inline-flex items-center gap-1.5 rounded-md bg-muted px-3 py-1.5 font-mono text-xs uppercase tracking-wide [[data-theme=dark]_&]:bg-white/[0.08]";
+  "inline-flex items-center gap-1.5 rounded-md border border-border bg-muted px-2.5 py-1.5 text-[11px] uppercase tracking-wide [[data-theme=dark]_&]:bg-white/[0.08]";
 
 // Where the plan said it would be. Ends at the full scope, which is what makes
 // the gap at the right-hand edge mean something.

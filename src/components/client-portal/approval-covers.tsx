@@ -131,9 +131,7 @@ export function ApprovalCovers() {
             // carrying meaning at all and goes back to being the edge of a
             // plate.
             className={`group/plate pointer-events-auto flex min-h-0 cursor-pointer flex-col overflow-hidden rounded-[4px] border text-left transition-colors ${LINE} ${
-              on
-                ? "bg-[var(--mock-well-2)]"
-                : "hover:bg-[var(--mock-well)]"
+              on ? "bg-[var(--mock-well-2)]" : "hover:bg-[var(--mock-well)]"
             }`}
           >
             {/* The art is 3:4 and the plate is nearly square, so object-cover

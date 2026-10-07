@@ -95,11 +95,7 @@ export function PortalProof({
             rule only appears from md, where the three actually sit side by
             side. Stacked below that, each card keeps its own top rule so the
             set still reads as divided. */}
-        <div
-          className={
-            single ? "mt-12" : "mt-12 grid md:grid-cols-3"
-          }
-        >
+        <div className={single ? "mt-12" : "mt-12 grid md:grid-cols-3"}>
           {stories.map((story, i) => (
             <Link
               key={story.href}

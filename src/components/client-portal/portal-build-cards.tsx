@@ -233,7 +233,11 @@ export function DescribeCard() {
           //
           // Dark only, which is where the class lives — in light the plain
           // --mock-line hairline already reads against the card.
-          className={`mock-edge [--mock-edge-h:150%] [--mock-edge-w:120%] flex flex-col overflow-hidden rounded-xl border bg-[var(--mock-window)] p-4 text-[color:var(--mock-ink)] shadow-[0_0_0_3px_var(--surface),0_0_0_4px_var(--mock-line)] ${LINE}`}
+          // The double ring is DARK ONLY. On a dark page it separates the card
+          // from the ground behind it; on a light one --surface is a hair off
+          // white and the pair read as a second, fatter border outside the real
+          // one — two outlines where the card has one edge.
+          className={`mock-edge [--mock-edge-h:150%] [--mock-edge-w:120%] flex flex-col overflow-hidden rounded-xl border bg-[var(--mock-window)] p-4 text-[color:var(--mock-ink)] [[data-theme=dark]_&]:shadow-[0_0_0_3px_var(--surface),0_0_0_4px_var(--mock-line)] ${LINE}`}
         >
           <p className={`text-[color:var(--mock-ink)] ${CARD_BODY}`}>
             Add a project tracker each client sees for their own project.
