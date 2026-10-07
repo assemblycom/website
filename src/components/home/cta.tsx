@@ -1,116 +1,42 @@
-"use client";
+import { DEMO_URL, SIGNUP_URL } from "@/lib/constants";
 
-import { useEffect, useRef, useState } from "react";
-import { V66Composer } from "./hero-v66";
-import { PROMPT_IDEAS } from "./prompt-ideas";
-import { useTheme } from "@/components/theme/theme-provider";
-
+// The prompt composer that used to sit here lost to the plain two-button hero,
+// so the footer ends the page the same way that hero opens it. The buttons are
+// the hero's own pair (see hero-big.tsx), minus its experiment tracking.
 export function CTA() {
-  // Dark sheet flowing into the black footer below; the green wordmark panel is
-  // revealed beneath (square top, footer rounds the bottom).
-  const inputRef = useRef<HTMLTextAreaElement>(null);
-  // Same prompt data + animated "Build …" placeholder as the hero composer,
-  // so the top and bottom boxes read identically.
-  const [prompt, setPrompt] = useState("");
-
-  // Closing the sign-up sheet steps back to this page with ?prompt=… on the URL
-  // (openGetStarted stamps it before opening), so the composer refills with what
-  // was typed instead of coming back empty. Same carry-back the hero composer
-  // does; without it only the top composer survived a dismiss.
-  useEffect(() => {
-    const carried = new URLSearchParams(window.location.search)
-      .get("prompt")
-      ?.trim();
-    if (!carried) return;
-    const id = setTimeout(() => setPrompt(carried), 0);
-    return () => clearTimeout(id);
-  }, []);
-  const { theme } = useTheme();
-  const dark = theme === "dark";
   // bg-background in both themes so the CTA sits on the same canvas as the
   // rest of the landing page instead of introducing its own tint.
   return (
     <section className="bg-background px-6 py-14 md:py-20">
-      {/* Some bottom room so the Prompt Ideas menu (opens downward) has space
-          before the footer, without leaving a large empty gap. */}
       <div className="mx-auto max-w-3xl pb-16 pt-16 text-center md:pb-24 md:pt-24">
-        <h2
-          className="type-h2 text-balance leading-[1.12] text-neutral-900 [[data-theme=dark]_&]:text-white"
-        >
-          Build the firm
+        <h2 className="type-h2 text-balance leading-[1.12] text-neutral-900 [[data-theme=dark]_&]:text-white">
+          Build the business
           <br />
           only you can build
         </h2>
-        <div className="mx-auto mt-8 max-w-xl text-left">
-          {/* Same animated gradient border as the hero composer up top. Every
-              prop below must stay in step with hero-v76's composer — the two
-              boxes are the same control and any drift shows immediately. */}
-          {/* The submit pill's two fills, matching the hero's composer — which
-              means the nav's primary, near-black on light and white on dark.
-              These two boxes sit on the same page, so a fill changed in one and
-              not the other is visible by scrolling. */}
-          <div className="v63-gradient-border v63-ring-solid relative rounded-[18px] [--composer-submit:var(--color-neutral-900)] md:rounded-[22px] [[data-theme=dark]_&]:[--composer-submit:#FFFFFF]">
-            <V66Composer
-              textareaRef={inputRef}
-              typewriter
-              // Always accented — the arrow routes to onboarding even with an
-              // empty box, so it never reads as disabled.
-              submitDisabled={false}
-              glow={false}
-              tone={theme}
-              // Both skins in CSS, so the field isn't a white slab on the first
-              // paint for a dark-mode visitor (see the composer's themeAuto).
-              themeAuto
-              compact
-              minimalControls
-              splitFooter
-              promptPicker
-              promptPickerLabel="Ideas"
-              promptPickerSide="left"
-              promptItems={PROMPT_IDEAS}
-              hideHowTo
-              plusAsAttach
-              submitLabel="Get started"
+        <p className="type-lead mx-auto mt-5 max-w-xl text-pretty text-muted-foreground">
+          Stop stitching together tools that were never meant to work together.
+          Run everything and build anything in one place.
+        </p>
 
-              // Signed in, "Get started" is the wrong sentence to hand someone who
-
-              // already has an account, and it sat next to a nav saying otherwise.
-
-              authedSubmitLabel="Open Assembly"
-              // Light mode uses a solid black submit button; dark keeps the
-              // accent fill.
-              submitDark={!dark}
-              value={prompt}
-              onValueChange={setPrompt}
-              accent={dark ? "#7DA4FF" : "#D9ED92"}
-              surfaceRadiusClass="rounded-[18px] md:rounded-[22px]"
-              // Light needs an explicit faint fill here, unlike the hero: the
-              // hero's box sits on the ground gradient (~#f9fafb behind the
-              // composer) so its white field lifts off the surround for free,
-              // while this section is pure bg-background — leaving a white field
-              // on white, with no inner/outer separation at all. #f7f8fa is the
-              // gradient's own mid stop, so the two composers match exactly.
-              surfaceClassName="bg-[#f7f8fa] shadow-[0_1px_2px_rgba(16,24,40,0.04)] [[data-theme=dark]_&]:bg-transparent [[data-theme=dark]_&]:shadow-[0_24px_60px_-28px_rgba(0,0,0,0.8)]"
-            />
-          </div>
-
-          {/* Answers the two things people weigh before typing anything, right
-              where they'd hesitate. As two chips in the mono face rather than a
-              sentence: they're a pair of facts about the plan, which is what the
-              site sets in mono caps everywhere else, and separate pills say that
-              better than a middot between two clauses did. Muted, so they
-              reassure without competing with the submit button above them. */}
-          <ul className="mt-3 flex flex-wrap items-center justify-center gap-1.5">
-            {["Free forever", "No credit card required"].map((label) => (
-              <li
-                key={label}
-                className="rounded-md bg-muted px-2 py-1 font-mono text-[11px] uppercase leading-none tracking-wide text-muted-foreground [[data-theme=dark]_&]:bg-white/[0.06]"
-              >
-                {label}
-              </li>
-            ))}
-          </ul>
+        <div className="mx-auto mt-10 flex w-full max-w-sm flex-col gap-3 sm:w-auto sm:max-w-none sm:flex-row sm:items-center sm:justify-center">
+          <a
+            href={SIGNUP_URL}
+            className="inline-flex w-full shrink-0 items-center justify-center whitespace-nowrap rounded-lg bg-foreground px-4 py-3 text-center text-sm text-background transition-opacity hover:opacity-90 sm:w-auto sm:py-2 md:px-5 md:py-2.5 [[data-theme=dark]_&]:bg-white [[data-theme=dark]_&]:text-neutral-900"
+          >
+            Get started
+          </a>
+          <a
+            href={DEMO_URL}
+            className="inline-flex w-full shrink-0 items-center justify-center whitespace-nowrap rounded-lg border border-foreground/20 bg-transparent px-4 py-3 text-center text-sm text-foreground transition-colors hover:bg-foreground/5 sm:w-auto sm:py-2 md:px-5 md:py-2.5"
+          >
+            Book demo
+          </a>
         </div>
+
+        <p className="mt-5 text-sm text-muted-foreground">
+          Free forever plan. No credit card required.
+        </p>
       </div>
     </section>
   );

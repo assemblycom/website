@@ -56,15 +56,15 @@ export async function HomeContent({ variant }: { variant?: HeroVariantProps }) {
       <div className="relative">
         <GridRails />
 
-        {/* The "how it works" walkthrough comes first, then the three platform
-            points (left-rail menu + visual). */}
+        {/* The platform overview comes first, then the app builder deep dive:
+            visitors see what's included before what they can build. */}
         <div className="section-follow">
           <Reveal variant="fade">
-            <HowItWorks />
+            <ProductionGap />
           </Reveal>
           <GridDivider />
           <Reveal variant="fade">
-            <ProductionGap />
+            <HowItWorks />
           </Reveal>
         </div>
 

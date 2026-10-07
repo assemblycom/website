@@ -67,19 +67,19 @@ const FAQS: FAQEntry[] = [
       "Two kinds of apps: client-facing apps and internal tools. Think onboarding wizards, document collection, project trackers, approval workflows, client dashboards. Apps can use AI too — like an assistant that answers client questions from your firm's own docs.\n\nClient-facing apps are where Assembly is strongest — every app has two sides, so your team works in your dashboard while each client gets their own view inside your branded client experience.",
   },
   {
+    question: "Are there templates I can start from?",
+    answer:
+      "Yes — 30+ app templates covering common workflows and specific industries, from accounting document collection to agency approval flows. Start from one and it's yours: reshape it by chat until it fits exactly how your firm works.\n\nTemplates are a great fit if you'd rather start from something proven than describe an app from scratch.",
+  },
+  {
     question: "How is Assembly different?",
     answer:
-      "Other AI builders spin up slick prototypes that are difficult to make production-ready — and often never make it in front of a client. Assembly closes that gap.\n\nBecause Assembly has a CRM and client experience foundation built in, the apps you describe go live where your team and clients already are — hosting, authentication, permissions, payments, notifications, and branding all handled securely for you. You build the part that's distinctly yours; Assembly already runs the rest.",
+      "Most firms run on a mix of a practice management tool, a client portal, and a handful of point solutions. Assembly replaces that with one platform: a CRM for your team, a branded experience for your clients, 30+ ready-made apps, and an AI app builder for anything else. Because it's all one system, every app you add or build shows up where your team and clients already work, with hosting, sign-in, permissions, and payments handled for you.",
   },
   {
     question: "Do I need to know how to code?",
     answer:
       "No. Describe what you want in plain English. The app builder asks a few product questions, shows you a plan you approve or edit, then builds. Changes happen the same way — by conversation.",
-  },
-  {
-    question: "Are there templates I can start from?",
-    answer:
-      "Yes — 30+ app templates covering common workflows and specific industries, from accounting document collection to agency approval flows. Start from one and it's yours: reshape it by chat until it fits exactly how your firm works.\n\nTemplates are a great fit if you'd rather start from something proven than describe an app from scratch.",
   },
   {
     question: "Can my apps connect to the tools I already use?",

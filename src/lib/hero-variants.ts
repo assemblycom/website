@@ -1,5 +1,9 @@
 /**
- * The homepage hero test: three messages crossed with two layouts, six arms.
+ * The homepage hero test: three messages on the simple big-type layout.
+ *
+ * It started as three messages crossed with two layouts. The composer layout
+ * (`control`) lost to big type in the interim read, so it was dropped and the
+ * arm names kept, which lets the copy comparison keep collecting data.
  *
  * Keys are semantic rather than lettered on purpose. The prototype's switcher
  * letters its layouts by list position while the URL keys them by their own
@@ -15,8 +19,8 @@
 export const COPY_KEYS = ["firm", "builder", "clients"] as const;
 export type CopyKey = (typeof COPY_KEYS)[number];
 
-/** The layout. `control` is the hero shipped today. */
-export const LAYOUT_KEYS = ["control", "bigtype"] as const;
+/** The layout. Only big type remains; see the note above. */
+export const LAYOUT_KEYS = ["bigtype"] as const;
 export type LayoutKey = (typeof LAYOUT_KEYS)[number];
 
 /** `<copy>-<layout>`, e.g. "firm-bigtype". What the cookie and events carry. */
@@ -41,7 +45,7 @@ export const ARMS: Arm[] = COPY_KEYS.flatMap((copy) =>
  * beats what came before.
  */
 export const FALLBACK_COPY: CopyKey = "firm";
-export const FALLBACK_LAYOUT: LayoutKey = "control";
+export const FALLBACK_LAYOUT: LayoutKey = "bigtype";
 
 export interface CopyVariant {
   key: CopyKey;
@@ -149,6 +153,18 @@ export function parseArm(
 }
 
 /**
+ * The arm a held cookie should become. A visitor assigned to a retired
+ * `<copy>-control` arm keeps their message and moves to big type, rather than
+ * being redrawn onto a message they were never shown.
+ */
+export function migrateArm(value: string | undefined | null): Arm | null {
+  if (!value) return null;
+  const [copy, layout] = value.split("-");
+  if (layout === "control" && isCopyKey(copy)) return `${copy}-bigtype`;
+  return parseArm(value) ? (value as Arm) : null;
+}
+
+/**
  * The prototype's letters, kept as aliases so the exploration links already
  * shared around keep resolving: hero-prototype-delta.vercel.app/?copy=a&layout=c
  * and the same query on this site land on the same arm.
@@ -159,8 +175,11 @@ const COPY_ALIASES: Record<string, CopyKey> = {
   c: "clients",
 };
 const LAYOUT_ALIASES: Record<string, LayoutKey> = {
-  b: "control",
+  // The retired composer layout resolves to big type, so old review links
+  // still land on their message.
+  b: "bigtype",
   c: "bigtype",
+  control: "bigtype",
 };
 
 /**
@@ -179,7 +198,7 @@ export function armFromQuery(params: URLSearchParams): Arm | null {
   return `${copy}-${layout}`;
 }
 
-/** An even draw across the six arms. */
+/** An even draw across the arms. */
 export function randomArm(): Arm {
   return ARMS[Math.floor(Math.random() * ARMS.length)];
 }

@@ -2226,7 +2226,7 @@ const PILLARS: Pillar[] = [
   },
   {
     num: "02",
-    short: "Client experience",
+    short: "Client portal",
     tagline: "Your brand, out of the box.",
     overview:
       "A branded client experience on your own domain comes standard. It's where clients log in to work with your firm, and publishing an app puts it there instantly. No hosting to set up, no URLs to wrangle.",
@@ -2251,101 +2251,6 @@ const PILLARS: Pillar[] = [
   },
   {
     num: "03",
-    short: "Authentication",
-    tagline: "Secure login, day one.",
-    overview:
-      "Sign-in is platform infrastructure. Your team and your clients authenticate once, and every app, built or ready-made, inherits that session automatically.",
-    sections: [
-      {
-        heading: "Three ways in",
-        body: "Magic links, Google sign-in, and passwords. You decide which methods your workspace allows.",
-        visual: "sign-in-methods",
-      },
-      {
-        heading: "MFA, enforced",
-        body: "Require two-factor authentication with one workspace setting. It covers every app, because there's only one front door.",
-        visual: "mfa-setting",
-      },
-      {
-        heading: "Never generated",
-        body: "The app builder writes features, never auth. Login stays engineered and audited by humans, no matter how fast you ship.",
-        visual: "never-generated",
-      },
-    ],
-    href: `${DOCS_BASE}/core-concepts/magic-links`,
-  },
-  {
-    num: "04",
-    short: "Roles & permissions",
-    tagline: "Control who sees what.",
-    overview:
-      "A structural boundary separates your internal team from your clients, and every app respects it automatically. Permissions are enforced by the platform, not re-implemented per app.",
-    sections: [
-      {
-        heading: "Your team",
-        body: "Admins manage the whole workspace. Staff can be limited to only the clients they're assigned.",
-        visual: "team-roles",
-      },
-      {
-        heading: "Your clients",
-        body: "Clients don't have roles, they have scope. Each contact sees their own data plus anything shared with a company they belong to, even when they belong to several.",
-        visual: "client-scope",
-      },
-      {
-        heading: "Per-app visibility",
-        body: "Show an app to everyone, or only to specific contacts and companies. It's a setting, not something you build.",
-        visual: "app-visibility",
-      },
-    ],
-    href: `${DOCS_BASE}/core-concepts/client-access`,
-  },
-  {
-    num: "05",
-    short: "Notifications",
-    tagline: "Every event, one place.",
-    overview:
-      "Every app can notify the right person at the right moment, in-product and by email, through the same system the rest of the platform uses. Nothing to wire up.",
-    sections: [
-      {
-        heading: "Branded for clients",
-        body: "Client emails go out under your name, and from your own address once you add a custom email domain.",
-        visual: "branded-email",
-      },
-      {
-        heading: "One feed for your team",
-        body: "Your team sees activity from every app and every client in one notification center. No tab-hopping to find out what changed.",
-        visual: "team-feed",
-      },
-      {
-        heading: "Volume you control",
-        body: "Decide what deserves an email and what stays a quiet in-product update, so clients hear from you only when it matters.",
-        visual: "notification-volume",
-      },
-    ],
-    href: `${DOCS_BASE}/core-concepts/notifications`,
-  },
-  {
-    num: "06",
-    short: "Workflows",
-    tagline: "Automate without the glue.",
-    overview:
-      "When something happens in your workspace, an automation handles the follow-up: assign the task, send the notification, update the record. No scripts, no glue tools.",
-    sections: [
-      {
-        heading: "Triggers and actions",
-        body: "Pair an event with a response: a new client kicks off onboarding, a submitted intake creates tasks, an approval notifies the client.",
-        visual: "automation",
-      },
-      {
-        heading: "Your apps emit events",
-        body: "Apps you build can define their own events, like a request submitted or an approval granted, and those show up in the workflow builder like any platform trigger. Custom apps don't just live in the workspace; they drive it.",
-        visual: "app-events",
-      },
-    ],
-    href: `${DOCS_BASE}/advanced-features/automations`,
-  },
-  {
-    num: "07",
     short: "Ready-made apps",
     tagline: "Install in one click.",
     overview:
@@ -2370,7 +2275,7 @@ const PILLARS: Pillar[] = [
     href: `${DOCS_BASE}/built-in-apps/introduction`,
   },
   {
-    num: "08",
+    num: "04",
     short: "API & MCP",
     tagline: "Connect any AI agent.",
     overview:
@@ -2390,7 +2295,77 @@ const PILLARS: Pillar[] = [
     href: `${DOCS_BASE}/connect-ai-tools/mcp`,
   },
   {
-    num: "09",
+    num: "05",
+    short: "Workflow builder",
+    tagline: "Automate without the glue.",
+    overview:
+      "When something happens in your workspace, an automation handles the follow-up: assign the task, send the notification, update the record. No scripts, no glue tools.",
+    sections: [
+      {
+        heading: "Triggers and actions",
+        body: "Pair an event with a response: a new client kicks off onboarding, a submitted intake creates tasks, an approval notifies the client.",
+        visual: "automation",
+      },
+      {
+        heading: "Your apps emit events",
+        body: "Apps you build can define their own events, like a request submitted or an approval granted, and those show up in the workflow builder like any platform trigger. Custom apps don't just live in the workspace; they drive it.",
+        visual: "app-events",
+      },
+    ],
+    href: `${DOCS_BASE}/advanced-features/automations`,
+  },
+  {
+    num: "06",
+    short: "Roles and permissions",
+    tagline: "Control who sees what.",
+    overview:
+      "A structural boundary separates your internal team from your clients, and every app respects it automatically. Permissions are enforced by the platform, not re-implemented per app.",
+    sections: [
+      {
+        heading: "Your team",
+        body: "Admins manage the whole workspace. Staff can be limited to only the clients they're assigned.",
+        visual: "team-roles",
+      },
+      {
+        heading: "Your clients",
+        body: "Clients don't have roles, they have scope. Each contact sees their own data plus anything shared with a company they belong to, even when they belong to several.",
+        visual: "client-scope",
+      },
+      {
+        heading: "Per-app visibility",
+        body: "Show an app to everyone, or only to specific contacts and companies. It's a setting, not something you build.",
+        visual: "app-visibility",
+      },
+    ],
+    href: `${DOCS_BASE}/core-concepts/client-access`,
+  },
+  {
+    num: "07",
+    short: "Notification center",
+    tagline: "Every event, one place.",
+    overview:
+      "Every app can notify the right person at the right moment, in-product and by email, through the same system the rest of the platform uses. Nothing to wire up.",
+    sections: [
+      {
+        heading: "Branded for clients",
+        body: "Client emails go out under your name, and from your own address once you add a custom email domain.",
+        visual: "branded-email",
+      },
+      {
+        heading: "One feed for your team",
+        body: "Your team sees activity from every app and every client in one notification center. No tab-hopping to find out what changed.",
+        visual: "team-feed",
+      },
+      {
+        heading: "Volume you control",
+        body: "Decide what deserves an email and what stays a quiet in-product update, so clients hear from you only when it matters.",
+        visual: "notification-volume",
+      },
+    ],
+    href: `${DOCS_BASE}/core-concepts/notifications`,
+  },
+  {
+    num: "08",
     short: "Integrated payments",
     tagline: "Get paid, built in.",
     overview:
@@ -2413,6 +2388,31 @@ const PILLARS: Pillar[] = [
       },
     ],
     href: `${DOCS_BASE}/built-in-apps/payments`,
+  },
+  {
+    num: "09",
+    short: "Authentication",
+    tagline: "Secure login, day one.",
+    overview:
+      "Sign-in is platform infrastructure. Your team and your clients authenticate once, and every app, built or ready-made, inherits that session automatically.",
+    sections: [
+      {
+        heading: "Three ways in",
+        body: "Magic links, Google sign-in, and passwords. You decide which methods your workspace allows.",
+        visual: "sign-in-methods",
+      },
+      {
+        heading: "MFA, enforced",
+        body: "Require two-factor authentication with one workspace setting. It covers every app, because there's only one front door.",
+        visual: "mfa-setting",
+      },
+      {
+        heading: "Never generated",
+        body: "The app builder writes features, never auth. Login stays engineered and audited by humans, no matter how fast you ship.",
+        visual: "never-generated",
+      },
+    ],
+    href: `${DOCS_BASE}/core-concepts/magic-links`,
   },
   {
     num: "10",
@@ -2668,16 +2668,15 @@ export function WholeStack() {
         {/* Heading — left column (sticky on desktop), matching the FAQ layout. */}
         <div className="md:sticky md:top-28 md:self-start">
           <h2 className="type-h2 text-foreground">
-            A complete platform,
-            <br />
-            not just an app builder
+            Everything you need to run your business
           </h2>
           {/* The heading states the claim; this says why it matters before the
               reader has to open any of the ten rows to find out. */}
           <p className="type-lead mt-5 max-w-md text-pretty text-muted-foreground">
-            An app builder is only as good as the platform it plugs into.
-            Assembly comes with a CRM, a client experience, workflows, and more
-            built in, so you never rebuild the basics.
+            Practice management tools run your back office. Client portals
+            handle the front. App builders make prototypes. Assembly is the only
+            platform that does all three, with a CRM for your team, a branded
+            experience for your clients, and an app builder for everything else.
           </p>
         </div>
 
