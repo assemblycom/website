@@ -152,11 +152,18 @@ export function StackPicker({
       // Below lg the card does not bleed — the grid has padding on both sides
       // there — so it keeps a plain closed panel with its border all round.
       className="relative flex h-[300px] flex-col justify-center gap-1 rounded-2xl border border-border bg-[var(--surface)] p-4 md:h-[380px] md:p-5 lg:h-[440px] lg:rounded-r-none lg:border-r-0 lg:border-transparent lg:bg-transparent [[data-theme=dark]_&]:border-[#383838] [[data-theme=dark]_&]:lg:border-transparent"
-      // Leaving the panel puts the selection back on the first row rather than
-      // stranding it wherever the pointer left. A picture that keeps the last
-      // thing you touched reads as a control you have used; this one is a
-      // picture, and it should look the same every time you come back to it.
-      onMouseLeave={() => setActive(0)}
+      // THE SELECTION STAYS WHERE YOU LEFT IT.
+      //
+      // Leaving the panel used to snap it back to the first row, on the
+      // argument that this is a picture and should look the same every time
+      // you come back to it. Wrong once the rows became links: a row you
+      // pointed at and then moved away from — towards its button, or away to
+      // think about it — is the row you are still considering, and resetting
+      // it takes the answer off the screen mid-thought. It also made the panel
+      // twitch every time the pointer crossed it on the way somewhere else.
+      //
+      // The first row is still what it opens on, so the panel is never waiting
+      // to be touched; it just stops arguing with you afterwards.
     >
       {/* The ground. Only from lg, where the card bleeds; below that the
           element's own background is doing the job. The left corners stay
