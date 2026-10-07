@@ -1159,13 +1159,20 @@ export function OnboardingMock() {
       // each other, so the whole screen sank into the page and only the panels
       // read as anything. On white it is unmistakably an app screen; the panels
       // keep their hairline borders, which is separation enough.
-      // WIDER THAN ITS FRAME from sm, so the right-hand column runs off the
-      // card's edge the way the project tracker's lane does. The frame around
+      // A MINIMUM width from sm, not a fixed one, so the right-hand column
+      // runs off the card's edge the way the project tracker's lane does.
+      //
+      // It was w-[660px] and that was wrong in the other direction: on a frame
+      // wider than 660 the board stopped at 660 and left a band of empty card
+      // to its right, which is the opposite of cropping. w-full with a 660
+      // floor fills whatever the frame gives it and overflows when the frame
+      // is narrower than the panels need — crops when it should, fills when it
+      // can. The frame around
       // this already bleeds right and clips, so the only effect is that the
       // panels are drawn at the size they were designed for instead of being
       // squeezed into the ~583px the card happens to have — the same trade the
       // board already makes by cropping its bottom row.
-      className="pointer-events-none flex h-full select-none flex-col bg-[var(--mock-window)] text-[color:var(--mock-ink)] sm:w-[660px] sm:shrink-0"
+      className="pointer-events-none flex h-full select-none flex-col bg-[var(--mock-window)] text-[color:var(--mock-ink)] sm:w-full sm:min-w-[660px] sm:shrink-0"
     >
       <MobileAppBar app="Client onboarding" />
       {/* The same bar the approvals screen carries, for the same reason.

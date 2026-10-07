@@ -220,10 +220,18 @@ export default function ClientPortalPage() {
         // The free plan and the no-card point are both already made by the
         // pricing section further up this page, so the chips restated them.
         planChips={false}
-        // Same reason: the ready-made and tailor sections above already walk
-        // through what you'd build here, so an Ideas menu of the same prompts
-        // is a list the visitor has read by the time they reach the close.
-        promptPicker={false}
+        // TWO BUTTONS, not a second prompt box. This page opens on a composer
+        // in its hero, and a page that both opens and closes on the same
+        // control asks the visitor the same question twice — the second time
+        // after they have read the whole argument, which is the moment to give
+        // them a door rather than a blank field. The two vertical pages and
+        // the builder page already close this way, so the set agrees.
+        //
+        // promptPicker goes with it: there is no composer left for an Ideas
+        // menu to sit on.
+        composer={false}
+        primaryCta={{ label: "Get started free", href: SIGNUP_URL }}
+        secondaryCta={{ label: "Book a demo", href: DEMO_URL }}
       />
     </>
   );
