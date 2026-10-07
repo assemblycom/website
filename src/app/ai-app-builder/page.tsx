@@ -18,6 +18,7 @@ import { BuilderHowItWorks } from "@/components/ai-app-builder/builder-how-it-wo
 import { BuilderAlternatives } from "@/components/ai-app-builder/builder-alternatives";
 import { BuilderTemplates } from "@/components/ai-app-builder/builder-templates";
 import { BuilderPrompt } from "@/components/ai-app-builder/builder-prompt";
+import { BuilderGlow } from "@/components/ai-app-builder/builder-glow";
 import { GridDivider, GridRails } from "@/components/ui/grid-lines";
 import { DEMO_URL, SIGNUP_URL } from "@/lib/constants";
 import { PAGE_SEO, pageMetadata } from "@/lib/seo";
@@ -205,8 +206,13 @@ export default function AiAppBuilderPage() {
           lands on instead of being tuned for one; svh rather than vh, because
           on mobile vh is the tallest the viewport ever gets and the browser
           chrome then eats the bottom of it. 5rem is the sticky nav above. */}
-      <section className="flex min-h-[calc(100svh-5rem)] items-center pb-20 pt-16 md:pb-28 md:pt-20">
-        <div className="mx-auto w-full max-w-[1400px] px-6 md:px-10">
+      <section className="relative flex min-h-[calc(100svh-5rem)] items-center overflow-hidden pb-20 pt-16 md:pb-28 md:pt-20">
+        {/* The horizon arc behind the headline. It clips to this section and
+            fades out before its bottom edge, so the region below still opens
+            on the page's own ground. `overflow-hidden` above is what crops the
+            ellipses into an arc — without it they are four circles. */}
+        <BuilderGlow />
+        <div className="relative z-10 mx-auto w-full max-w-[1400px] px-6 md:px-10">
           {/* Centred, with the composer under the claim rather than a split
               header and a picture beside it. This page's subject IS the box
               you type into, so the hero puts it on the centre line and lets

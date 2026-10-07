@@ -222,6 +222,28 @@
      another line of the page. */
   --proposal-ink-faint: rgba(16, 17, 20, 0.45);
   --proposal-ink-fill: rgba(16, 17, 20, 0.08);
+
+  /* /ai-app-builder's hero horizon (see builder-glow.tsx). Three lit rings and
+     a ground ring that punches the middle out; the hues are the brand ramp the
+     footer aurora and the composer ring both run, blue blooming out to lime.
+
+     LIGHT. The stops are saturated rather than pastel — the same reason
+     BRAND_AURORA_LIGHT is — because a tint lightened for a white page just
+     turns into the page. They carry their alpha instead, so the arc reads as
+     colour laid ON the white rather than a band of grey-blue sitting in front
+     of it, and the rim is lime with no white in it at all: a white-hot line on
+     a white page is invisible at the trough and a smudge at the ends. The dark
+     values are in the [data-theme="dark"] block and are not these dimmed. */
+  /* Light composites the rings NORMALLY — stacked over white, each stop stays
+     itself and the overlaps stay pale. The additive mode dark uses would drive
+     every overlap on a white ground straight to white. */
+  --builder-glow-blend: normal;
+  --builder-glow-bloom: rgba(63, 92, 247, 0.26);
+  --builder-glow-mid: rgba(79, 107, 249, 0.38);
+  --builder-glow-halo: rgba(159, 214, 196, 0.55);
+  --builder-glow-lime: rgba(198, 232, 79, 0.7);
+  --builder-glow-rim: rgba(255, 255, 255, 0.7);
+  --builder-glow-opacity: 1;
 }
 
 /* Site-wide dark theme. The theme toggle writes data-theme="dark" on <html>,
@@ -348,6 +370,30 @@
   --proposal-ink-soft: rgba(255, 255, 255, 0.75);
   --proposal-ink-faint: rgba(255, 255, 255, 0.5);
   --proposal-ink-fill: rgba(255, 255, 255, 0.15);
+
+  /* /ai-app-builder's hero horizon, in DARK — the arm the effect was designed
+     for, and a separate set of values from the light one in :root rather than
+     the same colours turned up. On near-black the ramp can run its full depth:
+     the bloom is the brand's deepest indigo, the mid ring its blue, and the rim
+     goes to white, which is the one place on this page white is the right ink —
+     it is a light source, not type, and the lime underneath it is what gives
+     the line its colour where it is thinnest. Alphas are high because there is
+     no white page left to show through. */
+  /* Dark composites the rings ADDITIVELY, which is the difference between a
+     glow and a stack of gels. Blended normally, translucent lime over
+     translucent blue AVERAGES — and yellow-green averaged with blue is grey, so
+     the band came out sage-olive no matter how saturated the stops were. Light
+     adds instead: plus-lighter sums them toward white, so each stop keeps its
+     hue and the overlaps brighten rather than dulling.
+     Alphas run lower here than they would otherwise, because adding four rings
+     accumulates where normal blending would not. */
+  --builder-glow-blend: plus-lighter;
+  --builder-glow-bloom: rgba(36, 60, 158, 0.62);
+  --builder-glow-mid: rgba(79, 107, 249, 0.5);
+  --builder-glow-halo: rgba(159, 214, 196, 0.32);
+  --builder-glow-lime: rgba(198, 232, 79, 0.42);
+  --builder-glow-rim: rgba(255, 255, 255, 0.8);
+  --builder-glow-opacity: 1;
 }
 
 /* ── The mock window's edge, in DARK ─────────────────────────────────────
@@ -3714,5 +3760,172 @@ html:not([data-authed]) .auth-only {
   .v63-spin-on-hover::before,
   .v63-spin-on-hover:hover::before {
     animation-play-state: paused;
+  }
+}
+
+/* ── /ai-app-builder hero horizon ─────────────────────────────────────────
+   Four concentric ellipses on one centre (see builder-glow.tsx). The largest
+   is the dimmest bloom, the smallest is painted in the page's own ground and
+   sits ON TOP — it occludes the middle, so only a rim survives around its
+   edge. The hero clips the box, so what reaches the reader is the trough of
+   the curve under the headline.
+
+   Sizes are in % of the hero, not pixels, so the curve keeps its shape from a
+   phone to an ultrawide rather than flattening into a straight band on the
+   one and bowing into a circle on the other. The box is wider than it is tall
+   and hangs half above the hero's top edge: that is what puts the lowest point
+   of the arc behind the composer and the rising ends off the left and right.
+
+   Colours come from the two theme blocks above. Nothing here names one. */
+.builder-glow {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+  /* The additive rings must sum against each other and NOT against the page
+     behind the hero, so the group gets its own stacking context. */
+  isolation: isolate;
+  opacity: var(--builder-glow-opacity);
+  /* The arc is a CIRCLE, sized off the viewport WIDTH alone, and the hero's
+     height does not enter into it. Sizing it as a % of both axes is what made
+     it elongate on a phone: 112% x 160% is a sane ratio in landscape, but on a
+     390x844 portrait it resolves to 437 wide by 1350 tall, and the "curve"
+     arrives as two vertical streaks down the sides with no bowl between them.
+     One diameter keeps the same circle on every screen — a phone simply sees a
+     smaller one.
+
+     The vh floor is what keeps it a HORIZON rather than a ring. Width alone
+     gives a portrait phone a circle small enough to fit inside the hero
+     vertically, so its top arc comes back into view and haloes the headline.
+     Holding the diameter to at least the viewport height puts the top off the
+     hero on any shape, leaving only the bottom arc. It costs some depth of
+     curve on a phone — a circle big enough to crop is a circle whose visible
+     run is flatter — and that is the right way to spend it.
+
+     --arc-trough is where the circle's LOWEST point lands down the hero, which
+     is the only thing the height should decide. Just past three quarters puts
+     it behind the composer in both orientations. */
+  --arc-d: max(112vw, 96vh);
+  --arc-trough: 74%;
+  /* The arc fades out before it reaches the hero's bottom edge, so the section
+     ends on the page's own ground and the divider below it lands on a clean
+     surface instead of cutting a gradient in half. */
+  mask-image: linear-gradient(to bottom, #000 0%, #000 86%, transparent 100%);
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    #000 0%,
+    #000 86%,
+    transparent 100%
+  );
+}
+
+.builder-glow__arc {
+  position: absolute;
+  left: 50%;
+  top: var(--arc-trough);
+  /* A square box with a 50% radius — so a circle, never an ellipse. Slightly
+     wider than the viewport, which puts the hero's left and right edges out
+     near the circle's horizontal extremes where it turns hardest: that is what
+     makes the ends climb and leaves a trough under the headline. A circle much
+     wider than the viewport would show only its flattest run and read as a
+     horizontal band. */
+  width: var(--arc-d);
+  height: var(--arc-d);
+  border-radius: 50%;
+  /* -100% lifts the circle by its own height, landing its bottom edge exactly
+     on --arc-trough; everything above that is off the top of the hero. The
+     scale is per-ring and set below, and because it works about the centre each
+     larger ring also reaches a little further down, which is what lets the
+     bloom spill past the rim rather than sitting concentric with it. */
+  transform: translate(-50%, -100%) scale(var(--arc-scale, 1));
+  will-change: transform, opacity;
+  /* Every LIT ring composites per the theme's mode. The ground ring overrides
+     this back to `normal` — it is an occluder, not a light, and adding it would
+     brighten the hole instead of punching it. */
+  mix-blend-mode: var(--builder-glow-blend);
+}
+
+/* Outermost and softest: the wide colour cast that tells you the rim is a
+   light source rather than a drawn line. */
+.builder-glow__arc--bloom {
+  --arc-scale: 1.105;
+  background: var(--builder-glow-bloom);
+  filter: blur(58px);
+}
+
+/* The body of the glow, between the bloom and the rim. */
+.builder-glow__arc--mid {
+  --arc-scale: 1.062;
+  background: var(--builder-glow-mid);
+  filter: blur(34px);
+}
+
+/* The bridge between the blue and the hot line — the ramp's teal step. It is a
+   separate ring rather than a tint mixed INTO the rim because that is what the
+   rim was at first, and a lime-tinted white over blue comes out khaki: the hue
+   has to sit beside the hot core, not inside it. */
+.builder-glow__arc--halo {
+  --arc-scale: 1.040;
+  background: var(--builder-glow-halo);
+  filter: blur(24px);
+}
+
+/* The ramp's lime step, and the reason the arc reads as Assembly's rather than
+   as a generic blue glow — the footer aurora spends as much of its band on lime
+   and teal as on blue, and an arc that goes straight from blue to a white rim
+   has none of it. */
+.builder-glow__arc--lime {
+  --arc-scale: 1.024;
+  background: var(--builder-glow-lime);
+  filter: blur(16px);
+}
+
+/* The hot line. Barely larger than the ground ring, so only a few pixels of it
+   are ever uncovered — the blur is what makes those pixels read as a lit edge
+   instead of a hairline border. In dark it is pure white, carrying no hue at
+   all: a light source is white and the colour belongs to what it lights. */
+.builder-glow__arc--rim {
+  --arc-scale: 1.011;
+  background: var(--builder-glow-rim);
+  filter: blur(7px);
+}
+
+/* The hole. Painted in the page's own ground in BOTH themes via --background,
+   so it is the one ring that must never be given a colour of its own: the
+   moment it is, the hero stops matching the section under it in one theme or
+   the other. Blurred so the rim meets the ground as a falloff, not a cut. */
+.builder-glow__arc--ground {
+  --arc-scale: 1;
+  background: var(--background);
+  filter: blur(26px);
+  mix-blend-mode: normal;
+}
+
+/* Rises once on mount, the reference's movement: up from below the fold of its
+   own box, settling as it sharpens. One pass, no loop — a horizon that keeps
+   breathing behind a headline is a distraction from the headline. */
+@keyframes builderGlowRise {
+  from {
+    transform: translateY(14%) scale(1.12);
+    opacity: 0;
+    filter: blur(14px);
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: var(--builder-glow-opacity);
+    filter: blur(0);
+  }
+}
+.builder-glow {
+  animation: builderGlowRise 1.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Reduced motion keeps the arc — it is the section's surface, not an effect —
+   and drops only the travel. */
+@media (prefers-reduced-motion: reduce) {
+  .builder-glow {
+    animation: none;
+    opacity: var(--builder-glow-opacity);
   }
 }

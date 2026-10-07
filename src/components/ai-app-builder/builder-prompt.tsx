@@ -76,10 +76,28 @@ export function BuilderPrompt({
           onValueChange={setPrompt}
           accent={dark ? "#7DA4FF" : "#D9ED92"}
           surfaceRadiusClass="rounded-[18px] md:rounded-[22px]"
-          // Light needs an explicit faint fill: this hero is pure bg-background,
-          // which would leave a white field on white with no inner/outer
-          // separation. #f7f8fa is the same mid stop the CTA's box uses.
-          surfaceClassName="bg-[#f7f8fa] shadow-[0_1px_2px_rgba(16,24,40,0.04)] [[data-theme=dark]_&]:bg-transparent [[data-theme=dark]_&]:shadow-[0_24px_60px_-28px_rgba(0,0,0,0.8)]"
+          // Glass in BOTH themes, so the horizon behind the hero runs through
+          // the composer's frame instead of stopping at it. The inner field is
+          // opaque in both (bg-white / #1b1b1b, set by the composer itself), so
+          // what the arc shows through is the frame and the footer row around
+          // it — the box still reads as a solid thing you type into, sitting on
+          // a lit ground, rather than a translucent sheet.
+          //
+          // This used to be a flat #f7f8fa in light, on the reasoning that the
+          // hero was pure bg-background and a white field on white would have
+          // no inner/outer separation. That stopped being true when the glow
+          // landed: the separation now comes from the arc behind it.
+          //
+          // Both themes frost what is behind them — that is what makes it glass
+          // rather than a hole cut in the box. The arc still runs through, but
+          // as a soft wash, so the frame reads as a pane with light behind it
+          // instead of a window onto a sharp edge passing under the controls.
+          //
+          // The two differ only in the veil. Light carries a white wash,
+          // because dark controls over the lit arc need something to sit on;
+          // dark carries none, because near-black furniture holds up over a lit
+          // ground on its own and a tint there would grey the glow out.
+          surfaceClassName="bg-white/55 shadow-[0_1px_2px_rgba(16,24,40,0.04)] backdrop-blur-2xl [[data-theme=dark]_&]:bg-transparent [[data-theme=dark]_&]:shadow-[0_24px_60px_-28px_rgba(0,0,0,0.8)]"
         />
       </div>
     </div>
