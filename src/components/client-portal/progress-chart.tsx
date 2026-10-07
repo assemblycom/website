@@ -31,22 +31,6 @@
 // which is what the footer now says.
 const DONE = [0, 1, 2, 3, 4, 6, 6, 6, 7, 8, 9, 10, 10, 11];
 
-// The site's stat chip, with two deliberate departures from the version on the
-// customers strip and the case-study pages.
-//
-// PP MORI, not the mono face. The mono is right where a chip sits in a wall of
-// body copy and needs to read as data; here the chip is the only type under a
-// chart, with nothing to distinguish itself from, and the mono just made it
-// look like a different component had wandered in.
-//
-// AND A BORDER. bg-muted is #f6f7f9 against a card that is near-white, so the
-// chip was a word floating on a shape nobody could see — it needs an edge to be
-// a chip at all. The hairline is the same --border every other box on the page
-// draws itself with, so the shape arrives from the palette rather than being
-// invented to solve this.
-const STAT =
-  "inline-flex items-center gap-1.5 rounded-md border border-border bg-muted px-2.5 py-1.5 text-[11px] uppercase tracking-wide [[data-theme=dark]_&]:bg-white/[0.08]";
-
 // Where the plan said it would be. Ends at the full scope, which is what makes
 // the gap at the right-hand edge mean something.
 const PLANNED = 24;
@@ -195,31 +179,6 @@ export function ProgressMock() {
       <div className="mt-2 flex items-center justify-between text-[10px] leading-none text-[color:var(--mock-ink-soft)]">
         <span>Aug 15</span>
         <span>Sep 15</span>
-      </div>
-
-      {/* Two readings as STAT CHIPS — the site's own, not a pair invented
-          here: mono, uppercase, rounded-md on bg-muted, the figure in
-          foreground and its label in muted-foreground. The same shape the
-          case-study pages and the customers strip already use, which is what
-          CLAUDE.md asks for and what stops this card inventing a third way of
-          drawing a number.
-
-          The icons went with the change. A warning glyph and a calendar sat in
-          front of these as plain text; inside a chip they would be a mark
-          competing with the figure for the left edge, and the chip's own shape
-          is what sets a stat apart from a sentence.
-
-          Order matters: the one that is wrong, then how long there is to fix
-          it. */}
-      <div className="mt-4 flex flex-wrap items-center gap-2">
-        <span className={STAT}>
-          <span className="text-foreground">5</span>
-          <span className="text-muted-foreground">behind pace</span>
-        </span>
-        <span className={STAT}>
-          <span className="text-foreground">13</span>
-          <span className="text-muted-foreground">weekdays left</span>
-        </span>
       </div>
     </div>
   );

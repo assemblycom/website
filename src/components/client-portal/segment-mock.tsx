@@ -50,6 +50,23 @@ export function IconUpload({ className }: { className?: string }) {
   );
 }
 
+// ── The mock type scale ──────────────────────────────────────────────────
+// Four steps, and screens in this set use ONLY these:
+//
+//   10.5px  the primary line — a row's name, a tab, a title in a header
+//   10px    a panel or section label, and the text inside a control
+//   9.5px   the secondary line — a sub, a role, a timestamp, a caption
+//   9px     a status chip, which is the one thing allowed to be smaller
+//           because its shape already separates it from the line it sits on
+//
+// Two things go off it deliberately: a headline figure (the board's "2 of 4"),
+// and the initials on an avatar tile, which is a glyph rather than type.
+//
+// It is written down because the cards sit side by side on one page and the
+// eye compares them. The upload card drifted to 11.5px and the onboarding
+// board's subs to 9px, and the result was a grid where some screens looked
+// zoomed in and others out — which reads as the screens being different sizes
+// rather than as different screens.
 const CHIP = "rounded px-1.5 py-[3px] text-[9px] leading-none";
 const POSITIVE = `${CHIP} bg-[var(--mock-positive-bg)] text-[color:var(--mock-positive-fg)]`;
 const WARNING = `${CHIP} bg-[var(--mock-warning-bg)] text-[color:var(--mock-warning-fg)]`;
@@ -340,7 +357,7 @@ function Row({
           {label}
         </span>
         {sub ? (
-          <span className="truncate text-[9px] leading-none text-[color:var(--mock-ink-soft)]">
+          <span className="truncate text-[9.5px] leading-none text-[color:var(--mock-ink-soft)]">
             {sub}
           </span>
         ) : null}
@@ -495,7 +512,7 @@ export function DocumentsStatsMock() {
       // target. Sized to its contents, the card ends where the well ends.
       className={`pointer-events-none flex select-none flex-col gap-3 rounded-xl border bg-[var(--mock-window)] text-[color:var(--mock-ink)] p-4 ${LINE}`}
     >
-      <p className="text-[11.5px] leading-none text-[color:var(--mock-ink-soft)]">
+      <p className="text-[10px] leading-none text-[color:var(--mock-ink-soft)]">
         Year-end documents
       </p>
 
@@ -511,10 +528,10 @@ export function DocumentsStatsMock() {
         // closes up around it.
         className={`flex flex-col items-center justify-center gap-2 rounded-lg border bg-[var(--mock-well)] px-4 py-10 text-center ${LINE}`}
       >
-        <span className="text-[11.5px] leading-none text-[color:var(--mock-ink)]">
+        <span className="text-[10.5px] leading-none text-[color:var(--mock-ink)]">
           Drop files to upload
         </span>
-        <span className="text-[10px] leading-none text-[color:var(--mock-ink-soft)]">
+        <span className="text-[9.5px] leading-none text-[color:var(--mock-ink-soft)]">
           PDF, XLSX or CSV, up to 25 MB
         </span>
       </div>
@@ -1416,7 +1433,7 @@ export function OnboardingMock() {
                 lead={<Initials>{initials}</Initials>}
                 label={name}
                 trailing={
-                  <span className="shrink-0 text-[9px] leading-none text-[color:var(--mock-ink-soft)]">
+                  <span className="shrink-0 text-[9.5px] leading-none text-[color:var(--mock-ink-soft)]">
                     {role}
                   </span>
                 }
