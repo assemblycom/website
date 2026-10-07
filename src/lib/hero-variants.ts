@@ -1,9 +1,11 @@
 /**
  * The homepage hero test: three messages on the simple big-type layout.
  *
- * It started as three messages crossed with two layouts. The composer layout
- * (`control`) lost to big type in the interim read, so it was dropped and the
- * arm names kept, which lets the copy comparison keep collecting data.
+ * It started as three messages crossed with two layouts (`control`, the
+ * composer, and `bigtype`). Big type won the interim read and became the only
+ * layout, and the page below the hero changed with it, so the arms were renamed
+ * `<copy>-v2`. New names keep Experiment 2 signups from pooling with Experiment
+ * 1's in the readout.
  *
  * Keys are semantic rather than lettered on purpose. The prototype's switcher
  * letters its layouts by list position while the URL keys them by their own
@@ -19,11 +21,11 @@
 export const COPY_KEYS = ["firm", "builder", "clients"] as const;
 export type CopyKey = (typeof COPY_KEYS)[number];
 
-/** The layout. Only big type remains; see the note above. */
-export const LAYOUT_KEYS = ["bigtype"] as const;
+/** The page version. `v2` is big type over the Experiment 2 page. */
+export const LAYOUT_KEYS = ["v2"] as const;
 export type LayoutKey = (typeof LAYOUT_KEYS)[number];
 
-/** `<copy>-<layout>`, e.g. "firm-bigtype". What the cookie and events carry. */
+/** `<copy>-<layout>`, e.g. "firm-v2". What the cookie and events carry. */
 export type Arm = `${CopyKey}-${LayoutKey}`;
 
 export const ARMS: Arm[] = COPY_KEYS.flatMap((copy) =>
@@ -45,7 +47,7 @@ export const ARMS: Arm[] = COPY_KEYS.flatMap((copy) =>
  * beats what came before.
  */
 export const FALLBACK_COPY: CopyKey = "firm";
-export const FALLBACK_LAYOUT: LayoutKey = "bigtype";
+export const FALLBACK_LAYOUT: LayoutKey = "v2";
 
 export interface CopyVariant {
   key: CopyKey;
@@ -152,15 +154,18 @@ export function parseArm(
   return { copy, layout };
 }
 
+/** Experiment 1's layouts, both retired in favour of `v2`. */
+const LEGACY_LAYOUTS = new Set(["control", "bigtype"]);
+
 /**
- * The arm a held cookie should become. A visitor assigned to a retired
- * `<copy>-control` arm keeps their message and moves to big type, rather than
- * being redrawn onto a message they were never shown.
+ * The arm a held cookie should become. A visitor holding an Experiment 1 arm
+ * (`<copy>-control` or `<copy>-bigtype`) keeps their message and moves to its
+ * v2 arm, rather than being redrawn onto a message they were never shown.
  */
 export function migrateArm(value: string | undefined | null): Arm | null {
   if (!value) return null;
   const [copy, layout] = value.split("-");
-  if (layout === "control" && isCopyKey(copy)) return `${copy}-bigtype`;
+  if (LEGACY_LAYOUTS.has(layout) && isCopyKey(copy)) return `${copy}-v2`;
   return parseArm(value) ? (value as Arm) : null;
 }
 
@@ -177,9 +182,10 @@ const COPY_ALIASES: Record<string, CopyKey> = {
 const LAYOUT_ALIASES: Record<string, LayoutKey> = {
   // The retired composer layout resolves to big type, so old review links
   // still land on their message.
-  b: "bigtype",
-  c: "bigtype",
-  control: "bigtype",
+  b: "v2",
+  c: "v2",
+  control: "v2",
+  bigtype: "v2",
 };
 
 /**
