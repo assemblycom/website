@@ -26,7 +26,6 @@ import {
   IconFile,
   IconArrowUpRight,
   IconGlobe,
-  IconPlus,
 } from "@/components/home/mock-icons";
 
 // Two glyphs the shared set does not carry, drawn to its light-stroke
@@ -1166,26 +1165,21 @@ function Panel({
 // this one has none, and a sidebar is the wrong answer on a phone anyway.
 //
 // So it gets the bar the product itself shows at that width: the nav collapsed
-// to a hamburger, the app named with the switcher's chevron beside it, and the
-// row's actions held to the right. sm:hidden, because from sm the two-column
+// to a hamburger and the app named with the switcher's chevron beside it.
+//
+// NO ACTIONS ON THE RIGHT. An overflow menu and a filled plus sat there, as
+// the product's own bar carries them. In a mock they are the two marks on the
+// screen that do nothing and say nothing — a plus promises a thing you can
+// add, which this picture never shows, and three dots stand for a menu nobody
+// can open. What the bar is here for is to prove there is an app around the
+// content; the hamburger and the app's name do that on their own, and on a
+// ~300px bar the pair also crowded the one element that carries the point. sm:hidden, because from sm the two-column
 // layout already reads as a desktop screen and a phone bar on top of it would
 // be two different devices in one picture.
 function IconHamburger({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 20 20" className={className} aria-hidden>
       <path d="M4.5 6.5h11M4.5 10h11M4.5 13.5h11" {...STROKE} />
-    </svg>
-  );
-}
-
-function IconEllipsis({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 20 20" className={className} aria-hidden>
-      {/* Dots, not a stroked path — at this size a three-dot path set with
-          round caps renders as a dashed line rather than as three marks. */}
-      <circle cx="5.5" cy="10" r="1.1" fill="currentColor" />
-      <circle cx="10" cy="10" r="1.1" fill="currentColor" />
-      <circle cx="14.5" cy="10" r="1.1" fill="currentColor" />
     </svg>
   );
 }
@@ -1229,16 +1223,6 @@ function MobileAppBar({
           {app}
         </span>
         <IconChevronDown className="size-[11px] shrink-0 text-[color:var(--mock-ink-soft)]" />
-      </span>
-      <span className="ml-auto flex items-center gap-1.5">
-        <span className={`${BAR_BUTTON} text-[color:var(--mock-ink-soft)]`}>
-          <IconEllipsis className="size-[13px]" />
-        </span>
-        {/* The one filled control, the way a primary action is drawn
-            everywhere else in these mocks. */}
-        <span className="flex size-[26px] shrink-0 items-center justify-center rounded-[5px] bg-[var(--mock-ink)] text-[color:var(--mock-window)]">
-          <IconPlus className="size-[12px]" />
-        </span>
       </span>
     </div>
   );
