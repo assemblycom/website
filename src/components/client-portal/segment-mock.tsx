@@ -115,7 +115,20 @@ const PANEL = `bg-[var(--mock-well-soft)] text-[color:var(--mock-ink)] ${LINE}`;
 //
 // Dark only, where the class is defined: the lift alone carries the panel in
 // light, and a ramp on a white card has nothing to fall into.
-const PANEL_TINT = `mock-edge [--mock-edge-fill:var(--mock-well-2)] [--mock-edge-w:120%] [--mock-edge-h:150%] bg-[var(--mock-well-2)] text-[color:var(--mock-ink)] ${LINE}`;
+//
+// DOUBLE OUTLINE, as two spread shadows rather than a second element: 3px of
+// the board's own ground, then 1px of the hairline. The first ring is what
+// makes it double — without a gap in the board's colour the two lines would
+// meet and read as one thick border, which is heavier than either and says
+// nothing. With it, the card looks mounted on the board rather than cut out of
+// it, and the step panel gains a second mark distinguishing it from the three
+// plain ones without going brighter again.
+//
+// Same shape the hero composer and the build cards already use; only the gap
+// colour differs, because those sit on --surface and this sits on the board's
+// --mock-window. 4px total clears the board's 10px gutter and 10px padding, so
+// the ring never meets a neighbour or the frame.
+const PANEL_TINT = `mock-edge [--mock-edge-fill:var(--mock-well-2)] [--mock-edge-w:120%] [--mock-edge-h:150%] bg-[var(--mock-well-2)] text-[color:var(--mock-ink)] shadow-[0_0_0_3px_var(--mock-window),0_0_0_4px_var(--mock-line)] ${LINE}`;
 
 function NavRow({
   icon,
@@ -1050,17 +1063,32 @@ export function IntakeAppMock({
 // shows that where a single list would flatten it.
 const STEPS = ["Your details", "Engagement letter", "Documents", "Review"];
 
-// Two people, not five. The list is the proof that "Client only" resolves to
-// somebody, and two names carry that as well as ten — while the panel is
-// 216px wide and sits under a crop, so a longer list would be showing its own
-// scrollbar rather than its contents.
+// Ticks per step in the progress meter.
 //
-// One client and one person from the firm, in that order: the client is the
-// subject of the screen, and a list that opened on the firm would be saying
-// who is working on them rather than who can see it.
+// Fourteen across a ~73px step, with a 2px gap: the marks come out about 3.3px,
+// so each stays a mark rather than a hairline, and the space between them is
+// narrower than the mark itself. At twelve-on-3px the gap matched the mark and
+// the run read as a row of separate blocks; a meter wants to read as one object
+// made of divisions, which means the marks have to sit closer together than
+// they are wide.
+const TICKS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+
+// Three people, not five. The list is the proof that the access rule resolves
+// to somebody, and three names carry that as well as ten — while the panel is
+// 216px wide, so a longer list would be showing its own scrollbar rather than
+// its contents.
+//
+// Three rather than two because the row above lost its "Saved" pill and got
+// shorter; the panels below take that height back, so the board keeps its
+// proportions instead of ending on a band of empty ground.
+//
+// The client first, then the firm: the client is the subject of the screen,
+// and a list that opened on the firm would be saying who is working on them
+// rather than who can see it.
 const ACCESS = [
   { initials: "MR", name: "Marta Reyes", role: "Client" },
   { initials: "JO", name: "James Okafor", role: "Partner" },
+  { initials: "PS", name: "Priya Shah", role: "Associate" },
 ];
 
 /**
@@ -1103,10 +1131,15 @@ function Panel({
   /**
    * Drops the panel's own label below sm.
    *
-   * For the one panel whose title is the same words as the phone bar above it
-   * — the bar names the screen at that width, so the panel repeating it puts
-   * the same phrase twice in forty pixels. From sm the bar is gone and the
-   * label is the only thing naming the panel, so it comes back.
+   * For a panel whose title is the same words as the phone bar above it — the
+   * bar names the screen at that width, so the panel repeating it puts the
+   * same phrase twice in forty pixels. From sm the bar is gone and the label is
+   * the only thing naming the panel, so it comes back.
+   *
+   * Nothing passes it at present: the step panel did, back when it was titled
+   * "Client onboarding" like the bar. It is kept because the clash it solves is
+   * a property of the layout, not of that one title — any panel renamed to the
+   * app's own name runs into it again.
    */
   hideTitleOnPhone?: boolean;
 }) {
@@ -1232,10 +1265,20 @@ export function OnboardingMock() {
       <MobileAppBar app="Client onboarding" className="-mx-2.5 -mt-2.5" />
 
       {/* Where this client is up to. */}
-      <Panel title="Client onboarding" hideTitleOnPhone tinted>
-        <p className="mt-2 text-[13px] leading-none text-[color:var(--mock-ink)]">
-          Engagement letter
-        </p>
+      {/* "Onboarding progress", and nothing else above the meter.
+      
+          It was an eyebrow reading "Client onboarding" with "Engagement letter"
+          set large underneath — the app's name, then the current step, stacked
+          as a title and a subtitle. Two problems. The eyebrow repeated the
+          phone bar directly above it and the board it sits on, so it named the
+          app for the third time in one picture; and the big step name was the
+          largest type on the board, which made the panel look like a document
+          header when what it holds is a progress meter.
+
+          The step name is not lost: it is in the labels under the meter, where
+          the filled run already points at it. Saying it twice, once in 13px,
+          was the heading competing with the thing it was heading. */}
+      <Panel title="Onboarding progress" tinted>
         {/* One segment per step, on the SAME GRID as the step names.
 
             This was four segments once before and was replaced by a single
@@ -1265,44 +1308,66 @@ export function OnboardingMock() {
             the reference, where a count is drawn as a row of thin marks rather
             than as a filled length.
 
-            Done with a MASK rather than by drawing the ticks. The span keeps
-            exactly the background it had, and
-            repeating-linear-gradient(to right, #000 0 2px, transparent 2px 5px)
-            punches the gaps out of it: 2px of mark on a 5px pitch. So the two
-            states are still the same pair of tokens they were as solid bars —
-            the tick shape is applied to the colour instead of being a second
-            place where the colour is decided — and the pattern re-tiles at any
-            width, where a fixed number of tick elements would have gone sparse
-            on a wide card and crowded on a narrow one.
+            Drawn as TWELVE ELEMENTS per step, not as a mask over a solid bar.
 
-            7px tall, up from 4. A tick has to be taller than it is wide to read
-            as a tick; at the old bar height the marks were square and the row
-            read as a dashed rule.
+            Two mask versions came first and both ended every run on a hairline.
+            A fixed 3px-on-6px pitch was the obvious bug — a step is ~73px and
+            73/6 is 12.17, so the twelfth tick was cut a sixth of the way
+            through. Switching the tile to calc(100%/12) was meant to fix that
+            by construction, and did not: the tile then measures 6.07px, the
+            mask raster snaps each repeat to whole device pixels, and the error
+            accumulates across twelve repeats until the last mark is clipped to
+            a sliver. A proportion that divides evenly in CSS still has to land
+            on a pixel grid.
 
-            The bars stay NEUTRAL. They were put on the Haze ramp once and taken
-            back off: colour on the track makes the progress bar the loudest
-            thing on the board, and the tint this picture wanted belongs to the
-            panel behind it, where it reads as the surface being tinted rather
-            than as the data being coloured.
+            Flexbox has no remainder to leave behind. Each tick is a real
+            element, so the browser distributes the fractional width across
+            twelve of them and every one is drawn whole — the last tick is a
+            tick, not whatever was left over. flex-1 keeps them even at any card
+            width, which is what the mask was for.
 
-            The empty tone is INK AT 12%, not bg-muted. Segmented, the unfilled
-            bars are carrying something the continuous track never asked them
-            to: they are the only thing saying there are four steps at all, so
-            they have to be visible rather than merely present. bg-muted is
-            #f6f7f9 against a #fcfcfd panel — six points apart, which rendered
-            as a bar that stopped halfway and nothing after it. A percentage of
-            the ink token resolves against whichever theme is up, so one value
-            holds in both instead of a light hex and a dark override that can
-            drift apart. */}
+            Equal mark and gap is what makes each tick legible as a unit. At
+            2px-on-5px the marks were hairlines, and a row of hairlines reads as
+            a dashed rule rather than as a count of something.
+
+            7px tall. A tick has to be taller than it is wide to read as a tick;
+            at the old 4px bar height the marks were square.
+
+            GREEN for the done steps, from --mock-positive-fg. The meter reads
+            as a count being filled in, and the thing being counted here is
+            steps completed — the same thing the Uploaded pills report one row
+            at a time, so it is the same green rather than a second one chosen
+            for this spot. Full strength, not the quiet cut the pills use: the
+            pills are four small marks repeated down a column where the colour
+            accumulates, while this is one object that the panel is built
+            around.
+
+            Not-yet stays ink at 12% — neutral, because an unfinished step has
+            no state worth colouring, and a second hue would make the track an
+            argument between two of them.
+
+            Ink at 12% specifically, not bg-muted: the unfilled ticks are the
+            only thing saying there are four steps at all, so they have to be
+            visible rather than merely present, and bg-muted is #f6f7f9 against
+            a #fcfcfd panel — six points apart, which rendered as a track that
+            stopped halfway and nothing after it. A percentage of the ink token
+            resolves against whichever theme is up, so one value holds in both
+            instead of a light hex and a dark override that can drift apart. */}
         <div className="mt-3">
           <div className="grid grid-cols-4 gap-1.5">
             {STEPS.map((s, i) => (
-              <span
-                key={s}
-                className={`h-[7px] [mask-image:repeating-linear-gradient(to_right,#000_0_2px,transparent_2px_5px)] ${
-                  i <= 1 ? "bg-foreground" : "bg-[var(--mock-ink)]/12"
-                }`}
-              />
+              <span key={s} className="flex gap-[2px]">
+                {TICKS.map((j) => (
+                  <span
+                    key={j}
+                    className={`h-[7px] flex-1 rounded-[1px] ${
+                      i <= 1
+                        ? "bg-[var(--mock-positive-fg)]"
+                        : "bg-[var(--mock-ink)]/12"
+                    }`}
+                  />
+                ))}
+              </span>
             ))}
           </div>
           {/* The NAMES are hidden on a phone, not the bars. At four across a
@@ -1328,12 +1393,22 @@ export function OnboardingMock() {
         </div>
       </Panel>
 
-      {/* The reassurance the copy promises: nothing typed is lost. */}
+      {/* Just the count now.
+
+          The "Saved" pill under it was the tallest thing in the top row, and
+          because grid items stretch, it was setting the height of the step
+          panel beside it — which is how that panel ended up with a band of
+          empty ground under its meter. The pill was the least of the four
+          things on the board and it was dictating the geometry of the most
+          important one.
+
+          Nothing is lost by dropping it: the meter next door shows two steps
+          done, which is the same claim — progress is being kept — made by the
+          thing the panel is actually about. */}
       <Panel title="Progress">
         <p className="mt-2 text-[20px] leading-none text-[color:var(--mock-ink)]">
           2 of 4
         </p>
-        <span className={`mt-2.5 inline-flex ${POSITIVE_QUIET}`}>Saved</span>
       </Panel>
 
       {/* Cropped by the card edge. */}
@@ -1373,6 +1448,13 @@ export function OnboardingMock() {
             label="Proof of identity.pdf"
             trailing={<span className={POSITIVE_QUIET}>Uploaded</span>}
           />
+          <Row
+            label="Source of funds.pdf"
+            trailing={<span className={POSITIVE_QUIET}>Uploaded</span>}
+          />
+          {/* The outstanding one stays LAST. The list is read top to bottom and
+              the thing still wanted is the thing to end on; sorted any other
+              way the panel closes on something already done. */}
           <Row
             label="Signed letter"
             trailing={<span className={WARNING_QUIET}>Awaiting</span>}

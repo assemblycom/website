@@ -68,7 +68,26 @@ export function PortalTailor({
                   Clients review and sign off on deliverables round by round.
                 </p>
                 <div
-                  className={`-mr-6 mt-8 min-h-[276px] flex-1 overflow-hidden rounded-tl-xl border-l border-t border-[var(--mock-line)] shadow-[0_1px_2px_rgba(16,24,40,0.04),0_18px_40px_-28px_rgba(16,24,40,0.28)] md:-mr-10 md:mt-10 [[data-theme=dark]_&]:shadow-[0_18px_44px_-28px_rgba(0,0,0,0.6)]`}
+                  // .mock-edge, the same lit border the onboarding board's
+                  // frame and the AI app builder's hero screen wear, on the
+                  // identical shape — rounded-tl-xl with a left and top border
+                  // and nothing on the other two sides, because the screen runs
+                  // off the card there.
+                  //
+                  // This is the one card in the section that shows the whole
+                  // portal, chrome and all, so it is the one most obviously
+                  // pretending to be a window; a flat grey hairline around a
+                  // near-black window reads as a line that has been dimmed
+                  // rather than as a window catching the light.
+                  //
+                  // Its drop shadows are untouched and still do their own job:
+                  // the ramp paints the BORDER, the shadows sit under the card.
+                  // Dark only, which is where the class is defined.
+                  //
+                  // Default 540x400 ellipse, no -w/-h override: at 583x311 this
+                  // frame is the same size as the onboarding one, which the
+                  // default already suits.
+                  className={`mock-edge -mr-6 mt-8 min-h-[276px] flex-1 overflow-hidden rounded-tl-xl border-l border-t border-[var(--mock-line)] bg-[var(--mock-window)] shadow-[0_1px_2px_rgba(16,24,40,0.04),0_18px_40px_-28px_rgba(16,24,40,0.28)] md:-mr-10 md:mt-10 [[data-theme=dark]_&]:shadow-[0_18px_44px_-28px_rgba(0,0,0,0.6)]`}
                 >
                   <ApprovalsMock />
                 </div>
