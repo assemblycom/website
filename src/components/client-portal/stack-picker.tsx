@@ -35,7 +35,16 @@ import { SIGNUP_URL } from "@/lib/constants";
 // Grouped so no two neighbours share a mechanism. Three Integrations in a row
 // would read as the column being sorted by it, and the point is that the three
 // ways in are mixed through one stack.
-const TOOLS = [
+// `logo` is the file under public/images/logos. Where a tool has none the
+// lettered tile stands in — which is what the product itself shows before
+// anyone uploads a mark, so the fallback is a real state rather than a gap.
+const TOOLS: {
+  initials: string;
+  name: string;
+  does: string;
+  how: string;
+  logo?: string;
+}[] = [
   {
     initials: "GC",
     name: "Google Calendar",
@@ -118,30 +127,38 @@ export function StackPicker({
       // became links. A hidden list of real destinations is a set of doors a
       // keyboard can tab into and a screen reader is never told about.
       title={title}
-      // A DOUBLE BORDER, drawn the way the hero's frames are.
+      // THE GROUND FADES OUT TO THE RIGHT, from lg.
       //
-      // `.mock-edge` is the lit bezel from globals.css — a radial ramp painted
-      // into the border box from the top-left with a white counter-light at
-      // the opposite corner, so the edge reads as an object catching light
-      // rather than as a hairline someone dimmed. It is dark-only by
-      // definition there, which is correct: the ramp's whole job is to lift an
-      // edge off a near-black ground, and on white it would be a grey smudge.
-      // --mock-edge-fill is handed the band's own surface, because the class
-      // paints the interior too and would otherwise repaint this panel back to
-      // the mock window colour.
+      // This card deliberately runs past the 1200px rail and off the viewport,
+      // and it was ending on a hard vertical: a border and a block of surface
+      // stopping dead against the page. That reads as a panel that has been
+      // cut, which is the opposite of what the bleed is for — the card is
+      // supposed to carry on.
       //
-      // ONE EDGE, not two. A second ring inside the first was tried and is
-      // gone: the bezel this class paints is already a graded edge rather than
-      // a flat hairline, so a ring a few pixels in gave it a second, harder
-      // line to compete with and the card read as being framed twice.
-      className="mock-edge flex h-[300px] flex-col justify-center gap-1 rounded-2xl border border-border bg-[var(--surface)] p-4 [--mock-edge-fill:var(--surface)] md:h-[380px] md:p-5 lg:h-[440px] lg:rounded-r-none [[data-theme=dark]_&]:border-[#383838]"
+      // So the FILL dissolves instead of stopping. The gradient is its own
+      // layer behind the rows rather than the element's background, which is
+      // what keeps the text out of it: a mask on the card would have taken the
+      // right-hand descriptions with it, and those are the column that has to
+      // stay readable. One declaration for both themes, because --surface
+      // resolves per theme and `transparent` lets whatever is behind through.
+      //
+      // Below lg the card does not bleed — the grid has padding on both sides
+      // there — so it keeps a plain closed panel with its border all round.
+      className="relative flex h-[300px] flex-col justify-center gap-1 rounded-2xl border border-border bg-[var(--surface)] p-4 md:h-[380px] md:p-5 lg:h-[440px] lg:rounded-r-none lg:border-r-0 lg:border-transparent lg:bg-transparent [[data-theme=dark]_&]:border-[#383838] [[data-theme=dark]_&]:lg:border-transparent"
       // Leaving the panel puts the selection back on the first row rather than
       // stranding it wherever the pointer left. A picture that keeps the last
       // thing you touched reads as a control you have used; this one is a
       // picture, and it should look the same every time you come back to it.
       onMouseLeave={() => setActive(0)}
     >
-      {TOOLS.map(({ initials, name, does, how }, i) => {
+      {/* The ground. Only from lg, where the card bleeds; below that the
+          element's own background is doing the job. The left corners stay
+          rounded and the right simply runs out. */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-0 hidden rounded-l-2xl bg-[linear-gradient(to_right,var(--surface)_0%,var(--surface)_58%,transparent_100%)] lg:block"
+      />
+      {TOOLS.map(({ initials, name, does, how, logo }, i) => {
         const on = i === active;
         return (
           <a
@@ -167,20 +184,35 @@ export function StackPicker({
             // nothing, and five tools still make the point that a stack is
             // mixed. The mechanisms stay mixed at every length because they
             // alternate down the list rather than being grouped.
-            className={`${ROW_AT[i] ?? "flex"} items-center gap-3 rounded-xl px-3 py-2.5 transition-colors ${
+            className={`${ROW_AT[i] ?? "flex"} relative items-center gap-3 rounded-xl px-3 py-2.5 transition-colors ${
               on
                 ? "bg-foreground/[0.06] [[data-theme=dark]_&]:bg-white/[0.07]"
                 : ""
             } focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40`}
           >
-            <span
-              className={`flex size-8 shrink-0 items-center justify-center rounded-lg text-[11px] leading-none ${PLATE}`}
-            >
-              {/* Nudged down half a cap height: flex centring lines up the
-                  text's box, which puts two capitals with no descender in its
-                  top half. Same fix as the portal mocks' avatars. */}
-              <span className="block translate-y-[0.1em]">{initials}</span>
-            </span>
+            {logo ? (
+              // The tool's own mark, on the same plate the initials use so the
+              // column lines up whichever a row has. object-contain with a
+              // little padding, because these marks are drawn to their own
+              // ratios — a square tile would squash the wide ones.
+              <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-white p-1.5">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={`/images/logos/${logo}`}
+                  alt=""
+                  className="h-full w-full object-contain"
+                />
+              </span>
+            ) : (
+              <span
+                className={`flex size-8 shrink-0 items-center justify-center rounded-lg text-[11px] leading-none ${PLATE}`}
+              >
+                {/* Nudged down half a cap height: flex centring lines up the
+                    text's box, which puts two capitals with no descender in its
+                    top half. Same fix as the portal mocks' avatars. */}
+                <span className="block translate-y-[0.1em]">{initials}</span>
+              </span>
+            )}
             <span className="min-w-0 truncate text-[15px] text-foreground">
               {name}
             </span>

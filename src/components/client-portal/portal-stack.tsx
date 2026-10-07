@@ -123,42 +123,62 @@ export function PortalStack({
                 three words that would otherwise be three nouns. */}
             {ways.length ? (
               <ul className="mt-10 flex flex-col">
-                {ways.map(({ label, body, href }, i) => (
+                {ways.map(({ label, href }, i) => (
                   <li key={label}>
                     <Link
                       href={href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      // -mx-3 px-3 so the hover fill extends past the type
-                      // without the labels being indented out of the column.
-                      // The rules are pseudo-elements pinned to the padding
-                      // box's edges, so they span that same full width.
-                      className={`group relative -mx-3 flex items-start gap-4 rounded-xl px-3 py-4 transition-colors before:absolute before:inset-x-3 before:top-0 before:h-px before:content-[''] hover:bg-foreground/[0.04] ${DOTTED_RULE_BEFORE} ${
+                      // SQUARE HOVER FILL, AND EXACTLY AS WIDE AS THE RULES.
+                      //
+                      // It was rounded-xl, which on a row spanning a ruled list
+                      // put a pill between two straight hairlines — the fill
+                      // pulled away from the rules at every corner and the row
+                      // read as a card that had landed in a table. A list
+                      // divided by full-width rules is a set of bands, so the
+                      // band is what highlights.
+                      //
+                      // And it was -mx-3 px-3, which pulled the fill twelve
+                      // pixels wider than the rules at each end: the band stuck
+                      // out past the lines that are supposed to bound it, so
+                      // the row looked like it was overflowing its own list.
+                      // The row now sits in the column, and the rules run its
+                      // full width — one measure for the band and the lines
+                      // that close it.
+                      className={`group relative flex items-center gap-4 py-4 transition-colors before:absolute before:inset-x-0 before:top-0 before:h-px before:content-[''] hover:bg-foreground/[0.04] ${DOTTED_RULE_BEFORE} ${
                         i === ways.length - 1
-                          ? `after:absolute after:inset-x-3 after:bottom-0 after:h-px after:content-[''] ${DOTTED_RULE_AFTER}`
+                          ? `after:absolute after:inset-x-0 after:bottom-0 after:h-px after:content-[''] ${DOTTED_RULE_AFTER}`
                           : ""
                       } [[data-theme=dark]_&]:hover:bg-white/[0.04]`}
                     >
-                      <span className="min-w-0 flex-1">
-                        <span className="block text-[15px] text-foreground">
-                          {label}
-                        </span>
-                        <span className="mt-0.5 block text-sm leading-relaxed text-muted-foreground">
-                          {body}
-                        </span>
+                      {/* THE LABEL ALONE. Each row carried a sentence under it
+                          explaining the word — and in a list of three whose
+                          words are Embeds, Integrations and Automations, the
+                          sentence was explaining terms the section's own lead
+                          has just defined. Three names and three destinations
+                          is the list; the argument is the paragraph above it. */}
+                      <span className="min-w-0 flex-1 truncate text-[15px] text-foreground">
+                        {label}
                       </span>
-                      {/* The chevron, at the row's far edge rather than beside
-                          the label — it marks where the row ENDS, which is
-                          what makes a list of them read as a column of
-                          destinations. Muted at rest and full strength under
-                          the pointer, so the row answers without moving. */}
+                      {/* AN ARROW, not a caret.
+
+                          A chevron is the mark for a disclosure — something
+                          that opens where it stands, which is what the first
+                          pass drew. These rows leave the page. An arrow is the
+                          one that means "goes somewhere", and it is the mark
+                          this site already uses for that.
+
+                          At the row's far edge rather than beside the label,
+                          so it marks where the row ends; muted at rest and
+                          full strength under the pointer, so the row answers
+                          without moving. */}
                       <svg
                         aria-hidden
                         viewBox="0 0 16 16"
-                        className="mt-[3px] size-4 shrink-0 text-muted-foreground transition-colors group-hover:text-foreground"
+                        className="size-4 shrink-0 text-muted-foreground transition-colors group-hover:text-foreground"
                       >
                         <path
-                          d="M6 3.5 10.5 8 6 12.5"
+                          d="M3 8h10M9 4l4 4-4 4"
                           fill="none"
                           stroke="currentColor"
                           strokeWidth="1.5"
