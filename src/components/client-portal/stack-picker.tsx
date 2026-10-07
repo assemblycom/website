@@ -50,12 +50,14 @@ const TOOLS: {
     name: "Google Calendar",
     does: "Booking and availability",
     how: "Embed",
+    logo: "google-calendar.png",
   },
   {
     initials: "ST",
     name: "Stripe",
     does: "Payments and invoices",
     how: "Connect",
+    logo: "stripe.svg",
   },
   {
     initials: "SL",
