@@ -14,8 +14,11 @@ export function CTA() {
           <br />
           only you can build
         </h2>
-        <p className="type-lead mx-auto mt-5 max-w-xl text-pretty text-muted-foreground">
+        <p className="type-lead mx-auto mt-5 max-w-2xl text-pretty text-muted-foreground">
           Stop stitching together tools that were never meant to work together.
+          {/* Each sentence on its own line from md up; narrower screens wrap
+              naturally. */}
+          <br className="hidden md:inline" />
           Run everything and build anything in one place.
         </p>
 
