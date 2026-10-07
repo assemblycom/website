@@ -62,6 +62,7 @@ const TOOLS: {
     name: "Slack",
     does: "Alerts and handoffs",
     how: "Automate",
+    logo: "slack.png",
   },
   {
     initials: "DS",
