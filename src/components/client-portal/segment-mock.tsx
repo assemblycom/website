@@ -84,22 +84,27 @@ const LINE = "border-[var(--mock-line)]";
 // colour on a panel ground reads as the panel meaning something.
 const PANEL = `bg-[var(--mock-well-soft)] text-[color:var(--mock-ink)] ${LINE}`;
 
-// The tinted ground, for the ONE panel that gets it.
+// The lifted ground, for the ONE panel that gets it.
 //
-// --mock-well, not a hue. A blue wash was tried and dropped: colour here reads
-// as a status — the panel meaning something — when all it has to do is be the
-// panel you look at first. --mock-well is the neutral step this mock family
-// already uses wherever a surface sits apart from the window (the portal bar,
-// the round header), so the first panel is lifted by the same amount and in
-// the same direction as every other lifted surface on the site, in both
-// themes, rather than by a one-off value.
+// --mock-well-2, not a hue. A blue wash was tried and dropped: colour here
+// reads as a status — the panel meaning something — when all it has to do is
+// be the panel you look at first.
+//
+// It started on --mock-well, one rung down, and that was too close to the
+// half-step the other three sit on to be worth the distinction. -2 is the top
+// of the same neutral ladder and moves the right way in BOTH themes on its
+// own: dark goes up (#292929 → #303030) because lifting a surface off black
+// means more light, light goes down (#f7f8fa → #f2f3f6) because lifting a
+// surface off white means less. One token name, two opposite directions,
+// which is the whole reason to take the rung rather than brighten a value by
+// hand and have to remember to darken the other theme to match.
 // It also catches the light, like the frame around it.
 //
 // .mock-edge again — the hero's lit border, and now the board's outer frame's —
 // with two overrides it needs and the frame does not:
 //
 //   --mock-edge-fill  so the ramp paints the BORDER but leaves the inside on
-//                     --mock-well. Without it the class's default fill would
+//                     --mock-well-2. Without it the class's default fill would
 //                     put the panel back on --mock-window and the lift above
 //                     would be undone by the thing meant to dress it.
 //   -w / -h in %      because the default 540x400 ellipse is tuned to the
@@ -110,7 +115,7 @@ const PANEL = `bg-[var(--mock-well-soft)] text-[color:var(--mock-ink)] ${LINE}`;
 //
 // Dark only, where the class is defined: the lift alone carries the panel in
 // light, and a ramp on a white card has nothing to fall into.
-const PANEL_TINT = `mock-edge [--mock-edge-fill:var(--mock-well)] [--mock-edge-w:120%] [--mock-edge-h:150%] bg-[var(--mock-well)] text-[color:var(--mock-ink)] ${LINE}`;
+const PANEL_TINT = `mock-edge [--mock-edge-fill:var(--mock-well-2)] [--mock-edge-w:120%] [--mock-edge-h:150%] bg-[var(--mock-well-2)] text-[color:var(--mock-ink)] ${LINE}`;
 
 function NavRow({
   icon,

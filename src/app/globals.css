@@ -161,12 +161,13 @@
      rest would have closed the gap between a panel and the recesses in it until
      a table head stopped reading as one. Same steps, two levels lower. */
   --mock-window: #fcfcfd;
-  /* Half of --mock-well's lift, for a panel that should sit off the window
-     without competing with the one panel that is actually stepped forward.
+  /* The quietest lift off the window, for a panel that should read as an
+     object without competing with the one panel that is stepped forward.
 
-     Measured as the midpoint of the two it sits between, so the board reads as
-     three rungs at an even pitch — ground, panel, step panel — rather than two
-     tones and an odd one. */
+     It is the bottom of a three-rung ladder the onboarding board climbs:
+     --mock-window for the board, this for its ordinary panels, --mock-well-2
+     for the step panel. Each rung has to clear the one below it by enough to
+     be seen and not so much that the board looks like three materials. */
   --mock-well-soft: #fafafc;
   /* The faint recess on a window: table heads, the row in play. Was
      bg-muted/60 over white. */
