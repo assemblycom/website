@@ -129,18 +129,11 @@ export function StackPicker({
       // paints the interior too and would otherwise repaint this panel back to
       // the mock window colour.
       //
-      // The second ring is the box-shadow pair: three pixels of the card's
-      // own surface, then a hairline. That gap is what makes it read as two
-      // borders rather than one thick one.
-      //
-      // INSET, not outset. Drawn outward it was a ring around the card, and
-      // this card deliberately runs past the 1200px rail and off the
-      // viewport — so the ring carried on past the page's own grid line and
-      // closed around a card the layout says is still going. Inset, the whole
-      // double edge lives inside the card's box: nothing is drawn outside the
-      // shape, so there is nothing to cross a guide with, and the bled right
-      // edge keeps running the way the layout intends.
-      className="mock-edge flex h-[300px] flex-col justify-center gap-1 rounded-2xl border border-border bg-[var(--surface)] p-4 shadow-[inset_0_0_0_3px_var(--surface),inset_0_0_0_4px_var(--border)] [--mock-edge-fill:var(--surface)] md:h-[380px] md:p-5 lg:h-[440px] lg:rounded-r-none [[data-theme=dark]_&]:border-[#383838] [[data-theme=dark]_&]:shadow-[inset_0_0_0_3px_var(--surface),inset_0_0_0_4px_#383838]"
+      // ONE EDGE, not two. A second ring inside the first was tried and is
+      // gone: the bezel this class paints is already a graded edge rather than
+      // a flat hairline, so a ring a few pixels in gave it a second, harder
+      // line to compete with and the card read as being framed twice.
+      className="mock-edge flex h-[300px] flex-col justify-center gap-1 rounded-2xl border border-border bg-[var(--surface)] p-4 [--mock-edge-fill:var(--surface)] md:h-[380px] md:p-5 lg:h-[440px] lg:rounded-r-none [[data-theme=dark]_&]:border-[#383838]"
       // Leaving the panel puts the selection back on the first row rather than
       // stranding it wherever the pointer left. A picture that keeps the last
       // thing you touched reads as a control you have used; this one is a

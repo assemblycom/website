@@ -446,7 +446,22 @@ export function RailCard({
   if (copyInside) {
     return (
       <div className={`group/card ${RAIL_W}`}>
-        <div className="relative flex aspect-[3/4] w-full select-none flex-col overflow-hidden rounded-3xl bg-[var(--surface)]">
+        {/* SQUARE BELOW sm, three-quarters from there.
+  
+                The card is 78% of the rail below sm, so its width grows with the
+                viewport while the ratio holds — at 375px it is a reasonable
+                255x340, but by 600px it is 400x533, which is two thirds of a
+                phone screen for one card in a rail you are meant to swipe
+                through. The ratio was set for the desktop rail, where three
+                cards share the row and none of them can run away with it.
+  
+                Square takes a quarter off the height across that whole range
+                without touching the desktop proportion. The mocks inside are
+                absolutely positioned and the card clips, so they crop further
+                from the foot — which is what they already do, and what says the
+                screen continues. */}
+
+        <div className="relative flex aspect-square w-full select-none flex-col overflow-hidden rounded-3xl bg-[var(--surface)] sm:aspect-[3/4]">
           <div className="relative z-10 shrink-0 px-6 pb-4 pt-6 md:px-7 md:pt-7">
             {copy}
           </div>
@@ -521,7 +536,7 @@ export function RailCard({
 
   return (
     <div className={`group/card ${RAIL_W}`}>
-      <div className="relative aspect-[3/4] w-full select-none overflow-hidden rounded-3xl bg-[var(--surface)]">
+      <div className="relative aspect-square w-full select-none overflow-hidden rounded-3xl bg-[var(--surface)] sm:aspect-[3/4]">
         {children}
       </div>
       <div className="mt-4 px-1">{copy}</div>
