@@ -2,7 +2,6 @@ import Link from "next/link";
 import { CheckIcon } from "@/components/ui/check-icon";
 import { Reveal } from "@/components/ui/reveal";
 import { APP_URL, DEMO_URL, DEMO_CTA_LABEL } from "@/lib/constants";
-import { PLAN_EDGE_BRAND } from "@/components/pricing/plan-wash";
 
 /**
  * A teaser, not a matrix: the full plan comparison is /pricing, and this
@@ -121,17 +120,18 @@ export function PortalPricing({
             same object and were being drawn two different ways, which in dark
             left this block as flat outlines on the near-black while the table
             had a lit top edge. The three ordinary plans take the neutral wash;
-            the recommended one takes the tinted edge alone, its wash removed
-            below. */}
+            Every card takes the same hairline, the recommended one included.
+            Its tinted top edge (.plan-edge-brand, dark only) is gone too: a
+            blue-lit border on one of four otherwise identical outlines was the
+            only colour in the block, and it read as the card being in a state
+            rather than as the plan being the suggested one. What marks the
+            recommended plan is its filled button. /pricing still runs the
+            class and plan-wash.ts is untouched, so that page is unchanged. */}
         <div className="mt-12 grid gap-4 min-[560px]:grid-cols-2 lg:grid-cols-4">
           {tiers.map((tier) => (
             <div
               key={tier.name}
-              // isolate + overflow-hidden still stand for the recommended
-              // card's edge, which is a masked gradient border.
-              className={`relative isolate flex flex-col overflow-hidden rounded-2xl border border-border p-6 [[data-theme=dark]_&]:border-[#383838] ${
-                tier.recommended ? PLAN_EDGE_BRAND : ""
-              }`}
+              className="relative flex flex-col overflow-hidden rounded-2xl border border-border p-6 [[data-theme=dark]_&]:border-[#383838]"
             >
               {/* No wash. Every card carried a grey one fading out by 120px,
                   which at this block's card height sat behind the plan name

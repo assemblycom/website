@@ -39,6 +39,20 @@ const CHIP = "rounded px-1.5 py-[4px] text-[11px] leading-none";
 const POSITIVE = `${CHIP} bg-[var(--mock-positive-bg)] text-[color:var(--mock-positive-fg)]`;
 const NEUTRAL = `${CHIP} bg-[var(--mock-well-2)] text-[color:var(--mock-ink-soft)]`;
 
+// A row answering the pointer, shared by every table in the rail so one card's
+// rows don't feel live while the next card's feel dead.
+//
+// --mock-well-2, the solid well, not --mock-well: the faint one is two percent
+// off white and a hover nobody can see is not a hover state.
+const ROW_HOVER = "transition-colors hover:bg-[var(--mock-well-2)]";
+
+// The dashed and unfilled circles in this family read off --mock-line, which at
+// #2e2e2e on the dark window is a step small enough to disappear — the mark was
+// simply not there in dark. Lifted here only; light keeps --mock-line, where it
+// is already a visible hairline against white.
+const CIRCLE_TRACK_DARK = "[[data-theme=dark]_&]:border-[#4d4d4d]";
+const CIRCLE_STROKE_DARK = "[[data-theme=dark]_&]:stroke-[#4d4d4d]";
+
 // Every hover move hangs off this, so "no motion" is one rule rather than
 // four separate ones that can drift.
 const MOVE =
@@ -172,7 +186,7 @@ function Ring({ value }: { value: number }) {
         r={r}
         fill="none"
         strokeWidth="2"
-        className="stroke-[var(--mock-line)]"
+        className={`stroke-[var(--mock-line)] ${CIRCLE_STROKE_DARK}`}
       />
       <circle
         cx="8"
@@ -216,7 +230,7 @@ export function PlanCard() {
               // --mock-well-2, the solid well, not --mock-well: the faint one
               // is two percent off white and a hover nobody can see is not a
               // hover state.
-              className={`flex items-center gap-2.5 border-b px-4 py-[11px] transition-colors last:border-b-0 hover:bg-[var(--mock-well-2)] ${LINE}`}
+              className={`flex items-center gap-2.5 border-b px-4 py-[11px] last:border-b-0 ${ROW_HOVER} ${LINE}`}
             >
               {/* Two states, not three: filled with a check for settled, a
                 dashed faint circle for everything still open. All of them
@@ -229,7 +243,7 @@ export function PlanCard() {
                   </span>
                 ) : (
                   <span
-                    className={`size-[16px] rounded-full border border-dashed ${LINE}`}
+                    className={`size-[16px] rounded-full border border-dashed ${LINE} ${CIRCLE_TRACK_DARK}`}
                   />
                 )}
               </span>
@@ -329,7 +343,7 @@ export function BuildCard() {
             {MILESTONES.map(({ name, owner, state }) => (
               <div
                 key={name}
-                className={`flex items-center gap-3 border-b px-3.5 py-[9px] last:border-b-0 ${LINE}`}
+                className={`flex items-center gap-3 border-b px-3.5 py-[9px] last:border-b-0 ${ROW_HOVER} ${LINE}`}
               >
                 <span className="w-[164px] shrink-0 whitespace-nowrap text-[13px] leading-none text-[color:var(--mock-ink)]">
                   {name}
@@ -363,8 +377,14 @@ function ClientNavRow({
 }) {
   return (
     <span
-      className={`flex h-[28px] items-center gap-2 rounded px-1.5 ${
-        active ? "bg-white/[0.12] text-white" : "text-white/60"
+      // On the slab a row cannot answer the pointer in ink — white against
+      // white/60 is too small a step — so it takes the same quiet fill the
+      // picked row wears, one stop down. The picked row is already at its
+      // fill and does not move.
+      className={`flex h-[28px] items-center gap-2 rounded px-1.5 transition-colors ${
+        active
+          ? "bg-white/[0.12] text-white"
+          : "text-white/60 hover:bg-white/[0.07] hover:text-white"
       }`}
     >
       <span className="flex shrink-0 items-center justify-center [&>svg]:size-[16px]">
@@ -400,7 +420,7 @@ function BusyRing({ className = "" }: { className?: string }) {
         r={r}
         fill="none"
         strokeWidth="2"
-        className="stroke-[var(--mock-line)]"
+        className={`stroke-[var(--mock-line)] ${CIRCLE_STROKE_DARK}`}
       />
       <circle
         cx="8"
@@ -450,7 +470,7 @@ export function IterateCard() {
             ].map(([client, due], i) => (
               <div
                 key={client}
-                className={`flex items-center gap-2 border-b px-3 py-[11px] last:border-b-0 ${LINE}`}
+                className={`flex items-center gap-2 border-b px-3 py-[11px] last:border-b-0 ${ROW_HOVER} ${LINE}`}
               >
                 <span className="flex-1 truncate text-[13px] leading-none text-[color:var(--mock-ink)]">
                   {client}
@@ -498,7 +518,7 @@ export function SecuredCard() {
         {ROWS.map(([who, access]) => (
           <div
             key={who}
-            className={`flex items-center gap-2 border-b px-3.5 py-[13px] ${LINE}`}
+            className={`flex items-center gap-2 border-b px-3.5 py-[13px] ${ROW_HOVER} ${LINE}`}
           >
             <span className="flex size-[16px] shrink-0 items-center justify-center rounded-full bg-[var(--mock-ink)] text-[color:var(--mock-window)]">
               <IconCheck className="size-[10px]" />

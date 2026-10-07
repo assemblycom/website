@@ -142,7 +142,7 @@ function Screen({
           on the layer inside now, over a ground that hides whatever is
           behind. */}
       <div
-        className={`h-[300px] overflow-hidden rounded-t-xl border-l border-r border-t border-border bg-background transition-colors duration-200 group-hover:border-foreground/30 motion-reduce:transition-none md:h-[400px] [[data-theme=dark]_&]:border-[#383838] [[data-theme=dark]_&]:group-hover:border-white/35 ${
+        className={`h-[300px] overflow-hidden rounded-t-xl border-l border-r border-t border-border bg-background transition-colors duration-200 group-hover:border-foreground/30 motion-reduce:transition-none md:h-[400px] [[data-theme=dark]_&]:border-[#383838] [[data-theme=dark]_&]:group-hover:border-white/20 ${
           selected ? (overlaps ? LIFT_LEFT : LIFT_RIGHT) : ""
         }`}
       >
@@ -154,7 +154,7 @@ function Screen({
             the selection rather than fixed to one side. */}
         <div
           className={`h-full transition duration-300 motion-reduce:transition-none ${
-            selected ? "" : "opacity-55 grayscale"
+            selected ? "" : "opacity-55 grayscale [[data-theme=dark]_&]:opacity-[0.85]"
           }`}
         >
           {children}
@@ -187,8 +187,22 @@ function Screen({
 // The bottom is a straight crop against the tray's edge instead — these are
 // windows onto screens that continue below, and the edge says so.
 const SCREEN_FADE =
-  "linear-gradient(to right, #000 0 86%, rgba(0,0,0,0.72) 92%, " +
-  "rgba(0,0,0,0.3) 97%, transparent 100%)";
+  "linear-gradient(to right, #000 0 90%, rgba(0,0,0,0.72) 95%, " +
+  "rgba(0,0,0,0.3) 98%, transparent 100%)";
+
+// The same idea on the bottom edge, and the reason the tray can round down
+// there at all. The screens used to run flush to the tray's bottom, so a
+// radius had nothing but screen to cut into and took two notches out of them.
+// Faded out over the last few percent, the tray's own grey is what sits in the
+// bottom corners, and there is a corner to round — the fix the agency hero's
+// tray already uses.
+//
+// SHORT. A long eased ramp here is what this picture must never go back to:
+// the left screen's near-black sidebar spread into a grey smear half the
+// height of the tray. At 96% of a 400px screen the ramp is ~16px, which reads
+// as the window giving out at the edge rather than as a gradient.
+const SCREEN_FADE_BOTTOM =
+  "linear-gradient(to bottom, #000 0 96%, rgba(0,0,0,0.45) 99%, transparent 100%)";
 
 function ScreenPair() {
   // Which screen is in front. It persists: pointing at one brings it forward
@@ -279,18 +293,30 @@ export function PortalProblem({
             right. No bottom padding: the crop is the point, and a tray that
             closed under them would make them two pictures sitting on a shelf.
 
-            Top corners only. The screens run to the tray's bottom edge, so a
-            radius down there has nothing to round — it clips two notches out
-            of them instead, which reads as a rendering fault rather than as a
-            corner. */}
-        <div className="mt-8 overflow-hidden rounded-t-3xl bg-[var(--surface)] p-4 pb-0 md:mt-10 md:p-6 md:pb-0">
+            Rounded on all four. The screens still run off the bottom, but
+            they fade out just before it (SCREEN_FADE_BOTTOM), so the bottom
+            corners hold the tray's own grey and there is something there to
+            round. Taking the fade away means taking the bottom radius with
+            it — a radius cut straight into the screens notches them. */}
+        <div className="mt-8 overflow-hidden rounded-3xl bg-[var(--surface)] p-4 pb-0 md:mt-10 md:p-6 md:pb-0">
+          {/* Two masks, nested rather than two layers on one element: CSS
+              composites mask layers by union, so declared together the right
+              fade and the bottom fade would each hold the other's edge open
+              instead of both applying. */}
           <div
             style={{
-              WebkitMaskImage: SCREEN_FADE,
-              maskImage: SCREEN_FADE,
+              WebkitMaskImage: SCREEN_FADE_BOTTOM,
+              maskImage: SCREEN_FADE_BOTTOM,
             }}
           >
-            {screens ?? <ScreenPair />}
+            <div
+              style={{
+                WebkitMaskImage: SCREEN_FADE,
+                maskImage: SCREEN_FADE,
+              }}
+            >
+              {screens ?? <ScreenPair />}
+            </div>
           </div>
         </div>
 

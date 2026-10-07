@@ -17,7 +17,6 @@ import {
   IconBrandMark,
   IconCard,
   IconChat,
-  IconChevronDown,
   IconDocuments,
   IconFile,
   IconGlobe,
@@ -73,6 +72,17 @@ function NavRow({
   label: string;
   active?: boolean;
   branded?: boolean;
+  /**
+   * What sits on the tile beside the name.
+   *
+   * "logo" is a firm's own mark — correct wherever the screen belongs to
+   * somebody. The generic portal in the problem section belongs to nobody, and
+   * a mark there quietly gave it one: the two screens carried the SAME logo,
+   * so the picture's whole argument ("one of these is yours") was contradicted
+   * by its own chrome. "initial" draws the brand's first letter instead, which
+   * is what every product puts on a workspace that has uploaded nothing.
+   */
+  mark?: "logo" | "initial";
 }) {
   return (
     <span
@@ -117,6 +127,7 @@ export function PortalSidebar({
   app,
   brand = "Brandmages",
   branded = false,
+  mark = "logo",
 }: {
   /** The firm's own app, added to the stock nav below. Omit for a portal
       that has no such app — the point the problem section makes. */
@@ -133,6 +144,17 @@ export function PortalSidebar({
    * a grey nav on both sides quietly contradicts.
    */
   branded?: boolean;
+  /**
+   * What sits on the tile beside the name.
+   *
+   * "logo" is a firm's own mark — correct wherever the screen belongs to
+   * somebody. The generic portal in the problem section belongs to nobody, and
+   * a mark there quietly gave it one: the two screens carried the SAME logo,
+   * so the picture's whole argument ("one of these is yours") was contradicted
+   * by its own chrome. "initial" draws the brand's first letter instead, which
+   * is what every product puts on a workspace that has uploaded nothing.
+   */
+  mark?: "logo" | "initial";
 }) {
   return (
     <div
@@ -149,10 +171,30 @@ export function PortalSidebar({
           className={`flex size-[15px] items-center justify-center rounded-[3px] ${
             branded
               ? "bg-white text-black"
-              : "bg-foreground text-background"
+              : mark === "initial"
+                ? // A placeholder tile, not a brand one: the default avatar a
+                  // workspace gets before anyone uploads anything, which is the
+                  // state this screen is illustrating. At bg-foreground it was
+                  // a solid black tile, the loudest mark in the screen the
+                  // section wants read as the dimmer half.
+                  //
+                  // The mock's own ink at 10%, not --mock-well-2. The wells are
+                  // recesses in a WINDOW, and this tile sits on the SIDEBAR,
+                  // which is already a well — so a well-coloured tile on it was
+                  // the same grey twice and the avatar disappeared. Ink-at-10
+                  // steps off whatever it is on, in either theme, because it
+                  // is drawn from the ink rather than from the ground.
+                  "bg-[var(--mock-ink)]/10 text-[color:var(--mock-ink-soft)]"
+                : "bg-foreground text-background"
           }`}
         >
-          <IconBrandMark className="size-[8px]" />
+          {mark === "initial" ? (
+            <span className="text-[8px] leading-none">
+              {brand.trim().charAt(0).toUpperCase()}
+            </span>
+          ) : (
+            <IconBrandMark className="size-[8px]" />
+          )}
         </span>
         <span
           className={`truncate text-[10.5px] leading-none ${
@@ -161,11 +203,6 @@ export function PortalSidebar({
         >
           {brand}
         </span>
-        <IconChevronDown
-          className={`size-[9px] shrink-0 ${
-            branded ? "text-white/60" : "text-[color:var(--mock-ink-soft)]"
-          }`}
-        />
       </span>
       <NavRow
         icon={<IconGlobe className="size-[11px]" />}
@@ -555,7 +592,7 @@ export function GenericPortalMock() {
       aria-hidden
       className="pointer-events-none flex h-full select-none bg-[var(--mock-window)] text-[color:var(--mock-ink)]"
     >
-      <PortalSidebar brand="Generic portal" />
+      <PortalSidebar brand="Generic" mark="initial" />
       <div className="flex min-w-0 flex-1 flex-col">
         <AppHeader title="Billing" />
         <div className="flex min-h-0 flex-1 flex-col px-4 py-3.5">
