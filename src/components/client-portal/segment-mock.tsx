@@ -452,70 +452,62 @@ export function ApprovalsMock() {
   );
 }
 
-// ── 2b. Accounting — the collection as an analytics tile ─────────────────
+// ── 2b. Accounting — the collection, as the act of collecting ────────────
 // A SECOND documents picture, for the tailor grid. DocumentsMock below is the
 // portal screen and is what the hero carousel draws, so it is left alone; this
 // one exists because beside the onboarding board the row-and-chip screen read
-// as the same card twice. A headline figure over a column chart is a different
-// KIND of picture, which is the whole point of that set.
-const UPLOADS = [1, 2, 2, 4, 3, 5];
-
+// as the same card twice.
+//
+// It was a headline figure over a column chart — uploads per week, climbing.
+// The shape was fine and it said nothing the card's own heading did not: a
+// count of documents received, drawn twice. What the card is selling is the
+// COLLECTING — "a per-client checklist with upload tracking" — and the moment
+// that describes is a client putting a file in, which a bar chart of last
+// month's totals is the one picture that cannot show.
+//
+// So it is the drop target, and only that — a dashed well, which is the one
+// control everybody recognises on sight without a glyph to announce it. The
+// arrow that sat above the copy was the third thing in a box that says "drop
+// files to upload" in words directly underneath.
+//
+// Two upload rows sat under it for a while, a landed file and one still going,
+// on the reasoning that "tracking" was half the sentence. They made the card
+// busy in the wrong way: a dropzone with a list beneath it is a file manager,
+// and the thing worth showing here is the invitation, not the log. The well
+// gets the whole card instead, which is also how it reads at a glance from
+// across the grid.
 export function DocumentsStatsMock() {
-  const peak = Math.max(...UPLOADS);
   return (
     <div
       aria-hidden
-      className={`pointer-events-none flex h-full select-none flex-col gap-4 rounded-xl border bg-[var(--mock-window)] text-[color:var(--mock-ink)] p-4 ${LINE}`}
+      className={`pointer-events-none flex h-full select-none flex-col gap-3 rounded-xl border bg-[var(--mock-window)] text-[color:var(--mock-ink)] p-4 ${LINE}`}
     >
-      <div>
-        <p className="text-[11.5px] leading-none text-[color:var(--mock-ink-soft)]">
-          Documents received
-        </p>
-        <p className="mt-2 text-[24px] leading-none text-[color:var(--mock-ink)]">
-          8 of 12
-        </p>
-      </div>
+      <p className="text-[11.5px] leading-none text-[color:var(--mock-ink-soft)]">
+        Year-end documents
+      </p>
 
-      {/* No axis rule: with the columns all starting from the same edge the
-          baseline is already read, and the line only added a second horizontal
-          to a card that has one under the heading. Corners are rounded at both
-          ends so each column is a complete shape rather than a strip cut off
-          at the bottom — which is what the rule was there to hide. 6px gutter.
-
-          No date range under it and no figure over the peak either. "8 of 12"
-          is the number this card is making, stated once at full size; a 10.5px
-          "5" above the last column and a "Nov 4 / Dec 9" rule under the chart
-          were two more figures competing with it, both of them detail nobody
-          reads at this size. The shape of the columns is the claim — uploads
-          climbing — and the shape survives losing its labels, which is the
-          test of whether they were carrying anything. */}
-      <div className="flex flex-1 flex-col">
-        <div className="flex min-h-[86px] flex-1 items-end gap-[6px]">
-          {UPLOADS.map((n, i) => (
-            <div key={i} className="flex h-full flex-1 flex-col justify-end">
-              {/* The same Haze pair the progress card uses, and the same
-                  reason: the peak was near-black against grey, which made the
-                  one column the card is pointing at read as ink rather than as
-                  a value — the heaviest mark on a card whose heading is set
-                  lighter than it. Full Haze for the peak, a tint of it for the
-                  rest, so the highlight is a step along one hue instead of a
-                  jump to a different kind of mark. */}
-              <div
-                className={`w-full rounded-[4px] ${
-                  n === peak
-                    ? "bg-[var(--mock-accent-bg)]"
-                    : "bg-[var(--mock-accent-bg-3)]"
-                }`}
-                style={{ height: `${(n / peak) * 100}%` }}
-              />
-            </div>
-          ))}
-        </div>
+      {/* The well. Dashed because that is what a drop target has looked like
+          for fifteen years, and flex-1 so it takes the height the columns used
+          to — a dropzone that is not the biggest thing on the card reads as a
+          field in a form rather than as somewhere to put something. */}
+      <div
+        // No flex-1. It used to take whatever height the card had left, and on
+        // a card sized for a column chart that was most of it — a drop target
+        // tall enough to lose its own label in the middle of. A well is read by
+        // its shape, not its area, so it gets a height of its own and the card
+        // closes up around it.
+        className={`flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed bg-[var(--mock-well)] px-4 py-10 text-center ${LINE}`}
+      >
+        <span className="text-[11.5px] leading-none text-[color:var(--mock-ink)]">
+          Drop files to upload
+        </span>
+        <span className="text-[10px] leading-none text-[color:var(--mock-ink-soft)]">
+          PDF, XLSX or CSV, up to 25 MB
+        </span>
       </div>
     </div>
   );
 }
-
 // ── 3. Accounting — the checklist as a portal screen ──────────────────────
 // Built to the same shape as the approvals screen: sidebar, app header, then
 // the content filling the frame. It used to be a bordered panel floating in the

@@ -4,7 +4,7 @@ import {
   DocumentsStatsMock,
   OnboardingMock,
 } from "@/components/client-portal/segment-mock";
-import { ProgressMock } from "@/components/client-portal/progress-donut";
+import { ProgressMock } from "@/components/client-portal/progress-chart";
 
 /** Shared by every card in the set. The page's one panel grey — these were on
  *  --muted, which is a different grey from the tray and the template rows a
@@ -113,7 +113,7 @@ export function PortalTailor({
                 <p className={BODY}>
                   A per-client checklist with upload tracking.
                 </p>
-                <div className="mt-6 min-h-[232px] flex-1">
+                <div className="mt-6 flex-1">
                   <DocumentsStatsMock />
                 </div>
               </div>
