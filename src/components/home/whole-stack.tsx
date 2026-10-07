@@ -2671,9 +2671,9 @@ export function WholeStack() {
               reader has to open any of the ten rows to find out. */}
           <p className="type-lead mt-5 max-w-md text-pretty text-muted-foreground">
             Practice management tools run your back office. Client portals
-            handle the front. App builders make prototypes. Assembly is the only
-            platform that does all three, with a CRM for your team, a branded
-            experience for your clients, and an app builder for everything else.
+            handle the front. Most app builders stop at prototypes. Assembly
+            does all three: CRM, branded client experience, and a secure app
+            builder.
           </p>
         </div>
 
