@@ -752,7 +752,21 @@ function Composer({ run, typing }: { run: number; typing: boolean }) {
           flipped. Shadows are not clipped by the overflow-hidden above, so
           the outer line survives it. */}
       <div
-        className={`overflow-hidden rounded-xl border bg-[var(--mock-window)] shadow-[0_0_0_3px_var(--surface),0_0_0_4px_var(--mock-line)] ${LINE}`}
+        // The same lit edge the Live screen beside this one wears — .mock-edge,
+        // a border painted with a radial falling from the top-left corner into
+        // the card's ground. The two halves of the hero are one picture, so the
+        // one box on this side and the one screen on that side should catch the
+        // light the same way.
+        //
+        // Sized for THIS box. The default ellipse is tuned to that screen's
+        // 760px height; on something 100px tall and 560px wide the whole border
+        // sits inside the bright end of it and comes out flat, so the falloff
+        // is scaled to run across the composer instead.
+        //
+        // Dark only, which is where the class lives: in light the plain
+        // --mock-line hairline already reads against the white card, and a grey
+        // ramp there would be a smudge rather than an edge.
+        className={`mock-edge [--mock-edge-h:160px] [--mock-edge-w:420px] overflow-hidden rounded-xl border bg-[var(--mock-window)] shadow-[0_0_0_3px_var(--surface),0_0_0_4px_var(--mock-line)] ${LINE}`}
       >
         {box}
       </div>

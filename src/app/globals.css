@@ -262,12 +262,21 @@
    DARK ONLY. In light the edge is #e8e9ec on white, which is already a
    whisper — a ramp there would be invisible at the top and dirty at the
    bottom. */
+/* The lit edge on a mock's own window: a border painted with a radial that
+   falls from the top-left corner into the card's ground, so the screen reads as
+   catching the light rather than as a flat hairline. Dark only — in light the
+   plain --mock-line hairline is already visible against white.
+
+   The ellipse is sized by the box carrying it, because the falloff has to span
+   THAT box: the 540x400 default is tuned to the hero's 760px-tall screen, and
+   on something short and wide (the composer) it lands entirely inside the
+   bright end and reads as one flat grey. Override with --mock-edge-w / -h. */
 [data-theme="dark"] .mock-edge {
   border-color: transparent;
   background-image:
     linear-gradient(var(--mock-window), var(--mock-window)),
     radial-gradient(
-      ellipse 540px 400px at 0% 0%,
+      ellipse var(--mock-edge-w, 540px) var(--mock-edge-h, 400px) at 0% 0%,
       #484848 0%,
       #3a3a3a 14%,
       #2f2f2f 32%,

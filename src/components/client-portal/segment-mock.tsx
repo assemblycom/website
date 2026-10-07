@@ -589,9 +589,20 @@ export function GenericPortalMock() {
       <div
         className={`flex items-center gap-2 border-b bg-[var(--mock-well)] px-4 py-2.5 ${LINE}`}
       >
-        <span className="size-[13px] shrink-0 rounded-[2px] bg-[var(--mock-ink)]/15" />
+        {/* The firm's initial on a plain square — the default avatar a
+            workspace gets in a product it did not design. Ink at 10%, so the
+            tile steps off whatever it sits on in either theme; on a well
+            colour it was the same grey twice and the avatar disappeared.
+            Square, not the rounded tile the Assembly screens use. */}
+        <span className="flex size-[13px] shrink-0 items-center justify-center rounded-[2px] bg-[var(--mock-ink)]/10 text-[7.5px] leading-none text-[color:var(--mock-ink-soft)]">
+          B
+        </span>
+        {/* Just "Portal". The product is nobody's and is not being sold here,
+            so the less it is named the better — and at this size a two-word
+            product name beside a one-letter avatar read as the firm's own
+            branding rather than as the software's. */}
         <span className="truncate text-[10.5px] leading-none text-[color:var(--mock-ink-soft)]">
-          Client Portal
+          Portal
         </span>
       </div>
 
@@ -601,7 +612,13 @@ export function GenericPortalMock() {
           mark the same idea the same way. */}
       <div className={`flex items-center gap-5 border-b px-4 ${LINE}`}>
         {BOUGHT_TABS.map((tab, i) => {
-          const open = i === BOUGHT_TABS.length - 1;
+          // Dashboard, not one of the three after it. What this screen shows
+          // below is a list of work the portal does not hold, which belongs to
+          // no particular app — parked under "Invoices" it read as an answer to
+          // the wrong question ("why is the rate card drive on the invoices
+          // page?"). The overview is the one page where a catch-all list is
+          // what you would expect to find.
+          const open = i === 0;
           return (
             <span
               key={tab}
@@ -677,10 +694,11 @@ export function IntakeAppMock({
     >
       <PortalSidebar app="Partner intake" branded={branded} />
       <div className="flex min-w-0 flex-1 flex-col">
-        <AppHeader
-          title="Partner intake"
-          meta={<span className={NEUTRAL}>Your app</span>}
-        />
+        {/* No "Your app" chip. The nav row beside it is lit and says the same
+            words, the caption above the picture says them again, and alone on
+            the header row it read as a stray pill rather than as whose app
+            this is. */}
+        <AppHeader title="Partner intake" />
         <div className="flex min-h-0 flex-1 flex-col px-4 py-3.5">
           <div className="flex flex-col gap-2.5">
             {INTAKE_FIELDS.map((field) => (
