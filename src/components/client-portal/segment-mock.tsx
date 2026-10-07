@@ -83,7 +83,24 @@ const PANEL = `bg-[var(--mock-window)] text-[color:var(--mock-ink)] ${LINE}`;
 // the round header), so the first panel is lifted by the same amount and in
 // the same direction as every other lifted surface on the site, in both
 // themes, rather than by a one-off value.
-const PANEL_TINT = `bg-[var(--mock-well)] text-[color:var(--mock-ink)] ${LINE}`;
+// It also catches the light, like the frame around it.
+//
+// .mock-edge again — the hero's lit border, and now the board's outer frame's —
+// with two overrides it needs and the frame does not:
+//
+//   --mock-edge-fill  so the ramp paints the BORDER but leaves the inside on
+//                     --mock-well. Without it the class's default fill would
+//                     put the panel back on --mock-window and the lift above
+//                     would be undone by the thing meant to dress it.
+//   -w / -h in %      because the default 540x400 ellipse is tuned to the
+//                     hero's 760px screen, and this panel is ~335x92 — the box
+//                     would sit entirely in the bright end of the ramp and read
+//                     as one flat grey. 120/150% is what the other card-sized
+//                     callers (the composer, the build cards) already use.
+//
+// Dark only, where the class is defined: the lift alone carries the panel in
+// light, and a ramp on a white card has nothing to fall into.
+const PANEL_TINT = `mock-edge [--mock-edge-fill:var(--mock-well)] [--mock-edge-w:120%] [--mock-edge-h:150%] bg-[var(--mock-well)] text-[color:var(--mock-ink)] ${LINE}`;
 
 function NavRow({
   icon,

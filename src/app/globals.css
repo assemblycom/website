@@ -354,11 +354,21 @@
    The ellipse is sized by the box carrying it, because the falloff has to span
    THAT box: the 540x400 default is tuned to the hero's 760px-tall screen, and
    on something short and wide (the composer) it lands entirely inside the
-   bright end and reads as one flat grey. Override with --mock-edge-w / -h. */
+   bright end and reads as one flat grey. Override with --mock-edge-w / -h.
+
+   The INTERIOR is --mock-edge-fill, defaulting to --mock-window. The first
+   layer below is clipped to the padding box, so it is what the element's inside
+   actually shows — a lit edge painted over a panel that sits on some other
+   ground would repaint that panel back to the window and quietly undo it. Every
+   existing caller is on --mock-window and passes nothing; a panel on
+   --mock-well passes --mock-well and keeps its own tone. */
 [data-theme="dark"] .mock-edge {
   border-color: transparent;
   background-image:
-    linear-gradient(var(--mock-window), var(--mock-window)),
+    linear-gradient(
+      var(--mock-edge-fill, var(--mock-window)),
+      var(--mock-edge-fill, var(--mock-window))
+    ),
     /* The counter-light at the opposite corner.
 
        The ramp below runs from the top-left and lands on #212121, so the whole
