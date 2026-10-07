@@ -86,6 +86,7 @@ const TOOLS: {
     name: "Calendly",
     does: "Scheduling and reminders",
     how: "Embed",
+    logo: "calendly.png",
   },
 ];
 

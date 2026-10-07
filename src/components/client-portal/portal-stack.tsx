@@ -142,10 +142,17 @@ export function PortalStack({
                       // pixels wider than the rules at each end: the band stuck
                       // out past the lines that are supposed to bound it, so
                       // the row looked like it was overflowing its own list.
-                      // The row now sits in the column, and the rules run its
-                      // full width — one measure for the band and the lines
-                      // that close it.
-                      className={`group relative flex items-center gap-4 py-4 transition-colors before:absolute before:inset-x-0 before:top-0 before:h-px before:content-[''] hover:bg-foreground/[0.04] ${DOTTED_RULE_BEFORE} ${
+                      //
+                      // The row sits in the column now, so the band and the
+                      // rules share one measure — and the padding went INSIDE
+                      // it rather than outside. Without it the label started on
+                      // the band's own edge and the arrow ended on it, which
+                      // read as text that had been pushed up against the walls.
+                      // The cost is that the labels are inset from the heading
+                      // above them; the band having room is worth more than
+                      // that alignment, since the band is the thing you see
+                      // move.
+                      className={`group relative flex items-center gap-4 px-3 py-4 transition-colors before:absolute before:inset-x-0 before:top-0 before:h-px before:content-[''] hover:bg-foreground/[0.04] ${DOTTED_RULE_BEFORE} ${
                         i === ways.length - 1
                           ? `after:absolute after:inset-x-0 after:bottom-0 after:h-px after:content-[''] ${DOTTED_RULE_AFTER}`
                           : ""
