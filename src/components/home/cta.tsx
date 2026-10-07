@@ -1,8 +1,10 @@
-import { DEMO_URL, SIGNUP_URL } from "@/lib/constants";
+import { APP_URL, DEMO_URL, SIGNUP_URL } from "@/lib/constants";
 
 // The prompt composer that used to sit here lost to the plain two-button hero,
 // so the footer ends the page the same way that hero opens it. The buttons are
 // the hero's own pair (see hero-big.tsx), minus its experiment tracking.
+const PRIMARY_CTA =
+  "inline-flex w-full shrink-0 items-center justify-center whitespace-nowrap rounded-lg bg-foreground px-4 py-3 text-center text-sm text-background transition-opacity hover:opacity-90 sm:w-auto sm:py-2 md:px-5 md:py-2.5 [[data-theme=dark]_&]:bg-white [[data-theme=dark]_&]:text-neutral-900";
 export function CTA() {
   // bg-background in both themes so the CTA sits on the same canvas as the
   // rest of the landing page instead of introducing its own tint.
@@ -23,11 +25,13 @@ export function CTA() {
         </p>
 
         <div className="mx-auto mt-10 flex w-full max-w-sm flex-col gap-3 sm:w-auto sm:max-w-none sm:flex-row sm:items-center sm:justify-center">
-          <a
-            href={SIGNUP_URL}
-            className="inline-flex w-full shrink-0 items-center justify-center whitespace-nowrap rounded-lg bg-foreground px-4 py-3 text-center text-sm text-background transition-opacity hover:opacity-90 sm:w-auto sm:py-2 md:px-5 md:py-2.5 [[data-theme=dark]_&]:bg-white [[data-theme=dark]_&]:text-neutral-900"
-          >
+          {/* Signed in, the primary opens the workspace instead of signup:
+              both ship and `data-authed` picks one before paint (globals.css). */}
+          <a href={SIGNUP_URL} className={`unauth-only ${PRIMARY_CTA}`}>
             Get started
+          </a>
+          <a href={APP_URL} className={`auth-only ${PRIMARY_CTA}`}>
+            Open Assembly
           </a>
           <a
             href={DEMO_URL}
