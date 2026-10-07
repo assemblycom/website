@@ -161,14 +161,6 @@
      rest would have closed the gap between a panel and the recesses in it until
      a table head stopped reading as one. Same steps, two levels lower. */
   --mock-window: #fcfcfd;
-  /* The same panel ground with a trace of Haze in it, for the onboarding
-     board's panels.
-
-     Not a second elevation: it is mixed to sit at the window's own lightness
-     and only shifts hue, so the panels read as tinted rather than as lifted
-     off the board behind them. A tint that also lifts would put the board on
-     two surface levels, which is a claim about structure, not colour. */
-  --mock-window-tint: #fafbfe;
   /* The faint recess on a window: table heads, the row in play. Was
      bg-muted/60 over white. */
   --mock-well: #f7f8fa;
@@ -290,9 +282,6 @@
      which went muddy once it sat on a lifted panel instead of the near-black
      ground. */
   --mock-window: #212121;
-  /* See --mock-window-tint in :root. Dark's own mix, at dark's own lightness —
-     a pale blue wash that works on white would be a lit slab on #212121. */
-  --mock-window-tint: #202229;
   --mock-well: #292929;
   --mock-well-2: #303030;
   /* #2e2e2e, not #3a3a3a. The hairline is a SEPARATION, not a feature, and

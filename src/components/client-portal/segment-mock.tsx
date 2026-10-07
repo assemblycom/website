@@ -72,12 +72,18 @@ const NEUTRAL = `${CHIP} bg-muted text-[color:var(--mock-ink-soft)] [[data-theme
 
 const LINE = "border-[var(--mock-line)]";
 /** The white panel the app is drawn on, wherever a card shows one. */
-// The panels carry the tint, not the progress bars and not the board behind
-// them. Colour on the track made the data the loudest thing in the picture;
-// on the panel ground it reads as the surface the app is drawn on, which is
-// what a tint is for. --mock-window-tint holds the mix for each theme, so
-// nothing themed is written here.
-const PANEL = `bg-[var(--mock-window-tint)] text-[color:var(--mock-ink)] ${LINE}`;
+const PANEL = `bg-[var(--mock-window)] text-[color:var(--mock-ink)] ${LINE}`;
+
+// The tinted ground, for the ONE panel that gets it.
+//
+// --mock-well, not a hue. A blue wash was tried and dropped: colour here reads
+// as a status — the panel meaning something — when all it has to do is be the
+// panel you look at first. --mock-well is the neutral step this mock family
+// already uses wherever a surface sits apart from the window (the portal bar,
+// the round header), so the first panel is lifted by the same amount and in
+// the same direction as every other lifted surface on the site, in both
+// themes, rather than by a one-off value.
+const PANEL_TINT = `bg-[var(--mock-well)] text-[color:var(--mock-ink)] ${LINE}`;
 
 function NavRow({
   icon,
@@ -1048,10 +1054,20 @@ function Panel({
   children,
   className = "",
   hideTitleOnPhone = false,
+  tinted = false,
 }: {
   title: string;
   children: React.ReactNode;
   className?: string;
+  /**
+   * Puts this panel on the lifted ground instead of the window.
+   *
+   * For the step panel alone. A board of four identically-weighted panels has
+   * no first thing to read, and the one that says where the client is up to is
+   * the reason the screen exists — so it is the one that steps forward. The
+   * other three stay on the window: lift them all and nothing is lifted.
+   */
+  tinted?: boolean;
   /**
    * Drops the panel's own label below sm.
    *
@@ -1064,7 +1080,9 @@ function Panel({
 }) {
   return (
     <div
-      className={`min-w-0 overflow-hidden rounded-lg border p-3 ${PANEL} ${className}`}
+      className={`min-w-0 overflow-hidden rounded-lg border p-3 ${
+        tinted ? PANEL_TINT : PANEL
+      } ${className}`}
     >
       <p
         className={`truncate text-[10px] leading-none text-[color:var(--mock-ink-soft)] ${
@@ -1182,7 +1200,7 @@ export function OnboardingMock() {
       <MobileAppBar app="Client onboarding" className="-mx-2.5 -mt-2.5" />
 
       {/* Where this client is up to. */}
-      <Panel title="Client onboarding" hideTitleOnPhone>
+      <Panel title="Client onboarding" hideTitleOnPhone tinted>
         <p className="mt-2 text-[13px] leading-none text-[color:var(--mock-ink)]">
           Engagement letter
         </p>
