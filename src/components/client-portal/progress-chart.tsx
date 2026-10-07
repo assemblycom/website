@@ -76,14 +76,18 @@ const IDEAL = line([
   [DAYS - 1, PLANNED],
 ]);
 
-// Weekends, as the bands the reference hatches. Day 0 is a Monday, so every
-// fifth and sixth day is the pair — drawn as plain low-opacity blocks rather
-// than a hatch: at this size a diagonal pattern turns to mush, and the band is
-// only there to explain why the line goes flat.
-const WEEKENDS = [5, 12, 19].map((d) => ({
-  from: x(d),
-  to: x(Math.min(d + 2, DAYS - 1)),
-}));
+// GRIDLINES, not bands. The weekends were solid low-opacity blocks — three grey
+// slabs standing behind a thin line, which is the wrong weight ratio for a
+// chart: the furniture was heavier than the data. A burn-up is normally drawn
+// as a filled line over hairline rules, and that is what this is now. The weeks
+// still divide the month; they just do it with a rule instead of a wall.
+const GRID = [5, 10, 15, 20].map(x);
+
+// The area under the line — the other half of the usual treatment. Same colour
+// as the stroke, fading out before it reaches the floor, so the line reads as
+// the top of a quantity rather than as a wire, and the chart stops looking like
+// two strokes on an empty box.
+const AREA = `${ACTUAL} L ${x(TODAY).toFixed(2)} 100 L 0 100 Z`;
 
 export function ProgressMock() {
   return (
@@ -107,16 +111,38 @@ export function ProgressMock() {
               a small chart, which made the card look framed rather than drawn —
               and the dashed plan already arrives at that height on the right, so
               the ceiling was being stated twice and the second time louder. */}
-          {WEEKENDS.map(({ from, to }) => (
-            <rect
-              key={from}
-              x={from}
-              y={0}
-              width={to - from}
-              height={100}
-              className="fill-[var(--mock-ink)]/[0.045]"
+          <defs>
+            {/* 0.28 at the line and gone by the floor. Stronger and the fill
+                competes with the stroke that bounds it; weaker and it is a
+                smudge. */}
+            <linearGradient id="burnup-fill" x1="0" y1="0" x2="0" y2="1">
+              <stop
+                offset="0%"
+                stopColor="var(--mock-accent-bg)"
+                stopOpacity="0.28"
+              />
+              <stop
+                offset="100%"
+                stopColor="var(--mock-accent-bg)"
+                stopOpacity="0"
+              />
+            </linearGradient>
+          </defs>
+
+          {GRID.map((gx) => (
+            <line
+              key={gx}
+              x1={gx}
+              y1="0"
+              x2={gx}
+              y2="100"
+              className="stroke-[var(--mock-ink)]/[0.08]"
+              vectorEffect="non-scaling-stroke"
+              strokeWidth={1}
             />
           ))}
+
+          <path d={AREA} fill="url(#burnup-fill)" stroke="none" />
 
           {/* Today. Everything right of it is forecast, which is why the solid
               lines stop here and only the dashed one carries on. */}

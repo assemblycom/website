@@ -113,7 +113,12 @@ export function PortalTailor({
                 <p className={BODY}>
                   A per-client checklist with upload tracking.
                 </p>
-                <div className="mt-6 flex-1">
+                {/* justify-center, because the mock no longer stretches. It is
+                    sized to its contents and the row's height is set by the
+                    taller cards beside it, so left at the top it sat with a
+                    column of empty card under it. Centred, the space falls
+                    either side and reads as the card's own margin. */}
+                <div className="mt-6 flex flex-1 flex-col justify-center">
                   <DocumentsStatsMock />
                 </div>
               </div>

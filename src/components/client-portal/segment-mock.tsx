@@ -468,8 +468,14 @@ export function ApprovalsMock() {
 // that describes is a client putting a file in, which a bar chart of last
 // month's totals is the one picture that cannot show.
 //
-// So it is the drop target, and only that — a dashed well, which is the one
-// control everybody recognises on sight without a glyph to announce it. The
+// So it is the drop target, and only that — a well with its own ground, which
+// reads as somewhere to put something without a glyph to announce it.
+//
+// The border is SOLID. It was dashed, which is the convention for a drop zone
+// and the reason it went in; but this card already sits inside a dashed-free
+// set, and at mock scale a dashed hairline on a filled panel reads as a dotted
+// seam rather than as an invitation. The fill is what says "put it here"; the
+// edge only has to close the shape. The
 // arrow that sat above the copy was the third thing in a box that says "drop
 // files to upload" in words directly underneath.
 //
@@ -503,7 +509,7 @@ export function DocumentsStatsMock() {
         // tall enough to lose its own label in the middle of. A well is read by
         // its shape, not its area, so it gets a height of its own and the card
         // closes up around it.
-        className={`flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed bg-[var(--mock-well)] px-4 py-10 text-center ${LINE}`}
+        className={`flex flex-col items-center justify-center gap-2 rounded-lg border bg-[var(--mock-well)] px-4 py-10 text-center ${LINE}`}
       >
         <span className="text-[11.5px] leading-none text-[color:var(--mock-ink)]">
           Drop files to upload
