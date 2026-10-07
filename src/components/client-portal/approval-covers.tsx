@@ -24,7 +24,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { IconChat, IconCheck } from "@/components/home/mock-icons";
+import { IconCheck } from "@/components/home/mock-icons";
 
 const LINE = "border-[var(--mock-line)]";
 
@@ -57,7 +57,7 @@ const DARK_RING =
 // shape a catalogue cover is never in. One row of two gives each plate the
 // panel's whole height.
 const COVERS = [
-  { name: "Cover A", src: "/images/mocks/covers/cover-1.jpg", comments: 1 },
+  { name: "Cover A", src: "/images/mocks/covers/cover-1.jpg" },
   { name: "Cover B", src: "/images/mocks/covers/cover-2.jpg" },
 ];
 
@@ -71,7 +71,7 @@ export function ApprovalCovers() {
 
   return (
     <div className="grid min-h-0 flex-1 grid-cols-2 gap-2 p-2.5">
-      {COVERS.map(({ name, src, comments }) => {
+      {COVERS.map(({ name, src }) => {
         const on = picked === name;
         return (
           <button
@@ -226,20 +226,23 @@ export function ApprovalCovers() {
                 />
               </span>
             </div>
+            {/* The plate's name, and nothing else on the row.
+            
+                A comment count sat at the right end — a speech bubble and a
+                figure. It was the smallest mark on the screen and the only one
+                pointing at something the mock does not show: there is no
+                comment thread here to open, so it was a notification for a
+                place that does not exist. The row is the plate's label, and a
+                label with a badge on it is a list item from a different
+                screen. */}
             <div
-              className={`flex items-center justify-between gap-1.5 border-t px-2 py-1.5 text-[9.5px] leading-none ${LINE} ${
+              className={`flex items-center border-t px-2 py-1.5 text-[9.5px] leading-none ${LINE} ${
                 on
                   ? "text-[color:var(--mock-ink)]"
                   : "text-[color:var(--mock-ink-soft)]"
               }`}
             >
               <span className="truncate">{name}</span>
-              {comments ? (
-                <span className="flex shrink-0 items-center gap-0.5 text-[color:var(--mock-ink-soft)]">
-                  <IconChat className="size-[9px]" />
-                  {comments}
-                </span>
-              ) : null}
             </div>
           </button>
         );

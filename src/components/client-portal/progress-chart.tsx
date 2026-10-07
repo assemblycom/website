@@ -129,13 +129,20 @@ export function ProgressMock() {
           <path d={AREA} fill="url(#burnup-fill)" stroke="none" />
 
           {/* Today. Everything right of it is forecast, which is why the solid
-              lines stop here and only the dashed one carries on. */}
+              line stops here and only the dashed one carries on.
+          
+              Drawn at the SAME weight as the gridlines. It was ink/20 against
+              their 0.08 — two and a half times heavier, which made it the
+              darkest mark on a chart whose darkest mark should be the data. It
+              does not need the weight: the line ends on it, and a dot sits
+              where they meet. Where "now" is, is already stated by the thing
+              that stops there. */}
           <line
             x1={x(TODAY)}
             y1="0"
             x2={x(TODAY)}
             y2="100"
-            className="stroke-[var(--mock-ink)]/20"
+            className="stroke-[var(--mock-ink)]/[0.08]"
             vectorEffect="non-scaling-stroke"
             strokeWidth={1}
           />

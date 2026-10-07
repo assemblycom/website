@@ -133,6 +133,19 @@ export function PortalTailor({
                 <p className={`${BODY} max-w-md`}>
                   Saves progress across steps, next to a secure data room.
                 </p>
+                {/* A HEIGHT CAP from md, so the board crops at the bottom as
+                well as the right.
+            
+                It fit exactly before — 326px of board in a 327px frame — which
+                made this the tallest card in the grid and set the row height
+                for the one beside it, leaving that card a column of empty
+                ground under a short drop target. A board that crops on one edge
+                and stops neatly on another also reads oddly: the right side
+                says "this continues", the bottom says "this is all of it".
+            
+                286 takes about forty pixels off the lower row, so both panels
+                run under the frame's edge the way the columns run past it. The
+                card is the shorter for it and the grid row with it. */}
                 {/* Shorter on a phone, and the right edge gives out.
             
                 This screen runs off the card's right side on purpose — it is a
@@ -165,7 +178,7 @@ export function PortalTailor({
                   // The default 540x400 ellipse is kept — this box is ~583x301,
                   // close enough to the hero screen's own size that the ramp
                   // crosses it the same way, so no --mock-edge-w/-h override.
-                  className={`mock-edge -mr-6 mt-8 min-h-[180px] flex-1 overflow-hidden rounded-tl-xl border-l border-t border-[var(--mock-line)] bg-[var(--mock-window)] max-md:[mask-image:linear-gradient(to_right,#000_0_78%,rgba(0,0,0,0.55)_90%,transparent_100%)] md:-mr-10 md:mt-10 md:min-h-[248px]`}
+                  className={`mock-edge -mr-6 mt-8 min-h-[180px] flex-1 overflow-hidden rounded-tl-xl border-l border-t border-[var(--mock-line)] bg-[var(--mock-window)] max-md:[mask-image:linear-gradient(to_right,#000_0_78%,rgba(0,0,0,0.55)_90%,transparent_100%)] md:-mr-10 md:mt-10 md:min-h-[248px] md:max-h-[286px]`}
                 >
                   <OnboardingMock />
                 </div>
