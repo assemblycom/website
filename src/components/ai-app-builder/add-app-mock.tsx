@@ -115,7 +115,13 @@ export function AddAppMock() {
           own is a page title; with the name in front of it, it is the workspace
           talking to the person who opened it, which is the difference between a
           screenshot of a form and a screenshot of somebody's Monday. */}
-        <p className="text-center text-[17px] leading-[1.3] tracking-[-0.01em]">
+        {/* 15px, down from 17. It is the biggest type in the shot either way,
+          which is right — it is the screen's own h1 — but at 17 against a
+          12.5px composer and a 10.5px nav it was nearly half again the size of
+          everything else and read as a marketing headline that had wandered
+          into a product screenshot. 15 still leads the page and stays in the
+          same family as the type under it. */}
+      <p className="text-center text-[15px] leading-[1.3] tracking-[-0.01em]">
           Margot, what app will you add?
         </p>
 

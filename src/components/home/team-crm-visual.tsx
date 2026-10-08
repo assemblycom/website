@@ -14,18 +14,44 @@ type Contact = {
   tiers: string[];
 };
 
+/**
+ * Two letters, the way the product draws an avatar with no photo on it: first
+ * initial and last. One letter is what a generic placeholder does, and on a
+ * list where three of six share a company it is also the least distinguishing
+ * thing the circle could hold.
+ *
+ * Taken off the name rather than stored, so a name and its circle cannot
+ * disagree. The parenthetical the product appends to test clients would turn
+ * into a "(" if it were ever added here, so the parts are filtered to the ones
+ * that start with a letter.
+ */
+function initials(name: string) {
+  const parts = name.split(" ").filter((w) => /^[A-Za-z]/.test(w));
+  const first = parts[0] ?? "";
+  const last = parts.length > 1 ? parts[parts.length - 1] : "";
+  return (first[0] ?? "") + (last[0] ?? "");
+}
+
+/**
+ * The firm and the addresses are SHORT on purpose. The card crops this table a
+ * little past its Company column, which leaves the Name column ~156px — enough
+ * for a name and an address, and not enough for "chuckd@servicesymphony.com".
+ * A truncated address in a picture of a contact list reads as the list being
+ * broken rather than as the card being narrow, so the sample data is written
+ * to the measure the card actually gives it.
+ */
 const CONTACTS: Contact[] = [
   {
     name: "Mary Sung",
-    email: "mary@servicesymphony.com",
-    company: "Service Symphony",
+    email: "mary@symphony.co",
+    company: "Symphony",
     status: "Inactive",
     tiers: ["Professional", "Starter"],
   },
   {
     name: "Chuck Wilford",
-    email: "chuckd@servicesymphony.com",
-    company: "Service Symphony",
+    email: "chuckd@symphony.co",
+    company: "Symphony",
     status: "Active",
     tiers: ["Professional"],
   },
@@ -38,7 +64,7 @@ const CONTACTS: Contact[] = [
   },
   {
     name: "Jasmin Khan",
-    email: "jasmin@servicesymphony.com",
+    email: "jasmin@symphony.co",
     company: "2 companies",
     status: "Active",
     tiers: ["Advanced"],
@@ -52,7 +78,7 @@ const CONTACTS: Contact[] = [
   },
   {
     name: "Andy Alvarez",
-    email: "alvarez@wavemarketing.com",
+    email: "andy@wavemarketing.com",
     company: "Wave Marketing",
     status: "Active",
     tiers: ["Professional", "Starter"],
@@ -118,8 +144,10 @@ export function TeamCrmVisual() {
                 className="flex items-center gap-2 border-b border-border px-3 py-[6px] last:border-b-0"
               >
                 <span className="flex min-w-0 flex-1 items-center gap-1.5">
-                  <span className="flex size-[18px] shrink-0 items-center justify-center rounded-full bg-border/70 text-[9px] leading-none text-foreground">
-                    {contact.name[0]}
+                  {/* 20px, not 18: two letters at 9px need the extra two
+                      pixels of circle or they sit against its sides. */}
+                  <span className="flex size-[20px] shrink-0 items-center justify-center rounded-full bg-border/70 text-[9px] leading-none text-foreground">
+                    {initials(contact.name)}
                   </span>
                   <span className="min-w-0">
                     <span className="block truncate text-[10.5px] leading-[1.3] text-foreground">

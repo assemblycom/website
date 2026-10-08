@@ -61,6 +61,23 @@ const PILLARS: Pillar[] = [
     body: "Contacts, companies, and custom fields built in. Each client sees only what you allow.",
     // The home page's CRM shot: contacts, companies and a custom field.
     visual: <TeamCrmVisual />,
+    // 490, not the tall card's default 860. The table's Name column is flex-1
+    // against four fixed ones, so every pixel of layout width lands on Name —
+    // at 860 it took 526 of them and pushed Company clean past the card's
+    // crop, which left a shot of a contact list with no company in it under a
+    // heading about companies.
+    //
+    // The number is set by the NARROWEST card this row draws, not the widest:
+    // at a 1024 viewport the card is 304 and shows 271px of the mock, where
+    // 520 still cut the company name in half. At 490 Name is 156 — enough for
+    // the longest address here with 6px to spare — and Company ends 3px inside
+    // the crop at that width, with room to spare on a wider screen. The type
+    // does not scale with this; only the columns do.
+    visualWidth: 490,
+    // Outlined, not cast — the same call as the Apps card beside it. These two
+    // sit in one row and a shadow under one with a drawn edge on the other is
+    // the row telling you they are different kinds of thing.
+    visualBare: true,
   },
   {
     eyebrow: "Security",
