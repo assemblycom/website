@@ -1,5 +1,4 @@
 import { cn } from "@/lib/utils";
-import { Reveal } from "@/components/ui/reveal";
 
 /**
  * Opens one chapter of the page.
@@ -46,50 +45,55 @@ export function BuilderChapter({
         tightBottom ? "pb-0" : "pb-16 md:pb-24",
       )}
     >
-      <Reveal>
-        {/* The site's tag chip, as on about and the sitemap, rather than bare
-            mono type set loose above the heading. */}
-        {eyebrow ? (
-          <p>
-            <span className="inline-flex items-center rounded-md bg-muted px-3 py-1.5 font-mono text-xs uppercase tracking-wide text-muted-foreground [[data-theme=dark]_&]:bg-white/[0.08]">
-              {eyebrow}
-            </span>
-          </p>
-        ) : null}
-        {/* Split runs the page hero's own grid, so a chapter opening a section
-            and the page opening itself are the same shape rather than two
-            kinds of header. The intro is held off the top of the heading's
-            first line rather than centred against it, so the two columns share
-            a baseline at the top. */}
-        <div
+      {/* No entrance. This heading used to arrive through the site's Reveal —
+          translate-y-8 and a fade, played as it crossed 90% of the viewport.
+          Two lines of type sliding up is an animation you SEE rather than one
+          that hands a section off, and on a reload partway down the page it
+          replayed every time, which reads as the page still loading rather
+          than as content arriving. The sections it introduces carry their own
+          reveals; the title above them is simply there. */}
+      {/* The site's tag chip, as on about and the sitemap, rather than bare
+          mono type set loose above the heading. */}
+      {eyebrow ? (
+        <p>
+          <span className="inline-flex items-center rounded-md bg-muted px-3 py-1.5 font-mono text-xs uppercase tracking-wide text-muted-foreground [[data-theme=dark]_&]:bg-white/[0.08]">
+            {eyebrow}
+          </span>
+        </p>
+      ) : null}
+      {/* Split runs the page hero's own grid, so a chapter opening a section
+          and the page opening itself are the same shape rather than two
+          kinds of header. The intro is held off the top of the heading's
+          first line rather than centred against it, so the two columns share
+          a baseline at the top. */}
+      <div
+        className={cn(
+          split &&
+            "grid gap-6 lg:grid-cols-[1.15fr_0.85fr] lg:items-start lg:gap-x-16",
+        )}
+      >
+        <h2
           className={cn(
-            split &&
-              "grid gap-6 lg:grid-cols-[1.15fr_0.85fr] lg:items-start lg:gap-x-16",
+            "type-h2 text-balance",
+            split ? "max-w-[22ch]" : "mx-auto max-w-3xl",
+            eyebrow && "mt-4",
           )}
         >
-          <h2
+          {heading}
+        </h2>
+        {intro ? (
+          <p
             className={cn(
-              "type-h2 text-balance",
-              split ? "max-w-[22ch]" : "mx-auto max-w-3xl",
-              eyebrow && "mt-4",
+              "text-pretty text-muted-foreground",
+              split
+                ? "max-w-[34rem] lg:pt-2"
+                : "mx-auto mt-5 max-w-2xl text-balance",
             )}
           >
-            {heading}
-          </h2>
-          {intro ? (
-            <p
-              className={cn(
-                "text-pretty text-muted-foreground",
-                split
-                  ? "max-w-[34rem] lg:pt-2"
-                  : "mx-auto mt-5 max-w-2xl text-balance",
-              )}
-            >
-              {intro}
-            </p>
-          ) : null}
-        </div>
-      </Reveal>
+            {intro}
+          </p>
+        ) : null}
+      </div>
     </section>
   );
 }

@@ -253,31 +253,31 @@ export function PortalSidebar({
         </span>
       </span>
       <NavRow
-        icon={<IconGlobe className="size-[11px]" />}
+        icon={<IconGlobe className="size-[13px]" />}
         label="Home"
         branded={branded}
       />
       <NavRow
-        icon={<IconChat className="size-[11px]" />}
+        icon={<IconChat className="size-[13px]" />}
         label="Messages"
         branded={branded}
       />
       <NavRow
-        icon={<IconFile className="size-[11px]" />}
+        icon={<IconFile className="size-[13px]" />}
         label="Files"
         branded={branded}
       />
       {/* With no app of its own, the stock nav's last row carries the
           selection — otherwise the sidebar has nothing open. */}
       <NavRow
-        icon={<IconCard className="size-[11px]" />}
+        icon={<IconCard className="size-[13px]" />}
         label="Billing"
         active={!app}
         branded={branded}
       />
       {app ? (
         <NavRow
-          icon={<IconDocuments className="size-[11px]" />}
+          icon={<IconDocuments className="size-[13px]" />}
           label={app}
           active
           branded={branded}

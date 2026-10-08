@@ -110,11 +110,16 @@ export function BuilderPrompt({
           minimalControls
           splitFooter
           hideHowTo
-          plusAsAttach
-          // The frame this hangs off is glass over the hero's arc, so the
-          // popover is too — an opaque card dropped on a lit ground was the
-          // one piece of the composer that did not belong to it.
-          menuGlass
+          // No "+". It opened a popover explaining that attachments, branding
+          // and integrations come with an account — a feature list delivered
+          // as a disabled control, on the one box whose whole job is to get a
+          // sentence typed into it. The page makes those arguments in its own
+          // sections, at length, further down; the hero does not need a menu
+          // that interrupts the typing to repeat them.
+          //
+          // This also empties the footer's left group, which is why the submit
+          // keeps its side of a justify-between with nothing opposite it.
+          hidePlus
           // ONE pane: no inner field box. The frame here is a real material
           // (glass over the arc), so it can be the surface you type into
           // rather than a tray holding a second surface that is.

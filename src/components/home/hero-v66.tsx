@@ -935,7 +935,18 @@ export function V66Composer({ placeholder = "Describe the workflow you want to t
               // an aria-label would override it with whichever word is wrong for
               // this visitor.
               aria-label={showsLabel ? undefined : (submitLabel ?? "Build it")}
-              className={`flex ${submitH} items-center justify-center gap-1.5 rounded-lg ${pillText} font-normal transition-all duration-150 ease-out active:scale-[0.98] ${
+              // rounded-xl (12px), not the site button's rounded-lg (8px).
+              // This is the one button on the site that sits INSIDE another
+              // rounded box, a few pixels off its corner, and at 8 against the
+              // frame's 22 the two curves read as a mistake rather than as a
+              // nesting. 12 is not a taste value: the gap under the button is
+              // a measured 10px, and an inner radius concentric with an outer
+              // one is outer minus gap. Matching the frame outright was the
+              // ask and is degenerate here — 22 on a 32px-tall button clamps
+              // to 16 and the pill becomes a lozenge, which is a different
+              // control. All three composers set the same 18/22 frame, so this
+              // lands the same way on the home hero and the CTA.
+              className={`flex ${submitH} items-center justify-center gap-1.5 rounded-xl ${pillText} font-normal transition-all duration-150 ease-out active:scale-[0.98] ${
                 submitActive
                   ? themeAuto
                     ? // Both skins as variants, for the same reason the field

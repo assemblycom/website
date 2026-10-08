@@ -238,10 +238,24 @@
      itself and the overlaps stay pale. The additive mode dark uses would drive
      every overlap on a white ground straight to white. */
   --builder-glow-blend: normal;
-  --builder-glow-bloom: rgba(58, 84, 252, 0.36);
-  --builder-glow-mid: rgba(66, 96, 255, 0.52);
-  --builder-glow-halo: rgba(118, 212, 180, 0.66);
-  --builder-glow-lime: rgba(190, 236, 48, 0.84);
+  /* A step up in saturation on every lit ring, and the reason is the note
+     above taken further: the stops were already pure-ish, but they were
+     carrying their colour at alphas low enough that the arc read as a wash of
+     blue-grey weather behind the headline rather than as the brand ramp. Each
+     hue goes purer AND its alpha up a step, which are the two levers — purer
+     alone is invisible under a 0.36 alpha, more alpha alone just makes a
+     stronger version of the muddy tone.
+
+     The teal moves furthest (118,212,180 → 74,214,170): it was the one stop
+     mixed halfway to white, which is why the band between the lime and the
+     blue read as the gap between them rather than as a colour of its own.
+
+     The rim does NOT move. It is white, saturation is not a thing it has, and
+     raising its alpha only eats the lime next to it. */
+  --builder-glow-bloom: rgba(46, 74, 255, 0.48);
+  --builder-glow-mid: rgba(56, 90, 255, 0.66);
+  --builder-glow-halo: rgba(74, 214, 170, 0.78);
+  --builder-glow-lime: rgba(188, 240, 30, 0.92);
   --builder-glow-rim: rgba(255, 255, 255, 0.7);
   --builder-glow-opacity: 1;
 }

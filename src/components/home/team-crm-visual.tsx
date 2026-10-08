@@ -96,7 +96,7 @@ function NavItem({
         active ? "bg-border/70" : ""
       }`}
     >
-      <span className="[&>svg]:size-[11px] flex shrink-0 items-center justify-center">
+      <span className="[&>svg]:size-[13px] flex shrink-0 items-center justify-center">
         {icon}
       </span>
       <span className="min-w-0 flex-1 truncate text-[10.5px] leading-none">
@@ -178,7 +178,7 @@ export function TeamCrmVisual() {
           {/* The one muted row: an action, not a destination. Same height and
               gutter as a nav row so the column keeps its rhythm. */}
           <div className="flex h-[22px] items-center gap-2 rounded px-1.5 text-muted-foreground">
-            <span className="[&>svg]:size-[11px] flex shrink-0 items-center justify-center">
+            <span className="[&>svg]:size-[13px] flex shrink-0 items-center justify-center">
               <IconPlus />
             </span>
             <span className="min-w-0 flex-1 truncate text-[10.5px] leading-none">
