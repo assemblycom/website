@@ -140,13 +140,26 @@ const PILLARS: Pillar[] = [
     // the title, the field, the button — and cropping it on the card's edges
     // cut off the half of it the claim is about.
     visualContained: true,
-    // The brand wash behind it. This is the one shot on the page that is a
-    // whole screen floating in the card rather than a window cropped by it,
-    // so it is the one with a ground to put anything on — and what the product
-    // puts there is this gradient, which is also the page's own ramp (see
-    // .pillar-brand-wash). A sign-in on bare --surface was a white panel on a
-    // grey one, the flattest card in the set.
-    brandWash: true,
+    // NO BRAND WASH. This card carried the page's periwinkle-to-lime ramp
+    // behind the sign-in, on the grounds that it is the one shot here that
+    // floats whole in its card rather than being cropped by it, so it is the
+    // one with a ground to put something on.
+    //
+    // In dark that ground never came off. Laid over a near-black surface the
+    // ramp has to run at about half its light-mode alpha or the body copy on
+    // top of it stops being readable, and at that strength periwinkle and lime
+    // both resolve towards the same olive-grey — a card tinted rather than
+    // coloured. Brightening it is a straight trade against the copy sitting in
+    // the top quarter (measured: the band under the body text goes from 3.0:1
+    // to 2.0:1), so the wash cannot be both legible and worth having here.
+    //
+    // The card takes --surface like the other three instead. The sign-in holds
+    // its own against a neutral ground via `fadeFootDark` below, which is what
+    // keeps its foot from cutting off flat.
+    //
+    // `.pillar-brand-wash` and the `brandWash` prop are left in place — this
+    // is the only caller, so turning it back on is one word.
+    brandWash: false,
     // A BOTTOM FADE IN DARK, and only in dark.
     //
     // The objection to one was that the screen's last visible object is the

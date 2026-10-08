@@ -3,13 +3,20 @@
 import { useState } from "react";
 import Link from "next/link";
 import { GRID_LINE } from "@/components/ui/grid-lines";
+import { SegmentedTabs } from "@/components/ui/segmented-tabs";
 
 // `tab` is the name at switcher width. The full names are written for a column
 // head that has the table's width under it; as tabs, three of them at full
 // length scroll off a 375px phone — and the one that scrolls off is ours, at
 // the right-hand end. Short enough that all three sit on the screen at once,
-// which is the whole reason to prefer a switcher to a list. They can afford to
-// be terse because the full name is printed under them.
+// which is the whole reason to prefer a switcher to a list.
+//
+// The tab is the ONLY place the option is named on a phone. It carried the
+// full name again on a line under the control, which said "Standalone" and
+// then "Standalone AI app builders" one row apart — the switcher already
+// names what you are looking at, and a caption repeating it is the thing the
+// switcher replaced the card stack to avoid. `name` is still what the table
+// heads its columns with from `md` up, where there is width for it.
 const COLUMNS: { name: string; tab: string }[] = [
   { name: "Build in-house", tab: "In-house" },
   { name: "Standalone AI app builders", tab: "Standalone" },
@@ -18,6 +25,26 @@ const COLUMNS: { name: string; tab: string }[] = [
 
 /** Index of the Assembly column, which carries the wash. */
 const OWN = 2;
+
+/**
+ * The order the PHONE switcher lists the options in — ours first.
+ *
+ * The table from `md` up runs In-house → Standalone → Assembly, left to right,
+ * because it shows all three at once and that order is the argument: here are
+ * the two routes you might have taken, and here is the one that is ready. A
+ * switcher shows one option at a time, so it has no left-to-right to argue
+ * with; what it has is a first tab, which is both the one that opens and the
+ * one a reader scanning the control sees first. Spending that on the route we
+ * are arguing against put our answer at the far end of a row some phones have
+ * to scroll.
+ *
+ * Indices into COLUMNS and ROWS[].cells, so the data stays in table order and
+ * only the phone's reading order changes.
+ */
+const PHONE_ORDER = [OWN, 0, 1];
+
+/** Prefix for the phone switcher's tab/panel id pair. */
+const TABS_ID = "builder-alternatives";
 
 /**
  * One named competitor, then the index — not two named peers. Pairing a named
@@ -91,10 +118,9 @@ const EDGE_R = "md:pr-2 lg:pr-3";
  * row's rule.
  */
 export function BuilderAlternatives() {
-  // Which option the phone switcher is showing. Opens on the first, so the
-  // three read in the order the heading sets them up in — the two routes you
-  // might have taken, then ours.
-  const [option, setOption] = useState(0);
+  // Which option the phone switcher is showing, as an index into COLUMNS.
+  // Opens on the first tab in PHONE_ORDER, which is ours.
+  const [option, setOption] = useState(PHONE_ORDER[0]);
 
   return (
     <section className="mx-auto max-w-[1200px] px-6 py-14 md:px-10 md:py-20">
@@ -156,59 +182,78 @@ export function BuilderAlternatives() {
 
           The table from `md` up is untouched; it can afford the across-read
           and is still the better object when the width exists. */}
-      <div className={`mt-10 overflow-clip rounded-2xl border px-6 pb-2 md:hidden ${GRID_LINE}`}>
-        {/* The tabs run full-bleed to the card's edges (-mx-6 against the
-            card's px-6) so the underline that marks the active option is a rule
-            across the card, the way it is on the pricing table. */}
-        {/* overflow-y-hidden: overflow-x-auto alone also makes this a vertical
-            scroll container, and the -mb-px underline trick lets it scroll up
-            by a pixel-high strip. */}
-        <div className="-mx-6 flex gap-6 overflow-x-auto overflow-y-hidden border-b px-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {COLUMNS.map((column, ci) => (
-            <button
-              key={column.name}
-              type="button"
-              aria-pressed={option === ci}
-              onClick={() => setOption(ci)}
-              className={`-mb-px shrink-0 border-b pb-3 pt-5 text-base font-medium transition-colors ${
-                option === ci
-                  ? "border-foreground text-foreground"
-                  : "border-transparent text-muted-foreground"
-              }`}
-            >
-              {column.tab}
-            </button>
-          ))}
+      <div className="md:hidden">
+        {/* The site's segmented control, not a row of underlined words.
+
+            It started as the pricing table's underline tabs, which are the
+            right pattern THERE — that control sits inside a long scrolling
+            table and has five plan names to carry, so it has to be able to
+            scroll. Here there are three short options above a five-row card,
+            and underlined text at the top of a bordered box reads as a
+            heading that happens to be in three parts rather than as something
+            you can press.
+
+            SegmentedTabs is the answer to both: a bordered track with a thumb
+            that glides between cells is unmistakably a control, and it is the
+            SAME control this page already runs one section up for Describe /
+            Plan / Build. Two segmented controls on one page is the page
+            having a pattern; a segmented control and a set of underline tabs
+            doing the same job is the page having two.
+
+            It also brings the semantics with it — `role="tablist"`, roving
+            arrow-key focus, and the tab/panel id pair the panel below points
+            back at — which the hand-rolled `aria-pressed` buttons did not
+            have. */}
+        <div className="mt-10">
+          <SegmentedTabs
+            label="Compare the three ways to get a custom app"
+            idBase={TABS_ID}
+            value={String(option)}
+            onChange={(v) => setOption(Number(v))}
+            options={PHONE_ORDER.map((ci) => ({
+              value: String(ci),
+              label: COLUMNS[ci].tab,
+            }))}
+          />
         </div>
 
-        {/* The full name under the tabs: the tab is short enough to fit three
-            of them, so the option still gets said once in the words the table
-            uses. */}
-        <p className="pb-1 pt-6 text-sm font-medium text-foreground">
-          {COLUMNS[option].name}
-        </p>
-
-        <dl>
-          {ROWS.map((row) => (
-            <div
-              key={row.label}
-              className={`-mx-6 flex items-baseline justify-between gap-4 border-t px-6 py-3.5 ${GRID_LINE}`}
-            >
-              <dt className="pr-4 text-sm text-muted-foreground">
-                {row.label}
-              </dt>
-              {/* Ranged right, so the five answers line up on one edge and the
-                  option can be read down a single column. */}
-              <dd
-                className={`shrink-0 text-right text-sm leading-snug ${
-                  option === OWN ? "text-foreground" : "text-muted-foreground"
-                }`}
+        <div
+          role="tabpanel"
+          id={`${TABS_ID}-panel-${option}`}
+          aria-labelledby={`${TABS_ID}-tab-${option}`}
+          className={`mt-5 overflow-clip rounded-2xl border px-6 ${GRID_LINE}`}
+        >
+          <dl>
+            {ROWS.map((row) => (
+              <div
+                key={row.label}
+                // first:border-t-0 — the card's own top edge is the rule above
+                // the first row now that the tabs have moved out of the box.
+                className={`-mx-6 flex items-baseline justify-between gap-4 border-t px-6 py-3.5 first:border-t-0 ${GRID_LINE}`}
               >
-                {row.cells[option]}
-              </dd>
-            </div>
-          ))}
-        </dl>
+                {/* ONE LINE, ALWAYS. The capability is the row's question and
+                    it is the same question on every option — a two-line "Time
+                    to a working / tool" against a one-line answer made the row
+                    look broken rather than long. The answers take the wrapping
+                    instead: they are the part that differs, they are ranged
+                    right, and a two-line answer there reads as an answer that
+                    needed two lines. */}
+                <dt className="shrink-0 whitespace-nowrap pr-4 text-sm text-muted-foreground">
+                  {row.label}
+                </dt>
+                {/* Ranged right, so the five answers line up on one edge and
+                    the option can be read down a single column. */}
+                <dd
+                  className={`min-w-0 text-right text-sm leading-snug ${
+                    option === OWN ? "text-foreground" : "text-muted-foreground"
+                  }`}
+                >
+                  {row.cells[option]}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </div>
       </div>
 
       {/* The frame, all four sides, rounded and clipping the cells inside it.

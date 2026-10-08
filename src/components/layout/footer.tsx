@@ -263,14 +263,27 @@ export function Footer({
                 links now run the full width, and the switch keeps the far right
                 corner. */}
             <div className="flex flex-col gap-10 lg:grid lg:grid-cols-6 lg:items-start lg:gap-x-10">
-              <div className="grid grid-cols-2 gap-x-8 gap-y-10 lg:col-span-6 lg:grid-cols-5 lg:gap-x-6">
+              {/* MULTICOL BELOW lg, not a two-column grid, and the Connect
+                  shelf is why. In a grid every cell in a row is as tall as the
+                  tallest, so Company — five links — got the height of the
+                  Compare+Legal cell beside it, which is two labelled groups.
+                  Connect then started after that whole row, separated from the
+                  shelf above it by a void the size of the slack it inherited
+                  rather than by the row gap. Columns pack instead of aligning,
+                  so each shelf sits directly under the one before it and the
+                  only gap left is the one declared here. `break-inside-avoid`
+                  keeps a shelf whole; `column-count` does not apply to a grid
+                  container, so `lg:grid` turns this off on its own. */}
+              <div className="columns-2 gap-x-8 lg:col-span-6 lg:grid lg:grid-cols-5 lg:gap-x-6">
                 {COLUMNS.map((column) => (
                   // A column can hold more than one group; the second sits under
                   // the first with its own label, the way a long shelf is split
                   // rather than left to run twice its neighbours' height.
                   <div
                     key={column[0].label}
-                    className="flex flex-col gap-8 sm:min-w-32"
+                    // mb-10 is the old grid's gap-y-10, carried by the items
+                    // now that the container no longer declares a row gap.
+                    className="mb-10 flex break-inside-avoid flex-col gap-8 sm:min-w-32 lg:mb-0"
                   >
                     {column.map((group) => (
                       <div key={group.label}>

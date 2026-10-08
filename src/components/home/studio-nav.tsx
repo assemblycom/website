@@ -443,11 +443,19 @@ export function StudioNav({
   // page for the rule to close off, and a line under a transparent bar draws a
   // box around nothing. The colour is what changes, never the width — a border
   // that appears by growing from 0 shifts everything under it by a pixel.
-  const navBorder = `border-b transition-colors ${ease} ${
-    bordered || scrolled
-      ? "border-border [[data-theme=dark]_&]:border-[#383838]"
-      : "border-transparent"
-  }`;
+  // NO RULE UNDER THE MOBILE BAR. This is the phone bar's border only — the
+  // desktop bar draws its own as NavBarBorder, an element, so it can fade with
+  // the sheet (see line ~582) and is untouched by this.
+  //
+  // The rule's job on desktop is to close off a bar that floats over the page
+  // with a visible edge. On a phone the bar is the full width of the screen
+  // and shares the page's own ground, so the line was not closing a bar off
+  // from anything — it read as a stray rule across the top of every page.
+  //
+  // `border-b border-transparent` and not dropping the border: the box keeps
+  // its 1px, so nothing under the bar moves. The colour was always the thing
+  // that changed on scroll, and now it never changes.
+  const navBorder = `border-b border-transparent ${ease}`;
 
   const menuSurface = darkTop ? "bg-background text-white" : "bg-background";
   const menuBorder = darkTop ? "border-white/10" : "border-border";

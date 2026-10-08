@@ -70,12 +70,20 @@ const UI_PLAIN = "text-[12.5px] leading-none";
     scene that IS a document — it is read, not glanced at — and it is drawn at
     1:1 in a 560 box with nothing else competing for the width. At the in-mock
     10px it was legible but looked like fine print in a screenshot. */
-const PLAN_HEAD = "text-[11px] leading-[1.3]";
+// BIGGER ON A PHONE, and the scale factor is the reason. This scene is drawn
+// at 360x300 and MockFit fits it into a ~327px slot, so everything in it comes
+// out at 0.91 — which took an 11px document down to 10px rendered, the
+// smallest type anywhere on the page. 14px design is ~12.7px on screen, which
+// reads as the small type inside a product screen rather than as fine print.
+// From `sm` the scene is drawn 1:1 at 620 and 11px is already correct there.
+// The document is deliberately cropped (see the foot ramp and the chevron), so
+// larger type costs visible lines rather than breaking the box.
+const PLAN_HEAD = "text-[14px] leading-[1.3] sm:text-[11px]";
 /* 1.6, not 1.45. This is the one block on the site that is set as a DOCUMENT
    — paragraphs and a list, read rather than scanned — and document leading is
    looser than a UI label's. It also makes the list's bullets land clear of the
    line above them rather than between two lines. */
-const PLAN_PROSE = "text-[11px] leading-[1.6]";
+const PLAN_PROSE = "text-[14px] leading-[1.6] sm:text-[11px]";
 
 const LINE = "border-[var(--mock-line)]";
 // ── Corner radius: a SCALE of three, not a value per element ─────────────
@@ -497,7 +505,8 @@ export function DescribeCard({ plain = false }: SceneProps = {}) {
                 // the box is topped out and pushed to the panel's optical
                 // middle by `120 - height/2`, so a 16px taller box comes down
                 // 8px less. Re-measure both if the row ever grows a line.
-                // CENTRED ON A PHONE, pushed down from `sm`.
+                // TOPPED OUT IN THE SCENE AT EVERY WIDTH; only the push down
+                // is `sm`-only.
                 //
                 // The offset below is arithmetic against the DESKTOP panel: a
                 // box centred in the scene sits ~60px under the centre of the
@@ -507,10 +516,20 @@ export function DescribeCard({ plain = false }: SceneProps = {}) {
                 // on a phone — the header wraps to two lines and the scene is
                 // the 360x300 box, not 620x400 — so the same push put the
                 // composer near the floor with a third of the panel empty
-                // above it. Below `sm` the margins come off and the scene's
-                // own `justify-center` does the work, which is correct at any
-                // phone height rather than at one.
-                "px-4 py-6 shadow-[0_0_0_3px_var(--surface),0_0_0_4px_var(--mock-line)] sm:mb-auto sm:mt-[66px]"
+                // above it.
+                //
+                // Letting the scene's own `justify-center` centre it there was
+                // the first correction, and it was still wrong — just less so.
+                // The scene is only the LOWER part of the panel, so a box
+                // centred in it sits ~64px under the centre of the card: the
+                // header costs that much off the top and nothing below pays it
+                // back. Topping the box out is what actually centres it, and
+                // the arithmetic is a coincidence worth writing down — the
+                // scene's vertical slack (~121px) is almost exactly twice that
+                // offset, so moving the box to the top of the scene lands its
+                // middle within ~4px of the card's. The header is balanced by
+                // the scene's own foot.
+                "mb-auto px-4 py-6 shadow-[0_0_0_3px_var(--surface),0_0_0_4px_var(--mock-line)] sm:mt-[66px]"
               : "overflow-hidden p-4 [[data-theme=dark]_&]:shadow-[0_0_0_3px_var(--surface),0_0_0_4px_var(--mock-line)]"
           }`}
         >
@@ -1054,7 +1073,11 @@ function RequirementsPane() {
                       gives it the line's own height so it centres on the FIRST
                       line of a flow that wraps to two rather than drifting with
                       the text. */}
-                  <span className="flex h-[17.6px] shrink-0 items-center">
+                  {/* The line's own height, so the dot centres on a flow's
+                      FIRST line — which means it tracks PLAN_PROSE's
+                      line-height at both sizes: 14 x 1.6 on a phone, 11 x 1.6
+                      from `sm`. */}
+                  <span className="flex h-[22.4px] shrink-0 items-center sm:h-[17.6px]">
                     <span className="size-[3px] rounded-full bg-current" />
                   </span>
                   <span className="min-w-0">{f}</span>
@@ -1335,10 +1358,10 @@ function CalendarPane() {
                   columns of digits and proportional figures make the marks sit
                   on slightly different centres across the row. */}
               <span
-                // NO BOX ON A PHONE. The outline is right at the width it was
+                // NO BOX ON A PHONE. The marker is right at the width it was
                 // drawn for; in a 51px column it is the heaviest object in the
                 // shot — a near-black rectangle under a grey day label, which
-                // reads as an input field rather than as today. Below `sm`
+                // swamps the column rather than reading as today. Below `sm`
                 // today is simply the digit in full ink, and the red now-line
                 // in its column is the other half of the marking, which no
                 // other day has.
@@ -1348,7 +1371,15 @@ function CalendarPane() {
                       // Tailwind scans raw source text, so an interpolated
                       // variant never appears for it to find and the class is
                       // simply not generated. It matches R_CHROME by value.
-                      "text-[color:var(--mock-ink)] sm:rounded-[4px] sm:border sm:border-[var(--mock-ink)]"
+                      // FILLED, not outlined. An outlined numeral next to the
+                      // outlined Week chip and the outlined chrome buttons was
+                      // a fourth bordered box in one toolbar, so "today" was
+                      // marked in the same language as every control beside
+                      // it. A solid slab is the one mark in the header that is
+                      // not a control, which is what a calendar does with
+                      // today anyway. The digit flips to the window's own
+                      // ground so it reads out of the fill in both themes.
+                      "text-[color:var(--mock-ink)] sm:rounded-[4px] sm:bg-[var(--mock-ink)] sm:text-[color:var(--mock-window)]"
                     : "text-[color:var(--mock-ink-soft)]"
                 }`}
               >
