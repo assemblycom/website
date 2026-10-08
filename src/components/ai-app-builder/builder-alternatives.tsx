@@ -1,10 +1,19 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import { GRID_LINE } from "@/components/ui/grid-lines";
 
-const COLUMNS: { name: string }[] = [
-  { name: "Build in-house" },
-  { name: "Standalone AI app builders" },
-  { name: "Assembly's AI app builder" },
+// `tab` is the name at switcher width. The full names are written for a column
+// head that has the table's width under it; as tabs, three of them at full
+// length scroll off a 375px phone — and the one that scrolls off is ours, at
+// the right-hand end. Short enough that all three sit on the screen at once,
+// which is the whole reason to prefer a switcher to a list. They can afford to
+// be terse because the full name is printed under them.
+const COLUMNS: { name: string; tab: string }[] = [
+  { name: "Build in-house", tab: "In-house" },
+  { name: "Standalone AI app builders", tab: "Standalone" },
+  { name: "Assembly's AI app builder", tab: "Assembly" },
 ];
 
 /** Index of the Assembly column, which carries the wash. */
@@ -82,6 +91,11 @@ const EDGE_R = "md:pr-2 lg:pr-3";
  * row's rule.
  */
 export function BuilderAlternatives() {
+  // Which option the phone switcher is showing. Opens on the first, so the
+  // three read in the order the heading sets them up in — the two routes you
+  // might have taken, then ours.
+  const [option, setOption] = useState(0);
+
   return (
     <section className="mx-auto max-w-[1200px] px-6 py-14 md:px-10 md:py-20">
       {/* Same split the page's hero runs: the claim and its actions hold the
@@ -122,72 +136,80 @@ export function BuilderAlternatives() {
         </div>
       </div>
 
-      {/* ONE CARD PER OPTION BELOW md, not one block per capability.
-          
-          It was the table transposed: every capability became a box holding
-          all three answers, each answer labelled with the option it belonged
-          to. That named the three options five times over — fifteen headings
-          for fifteen answers — and the repetition was most of what you saw,
-          because the labels are long ("Standalone AI app builders") and the
-          answers are short ("No"). It also left the three options with no
-          identity of their own: nothing on the screen was "the in-house
-          route", only five separate mentions of it.
+      {/* A SWITCHER BELOW md, not three cards and not the table transposed.
 
-          A phone cannot show a comparison ACROSS anyway — three columns of
-          free text do not fit, which is why the table is hidden here at all —
-          so the stack stopped paying for the thing it was giving up. Grouped
-          by option it reads as the heading above it reads: three ways to get
-          an app, each one's story told once, and the one that is ready marked
-          as such. Each option is named once instead of five times, and the
-          capability labels do the repeating — which is the right way round,
-          since they are the shorter of the two and they are the questions.
+          Two layouts were tried here first. Transposed — one box per
+          capability, each holding all three answers — named the three options
+          five times over, and the long labels ("Standalone AI app builders")
+          against the short answers ("No") made the repetition most of what you
+          saw. Grouped the other way, one card per option, fixed the repetition
+          but left five screens of card to scroll past, and the two routes you
+          are not buying take up two thirds of it.
+
+          The switcher is the pricing page's "Compare plans" control, reused
+          exactly: scrollable underline tabs over a single-column list of
+          label-and-answer rows. One option is on screen at a time, so the
+          section is one screen tall instead of five, and the comparison is
+          made by tapping across rather than by scrolling. Reusing it also
+          means the two comparison tables on the site behave the same way on a
+          phone, which is the point of having a pattern at all.
 
           The table from `md` up is untouched; it can afford the across-read
           and is still the better object when the width exists. */}
-      <ul className="mt-10 space-y-4 md:hidden">
-        {COLUMNS.map((column, ci) => (
-          <li
-            key={column.name}
-            // The own card carries the same `--muted` wash its column carries
-            // in the table, so the two layouts mark our side the same way.
-            className={`overflow-hidden rounded-xl border ${GRID_LINE} ${
-              ci === OWN
-                ? "bg-muted [[data-theme=dark]_&]:bg-[var(--surface-2)]"
-                : ""
-            }`}
-          >
-            <p
-              className={`border-b px-4 py-3 text-sm ${GRID_LINE} ${
-                ci === OWN ? "text-foreground" : "text-muted-foreground"
+      <div className={`mt-10 overflow-clip rounded-2xl border px-6 pb-2 md:hidden ${GRID_LINE}`}>
+        {/* The tabs run full-bleed to the card's edges (-mx-6 against the
+            card's px-6) so the underline that marks the active option is a rule
+            across the card, the way it is on the pricing table. */}
+        {/* overflow-y-hidden: overflow-x-auto alone also makes this a vertical
+            scroll container, and the -mb-px underline trick lets it scroll up
+            by a pixel-high strip. */}
+        <div className="-mx-6 flex gap-6 overflow-x-auto overflow-y-hidden border-b px-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {COLUMNS.map((column, ci) => (
+            <button
+              key={column.name}
+              type="button"
+              aria-pressed={option === ci}
+              onClick={() => setOption(ci)}
+              className={`-mb-px shrink-0 border-b pb-3 pt-5 text-base font-medium transition-colors ${
+                option === ci
+                  ? "border-foreground text-foreground"
+                  : "border-transparent text-muted-foreground"
               }`}
             >
-              {column.name}
-            </p>
-            <dl className="divide-y divide-border px-4 [[data-theme=dark]_&]:divide-[#383838]">
-              {ROWS.map((row) => (
-                <div
-                  key={row.label}
-                  className="flex items-baseline justify-between gap-4 py-2.5"
-                >
-                  <dt className="shrink-0 text-xs text-muted-foreground">
-                    {row.label}
-                  </dt>
-                  {/* Ranged right, so the five answers line up on one edge and
-                      the card can be read down its own column rather than
-                      hunted for across five labels of different lengths. */}
-                  <dd
-                    className={`text-right text-sm leading-snug ${
-                      ci === OWN ? "text-foreground" : "text-muted-foreground"
-                    }`}
-                  >
-                    {row.cells[ci]}
-                  </dd>
-                </div>
-              ))}
-            </dl>
-          </li>
-        ))}
-      </ul>
+              {column.tab}
+            </button>
+          ))}
+        </div>
+
+        {/* The full name under the tabs: the tab is short enough to fit three
+            of them, so the option still gets said once in the words the table
+            uses. */}
+        <p className="pb-1 pt-6 text-sm font-medium text-foreground">
+          {COLUMNS[option].name}
+        </p>
+
+        <dl>
+          {ROWS.map((row) => (
+            <div
+              key={row.label}
+              className={`-mx-6 flex items-baseline justify-between gap-4 border-t px-6 py-3.5 ${GRID_LINE}`}
+            >
+              <dt className="pr-4 text-sm text-muted-foreground">
+                {row.label}
+              </dt>
+              {/* Ranged right, so the five answers line up on one edge and the
+                  option can be read down a single column. */}
+              <dd
+                className={`shrink-0 text-right text-sm leading-snug ${
+                  option === OWN ? "text-foreground" : "text-muted-foreground"
+                }`}
+              >
+                {row.cells[option]}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </div>
 
       {/* The frame, all four sides, rounded and clipping the cells inside it.
           The cells draw the rules BETWEEN columns and rows; the frame draws
