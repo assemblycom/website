@@ -854,19 +854,12 @@ function RequirementsPane() {
           above it and the soft-ink prose below, 500 at 12.5px is plenty to
           read as the heading of the block.
 
-          Approve stays in the right corner, now on the title's row. It is
-          still the quiet button and not the page's primary: the point of this
-          screen is that you can revise instead, so the control you are NOT
-          being pushed towards must not be the heaviest thing on it. */}
-      <div className="flex shrink-0 items-center justify-between gap-2">
-        <span className="text-[12.5px] font-medium leading-none text-[color:var(--mock-ink)]">
-          Requirements
-        </span>
-        <span
-          className={`flex shrink-0 items-center ${R_CHROME} border bg-[var(--mock-window)] px-3 py-1.5 text-[color:var(--mock-ink)] ${PLAN_HEAD} ${LINE}`}
-        >
-          Approve
-        </span>
+          Approve is NOT up here. It belongs to the document, not to the
+          sentence naming it, so it sits in the card's own top-right corner —
+          see below. The title alone out here is the label; the control is on
+          the thing it acts on. */}
+      <div className="shrink-0 text-[12.5px] font-medium leading-none text-[color:var(--mock-ink)]">
+        Requirements
       </div>
 
       {/* The card, and the mark saying it continues past the crop.
@@ -878,6 +871,26 @@ function RequirementsPane() {
         <div
           className={`relative flex h-full flex-col overflow-hidden ${R_PANEL} border bg-[var(--mock-window)] ${LINE}`}
         >
+          {/* The action, in the card's own top-right corner — the corner the
+              product puts a document's controls in, and where the eye goes
+              once it has read the title above the card.
+
+              Its own row rather than floated over the text: the document
+              starts with a heading on the left, so an absolutely positioned
+              button would be a control hovering beside "Overview" with
+              nothing holding the two apart.
+
+              A quiet button, not the page's primary. The point of this screen
+              is that you can revise instead, so the control you are NOT being
+              pushed towards must not be the heaviest object on it. */}
+          <div className="flex shrink-0 justify-end px-4 pt-3">
+            <span
+              className={`flex shrink-0 items-center ${R_CHROME} border bg-[var(--mock-window)] px-3 py-1.5 text-[color:var(--mock-ink)] ${PLAN_HEAD} ${LINE}`}
+            >
+              Approve
+            </span>
+          </div>
+
           {/* The document. It OVERFLOWS, and is meant to: the thread above and
               the composer below take about 130px of the 360 the scene has, so
               the last flow falls past the card's foot. That is the honest
@@ -885,7 +898,7 @@ function RequirementsPane() {
               and the fade and the chevron under it say so. Clipping it to fit
               would mean a four-flow plan that happens to end exactly where the
               card does, which no real one ever does. */}
-          <div className="flex min-h-0 flex-1 flex-col gap-1.5 p-4">
+          <div className="flex min-h-0 flex-1 flex-col gap-1.5 px-4 pb-4 pt-2">
             <span className={`text-[color:var(--mock-ink)] ${PLAN_HEAD}`}>
               Overview
             </span>
