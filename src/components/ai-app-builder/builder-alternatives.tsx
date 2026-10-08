@@ -122,33 +122,69 @@ export function BuilderAlternatives() {
         </div>
       </div>
 
-      {/* Below md, one option at a time under its capability. Three columns
-          of free text will not fit a phone. */}
-      <ul className="mt-10 space-y-7 md:hidden">
-        {ROWS.map((row) => (
-          <li key={row.label}>
-            <p className="text-sm">{row.label}</p>
-            <div
-              className={`mt-3 divide-y overflow-hidden rounded-lg border ${GRID_LINE} divide-border [[data-theme=dark]_&]:divide-[#383838]`}
+      {/* ONE CARD PER OPTION BELOW md, not one block per capability.
+          
+          It was the table transposed: every capability became a box holding
+          all three answers, each answer labelled with the option it belonged
+          to. That named the three options five times over — fifteen headings
+          for fifteen answers — and the repetition was most of what you saw,
+          because the labels are long ("Standalone AI app builders") and the
+          answers are short ("No"). It also left the three options with no
+          identity of their own: nothing on the screen was "the in-house
+          route", only five separate mentions of it.
+
+          A phone cannot show a comparison ACROSS anyway — three columns of
+          free text do not fit, which is why the table is hidden here at all —
+          so the stack stopped paying for the thing it was giving up. Grouped
+          by option it reads as the heading above it reads: three ways to get
+          an app, each one's story told once, and the one that is ready marked
+          as such. Each option is named once instead of five times, and the
+          capability labels do the repeating — which is the right way round,
+          since they are the shorter of the two and they are the questions.
+
+          The table from `md` up is untouched; it can afford the across-read
+          and is still the better object when the width exists. */}
+      <ul className="mt-10 space-y-4 md:hidden">
+        {COLUMNS.map((column, ci) => (
+          <li
+            key={column.name}
+            // The own card carries the same `--muted` wash its column carries
+            // in the table, so the two layouts mark our side the same way.
+            className={`overflow-hidden rounded-xl border ${GRID_LINE} ${
+              ci === OWN
+                ? "bg-muted [[data-theme=dark]_&]:bg-[var(--surface-2)]"
+                : ""
+            }`}
+          >
+            <p
+              className={`border-b px-4 py-3 text-sm ${GRID_LINE} ${
+                ci === OWN ? "text-foreground" : "text-muted-foreground"
+              }`}
             >
-              {row.cells.map((cell, i) => (
+              {column.name}
+            </p>
+            <dl className="divide-y divide-border px-4 [[data-theme=dark]_&]:divide-[#383838]">
+              {ROWS.map((row) => (
                 <div
-                  key={COLUMNS[i].name}
-                  className={`px-4 py-3 ${i === OWN ? "bg-muted" : ""}`}
+                  key={row.label}
+                  className="flex items-baseline justify-between gap-4 py-2.5"
                 >
-                  <span className="block text-xs text-muted-foreground">
-                    {COLUMNS[i].name}
-                  </span>
-                  <p
-                    className={`mt-1 text-sm leading-relaxed ${
-                      i === OWN ? "text-foreground" : "text-muted-foreground"
+                  <dt className="shrink-0 text-xs text-muted-foreground">
+                    {row.label}
+                  </dt>
+                  {/* Ranged right, so the five answers line up on one edge and
+                      the card can be read down its own column rather than
+                      hunted for across five labels of different lengths. */}
+                  <dd
+                    className={`text-right text-sm leading-snug ${
+                      ci === OWN ? "text-foreground" : "text-muted-foreground"
                     }`}
                   >
-                    {cell}
-                  </p>
+                    {row.cells[ci]}
+                  </dd>
                 </div>
               ))}
-            </div>
+            </dl>
           </li>
         ))}
       </ul>

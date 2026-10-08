@@ -38,8 +38,16 @@ export const metadata: Metadata = pageMetadata(PAGE_SEO.aiAppBuilder);
 const PILLARS: Pillar[] = [
   {
     eyebrow: "Apps",
-    heading: "Build client apps and internal tools in one place",
-    body: "Describe it once. Client apps land in your client experience, team tools in the dashboard.",
+    // "Build … in one place" → "Client apps and internal tools, one place".
+    // The verb goes because the whole page is about building and the section
+    // above this one says so twice; "one place" is the claim and it stays.
+    heading: "Client apps and internal tools, one place",
+    // 15 words to 13, same two beats: you describe it once, and WHICH of the
+    // two places it lands in is decided for you. "your client experience" →
+    // "clients" is the same destination said shorter — the apps reach the
+    // client — and keeps the pairing with "your dashboard" it is contrasted
+    // against.
+    body: "Describe it once. Client apps go to clients, team tools to your dashboard.",
     // The Add App screen — the ONE PLACE the heading names. It was the built
     // app sitting in a client's sidebar, which shows where an app lands; that
     // is true, and it is also what the two cards further down this row already
@@ -61,12 +69,15 @@ const PILLARS: Pillar[] = [
   },
   {
     eyebrow: "CRM",
-    heading: "One CRM. Every app connects to it",
-    // Shortened, same claim: "come built in" → "built in", and the second
-    // sentence drops its passive tail ("what they're allowed to see" → "what
-    // you allow"), which also puts the firm back in the sentence as the one
-    // doing the allowing. Three lines of copy became two.
-    body: "Contacts, companies, and custom fields — each client sees only what you allow.",
+    // Two sentences to one phrase. "One CRM. Every app connects to it" said
+    // the same thing twice — one CRM, and everything joins it — so the second
+    // half is folded in as "behind every app".
+    heading: "One CRM behind every app",
+    // 12 words to 10. The dash clause becomes its own short sentence and the
+    // list drops its "and"; "each client sees only what you allow" loses
+    // "each", which the plural already carries. The claim is unchanged: three
+    // kinds of record, and per-client visibility you control.
+    body: "Contacts, companies, custom fields. Clients see only what you allow.",
     // The home page's CRM shot: contacts, companies and a custom field.
     visual: <TeamCrmVisual />,
     // 490, not the tall card's default 860. The table's Name column is flex-1
@@ -102,12 +113,23 @@ const PILLARS: Pillar[] = [
     // the row telling you they are different kinds of thing.
     visualBare: true,
     fadeRight: true,
+    // Contained and centred on a phone. At 327px the card is barely narrower
+    // than the 360px shot, so the crop had nothing to show for itself — a few
+    // pixels of overhang and a ramp running through the Company column — where
+    // on a desktop the same crop is a real window onto a wider table.
+    containOnPhone: true,
     fadeFrom: 88,
   },
   {
     eyebrow: "Security",
-    heading: "Secure logins, permissions, and billing built in",
-    body: "Maintained by Assembly. Nothing reaches clients until you make it visible.",
+    // The "and" goes; the list reads as a list without it. "Secure" stays —
+    // it is the word doing the work, and the three nouns alone would be a
+    // feature list rather than a claim about them.
+    heading: "Secure logins, permissions, billing built in",
+    // 11 words to 10, and the second sentence turns round to lead on the
+    // client: "Nothing reaches clients until…" → "Clients see nothing
+    // until…". Same gate, same hand on it.
+    body: "Maintained by Assembly. Clients see nothing until you make it visible.",
     // The firm's own sign-in: their mark, their domain, no platform badge.
     // The claim leads on secure LOGINS, and this is the first thing a client
     // meets. It was the onboarding screen, which carried an "Access: client
@@ -118,16 +140,41 @@ const PILLARS: Pillar[] = [
     // the title, the field, the button — and cropping it on the card's edges
     // cut off the half of it the claim is about.
     visualContained: true,
-    // NO bottom fade here, unlike the Apps card. It was tried: the screen's
-    // last visible object is the Magic link button, a solid near-black slab,
-    // and a ramp across it reads as the button being blurred rather than as
-    // the screen giving out. A fade needs something low-contrast to give out
-    // into. The card's own edge cuts it cleanly instead.
+    // The brand wash behind it. This is the one shot on the page that is a
+    // whole screen floating in the card rather than a window cropped by it,
+    // so it is the one with a ground to put anything on — and what the product
+    // puts there is this gradient, which is also the page's own ramp (see
+    // .pillar-brand-wash). A sign-in on bare --surface was a white panel on a
+    // grey one, the flattest card in the set.
+    brandWash: true,
+    // A BOTTOM FADE IN DARK, and only in dark.
+    //
+    // The objection to one was that the screen's last visible object is the
+    // Magic link button, a solid near-black slab in light, and a ramp across a
+    // slab reads as the button being blurred rather than as the screen giving
+    // out. That still holds in light, and light does not need the ramp anyway:
+    // --surface and the screen's --mock-window are a point apart there, so the
+    // foot already gives out on its own.
+    //
+    // Dark is the other case on both counts. The card is #191919 and the
+    // screen #212121, so the hard cut at the card's edge is a visible step
+    // running flat across the full width; and the Magic link button is no
+    // longer a slab here — it took the Continue-with-Google surface in dark, so
+    // there is something low-contrast for the ramp to give out into, which is
+    // exactly what it was missing. See `fadeFootDark` and --mock-foot-fade.
+    fadeFootDark: true,
   },
   {
     eyebrow: "Branding",
-    heading: "New apps land in your clients' branded home",
-    body: "Your logo and colors, not ours. Every new app picks them up automatically.",
+    // "in your clients' branded home" → "already branded". Where it lands is
+    // the picture's job — the shot under this heading IS the client's home —
+    // so the words keep the part the picture cannot say: that it arrives
+    // carrying your brand rather than being dressed afterwards.
+    heading: "New apps land already branded",
+    // 13 words to 11. The second sentence becomes a clause on the first, and
+    // "picks them up automatically" drops the adverb, which the present tense
+    // already implies.
+    body: "Your logo and colors, not ours — every app picks them up.",
     // The CLIENT's nav, in the firm's colour, with the apps the firm has added
     // listed under the stock rows. It was the home page's branded-portal shot,
     // which is the team's dashboard — CRM, Team, Customize, and a table of six
@@ -276,7 +323,14 @@ export default function AiAppBuilderPage() {
           lands on instead of being tuned for one; svh rather than vh, because
           on mobile vh is the tallest the viewport ever gets and the browser
           chrome then eats the bottom of it. 5rem is the sticky nav above. */}
-      <section className="relative flex min-h-[calc(100svh-5rem)] items-center overflow-hidden pb-20 pt-16 md:pb-28 md:pt-20">
+      {/* RANGED TO THE TOP ON A PHONE, centred from `md`. Centring in a
+          viewport-tall section is right on a desktop, where the claim lands on
+          the optical middle of a wide screen. On a phone the same rule put a
+          third of the screen above the headline before anything was said, and
+          pushed the composer — the one thing on this page you can actually use
+          — most of the way down the first screen. The glow below is unchanged:
+          it is drawn to the section's foot, which has not moved. */}
+      <section className="relative flex min-h-[calc(100svh-5rem)] items-start overflow-hidden pb-20 pt-10 md:items-center md:pb-28 md:pt-20">
         {/* The horizon arc behind the headline. It clips to this section and
             fades out before its bottom edge, so the region below still opens
             on the page's own ground. `overflow-hidden` above is what crops the
@@ -407,9 +461,14 @@ export default function AiAppBuilderPage() {
         // sentences wrap into a block on their own.
         subheading={
           <>
+            {/* "what your business needs" → "what you need". The reader is
+                the business; naming it again was the sentence restating its
+                own audience. 15 words to 13, both offers intact: skip the
+                custom build, and start either from a description or from a
+                template. */}
             Skip the five-figure custom build.
-            <br className="hidden md:inline" /> Describe what your business
-            needs, or start from a template.
+            <br className="hidden md:inline" /> Describe what you need, or
+            start from a template.
           </>
         }
         // The page opens on a composer; closing on a second one asks the same

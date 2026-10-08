@@ -54,7 +54,20 @@ export function TemplateRail({ cards }: { cards: TemplateRailCard[] }) {
           // already has (--surface to --surface-2), and takes no ring at all.
           // That is the move the rest of this page's dark mode makes: a
           // surface answering by getting lighter.
-          className="group flex items-center gap-4 rounded-xl bg-[var(--surface)] p-3 ring-1 ring-transparent transition-[box-shadow,background-color] hover:ring-foreground/10 [[data-theme=dark]_&]:hover:bg-[var(--surface-2)] [[data-theme=dark]_&]:hover:ring-transparent"
+          // min-w-0 ON THE ROW ITSELF, not just on the text inside it.
+          //
+          // A grid item's automatic minimum size is min-width:auto, which
+          // resolves to its MIN-CONTENT — and the two lines inside this row are
+          // `truncate`, which is white-space:nowrap, so their min-content is
+          // the whole untruncated sentence. The row therefore refused to shrink
+          // to its track: at a 375px viewport the track was 327 and the row
+          // laid out at 358, overflowing the section's own padding and getting
+          // clipped by the page. The inner `min-w-0 flex-1` could not fix it,
+          // because it governs the flex child, not the grid item above it.
+          //
+          // With the floor removed the row shrinks to its track and `truncate`
+          // does what it was always there to do.
+          className="group flex min-w-0 items-center gap-4 rounded-xl bg-[var(--surface)] p-3 ring-1 ring-transparent transition-[box-shadow,background-color] hover:ring-foreground/10 [[data-theme=dark]_&]:hover:bg-[var(--surface-2)] [[data-theme=dark]_&]:hover:ring-transparent"
         >
           {/* The template shot goes here once the art exists. It takes the
               full `--muted` against the row's half-strength fill, so the slot

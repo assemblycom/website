@@ -21,6 +21,9 @@ type Contact = {
   name: string;
   email: string;
   company: string;
+  phone: string;
+  /** A custom field. Blank for the rows that have not been given one. */
+  tag?: string;
 };
 
 /**
@@ -100,7 +103,7 @@ function MarkSymphony({ className }: { className?: string }) {
 }
 
 /**
- * Wave Marketing — a W from GTL001, outlined. The face is a heavy geometric
+ * Wave — a W from GTL001, outlined. The face is a heavy geometric
  * sans whose joints are cut rather than curved, so the letter survives being
  * 9px tall: it is all stem and no detail, which is the only thing that reads at
  * this size.
@@ -184,7 +187,7 @@ function MarkGodo({ className }: { className?: string }) {
 const COMPANY_TILES: Record<string, string> = {
   Symphony:
     "bg-[#111111] text-white [[data-theme=dark]_&]:bg-[#f2f2f2] [[data-theme=dark]_&]:text-[#111111]",
-  "Wave Marketing": "bg-[#63C7B2] text-[#111111]",
+  Wave: "bg-[#63C7B2] text-[#111111]",
   Godo: "bg-[#F06449] text-[#111111]",
 };
 /**
@@ -208,7 +211,7 @@ const COMPANY_MARKS: Record<
   // 8px, and it used to be 9. The W is a wide, flat-bottomed letter that fills
   // its box corner to corner; at 9 it touched the tile's rounding and read as
   // a letter jammed into a square rather than as a mark sitting in one.
-  "Wave Marketing": { Mark: MarkWave, size: "size-[8px]" },
+  Wave: { Mark: MarkWave, size: "size-[8px]" },
   // 7.5px against the W's 8. A near-circle reads larger than a letter made of
   // diagonals at the same measured size, so the G is held half a pixel under
   // it — an optical correction, not an arithmetic one.
@@ -257,36 +260,54 @@ function initials(name: string) {
  * broken rather than as the card being narrow, so the sample data is written
  * to the measure the card actually gives it.
  */
+/**
+ * FICTIONAL NUMBERS ONLY, and the 555-01xx block specifically — it is the
+ * range reserved for fiction, so nothing here can ever ring a real person.
+ *
+ * This list is sample data in a marketing screenshot. Nothing in it may be
+ * copied from a real CRM, a support ticket, or a screenshot someone shared to
+ * describe a layout: a number that looks plausible IS someone's number. The
+ * names, addresses and firms here are invented for the same reason.
+ */
 const CONTACTS: Contact[] = [
   {
     name: "Mary Sung",
     email: "mary@symphony.co",
     company: "Symphony",
+    phone: "(555) 010-4471",
+    tag: "Retainer",
   },
   {
     name: "Chuck Wilford",
     email: "chuckd@symphony.co",
     company: "Symphony",
+    phone: "(555) 010-2286",
   },
   {
     name: "Timothy Leclerc",
     email: "timmy@wave.co",
-    company: "Wave Marketing",
+    company: "Wave",
+    phone: "(555) 010-7715",
+    tag: "Project",
   },
   {
     name: "Jasmin Khan",
     email: "jasmin@symphony.co",
     company: "2 companies",
+    phone: "(555) 010-3390",
   },
   {
     name: "Kenny Tse",
     email: "ktse2@godo.com",
     company: "Godo",
+    phone: "(555) 010-6128",
+    tag: "Retainer",
   },
   {
     name: "Andy Alvarez",
     email: "andy@wave.co",
-    company: "Wave Marketing",
+    company: "Wave",
+    phone: "(555) 010-8834",
   },
 ];
 
@@ -301,7 +322,23 @@ export function TeamCrmVisual() {
       // the card's grey through them, and a second hairline inside the frame's
       // own. The frame draws the edge now (see `visualBare`), so this is just
       // the screen.
-      className="pointer-events-none flex h-full select-none flex-col overflow-hidden bg-background"
+      //
+      // THE --mock-* FAMILY, NOT THE PAGE TOKENS. This screen was the one shot
+      // in the pillar row still built on `bg-background` / `border-border` /
+      // `text-foreground`, which are the PAGE's values. In light the two sets
+      // nearly agree, so nothing showed; in dark the page ground is
+      // rgb(10,10,10) and the card under it is #191919, so the screen came out
+      // DARKER than the card it is lying on — a hole cut in the card rather
+      // than a panel sitting on it, with its hairlines at --border too faint
+      // to state a table. --mock-window is #212121, a step UP from the card,
+      // which is the whole reason that token exists; --mock-line and the two
+      // inks come with it so the rules and the type sit on the same ladder as
+      // the Add App and Branding screens beside it.
+      // NO pointer-events-none any more: the rows answer the cursor (below),
+      // and a shot that cannot be pointed at cannot have a hover state.
+      // `select-none` stays — this is a picture of a table, not a table, and a
+      // drag across it should not leave half a contact highlighted.
+      className="flex h-full select-none flex-col overflow-hidden bg-[var(--mock-window)]"
     >
       <div className="flex min-h-0 flex-1">
         {/* NO SIDEBAR, and no header bar over the table. This card's claim is
@@ -320,14 +357,14 @@ export function TeamCrmVisual() {
               the frame. pt-3.5 against the tabs' own pb-1.5 is not symmetry
               for its own sake — a tab's underline IS its bottom edge, so the
               gap under it reads shorter than the number says. */}
-          <div className="flex shrink-0 gap-4 border-b border-border px-3 pt-3.5">
+          <div className="flex shrink-0 gap-4 border-b border-[var(--mock-line)] px-3 pt-3.5">
             {["Companies", "Contacts"].map((tab, i) => (
               <span
                 key={tab}
                 className={`-mb-px border-b pb-1.5 ${MOCK_PRIMARY} ${
                   i === 1
-                    ? "border-foreground text-foreground"
-                    : "border-transparent text-muted-foreground"
+                    ? "border-[var(--mock-ink)] text-[color:var(--mock-ink)]"
+                    : "border-transparent text-[color:var(--mock-ink-soft)]"
                 }`}
               >
                 {tab}
@@ -358,16 +395,94 @@ export function TeamCrmVisual() {
                 contact rows' 33 — so the bar read as squeezed between the tabs
                 above it and the first contact below. */}
             <div
-              className={`flex items-center gap-2 border-b border-border py-2.5 pl-5 text-muted-foreground ${MOCK_SECONDARY}`}
+              // gap-5 UNDER `sm`, gap-2 above — and the row below takes the
+              // same pair, or the heads stop sitting over their columns.
+              //
+              // On a phone only two columns are drawn, and they were set at
+              // the seven-column gap: the Name cell's address truncates at its
+              // full width, so the ellipsis ended 8px from the company mark
+              // and the two columns read as one run of text. There is room for
+              // it — two columns and the shot's own inset come to 264 of the
+              // 287 the contained shot has — so the gap takes 12 of the 23 that
+              // were spare. From `sm` four columns are drawn and 8px is what
+              // fits them.
+              className={`flex items-center gap-5 border-b border-[var(--mock-line)] py-2.5 pl-5 text-[color:var(--mock-ink-soft)] sm:gap-2 ${MOCK_SECONDARY}`}
             >
-              <span className="w-[148px]">Name</span>
-              <span className="hidden w-[112px] sm:block">Company</span>
+              {/* NO `sm:` GATE ON COMPANY, and the Name column steps instead.
+                  The column used to be `hidden sm:block`, which is a VIEWPORT
+                  query on a mock that is laid out at a fixed 360px whatever
+                  the viewport is — so on a phone the card showed a contact
+                  list with no company in it under a heading about companies,
+                  and the right half of every row was empty ground. The width
+                  was always there; only the breakpoint was hiding it.
+
+                  124 under `sm`, 148 above. The card is 327 wide on a phone
+                  against the shot's 360, and the budget is fixed: the shot's
+                  left inset (20px) + its own pl-5 + Name + the 8px gap +
+                  Company has to land inside the 288px of card the right-edge
+                  ramp leaves solid. The 24px comes off the one column that can
+                  spare it — the address truncates a character or two earlier,
+                  which is a smaller loss than the company column sitting under
+                  the gradient. */}
+              <span className="w-[124px] shrink-0 sm:w-[148px]">Name</span>
+              <span className="w-[112px] shrink-0">Company</span>
+              {/* TWO MORE COLUMNS, SHOWN FROM `sm` ONLY.
+                  
+                  Below `sm` the shot is contained inside the card (see
+                  `containOnPhone`) and is ~287px wide — Name and Company
+                  already fill it, and with four columns asking for 540 the
+                  flex row shrank all of them to fit, so a phone got four
+                  squeezed columns with "Mary …" in the first. Two columns at
+                  their drawn width beat four at any width.
+
+                  From `lg` they are drawn but unreachable: the shot goes back
+                  to its fixed 360 and they sit past the frame's own crop,
+                  which is the same "table that carries on" the right-edge ramp
+                  is already claiming. Every column is `shrink-0` so that stays
+                  true — without it the row would squeeze all four into 360
+                  rather than letting two of them run off the edge.
+
+                  Between those two breakpoints the bento has not split into
+                  columns yet, so this card is the full width of the page and
+                  the shot runs to its right edge (see `containOnPhone`'s
+                  `sm:right-0`). Two columns were what that width was missing:
+                  it was ~690px of card holding a 360px table, so two thirds of
+                  the card was empty ground with a gradient over it.
+
+                  Phone and Tags rather than two more of the same: Tags is a
+                  CUSTOM FIELD, which is the third thing this card's copy
+                  promises ("Contacts, companies, and custom fields") and the
+                  only one of the three the shot was not showing. */}
+              <span className="hidden w-[130px] shrink-0 sm:block">Phone</span>
+              <span className="hidden w-[130px] shrink-0 sm:block">Tags</span>
               <span className="flex-1" />
             </div>
             {CONTACTS.map((contact, i) => (
               <div
                 key={contact.name}
-                className="flex min-h-[33px] items-center gap-2 border-b border-border py-[6px] pl-5 last:border-b-0"
+                // py-[9px], up from 6, and min-h 39 from 33 — the floor moves
+                // with the padding so the empty last row keeps the same height
+                // as the ones above it. The rows were set by their contents:
+                // a 11.5/1.3 name over a 10.5/1.35 address is ~29px of type,
+                // and 6px of air either side left the gap between two people
+                // smaller than the gap between a person's name and their own
+                // address. The pair has to read as one record before the rows
+                // read as a list, so the space BETWEEN records has to beat the
+                // space inside one.
+                // THE ROW ANSWERS THE CURSOR. --mock-well is the recess the
+                // table head already wears, so a hovered row is lit by the
+                // same step the screen uses everywhere else rather than by a
+                // tint invented for this one state — and because it is a
+                // token, it is right in both themes without a second value.
+                //
+                // Not on the empty last row: there is no record under the
+                // cursor there, and a blank strip that lights up is the mock
+                // claiming something is there.
+                className={`flex min-h-[39px] items-center gap-5 border-b border-[var(--mock-line)] py-[9px] pl-5 transition-colors duration-150 last:border-b-0 sm:gap-2 ${
+                  i === CONTACTS.length - 1
+                    ? ""
+                    : "hover:bg-[var(--mock-well)]"
+                }`}
               >
                 {/* THE LAST ROW IS EMPTY, and keeps everything else: its
                     height, its hairlines, its ground running off the card's
@@ -379,11 +494,11 @@ export function TeamCrmVisual() {
                     that carries on. An empty row of the same height is the
                     next record not yet in view: the rule under it is still
                     there, the ground still reaches the edge, and nothing is
-                    sliced. min-h-[33px] because the avatar was what set the
+                    sliced. min-h-[39px] because the avatar was what set the
                     row's height, and the empty row has no avatar. */}
                 {i === CONTACTS.length - 1 ? null : (
                   <>
-                    <span className="flex w-[148px] min-w-0 items-center gap-1.5">
+                    <span className="flex w-[124px] min-w-0 shrink-0 items-center gap-1.5 sm:w-[148px]">
                       {/* 20px, not 18: two letters at 9px need the extra two
                       pixels of circle or they sit against its sides. */}
                       <span
@@ -395,12 +510,12 @@ export function TeamCrmVisual() {
                       </span>
                       <span className="min-w-0">
                         <span
-                          className={`block truncate text-foreground ${MOCK_PRIMARY_STACKED}`}
+                          className={`block truncate text-[color:var(--mock-ink)] ${MOCK_PRIMARY_STACKED}`}
                         >
                           {contact.name}
                         </span>
                         <span
-                          className={`block truncate text-muted-foreground ${MOCK_SECONDARY_STACKED}`}
+                          className={`block truncate text-[color:var(--mock-ink-soft)] ${MOCK_SECONDARY_STACKED}`}
                         >
                           {contact.email}
                         </span>
@@ -417,13 +532,18 @@ export function TeamCrmVisual() {
                     name. The second tile carries a ring in the row's own
                     background so the pair reads as two tiles and not one
                     bitten shape. */}
-                    {/* 112, up from 104. The company name moved to the shared
+                    {/* 112, and it stays there now the longest name is
+                    "2 companies" rather than "Wave Marketing". It was 104, and
+                    went up when the company name moved to the shared
                     MOCK_PRIMARY (11.5px) with every other row label on the
-                    site, and at 104 "Wave Marketing" came up three pixels
-                    short and truncated. The column is followed by a flex-1
-                    spacer, so the width comes out of empty space rather than
-                    off the Name column. */}
-                    <span className="hidden w-[112px] items-center gap-1.5 sm:flex">
+                    site — at 104 "Wave Marketing" came three pixels short and
+                    truncated. The firm is just "Wave" today, so nothing in the
+                    column needs the extra width; it is kept because the column
+                    is followed by a flex-1 spacer, so the width costs empty
+                    space rather than anything on the Name column, and a column
+                    cut to its current contents is one that truncates the next
+                    time a name is added. */}
+                    <span className="flex w-[112px] shrink-0 items-center gap-1.5">
                       <span className="relative flex shrink-0 items-center">
                         <CompanyMark
                           company={
@@ -440,16 +560,37 @@ export function TeamCrmVisual() {
                           // is about. Jasmin's address is @symphony.co, so
                           // Symphony is the one in front and Wave is the other.
                           <CompanyMark
-                            company="Wave Marketing"
-                            className="-ml-[7px] ring-[1.5px] ring-background"
+                            company="Wave"
+                            className="-ml-[7px] ring-[1.5px] ring-[var(--mock-window)]"
                           />
                         ) : null}
                       </span>
                       <span
-                        className={`min-w-0 truncate text-muted-foreground ${MOCK_PRIMARY}`}
+                        className={`min-w-0 truncate text-[color:var(--mock-ink-soft)] ${MOCK_PRIMARY}`}
                       >
                         {contact.company}
                       </span>
+                    </span>
+                    <span
+                      className={`hidden w-[130px] shrink-0 truncate text-[color:var(--mock-ink-soft)] sm:block ${MOCK_PRIMARY}`}
+                    >
+                      {contact.phone}
+                    </span>
+                    {/* The custom field, drawn the way the product draws a tag
+                        — a bordered pill on the window, not a filled chip. The
+                        site's own tag pattern (mono, uppercase, bg-muted) is
+                        for the SITE's chrome; inside a product shot the
+                        product's own styling is what makes it read as a
+                        screenshot. Rows without one are blank, as they are in
+                        the product: a tag is something somebody added. */}
+                    <span className="hidden w-[130px] shrink-0 sm:block">
+                      {contact.tag ? (
+                        <span
+                          className={`inline-flex items-center rounded-[4px] border border-[var(--mock-line)] px-1.5 py-[3px] text-[color:var(--mock-ink-soft)] ${MOCK_SECONDARY}`}
+                        >
+                          {contact.tag}
+                        </span>
+                      ) : null}
                     </span>
                   </>
                 )}

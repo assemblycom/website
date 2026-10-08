@@ -274,13 +274,32 @@ type SceneProps = { plain?: boolean };
 
 /**
  * The design box a `plain` scene is drawn at: the panel slot's own landscape
- * shape, in place of the rail's portrait 340x453. MockFit fits the whole box,
- * so a portrait scene in a landscape slot is sized by height alone and leaves
- * the width empty either side — which the artwork grounds used to fill and,
- * with them gone, nothing does. One box for all three so the three steps stay
- * the same size as you tab between them.
+ * shape (620x400), in place of the rail's portrait 340x453. MockFit fits the
+ * whole box, so a portrait scene in a landscape slot is sized by height alone
+ * and leaves the width empty either side — which the artwork grounds used to
+ * fill and, with them gone, nothing does. One box for all three from `sm` up,
+ * so the three steps stay the same size as you tab between them.
  */
-const PANEL_SCENE = { w: 620, h: 400 };
+/**
+ * The same box with a PHONE step in front of it, as classes rather than
+ * numbers, for the scenes the /ai-app-builder panel draws.
+ *
+ * 620x400 is a desktop measurement. MockFit fits the whole design box, so in
+ * the panel's ~327px slot on a phone it resolved to a scale of 0.53 — the
+ * composer, the plan list and the portal screen were all drawn at half the
+ * size their type was set for, which is the "too tiny" you see, and the scene
+ * then filled 211px of a 360px slot and left 149px of bare panel under it.
+ *
+ * 360x300 is the same scene redrawn to a phone's shape: it reflows the content
+ * to a narrow box instead of shrinking it, so the fit comes out near 1:1 and
+ * the type is the size it was set at. The slot carries the matching 6:5 aspect
+ * below `sm` (see BuilderHowItWorks), so the scene lands on the slot exactly
+ * and there is no dead panel in either axis at any phone width.
+ */
+const PANEL_SCENE_PHONE = {
+  vars: "[--template-mock-w:360px] [--template-mock-h:300px] sm:[--template-mock-w:620px] sm:[--template-mock-h:400px]",
+  size: "w-[360px] h-[300px] sm:w-[620px] sm:h-[400px]",
+};
 
 /**
  * Build's panel box, which is WIDER than the other two from `lg` up.
@@ -296,7 +315,16 @@ const PANEL_SCENE = { w: 620, h: 400 };
  * is `w-full max-w-[…]`, so a box wider than the panel is fitted DOWN and takes
  * the mock's type with it — 0.84 scale at the md breakpoint is how an 11.5px
  * label becomes 9.7px. So each width waits for a panel that can hold it at 1:1.
- * The panel is 944 inside at `lg` (holds 820) and 1120 at `xl` (holds 1040).
+ * The panel is 944 inside at `lg` (holds 900) and 1072 at 1152 (holds 1040).
+ *
+ * THE SECOND STEP IS AT 1152, NOT AT `xl` (1280), and the first is 900 rather
+ * than 820. The slot is `ml-auto`, so every pixel the box is narrower than the
+ * panel is a pixel of bare panel on the LEFT — and waiting for 1280 meant the
+ * worst case sat just under it: a 1120px panel holding an 820px box, 300px of
+ * nothing under the copy. 1152 is simply the width at which the panel first
+ * holds 1040 at 1:1, which is the rule the other steps already follow; it just
+ * was not a breakpoint anyone had named. The gap now peaks near 170 instead of
+ * 300, and is 32 from 1152 up.
  *
  * The `xl` step is what closes the gap on the LEFT. The slot is `ml-auto`, so
  * the scene's right edge is the panel's right edge and all the slack collects
@@ -309,8 +337,12 @@ const PANEL_SCENE = { w: 620, h: 400 };
  * is the axis with the slack, since all three slots run to the panel's foot.
  */
 const PANEL_SCENE_WIDE = {
-  vars: "[--template-mock-w:620px] [--template-mock-h:400px] lg:[--template-mock-w:820px] xl:[--template-mock-w:1040px]",
-  size: "w-[620px] h-[400px] lg:w-[820px] xl:w-[1040px]",
+  // The phone step is the same one PANEL_SCENE_PHONE takes and for the
+  // same reason — see there. Build's scene is a portal screen that bleeds off
+  // its own right edge, so a narrow box crops it further rather than squeezing
+  // it, which is the behaviour this scene already has at every other width.
+  vars: "[--template-mock-w:360px] [--template-mock-h:300px] sm:[--template-mock-w:620px] sm:[--template-mock-h:400px] lg:[--template-mock-w:900px] lgx:[--template-mock-w:1040px]",
+  size: "w-[360px] h-[300px] sm:w-[620px] sm:h-[400px] lg:w-[900px] lgx:w-[1040px]",
 };
 
 export function DescribeCard({ plain = false }: SceneProps = {}) {
@@ -369,7 +401,14 @@ export function DescribeCard({ plain = false }: SceneProps = {}) {
           />
         </div>
       )}
-      <Scene {...(plain ? PANEL_SCENE : {})}>
+      <Scene
+        {...(plain
+          ? {
+              boxClass: PANEL_SCENE_PHONE.vars,
+              boxSizeClass: PANEL_SCENE_PHONE.size,
+            }
+          : {})}
+      >
         {/* Not WINDOW. This box is the same object as the hero's composer, so it
           wears the hero's treatment: the element's own hairline, a 3px band of
           the card's ground, then a second hairline — drawn as two spread
@@ -431,11 +470,48 @@ export function DescribeCard({ plain = false }: SceneProps = {}) {
           // from the scene's content edge to the panel's middle. At 92px tall
           // that is 74. Re-measure it if the row ever grows a line.
           className={`mock-edge [--mock-edge-h:150%] [--mock-edge-w:120%] flex flex-col ${
-            plain ? `${R_PANEL} gap-2.5` : R_CHROME
-          } border bg-[var(--mock-window)] p-4 text-[color:var(--mock-ink)] ${LINE} ${
             plain
-              ? "mb-auto mt-[74px] shadow-[0_0_0_3px_var(--surface),0_0_0_4px_var(--mock-line)]"
-              : "overflow-hidden [[data-theme=dark]_&]:shadow-[0_0_0_3px_var(--surface),0_0_0_4px_var(--mock-line)]"
+              ? // A STRONGER EDGE ON THE PANEL, via the three tokens the rule
+                // exposes (see .mock-edge). The shared ramp is tuned for a
+                // frame the size of a whole screen; on a box this small only
+                // its brightest corner is ever on screen, so the hairline came
+                // out close to flat and the composer — the one object this
+                // step is about — had the quietest edge in the panel. Lifted
+                // about two stops at the top of the ramp and left to meet the
+                // shared tail, so it is the same light, just further up.
+                //
+                // The rail keeps the default: there the box sits on a
+                // photograph rather than a --surface card, and a brighter edge
+                // over artwork reads as a glow around the box.
+                "[--mock-edge-1:#6e6e6e] [--mock-edge-2:#555555] [--mock-edge-3:#3e3e3e]"
+              : ""
+          } ${plain ? `${R_PANEL} gap-2.5` : R_CHROME} border bg-[var(--mock-window)] text-[color:var(--mock-ink)] ${LINE} ${
+            plain
+              ? // py-6 against the rail's p-4. The box is sized by its content
+                // and at p-4 it measured 92px — a sentence and a control row
+                // with very little air around either, which on a 620px scene
+                // read as a control squeezed rather than a composer. The extra
+                // 16px goes above and below the pair, not between them.
+                //
+                // mt-[66px], down from 74, and the two numbers move together:
+                // the box is topped out and pushed to the panel's optical
+                // middle by `120 - height/2`, so a 16px taller box comes down
+                // 8px less. Re-measure both if the row ever grows a line.
+                // CENTRED ON A PHONE, pushed down from `sm`.
+                //
+                // The offset below is arithmetic against the DESKTOP panel: a
+                // box centred in the scene sits ~60px under the centre of the
+                // panel, because the panel is a header plus this scene and the
+                // header comes off the top, so the box is topped out and
+                // pushed down by `120 - height/2`. None of those numbers hold
+                // on a phone — the header wraps to two lines and the scene is
+                // the 360x300 box, not 620x400 — so the same push put the
+                // composer near the floor with a third of the panel empty
+                // above it. Below `sm` the margins come off and the scene's
+                // own `justify-center` does the work, which is correct at any
+                // phone height rather than at one.
+                "px-4 py-6 shadow-[0_0_0_3px_var(--surface),0_0_0_4px_var(--mock-line)] sm:mb-auto sm:mt-[66px]"
+              : "overflow-hidden p-4 [[data-theme=dark]_&]:shadow-[0_0_0_3px_var(--surface),0_0_0_4px_var(--mock-line)]"
           }`}
         >
           <p
@@ -628,7 +704,10 @@ export function PlanCard({ plain = false }: SceneProps = {}) {
         // The standard box, not the wide one: with the nav and the window gone
         // there is no screen left to need a screen's width — two cards and a
         // measure of prose, which is what the shared 620 is for.
-        <Scene {...PANEL_SCENE}>
+        <Scene
+          boxClass={PANEL_SCENE_PHONE.vars}
+          boxSizeClass={PANEL_SCENE_PHONE.size}
+        >
           <RequirementsPane />
         </Scene>
       ) : (
@@ -828,7 +907,17 @@ function RequirementsPane() {
           #f2f3f6 against a --surface panel of #f5f5f5 — four points, which is
           no bubble at all in light. The window tone LIFTS off the surface in
           both themes, which is the rule the rest of these mocks are drawn on. */}
-      <div className="flex shrink-0 justify-end">
+      {/* THE THREAD, THE TITLE AND THE COMPOSER ARE PHONE-HIDDEN. Below `sm`
+          this step is the requirements card and nothing else.
+
+          Five stacked objects in a 360px-wide scene is five things each too
+          small to read: the card — the one the step is actually about, the one
+          with Approve on it — was getting less than half the scene, and the
+          box needed 500px of design height to hold the rest. Alone, the card
+          fills a 360x300 box at near 1:1, and the step still says what it says:
+          here is the plan, approve it. The conversation around it is context a
+          phone does not have room for. */}
+      <div className="hidden shrink-0 justify-end sm:flex">
         <span
           className={`max-w-[78%] ${R_PANEL} border bg-[var(--mock-window)] px-3 py-2 text-[color:var(--mock-ink)] ${PLAN_PROSE} ${LINE}`}
         >
@@ -840,7 +929,9 @@ function RequirementsPane() {
           read as something that CAME BACK rather than as a panel that was
           always there. Soft ink: it introduces the document, it is not the
           document. */}
-      <p className={`shrink-0 text-[color:var(--mock-ink-soft)] ${PLAN_PROSE}`}>
+      <p
+        className={`hidden shrink-0 text-[color:var(--mock-ink-soft)] sm:block ${PLAN_PROSE}`}
+      >
         Here&apos;s the plan. Approve it, or tell me what to change.
       </p>
 
@@ -863,7 +954,7 @@ function RequirementsPane() {
           sentence naming it, so it sits in the card's own top-right corner —
           see below. The title alone out here is the label; the control is on
           the thing it acts on. */}
-      <div className="shrink-0 text-[12.5px] font-medium leading-none text-[color:var(--mock-ink)]">
+      <div className="hidden shrink-0 text-[12.5px] font-medium leading-none text-[color:var(--mock-ink)] sm:block">
         Requirements
       </div>
 
@@ -888,7 +979,28 @@ function RequirementsPane() {
               A quiet button, not the page's primary. The point of this screen
               is that you can revise instead, so the control you are NOT being
               pushed towards must not be the heaviest object on it. */}
-          <div className="flex shrink-0 justify-end px-4 pt-3">
+          {/* THE CARD'S OWN HEADER ROW ON A PHONE: the title on the left, the
+              action on the right, ruled off from the document under it.
+
+              The title lives OUTSIDE the card from `sm` up, where it reads as
+              the reply naming what it is sending. On a phone the reply is gone
+              — the thread and the composer are hidden — so an outside title
+              had nothing to belong to and was hidden with them, which left the
+              card opening on a button floating in white with no idea what it
+              approved. Inside, on the row the button is already on, it costs
+              no height at all and the card says what it is.
+
+              The rule under it is what makes the pair read as a header rather
+              than as the document's first line; it is the same hairline the
+              card's own border draws, so nothing new is introduced. */}
+          <div
+            className={`flex shrink-0 items-center justify-between gap-2 border-b px-4 py-2.5 sm:justify-end sm:border-b-0 sm:px-4 sm:pb-0 sm:pt-3 ${LINE}`}
+          >
+            <span
+              className={`min-w-0 truncate text-[color:var(--mock-ink)] sm:hidden ${PLAN_HEAD}`}
+            >
+              Requirements
+            </span>
             <span
               className={`flex shrink-0 items-center ${R_CHROME} border bg-[var(--mock-window)] px-3 py-1.5 text-[color:var(--mock-ink)] ${PLAN_HEAD} ${LINE}`}
             >
@@ -977,7 +1089,7 @@ function RequirementsPane() {
           under it. One row with the send button inline made a search field out
           of something you write a paragraph into. */}
       <div
-        className={`mt-1 flex shrink-0 flex-col gap-1.5 ${R_PANEL} border bg-[var(--mock-window)] px-3 py-2.5 ${LINE}`}
+        className={`mt-1 hidden shrink-0 flex-col gap-1.5 sm:flex ${R_PANEL} border bg-[var(--mock-window)] px-3 py-2.5 ${LINE}`}
       >
         <span
           className={`min-w-0 truncate text-[color:var(--mock-ink-soft)] ${PLAN_PROSE}`}
@@ -1075,6 +1187,46 @@ const CAL_EVENTS = [
 const CAL_NOW = 11.67;
 const CAL_NOW_DAY = 4;
 
+/**
+ * TWO DAYS ON A PHONE, seven from `sm` up.
+ *
+ * Below `sm` this scene is drawn into a 360px box, and a seven-day week in the
+ * ~180px the pane has left after the nav is a 19px column — narrower than the
+ * day label above it. See the count below for why it settled on two. The window used to just overrun the box instead, which
+ * cut the week mid-column and took the toolbar off the top; it now fits the
+ * box exactly (see the `w-[340px] h-[280px]` below), and three columns is what
+ * that width holds at a size the events are still readable at.
+ *
+ * Days 3–4, not 0–2, because day 4 is the one marked today and carries the red
+ * now-line — a calendar cropped to a stretch of week with no "now" in it is a
+ * calendar of some other week. Both have events on them.
+ *
+ * TWO, DOWN FROM THREE. Three columns in the ~158px the pane has left came to
+ * 48px each, where every event drew as "Desi…" — a calendar whose entries
+ * cannot be read is a grid. Two is 79px, which sets the titles these events
+ * actually have. The toolbar still names the week, as a phone calendar's does
+ * while showing a day or two of it.
+ *
+ * Done by hiding columns rather than slicing CAL_DAYS: the events, the
+ * now-line and the hour lines are all positioned by index into that array, so
+ * a shorter array on one breakpoint would mean re-indexing all of them.
+ */
+const CAL_PHONE_FIRST = 3;
+const CAL_PHONE_LAST = 4;
+const calDayHidden = (i: number, display: "flex" | "block") =>
+  i >= CAL_PHONE_FIRST && i <= CAL_PHONE_LAST
+    ? ""
+    : display === "flex"
+      ? "hidden sm:flex"
+      : "hidden sm:block";
+/** The last VISIBLE column draws no right edge; the grid's own frame closes it. */
+const calDayEdge = (i: number) =>
+  i === CAL_DAYS.length - 1
+    ? ""
+    : i === CAL_PHONE_LAST
+      ? `sm:border-r ${LINE}`
+      : `border-r ${LINE}`;
+
 function CalendarPane() {
   const gridH = CAL_HOURS.length * CAL_ROW_H;
   const y = (clock: number) => (clock - CAL_START) * CAL_ROW_H;
@@ -1091,10 +1243,22 @@ function CalendarPane() {
             demonstrate, in the slot where the week's own name should start.
             The segmented Month/Week/Day control at the other end already says
             this view has controls on it, and that one is legible. */}
-        <span className={`text-[color:var(--mock-ink)] ${UI_PRIMARY}`}>
+        {/* Soft ink, not full. The date names the view; the week under it is
+            the subject. At full ink it was the darkest type on the screen and
+            the first thing the eye landed on, which is the toolbar winning
+            against the calendar. */}
+        <span
+          className={`whitespace-nowrap text-[color:var(--mock-ink-soft)] ${UI_PRIMARY}`}
+        >
           Oct 4–10, 2026
         </span>
-        <span className="flex items-center gap-1.5">
+        {/* HIDDEN ON A PHONE. Three segments in the ~200px the pane has left
+            is a control nobody can read, and it was taking enough of the
+            toolbar to break "Oct 4–10, 2026" onto two lines beside it — a
+            date wrapping mid-phrase is a worse fault than a missing toggle.
+            The week is the view either way; the control only says you could
+            change it, which is a claim a still picture cannot demonstrate. */}
+        <span className="hidden items-center gap-1.5 sm:flex">
           {/* The segmented control, the site's own shape: the picked segment is
               a raised white chip inside a filled track. */}
           <span
@@ -1127,13 +1291,18 @@ function CalendarPane() {
         >
           {/* Day header. The gutter's cell is empty, which is what keeps the
               seven day columns aligned with the seven below them. */}
-          <div className={`w-[46px] shrink-0 border-r ${LINE}`} />
+          {/* 34px under `sm`. The gutter is fixed and the day columns are
+              flex-1, so every pixel it holds comes off them — and at 46 it was
+              nearly as wide as a whole phone column. 34 still sets "11 AM" on
+              one line. */}
+          <div className={`w-[38px] shrink-0 border-r sm:w-[46px] ${LINE}`} />
           {CAL_DAYS.map((d, i) => (
             <div
               key={d.label}
-              className={`flex min-w-0 flex-1 flex-col items-center gap-[3px] py-1.5 ${
-                i < CAL_DAYS.length - 1 ? `border-r ${LINE}` : ""
-              }`}
+              className={`min-w-0 flex-1 flex-col items-center gap-[3px] py-1.5 ${calDayHidden(
+                i,
+                "flex",
+              )} ${i >= CAL_PHONE_FIRST && i <= CAL_PHONE_LAST ? "flex" : "sm:flex"} ${calDayEdge(i)}`}
             >
               <span
                 className={`text-[color:var(--mock-ink-soft)] ${UI_SECONDARY}`}
@@ -1166,9 +1335,20 @@ function CalendarPane() {
                   columns of digits and proportional figures make the marks sit
                   on slightly different centres across the row. */}
               <span
+                // NO BOX ON A PHONE. The outline is right at the width it was
+                // drawn for; in a 51px column it is the heaviest object in the
+                // shot — a near-black rectangle under a grey day label, which
+                // reads as an input field rather than as today. Below `sm`
+                // today is simply the digit in full ink, and the red now-line
+                // in its column is the other half of the marking, which no
+                // other day has.
                 className={`flex size-[18px] items-center justify-center tabular-nums ${UI_PRIMARY} ${
                   d.today
-                    ? `${R_CHROME} border border-[var(--mock-ink)] text-[color:var(--mock-ink)]`
+                    ? // `sm:rounded-[4px]` written out, NOT `sm:${R_CHROME}`.
+                      // Tailwind scans raw source text, so an interpolated
+                      // variant never appears for it to find and the class is
+                      // simply not generated. It matches R_CHROME by value.
+                      "text-[color:var(--mock-ink)] sm:rounded-[4px] sm:border sm:border-[var(--mock-ink)]"
                     : "text-[color:var(--mock-ink-soft)]"
                 }`}
               >
@@ -1198,11 +1378,17 @@ function CalendarPane() {
               pixels: -translate-y-1/2 halves whatever the label's own box turns
               out to be, where the -4px it used to carry was half of a 10.5px
               line rounded down, and drifted the moment the type size moved. */}
-          <div className={`relative w-[46px] shrink-0 border-r ${LINE}`}>
+          <div
+            className={`relative w-[38px] shrink-0 border-r sm:w-[46px] ${LINE}`}
+          >
             {CAL_HOURS.map((h, i) => (
               <span
                 key={h}
-                className={`absolute right-1.5 -translate-y-1/2 tabular-nums text-[color:var(--mock-ink-soft)] ${UI_SECONDARY}`}
+                // whitespace-nowrap: the labels are absolutely positioned but
+                // still wrap to the gutter's width, and at the phone's narrower
+                // gutter "12 PM" broke onto two lines — a stack of digits down
+                // the side of a calendar.
+                className={`absolute right-1.5 -translate-y-1/2 whitespace-nowrap tabular-nums text-[color:var(--mock-ink-soft)] ${UI_SECONDARY}`}
                 style={{ top: i * CAL_ROW_H }}
               >
                 {i === 0 ? "" : h}
@@ -1213,9 +1399,10 @@ function CalendarPane() {
           {CAL_DAYS.map((d, dayIndex) => (
             <div
               key={d.label}
-              className={`relative min-w-0 flex-1 ${
-                dayIndex < CAL_DAYS.length - 1 ? `border-r ${LINE}` : ""
-              }`}
+              className={`relative min-w-0 flex-1 ${calDayHidden(
+                dayIndex,
+                "block",
+              )} ${calDayEdge(dayIndex)}`}
             >
               {/* The hour lines, drawn per column rather than as one band
                   behind the grid, so a column's events paint over its own
@@ -1451,11 +1638,31 @@ export function BuildCard({ plain = false }: SceneProps = {}) {
           // takes the panel step instead, the biggest in the scale, because it
           // belongs to the biggest object.
           className={`flex shrink-0 ${WINDOW} ${R_PANEL} rounded-b-none rounded-tr-none border-b-0 border-r-0 ${
-            plain ? "h-[380px] w-[600px] lg:w-[800px] xl:w-[1020px]" : ""
+            plain
+              ? // 340x280 ON A PHONE, which is the 360x300 box exactly minus
+                // the scene's own 20px top and left padding — so the window
+                // lands flush on the box's right and bottom edges and nothing
+                // is cropped. It used to keep the desktop 600x380 here and
+                // simply overrun: the week was cut mid-column on the right,
+                // and because a bleed scene is pinned to the FOOT of its box
+                // the 80px it overran vertically came off the TOP, taking the
+                // toolbar — the date and the Month/Week/Day control — with it.
+                "h-[280px] w-[340px] sm:h-[380px] sm:w-[600px] lg:w-[800px] xl:w-[1020px]"
+              : ""
           }`}
         >
           <div
-            className={`flex w-[136px] shrink-0 flex-col px-2 py-2.5 ${BRAND_SIDEBAR}`}
+            // 124 ON A PHONE. The rail is fixed, so every pixel it takes comes
+            // off the week beside it — in a 340px window 136 left the three day
+            // columns at 45px, where the event titles came out as "Desi…".
+            //
+            // 116 was tried first and went one step too far: the rail's own
+            // padding takes 16, the name row's another 12, and the mark and its
+            // gap 20, which left 68px for "Brandmages" — about two short, so
+            // the workspace name itself truncated. A nav that cannot set its
+            // own name is a worse trade than a slightly narrower week. 124
+            // leaves 76 for a ~66px name and still puts the columns near 49.
+            className={`flex w-[124px] shrink-0 flex-col px-2 py-2.5 sm:w-[136px] ${BRAND_SIDEBAR}`}
           >
             <span className="flex items-center gap-1.5 px-1.5 pb-3 pt-0.5">
               <span

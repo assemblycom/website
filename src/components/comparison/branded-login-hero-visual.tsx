@@ -75,6 +75,9 @@ export function BrandedLoginScreen() {
       // on a card this short was the first thing above the sign-in and said
       // nothing the card's heading does not.
       chrome={false}
+      // The pillar card ramps this screen's foot in dark, and the Magic-link
+      // button is what sits under the ramp.
+      quietFoot
       domain="portal.brandmages.com"
       mark={
         // The firm's mark: --mock-brand's dark slab with a white glyph in
@@ -107,6 +110,7 @@ function LoginScreen({
   badge = false,
   framed = false,
   chrome = true,
+  quietFoot = false,
 }: {
   domain: string;
   mark: React.ReactNode;
@@ -122,6 +126,13 @@ function LoginScreen({
    * dark) instead of matching whatever ground it happens to land on.
    */
   framed?: boolean;
+  /**
+   * Drops the Magic-link button's label IN DARK, for a frame that dissolves
+   * this screen's foot into its card (see `fadeFootDark` on the pillar and
+   * --mock-foot-fade). Off by default — the split hero shows the whole screen
+   * with nothing fading, and there the label is the button.
+   */
+  quietFoot?: boolean;
   /**
    * Draws the browser bar — traffic lights and the address — above the screen.
    *
@@ -143,15 +154,23 @@ function LoginScreen({
         rule: "bg-[var(--mock-line)]",
         field:
           "border-[var(--mock-line)] bg-[var(--mock-well)] text-[color:var(--mock-ink-soft)]",
-        // THE MAGIC-LINK BUTTON IS QUIET IN DARK. In light --mock-ink is a
-        // near-black slab on a white screen, which is what a primary action
-        // looks like. Flipped, it becomes a near-WHITE slab on a near-black
-        // card — the brightest object in the whole shot, pulling the eye to a
-        // button in a picture whose subject is the sign-in as a whole. In dark
-        // it takes the same surface the Continue-with-Google row wears, so the
-        // two controls read as a pair and the card has no hot spot.
+        // THE MAGIC-LINK BUTTON WEARS THE GOOGLE ROW'S SURFACE, in both
+        // themes now.
+        //
+        // Dark took it first, and for a reason that turned out to hold in
+        // light too: --mock-ink flipped is a near-WHITE slab on a near-black
+        // card, the brightest object in the shot. In light it is the mirror of
+        // that — a near-black slab on a white screen, and now on a card with a
+        // brand wash behind it, the one piece of solid black in the picture.
+        // The shot's subject is the sign-in as a whole, not one of its two
+        // buttons, and the screen offers Google OR a magic link as equals; a
+        // filled primary said one of them was the way in.
+        //
+        // The same tokens the Google row uses (see `field`), with full ink on
+        // the label rather than soft, because this one is a button and not a
+        // field.
         primary:
-          "bg-[var(--mock-ink)] text-[color:var(--mock-window)] [[data-theme=dark]_&]:border [[data-theme=dark]_&]:border-[var(--mock-line)] [[data-theme=dark]_&]:bg-[var(--mock-well)] [[data-theme=dark]_&]:text-[color:var(--mock-ink)]",
+          "border border-[var(--mock-line)] bg-[var(--mock-well)] text-[color:var(--mock-ink)]",
       }
     : {
         ink: "text-foreground",
@@ -169,11 +188,29 @@ function LoginScreen({
         framed
           ? // Open at the foot, like the branded-portal shot beside it: the
             // screen runs off the bottom of its card, so there is no corner to
-            // round and no edge to close down there.
-            // Lit along its top edge and open at its foot — see
-            // .mock-lit-edge. 180deg, the default, because this frame is
-            // cropped at the bottom only.
-            "mock-lit-edge overflow-hidden rounded-t-xl bg-[var(--mock-window)]"
+            // round and no edge to close down there — hence border-b-0.
+            //
+            // .mock-edge, not .mock-lit-edge. The two are both dark-only
+            // treatments of the same hairline and they differ in where the
+            // light comes from: .mock-lit-edge runs a LINEAR ramp down from
+            // the top, which suits a shot that is cropped on its right as well
+            // as its foot, and .mock-edge is the RADIAL one the client-portal
+            // hero's frame wears — a light at the top-left corner falling off
+            // across the whole bezel, with a counter-light at the opposite
+            // corner so the far side still has falloff in it.
+            //
+            // This frame is the radial case. It is contained across the card's
+            // full width with both top corners closed, so a one-axis ramp lit
+            // its two ends identically and the edge read as a dimmed line
+            // rather than as an object catching light. Reused rather than
+            // re-tuned, so this frame and the portal hero's are one decision.
+            //
+            // The border has to be REAL here: .mock-edge paints into the
+            // border box and clips the ramp to it, where .mock-lit-edge drew
+            // its own 1px ring and needed none. Light is untouched either way
+            // — the rule is scoped to [data-theme="dark"], so there this is
+            // the plain --mock-line hairline it has always been.
+            "mock-edge overflow-hidden rounded-t-xl border border-b-0 border-[var(--mock-line)] bg-[var(--mock-window)]"
           : ""
       }`}
     >
@@ -261,7 +298,18 @@ function LoginScreen({
         <div
           className={`mt-4 flex h-[30px] w-full items-center justify-center rounded-[4px] ${MOCK_PRIMARY} ${c.primary}`}
         >
-          Email me a Magic link
+          {/* THE LABEL GOES IN DARK when the frame fades this screen's foot.
+              The button is the last object before the card's bottom edge, so
+              it is the one thing the ramp runs through — and a word read at
+              30% through a gradient is not a screen giving out, it is a word
+              that failed to render. The slab itself fades cleanly, because a
+              flat surface has nothing to half-read. `invisible`, not removed,
+              so the button keeps its height and the stack above it does not
+              move. Light keeps the label: it has no ramp (see
+              --mock-foot-fade) and the button is fully legible there. */}
+          <span className={quietFoot ? "[[data-theme=dark]_&]:invisible" : ""}>
+            Email me a Magic link
+          </span>
         </div>
 
         {/* No "Don't have an account? Create account" line. At 10px it was a

@@ -3,8 +3,6 @@ import {
   IconBookBlank,
   IconBrandMark,
   IconChat,
-  IconChecks,
-  IconClock,
   IconGlobe,
   IconPlus,
   IconUsers,
@@ -42,18 +40,30 @@ function NavItem({
   icon,
   label,
   active,
-  /** An action rather than a destination — quieter, unless it is the one open. */
-  muted,
 }: {
   icon: React.ReactNode;
   label: string;
   active?: boolean;
-  muted?: boolean;
 }) {
   return (
     <div
+      // ONLY THE OPEN ROW IS IN FULL INK; every other row is muted.
+      //
+      // It used to be the other way round — every destination at full ink and
+      // only Add App quieted, on the reasoning that an action is not a place.
+      // That read as a nav where six things were equally the subject, and the
+      // lit row had to carry the whole of "you are here" on a 70%-opacity
+      // fill. A rail is a list of places you are NOT, which is why every real
+      // one sets the current row apart in ink as well as in fill.
+      //
+      // It also stops the nav competing with the pane. This shot's subject is
+      // the composer in the middle of the screen, and six full-ink labels down
+      // the left were the highest-contrast type on the card.
+      //
+      // The `muted` prop is gone with it: it existed to make this one
+      // distinction and the rule now covers it.
       className={`flex h-[22px] items-center gap-2 rounded px-1.5 ${
-        muted && !active ? "text-muted-foreground" : "text-foreground"
+        active ? "text-foreground" : "text-muted-foreground"
       } ${active ? "bg-border/70" : ""}`}
     >
       <span className="[&>svg]:size-[13px] flex shrink-0 items-center justify-center">
@@ -112,26 +122,19 @@ export function WorkspaceSidebar({
         label="Messages"
         active={active === "Messages"}
       />
-      {/* THREE apps the firm has built, not one. The group was Year-end docs
-          alone, which shows a workspace that has added an app; the claim over
-          this shot is that client apps AND internal tools both start here, and
-          a list of one cannot show a range. Three named apps that are
-          obviously different jobs — a document collector, an approval flow, a
-          calendar — say it without a word of copy.
+      {/* ONE app the firm has built, and back to one on purpose. It was three
+          — Year-end docs, Design approvals, Calendar — on the reasoning that a
+          list of one cannot show a range. It cannot, but the range is not this
+          shot's job: the claim over it is that every app starts in the box in
+          the middle of the screen, and three named apps down the left were
+          three more things to read before reaching it.
 
-          The glyphs are the ones this site already uses for these two apps:
-          IconChecks is Design approvals on /solutions' agency hero and
-          IconClock is Calendar in the build card's client nav. Reused rather
-          than re-picked, so one app does not end up with two marks. */}
+          One also puts this nav in step with the Branding card further down
+          the same page, whose portal lists the stock rows and exactly one
+          added app, also Year-end docs. Two shots of the same workspace in one
+          section should not disagree about how many apps it has. */}
       <NavItem icon={<IconBookBlank />} label="Year-end docs" />
-      <NavItem icon={<IconChecks />} label="Design approvals" />
-      <NavItem icon={<IconClock />} label="Calendar" />
-      <NavItem
-        icon={<IconPlus />}
-        label="Add App"
-        muted
-        active={active === "Add App"}
-      />
+      <NavItem icon={<IconPlus />} label="Add App" active={active === "Add App"} />
     </div>
   );
 }

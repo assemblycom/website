@@ -194,6 +194,12 @@
      is just the hairline: a white highlight on a white screen is nothing, and
      a darker top edge would read as a shadow falling the wrong way. */
   --mock-edge-lit: #e8e9ec;
+  /* The ramp that dissolves a CONTAINED shot into the card at its foot — see
+     .mock-foot-fade below. `none` in light, and that is the whole value: a
+     contained shot sits on --surface #fbfbfa with its own --mock-window #fcfcfd
+     a point off it, so the screen's foot already gives out into the card on its
+     own and a ramp over it would only soften the one object the card is about. */
+  --mock-foot-fade: none;
   --mock-ink: #101114;
   --mock-ink-soft: #6b7079;
   /* Anything that must sit ABOVE a well — only the segmented thumb so far. */
@@ -374,6 +380,24 @@
      screen looking like an object — light catching a top edge is what makes a
      panel read as sitting in front of the thing behind it. */
   --mock-edge-lit: rgba(255, 255, 255, 0.16);
+  /* In dark the foot has to be drawn. The card is #191919 and the shot's own
+     ground is #212121, so where a contained screen meets the card's bottom
+     edge there is an eight-point step running flat across the full width — a
+     hard horizontal cut, which reads as the picture being sliced rather than
+     as a window onto something that carries on. Light never has this problem:
+     its two grounds are a point apart.
+
+     The last quarter only, and the same shape as `edgeFade`'s ramps in
+     builder-pillars.tsx — solid, then the midpoint at 58% of what is left,
+     then out. Short on purpose: the form is a single object with a middle, and
+     a ramp that started any higher would be fading the field and the button
+     the card's claim is actually about. */
+  --mock-foot-fade: linear-gradient(
+    to bottom,
+    #000 72%,
+    rgba(0, 0, 0, 0.55) 88%,
+    transparent 100%
+  );
   --mock-ink: #ededed;
   --mock-ink-soft: #9a9a9a;
   --mock-raise: #3d3d3d;
@@ -492,17 +516,36 @@
         rgba(255, 255, 255, 0.008) 62%,
         transparent 80%
       ),
+    /* The light itself. Its three brightest stops are TOKENS with the
+       original values as defaults, so a box that needs a stronger edge than
+       the set's can say so without forking the rule or touching the boxes that
+       are already right — the tail (#272727 → #212121) is the fade into the
+       window's own ground and is shared by all of them. */
     radial-gradient(
       ellipse var(--mock-edge-w, 540px) var(--mock-edge-h, 400px) at 0% 0%,
-      #484848 0%,
-      #3a3a3a 14%,
-      #2f2f2f 32%,
+      var(--mock-edge-1, #484848) 0%,
+      var(--mock-edge-2, #3a3a3a) 14%,
+      var(--mock-edge-3, #2f2f2f) 32%,
       #272727 55%,
       #232323 78%,
       #212121 100%
     );
   background-origin: border-box;
   background-clip: padding-box, border-box, border-box;
+}
+
+/* One extra breakpoint, at 1152px. The Build step's shot is `ml-auto` and
+   steps its width with the panel, and between `lg` (1024) and `xl` (1280) the
+   panel outgrows the widest box the shot had — 1120px of panel holding an
+   820px shot, which is 300px of bare panel under the copy. 1152 is where the
+   panel first holds the next size up at 1:1.
+
+   REGISTERED RATHER THAN WRITTEN AS `min-[1152px]:`. The arbitrary variant
+   generates, but Tailwind sorts it before the named breakpoints, so `lg:` came
+   after it and won at every width above 1152 — the step silently did nothing.
+   A real breakpoint sorts by its own value. */
+@theme {
+  --breakpoint-lgx: 72rem;
 }
 
 @theme inline {
@@ -4001,8 +4044,23 @@ html:not([data-authed]) .auth-only {
    Light mode gets the same ring with --mock-edge-lit equal to --mock-line, so
    the gradient is flat and this is exactly the hairline that was there before.
    Only dark actually lights up — see the token. */
-.mock-lit-edge {
-  position: relative;
+/* IN `@layer components`, and it has to be. Unlayered CSS beats everything in
+   a layer, whatever its specificity — so as a bare `.mock-lit-edge { position:
+   relative }` this silently turned every absolutely-positioned frame wearing
+   the class back into an in-flow one, and `:where()` could not save it either
+   for the same reason. The pillar shots are absolute inside a `min-h` box
+   precisely so they can overhang it; in flow they pushed the box out to their
+   own height and the cards ran ~160px taller than their min-h. It did not show
+   on a desktop grid row, where the cards are height-equalised anyway, and
+   showed on every phone, where they are not.
+
+   The declaration is still needed — an element with no position of its own has
+   to establish a containing block for the ::after ring — it just has to sit
+   under the utilities rather than over them. */
+@layer components {
+  .mock-lit-edge {
+    position: relative;
+  }
 }
 .mock-lit-edge::after {
   content: "";
@@ -4022,4 +4080,118 @@ html:not([data-authed]) .auth-only {
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   pointer-events: none;
+}
+
+/* ── A PILLAR SHOT'S BRAND WASH ──────────────────────────────────────────
+   The ground behind the sign-in pillar: the product's own signed-in backdrop —
+   white at the head, the brand blue through the middle, lime at the foot, and
+   spent before the right edge.
+
+   ONE LAYER, AND IT RUNS STRAIGHT DOWN. At any given height the hue is one
+   colour clean across the card, which is what makes it read as light falling
+   down a page rather than as a corner being lit.
+
+   It took two wrong turns before this. First three radial lobes anchored off
+   the left edge: lobes put colour in a blob, so the hue ran out a tenth of the
+   way across and the card read as grey with a coloured bar down one side. Then
+   the same vertical ramp with a left-to-right washout over it, which only made
+   the bar softer — the ramp still gave out horizontally, so the wash read as
+   diagonal. There is no horizontal component at all now.
+
+   The hues are the site's own ramp and nothing else: #8ea2f4 → #9fd6c4 →
+   #d9ed92 are the composer ring's three stops, which are BRAND_AURORA's blue,
+   mint and lime (footer.tsx). The ring runs them lime-to-blue down its border;
+   this runs them the other way down a page, which is the order the footer
+   aurora and the hero horizon use — blue blooming out to lime.
+
+   LIGHT and DARK are separate value sets, as the guidelines require. Light
+   opens on white rather than on --surface: the head of this card is the one
+   place the ramp has nothing in it, and #f5f5f5 there reads as grey card
+   rather than as the top of a lit page. Dark keeps its own ground and carries
+   the ramp at roughly half the alpha — on #191919 the same values read as a
+   lit panel rather than as a tint. */
+.pillar-brand-wash {
+  /* WHITE, not --surface. The reference lays this ramp on a white page and the
+     card's own #f5f5f5 was the reason ours came out grey-blue: a 30%-alpha
+     periwinkle over grey is a grey, and the head of the card — where the ramp
+     has nothing in it — read as card rather than as the top of a lit page. */
+  background-color: #ffffff;
+  /* NO WHITE AT THE HEAD. The ramp used to open on #ffffff and only reach blue
+     a third of the way down, which left the copy on a plain white band with
+     the colour starting beneath it — a gradient stuck to the card's lower half
+     rather than the card's ground. It opens IN the blue now and spends the
+     full height getting to lime. */
+  background-image: linear-gradient(
+    to bottom,
+    rgba(142, 162, 244, 0.4) 0%,
+    rgba(142, 162, 244, 0.6) 20%,
+    rgba(142, 162, 244, 0.76) 42%,
+    rgba(159, 214, 196, 0.62) 66%,
+    rgba(206, 232, 122, 0.8) 88%,
+    rgba(206, 232, 122, 0.92) 100%
+  );
+}
+
+[data-theme="dark"] .pillar-brand-wash {
+  /* Dark keeps the card's own ground — there is no white page to lay this on,
+     and the ramp is light falling INTO a near-black surface rather than colour
+     laid over a bright one. */
+  background-color: var(--surface);
+  background-image: linear-gradient(
+    to bottom,
+    rgba(142, 162, 244, 0.2) 0%,
+    rgba(142, 162, 244, 0.3) 20%,
+    rgba(142, 162, 244, 0.4) 42%,
+    rgba(159, 214, 196, 0.32) 66%,
+    rgba(206, 232, 122, 0.42) 88%,
+    rgba(206, 232, 122, 0.48) 100%
+  );
+}
+
+/* ── A PILLAR SHOT'S EDGE RAMPS ──────────────────────────────────────────
+   The right- and bottom-edge dissolves on /ai-app-builder's pillar cards.
+
+   They used to be an inline `maskImage` computed per pillar, which works until
+   one of them has to differ BETWEEN BREAKPOINTS — an inline style cannot carry
+   a media query. The CRM card is that case: from `sm` up its shot is wider
+   than the card and dissolves off the right edge, and on a phone it is
+   contained and centred instead, where a right-hand ramp would be eating a
+   shot that already ends inside the card.
+
+   So the ramps are tokens now and this class only spends them. The pillar sets
+   `--pillar-fade` (the full set) and `--pillar-fade-phone` (the set a phone
+   should get, which for a contained card is the same minus the right ramp);
+   both default to `none`, which is mask-image's initial value and therefore
+   exactly "no mask". mask-composite is always declared and is harmless on a
+   single layer. */
+@layer components {
+  .pillar-edge-fade {
+    -webkit-mask-image: var(--pillar-fade-phone, none);
+    mask-image: var(--pillar-fade-phone, none);
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
+  }
+
+  @media (width >= 40rem) {
+    .pillar-edge-fade {
+      -webkit-mask-image: var(--pillar-fade, none);
+      mask-image: var(--pillar-fade, none);
+    }
+  }
+}
+
+/* ── A CONTAINED SHOT'S FOOT ──────────────────────────────────────────────
+   Dissolves a `visualContained` screen into the card at its bottom edge, the
+   way `fadeBottom` does for the cropped shots — except that those carry their
+   ramp as an inline mask computed per pillar, and this one has to differ
+   BETWEEN THEMES, which an inline style cannot do.
+
+   So the ramp is a token and this class only spends it. Light sets it to
+   `none`, which is the initial value of mask-image and therefore the exact
+   behaviour this card had before; dark sets the gradient. Neither theme can be
+   changed by touching the other, and there is no number in this rule to get
+   out of step with a token. */
+.mock-foot-fade {
+  -webkit-mask-image: var(--mock-foot-fade);
+  mask-image: var(--mock-foot-fade);
 }

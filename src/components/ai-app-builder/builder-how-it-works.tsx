@@ -44,6 +44,15 @@ const STEPS: {
    * read through a letterbox.
    */
   wide?: boolean;
+  /**
+   * The slot's shape BELOW `sm`, matching this step's phone design box in
+   * portal-build-cards. MockFit fits the whole box, so a slot of a different
+   * shape leaves bare panel on whichever axis is slacker — the aspect is how
+   * the slot says which box is coming. Plan's scene is a conversation and
+   * reflows much taller than the other two at 360px wide, so it is the one
+   * step that does not take 6:5.
+   */
+  phoneAspect: string;
 }[] = [
   {
     value: "describe",
@@ -51,6 +60,8 @@ const STEPS: {
     name: "Describe",
     body: "Say what you want, or start from a template.",
     visual: <DescribeCard plain />,
+    // 360x300
+    phoneAspect: "aspect-[6/5]",
   },
   {
     value: "plan",
@@ -58,6 +69,9 @@ const STEPS: {
     name: "Plan",
     body: "Approve or edit the plan before anything is built.",
     visual: <PlanCard plain />,
+    // 360x300, the shared phone box: below `sm` this step is the
+    // requirements card alone — see RequirementsPane.
+    phoneAspect: "aspect-[6/5]",
   },
   {
     value: "build",
@@ -65,6 +79,8 @@ const STEPS: {
     name: "Build",
     body: "Client apps land in your client experience, team tools in your dashboard.",
     visual: <BuildCard plain />,
+    // 360x300, like Describe: this scene crops rather than reflowing.
+    phoneAspect: "aspect-[6/5]",
     wide: true,
     // The only step that runs to the panel's right edge. Its scene is a whole
     // portal screen that already bleeds off its own frame, so letting it reach
@@ -149,16 +165,28 @@ export function BuilderHowItWorks() {
                 gap back; any slot taller leaves dead panel under it. The two
                 numbers have to stay in step with PANEL_SCENE.
 
-                The flush step is the exception, and takes 820 at `lg` and
-                1040 at `xl` to match PANEL_SCENE_WIDE — its scene is a portal screen drawn to
+                The flush step is the exception, and takes 900 at `lg` and
+                1040 at 1152 to match PANEL_SCENE_WIDE — its scene is a portal screen drawn to
                 the wider box, so the slot has to widen with it or the screen is
                 fitted back down into 560. Below lg both boxes are 560 and this
                 reads as one number again. The HEIGHT is shared by all three,
                 which is what keeps the panel from resizing as you tab. */}
             <div
-              className={`relative mt-6 h-[360px] w-full md:mt-8 md:h-[400px] ${
+              // AN ASPECT BELOW `sm`, a fixed height above it. The slot's
+              // shape has to match the scene's design box or MockFit fits on
+              // the tighter axis and leaves the other one bare — which is what
+              // a 327x360 slot did to a 620x400 scene. 6:5 is the phone box
+              // (360x300, see PANEL_SCENE_RESPONSIVE), so the fit comes out
+              // the same on both axes at ANY phone width and the panel has no
+              // dead ground in it. From `sm` the fixed height returns, because
+              // there all three steps share one panel that must not resize as
+              // you tab between them.
+              className={`relative mt-6 w-full ${current.phoneAspect} sm:aspect-auto sm:h-[360px] md:mt-8 md:h-[400px] ${
                 current.wide
-                  ? "max-w-[620px] lg:max-w-[820px] xl:max-w-[1040px]"
+                  ? // Steps with PANEL_SCENE_WIDE exactly — the slot and the
+                    // design box are one decision, and a slot that lags the box
+                    // fits the mock DOWN and shrinks its type.
+                    "max-w-[620px] lg:max-w-[900px] lgx:max-w-[1040px]"
                   : "max-w-[620px]"
               } ${current.flush ? "ml-auto" : "mx-auto"}`}
             >
