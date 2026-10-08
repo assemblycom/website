@@ -1,4 +1,10 @@
 import { IconBrandMark, IconSearch } from "@/components/home/mock-icons";
+import {
+  MOCK_MICRO,
+  MOCK_PRIMARY,
+  MOCK_SECONDARY,
+  MOCK_TITLE,
+} from "@/components/ui/mock-type";
 import { SplitHeroPanel } from "@/components/comparison/split-hero-panel";
 
 /**
@@ -166,7 +172,9 @@ function LoginScreen({
               />
             ))}
           </span>
-          <span className="flex-1 truncate rounded-full bg-muted px-3 py-1 text-center text-[11px] text-muted-foreground [[data-theme=dark]_&]:bg-white/[0.08]">
+          <span
+            className={`flex-1 truncate rounded-full bg-muted px-3 py-1 text-center text-muted-foreground [[data-theme=dark]_&]:bg-white/[0.08] ${MOCK_SECONDARY}`}
+          >
             {domain}
           </span>
         </div>
@@ -186,7 +194,12 @@ function LoginScreen({
           one when it stretches to whatever frame it was dropped into. */}
       <div className="mx-auto flex w-full max-w-[320px] flex-1 flex-col items-center px-5 pt-8">
         {mark}
-        <p className={`mt-4 text-[17px] leading-none ${c.ink}`}>{title}</p>
+        {/* MOCK_TITLE, down from 17px. The 17 came from the ratio the real
+            sign-in gives its heading; copied into a mock drawn at about half
+            product scale it was the largest object on the card by a wide
+            margin — a marketing headline that had wandered into a
+            screenshot, and well clear of the heading in the shot beside it. */}
+        <p className={`mt-4 ${MOCK_TITLE} ${c.ink}`}>{title}</p>
 
         {/* Google first, then the divider, then the email form: the real
             screen's order. The SSO row is what makes this read as a product
@@ -200,7 +213,7 @@ function LoginScreen({
             no reason either one could name. Set explicitly on all three rather
             than left to line-height, which is what let them drift apart. */}
         <div
-          className={`mt-5 flex h-[30px] w-full items-center justify-center gap-1.5 rounded-[4px] border text-[12px] ${c.field}`}
+          className={`mt-5 flex h-[30px] w-full items-center justify-center gap-1.5 rounded-[4px] border ${MOCK_PRIMARY} ${c.field}`}
         >
           <IconGoogleG />
           <span className={c.ink}>Continue with Google</span>
@@ -208,7 +221,7 @@ function LoginScreen({
 
         <div className="mt-3 flex w-full items-center gap-2">
           <span className={`h-px flex-1 ${c.rule}`} />
-          <span className={`text-[9px] tracking-wide ${c.inkSoft}`}>OR</span>
+          <span className={`tracking-wide ${MOCK_MICRO} ${c.inkSoft}`}>OR</span>
           <span className={`h-px flex-1 ${c.rule}`} />
         </div>
 
@@ -227,7 +240,7 @@ function LoginScreen({
         <Field label="Password" placeholder="Optional" c={c} />
 
         <div
-          className={`mt-4 flex h-[30px] w-full items-center justify-center rounded-[4px] text-[12px] ${c.primary}`}
+          className={`mt-4 flex h-[30px] w-full items-center justify-center rounded-[4px] ${MOCK_PRIMARY} ${c.primary}`}
         >
           Email me a Magic link
         </div>
@@ -239,7 +252,9 @@ function LoginScreen({
       </div>
       {badge && (
         <div className="flex justify-center pb-5">
-          <span className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1 text-[11px] text-muted-foreground [[data-theme=dark]_&]:border-white/15">
+          <span
+            className={`flex items-center gap-1.5 rounded-full border border-border px-3 py-1 text-muted-foreground [[data-theme=dark]_&]:border-white/15 ${MOCK_SECONDARY}`}
+          >
             <span className="size-2.5 rounded-sm bg-muted-foreground/40" />
             Built with a hosted platform
           </span>
@@ -284,7 +299,9 @@ function SafariChrome({ domain }: { domain: string }) {
           is the whole claim. */}
       <span className="mx-auto flex w-full max-w-[200px] items-center justify-center gap-1 rounded-md border border-[var(--mock-line)] bg-[var(--mock-window)] px-2 py-[3px]">
         <IconSearch className="size-[8px] shrink-0 text-[color:var(--mock-ink-soft)]" />
-        <span className="truncate text-[10px] leading-none text-[color:var(--mock-ink-soft)]">
+        <span
+          className={`truncate text-[color:var(--mock-ink-soft)] ${MOCK_SECONDARY}`}
+        >
           {domain}
         </span>
       </span>
@@ -317,9 +334,9 @@ function Field({
 }) {
   return (
     <div className="mt-3 w-full">
-      <span className={`block text-[10px] leading-none ${c.ink}`}>{label}</span>
+      <span className={`block ${MOCK_SECONDARY} ${c.ink}`}>{label}</span>
       <div
-        className={`mt-1 flex h-[30px] w-full items-center rounded-[4px] border px-2.5 text-[11px] ${c.field}`}
+        className={`mt-1 flex h-[30px] w-full items-center rounded-[4px] border px-2.5 ${MOCK_PRIMARY} ${c.field}`}
       >
         <span className="truncate">{placeholder ?? ""}</span>
       </div>

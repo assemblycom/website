@@ -7,6 +7,7 @@ import {
   IconPlus,
   IconUsers,
 } from "@/components/home/mock-icons";
+import { MOCK_MICRO, MOCK_PRIMARY } from "@/components/ui/mock-type";
 
 // ─────────────────────────────────────────────────────────────────────────
 // WORKSPACE SIDEBAR — the firm's own nav, shared by the product mocks.
@@ -56,16 +57,14 @@ function NavItem({
       <span className="[&>svg]:size-[13px] flex shrink-0 items-center justify-center">
         {icon}
       </span>
-      <span className="min-w-0 flex-1 truncate text-[10.5px] leading-none">
-        {label}
-      </span>
+      <span className={`min-w-0 flex-1 truncate ${MOCK_PRIMARY}`}>{label}</span>
     </div>
   );
 }
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <p className="px-1.5 pb-1 pt-2.5 text-[9.5px] leading-none text-muted-foreground">
+    <p className={`px-1.5 pb-1 pt-2.5 text-muted-foreground ${MOCK_MICRO}`}>
       {children}
     </p>
   );
@@ -91,9 +90,7 @@ export function WorkspaceSidebar({
         <span className="flex size-[15px] items-center justify-center rounded bg-foreground text-background">
           <IconBrandMark className="size-[9px]" />
         </span>
-        <span className="text-[11px] leading-none text-foreground">
-          BrandMages
-        </span>
+        <span className={`text-foreground ${MOCK_PRIMARY}`}>BrandMages</span>
       </div>
 
       <NavItem icon={<IconBook />} label="CRM" active={active === "CRM"} />

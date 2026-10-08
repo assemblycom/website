@@ -9,6 +9,13 @@
 // ─────────────────────────────────────────────────────────────────────────
 
 import { IconBrandMark } from "@/components/home/mock-icons";
+import {
+  MOCK_MICRO,
+  MOCK_PRIMARY,
+  MOCK_PRIMARY_STACKED,
+  MOCK_SECONDARY,
+  MOCK_SECONDARY_STACKED,
+} from "@/components/ui/mock-type";
 
 type Contact = {
   name: string;
@@ -310,7 +317,7 @@ export function TeamCrmVisual() {
             {["Companies", "Contacts"].map((tab, i) => (
               <span
                 key={tab}
-                className={`-mb-px border-b pb-1.5 text-[11px] leading-none ${
+                className={`-mb-px border-b pb-1.5 ${MOCK_PRIMARY} ${
                   i === 1
                     ? "border-foreground text-foreground"
                     : "border-transparent text-muted-foreground"
@@ -343,36 +350,56 @@ export function TeamCrmVisual() {
                 the screen and were in the tightest row — 22px against the
                 contact rows' 33 — so the bar read as squeezed between the tabs
                 above it and the first contact below. */}
-            <div className="flex items-center gap-2 border-b border-border py-2.5 pl-5 text-[10px] leading-none text-muted-foreground">
+            <div
+              className={`flex items-center gap-2 border-b border-border py-2.5 pl-5 text-muted-foreground ${MOCK_SECONDARY}`}
+            >
               <span className="w-[148px]">Name</span>
-              <span className="hidden w-[104px] sm:block">Company</span>
+              <span className="hidden w-[112px] sm:block">Company</span>
               <span className="flex-1" />
             </div>
             {CONTACTS.map((contact, i) => (
               <div
                 key={contact.name}
-                className="flex items-center gap-2 border-b border-border py-[6px] pl-5 last:border-b-0"
+                className="flex min-h-[33px] items-center gap-2 border-b border-border py-[6px] pl-5 last:border-b-0"
               >
-                <span className="flex w-[148px] min-w-0 items-center gap-1.5">
-                  {/* 20px, not 18: two letters at 9px need the extra two
+                {/* THE LAST ROW IS EMPTY, and keeps everything else: its
+                    height, its hairlines, its ground running off the card's
+                    right edge.
+
+                    It carried a sixth contact, which the card's bottom crop
+                    cut through — so the table ended on a half-drawn person,
+                    which reads as the shot being broken rather than as a list
+                    that carries on. An empty row of the same height is the
+                    next record not yet in view: the rule under it is still
+                    there, the ground still reaches the edge, and nothing is
+                    sliced. min-h-[33px] because the avatar was what set the
+                    row's height, and the empty row has no avatar. */}
+                {i === CONTACTS.length - 1 ? null : (
+                  <>
+                    <span className="flex w-[148px] min-w-0 items-center gap-1.5">
+                      {/* 20px, not 18: two letters at 9px need the extra two
                       pixels of circle or they sit against its sides. */}
-                  <span
-                    className={`flex size-[20px] shrink-0 items-center justify-center rounded-full text-[9px] leading-none ${
-                      AVATAR_TINTS[i % AVATAR_TINTS.length]
-                    }`}
-                  >
-                    {initials(contact.name)}
-                  </span>
-                  <span className="min-w-0">
-                    <span className="block truncate text-[10.5px] leading-[1.3] text-foreground">
-                      {contact.name}
+                      <span
+                        className={`flex size-[20px] shrink-0 items-center justify-center rounded-full ${MOCK_MICRO} ${
+                          AVATAR_TINTS[i % AVATAR_TINTS.length]
+                        }`}
+                      >
+                        {initials(contact.name)}
+                      </span>
+                      <span className="min-w-0">
+                        <span
+                          className={`block truncate text-foreground ${MOCK_PRIMARY_STACKED}`}
+                        >
+                          {contact.name}
+                        </span>
+                        <span
+                          className={`block truncate text-muted-foreground ${MOCK_SECONDARY_STACKED}`}
+                        >
+                          {contact.email}
+                        </span>
+                      </span>
                     </span>
-                    <span className="block truncate text-[9.5px] leading-[1.3] text-muted-foreground">
-                      {contact.email}
-                    </span>
-                  </span>
-                </span>
-                {/* A mark on every company, the way the product draws one.
+                    {/* A mark on every company, the way the product draws one.
                     The rows already carry a circle for the person; a bare
                     string in the column beside it read as a note about the
                     contact rather than as a record of its own.
@@ -383,32 +410,47 @@ export function TeamCrmVisual() {
                     name. The second tile carries a ring in the row's own
                     background so the pair reads as two tiles and not one
                     bitten shape. */}
-                <span className="hidden w-[104px] items-center gap-1.5 sm:flex">
-                  <span className="relative flex shrink-0 items-center">
-                    <CompanyMark
-                      company={
-                        contact.company === "2 companies"
-                          ? "Symphony"
-                          : contact.company
-                      }
-                    />
-                    {contact.company === "2 companies" ? (
-                      // The SECOND company is a different one, not Symphony
-                      // twice. The row says this contact belongs to more than
-                      // one place, and two of the same mark says the opposite
-                      // — which was the bug in miniature that this whole pass
-                      // is about. Jasmin's address is @symphony.co, so
-                      // Symphony is the one in front and Wave is the other.
-                      <CompanyMark
-                        company="Wave Marketing"
-                        className="-ml-[7px] ring-[1.5px] ring-background"
-                      />
-                    ) : null}
-                  </span>
-                  <span className="min-w-0 truncate text-[10.5px] leading-none text-muted-foreground">
-                    {contact.company}
-                  </span>
-                </span>
+                    {/* 112, up from 104. The company name moved to the shared
+                    MOCK_PRIMARY (11.5px) with every other row label on the
+                    site, and at 104 "Wave Marketing" came up three pixels
+                    short and truncated. The column is followed by a flex-1
+                    spacer, so the width comes out of empty space rather than
+                    off the Name column. */}
+                    <span className="hidden w-[112px] items-center gap-1.5 sm:flex">
+                      <span className="relative flex shrink-0 items-center">
+                        <CompanyMark
+                          company={
+                            contact.company === "2 companies"
+                              ? "Symphony"
+                              : contact.company
+                          }
+                        />
+                        {contact.company === "2 companies" ? (
+                          // The SECOND company is a different one, not Symphony
+                          // twice. The row says this contact belongs to more than
+                          // one place, and two of the same mark says the opposite
+                          // — which was the bug in miniature that this whole pass
+                          // is about. Jasmin's address is @symphony.co, so
+                          // Symphony is the one in front and Wave is the other.
+                          <CompanyMark
+                            company="Wave Marketing"
+                            className="-ml-[7px] ring-[1.5px] ring-background"
+                          />
+                        ) : null}
+                      </span>
+                      <span
+                        className={`min-w-0 truncate text-muted-foreground ${MOCK_PRIMARY}`}
+                      >
+                        {contact.company}
+                      </span>
+                    </span>
+                  </>
+                )}
+                {/* The spacer stays on every row, the empty one included — it
+                    is what lets the table be wider than the card without
+                    moving the columns, so the blank row has to keep the same
+                    width as the ones above it or its hairline would stop
+                    short of the edge. */}
                 <span className="flex-1" />
               </div>
             ))}

@@ -6,6 +6,11 @@ import {
   IconFile,
   IconHouse,
 } from "@/components/home/mock-icons";
+import {
+  MOCK_PRIMARY,
+  MOCK_SECONDARY,
+  MOCK_TITLE,
+} from "@/components/ui/mock-type";
 
 // ─────────────────────────────────────────────────────────────────────────
 // THE CLIENT'S BRANDED HOME — the picture behind "your clients already have a
@@ -70,7 +75,7 @@ function NavRow({
     <span
       // 4px, the same as the portal nav row in segment-mock. It was 5 here and
       // 6 there for no reason anyone recorded; one element, one radius.
-      className={`flex items-center gap-2 rounded-[4px] px-2 py-[6px] text-[12px] leading-none ${
+      className={`flex items-center gap-2 rounded-[4px] px-2 py-[6px] ${MOCK_PRIMARY} ${
         active ? "bg-white/15 text-white" : "text-white/70"
       }`}
     >
@@ -136,9 +141,7 @@ export function BrandedPortalVisual({
           <span className="flex size-[18px] items-center justify-center rounded-[4px] bg-white text-black">
             <IconBrandMark className="size-[10px]" />
           </span>
-          <span className="truncate text-[12.5px] leading-none text-white">
-            {brand}
-          </span>
+          <span className={`truncate text-white ${MOCK_PRIMARY}`}>{brand}</span>
           {/* No chevron. It is the workspace switcher's mark, and a switcher
               is not what this card is about — on a still picture it promises a
               menu that cannot open, and at 10px in white/50 it read as a
@@ -179,7 +182,7 @@ export function BrandedPortalVisual({
       >
         {appHeader ? (
           <div className={`border-b px-5 py-3.5 ${LINE}`}>
-            <span className="text-[14px] leading-none text-[color:var(--mock-ink)]">
+            <span className={`text-[color:var(--mock-ink)] ${MOCK_TITLE}`}>
               {title}
             </span>
           </div>
@@ -196,11 +199,13 @@ export function BrandedPortalVisual({
               "Signed engagement letter",
             ].map((label) => (
               <div key={label}>
-                <p className="text-[11px] leading-none text-[color:var(--mock-ink-soft)]">
+                <p
+                  className={`text-[color:var(--mock-ink-soft)] ${MOCK_SECONDARY}`}
+                >
                   {label}
                 </p>
                 <div
-                  className={`mt-1.5 rounded-md border px-3 py-2 text-[12.5px] leading-none text-[color:var(--mock-ink-soft)] ${LINE}`}
+                  className={`mt-1.5 rounded-md border px-3 py-2 text-[color:var(--mock-ink-soft)] ${MOCK_PRIMARY} ${LINE}`}
                 >
                   Upload
                 </div>

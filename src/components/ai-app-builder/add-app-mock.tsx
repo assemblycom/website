@@ -23,6 +23,13 @@
 // ─────────────────────────────────────────────────────────────────────────
 
 import { IconPlus } from "@/components/home/mock-icons";
+import {
+  MOCK_BODY,
+  MOCK_PRIMARY,
+  MOCK_SECONDARY,
+  MOCK_SECONDARY_STACKED,
+  MOCK_TITLE,
+} from "@/components/ui/mock-type";
 import { WorkspaceSidebar } from "@/components/home/workspace-sidebar";
 import { IconArrowUp } from "@/components/home/build-step-visual";
 
@@ -106,7 +113,7 @@ export function AddAppMock() {
           heading is already the only centred line on the screen and the only
           one in full ink — position and weight are doing the work that size
           does at full scale. */}
-        <p className="text-center text-[13.5px] leading-[1.3] tracking-[-0.01em]">
+        <p className={`text-center tracking-[-0.01em] ${MOCK_TITLE}`}>
           Margot, what app will you add?
         </p>
 
@@ -141,7 +148,9 @@ export function AddAppMock() {
               <div
                 className={`flex flex-col gap-3 rounded-lg border bg-[var(--mock-window)] px-3 py-2.5 ${LINE}`}
               >
-                <span className="text-[12.5px] leading-[1.4] text-[color:var(--mock-ink-soft)]">
+                <span
+                  className={`text-[color:var(--mock-ink-soft)] ${MOCK_BODY}`}
+                >
                   Build an onboarding wizard for my clients
                 </span>
                 {/* Two rows, like every other composer in this set: what you type,
@@ -160,7 +169,9 @@ export function AddAppMock() {
                   which in a still picture is a promise the picture cannot
                   keep — and at 9px it read as a smudge beside the type
                   rather than as a mark. */}
-                    <span className="rounded-[4px] px-1.5 py-1 text-[11px] leading-none text-[color:var(--mock-ink-soft)]">
+                    <span
+                      className={`rounded-[4px] px-1.5 py-1 text-[color:var(--mock-ink-soft)] ${MOCK_SECONDARY}`}
+                    >
                       Auto
                     </span>
                     <span className="flex size-[22px] shrink-0 items-center justify-center rounded-[4px] bg-[var(--mock-ink)] text-[color:var(--mock-window)]">
@@ -181,7 +192,7 @@ export function AddAppMock() {
           still close enough to belong to it. 64 is where the two stop being
           one block; it also puts the composer nearer the optical middle of the
           part of the screen the card shows. */}
-        <p className="mt-16 text-[11.5px] leading-none text-[color:var(--mock-ink)]">
+        <p className={`mt-16 text-[color:var(--mock-ink)] ${MOCK_PRIMARY}`}>
           Start from a template
         </p>
         <div className="mt-2.5 grid grid-cols-4 gap-2.5">
@@ -210,7 +221,7 @@ export function AddAppMock() {
                 mistake. The min-height is what keeps the four cards ending on
                 the same line once one of them wraps. */}
               <div
-                className={`min-h-[36px] border-t px-2.5 py-2 text-[10.5px] leading-[1.35] ${LINE}`}
+                className={`min-h-[36px] border-t px-2.5 py-2 ${MOCK_SECONDARY_STACKED} ${LINE}`}
               >
                 {name}
               </div>
