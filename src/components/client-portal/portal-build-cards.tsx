@@ -788,131 +788,159 @@ const PLAN_DOC = {
 };
 
 /**
- * The plan, as the two objects it actually is: the document, and the bar you
- * either approve it with or type a revision into.
+ * The plan, as the CONVERSATION it arrives in: what you asked for, what came
+ * back, and the box you answer in.
  *
- * It was drawn as a whole product screen — brand nav down the left, the
- * document in a pane beside it — and the nav was the loudest thing on the
- * card: a black slab against a step whose subject is a paragraph of reasoning.
- * The chrome also said nothing the step needed. Where the plan LIVES is step
- * three's job (the app lands in the client's nav); step two is only about what
- * the plan says and whether you accept it.
+ * It was the document and its approve strip alone, stacked in the middle of an
+ * otherwise empty scene — right about the two objects, silent about where they
+ * are. The product's plan step is a thread: the sentence from step one is still
+ * on screen above the plan, the plan comes back as a reply, and the composer
+ * under it is the same composer that sentence was typed into. That is what
+ * "approve or edit the plan before anything is built" looks like in use — a
+ * reply you can talk back to, not a form with a button on it.
  *
- * So no sidebar, no window, no pane ground. Two cards on the scene, the way
- * the Describe card is one composer on the scene — the step's two objects at
- * the size they can be read at, rather than a screenshot of where they sit.
+ * So four things down the scene: the prompt as a bubble, one line of reply, the
+ * requirements card, the composer. The bubble carries the Describe step's own
+ * sentence VERBATIM, which is what makes the three panels read as one session
+ * rather than as three screenshots of one product.
+ *
+ * Still no sidebar and no window chrome. Where the plan LIVES is step three's
+ * job; this step is only what the plan says and whether you accept it.
  */
 function RequirementsPane() {
-  // Three cards, each one under the next: the document, then the Requirements
-  // strip over its foot, then the revise box over the strip's. No gaps between
-  // them — the overlap IS the join, and a gap would turn the stack back into a
-  // list of separate panels.
   return (
-    <div className="flex size-full flex-col justify-center">
-      <div
-        // gap-1 and p-3: the last ten pixels. With gap-1.5 the four flows and
-        // two headings cleared the card's bottom PADDING rather than its text —
-        // every word was on screen but the document ended flush on its own
-        // edge, which reads as a crop even when nothing is missing.
-        // pb-6: the strip overlaps this card's foot by 12px, so the bottom
-        // padding is what gets covered. At p-3 the last flow ended exactly on
-        // the covered edge; the extra keeps a clear band under it.
-        className={`flex flex-col gap-1 overflow-hidden ${R_PANEL} border bg-[var(--mock-window)] p-3 pb-5 ${LINE}`}
-      >
-        <span className={`text-[color:var(--mock-ink)] ${PLAN_TITLE}`}>
-          Requirements
+    <div className="flex size-full flex-col gap-2.5">
+      {/* The typed prompt, kept in view above its answer.
+
+          rounded-full, which is off the R_* scale on purpose — the scale is
+          three steps for CARDS and the things inside them, and a circle is
+          exempt from it throughout this file. A bubble is not a card, and at
+          one line of type a pill is the shape that says so; at R_PANEL it was
+          a third small card in a column of cards.
+
+          --mock-window with a hairline, not a tinted fill. --mock-well-2 is
+          #f2f3f6 against a --surface panel of #f5f5f5 — four points, which is
+          no bubble at all in light. The window tone LIFTS off the surface in
+          both themes, which is the rule the rest of these mocks are drawn on. */}
+      <div className="flex shrink-0 justify-end">
+        <span
+          className={`max-w-[78%] rounded-full border bg-[var(--mock-window)] px-3.5 py-2 text-[color:var(--mock-ink)] ${PLAN_PROSE} ${LINE}`}
+        >
+          Add a shared calendar each client books their own time on.
         </span>
-        <span className={`text-[color:var(--mock-ink)] ${PLAN_HEAD}`}>
-          Overview
-        </span>
-        <p className={`text-[color:var(--mock-ink-soft)] ${PLAN_PROSE}`}>
-          {PLAN_DOC.overview}
-        </p>
-        <span className={`mt-1 text-[color:var(--mock-ink)] ${PLAN_HEAD}`}>
-          Core Flows
-        </span>
-        <ul className="flex flex-col gap-1">
-          {PLAN_DOC.flows.map((f) => (
-            <li
-              key={f}
-              className={`flex gap-1.5 text-[color:var(--mock-ink-soft)] ${PLAN_PROSE}`}
-            >
-              <span className="shrink-0">•</span>
-              <span className="min-w-0">{f}</span>
-            </li>
-          ))}
-        </ul>
       </div>
 
-      {/* The step's whole claim — approve it, or say what to change.
-      
-          TWO cards, layered, not one card with a divider. The product draws the
-          Requirements strip and the revise box as separate objects and tucks
-          the strip UNDER the box: the box is a full card with its own border
-          and four rounded corners, and the strip's bottom edge disappears
-          behind it. What you see of the strip either side of the box's top
-          corners is the tint showing through, which is what tells you there are
-          two things stacked rather than one box with a shaded header.
+      {/* The reply's one line of prose, which is what makes the card under it
+          read as something that CAME BACK rather than as a panel that was
+          always there. Soft ink: it introduces the document, it is not the
+          document. */}
+      <p className={`shrink-0 text-[color:var(--mock-ink-soft)] ${PLAN_PROSE}`}>
+        Here&apos;s the plan. Approve it, or tell me what to change.
+      </p>
 
-          Drawn as a negative top margin on the box plus `relative`, which is
-          what puts it in front — the strip is unpositioned, so a positioned
-          sibling paints above it without anyone needing a z-index. The strip
-          carries extra bottom padding so its own content stays clear of the
-          edge that covers it. */}
-      <div className="relative -mt-3 shrink-0">
+      {/* The card, and the mark saying it continues past the crop.
+
+          Relative wrapper rather than one box, because the chevron straddles
+          the card's bottom EDGE and the card is overflow-hidden — anything
+          drawn inside it is clipped by the thing it is meant to hang off. */}
+      <div className="relative min-h-0 flex-1">
         <div
-          // --mock-well-2, not --mock-well. The well is #f7f8fa against a
-          // #fcfcfd card — three points, which is no strip at all; the
-          // reference draws a clearly tinted one and that is what separates the
-          // thing being approved from the field you revise it in. well-2 is the
-          // scale's next rung (#f2f3f6), not a value invented here, and it
-          // flips with the theme like the rest.
-          className={`flex items-center justify-between gap-2 ${R_PANEL} border bg-[var(--mock-well-2)] px-3 pb-5 pt-2 ${LINE}`}
+          className={`relative flex h-full flex-col overflow-hidden ${R_PANEL} border bg-[var(--mock-window)] ${LINE}`}
         >
-          {/* An OUTLINED check, not a filled disc. The filled one is the mark
-              this product uses for a thing already done — it is what the plan
-              checklist's settled rows wear — and putting it on a bar whose
-              whole purpose is to ask you to approve said the approving had
-              already happened. Outlined, it reads as the section's icon. */}
-          {/* The word alone. It carried a ring with a tick in it, then a ring
-              with nothing in it, and neither was doing work: the tick repeated
-              the one on the Approve button two inches to its right, and the
-              empty ring was a status mark for a status nothing here reports. */}
-          <span className={`text-[color:var(--mock-ink)] ${PLAN_HEAD}`}>
-            Requirements
-          </span>
-          {/* A quiet button, not the page's primary. It was solid --mock-ink,
-              which made the heaviest object on the whole step the one control
-              the reader is not being pushed towards — the point of this screen
-              is that you can revise instead. White with a hairline is what the
-              product draws. */}
-          <span
-            className={`flex items-center ${R_CHROME} border bg-[var(--mock-window)] px-3 py-1.5 text-[color:var(--mock-ink)] ${PLAN_HEAD} ${LINE}`}
-          >
-            Approve
-          </span>
-        </div>
-        {/* Two rows, as the product has it: what you type, then the controls
-            under it. One row with the send button inline made a search field
-            out of something you write a paragraph into. */}
-        <div
-          className={`relative -mt-3 flex flex-col gap-1.5 ${R_PANEL} border bg-[var(--mock-window)] px-3 py-2.5 ${LINE}`}
-        >
-          <span
-            className={`min-w-0 truncate text-[color:var(--mock-ink-soft)] ${PLAN_PROSE}`}
-          >
-            Type to revise plan
-          </span>
-          <div className="flex items-center justify-between gap-2">
-            <span className="flex size-[18px] items-center justify-center text-[color:var(--mock-ink)]">
-              <IconPlus className="size-[11px]" />
+          {/* No rule under the header. The document's own first heading is two
+              lines below it and a divider between them made the title read as
+              a window chrome bar over a pane, which is the screenshot this
+              scene stopped being. */}
+          <div className="flex shrink-0 items-center justify-between gap-2 px-3 pb-1 pt-2.5">
+            <span className={`text-[color:var(--mock-ink)] ${PLAN_TITLE}`}>
+              Requirements
             </span>
+            {/* A quiet button, not the page's primary — the point of this
+                screen is that you can revise instead, so the control you are
+                NOT being pushed towards must not be the heaviest object on it.
+                White with a hairline is what the product draws. It used to sit
+                on a tinted strip under the document; on the card itself the
+                hairline is doing the separating alone, which is the trade for
+                the strip being gone. */}
             <span
-              className={`flex size-[22px] shrink-0 items-center justify-center ${R_CARD} bg-[var(--mock-well-2)] text-[color:var(--mock-ink-soft)]`}
+              className={`flex shrink-0 items-center ${R_CHROME} border bg-[var(--mock-window)] px-3 py-1.5 text-[color:var(--mock-ink)] ${PLAN_HEAD} ${LINE}`}
             >
-              <IconArrowUp className="size-[10px]" />
+              Approve
             </span>
           </div>
+
+          {/* The document. It OVERFLOWS, and is meant to: the thread above and
+              the composer below take about 130px of the 360 the scene has, so
+              the last flow falls past the card's foot. That is the honest
+              shape of a plan — it is longer than the window it is read in —
+              and the fade and the chevron under it say so. Clipping it to fit
+              would mean a four-flow plan that happens to end exactly where the
+              card does, which no real one ever does. */}
+          <div className="flex min-h-0 flex-1 flex-col gap-1 px-3 pb-3">
+            <span className={`text-[color:var(--mock-ink)] ${PLAN_HEAD}`}>
+              Overview
+            </span>
+            <p className={`text-[color:var(--mock-ink-soft)] ${PLAN_PROSE}`}>
+              {PLAN_DOC.overview}
+            </p>
+            <span className={`mt-1 text-[color:var(--mock-ink)] ${PLAN_HEAD}`}>
+              Core Flows
+            </span>
+            <ul className="flex flex-col gap-1">
+              {PLAN_DOC.flows.map((f) => (
+                <li
+                  key={f}
+                  className={`flex gap-1.5 text-[color:var(--mock-ink-soft)] ${PLAN_PROSE}`}
+                >
+                  <span className="shrink-0">•</span>
+                  <span className="min-w-0">{f}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* The last 40px of the card, ramped to its own ground. A hard crop
+              across a line of type reads as a rendering fault; a ramp reads as
+              the page carrying on. Both stops are --mock-window, so it cannot
+              drift from the card it is painted on in either theme. */}
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-b from-transparent to-[var(--mock-window)]" />
+        </div>
+
+        {/* Half on the card, half off it — the position is the whole message:
+            a control that belongs to the card, pointing out of it. */}
+        <span
+          className={`absolute bottom-0 left-1/2 flex size-[24px] -translate-x-1/2 translate-y-1/2 items-center justify-center rounded-full border bg-[var(--mock-window)] text-[color:var(--mock-ink-soft)] ${LINE}`}
+        >
+          <IconChevronDown className="size-[11px]" />
+        </span>
+      </div>
+
+      {/* The composer, unchanged and now in the place it is actually in: under
+          the reply, not tucked beneath the document as a third stacked card.
+
+          mt-1 on top of the column's gap-2.5, so the chevron hanging 12px off
+          the card's foot clears this box's top edge rather than touching it.
+
+          Two rows, as the product has it: what you type, then the controls
+          under it. One row with the send button inline made a search field out
+          of something you write a paragraph into. */}
+      <div
+        className={`mt-1 flex shrink-0 flex-col gap-1.5 ${R_PANEL} border bg-[var(--mock-window)] px-3 py-2.5 ${LINE}`}
+      >
+        <span
+          className={`min-w-0 truncate text-[color:var(--mock-ink-soft)] ${PLAN_PROSE}`}
+        >
+          Type to revise plan
+        </span>
+        <div className="flex items-center justify-between gap-2">
+          <span className="flex size-[18px] items-center justify-center text-[color:var(--mock-ink)]">
+            <IconPlus className="size-[11px]" />
+          </span>
+          <span
+            className={`flex size-[22px] shrink-0 items-center justify-center ${R_CARD} bg-[var(--mock-well-2)] text-[color:var(--mock-ink-soft)]`}
+          >
+            <IconArrowUp className="size-[10px]" />
+          </span>
         </div>
       </div>
     </div>
