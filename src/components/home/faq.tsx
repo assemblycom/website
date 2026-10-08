@@ -205,10 +205,44 @@ function FAQItem({
             : "border-b border-border last:border-b-0"
         }
       >
+        {/* The hover is a PLATE behind the row, not a change to the question's
+            own ink: the question is already --foreground, so there is nowhere
+            for the text to go on hover that isn't dimmer, and a row that fades
+            when you point at it reads as disabled.
+
+            SQUARE, and exactly the row's own box — inset-0, no radius. It was
+            a rounded plate bled 12px past the text on each side, which was
+            wrong on both counts: the rounding drew a second, softer box inside
+            the row's hard dotted rules, so a hovered row read as two boxes
+            rather than one; and the bleed ran the tint out past the ends of
+            those rules, so the thing highlighting the row was wider than the
+            row. The rules are the row's edges, so the plate stops at them.
+
+            `isolate` on the button is load-bearing. The plate is -z-10 so it
+            sits under the question and the chevron, and without a stacking
+            context of its own that puts it behind the PAGE — the tint simply
+            never appears.
+
+            Hover only, and still click to open. Hover-to-open was tried and
+            reverted (rows popped open as the cursor crossed them while
+            scrolling); this gives the row the affordance that change was
+            after without the behaviour that made it unusable. The same plate
+            answers focus-visible, so a keyboard gets the row as well as the
+            ring.
+
+            ONE value for both themes, --foreground at 6%, rather than a light
+            tint plus a dark override. The ink token already flips — near-black
+            on the light page, near-white on the dark one — so six percent of it
+            is a plate a shade off the ground either way, and there is no second
+            number that can be tuned on one theme and left behind on the other.
+            `bg-muted/60` was tried first and is wrong twice over: it resolved
+            to nothing at all under [data-theme=dark], and --muted is a SURFACE
+            step, so even working it would have been a fixed grey rather than
+            something that answers the ground it is drawn on. */}
         <button
           onClick={onToggle}
           aria-expanded={open}
-          className="group flex w-full cursor-pointer items-center justify-between gap-6 py-5 text-left"
+          className="group relative isolate flex w-full cursor-pointer items-center justify-between gap-6 py-5 text-left outline-none before:absolute before:inset-0 before:-z-10 before:bg-transparent before:transition-colors hover:before:bg-foreground/[0.06] focus-visible:before:bg-foreground/[0.06]"
         >
           <span className="type-body text-foreground">
             {compactQuestions ? (
