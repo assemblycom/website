@@ -750,8 +750,13 @@ export function V66Composer({ placeholder = "Describe the workflow you want to t
         )}
 
         <div
+          // pb-1.5, matching px-1.5. The submit sits in this row's bottom
+          // right corner, so the row's bottom inset and its side inset are the
+          // two gaps you see at once — at pb-0.5 they were 10px and 14px, and
+          // a button 4px nearer the floor than the wall reads as having slipped
+          // rather than as being inset.
           className={`flex items-center justify-between gap-2 ${
-            splitFooter ? "mt-2 px-1.5 pb-0.5" : "mt-3"
+            splitFooter ? "mt-2 px-1.5 pb-1.5" : "mt-3"
           }`}
         >
           {/* Left — creation controls: "+", the prompt picker, and/or video. */}
@@ -780,17 +785,17 @@ export function V66Composer({ placeholder = "Describe the workflow you want to t
                     // composer's edge (pb-0.5 + the surface's p-2 + the ring).
                     // So mt-1 opened the popover 12.7px INSIDE the frame it
                     // hangs from — measured — and the card's top corners were
-                    // cut by the composer's own bottom edge. mt-5 clears the
-                    // edge with ~3px under it. Measured across the scale: mt-4
-                    // still touches the frame at -0.7px and mt-6 opens 7.3px
-                    // clear, which reads as the card having come loose from the
-                    // box it belongs to. mt-5 is the only step that clears the
-                    // edge without putting daylight under it.
+                    // cut by the composer's own bottom edge. The step that
+                    // clears the edge without putting daylight under it was
+                    // mt-5; the footer's bottom inset then went from pb-0.5 to
+                    // pb-1.5, which lifts this button 4px and takes the whole
+                    // measurement with it, so the step is mt-6 now. If that
+                    // padding moves again, this moves with it.
                     //
                     // Unchanged off splitFooter, where the button is the last
                     // thing in the box and mt-1 already read correctly, and
                     // level with the prompt-picker menu beside it.
-                    className={`absolute left-0 top-full z-40 ${splitFooter ? "mt-5" : "mt-1"} w-[288px] max-w-[calc(100vw-3rem)] animate-menu-in rounded-2xl border p-4 text-left shadow-[0_20px_50px_-24px_rgba(0,0,0,0.4)] ${menuSurfaceCls}`}
+                    className={`absolute left-0 top-full z-40 ${splitFooter ? "mt-6" : "mt-1"} w-[288px] max-w-[calc(100vw-3rem)] animate-menu-in rounded-2xl border p-4 text-left shadow-[0_20px_50px_-24px_rgba(0,0,0,0.4)] ${menuSurfaceCls}`}
                   >
                     <p className={`text-sm font-medium ${dark ? "text-white" : "text-neutral-900"}`}>
                       Unlock more features

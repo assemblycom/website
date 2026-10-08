@@ -28,19 +28,42 @@ import { IconArrowUp } from "@/components/home/build-step-visual";
 const LINE = "border-[var(--mock-line)]";
 
 /**
- * The shelf under the box. Four, because four is what fits the card's width at
- * the size the product draws them — a fifth would take every card under 140px
- * and the names start wrapping.
+ * The library under the box — the product's "Browse all apps" shelf.
  *
- * The names are the ones /templates and the section further down this page
- * use, so a visitor who keeps scrolling meets the cards they just saw in the
- * picture rather than a different four. The covers are blank — see below.
+ * It was four template cover cards, which made the screen say "start from a
+ * template" twice: once here and once in the page's own templates section a
+ * few screens down. The library is the other half of the claim above it —
+ * "one place" is a place that already HAS apps in it, and a named list of
+ * twenty-one of them says that where four blank covers did not.
+ *
+ * Six, in two columns. Three columns is what the product shows at full width;
+ * at the width this card gives the screen, three would put every description
+ * under 165px and truncate the ones that carry the meaning. Two columns is the
+ * same list seen through a narrower window, which is what the crop already
+ * claims — and a truncated description in a mock is a smaller mistake than a
+ * second set of shortened copy, but it is still a mistake.
  */
-const TEMPLATES = [
-  "Client onboarding wizard",
-  "Client project tracker",
-  "Proposal builder",
-  "Time tracker",
+const APPS = [
+  { name: "Client project tracker", about: "Share milestones and progress" },
+  { name: "Document collector", about: "Requested docs with a checklist" },
+  { name: "Helpdesk", about: "Help guides and resources for clients" },
+  { name: "Data room", about: "Securely share sensitive documents" },
+  { name: "Client onboarding wizard", about: "Multi-step flow, progress saved" },
+  { name: "Design approvals", about: "Creative sign-off, round by round" },
+];
+
+/**
+ * The filters over the library. "All" is the one that is on, and the rest are
+ * the product's own categories in its own order; "More" is where the row stops
+ * rather than an invented category, which is what keeps the set honest at a
+ * width that cannot hold eleven of them.
+ */
+const FILTERS = [
+  "Knowledge base",
+  "Dashboards",
+  "Internal",
+  "Trackers",
+  "More",
 ];
 
 export function AddAppMock() {
@@ -134,35 +157,67 @@ export function AddAppMock() {
         </div>
       </div>
 
-      {/* The shelf. Ranged left under a centred box on purpose — it is a list
-          of things, and a centred list of four is a decoration. */}
-      <p className="mt-9 text-[11.5px] leading-none text-[color:var(--mock-ink)]">
-        Start from a template
-      </p>
-      <div className="mt-2.5 grid grid-cols-4 gap-2.5">
-        {TEMPLATES.map((name) => (
+      {/* The library. Ranged left under a centred box on purpose — it is a
+          list of things, and a centred list is a decoration.
+
+          The count is the point of the heading, not decoration: "Browse all
+          apps" alone is a link, "21" is the claim that the place you just
+          typed into is already full. */}
+      <div className="mt-8 flex items-baseline gap-2">
+        <span className="text-[11.5px] leading-none text-[color:var(--mock-ink)]">
+          Browse all apps
+        </span>
+        <span className="text-[10.5px] leading-none text-[color:var(--mock-ink-soft)]">
+          21
+        </span>
+      </div>
+
+      {/* Filters, with search pushed to the far end of the row the way the
+          product has it. The chips are the mocks' own shape (R_CHROME, a
+          hairline, the window ground); the one that is ON takes the solid well
+          and drops its border, so the set reads as one control with a
+          selection rather than as six buttons. */}
+      <div className="mt-2.5 flex items-center gap-1.5">
+        <span
+          className={`shrink-0 rounded-[4px] bg-[var(--mock-well-2)] px-2 py-1 text-[10px] leading-none text-[color:var(--mock-ink)]`}
+        >
+          All
+        </span>
+        {FILTERS.map((f) => (
+          <span
+            key={f}
+            className={`shrink-0 rounded-[4px] border bg-[var(--mock-window)] px-2 py-1 text-[10px] leading-none text-[color:var(--mock-ink-soft)] ${LINE}`}
+          >
+            {f}
+          </span>
+        ))}
+        <span
+          className={`ml-auto flex w-[104px] shrink-0 items-center rounded-[4px] border bg-[var(--mock-window)] px-2 py-1 text-[10px] leading-none text-[color:var(--mock-ink-soft)] ${LINE}`}
+        >
+          Search
+        </span>
+      </div>
+
+      <div className="mt-2.5 grid grid-cols-2 gap-2">
+        {APPS.map(({ name, about }) => (
           <div
             key={name}
-            className={`overflow-hidden rounded-[8px] border bg-[var(--mock-window)] ${LINE}`}
+            className={`flex items-center gap-2.5 rounded-[8px] border bg-[var(--mock-window)] px-2.5 py-2 ${LINE}`}
           >
-            {/* A plain cover, and plain on purpose. It carried each
-                template's own drawn mark, which put four pieces of detailed
-                artwork in a picture whose subject is the box above them — the
-                marks were the highest-contrast thing on the card and the eye
-                went to the shelf instead of to the thing you type into. Empty,
-                the shelf reads as a shelf and the names do the naming. */}
-            <div className="h-[74px] bg-[var(--mock-well)]" />
-            {/* Two lines of room, always. These are the templates' real names
-                and the longest of them runs to two lines in a 150px card — on
-                one line with a truncate it came out "Client onboarding w…",
-                which is a smaller mistake than a second set of shortened names
-                but still a mistake. The min-height is what keeps the four
-                cards ending on the same line once one of them wraps. */}
-            <div
-              className={`min-h-[36px] border-t px-2.5 py-2 text-[10.5px] leading-[1.35] ${LINE}`}
-            >
-              {name}
-            </div>
+            {/* A plain tile, no glyph. The product draws each app's own mark
+                here; six pieces of artwork in a list whose job is to say "there
+                are twenty-one of these" put the detail on the wrong thing, and
+                the same argument already took the marks off the covers this
+                list replaces. */}
+            <span className="size-[26px] shrink-0 rounded-[6px] bg-[var(--mock-well)]" />
+            <span className="flex min-w-0 flex-col gap-1.5">
+              <span className="truncate text-[11px] leading-none text-[color:var(--mock-ink)]">
+                {name}
+              </span>
+              <span className="truncate text-[10px] leading-none text-[color:var(--mock-ink-soft)]">
+                {about}
+              </span>
+            </span>
           </div>
         ))}
       </div>

@@ -23,13 +23,16 @@ export interface Pillar {
    */
   visualContained?: boolean;
   /**
-   * Drops the lift and the rounded corner, so the shot meets the card flat.
+   * Drops the CAST and draws the screen's own edge instead: the rounded
+   * top-left corner it already had, plus a hairline down its left and across
+   * its top.
    *
-   * For a screen whose own ground is the SAME white as the product's page and
-   * whose subject is centred in it — there, a cast and a corner draw a frame
-   * around a picture that is mostly empty page, and the frame becomes the
-   * thing you see. The other three are screens with furniture up against their
-   * edges, where the lift is what stops them merging into the card.
+   * For a screen whose ground is the same white as the product's page and
+   * whose subject is centred in it. A drop shadow there is a cloud under a
+   * mostly-empty page and reads as the picture being lifted off the card
+   * rather than as a screen; a line says the same thing exactly, with an edge
+   * you can see. The other three keep the cast — their screens have furniture
+   * against every edge, where a hairline would be lost in it.
    */
   visualBare?: boolean;
   /**
@@ -87,6 +90,8 @@ export function BuilderPillars({ pillars }: { pillars: Pillar[] }) {
 
 const CARD =
   "relative flex flex-col overflow-hidden rounded-3xl bg-[var(--surface)]";
+/** The mocks' own hairline, so a screen's drawn edge matches the lines in it. */
+const LINE = "border-[var(--mock-line)]";
 const CARD_PAD = "px-6 pt-7 md:px-8 md:pt-8";
 
 /**
@@ -208,8 +213,10 @@ function FeatureCard({
               that fades the shot, so the branding card's cast disappeared
               exactly where the screen is still solid. */}
           <div
-            className={`absolute left-6 top-0 overflow-hidden md:left-8 ${
-              pillar.visualBare ? "" : `rounded-tl-xl ${SCREEN_LIFT}`
+            className={`absolute left-6 top-0 overflow-hidden rounded-tl-xl md:left-8 ${
+              pillar.visualBare
+                ? `border-l border-t ${LINE}`
+                : SCREEN_LIFT
             } ${span === "wide" ? "right-0 h-[130%]" : "h-full"}`}
             style={
               span === "wide"
