@@ -36,20 +36,24 @@ const LINE = "border-[var(--mock-line)]";
  * "one place" is a place that already HAS apps in it, and a named list of
  * twenty-one of them says that where four blank covers did not.
  *
- * Six, in two columns. Three columns is what the product shows at full width;
- * at the width this card gives the screen, three would put every description
- * under 165px and truncate the ones that carry the meaning. Two columns is the
- * same list seen through a narrower window, which is what the crop already
- * claims — and a truncated description in a mock is a smaller mistake than a
- * second set of shortened copy, but it is still a mistake.
+ * Six, in three columns — the product's own column count. Three is what makes
+ * the row read as a LIBRARY rather than as a short list, and it costs about
+ * 45px per card against two.
+ *
+ * Which is why these six and not the page's flagship templates. A card is
+ * ~165px here, leaving ~119px for type, and "Client project tracker" and
+ * "Client onboarding wizard" both truncate in that. Every app named below fits
+ * at full length, name and line, with its own line written to the same
+ * measure — a truncated name in a mock of a product is worse than showing six
+ * other real apps out of twenty-one.
  */
 const APPS = [
-  { name: "Client project tracker", about: "Share milestones and progress" },
-  { name: "Document collector", about: "Requested docs with a checklist" },
-  { name: "Helpdesk", about: "Help guides and resources for clients" },
-  { name: "Data room", about: "Securely share sensitive documents" },
-  { name: "Client onboarding wizard", about: "Multi-step flow, progress saved" },
-  { name: "Design approvals", about: "Creative sign-off, round by round" },
+  { name: "Document collector", about: "Docs with a checklist" },
+  { name: "Helpdesk", about: "Guides for clients" },
+  { name: "Data room", about: "Share files securely" },
+  { name: "Proposals", about: "Branded, e-signable" },
+  { name: "Design approvals", about: "Sign-off by round" },
+  { name: "New client intake", about: "Scope, goals, budget" },
 ];
 
 /**
@@ -198,18 +202,18 @@ export function AddAppMock() {
         </span>
       </div>
 
-      <div className="mt-2.5 grid grid-cols-2 gap-2">
+      <div className="mt-2.5 grid grid-cols-3 gap-2">
         {APPS.map(({ name, about }) => (
           <div
             key={name}
-            className={`flex items-center gap-2.5 rounded-[8px] border bg-[var(--mock-window)] px-2.5 py-2 ${LINE}`}
+            className={`flex items-center gap-2 rounded-[8px] border bg-[var(--mock-window)] px-2 py-2 ${LINE}`}
           >
             {/* A plain tile, no glyph. The product draws each app's own mark
                 here; six pieces of artwork in a list whose job is to say "there
                 are twenty-one of these" put the detail on the wrong thing, and
                 the same argument already took the marks off the covers this
                 list replaces. */}
-            <span className="size-[26px] shrink-0 rounded-[6px] bg-[var(--mock-well)]" />
+            <span className="size-[22px] shrink-0 rounded-[6px] bg-[var(--mock-well)]" />
             <span className="flex min-w-0 flex-col gap-1.5">
               <span className="truncate text-[11px] leading-none text-[color:var(--mock-ink)]">
                 {name}
