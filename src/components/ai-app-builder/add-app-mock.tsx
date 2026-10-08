@@ -23,6 +23,7 @@
 // ─────────────────────────────────────────────────────────────────────────
 
 import { IconPlus } from "@/components/home/mock-icons";
+import { WorkspaceSidebar } from "@/components/home/workspace-sidebar";
 import { IconArrowUp } from "@/components/home/build-step-visual";
 
 const LINE = "border-[var(--mock-line)]";
@@ -71,13 +72,11 @@ const FILTERS = [
 ];
 
 export function AddAppMock() {
-  // UNEVEN PADDING (pl-14 / pr-6), and it has to be. The card crops this screen
-  // on its RIGHT edge and holds it 32px off its left, so what you see is a
-  // window onto a page that carries on past the right — and content centred in
-  // the window sits left of where it would be on the whole page. The extra
-  // 32px on the left is that difference, which puts the headline and the box
-  // where the eye expects them on a screen that continues. Even padding
-  // measured correctly and still read as squeezed left.
+  // UNEVEN PADDING on the pane (pl-8 / pr-5), and it has to be. The card crops
+  // this screen on its RIGHT edge, so the pane is a window onto a page that
+  // carries on — and content centred in the window sits left of where it would
+  // be on the whole page. The few extra pixels on the left are that
+  // difference. Even padding measured correctly and still read as squeezed.
   //
   // THE PAGE IS --mock-window — the product's own page ground, white in light
   // and #212121 in dark. It was tried on --mock-well, which separates the
@@ -88,27 +87,30 @@ export function AddAppMock() {
   return (
     <div
       aria-hidden
-      className="pointer-events-none flex h-full select-none flex-col bg-[var(--mock-window)] text-[color:var(--mock-ink)]"
+      className="pointer-events-none flex h-full select-none bg-[var(--mock-window)] text-[color:var(--mock-ink)]"
     >
-      {/* The screen's own bar, which says what page this is. Without it the
-          shot was a headline floating at the top of a white rectangle — true
-          to the page's content and silent about it being a page IN something.
-          40px with a hairline under it and a 12px title is the shape the other
-          product shots in this family use (see ScreenTopBar in
-          abstract-step-visuals); drawn here with the --mock-* tokens so it
-          themes with the rest of this file rather than that one.
+      {/* The firm's own nav, with Add App lit. A bar naming the page was
+          tried first and said less: it told you the page's name, which the
+          headline under it already says, where the nav says WHERE the page is
+          — inside a workspace that already has a CRM, a team and three apps in
+          it. That is the claim the card is making.
 
-          It takes the page's own left margin rather than a bar-sized one, so
-          the title, the headline and the library all start on one line. */}
-      <div
-        className={`flex h-[40px] shrink-0 items-center border-b pl-14 pr-6 ${LINE}`}
-      >
-        <span className="text-[12px] leading-none text-[color:var(--mock-ink)]">
-          Add App
-        </span>
-      </div>
+          Shared with nothing else at the moment and deliberately its own
+          component: this nav is drawn inline in two other mocks, and a third
+          copy would be the thing that lets them drift apart.
 
-      <div className="flex min-h-0 flex-1 flex-col pl-14 pr-6 pt-9">
+          Narrower than the CRM card drew it (136 against 148/164), and always
+          shown — this shot is never below `sm`, and every pixel the rail takes
+          is a pixel off the pane that is the subject. */}
+      <WorkspaceSidebar active="Add App" className="flex w-[136px]" />
+
+      {/* min-w-0 is load-bearing. A flex child defaults to min-width:auto,
+          so the pane refused to shrink below its widest child — the 520px app
+          grid — and grew to 572 inside a 455px slot, pushing the composer's
+          send button out past the card's edge. With it, the pane is the width
+          the nav leaves it and the grid is the only thing that overflows,
+          which is what the overflow was for. */}
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col pl-8 pr-5 pt-8">
         {/* Named, because the product names you. "What app will you add?" on its
           own is a page title; with the name in front of it, it is the workspace
           talking to the person who opened it, which is the difference between a
@@ -120,7 +122,7 @@ export function AddAppMock() {
         {/* The box, at the measure the product gives it rather than the card's
           full width — a composer run edge to edge across 709px stops reading as
           a thing you type one sentence into. */}
-        <div className="mx-auto mt-5 w-full max-w-[460px]">
+        <div className="mx-auto mt-5 w-full max-w-[400px]">
           {/* THE DOUBLE OUTLINE — the composer's own hairline, a 3px band of the
             screen's ground, then a second line around that. It is the
             treatment the hero's composer and the Describe card both wear, and
@@ -226,7 +228,13 @@ export function AddAppMock() {
           </span>
         </div>
 
-        <div className="mt-2.5 grid grid-cols-3 gap-2">
+        {/* Wider than the pane, on purpose. Three columns at the pane's own
+            width would be ~130px each and truncate half the names; at 520 they
+            are the width they are drawn for and the third column runs off the
+            card's right edge — which is the crop this whole shot already
+            carries. A screen that continues is the claim; a truncated product
+            name is a mistake. */}
+        <div className="mt-2.5 grid w-[520px] grid-cols-3 gap-2">
           {APPS.map(({ name, about }) => (
             <div
               key={name}
