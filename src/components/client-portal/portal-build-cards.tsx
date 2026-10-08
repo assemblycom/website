@@ -28,8 +28,6 @@ import {
   IconGlobe,
   IconPlus,
   IconChevronDown,
-  IconChevronLeft,
-  IconChevronRight,
   IconClock,
   IconSearch,
 } from "@/components/home/mock-icons";
@@ -491,11 +489,15 @@ export function DescribeCard({ plain = false }: SceneProps = {}) {
             ) : null}
             <span className="flex items-center gap-2">
               {plain ? (
+                // The word alone, no chevron — the same call the Add App
+                // mock's composer already made. A caret says "this opens",
+                // which in a still picture is a promise the picture cannot
+                // keep, and at 10px it read as a smudge beside the type rather
+                // than as a mark.
                 <span
-                  className={`flex items-center gap-1 ${R_CHROME} px-1.5 py-1 text-[color:var(--mock-ink-soft)] ${UI_PLAIN}`}
+                  className={`flex items-center ${R_CHROME} px-1.5 py-1 text-[color:var(--mock-ink-soft)] ${UI_PLAIN}`}
                 >
                   Auto
-                  <IconChevronDown className="size-[10px] shrink-0" />
                 </span>
               ) : null}
               <span
@@ -908,7 +910,15 @@ function RequirementsPane() {
               the card's edges far enough that the card reads as paper around
               it. px-6 and not more: this card is ~400px of measure, and every
               pixel of inset is a pixel the sentences wrap in. */}
-          <div className="flex min-h-0 flex-1 flex-col gap-2 px-6 pb-4 pt-2">
+          {/* A CENTRED COLUMN inside the card, not the card's full width.
+              px-6 alone ranged the document hard left against a card that is
+              ~400px of measure, so the text filled every available pixel and
+              the card stopped reading as paper with a document on it — it read
+              as a pane whose contents had been poured in. Capped and centred,
+              the two margins are equal and the card has a page in it. The cap
+              is a max-width rather than more padding so it still fills the
+              column at the narrower widths this scene is drawn at. */}
+          <div className="mx-auto flex min-h-0 w-full max-w-[340px] flex-1 flex-col gap-2 px-6 pb-4 pt-2">
             <span className={`text-[color:var(--mock-ink)] ${PLAN_HEAD}`}>
               Overview
             </span>
@@ -924,7 +934,17 @@ function RequirementsPane() {
                   key={f}
                   className={`flex gap-2 text-[color:var(--mock-ink-soft)] ${PLAN_PROSE}`}
                 >
-                  <span className="shrink-0">•</span>
+                  {/* A DRAWN DOT, not the "•" character. At 11px the glyph
+                      renders as a 1–2px speck whose size and vertical position
+                      are the font's business rather than ours, and in this face
+                      it sat low and read as a stray full stop. A 3px circle is
+                      the same mark at a size we choose, and the wrapper box
+                      gives it the line's own height so it centres on the FIRST
+                      line of a flow that wraps to two rather than drifting with
+                      the text. */}
+                  <span className="flex h-[17.6px] shrink-0 items-center">
+                    <span className="size-[3px] rounded-full bg-current" />
+                  </span>
                   <span className="min-w-0">{f}</span>
                 </li>
               ))}
@@ -1063,14 +1083,16 @@ function CalendarPane() {
     <div className="flex min-h-0 flex-1 flex-col">
       {/* Toolbar: the week on the left, the controls on the right. */}
       <div className="flex shrink-0 items-center justify-between gap-2 px-3 pt-2.5">
-        <span className="flex items-center gap-1.5">
-          <span className="flex items-center gap-0.5 text-[color:var(--mock-ink-soft)]">
-            <IconChevronLeft className="size-[9px]" />
-            <IconChevronRight className="size-[9px]" />
-          </span>
-          <span className={`text-[color:var(--mock-ink)] ${UI_PRIMARY}`}>
-            Oct 4–10, 2026
-          </span>
+        {/* The week, with NO prev/next pair in front of it. At 9px the two
+            chevrons were a pair of grey ticks the size of the punctuation
+            beside them — too small to read as controls, and the first thing in
+            the toolbar. A still picture cannot page a calendar anyway, so what
+            they bought was the suggestion of a control the shot can never
+            demonstrate, in the slot where the week's own name should start.
+            The segmented Month/Week/Day control at the other end already says
+            this view has controls on it, and that one is legible. */}
+        <span className={`text-[color:var(--mock-ink)] ${UI_PRIMARY}`}>
+          Oct 4–10, 2026
         </span>
         <span className="flex items-center gap-1.5">
           {/* The segmented control, the site's own shape: the picked segment is
@@ -1121,19 +1143,32 @@ function CalendarPane() {
               {/* Today is a filled disc, the one piece of emphasis in the
                   header — the same move the product makes.
 
-                  18px, up from 15. The digit measures centred in the disc to
-                  within a quarter of a pixel, so this was never an alignment
-                  fault — an 11.5px numeral in a 15px circle simply fills nearly
-                  all of it, and a glyph with no room around it reads as cropped
-                  whatever its centring says. 18 puts a ring of ground back.
+                  A SQUARISH OUTLINE, not a filled circle. The disc was the
+                  heaviest object in the whole shot — a solid near-black dot in
+                  a header of hairlines and grey type, so the eye landed on a
+                  date rather than on the week of events the card is about. An
+                  outline marks the same day and weighs what the rest of the
+                  header weighs. Square-ish, because every other selected thing
+                  in this set is a rounded rectangle (the Week chip two inches
+                  to its right, the chrome buttons, the cards) and a circle was
+                  the one shape here from a different vocabulary.
+
+                  R_CHROME, the set's own small radius, so it matches that Week
+                  chip exactly rather than being a third corner size.
+
+                  18px. The digit measures centred to within a quarter of a
+                  pixel, so this was never an alignment fault — an 11.5px
+                  numeral in a 15px box simply fills nearly all of it, and a
+                  glyph with no room around it reads as cropped whatever its
+                  centring says. 18 puts a ring of ground back.
 
                   tabular-nums so 8 and 10 set to one width: the header is seven
-                  columns of digits and proportional figures make the discs sit
+                  columns of digits and proportional figures make the marks sit
                   on slightly different centres across the row. */}
               <span
-                className={`flex size-[18px] items-center justify-center rounded-full tabular-nums ${UI_PRIMARY} ${
+                className={`flex size-[18px] items-center justify-center tabular-nums ${UI_PRIMARY} ${
                   d.today
-                    ? "bg-[var(--mock-ink)] text-[color:var(--mock-window)]"
+                    ? `${R_CHROME} border border-[var(--mock-ink)] text-[color:var(--mock-ink)]`
                     : "text-[color:var(--mock-ink-soft)]"
                 }`}
               >
