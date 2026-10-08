@@ -2,6 +2,10 @@
 
 import { useState, type ReactNode } from "react";
 import { Section } from "@/components/ui/section";
+import {
+  DOTTED_RULE_AFTER,
+  DOTTED_RULE_BEFORE,
+} from "@/components/ui/dotted-rule";
 
 export interface FAQLink {
   label: string;
@@ -10,10 +14,10 @@ export interface FAQLink {
 
 export interface FAQEntry {
   question: string;
-  // Shown in place of `question` below sm. A question that wraps to a second
-  // line turns a tidy stack of rows into a ragged one, and on a phone there is
-  // no room to solve that with type size. Optional: only the questions that
-  // actually wrap carry one, and the short form has to mean the same thing.
+  // Shown in place of `question` below sm, and at every width on a page that
+  // asks for it. A question that wraps to a second line turns a tidy stack of
+  // rows into a ragged one. Optional: only the questions that actually wrap
+  // carry one, and the short form has to mean the same thing.
   shortQuestion?: string;
   answer: string;
   /**
@@ -49,7 +53,11 @@ function renderAnswer(text: string, links?: FAQLink[]): ReactNode {
           {...(external
             ? { target: "_blank", rel: "noopener noreferrer" }
             : {})}
-          className="underline underline-offset-2 transition-colors hover:text-foreground"
+          // decoration-1 rather than the font's `auto` thickness, which at
+          // body size drew a rule heavy enough to read as a highlight. 1px
+          // matches the prose links in `.post-body`, the same kind of inline
+          // link in running text.
+          className="underline decoration-1 underline-offset-2 [text-decoration-skip-ink:none] transition-colors hover:text-foreground"
         >
           {link.label}
         </a>,
@@ -79,7 +87,7 @@ const FAQS: FAQEntry[] = [
   {
     question: "Do I need to know how to code?",
     answer:
-      "No. Describe what you want in plain English. The app builder asks a few product questions, shows you a plan you approve or edit, then builds. Changes happen the same way — by conversation.",
+      "No. Describe what you want. The app builder asks a few product questions, shows you a plan you approve or edit, then builds. Changes happen the same way — by conversation.",
   },
   {
     question: "Can my apps connect to the tools I already use?",
@@ -118,6 +126,7 @@ const FAQS: FAQEntry[] = [
 // on /security).
 type FAQVariant = "cards" | "divided";
 
+
 function FAQItem({
   question,
   shortQuestion,
@@ -127,10 +136,14 @@ function FAQItem({
   open,
   onToggle,
   variant = "cards",
+  compactQuestions = false,
+  dottedRules = false,
 }: FAQEntry & {
   open: boolean;
   onToggle: () => void;
   variant?: FAQVariant;
+  compactQuestions?: boolean;
+  dottedRules?: boolean;
 }) {
   // Controlled by the parent so only one answer is open at a time (opening one
   // closes the others). Toggles on click only — hover-to-open made rows pop open
@@ -185,15 +198,61 @@ function FAQItem({
 
   if (variant === "divided") {
     return (
-      <div className="border-b border-border last:border-b-0">
+      <div
+        className={
+          dottedRules
+            ? `relative after:absolute after:inset-x-0 after:bottom-0 after:h-px after:content-[''] ${DOTTED_RULE_AFTER} last:after:hidden`
+            : "border-b border-border last:border-b-0"
+        }
+      >
+        {/* The hover is a PLATE behind the row, not a change to the question's
+            own ink: the question is already --foreground, so there is nowhere
+            for the text to go on hover that isn't dimmer, and a row that fades
+            when you point at it reads as disabled.
+
+            SQUARE, and exactly the row's own box — inset-0, no radius. It was
+            a rounded plate bled 12px past the text on each side, which was
+            wrong on both counts: the rounding drew a second, softer box inside
+            the row's hard dotted rules, so a hovered row read as two boxes
+            rather than one; and the bleed ran the tint out past the ends of
+            those rules, so the thing highlighting the row was wider than the
+            row. The rules are the row's edges, so the plate stops at them.
+
+            `isolate` on the button is load-bearing. The plate is -z-10 so it
+            sits under the question and the chevron, and without a stacking
+            context of its own that puts it behind the PAGE — the tint simply
+            never appears.
+
+            Hover only, and still click to open. Hover-to-open was tried and
+            reverted (rows popped open as the cursor crossed them while
+            scrolling); this gives the row the affordance that change was
+            after without the behaviour that made it unusable. The same plate
+            answers focus-visible, so a keyboard gets the row as well as the
+            ring.
+
+            ONE value for both themes, --foreground at 6%, rather than a light
+            tint plus a dark override. The ink token already flips — near-black
+            on the light page, near-white on the dark one — so six percent of it
+            is a plate a shade off the ground either way, and there is no second
+            number that can be tuned on one theme and left behind on the other.
+            `bg-muted/60` was tried first and is wrong twice over: it resolved
+            to nothing at all under [data-theme=dark], and --muted is a SURFACE
+            step, so even working it would have been a fixed grey rather than
+            something that answers the ground it is drawn on. */}
         <button
           onClick={onToggle}
           aria-expanded={open}
-          className="group flex w-full cursor-pointer items-center justify-between gap-6 py-5 text-left"
+          className="group relative isolate flex w-full cursor-pointer items-center justify-between gap-6 py-5 text-left outline-none before:absolute before:inset-0 before:-z-10 before:bg-transparent before:transition-colors hover:before:bg-foreground/[0.06] focus-visible:before:bg-foreground/[0.06]"
         >
           <span className="type-body text-foreground">
-            <span className="sm:hidden">{shortQuestion ?? question}</span>
-            <span className="hidden sm:inline">{question}</span>
+            {compactQuestions ? (
+              shortQuestion ?? question
+            ) : (
+              <>
+                <span className="sm:hidden">{shortQuestion ?? question}</span>
+                <span className="hidden sm:inline">{question}</span>
+              </>
+            )}
           </span>
           {/* The chevron turns 90°, not 180 — half the travel of a full flip,
               and timed to the drawer (300ms) so the two move as one gesture.
@@ -241,8 +300,14 @@ function FAQItem({
         className="flex w-full cursor-pointer items-center justify-between gap-4 rounded-[8px] px-5 py-3 text-left outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-foreground/40"
       >
         <span className="type-body text-foreground">
-          <span className="sm:hidden">{shortQuestion ?? question}</span>
-          <span className="hidden sm:inline">{question}</span>
+          {compactQuestions ? (
+            shortQuestion ?? question
+          ) : (
+            <>
+              <span className="sm:hidden">{shortQuestion ?? question}</span>
+              <span className="hidden sm:inline">{question}</span>
+            </>
+          )}
         </span>
         <svg
           width="20"
@@ -276,11 +341,20 @@ export function Accordion({
   items,
   twoColumn,
   variant = "cards",
+  compactQuestions = false,
+  dottedRules = false,
   flushTop = true,
 }: {
   items: FAQEntry[];
   twoColumn: boolean;
   variant?: FAQVariant;
+  /** Run `shortQuestion` at every width, not only below sm. */
+  compactQuestions?: boolean;
+  /**
+   * Draw the divided list's rules as the dotted hairline rather than a solid
+   * border, and open the list with one. Divided only.
+   */
+  dottedRules?: boolean;
   /**
    * The divided list is normally ruled top by the layout above it, so the first
    * row drops its top padding to sit against that line. A list with no rule
@@ -294,6 +368,8 @@ export function Accordion({
       key={faq.question}
       {...faq}
       variant={variant}
+      compactQuestions={compactQuestions}
+      dottedRules={dottedRules}
       open={openId === faq.question}
       onToggle={() =>
         setOpenId((cur) => (cur === faq.question ? null : faq.question))
@@ -314,7 +390,19 @@ export function Accordion({
       );
     }
     return (
-      <div className={flushTop ? "[&>div:first-child>button]:pt-0" : ""}>
+      <div
+        className={[
+          flushTop ? "[&>div:first-child>button]:pt-0" : "",
+          // Opening rule, so the list reads as bounded rather than as a stack
+          // that happens to start. Only with the dotted treatment: a solid one
+          // here doubled up with whatever section rule sits above.
+          dottedRules
+            ? `relative before:absolute before:inset-x-0 before:top-0 before:h-px before:content-[''] ${DOTTED_RULE_BEFORE}`
+            : "",
+        ]
+          .filter(Boolean)
+          .join(" ")}
+      >
         {items.map(renderItem)}
       </div>
     );
@@ -342,11 +430,21 @@ export function FAQ({
   items = FAQS,
   twoColumn = false,
   variant = "cards",
+  compactQuestions = false,
+  dottedRules = false,
 }: {
   heading?: string;
   items?: FAQEntry[];
   twoColumn?: boolean;
   variant?: FAQVariant;
+  /** Dotted hairlines instead of solid borders. Divided only. */
+  dottedRules?: boolean;
+  /**
+   * Run the short form of every question that has one, at every width. For a
+   * page whose questions are written long for search: the row stays one line
+   * while the full wording is still what the answer is filed under.
+   */
+  compactQuestions?: boolean;
 } = {}) {
   // Vercel-style: heading sits in a left column, the divided question list runs
   // down the right. The heading sticks so it stays with the list on long scrolls.
@@ -357,7 +455,12 @@ export function FAQ({
         <Section id="faq" className="px-0 py-16 md:py-24">
           <div className="mx-auto max-w-[1200px] px-6 md:px-10">
             <h2 className="type-h2 text-center">{heading}</h2>
-            <Accordion items={items} twoColumn variant={variant} />
+            <Accordion
+              items={items}
+              twoColumn
+              variant={variant}
+              compactQuestions={compactQuestions}
+            />
           </div>
         </Section>
       );
@@ -368,7 +471,17 @@ export function FAQ({
           <div className="md:sticky md:top-28 md:self-start">
             <h2 className="type-h2">{heading}</h2>
           </div>
-          <Accordion items={items} twoColumn={false} variant={variant} />
+          {/* flushTop off under a dotted rule: the first row keeps its top
+              padding like every other, so it sits off the opening rule rather
+              than against it. */}
+          <Accordion
+            items={items}
+            twoColumn={false}
+            variant={variant}
+            compactQuestions={compactQuestions}
+            dottedRules={dottedRules}
+            flushTop={!dottedRules}
+          />
         </div>
       </Section>
     );
@@ -384,7 +497,12 @@ export function FAQ({
         <h2 className="type-h2 mx-auto max-w-80 text-center sm:max-w-none">
           {heading}
         </h2>
-        <Accordion items={items} twoColumn={twoColumn} variant={variant} />
+        <Accordion
+          items={items}
+          twoColumn={twoColumn}
+          variant={variant}
+          compactQuestions={compactQuestions}
+        />
       </div>
     </Section>
   );

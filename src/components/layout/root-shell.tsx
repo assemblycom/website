@@ -11,6 +11,15 @@ import { useTheme } from "@/components/theme/theme-provider";
 // to fill one (see the branch below).
 const SHORT_PAGES = new Set(["/demo", "/demo-video"]);
 
+// The page sheet. Its top corners used to be rounded, so that the announcement
+// band's ground showed through the cuts and the page read as rising out of it.
+// With the band down (see lib/announcement.ts) there is nothing above to rise
+// out of, and the cuts only exposed two slivers of --muted at the very top — so
+// the sheet meets the top edge square. Round the corners again alongside putting
+// a band back. No overflow clip, since that would stop the nav inside from
+// sticking.
+const SHEET = "relative flex flex-1 flex-col bg-background";
+
 /**
  * Every page in this shell ends in the reveal footer — a single black sheet
  * closing on the brand aurora (the gradient lives inside the footer itself,
@@ -73,25 +82,29 @@ export function RootShell({ children }: { children: React.ReactNode }) {
   // full screen below.
   if (SHORT_PAGES.has(pathname)) {
     return (
-      <div className="flex min-h-screen flex-col bg-background">
+      <div className="flex min-h-screen flex-col bg-muted">
         <AnnouncementBar />
-        {nav}
-        <main id="main" className="flex-1">
-          {children}
-        </main>
-        <Footer reveal light={revealFooterLight} themeToggle={themeToggle} />
+        <div className={SHEET}>
+          {nav}
+          <main id="main" className="flex-1">
+            {children}
+          </main>
+          <Footer reveal light={revealFooterLight} themeToggle={themeToggle} />
+        </div>
       </div>
     );
   }
 
   return (
     <>
-      <div className="flex min-h-screen flex-col bg-background">
+      <div className="flex min-h-screen flex-col bg-muted">
         <AnnouncementBar />
-        {nav}
-        <main id="main" className="flex-1">
-          {children}
-        </main>
+        <div className={SHEET}>
+          {nav}
+          <main id="main" className="flex-1">
+            {children}
+          </main>
+        </div>
       </div>
       <Footer reveal light={revealFooterLight} themeToggle={themeToggle} />
     </>

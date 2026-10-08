@@ -3,8 +3,12 @@ import { FROZEN_SOLUTIONS } from "./solutions.frozen";
 /**
  * The industry landing pages. They came out of Contentful — where they were
  * filed under a "solutions/" slug prefix the route dropped — and now live in
- * solutions.frozen.ts, imagery and all. One of the nine is noIndex, which the
+ * solutions.frozen.ts, imagery and all. One of the seven is noIndex, which the
  * frozen copy carries the way the CMS did.
+ *
+ * Seven, not nine: /solutions/accounting-client-portal and
+ * /solutions/marketing-agency-client-portal are hand-built pages of their own
+ * now, so their CMS copy came out of the frozen set.
  *
  * This replaces solutions.fallback.ts, which held the same copy as a floor for
  * a CMS outage. There is no CMS read left to fall back from.

@@ -1,45 +1,249 @@
+"use client";
+
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { V66Composer } from "./hero-v66";
+import { PROMPT_IDEAS } from "./prompt-ideas";
+import { useTheme } from "@/components/theme/theme-provider";
 import { APP_URL, DEMO_URL, SIGNUP_URL } from "@/lib/constants";
 
-// The prompt composer that used to sit here lost to the plain two-button hero,
-// so the footer ends the page the same way that hero opens it. The buttons are
-// the hero's own pair (see hero-big.tsx), minus its experiment tracking.
+// The hero's own button pair (see hero-big.tsx), minus its experiment
+// tracking — so the page's close is the same control its top opens with.
 const PRIMARY_CTA =
   "inline-flex w-full shrink-0 items-center justify-center whitespace-nowrap rounded-lg bg-foreground px-4 py-3 text-center text-sm text-background transition-opacity hover:opacity-90 sm:w-auto sm:py-2 md:px-5 md:py-2.5 [[data-theme=dark]_&]:bg-white [[data-theme=dark]_&]:text-neutral-900";
-export function CTA() {
+
+const SECONDARY_CTA =
+  "inline-flex w-full shrink-0 items-center justify-center whitespace-nowrap rounded-lg border border-foreground/20 bg-transparent px-4 py-3 text-center text-sm text-foreground transition-colors hover:bg-foreground/5 sm:w-auto sm:py-2 md:px-5 md:py-2.5 [[data-theme=dark]_&]:border-white/25 [[data-theme=dark]_&]:text-white";
+
+export function CTA({
+  heading,
+  subheading,
+  submitLabel = "Get started",
+  secondaryCta,
+  planChips = true,
+  promptExamples,
+  promptPicker = true,
+  composer = false,
+  primaryCta,
+}: {
+  // Overrides the default close for a page whose argument ends somewhere else
+  // (e.g. the AI app builder page closes on what you would build today).
+  heading?: ReactNode;
+  /**
+   * The lead under the heading, where a page's brief calls for its own.
+   *
+   * A ReactNode and not a string so a page can place its own line break, the
+   * way the default below does — `text-pretty` guards against a one-word last
+   * line but not a two-word one, so a lead that happens to end "…or start from
+   * / a template." needs the break stated rather than negotiated.
+   */
+  subheading?: ReactNode;
+  /** The composer's submit wording, which a feature page names after its own CTA. */
+  submitLabel?: string;
+  /** An outline second action beside the box, visibly secondary to the submit. */
+  secondaryCta?: { label: string; href: string };
+  /** Off for a page that has already made the free-plan case further up. */
+  planChips?: boolean;
+  /** Page-specific examples, completing "Build …", for both the typewriter and the Ideas menu. */
+  promptExamples?: string[];
+  /**
+   * Off for a page that has already shown the same starter prompts further
+   * up, where a second menu of them is a list the visitor has read already.
+   * The typewriter placeholder stays either way.
+   */
+  promptPicker?: boolean;
+  /**
+   * The second prompt box, OFF BY DEFAULT since the release that dropped it
+   * from the homepage: the footer now ends the page the way the hero opens it,
+   * on a pair of buttons.
+   *
+   * It is still here rather than deleted because the builder page closes on
+   * one deliberately — that page is about describing an app, so the field is
+   * its argument rather than a repeat of it. Everywhere else the default is
+   * what the site ships.
+   */
+  composer?: boolean;
+  /** The filled action, when `composer` is off. */
+  primaryCta?: { label: string; href: string };
+} = {}) {
+  // Dark sheet flowing into the black footer below; the green wordmark panel is
+  // revealed beneath (square top, footer rounds the bottom).
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+  // Same prompt data + animated "Build …" placeholder as the hero composer,
+  // so the top and bottom boxes read identically.
+  const [prompt, setPrompt] = useState("");
+
+  // Closing the sign-up sheet steps back to this page with ?prompt=… on the URL
+  // (openGetStarted stamps it before opening), so the composer refills with what
+  // was typed instead of coming back empty. Same carry-back the hero composer
+  // does; without it only the top composer survived a dismiss.
+  useEffect(() => {
+    const carried = new URLSearchParams(window.location.search)
+      .get("prompt")
+      ?.trim();
+    if (!carried) return;
+    const id = setTimeout(() => setPrompt(carried), 0);
+    return () => clearTimeout(id);
+  }, []);
+  const { theme } = useTheme();
+  const dark = theme === "dark";
   // bg-background in both themes so the CTA sits on the same canvas as the
   // rest of the landing page instead of introducing its own tint.
   return (
     <section className="bg-background px-6 py-14 md:py-20">
+      {/* Some bottom room so the Prompt Ideas menu (opens downward) has space
+          before the footer, without leaving a large empty gap. */}
       <div className="mx-auto max-w-3xl pb-16 pt-16 text-center md:pb-24 md:pt-24">
-        <h2 className="type-h2 text-balance leading-[1.12] text-neutral-900 [[data-theme=dark]_&]:text-white">
-          Build the business
-          <br />
-          only you can build
+        <h2
+          className="type-h2 text-balance leading-[1.12] text-neutral-900 [[data-theme=dark]_&]:text-white"
+        >
+          {heading ?? (
+            <>
+              Build the business
+              <br />
+              only you can build
+            </>
+          )}
         </h2>
+        {/* The lead the release wrote, for any page that does not bring its
+            own. It used to render only when a page passed one, which left the
+            default close as a heading and a control with nothing between
+            them. */}
         <p className="type-lead mx-auto mt-5 max-w-2xl text-pretty text-muted-foreground">
-          Stop stitching together tools that were never meant to work together.
-          {/* Each sentence on its own line from md up; narrower screens wrap
-              naturally. */}
-          <br className="hidden md:inline" />
-          Run everything and build anything in one place.
+          {subheading ?? (
+            <>
+              Stop stitching together tools that were never meant to work
+              together.
+              {/* Each sentence on its own line from md up; narrower screens
+                  wrap naturally. */}
+              <br className="hidden md:inline" />
+              Run everything and build anything in one place.
+            </>
+          )}
         </p>
+        {!composer ? (
+          // Two actions in one row, the same pair and the same classes the
+          // page's hero opens with, so the top and bottom of the page close on
+          // one control rather than two different ones.
+          <div className="mx-auto mt-10 flex w-full max-w-sm flex-col gap-3 sm:w-auto sm:max-w-none sm:flex-row sm:items-center sm:justify-center">
+            {primaryCta ? (
+              // A page that names its own action states one destination, so
+              // there is no signed-in variant to swap in — the label is that
+              // page's sentence rather than the site's standing offer.
+              <a href={primaryCta.href} className={PRIMARY_CTA}>
+                {primaryCta.label}
+              </a>
+            ) : (
+              <>
+                {/* Signed in, the primary opens the workspace instead of
+                    signup: both ship and `data-authed` picks one before paint
+                    (globals.css). */}
+                <a href={SIGNUP_URL} className={`unauth-only ${PRIMARY_CTA}`}>
+                  Get started
+                </a>
+                <a href={APP_URL} className={`auth-only ${PRIMARY_CTA}`}>
+                  Open Assembly
+                </a>
+              </>
+            )}
+            {/* The second action always ships. It used to render only when a
+                page passed one, so the default close came down to a single
+                button — and "Book demo" is the other half of the offer the
+                hero makes at the top of the same page. */}
+            <a href={secondaryCta?.href ?? DEMO_URL} className={SECONDARY_CTA}>
+              {secondaryCta?.label ?? "Book demo"}
+            </a>
+          </div>
+        ) : null}
+        {composer ? (
+        <div className="mx-auto mt-8 max-w-xl text-left">
+          {/* Same animated gradient border as the hero composer up top. Every
+              prop below must stay in step with hero-v76's composer — the two
+              boxes are the same control and any drift shows immediately. */}
+          {/* The submit pill's two fills, matching the hero's composer — which
+              means the nav's primary, near-black on light and white on dark.
+              These two boxes sit on the same page, so a fill changed in one and
+              not the other is visible by scrolling. */}
+          <div className="v63-gradient-border v63-ring-solid relative rounded-[18px] [--composer-submit:var(--color-neutral-900)] md:rounded-[22px] [[data-theme=dark]_&]:[--composer-submit:#FFFFFF]">
+            <V66Composer
+              textareaRef={inputRef}
+              typewriter
+              // Always accented — the arrow routes to onboarding even with an
+              // empty box, so it never reads as disabled.
+              submitDisabled={false}
+              glow={false}
+              tone={theme}
+              // Both skins in CSS, so the field isn't a white slab on the first
+              // paint for a dark-mode visitor (see the composer's themeAuto).
+              themeAuto
+              compact
+              minimalControls
+              splitFooter
+              promptPicker={promptPicker}
+              promptPickerLabel="Ideas"
+              promptPickerSide="left"
+              promptItems={
+                promptExamples?.map((ex) => `Build ${ex}`) ?? PROMPT_IDEAS
+              }
+              typewriterExamples={promptExamples}
+              hideHowTo
+              plusAsAttach
+              submitLabel={submitLabel}
 
-        <div className="mx-auto mt-10 flex w-full max-w-sm flex-col gap-3 sm:w-auto sm:max-w-none sm:flex-row sm:items-center sm:justify-center">
-          {/* Signed in, the primary opens the workspace instead of signup:
-              both ship and `data-authed` picks one before paint (globals.css). */}
-          <a href={SIGNUP_URL} className={`unauth-only ${PRIMARY_CTA}`}>
-            Get started
-          </a>
-          <a href={APP_URL} className={`auth-only ${PRIMARY_CTA}`}>
-            Open Assembly
-          </a>
-          <a
-            href={DEMO_URL}
-            className="inline-flex w-full shrink-0 items-center justify-center whitespace-nowrap rounded-lg border border-foreground/20 bg-transparent px-4 py-3 text-center text-sm text-foreground transition-colors hover:bg-foreground/5 sm:w-auto sm:py-2 md:px-5 md:py-2.5"
-          >
-            Book demo
-          </a>
+              // Signed in, "Get started" is the wrong sentence to hand someone who
+
+              // already has an account, and it sat next to a nav saying otherwise.
+
+              authedSubmitLabel="Open Assembly"
+              // Light mode uses a solid black submit button; dark keeps the
+              // accent fill.
+              submitDark={!dark}
+              value={prompt}
+              onValueChange={setPrompt}
+              accent={dark ? "#7DA4FF" : "#D9ED92"}
+              surfaceRadiusClass="rounded-[18px] md:rounded-[22px]"
+              // Light needs an explicit faint fill here, unlike the hero: the
+              // hero's box sits on the ground gradient (~#f9fafb behind the
+              // composer) so its white field lifts off the surround for free,
+              // while this section is pure bg-background — leaving a white field
+              // on white, with no inner/outer separation at all. #f7f8fa is the
+              // gradient's own mid stop, so the two composers match exactly.
+              surfaceClassName="bg-[#f7f8fa] shadow-[0_1px_2px_rgba(16,24,40,0.04)] [[data-theme=dark]_&]:bg-transparent [[data-theme=dark]_&]:shadow-[0_24px_60px_-28px_rgba(0,0,0,0.8)]"
+            />
+          </div>
+
+          {/* Secondary action. An outline button under the box rather than
+              beside it, so it never reads as the composer's own control. */}
+          {secondaryCta ? (
+            <div className="mt-4 flex justify-center">
+              <a
+                href={secondaryCta.href}
+                className="rounded-lg border border-foreground/20 bg-transparent px-5 py-2.5 text-center text-sm text-foreground transition-colors hover:bg-foreground/5 [[data-theme=dark]_&]:border-white/25 [[data-theme=dark]_&]:text-white"
+              >
+                {secondaryCta.label}
+              </a>
+            </div>
+          ) : null}
+
+          {/* Answers the two things people weigh before typing anything, right
+              where they'd hesitate. As two chips in the mono face rather than a
+              sentence: they're a pair of facts about the plan, which is what the
+              site sets in mono caps everywhere else, and separate pills say that
+              better than a middot between two clauses did. Muted, so they
+              reassure without competing with the submit button above them. */}
+          {planChips ? (
+            <ul className="mt-3 flex flex-wrap items-center justify-center gap-1.5">
+              {["Free forever", "No credit card required"].map((label) => (
+                <li
+                  key={label}
+                  className="rounded-md bg-muted px-2 py-1 font-mono text-[11px] uppercase leading-none tracking-wide text-muted-foreground [[data-theme=dark]_&]:bg-white/[0.06]"
+                >
+                  {label}
+                </li>
+              ))}
+            </ul>
+          ) : null}
         </div>
+        ) : null}
       </div>
     </section>
   );

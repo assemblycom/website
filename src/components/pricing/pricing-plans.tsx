@@ -1,7 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import { CheckIcon } from "@/components/ui/check-icon";
 import { APP_URL, DEMO_URL, DEMO_CTA_LABEL } from "@/lib/constants";
+import {
+  PLAN_EDGE_BRAND,
+  PLAN_WASH_BRAND,
+  PLAN_WASH_BRAND_LG,
+  PLAN_WASH_NEUTRAL,
+  PLAN_WASH_NEUTRAL_LG,
+} from "@/components/pricing/plan-wash";
 
 interface PlanFeatureGroup {
   label: string;
@@ -219,26 +227,6 @@ function EnterpriseCard() {
   );
 }
 
-function CheckIcon() {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      fill="none"
-      className="shrink-0 text-accent"
-    >
-      <path
-        d="M4 8l2.5 2.5L12 5.5"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
 function planSubtitle(plan: Plan, billing: Billing) {
   if (plan.priceMonthly === 0) return "Free forever";
   return billing === "yearly" ? "Billed annually" : "Billed monthly";
@@ -338,7 +326,7 @@ function PlanGrid({
                 dropLeftDivider ? "lg:[[data-theme=dark]_&]:border-l-0" : ""
               } ${
                 plan.highlighted
-                  ? "[[data-theme=dark]_&]:!border-[#7DA4FF]/40 lg:[[data-theme=dark]_&]:border-r lg:[[data-theme=dark]_&]:[border-image:linear-gradient(to_bottom,rgba(125,164,255,0.55),#383838_75%)_1]"
+                  ? `${PLAN_EDGE_BRAND} lg:[[data-theme=dark]_&]:border-r lg:[[data-theme=dark]_&]:[border-image:linear-gradient(to_bottom,rgba(125,164,255,0.55),#383838_75%)_1]`
                   : ""
               }`}
             >
@@ -348,17 +336,14 @@ function PlanGrid({
                   blue, the rest take a neutral gray at the same lengths. */}
               <div
                 aria-hidden
+                // Values shared with the four-card block the product pages
+                // run, so the recommended plan cannot end up a different blue
+                // on two pages. Only the lg fade, which follows this table's
+                // taller subgrid, is this page's own.
                 className={`pointer-events-none absolute inset-0 -z-10 ${
                   plan.highlighted
-                    ? "[background:linear-gradient(to_bottom,#7DA4FF,transparent_180px)] lg:[background:linear-gradient(to_bottom,#7DA4FF,transparent_224px)] [[data-theme=dark]_&]:[background:linear-gradient(to_bottom,rgba(125,164,255,0.28),transparent_170px)]"
-                    // Palette tokens, not hand-mixed grays. Light takes --muted,
-                    // its surface tone on white. Dark has no token between
-                    // --muted (a hair off the card, so it barely showed) and
-                    // --border (a bright band across the top), so it takes the
-                    // hairline tone held back to just over half — derived from
-                    // the scale rather than a new gray. Dark matches the
-                    // highlighted plan's 170px fade.
-                    : "[background:linear-gradient(to_bottom,var(--muted),transparent_180px)] lg:[background:linear-gradient(to_bottom,var(--muted),transparent_224px)] [[data-theme=dark]_&]:[background:linear-gradient(to_bottom,color-mix(in_srgb,var(--border)_55%,transparent),transparent_170px)]"
+                    ? `${PLAN_WASH_BRAND} ${PLAN_WASH_BRAND_LG}`
+                    : `${PLAN_WASH_NEUTRAL} ${PLAN_WASH_NEUTRAL_LG}`
                 }`}
               />
 
