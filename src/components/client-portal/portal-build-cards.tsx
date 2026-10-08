@@ -812,11 +812,12 @@ function RequirementsPane() {
     <div className="flex size-full flex-col gap-2.5">
       {/* The typed prompt, kept in view above its answer.
 
-          rounded-full, which is off the R_* scale on purpose — the scale is
-          three steps for CARDS and the things inside them, and a circle is
-          exempt from it throughout this file. A bubble is not a card, and at
-          one line of type a pill is the shape that says so; at R_PANEL it was
-          a third small card in a column of cards.
+          R_PANEL, the same corner as the card and the composer under it. It
+          was rounded-full, on the reasoning that a bubble is not a card and a
+          pill is what says so — which is true of a bubble on its own and
+          wrong here: these three objects sit in one column a few pixels
+          apart, and a pill at the top of a stack of 10px corners is the one
+          shape in the scene that belongs to a different set.
 
           --mock-window with a hairline, not a tinted fill. --mock-well-2 is
           #f2f3f6 against a --surface panel of #f5f5f5 — four points, which is
@@ -824,7 +825,7 @@ function RequirementsPane() {
           both themes, which is the rule the rest of these mocks are drawn on. */}
       <div className="flex shrink-0 justify-end">
         <span
-          className={`max-w-[78%] rounded-full border bg-[var(--mock-window)] px-3.5 py-2 text-[color:var(--mock-ink)] ${PLAN_PROSE} ${LINE}`}
+          className={`max-w-[78%] ${R_PANEL} border bg-[var(--mock-window)] px-3 py-2 text-[color:var(--mock-ink)] ${PLAN_PROSE} ${LINE}`}
         >
           Add a shared calendar each client books their own time on.
         </span>

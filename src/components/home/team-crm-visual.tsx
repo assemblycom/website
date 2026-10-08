@@ -5,15 +5,15 @@
 // ─────────────────────────────────────────────────────────────────────────
 
 import {
+  IconBook,
+  IconBookBlank,
   IconBrandMark,
   IconChat,
   IconChevronDown,
-  IconDocuments,
   IconDots,
   IconExport,
-  IconHouse,
+  IconGlobe,
   IconList,
-  IconPerson,
   IconPlus,
   IconSearch,
   IconUsers,
@@ -168,13 +168,22 @@ export function TeamCrmVisual() {
               CRM stays the selected row. The card is about the CRM, the pane
               to the right of this is the CRM, and the lit row is what ties the
               two together. */}
-          <NavItem icon={<IconUsers />} label="CRM" active />
-          <NavItem icon={<IconPerson />} label="Team" />
+          {/* The approved product glyphs, in the pairing the hero mocks use:
+              IconBook is the CRM contact card (its name predates the glyph)
+              and IconUsers is the group under a roof, which is Team. They had
+              been CRM=IconUsers and Team=IconPerson — the group icon on the
+              record list and a single person on the team page, which is each
+              row wearing the other's meaning. */}
+          <NavItem icon={<IconBook />} label="CRM" active />
+          <NavItem icon={<IconUsers />} label="Team" />
 
           <SectionLabel>Apps</SectionLabel>
-          <NavItem icon={<IconHouse />} label="Home" />
+          {/* IconGlobe is the product's house (the name is historical), and
+              IconBookBlank the blank book the app row carries — both as the
+              builder hero's own sidebar draws them. */}
+          <NavItem icon={<IconGlobe />} label="Home" />
           <NavItem icon={<IconChat />} label="Messages" />
-          <NavItem icon={<IconDocuments />} label="Year-end docs" />
+          <NavItem icon={<IconBookBlank />} label="Year-end docs" />
           {/* The one muted row: an action, not a destination. Same height and
               gutter as a nav row so the column keeps its rhythm. */}
           <div className="flex h-[22px] items-center gap-2 rounded px-1.5 text-muted-foreground">

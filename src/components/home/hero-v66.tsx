@@ -224,11 +224,13 @@ function openGetStarted(value: string, ctaSurface?: string) {
   );
 }
 
-// Once there is a prompt in the box, the button names what happens to it
-// rather than where it takes you. Both auth states converge on the one
-// sentence: the destination still differs, the promise does not. Empty, they
-// diverge again — "Get started" for a visitor, "Open Assembly" for a customer.
-const TYPED_SUBMIT_LABEL = "Build in Assembly";
+// The button used to rename itself the moment you typed — "Build in Assembly"
+// in place of "Get started", on the reasoning that with a prompt in the box the
+// label should name what happens to it rather than where it takes you. True in
+// the abstract, and wrong in the hand: the words change under the pointer while
+// you are mid-sentence and looking at the box right beside them, which reads as
+// the page reacting to you rather than waiting for you. The auth split stays —
+// that one is resolved before paint, not while you type.
 
 export function V66Composer({ placeholder = "Describe the workflow you want to turn into an app…", glow = true, surfaceClassName = "bg-white ring-1 ring-black/[0.06]", surfaceRadiusClass = "rounded-[22px]", minHeightClass = "min-h-[188px]", tone = "light", typewriter = false, mutedControls = false, submitLabel, authedSubmitLabel, typewriterExamples, submitDark = false, themeAuto = false, accent = LIME, hidePlus = false, hideHowTo = false, howToLabel = "How it works", howToSide = "left", promptPicker = false, promptPickerLabel = "Select a prompt", promptPickerSide = "left", promptPickerUp = false, promptItems, plusItems, compact = false, minimalControls = false, plusAsAttach = false, menuGlass = false, unifiedSurface = false, footerLeading, showSubmit = true, submitDisabled, textDimmed = false, splitFooter = false, value: valueProp, onValueChange, textareaRef, ctaSurface }: { glow?: boolean; surfaceClassName?: string; surfaceRadiusClass?: string; minHeightClass?: string; tone?: "light" | "dark"; typewriter?: boolean; mutedControls?: boolean; submitLabel?: string; authedSubmitLabel?: string; typewriterExamples?: string[]; submitDark?: boolean; themeAuto?: boolean; accent?: string; hidePlus?: boolean; hideHowTo?: boolean; howToLabel?: string; howToSide?: "left" | "right"; promptPicker?: boolean; promptPickerLabel?: string; promptPickerSide?: "left" | "right"; promptPickerUp?: boolean; promptItems?: (string | { label: string; prompt: string })[]; plusItems?: { label: string; icon: "attach" | "transfer" }[]; compact?: boolean; minimalControls?: boolean; plusAsAttach?: boolean; /** Frosts the composer's menus to match a glass frame. */ menuGlass?: boolean; /** Drops the inner field's own surface so the composer is ONE pane. */ unifiedSurface?: boolean; footerLeading?: React.ReactNode; showSubmit?: boolean; submitDisabled?: boolean; textDimmed?: boolean; splitFooter?: boolean; value?: string; onValueChange?: (v: string) => void; textareaRef?: React.Ref<HTMLTextAreaElement>; /** Names this composer as a hero CTA in the test readout. Only the hero passes it. */ ctaSurface?: string; /** The static placeholder, shown when the typewriter is off. */ placeholder?: string } = {}) {
 
@@ -935,18 +937,12 @@ export function V66Composer({ placeholder = "Describe the workflow you want to t
               // an aria-label would override it with whichever word is wrong for
               // this visitor.
               aria-label={showsLabel ? undefined : (submitLabel ?? "Build it")}
-              // rounded-xl (12px), not the site button's rounded-lg (8px).
-              // This is the one button on the site that sits INSIDE another
-              // rounded box, a few pixels off its corner, and at 8 against the
-              // frame's 22 the two curves read as a mistake rather than as a
-              // nesting. 12 is not a taste value: the gap under the button is
-              // a measured 10px, and an inner radius concentric with an outer
-              // one is outer minus gap. Matching the frame outright was the
-              // ask and is degenerate here — 22 on a 32px-tall button clamps
-              // to 16 and the pill becomes a lozenge, which is a different
-              // control. All three composers set the same 18/22 frame, so this
-              // lands the same way on the home hero and the CTA.
-              className={`flex ${submitH} items-center justify-center gap-1.5 rounded-xl ${pillText} font-normal transition-all duration-150 ease-out active:scale-[0.98] ${
+              // rounded-lg, the site's button radius — the same 8px the nav's
+              // "Book a demo" and "Get started" carry. A concentric 12 was
+              // tried against the frame's 22 and is the wrong fix: the frame
+              // is what moves to meet the buttons, not the other way round,
+              // so every button on the page is one radius.
+              className={`flex ${submitH} items-center justify-center gap-1.5 rounded-lg ${pillText} font-normal transition-all duration-150 ease-out active:scale-[0.98] ${
                 submitActive
                   ? themeAuto
                     ? // Both skins as variants, for the same reason the field
@@ -980,10 +976,7 @@ export function V66Composer({ placeholder = "Describe the workflow you want to t
                   spot on the page a visitor is already looking. The hidden half
                   is `display:none`, so it leaves the accessible name alone. */}
               {showsLabel &&
-                (typed ? (
-                  // One label for everyone, so no auth split to resolve.
-                  <span className="whitespace-nowrap">{TYPED_SUBMIT_LABEL}</span>
-                ) : authedSubmitLabel ? (
+                (authedSubmitLabel ? (
                   <>
                     <span className="auth-only whitespace-nowrap">{authedSubmitLabel}</span>
                     <span className="unauth-only whitespace-nowrap">{submitLabel}</span>

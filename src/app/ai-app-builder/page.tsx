@@ -10,7 +10,7 @@ import {
   type Pillar,
 } from "@/components/ai-app-builder/builder-pillars";
 import { BuilderChapter } from "@/components/ai-app-builder/builder-chapter";
-import { IntakeAppMock } from "@/components/client-portal/segment-mock";
+import { AddAppMock } from "@/components/ai-app-builder/add-app-mock";
 import { BrandedLoginScreen } from "@/components/comparison/branded-login-hero-visual";
 import { TeamCrmVisual } from "@/components/home/team-crm-visual";
 import { BrandedPortalVisual } from "@/components/ai-app-builder/branded-portal-visual";
@@ -37,10 +37,13 @@ const PILLARS: Pillar[] = [
     eyebrow: "Apps",
     heading: "Build client apps and internal tools in one place",
     body: "Describe it once. Client apps land in your client experience, team tools in your dashboard.",
-    // The built app sitting in the client's own sidebar, which is the claim.
-    // A landscape screen like the other three: the build rail's portrait cards
-    // are the wrong shape for this frame, and they already run below.
-    visual: <IntakeAppMock />,
+    // The Add App screen — the ONE PLACE the heading names. It was the built
+    // app sitting in a client's sidebar, which shows where an app lands; that
+    // is true, and it is also what the two cards further down this row already
+    // show. The claim here is about where every app starts, and the product's
+    // answer is a single box that takes a sentence and decides from the
+    // sentence whether what comes back is a client app or a team tool.
+    visual: <AddAppMock />,
   },
   {
     eyebrow: "CRM",

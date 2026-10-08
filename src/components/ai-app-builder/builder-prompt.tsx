@@ -92,7 +92,16 @@ export function BuilderPrompt({
         it was — its field is bg-white over a white-washed frame, which has
         the separation this one lost.
       */}
-      <div className="v63-gradient-border v63-ring-solid v63-spin-on-hover v63-still-on-focus relative rounded-[18px] [--composer-submit:var(--color-neutral-900)] md:rounded-[22px] [[data-theme=dark]_&]:[--composer-placeholder:#FFFFFF8C] [[data-theme=dark]_&]:[--composer-ring-opacity:0.55] [[data-theme=dark]_&]:[--composer-submit:#EDEDED]">
+      {/* rounded-lg — 8px, the radius every button on this site already
+          carries, the nav's "Book a demo" and "Get started" included. It was
+          18/22, which put the page's largest soft corner directly above a row
+          of 8px buttons and around a submit that is itself one of them; two
+          radii that far apart on one object read as two objects.
+          The composer's own surface takes the same number below, so the
+          gradient border and the pane inside it stay on one curve.
+          THE BUILDER HERO ONLY. The home hero and the bottom CTA run the same
+          component at 18/22 and keep it. */}
+      <div className="v63-gradient-border v63-ring-solid v63-spin-on-hover v63-still-on-focus relative rounded-lg [--composer-submit:var(--color-neutral-900)] [[data-theme=dark]_&]:[--composer-placeholder:#FFFFFF8C] [[data-theme=dark]_&]:[--composer-ring-opacity:0.55] [[data-theme=dark]_&]:[--composer-submit:#EDEDED]">
         <V66Composer
           // The headline above already names what to type, so this box leads
           // with its own static placeholder rather than the cycling "Build …"
@@ -139,7 +148,7 @@ export function BuilderPrompt({
           value={prompt}
           onValueChange={setPrompt}
           accent={dark ? "#7DA4FF" : "#D9ED92"}
-          surfaceRadiusClass="rounded-[18px] md:rounded-[22px]"
+          surfaceRadiusClass="rounded-lg"
           // Glass in BOTH themes, so the horizon behind the hero runs through
           // the composer's frame instead of stopping at it. The inner field is
           // opaque in both (bg-white / #1b1b1b, set by the composer itself), so
