@@ -25,13 +25,21 @@ import { getCaseStudyBySlug } from "@/lib/case-studies";
 //
 // From sm it is a plain grid and there is nothing to scroll; the sixth drops
 // out at lg, where the row runs five across and it would only pad the line.
+//
+// Capital One leads, and the roster stays at SIX. The row is one line at every
+// width by design (sm:grid-cols-6, lg:grid-cols-5), so a seventh mark would
+// wrap it into the logo wall the note above exists to prevent. Sargent CPAs
+// came off to make room: it was already the sixth, the one hidden from lg, so
+// it is the mark the widest layout was not showing anyway — and of the six it
+// is the least known, which is the whole basis on which a mark earns its place
+// in a row this short.
 const LOGO_SLUGS = [
+  "capital-one-luxury-travel",
   "collective-cpa",
   "advertai-marketing",
   "ditto-by-dbc",
   "metta-health",
   "orca-accounting",
-  "sargent-cpa",
 ];
 const DESKTOP_COUNT = 5;
 

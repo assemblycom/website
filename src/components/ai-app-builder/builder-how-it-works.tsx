@@ -27,27 +27,43 @@ import {
 // Spelled out, matching the rail on /client-portal — the two run the same
 // three beats and a reader moving between the pages should not meet "Step 2"
 // on one and "Step Two" on the other.
-const STEPS = [
+const STEPS: {
+  value: string;
+  step: string;
+  name: string;
+  body: string;
+  visual: React.ReactNode;
+  /** Runs the scene to the panel's right edge instead of centring it. */
+  flush?: boolean;
+}[] = [
   {
     value: "describe",
     step: "Step One",
     name: "Describe",
     body: "Say what you want, or start from a template.",
-    visual: <DescribeCard />,
+    visual: <DescribeCard plain />,
   },
   {
     value: "plan",
     step: "Step Two",
     name: "Plan",
     body: "Approve or edit the plan before anything is built.",
-    visual: <PlanCard />,
+    visual: <PlanCard plain />,
   },
   {
     value: "build",
     step: "Step Three",
     name: "Build",
     body: "Client apps land in your client experience, team tools in your dashboard.",
-    visual: <BuildCard />,
+    visual: <BuildCard plain />,
+    // The only step that runs to the panel's right edge. Its scene is a whole
+    // portal screen that already bleeds off its own frame, so letting it reach
+    // the panel edge continues the crop the mock is drawn with — the panel
+    // opens onto a screen that carries on past it. The other two are discrete
+    // objects, a composer and a checklist, with a beginning and an end on both
+    // sides; pushed against an edge they read as having slipped off-centre
+    // rather than as continuing, so they stay centred.
+    flush: true,
   },
 ];
 
@@ -101,19 +117,32 @@ export function BuilderHowItWorks() {
               </p>
             </div>
 
-            {/* Capped and centred. The scenes are MockFit covers, so they scale
-                to whatever width they are given — uncapped in a 1200px panel
-                they would blow up past the size their type was drawn at. 520px
-                is about the size these were designed for. Running to the
-                panel's foot, like every other screen on this page.
+            {/* Capped and centred, and running to the panel's foot like every
+                other screen on this page.
 
                 HEIGHT is what sizes these, not width: the scenes are portrait
                 (340x453) and MockFit fits the whole design box, so a wider slot
-                alone changes nothing — it only adds grey either side. The slot
-                is tall enough to draw them at about the size they were designed
-                at, and the cap keeps a 1200px panel from blowing them up past
-                the size their type was set for. */}
-            <div className="relative mx-auto mt-6 h-[380px] w-full max-w-[560px] md:mt-8 md:h-[480px]">
+                alone changes nothing — it only adds ground either side. The cap
+                keeps a 1200px panel from blowing them up past the size their
+                type was set for.
+
+                Alignment is per step (see `flush`): Build takes ml-auto, so
+                the slot's right edge IS the panel's right edge and all the
+                slack collects on the left under the copy. Describe and Plan
+                keep mx-auto.
+
+                560x400 exactly matches the scene the `plain` cards draw at, so
+                the fit is 1:1 — no slack in either axis, which is what keeps
+                the right edge flush AND takes 80px of empty panel off the
+                height. Any slot WIDER than 1.4 goes height-bound and re-centres
+                the scene horizontally, putting the gap back; any slot taller
+                leaves dead panel under it. The two numbers have to stay in
+                step with PANEL_SCENE. */}
+            <div
+              className={`relative mt-6 h-[360px] w-full max-w-[560px] md:mt-8 md:h-[400px] ${
+                current.flush ? "ml-auto" : "mx-auto"
+              }`}
+            >
               {current.visual}
             </div>
           </div>

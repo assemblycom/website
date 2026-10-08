@@ -223,12 +223,21 @@ export default function AiAppBuilderPage() {
             <h1 className="type-display mx-auto max-w-[18ch] text-balance">
               The AI app builder made for service businesses
             </h1>
-            {/* Kept to about three lines so it balances the headline; the own-
-                domain point is carried by the branding pillar further down. */}
-            <p className="type-lead mx-auto mt-5 max-w-[42rem] text-pretty text-muted-foreground">
+            {/* One line of claim, no audience list. It used to end "for
+                agencies, accountants, consultants, and other service
+                businesses" — which is the headline's own last three words
+                spelled out, so the hero made the same point twice in a row and
+                spent half the lede doing it. The verticals are named further
+                down, where they are the subject rather than a restatement.
+                The own-domain point is carried by the branding pillar. */}
+            {/* text-balance, not text-pretty, and the headline above it is the
+                reason. pretty only protects the LAST line from running short,
+                so it filled line one and left "and your branding built in." on
+                its own under it — a long line over a stub, directly beneath a
+                headline that is itself balanced. balance evens the two. */}
+            <p className="type-lead mx-auto mt-5 max-w-[38rem] text-balance text-muted-foreground">
               Describe what you want. Assembly builds a working app with logins,
-              permissions, and your branding built in, for agencies,
-              accountants, consultants, and other service businesses.
+              permissions, and your branding built in.
             </p>
           </div>
 

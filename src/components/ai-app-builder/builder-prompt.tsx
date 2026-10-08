@@ -47,7 +47,52 @@ export function BuilderPrompt({
     // the home hero set them — these boxes sit on the same site and a value
     // changed in one and not the others is visible by scrolling.
     <div className="mx-auto mt-14 w-full max-w-[640px] text-left md:mt-16">
-      <div className="v63-gradient-border v63-ring-solid v63-spin-on-hover relative rounded-[18px] [--composer-submit:var(--color-neutral-900)] md:rounded-[22px] [[data-theme=dark]_&]:[--composer-submit:#FFFFFF]">
+      {/*
+        Four tokens overridden here and nowhere else on the site. All four
+        default to the shipped values inside the composer, so every other box
+        is untouched; this is the one composer whose frame is transparent in
+        dark, which is what makes each of them wrong here specifically.
+
+        - --composer-field. The page's own #0A0A0A, not the composer's default
+          #1b1b1b and not a lifted grey.
+
+          The frame here is transparent glass and the arc lights it, so the
+          composer has two materials in it: a lit pane, and the field inside
+          that pane. The field's job is to be the second one, and the cleanest
+          way to read as a well cut into a lit surface is to be the dark the
+          surface was cut out of. At #0A0A0A the box is exactly that — black
+          well, lit glass, nothing else.
+
+          Two values were tried and are worse, both because they add a THIRD
+          tone that belongs to neither material. #1b1b1b is eight points off
+          the page, close enough to look like the page showing through by
+          accident rather than by intent. A lifted #262626 is further off and
+          reads as a grey slab laid on the glass — the muddiest of the three
+          on screen, and the one a side-by-side at 1:1 settles immediately. A
+          cool part-transparent fill letting the arc tint the field was tried
+          too: the blue cast read as colour applied to the input rather than
+          as light falling on it.
+
+          Being the page colour also helps the one measurement that matters
+          here — the placeholder gains contrast against a darker field rather
+          than losing it.
+        - --composer-placeholder. It is the only label the box carries, and
+          white/40 on the raised field is 3.6:1. /55 clears 4.5:1.
+        - --composer-ring-opacity. The ring is a solid blue→lime loop at full
+          strength. On an unlit page it is the only colour in the frame and it
+          reads as the box being live; over the arc it is a second coloured
+          edge competing with the one behind it, and the two together read as
+          decoration. At 0.55 it still moves and still says live.
+        - --composer-submit. Pure #FFFFFF is the brightest thing on the page
+          at a point where the arc is already near its peak, so the pill
+          out-shouted the headline. #EDEDED is a neutral step down — enough to
+          sit under the type without reading as disabled.
+
+        Dark only. Light mode sets none of the four and is byte-for-byte what
+        it was — its field is bg-white over a white-washed frame, which has
+        the separation this one lost.
+      */}
+      <div className="v63-gradient-border v63-ring-solid v63-spin-on-hover v63-still-on-focus relative rounded-[18px] [--composer-submit:var(--color-neutral-900)] md:rounded-[22px] [[data-theme=dark]_&]:[--composer-placeholder:#FFFFFF8C] [[data-theme=dark]_&]:[--composer-ring-opacity:0.55] [[data-theme=dark]_&]:[--composer-submit:#EDEDED]">
         <V66Composer
           // The headline above already names what to type, so this box leads
           // with its own static placeholder rather than the cycling "Build …"
@@ -66,6 +111,20 @@ export function BuilderPrompt({
           splitFooter
           hideHowTo
           plusAsAttach
+          // The frame this hangs off is glass over the hero's arc, so the
+          // popover is too — an opaque card dropped on a lit ground was the
+          // one piece of the composer that did not belong to it.
+          menuGlass
+          // ONE pane: no inner field box. The frame here is a real material
+          // (glass over the arc), so it can be the surface you type into
+          // rather than a tray holding a second surface that is.
+          unifiedSurface
+          // Shorter than the shared 188px default. That height was drawn for
+          // the two-box composer, where the inner field needed enough of its
+          // own body to read as a field inside a frame. As one pane there is
+          // no inner box to give height to — what is left is an empty glass
+          // slab between the first line and the footer.
+          minHeightClass="min-h-[144px]"
           submitLabel="Get started"
           // Signed in, "Get started" is the wrong sentence to hand someone who
           // already has an account.
@@ -93,11 +152,24 @@ export function BuilderPrompt({
           // as a soft wash, so the frame reads as a pane with light behind it
           // instead of a window onto a sharp edge passing under the controls.
           //
-          // The two differ only in the veil. Light carries a white wash,
-          // because dark controls over the lit arc need something to sit on;
-          // dark carries none, because near-black furniture holds up over a lit
-          // ground on its own and a tint there would grey the glow out.
-          surfaceClassName="bg-white/55 shadow-[0_1px_2px_rgba(16,24,40,0.04)] backdrop-blur-2xl [[data-theme=dark]_&]:bg-transparent [[data-theme=dark]_&]:shadow-[0_24px_60px_-28px_rgba(0,0,0,0.8)]"
+          // BOTH themes carry a veil now — light a white wash, dark a black
+          // one. Dark used to carry none, on the grounds that near-black
+          // furniture holds up over a lit ground on its own. That was true
+          // while the inner field was #1b1b1b. It stopped being true when the
+          // field went to the page's #0A0A0A: an unveiled frame is the raw arc
+          // at full strength, so the box became a pure-black panel sitting in
+          // a bright tray, with the brightest thing in it an EMPTY strip of
+          // footer. Two materials that far apart read as two stacked objects
+          // rather than as one control.
+          //
+          // 45% closes that gap without closing the window. The arc still
+          // comes through the frame — that is the whole reason the frame is
+          // glass — but as light behind smoked glass rather than as a lit band
+          // in its own right, so the eye goes to the field and the submit
+          // instead of to the gap between them. Tried at 20% (the band is
+          // still visibly lighter than the field) and 35% (close); 45% is
+          // where the box reads as one object.
+          surfaceClassName="bg-white/55 shadow-[0_1px_2px_rgba(16,24,40,0.04)] backdrop-blur-2xl [[data-theme=dark]_&]:bg-black/45 [[data-theme=dark]_&]:shadow-[0_24px_60px_-28px_rgba(0,0,0,0.8)]"
         />
       </div>
     </div>

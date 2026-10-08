@@ -1155,8 +1155,11 @@ html[data-theme="dark"] body {
   pointer-events: none;
   z-index: 2;
   /* The hero keeps the ring visible at rest so the box always reads as the live
-     entry point. */
-  opacity: 1;
+     entry point. Tokenised: a composer sitting on a lit ground (the
+     /ai-app-builder horizon) needs the ring quieter, because there the sweep is
+     competing with the arc behind it rather than being the only colour on an
+     unlit page. Default 1, so every other box is unchanged. */
+  opacity: var(--composer-ring-opacity, 1);
   transition:
     opacity 0.3s ease,
     border-width 0.45s cubic-bezier(0.25, 1, 0.5, 1),
@@ -1172,7 +1175,7 @@ html[data-theme="dark"] body {
 .v63-gradient-border:focus-within::before {
   border-width: 1.5px;
   filter: none;
-  opacity: 0.5;
+  opacity: calc(var(--composer-ring-opacity, 1) * 0.5);
   animation-duration: 20s;
 }
 /* Dark-mode hover lives entirely in the RING: the sweep speeds up and pumps
@@ -1190,6 +1193,24 @@ html[data-theme="dark"] .v63-gradient-border:hover::before {
 html[data-theme="dark"] .v63-gradient-border:focus-within:hover::before {
   filter: none;
   animation-duration: 20s;
+}
+/* Opt-in: the ring stops dead while the box has focus, instead of slowing to a
+   20s crawl. A sweep behind the words you are typing is movement in the one
+   place on the page that wants none, and "slower" only makes it a drift you
+   catch out of the corner of your eye. The gradient stays — it is a still
+   coloured edge, so the box still reads as the live one — it just holds its
+   angle until you click away. Carried by .v63-still-on-focus so the composers
+   that are not the thing you came to the page to type into keep their calm-down
+   as it was. */
+.v63-still-on-focus:focus-within::before {
+  animation: none;
+  /* And at the SAME brightness it has at rest. The shared focus rule also
+     halves the opacity, so clicking into the box visibly dimmed the edge at
+     the moment of clicking into it — the one interaction where the box should
+     look more live, not less. Holding the rest value means the ring does not
+     change at all when focus lands: it simply stops moving. */
+  opacity: var(--composer-ring-opacity, 1);
+  filter: none;
 }
 @media (prefers-reduced-motion: reduce) {
   .v63-gradient-border::before {
@@ -1214,7 +1235,7 @@ html:not([data-theme="dark"]) .v63-gradient-border::before {
     border-box;
 }
 html:not([data-theme="dark"]) .v63-gradient-border:focus-within::before {
-  opacity: 0.8;
+  opacity: calc(var(--composer-ring-opacity, 1) * 0.8);
 }
 /* Describe-step mock ring: a continuous colour loop (no transparent arc) so the
    small mock's border always reads as coloured and never washes out to white.

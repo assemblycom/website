@@ -91,8 +91,20 @@ function Scene({
   children,
   bleed = false,
   fadeFrom = 52,
+  w = W,
+  h = H,
 }: {
   children: React.ReactNode;
+  /**
+   * The scene's design box. The rail's three scenes are all portrait (340x453)
+   * because the rail's cards are, and MockFit fits the whole box — so in a
+   * LANDSCAPE slot a portrait scene is sized by the slot's height and leaves
+   * the width either side empty, however wide the slot is. A scene with no
+   * artwork ground behind it (see `plain`) has nothing to fill that margin
+   * with, so it redraws itself to the slot's shape instead.
+   */
+  w?: number;
+  h?: number;
   /**
    * Draws the mock at its own size running off the card's right and bottom
    * edges, rather than fitting it inside. A screen squeezed into 300px
@@ -111,13 +123,21 @@ function Scene({
   fadeFrom?: number;
 }) {
   return (
-    <MockFit className="absolute inset-0 [--template-mock-h:453px] [--template-mock-w:340px]">
+    <MockFit
+      className="absolute inset-0"
+      style={
+        {
+          "--template-mock-w": `${w}px`,
+          "--template-mock-h": `${h}px`,
+        } as React.CSSProperties
+      }
+    >
       <div
         style={
           bleed
             ? {
-                width: W,
-                height: H,
+                width: w,
+                height: h,
                 // The right edge only. It was a two-stop ramp that changed rate
                 // hard enough to draw a vertical line down the card; the shared
                 // eased curve is what fixed that — see fade-mask.ts.
@@ -131,7 +151,7 @@ function Scene({
                 WebkitMaskImage: fadeMask("to right", fadeFrom),
                 maskImage: fadeMask("to right", fadeFrom),
               }
-            : { width: W, height: H }
+            : { width: w, height: h }
         }
         className={
           bleed
@@ -152,7 +172,33 @@ function Scene({
 // what you want, and the only control in a rail of otherwise still pictures.
 // The templates have their own section further down the page, so the step is
 // left to make one point.
-export function DescribeCard() {
+/**
+ * Opt-in: draw the scene with no artwork ground behind it.
+ *
+ * The three grounds — a photograph, #101010, #CFCFCF/Haze — are drawn for the
+ * RAIL on /client-portal, where each card is about 340px wide and the ground is
+ * what separates one card from the next in a row of three. /ai-app-builder
+ * shows the same three scenes one at a time inside a single wide --surface
+ * panel, where there is no neighbour to separate from: the ground stops being
+ * separation and becomes a heavy block of colour sitting inside an otherwise
+ * quiet panel, with the actual subject floating in the middle of it.
+ *
+ * So this is a property of the SLOT, not of the scene, and only the panel
+ * passes it. The rail keeps every ground exactly as drawn.
+ */
+type SceneProps = { plain?: boolean };
+
+/**
+ * The design box a `plain` scene is drawn at: the panel slot's own landscape
+ * shape, in place of the rail's portrait 340x453. MockFit fits the whole box,
+ * so a portrait scene in a landscape slot is sized by height alone and leaves
+ * the width empty either side — which the artwork grounds used to fill and,
+ * with them gone, nothing does. One box for all three so the three steps stay
+ * the same size as you tab between them.
+ */
+const PANEL_SCENE = { w: 560, h: 400 };
+
+export function DescribeCard({ plain = false }: SceneProps = {}) {
   return (
     <>
       {/* A photograph behind this card only, scrimmed hard.
@@ -197,16 +243,18 @@ export function DescribeCard() {
           and reads as a pale hairline drawn under the card. Over-covering by a
           pixel removes it; the parent is overflow-hidden, so the extra is
           clipped and the radius is unaffected. */}
-      <div className="absolute -inset-px">
-        <Image
-          src="/images/mocks/describe-phone.webp"
-          alt=""
-          fill
-          sizes="(min-width: 1024px) 420px, 90vw"
-          className="object-cover"
-        />
-      </div>
-      <Scene>
+      {!plain && (
+        <div className="absolute -inset-px">
+          <Image
+            src="/images/mocks/describe-phone.webp"
+            alt=""
+            fill
+            sizes="(min-width: 1024px) 420px, 90vw"
+            className="object-cover"
+          />
+        </div>
+      )}
+      <Scene {...(plain ? PANEL_SCENE : {})}>
         {/* Not WINDOW. This box is the same object as the hero's composer, so it
           wears the hero's treatment: the element's own hairline, a 3px band of
           the card's ground, then a second hairline — drawn as two spread
@@ -237,7 +285,17 @@ export function DescribeCard() {
           // from the ground behind it; on a light one --surface is a hair off
           // white and the pair read as a second, fatter border outside the real
           // one — two outlines where the card has one edge.
+          // plain: the photograph is gone, so the composer takes the scene's
+          // full WIDTH — it is the only thing left on the frame and at the
+          // rail's width it read as a small panel adrift in an empty one.
+          //
+          // Height is set, not stretched. Filling the frame vertically as well
+          // was tried and is wrong: a composer is a wide, shallow thing you
+          // type one sentence into, and at the scene's full height it became a
+          // tall white slab that was mostly empty space with a line of text at
+          // the top. 170 keeps the proportion the real composer has.
           className={`mock-edge [--mock-edge-h:150%] [--mock-edge-w:120%] flex flex-col overflow-hidden rounded-xl border bg-[var(--mock-window)] p-4 text-[color:var(--mock-ink)] [[data-theme=dark]_&]:shadow-[0_0_0_3px_var(--surface),0_0_0_4px_var(--mock-line)] ${LINE}`}
+          style={plain ? { height: 170 } : undefined}
         >
           <p className={`text-[color:var(--mock-ink)] ${CARD_BODY}`}>
             Add a project tracker each client sees for their own project.
@@ -251,7 +309,9 @@ export function DescribeCard() {
           {/* The composer's control row, where the product puts it. With the
             switch gone the send button is on its own, so the row is laid out
             from the right rather than split between two ends. */}
-          <div className="mt-6 flex items-center justify-end">
+          <div
+            className={`${plain ? "mt-auto" : "mt-6"} flex items-center justify-end`}
+          >
             <span
               className={`${MOVE} flex size-[20px] shrink-0 items-center justify-center rounded-[4px] bg-[var(--mock-ink)] text-[color:var(--mock-window)] group-hover/card:scale-110`}
             >
@@ -343,7 +403,7 @@ function Ring({ value }: { value: number }) {
   );
 }
 
-export function PlanCard() {
+export function PlanCard({ plain = false }: SceneProps = {}) {
   return (
     <>
       {/* The Plan card's ground — and the one ground in the set that DOES
@@ -368,8 +428,10 @@ export function PlanCard() {
           and reads as a pale hairline drawn under the card. Over-covering by a
           pixel removes it; the parent is overflow-hidden, so the extra is
           clipped and the radius is unaffected. */}
-      <div className="absolute -inset-px bg-[#101010] [[data-theme=dark]_&]:bg-[#FBFBF5]" />
-      <Scene>
+      {!plain && (
+        <div className="absolute -inset-px bg-[#101010] [[data-theme=dark]_&]:bg-[#FBFBF5]" />
+      )}
+      <Scene {...(plain ? PANEL_SCENE : {})}>
         <div className={`flex flex-col ${WINDOW}`}>
           {/* The header takes the well's tint. On --mock-window it was the same
             white as the rows under it, so the card opened on five identical
@@ -581,7 +643,7 @@ function ProjectCard({
   );
 }
 
-export function BuildCard() {
+export function BuildCard({ plain = false }: SceneProps = {}) {
   return (
     <>
       {/* The Build card's ground, the third of the set — the Describe card
@@ -610,13 +672,15 @@ export function BuildCard() {
           and reads as a pale hairline drawn under the card. Over-covering by a
           pixel removes it; the parent is overflow-hidden, so the extra is
           clipped and the radius is unaffected. */}
-      <div className="absolute -inset-px bg-[#CFCFCF] [[data-theme=dark]_&]:bg-[#7DA4FF]" />
+      {!plain && (
+        <div className="absolute -inset-px bg-[#CFCFCF] [[data-theme=dark]_&]:bg-[#7DA4FF]" />
+      )}
       {/* fadeFrom 100 — the right-edge fade is OFF for this card. That ramp
           exists to dissolve art that overruns the card, and nothing overruns it
           any more: the window is drawn at exactly the width the card shows.
           With a single column the fade had nothing to soften and everything to
           spoil, dimming the only column on screen from 82% of its width on. */}
-      <Scene bleed fadeFrom={100}>
+      <Scene bleed fadeFrom={100} {...(plain ? PANEL_SCENE : {})}>
         {/* 320 wide, which is exactly what the card shows — the scene is 340 and
           the bleed insets it by 20. So the board is cropped on the BOTTOM only,
           where a cut row still reads as a list continuing, and not on the right,
@@ -642,7 +706,13 @@ export function BuildCard() {
           It buys the project cards about a third more measure, which is the
           difference between titles written to fit and titles that fit. */}
         <div
-          style={{ width: 380, height: 412 }}
+          // plain: the scene is landscape and there is no ground behind the
+          // window any more, so a 380-wide screen left a third of the frame as
+          // bare panel to its right and the step's own subject reading as a
+          // narrow column. 540x380 is the scene inside its padding, so the
+          // window fills it — the sidebar is fixed at 136, so every one of the
+          // extra pixels goes to the board, which is the part worth seeing.
+          style={plain ? { width: 540, height: 380 } : { width: 380, height: 412 }}
           className={`flex shrink-0 ${WINDOW} rounded-b-none rounded-tr-none border-b-0 border-r-0`}
         >
           <div
