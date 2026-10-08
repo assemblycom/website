@@ -87,10 +87,10 @@ export function AddAppMock() {
           component: this nav is drawn inline in two other mocks, and a third
           copy would be the thing that lets them drift apart.
 
-          Narrower than the CRM card drew it (136 against 148/164), and always
+          Narrower than the CRM card drew it (140 against 148/164), and always
           shown — this shot is never below `sm`, and every pixel the rail takes
           is a pixel off the pane that is the subject. */}
-      <WorkspaceSidebar active="Add App" className="flex w-[136px]" />
+      <WorkspaceSidebar active="Add App" className="flex w-[140px]" />
 
       {/* min-w-0 is load-bearing. A flex child defaults to min-width:auto,
           so the pane refused to shrink below its widest child — the 520px app

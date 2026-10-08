@@ -150,10 +150,17 @@ function MarkGodo({ className }: { className?: string }) {
  * that and made three companies look like one filing system. The colour is
  * what makes them read as three businesses.
  *
- * WHITE marks, not dark ones. All three brands are mid-tone, so either works
- * at full size — but at 8px a dark mark on a mid-tone ground loses its edges
- * into the tile, where white holds them. Knockout is also how a logo this
- * small is set everywhere else.
+ * DARK MARKS ON THE COLOURED TILES, not white ones. White knockout is the
+ * reflex for a brand tile and it was wrong for these three, because all three
+ * are LIGHT mid-tones — measured against white the contrast is 2.4:1 on the
+ * blue, 2.0:1 on the teal and 3.2:1 on the orange, so at 8px the W was a pale
+ * shape dissolving into its own tile. Against #111 the same three are 7.8,
+ * 9.3 and 6.0:1. Black wins on every one of them, which is why this is one
+ * rule rather than an exception for the teal.
+ *
+ * Symphony is the exception that proves it: its tile is not a mid-tone, it is
+ * black (and near-white in dark), so its mark is the one that stays knocked
+ * out.
  *
  * HARDCODED, AND THE TWO COLOURED ONES DO NOT FLIP. This is the case the
  * design guidelines' rule about theme-scoped colour does not cover: these are
@@ -177,8 +184,8 @@ function MarkGodo({ className }: { className?: string }) {
 const COMPANY_TILES: Record<string, string> = {
   Symphony:
     "bg-[#111111] text-white [[data-theme=dark]_&]:bg-[#f2f2f2] [[data-theme=dark]_&]:text-[#111111]",
-  "Wave Marketing": "bg-[#63C7B2] text-white",
-  Godo: "bg-[#F06449] text-white",
+  "Wave Marketing": "bg-[#63C7B2] text-[#111111]",
+  Godo: "bg-[#F06449] text-[#111111]",
 };
 /**
  * Which mark each company gets, and how big it sits in its 14px tile.

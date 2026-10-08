@@ -39,7 +39,7 @@ const PILLARS: Pillar[] = [
   {
     eyebrow: "Apps",
     heading: "Build client apps and internal tools in one place",
-    body: "Describe it once. Client apps land in your client experience, team tools in your dashboard.",
+    body: "Describe it once. Client apps land in your client experience, team tools in the dashboard.",
     // The Add App screen — the ONE PLACE the heading names. It was the built
     // app sitting in a client's sidebar, which shows where an app lands; that
     // is true, and it is also what the two cards further down this row already
@@ -66,7 +66,7 @@ const PILLARS: Pillar[] = [
     // sentence drops its passive tail ("what they're allowed to see" → "what
     // you allow"), which also puts the firm back in the sentence as the one
     // doing the allowing. Three lines of copy became two.
-    body: "Contacts, companies, and custom fields built in. Each client sees only what you allow.",
+    body: "Contacts, companies, and custom fields — each client sees only what you allow.",
     // The home page's CRM shot: contacts, companies and a custom field.
     visual: <TeamCrmVisual />,
     // 490, not the tall card's default 860. The table's Name column is flex-1
@@ -107,7 +107,7 @@ const PILLARS: Pillar[] = [
   {
     eyebrow: "Security",
     heading: "Secure logins, permissions, and billing built in",
-    body: "Built and maintained by Assembly. Nothing reaches your clients until you make it visible.",
+    body: "Maintained by Assembly. Nothing reaches clients until you make it visible.",
     // The firm's own sign-in: their mark, their domain, no platform badge.
     // The claim leads on secure LOGINS, and this is the first thing a client
     // meets. It was the onboarding screen, which carried an "Access: client

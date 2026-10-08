@@ -3,6 +3,8 @@ import {
   IconBookBlank,
   IconBrandMark,
   IconChat,
+  IconChecks,
+  IconClock,
   IconGlobe,
   IconPlus,
   IconUsers,
@@ -84,7 +86,14 @@ export function WorkspaceSidebar({
 }) {
   return (
     <div
-      className={`shrink-0 flex-col overflow-hidden border-r border-border bg-muted px-1.5 py-2 ${className}`}
+      // THE DIVIDER READS --mock-line, not --border. The two are the same
+      // value in light (#e8e9ec), so nothing moves there; in dark --border is
+      // #383838 against a #1c1c1c rail and a #212121 pane, a +28 step that
+      // read as a lit edge down the middle of the shot rather than as the
+      // seam between two panels. --mock-line is #2e2e2e, which is the line
+      // every other surface in these mocks is drawn with — so this is the
+      // mock family's own token finally being used here, not a new value.
+      className={`shrink-0 flex-col overflow-hidden border-r border-[var(--mock-line)] bg-muted px-1.5 py-2 ${className}`}
     >
       <div className="flex items-center gap-1.5 px-1.5 pb-2.5 pt-0.5">
         <span className="flex size-[15px] items-center justify-center rounded bg-foreground text-background">
@@ -103,7 +112,20 @@ export function WorkspaceSidebar({
         label="Messages"
         active={active === "Messages"}
       />
+      {/* THREE apps the firm has built, not one. The group was Year-end docs
+          alone, which shows a workspace that has added an app; the claim over
+          this shot is that client apps AND internal tools both start here, and
+          a list of one cannot show a range. Three named apps that are
+          obviously different jobs — a document collector, an approval flow, a
+          calendar — say it without a word of copy.
+
+          The glyphs are the ones this site already uses for these two apps:
+          IconChecks is Design approvals on /solutions' agency hero and
+          IconClock is Calendar in the build card's client nav. Reused rather
+          than re-picked, so one app does not end up with two marks. */}
       <NavItem icon={<IconBookBlank />} label="Year-end docs" />
+      <NavItem icon={<IconChecks />} label="Design approvals" />
+      <NavItem icon={<IconClock />} label="Calendar" />
       <NavItem
         icon={<IconPlus />}
         label="Add App"
