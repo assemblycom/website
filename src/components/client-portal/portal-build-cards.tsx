@@ -839,6 +839,36 @@ function RequirementsPane() {
         Here&apos;s the plan. Approve it, or tell me what to change.
       </p>
 
+      {/* The document's TITLE, and the action on it, above the card rather
+          than inside it.
+
+          It was the card's own header row. Out here it does three things at
+          once: the card below becomes pure document, so its padding can open
+          up without the title eating the first inch of it; the card gets
+          shorter by exactly the header's height; and the title reads as the
+          reply NAMING what it is sending — which is what it is — instead of
+          as chrome on a pane.
+
+          font-medium, which is as heavy as this site goes (400 and 500, never
+          600/700 — see the design guidelines). Against the soft-ink sentence
+          above it and the soft-ink prose below, 500 at 12.5px is plenty to
+          read as the heading of the block.
+
+          Approve stays in the right corner, now on the title's row. It is
+          still the quiet button and not the page's primary: the point of this
+          screen is that you can revise instead, so the control you are NOT
+          being pushed towards must not be the heaviest thing on it. */}
+      <div className="flex shrink-0 items-center justify-between gap-2">
+        <span className="text-[12.5px] font-medium leading-none text-[color:var(--mock-ink)]">
+          Requirements
+        </span>
+        <span
+          className={`flex shrink-0 items-center ${R_CHROME} border bg-[var(--mock-window)] px-3 py-1.5 text-[color:var(--mock-ink)] ${PLAN_HEAD} ${LINE}`}
+        >
+          Approve
+        </span>
+      </div>
+
       {/* The card, and the mark saying it continues past the crop.
 
           Relative wrapper rather than one box, because the chevron straddles
@@ -848,28 +878,6 @@ function RequirementsPane() {
         <div
           className={`relative flex h-full flex-col overflow-hidden ${R_PANEL} border bg-[var(--mock-window)] ${LINE}`}
         >
-          {/* No rule under the header. The document's own first heading is two
-              lines below it and a divider between them made the title read as
-              a window chrome bar over a pane, which is the screenshot this
-              scene stopped being. */}
-          <div className="flex shrink-0 items-center justify-between gap-2 px-3 pb-1 pt-2.5">
-            <span className={`text-[color:var(--mock-ink)] ${PLAN_TITLE}`}>
-              Requirements
-            </span>
-            {/* A quiet button, not the page's primary — the point of this
-                screen is that you can revise instead, so the control you are
-                NOT being pushed towards must not be the heaviest object on it.
-                White with a hairline is what the product draws. It used to sit
-                on a tinted strip under the document; on the card itself the
-                hairline is doing the separating alone, which is the trade for
-                the strip being gone. */}
-            <span
-              className={`flex shrink-0 items-center ${R_CHROME} border bg-[var(--mock-window)] px-3 py-1.5 text-[color:var(--mock-ink)] ${PLAN_HEAD} ${LINE}`}
-            >
-              Approve
-            </span>
-          </div>
-
           {/* The document. It OVERFLOWS, and is meant to: the thread above and
               the composer below take about 130px of the 360 the scene has, so
               the last flow falls past the card's foot. That is the honest
@@ -877,7 +885,7 @@ function RequirementsPane() {
               and the fade and the chevron under it say so. Clipping it to fit
               would mean a four-flow plan that happens to end exactly where the
               card does, which no real one ever does. */}
-          <div className="flex min-h-0 flex-1 flex-col gap-1 px-3 pb-3">
+          <div className="flex min-h-0 flex-1 flex-col gap-1.5 p-4">
             <span className={`text-[color:var(--mock-ink)] ${PLAN_HEAD}`}>
               Overview
             </span>
