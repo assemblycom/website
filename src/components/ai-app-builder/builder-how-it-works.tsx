@@ -35,6 +35,15 @@ const STEPS: {
   visual: React.ReactNode;
   /** Runs the scene to the panel's right edge instead of centring it. */
   flush?: boolean;
+  /**
+   * Takes the wide box (see PANEL_SCENE_WIDE) rather than the shared 560.
+   *
+   * For the steps whose scene is a whole PRODUCT SCREEN — a nav beside a pane
+   * of real content — as against Describe's composer, which is one object and
+   * is drawn at the size a composer is. A screen fitted into 560 is a screen
+   * read through a letterbox.
+   */
+  wide?: boolean;
 }[] = [
   {
     value: "describe",
@@ -56,6 +65,7 @@ const STEPS: {
     name: "Build",
     body: "Client apps land in your client experience, team tools in your dashboard.",
     visual: <BuildCard plain />,
+    wide: true,
     // The only step that runs to the panel's right edge. Its scene is a whole
     // portal screen that already bleeds off its own frame, so letting it reach
     // the panel edge continues the crop the mock is drawn with — the panel
@@ -131,17 +141,26 @@ export function BuilderHowItWorks() {
                 slack collects on the left under the copy. Describe and Plan
                 keep mx-auto.
 
-                560x400 exactly matches the scene the `plain` cards draw at, so
+                620x400 exactly matches the scene the `plain` cards draw at, so
                 the fit is 1:1 — no slack in either axis, which is what keeps
                 the right edge flush AND takes 80px of empty panel off the
-                height. Any slot WIDER than 1.4 goes height-bound and re-centres
-                the scene horizontally, putting the gap back; any slot taller
-                leaves dead panel under it. The two numbers have to stay in
-                step with PANEL_SCENE. */}
+                height. Any slot WIDER than the scene's own ratio goes
+                height-bound and re-centres the scene horizontally, putting the
+                gap back; any slot taller leaves dead panel under it. The two
+                numbers have to stay in step with PANEL_SCENE.
+
+                The flush step is the exception, and takes 820 at `lg` and
+                1040 at `xl` to match PANEL_SCENE_WIDE — its scene is a portal screen drawn to
+                the wider box, so the slot has to widen with it or the screen is
+                fitted back down into 560. Below lg both boxes are 560 and this
+                reads as one number again. The HEIGHT is shared by all three,
+                which is what keeps the panel from resizing as you tab. */}
             <div
-              className={`relative mt-6 h-[360px] w-full max-w-[560px] md:mt-8 md:h-[400px] ${
-                current.flush ? "ml-auto" : "mx-auto"
-              }`}
+              className={`relative mt-6 h-[360px] w-full md:mt-8 md:h-[400px] ${
+                current.wide
+                  ? "max-w-[620px] lg:max-w-[820px] xl:max-w-[1040px]"
+                  : "max-w-[620px]"
+              } ${current.flush ? "ml-auto" : "mx-auto"}`}
             >
               {current.visual}
             </div>
