@@ -117,37 +117,21 @@ const LINE = "border-[var(--mock-line)]";
 const CARD_PAD = "px-6 pt-7 md:px-8 md:pt-8";
 
 /**
- * The lift that keeps a product screen off the card it sits on — LIGHT ONLY.
+ * NO CAST on any of the four shots.
  *
- * In light the two planes are seven points apart: the card is --surface
- * #f5f5f5 and the screens are --mock-window #fcfcfd (the CRM's is flat #fff).
- * Their hairline is --mock-line #e8e9ec, thirteen points under the card, so
- * the only thing separating a screen from its ground was a line quieter than
- * the step between two greys that already nearly match. Three of the four
- * mocks carry no shadow of their own at all. The result reads as one flat
- * panel with some furniture drawn on it rather than as a screen on a card.
+ * They used to carry one in light — two drop-shadows, a tight one for the edge
+ * and a wide soft one for height — because --surface and --mock-window are
+ * seven points apart and their hairline was quieter than the step between
+ * them, so a screen read as furniture drawn on the card rather than as a screen
+ * on it.
  *
- * A SHADOW rather than a darker card or a heavier border, because the problem
- * is that the two fills are the same brightness, and no amount of edge fixes
- * that — an outline around two identical planes is still two identical planes.
- * A cast says one is in front.
- *
- * `drop-shadow` and not `box-shadow`: these are four different mocks with four
- * different silhouettes — rounded on two corners, cropped on the others, one
- * of them behind a fade mask — and a box-shadow would draw the rectangle of
- * the wrapper instead of the shape of the screen. drop-shadow follows the
- * alpha, so each one gets its own outline whatever shape it is.
- *
- * Two casts: a tight one that reads as the edge, and a wide soft one that
- * reads as height. One alone gives either a hard line or a grey cloud.
- *
- * DARK gets none, and must not. There --surface is #191919 and the screens are
- * near-black too, but dark separates them the way the rest of this site's dark
- * mode does — the surface above is lighter — and a black cast on a black
- * ground is invisible at best and a grey smear where it does catch.
+ * The set answered that a different way instead: the shots lost their chrome
+ * and now meet the card flat, two of them dissolving into it through a mask.
+ * A cast under a shot that has no edge is a cloud with nothing casting it —
+ * and with two of the four already flat, the remaining two read as the odd
+ * ones rather than as the lifted ones. The separation is the hairline's job
+ * now, which is what `visualBare` draws.
  */
-const SCREEN_LIFT =
-  "[filter:drop-shadow(0_1px_1px_rgba(16,24,40,0.07))_drop-shadow(0_10px_22px_rgba(16,24,40,0.10))] [[data-theme=dark]_&]:[filter:none]";
 
 /**
  * One of the two cards that carry a screen: copy at the top, the shot below it
@@ -203,9 +187,7 @@ function FeatureCard({
            itself is never cropped — the window ends exactly on the card's
            edge, so the mark, the field and the button are all still there. */
         <div
-          className={`mt-7 min-h-[260px] flex-1 px-10 md:mt-8 md:min-h-[300px] md:px-16 ${
-            pillar.visualBare ? "" : SCREEN_LIFT
-          }`}
+          className="mt-7 min-h-[260px] flex-1 px-10 md:mt-8 md:min-h-[300px] md:px-16"
           style={edgeFade(pillar)}
         >
           {pillar.visual}
@@ -222,16 +204,13 @@ function FeatureCard({
           }`}
           style={edgeFade(pillar)}
         >
-          {/* The lift is on THIS box and not the masked one outside it: a
-              filter and a mask on one element make the browser build the
-              filtered result first and then cut the shadow with the same ramp
-              that fades the shot, so the branding card's cast disappeared
-              exactly where the screen is still solid. */}
+          {/* The hairline is on THIS box, inside the masked one: a shot that
+              dissolves into the card wants its edge to go with it, and an
+              edge drawn outside the mask would survive the fade as a line
+              around nothing. */}
           <div
             className={`absolute left-6 top-0 overflow-hidden rounded-tl-xl md:left-8 ${
-              pillar.visualBare
-                ? `border-l border-t ${LINE}`
-                : SCREEN_LIFT
+              pillar.visualBare ? `border-l border-t ${LINE}` : ""
             } ${span === "wide" ? "right-0 h-[130%]" : "h-full"}`}
             style={
               span === "wide"

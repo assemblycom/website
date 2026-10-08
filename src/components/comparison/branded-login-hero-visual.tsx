@@ -191,8 +191,16 @@ function LoginScreen({
         {/* Google first, then the divider, then the email form: the real
             screen's order. The SSO row is what makes this read as a product
             sign-in rather than as a generic email box with a button. */}
+        {/* h-[30px], the same height the two fields and the Magic-link button
+            take. The four controls are one stack down the middle of a 280px
+            column, so any disagreement between them reads as a mistake rather
+            than as a hierarchy — and it WAS a disagreement: this row and the
+            button were sized by their 12px type plus padding (~29px) while the
+            fields were a hardcoded 26, so the form had two heights in it for
+            no reason either one could name. Set explicitly on all three rather
+            than left to line-height, which is what let them drift apart. */}
         <div
-          className={`mt-5 flex w-full items-center justify-center gap-1.5 rounded-[4px] border py-[7px] text-[12px] ${c.field}`}
+          className={`mt-5 flex h-[30px] w-full items-center justify-center gap-1.5 rounded-[4px] border text-[12px] ${c.field}`}
         >
           <IconGoogleG />
           <span className={c.ink}>Continue with Google</span>
@@ -204,7 +212,14 @@ function LoginScreen({
           <span className={`h-px flex-1 ${c.rule}`} />
         </div>
 
-        <Field label="Email" c={c} />
+        {/* A SAMPLE ADDRESS, not an empty box. The field rendered blank, which
+            in a still picture of a form is not "waiting for input" — there is
+            no caret and nothing is going to happen — it is just a grey
+            rectangle, and next to the Password field, which does carry a word,
+            it read as the one control that failed to draw. A filled address
+            also says who is signing in: a client of the firm, at their own
+            address, which is the claim the card is making. */}
+        <Field label="Email" placeholder="margot@brandmages.com" c={c} />
         {/* "Optional" because a password is: the real screen takes either a
             password or a magic link, and the optional field is the visible
             half of that. No reveal control — at 11px it was a grey smudge in
@@ -212,7 +227,7 @@ function LoginScreen({
         <Field label="Password" placeholder="Optional" c={c} />
 
         <div
-          className={`mt-4 w-full rounded-[4px] py-[7px] text-center text-[12px] ${c.primary}`}
+          className={`mt-4 flex h-[30px] w-full items-center justify-center rounded-[4px] text-[12px] ${c.primary}`}
         >
           Email me a Magic link
         </div>
@@ -304,7 +319,7 @@ function Field({
     <div className="mt-3 w-full">
       <span className={`block text-[10px] leading-none ${c.ink}`}>{label}</span>
       <div
-        className={`mt-1 flex h-[26px] w-full items-center rounded-[4px] border px-2.5 text-[11px] ${c.field}`}
+        className={`mt-1 flex h-[30px] w-full items-center rounded-[4px] border px-2.5 text-[11px] ${c.field}`}
       >
         <span className="truncate">{placeholder ?? ""}</span>
       </div>
