@@ -177,7 +177,20 @@ export function BrandedPortalVisual({
 
       <div
         className={`flex min-w-0 flex-1 flex-col ${
-          quietPane ? "opacity-55" : ""
+          // 55% IN LIGHT, 80% IN DARK — and it has to be two numbers.
+          //
+          // 55 was picked against a white pane on a light-grey card, where
+          // there is a long way to fall before the pane stops existing. In
+          // dark the pane is --mock-window #212121 and the card is #191919,
+          // eight points apart, so knocking it back 45% lands it at about
+          // #1d1d1d — four points off the card, with its type dimmed to match.
+          // The whole right-hand side went to mud, which is the opposite of
+          // "quiet": a recessed pane still has to be a pane.
+          //
+          // 80 keeps the nav as the loudest thing in the shot, which is the
+          // point of the prop, while leaving the pane legible as the screen
+          // the nav is attached to.
+          quietPane ? "opacity-55 [[data-theme=dark]_&]:opacity-80" : ""
         }`}
       >
         {appHeader ? (

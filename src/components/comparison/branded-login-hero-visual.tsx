@@ -77,13 +77,21 @@ export function BrandedLoginScreen() {
       chrome={false}
       domain="portal.brandmages.com"
       mark={
-        // The firm's mark on --mock-brand, the family's brand slab, which stays
-        // a dark slab in both themes — it is the client's colour, not ours, and
-        // --foreground would have flipped it to a white tile in dark.
+        // The firm's mark: --mock-brand's dark slab with a white glyph in
+        // light, and the other way round in dark.
+        //
+        // It used to be the dark slab in BOTH themes, on the reasoning that it
+        // is the client's colour and not ours. That holds while the ground
+        // behind it is white; in dark the slab sits on a near-black card and
+        // the firm's mark — the branded half of the whole claim — was a dark
+        // square on a dark screen. A one-colour mark inverts on a dark ground,
+        // which is what every logo does and what the CRM's Symphony tile a
+        // card away already does.
+        //
         // size-9, down from 11. With the browser bar gone the mark became the
         // first thing on the screen, and at 44px it was the largest object in
         // a shot whose subject is the form under it.
-        <span className="flex size-9 items-center justify-center rounded-[10px] bg-[var(--mock-brand)] text-white">
+        <span className="flex size-9 items-center justify-center rounded-[10px] bg-[var(--mock-brand)] text-white [[data-theme=dark]_&]:bg-[#f2f2f2] [[data-theme=dark]_&]:text-[#111111]">
           <IconBrandMark className="size-4" />
         </span>
       }
@@ -135,7 +143,15 @@ function LoginScreen({
         rule: "bg-[var(--mock-line)]",
         field:
           "border-[var(--mock-line)] bg-[var(--mock-well)] text-[color:var(--mock-ink-soft)]",
-        primary: "bg-[var(--mock-ink)] text-[color:var(--mock-window)]",
+        // THE MAGIC-LINK BUTTON IS QUIET IN DARK. In light --mock-ink is a
+        // near-black slab on a white screen, which is what a primary action
+        // looks like. Flipped, it becomes a near-WHITE slab on a near-black
+        // card — the brightest object in the whole shot, pulling the eye to a
+        // button in a picture whose subject is the sign-in as a whole. In dark
+        // it takes the same surface the Continue-with-Google row wears, so the
+        // two controls read as a pair and the card has no hot spot.
+        primary:
+          "bg-[var(--mock-ink)] text-[color:var(--mock-window)] [[data-theme=dark]_&]:border [[data-theme=dark]_&]:border-[var(--mock-line)] [[data-theme=dark]_&]:bg-[var(--mock-well)] [[data-theme=dark]_&]:text-[color:var(--mock-ink)]",
       }
     : {
         ink: "text-foreground",
@@ -154,7 +170,10 @@ function LoginScreen({
           ? // Open at the foot, like the branded-portal shot beside it: the
             // screen runs off the bottom of its card, so there is no corner to
             // round and no edge to close down there.
-            "overflow-hidden rounded-t-xl border border-b-0 border-[var(--mock-line)] bg-[var(--mock-window)]"
+            // Lit along its top edge and open at its foot — see
+            // .mock-lit-edge. 180deg, the default, because this frame is
+            // cropped at the bottom only.
+            "mock-lit-edge overflow-hidden rounded-t-xl bg-[var(--mock-window)]"
           : ""
       }`}
     >

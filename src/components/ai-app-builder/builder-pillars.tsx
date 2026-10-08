@@ -113,7 +113,6 @@ export function BuilderPillars({ pillars }: { pillars: Pillar[] }) {
 const CARD =
   "relative flex flex-col overflow-hidden rounded-3xl bg-[var(--surface)]";
 /** The mocks' own hairline, so a screen's drawn edge matches the lines in it. */
-const LINE = "border-[var(--mock-line)]";
 const CARD_PAD = "px-6 pt-7 md:px-8 md:pt-8";
 
 /**
@@ -210,7 +209,16 @@ function FeatureCard({
               around nothing. */}
           <div
             className={`absolute left-6 top-0 overflow-hidden rounded-tl-xl md:left-8 ${
-              pillar.visualBare ? `border-l border-t ${LINE}` : ""
+              // The hairline is a LIT edge now (see .mock-lit-edge): brightest
+              // along the top where the light would land, the plain line by
+              // the middle, gone before the right and the foot — which are the
+              // two edges this frame leaves open. 135deg is what runs it
+              // diagonally so neither open edge gets a line down it.
+              //
+              // In light it is the same hairline as before; only dark lights
+              // up, which is where a near-black screen on a near-black card
+              // had no edge of its own.
+              pillar.visualBare ? "mock-lit-edge [--lit-angle:135deg]" : ""
             } ${span === "wide" ? "right-0 h-[130%]" : "h-full"}`}
             style={
               span === "wide"

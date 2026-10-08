@@ -190,6 +190,10 @@
   /* The solid one: segmented tracks, progress troughs, the chat bubble. */
   --mock-well-2: #f2f3f6;
   --mock-line: #e8e9ec;
+  /* The TOP of a mock frame's lit edge — see .mock-lit-edge below. In light it
+     is just the hairline: a white highlight on a white screen is nothing, and
+     a darker top edge would read as a shadow falling the wrong way. */
+  --mock-edge-lit: #e8e9ec;
   --mock-ink: #101114;
   --mock-ink-soft: #6b7079;
   /* Anything that must sit ABOVE a well — only the segmented thumb so far. */
@@ -365,6 +369,11 @@
      same idea, and a step DOWN in light is not the same number as a step up
      in dark. */
   --mock-line: #2e2e2e;
+  /* In dark it is a real highlight. A near-black screen on a near-black card
+     has no edge of its own, and the hairline alone states one without the
+     screen looking like an object — light catching a top edge is what makes a
+     panel read as sitting in front of the thing behind it. */
+  --mock-edge-lit: rgba(255, 255, 255, 0.16);
   --mock-ink: #ededed;
   --mock-ink-soft: #9a9a9a;
   --mock-raise: #3d3d3d;
@@ -476,13 +485,13 @@
        underneath has already put down, so the two never disagree about a value
        and the corner stays a continuation of the same edge. It dies out well
        before the midpoint, so the top-left remains the light. */
-      radial-gradient(
-      ellipse var(--mock-edge-w, 540px) var(--mock-edge-h, 400px) at 100% 100%,
-      rgba(255, 255, 255, 0.05) 0%,
-      rgba(255, 255, 255, 0.028) 35%,
-      rgba(255, 255, 255, 0.008) 62%,
-      transparent 80%
-    ),
+    radial-gradient(
+        ellipse var(--mock-edge-w, 540px) var(--mock-edge-h, 400px) at 100% 100%,
+        rgba(255, 255, 255, 0.05) 0%,
+        rgba(255, 255, 255, 0.028) 35%,
+        rgba(255, 255, 255, 0.008) 62%,
+        transparent 80%
+      ),
     radial-gradient(
       ellipse var(--mock-edge-w, 540px) var(--mock-edge-h, 400px) at 0% 0%,
       #484848 0%,
@@ -2058,7 +2067,11 @@ html[data-theme="dark"] .v63-ring-solid::before {
   background-position: 130% 0;
   /* Matched to .v69-plot-grid--dots exactly — same circle, same 14px tile, same
      top-left origin. A mask a pixel out of step lights the gaps instead. */
-  -webkit-mask-image: radial-gradient(circle at 1px 1px, #000 1px, transparent 0);
+  -webkit-mask-image: radial-gradient(
+    circle at 1px 1px,
+    #000 1px,
+    transparent 0
+  );
   mask-image: radial-gradient(circle at 1px 1px, #000 1px, transparent 0);
   -webkit-mask-size: 14px 14px;
   mask-size: 14px 14px;
@@ -3224,7 +3237,8 @@ html[data-theme="dark"] .v63-ring-solid::before {
     /* The rule is what says "quote" at a glance — the size alone read as a
        stray block of large text. */
     padding-left: 1.75rem;
-    border-left: 2px solid color-mix(in srgb, var(--foreground) 18%, transparent);
+    border-left: 2px solid
+      color-mix(in srgb, var(--foreground) 18%, transparent);
     font-size: 1.25rem; /* 20px, the sub-head's step, at both breakpoints */
     line-height: 1.45;
     letter-spacing: -0.014em;
@@ -3474,10 +3488,10 @@ html[data-theme="dark"] .v63-ring-solid::before {
     /* The covers scroll with the content and the shadows are pinned to the box,
        so a shadow only shows on a side there is more table to reach. */
     background:
-      linear-gradient(to right, var(--background) 60%, transparent) left center /
-        3rem 100% no-repeat local,
-      linear-gradient(to left, var(--background) 60%, transparent) right center /
-        3rem 100% no-repeat local,
+      linear-gradient(to right, var(--background) 60%, transparent) left
+        center / 3rem 100% no-repeat local,
+      linear-gradient(to left, var(--background) 60%, transparent) right
+        center / 3rem 100% no-repeat local,
       radial-gradient(
           farthest-side at 0 50%,
           color-mix(in srgb, var(--foreground) 14%, transparent),
@@ -3901,7 +3915,7 @@ html:not([data-authed]) .auth-only {
    rim was at first, and a lime-tinted white over blue comes out khaki: the hue
    has to sit beside the hot core, not inside it. */
 .builder-glow__arc--halo {
-  --arc-scale: 1.040;
+  --arc-scale: 1.04;
   background: var(--builder-glow-halo);
   filter: blur(24px);
 }
@@ -3963,4 +3977,49 @@ html:not([data-authed]) .auth-only {
     animation: none;
     opacity: var(--builder-glow-opacity);
   }
+}
+
+/* ── A MOCK FRAME'S LIT EDGE ──────────────────────────────────────────────
+   A hairline that is brightest where the light would hit it and gives out
+   before the edges the frame leaves open — the border-side version of the
+   top-lit ground the client-portal hero gives its carousel frames.
+
+   WHY A RING AND NOT A BORDER. `border-image` takes a gradient but ignores
+   border-radius, and these frames are rounded on the corners that are closed.
+   A 1px-padded box masked to its own outline follows the radius, which is the
+   one technique that does both.
+
+   `--lit-angle` is how a frame says which way it is open. 180deg is the
+   default: bright along the top, the plain hairline by the middle, gone by the
+   bottom — for a screen cropped at its foot. 135deg runs it diagonally for a
+   screen cropped at the foot AND the right, so neither open edge gets a line
+   drawn down it.
+
+   The colour stop sits at 45%: the highlight has to be spent by the time the
+   eye is halfway down, or it reads as a glowing box rather than as a lit edge.
+
+   Light mode gets the same ring with --mock-edge-lit equal to --mock-line, so
+   the gradient is flat and this is exactly the hairline that was there before.
+   Only dark actually lights up — see the token. */
+.mock-lit-edge {
+  position: relative;
+}
+.mock-lit-edge::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    var(--lit-angle, 180deg),
+    var(--mock-edge-lit) 0%,
+    var(--mock-line) 45%,
+    transparent 100%
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
 }
