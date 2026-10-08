@@ -182,29 +182,40 @@ export function BuilderAlternatives() {
 
           The table from `md` up is untouched; it can afford the across-read
           and is still the better object when the width exists. */}
-      <div className="md:hidden">
-        {/* The site's segmented control, not a row of underlined words.
+      {/* ONE OBJECT, control and all.
 
-            It started as the pricing table's underline tabs, which are the
-            right pattern THERE — that control sits inside a long scrolling
-            table and has five plan names to carry, so it has to be able to
-            scroll. Here there are three short options above a five-row card,
-            and underlined text at the top of a bordered box reads as a
-            heading that happens to be in three parts rather than as something
-            you can press.
+          The control used to float above the card with a gap, which read as a
+          filter sitting next to a table rather than as the table's own head —
+          two things, when what is on screen is one. Inside the card the
+          switcher is the thead: the rule under it is the same hairline that
+          separates every row below, so the card reads top to bottom as one
+          table whose first row happens to be the control that chooses the
+          column.
 
-            SegmentedTabs is the answer to both: a bordered track with a thumb
-            that glides between cells is unmistakably a control, and it is the
-            SAME control this page already runs one section up for Describe /
-            Plan / Build. Two segmented controls on one page is the page
-            having a pattern; a segmented control and a set of underline tabs
-            doing the same job is the page having two.
+          The site's segmented control, not a row of underlined words. It
+          started as the pricing table's underline tabs, which are the right
+          pattern THERE — that control sits inside a long scrolling table and
+          has five plan names to carry, so it has to be able to scroll. Here
+          there are three short options over five rows, and underlined text at
+          the head of a bordered box reads as a heading that happens to be in
+          three parts rather than as something you can press. SegmentedTabs is
+          unmistakably a control, and it is the SAME one this page already runs
+          one section up for Describe / Plan / Build. It also brings
+          `role="tablist"`, roving arrow-key focus and the tab/panel id pair
+          the rows below point back at, which the hand-rolled `aria-pressed`
+          buttons did not have.
 
-            It also brings the semantics with it — `role="tablist"`, roving
-            arrow-key focus, and the tab/panel id pair the panel below points
-            back at — which the hand-rolled `aria-pressed` buttons did not
-            have. */}
-        <div className="mt-10">
+          The table from `md` up is untouched; it can afford the across-read
+          and is still the better object when the width exists. */}
+      <div
+        className={`mt-10 overflow-clip rounded-2xl border md:hidden ${GRID_LINE}`}
+      >
+        {/* p-2, and it is as much padding as the head can spend. The track
+            needs ~322px to set three labels without compressing them, and the
+            card is 327 wide at 375 — so every pixel of inset here comes
+            straight off the cells. Two is enough to keep the track's own
+            hairline off the card's. */}
+        <div className="p-2">
           <SegmentedTabs
             label="Compare the three ways to get a custom app"
             idBase={TABS_ID}
@@ -217,43 +228,41 @@ export function BuilderAlternatives() {
           />
         </div>
 
-        <div
+        <dl
           role="tabpanel"
           id={`${TABS_ID}-panel-${option}`}
           aria-labelledby={`${TABS_ID}-tab-${option}`}
-          className={`mt-5 overflow-clip rounded-2xl border px-6 ${GRID_LINE}`}
         >
-          <dl>
-            {ROWS.map((row) => (
-              <div
-                key={row.label}
-                // first:border-t-0 — the card's own top edge is the rule above
-                // the first row now that the tabs have moved out of the box.
-                className={`-mx-6 flex items-baseline justify-between gap-4 border-t px-6 py-3.5 first:border-t-0 ${GRID_LINE}`}
+          {ROWS.map((row) => (
+            <div
+              key={row.label}
+              // Every row rules above itself, the first one included: that
+              // first rule is the seam between the head and the body, which is
+              // what makes the control read as part of the table.
+              className={`flex items-baseline justify-between gap-4 border-t px-4 py-3.5 ${GRID_LINE}`}
+            >
+              {/* ONE LINE, ALWAYS. The capability is the row's question and
+                  it is the same question on every option — a two-line "Time
+                  to a working / tool" against a one-line answer made the row
+                  look broken rather than long. The answers take the wrapping
+                  instead: they are the part that differs, they are ranged
+                  right, and a two-line answer there reads as an answer that
+                  needed two lines. */}
+              <dt className="shrink-0 whitespace-nowrap pr-4 text-sm text-muted-foreground">
+                {row.label}
+              </dt>
+              {/* Ranged right, so the five answers line up on one edge and
+                  the option can be read down a single column. */}
+              <dd
+                className={`min-w-0 text-right text-sm leading-snug ${
+                  option === OWN ? "text-foreground" : "text-muted-foreground"
+                }`}
               >
-                {/* ONE LINE, ALWAYS. The capability is the row's question and
-                    it is the same question on every option — a two-line "Time
-                    to a working / tool" against a one-line answer made the row
-                    look broken rather than long. The answers take the wrapping
-                    instead: they are the part that differs, they are ranged
-                    right, and a two-line answer there reads as an answer that
-                    needed two lines. */}
-                <dt className="shrink-0 whitespace-nowrap pr-4 text-sm text-muted-foreground">
-                  {row.label}
-                </dt>
-                {/* Ranged right, so the five answers line up on one edge and
-                    the option can be read down a single column. */}
-                <dd
-                  className={`min-w-0 text-right text-sm leading-snug ${
-                    option === OWN ? "text-foreground" : "text-muted-foreground"
-                  }`}
-                >
-                  {row.cells[option]}
-                </dd>
-              </div>
-            ))}
-          </dl>
-        </div>
+                {row.cells[option]}
+              </dd>
+            </div>
+          ))}
+        </dl>
       </div>
 
       {/* The frame, all four sides, rounded and clipping the cells inside it.
