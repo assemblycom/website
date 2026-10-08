@@ -81,7 +81,7 @@ export const BUILD_STEPS = [
  * Assembly, not by the AI" beat that the fifth card makes here.
  */
 export function PortalBuild({
-  heading = "Build the features unique to your firm.",
+  heading = "Build the features unique to your firm",
   body = "Tell us what you want, approve the plan, and a real app lands in your portal with logins, permissions, and branding already handled.",
   steps = BUILD_STEPS,
   cta = { label: "Describe your first app", href: SIGNUP_URL },

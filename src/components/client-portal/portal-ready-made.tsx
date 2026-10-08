@@ -90,7 +90,7 @@ const PICKS: {
  */
 export function PortalReadyMade({
   id,
-  heading = "Start with what every firm needs.",
+  heading = "Start with what every firm needs",
   body = "Choose from 30+ pre-made app templates, all added to a branded portal ready for your clients to use. Every one is a working app: install it, use it, or tell the builder what to change.",
   picks = PICKS,
   link = { label: "Browse templates", href: "/templates" },

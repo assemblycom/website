@@ -24,7 +24,7 @@ const BODY = "mt-2 text-sm leading-relaxed text-muted-foreground";
  */
 /** Heading and lead are props; the four cards are the same picture either way. */
 export function PortalTailor({
-  heading = "One portal. A different experience for every client",
+  heading = "One portal. A different experience for every client.",
   body = "Control which apps each client and company sees, brand it on your own domain, and give each segment the workflow it actually needs.",
   visual,
 }: {

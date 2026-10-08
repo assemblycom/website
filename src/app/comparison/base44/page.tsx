@@ -28,7 +28,7 @@ const PAGE: VsPage = {
     },
   },
   glance: {
-    heading: "Two ways to ship an app. One is meant for clients",
+    heading: "Two ways to ship an app. One is meant for clients.",
     sub: "Base44 is fast and all-in-one. Here is what changes when clients are involved.",
     rows: [
       {

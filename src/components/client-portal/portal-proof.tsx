@@ -55,7 +55,7 @@ const STORIES = [
  * the same object the case-study pages and the customers strip already carry.
  */
 export function PortalProof({
-  heading = "Firms that stopped settling.",
+  heading = "Firms that stopped settling",
   body = "See how firms replaced rigid tools with a portal they built around their own workflow.",
   stories = STORIES,
   linkLabel,

@@ -28,8 +28,15 @@ export function CTA({
   // Overrides the default close for a page whose argument ends somewhere else
   // (e.g. the AI app builder page closes on what you would build today).
   heading?: ReactNode;
-  /** One line under the heading, where a page's brief calls for one. */
-  subheading?: string;
+  /**
+   * The lead under the heading, where a page's brief calls for its own.
+   *
+   * A ReactNode and not a string so a page can place its own line break, the
+   * way the default below does — `text-pretty` guards against a one-word last
+   * line but not a two-word one, so a lead that happens to end "…or start from
+   * / a template." needs the break stated rather than negotiated.
+   */
+  subheading?: ReactNode;
   /** The composer's submit wording, which a feature page names after its own CTA. */
   submitLabel?: string;
   /** An outline second action beside the box, visibly secondary to the submit. */

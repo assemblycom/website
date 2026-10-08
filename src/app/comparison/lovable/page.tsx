@@ -27,7 +27,7 @@ const PAGE: VsPage = {
     },
   },
   glance: {
-    heading: "Same prompt. Very different destination",
+    heading: "Same prompt. Very different destination.",
     sub: "Lovable ends with a prototype you finish. Assembly ends with an app your clients can sign into.",
     rows: [
       {

@@ -35,7 +35,7 @@ export const metadata: Metadata = pageMetadata(PAGE_SEO.aiAppBuilder);
 const PILLARS: Pillar[] = [
   {
     eyebrow: "Apps",
-    heading: "Build client-facing apps and internal tools, all in one place",
+    heading: "Build client apps and internal tools in one place",
     body: "Describe it once. Client apps land in your client experience, team tools in your dashboard.",
     // The built app sitting in the client's own sidebar, which is the claim.
     // A landscape screen like the other three: the build rail's portrait cards
@@ -51,7 +51,7 @@ const PILLARS: Pillar[] = [
   },
   {
     eyebrow: "Security",
-    heading: "Secure logins, permissions, and billing come built in",
+    heading: "Secure logins, permissions, and billing built in",
     body: "Built and maintained by Assembly. Nothing reaches your clients until you make it visible.",
     // The firm's own sign-in: their mark, their domain, no platform badge.
     // The claim leads on secure LOGINS, and this is the first thing a client
@@ -66,7 +66,7 @@ const PILLARS: Pillar[] = [
   },
   {
     eyebrow: "Branding",
-    heading: "Your clients already have a branded home. New apps land in it",
+    heading: "New apps land in your clients' branded home",
     body: "Your logo and colors, not ours. Every new app picks them up automatically.",
     // The CLIENT's nav, in the firm's colour, with the apps the firm has added
     // listed under the stock rows. It was the home page's branded-portal shot,
@@ -329,10 +329,21 @@ export default function AiAppBuilderPage() {
           <>
             Your next app,
             <br />
-            built this afternoon.
+            built this afternoon
           </>
         }
-        subheading="Skip the five-figure custom build. Describe what your business needs, or start from a template."
+        // Broken at the sentence, the same place the CTA's own default lead
+        // breaks. Left to wrap it set eight words on line one and "a template."
+        // on line two — `text-pretty` only rescues a single-word last line. The
+        // break is md-up: below that the measure is narrow enough that the two
+        // sentences wrap into a block on their own.
+        subheading={
+          <>
+            Skip the five-figure custom build.
+            <br className="hidden md:inline" />{" "}
+            Describe what your business needs, or start from a template.
+          </>
+        }
         // The page opens on a composer; closing on a second one asks the same
         // question twice. Two buttons instead, the pair the hero opens with.
         composer={false}
