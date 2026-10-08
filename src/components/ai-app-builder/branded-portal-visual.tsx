@@ -4,7 +4,6 @@ import {
   IconChat,
   IconDocuments,
   IconFile,
-  IconForm,
   IconHouse,
 } from "@/components/home/mock-icons";
 
@@ -34,11 +33,27 @@ const STOCK = [
   { icon: <IconCard />, label: "Billing" },
 ];
 
-/** What this firm has built. The last one is open. */
-const ADDED = [
-  { icon: <IconForm />, label: "Partner intake" },
-  { icon: <IconDocuments />, label: "Year-end docs" },
-];
+/**
+ * The same list without Billing, for a shot whose whole point is the ONE added
+ * row sitting under the stock ones.
+ *
+ * Billing is a real portal row and belongs in the default — /solutions' agency
+ * hero is a picture of a working portal and wants it. But on the branding
+ * pillar the nav is the claim, and every stock row before the added one is a
+ * row the eye passes on the way to the thing being demonstrated. Three is
+ * enough to establish "this is a portal with the usual rows in it".
+ */
+export const PORTAL_STOCK_CORE = STOCK.slice(0, 3);
+
+/**
+ * What this firm has built. The last one is open.
+ *
+ * ONE app, not two. It was Partner intake above Year-end docs, which showed a
+ * firm that has added a few — true, and not the claim. The claim is that a NEW
+ * app lands here, and a list of two makes the reader work out which one is new
+ * before the shot says anything. One row, open, is the new app.
+ */
+const ADDED = [{ icon: <IconDocuments />, label: "Year-end docs" }];
 
 export type PortalApp = { icon: React.ReactNode; label: string };
 
@@ -69,6 +84,7 @@ function NavRow({
 
 export function BrandedPortalVisual({
   brand = "Brandmages",
+  stock = STOCK,
   apps = ADDED,
   title = "Year-end docs",
   children,
@@ -76,6 +92,8 @@ export function BrandedPortalVisual({
   appHeader = true,
 }: {
   brand?: string;
+  /** The portal's built-in rows. PORTAL_STOCK_CORE drops Billing. */
+  stock?: PortalApp[];
   /** The firm's own apps, under the stock rows. The last one is open. */
   apps?: PortalApp[];
   /** The open app's name, in its header. */
@@ -127,7 +145,7 @@ export function BrandedPortalVisual({
               speck beside the firm's name rather than as a control. */}
         </span>
 
-        {STOCK.map(({ icon, label }) => (
+        {stock.map(({ icon, label }) => (
           <NavRow key={label} icon={icon} label={label} />
         ))}
 
@@ -135,8 +153,14 @@ export function BrandedPortalVisual({
             gone: in a shot this size a line of 10.5px caps at 40% white was a
             label about the nav rather than part of it. The break in the stack
             says the same thing — these rows are not stock — without spending a
-            row of type on saying it. */}
-        <div className="mt-4 flex flex-col gap-[2px]">
+            row of type on saying it.
+
+            mt-2, down from mt-4. At four the added rows read as a second list
+            further down the nav; the point here is that a new app joins the
+            ones already there, so it should sit just clear of Files rather
+            than across a gap from it. Still a break, because a row with no
+            break at all is just a fifth stock row. */}
+        <div className="mt-2 flex flex-col gap-[2px]">
           {apps.map(({ icon, label }, i) => (
             <NavRow
               key={label}
@@ -166,20 +190,22 @@ export function BrandedPortalVisual({
             it. A caller that IS about the app passes its own screen. */}
         <div className="flex min-h-0 flex-1 flex-col gap-3.5 px-5 py-4">
           {children ??
-            ["Last year's return", "Bank statements", "Signed engagement letter"].map(
-              (label) => (
-                <div key={label}>
-                  <p className="text-[11px] leading-none text-[color:var(--mock-ink-soft)]">
-                    {label}
-                  </p>
-                  <div
-                    className={`mt-1.5 rounded-md border px-3 py-2 text-[12.5px] leading-none text-[color:var(--mock-ink-soft)] ${LINE}`}
-                  >
-                    Upload
-                  </div>
+            [
+              "Last year's return",
+              "Bank statements",
+              "Signed engagement letter",
+            ].map((label) => (
+              <div key={label}>
+                <p className="text-[11px] leading-none text-[color:var(--mock-ink-soft)]">
+                  {label}
+                </p>
+                <div
+                  className={`mt-1.5 rounded-md border px-3 py-2 text-[12.5px] leading-none text-[color:var(--mock-ink-soft)] ${LINE}`}
+                >
+                  Upload
                 </div>
-              ),
-            )}
+              </div>
+            ))}
         </div>
       </div>
     </div>

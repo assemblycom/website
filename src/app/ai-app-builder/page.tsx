@@ -13,7 +13,10 @@ import { BuilderChapter } from "@/components/ai-app-builder/builder-chapter";
 import { AddAppMock } from "@/components/ai-app-builder/add-app-mock";
 import { BrandedLoginScreen } from "@/components/comparison/branded-login-hero-visual";
 import { TeamCrmVisual } from "@/components/home/team-crm-visual";
-import { BrandedPortalVisual } from "@/components/ai-app-builder/branded-portal-visual";
+import {
+  BrandedPortalVisual,
+  PORTAL_STOCK_CORE,
+} from "@/components/ai-app-builder/branded-portal-visual";
 import { BuilderHowItWorks } from "@/components/ai-app-builder/builder-how-it-works";
 import { BuilderAlternatives } from "@/components/ai-app-builder/builder-alternatives";
 import { BuilderTemplates } from "@/components/ai-app-builder/builder-templates";
@@ -130,7 +133,18 @@ const PILLARS: Pillar[] = [
     // which is the team's dashboard — CRM, Team, Customize, and a table of six
     // clients' time entries — so a card about where the client's apps land was
     // showing a screen no client ever opens.
-    visual: <BrandedPortalVisual quietPane appHeader={false} />,
+    // PORTAL_STOCK_CORE: Home, Messages, Files — no Billing. This card's nav
+    // only has to establish "a portal with the usual rows in it" before the
+    // added app, and a fourth stock row is one more thing between the top of
+    // the nav and the row the claim is about. /solutions' agency hero keeps
+    // the full set.
+    visual: (
+      <BrandedPortalVisual
+        quietPane
+        appHeader={false}
+        stock={PORTAL_STOCK_CORE}
+      />
+    ),
     // The firm's branded nav IS this claim; the app pane beside it only shows
     // the nav is attached to a real screen. So the pane dissolves into the card
     // on the right instead of being cut off by it, and the slab is what the eye
@@ -181,8 +195,7 @@ const BUILDER_FAQS: FAQEntry[] = [
   {
     question:
       "What happens if Assembly's AI app builder builds something wrong that my clients could see?",
-    shortQuestion:
-      "What if Assembly's AI app builder builds something wrong?",
+    shortQuestion: "What if Assembly's AI app builder builds something wrong?",
     answer:
       "Nothing reaches your clients until you've approved the plan and made the app visible to them. New apps stay hidden from clients by default while you test. If something needs fixing after launch, keep chatting with the app builder to change it.",
   },
@@ -305,8 +318,6 @@ export default function AiAppBuilderPage() {
               asked the same question twice — and the demo is carried by the
               nav's own Book a demo, which is on every page including this
               one. */}
-
-
         </div>
       </section>
 
@@ -397,8 +408,8 @@ export default function AiAppBuilderPage() {
         subheading={
           <>
             Skip the five-figure custom build.
-            <br className="hidden md:inline" />{" "}
-            Describe what your business needs, or start from a template.
+            <br className="hidden md:inline" /> Describe what your business
+            needs, or start from a template.
           </>
         }
         // The page opens on a composer; closing on a second one asks the same
