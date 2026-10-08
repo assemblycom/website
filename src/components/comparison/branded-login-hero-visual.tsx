@@ -74,8 +74,11 @@ export function BrandedLoginScreen() {
         // The firm's mark on --mock-brand, the family's brand slab, which stays
         // a dark slab in both themes — it is the client's colour, not ours, and
         // --foreground would have flipped it to a white tile in dark.
-        <span className="flex size-11 items-center justify-center rounded-xl bg-[var(--mock-brand)] text-white">
-          <IconBrandMark className="size-5" />
+        // size-9, down from 11. With the browser bar gone the mark became the
+        // first thing on the screen, and at 44px it was the largest object in
+        // a shot whose subject is the form under it.
+        <span className="flex size-9 items-center justify-center rounded-[10px] bg-[var(--mock-brand)] text-white">
+          <IconBrandMark className="size-4" />
         </span>
       }
       title="Sign in to Brandmages"
@@ -176,7 +179,12 @@ function LoginScreen({
           crops BOTH ends — losing the mark, which is the branded half of the
           claim. Top-anchored, the crop only ever takes the footer link, which
           is the one line nothing here depends on. */}
-      <div className="mx-auto flex w-full max-w-[300px] flex-1 flex-col items-center px-7 pt-8">
+      {/* 320 against px-5, where it was 300 against px-7: the column is a
+          touch wider and spends less of itself on its own gutter, so the
+          button and the two fields gain ~36px between them. The cap still
+          governs — a sign-in form has a width of its own and stops reading as
+          one when it stretches to whatever frame it was dropped into. */}
+      <div className="mx-auto flex w-full max-w-[320px] flex-1 flex-col items-center px-5 pt-8">
         {mark}
         <p className={`mt-4 text-[17px] leading-none ${c.ink}`}>{title}</p>
 

@@ -115,10 +115,11 @@ const PILLARS: Pillar[] = [
     // the title, the field, the button — and cropping it on the card's edges
     // cut off the half of it the claim is about.
     visualContained: true,
-    // And dissolved at the foot like the Apps card. The sign-in is taller than
-    // the card, so it ends mid-form; a hard cut there reads as a half-drawn
-    // field rather than as a screen carrying on.
-    fadeBottom: 86,
+    // NO bottom fade here, unlike the Apps card. It was tried: the screen's
+    // last visible object is the Magic link button, a solid near-black slab,
+    // and a ramp across it reads as the button being blurred rather than as
+    // the screen giving out. A fade needs something low-contrast to give out
+    // into. The card's own edge cuts it cleanly instead.
   },
   {
     eyebrow: "Branding",

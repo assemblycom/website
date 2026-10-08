@@ -203,7 +203,7 @@ function FeatureCard({
            itself is never cropped — the window ends exactly on the card's
            edge, so the mark, the field and the button are all still there. */
         <div
-          className={`mt-7 min-h-[260px] flex-1 px-6 md:mt-8 md:min-h-[300px] md:px-8 ${
+          className={`mt-7 min-h-[260px] flex-1 px-10 md:mt-8 md:min-h-[300px] md:px-16 ${
             pillar.visualBare ? "" : SCREEN_LIFT
           }`}
           style={edgeFade(pillar)}

@@ -115,13 +115,17 @@ export function AddAppMock() {
           own is a page title; with the name in front of it, it is the workspace
           talking to the person who opened it, which is the difference between a
           screenshot of a form and a screenshot of somebody's Monday. */}
-        {/* 15px, down from 17. It is the biggest type in the shot either way,
-          which is right — it is the screen's own h1 — but at 17 against a
-          12.5px composer and a 10.5px nav it was nearly half again the size of
-          everything else and read as a marketing headline that had wandered
-          into a product screenshot. 15 still leads the page and stays in the
-          same family as the type under it. */}
-      <p className="text-center text-[15px] leading-[1.3] tracking-[-0.01em]">
+        {/* 13.5px — 17, then 15, then here. The product sets this heading at
+          roughly 1.7x its composer, and copying that ratio is what made it
+          wrong: this whole mock is drawn at about half product scale, where a
+          1.7x heading is a marketing headline that wandered into a product
+          screenshot. A mock's biggest type has to stay inside the mock's own
+          range or it stops being part of the screen.
+          One point above the composer's 12.5 is enough here, because the
+          heading is already the only centred line on the screen and the only
+          one in full ink — position and weight are doing the work that size
+          does at full scale. */}
+      <p className="text-center text-[13.5px] leading-[1.3] tracking-[-0.01em]">
           Margot, what app will you add?
         </p>
 
