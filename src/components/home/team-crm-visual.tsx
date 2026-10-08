@@ -5,26 +5,17 @@
 // ─────────────────────────────────────────────────────────────────────────
 
 import {
-  IconBell,
-  IconBolt,
-  IconBook,
   IconBrandMark,
-  IconCard,
   IconChat,
-  IconChecks,
   IconChevronDown,
-  IconDashboard,
+  IconDocuments,
   IconDots,
   IconExport,
-  IconFile,
-  IconForm,
-  IconGrid,
   IconHouse,
   IconList,
-  IconPen,
+  IconPerson,
+  IconPlus,
   IconSearch,
-  IconSliders,
-  IconSync,
   IconUsers,
 } from "@/components/home/mock-icons";
 
@@ -116,14 +107,6 @@ function NavItem({
   );
 }
 
-function CountBadge({ children }: { children: React.ReactNode }) {
-  return (
-    <span className="flex h-[13px] min-w-[15px] items-center justify-center rounded bg-border/70 text-[9px] leading-none text-foreground">
-      {children}
-    </span>
-  );
-}
-
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
     <p className="px-1.5 pb-1 pt-2.5 text-[9.5px] leading-none text-muted-foreground">
@@ -166,32 +149,42 @@ export function TeamCrmVisual() {
             </span>
           </div>
 
-          <NavItem icon={<IconDashboard />} label="Dashboard" />
+          {/* The product's current team nav, not the fourteen-row one this
+              carried.
+
+              It listed Dashboard, CRM, Notifications and Automations over an
+              Apps group of eight — Files, Contracts, Forms, Billing, Tasks,
+              Quickbooks sync — and closed on a Preferences group. Two things
+              were wrong with that. It is not the nav any more; and on a card
+              whose claim is "every APP connects to the CRM", a column of eight
+              stock rows is the part of the picture that reads as the apps,
+              which makes the one thing the firm actually built invisible.
+
+              So: the two team surfaces, then the apps — the stock pair every
+              workspace has, the app this firm built, and the action that adds
+              the next one. `Add App` is what makes the group legible as a
+              list that GROWS, which is the sentence the card is making.
+
+              CRM stays the selected row. The card is about the CRM, the pane
+              to the right of this is the CRM, and the lit row is what ties the
+              two together. */}
           <NavItem icon={<IconUsers />} label="CRM" active />
-          <NavItem
-            icon={<IconBell />}
-            label="Notifications"
-            trailing={<CountBadge>2</CountBadge>}
-          />
-          <NavItem icon={<IconBolt />} label="Automations" />
+          <NavItem icon={<IconPerson />} label="Team" />
 
           <SectionLabel>Apps</SectionLabel>
           <NavItem icon={<IconHouse />} label="Home" />
-          <NavItem
-            icon={<IconChat />}
-            label="Messages"
-            trailing={<CountBadge>3</CountBadge>}
-          />
-          <NavItem icon={<IconFile />} label="Files" />
-          <NavItem icon={<IconPen />} label="Contracts" />
-          <NavItem icon={<IconForm />} label="Forms" />
-          <NavItem icon={<IconCard />} label="Billing" />
-          <NavItem icon={<IconChecks />} label="Tasks" />
-          <NavItem icon={<IconSync />} label="Quickbooks sync" />
-
-          <SectionLabel>Preferences</SectionLabel>
-          <NavItem icon={<IconBook />} label="App Library" />
-          <NavItem icon={<IconSliders />} label="Customization" />
+          <NavItem icon={<IconChat />} label="Messages" />
+          <NavItem icon={<IconDocuments />} label="Year-end docs" />
+          {/* The one muted row: an action, not a destination. Same height and
+              gutter as a nav row so the column keeps its rhythm. */}
+          <div className="flex h-[22px] items-center gap-2 rounded px-1.5 text-muted-foreground">
+            <span className="[&>svg]:size-[11px] flex shrink-0 items-center justify-center">
+              <IconPlus />
+            </span>
+            <span className="min-w-0 flex-1 truncate text-[10.5px] leading-none">
+              Add App
+            </span>
+          </div>
         </div>
 
         {/* Main column — CRM contacts table. */}

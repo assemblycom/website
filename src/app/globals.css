@@ -238,10 +238,10 @@
      itself and the overlaps stay pale. The additive mode dark uses would drive
      every overlap on a white ground straight to white. */
   --builder-glow-blend: normal;
-  --builder-glow-bloom: rgba(63, 92, 247, 0.26);
-  --builder-glow-mid: rgba(79, 107, 249, 0.38);
-  --builder-glow-halo: rgba(159, 214, 196, 0.55);
-  --builder-glow-lime: rgba(198, 232, 79, 0.7);
+  --builder-glow-bloom: rgba(58, 84, 252, 0.36);
+  --builder-glow-mid: rgba(66, 96, 255, 0.52);
+  --builder-glow-halo: rgba(118, 212, 180, 0.66);
+  --builder-glow-lime: rgba(190, 236, 48, 0.84);
   --builder-glow-rim: rgba(255, 255, 255, 0.7);
   --builder-glow-opacity: 1;
 }
