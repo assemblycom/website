@@ -23,6 +23,16 @@ export interface Pillar {
    */
   visualContained?: boolean;
   /**
+   * Drops the lift and the rounded corner, so the shot meets the card flat.
+   *
+   * For a screen whose own ground is the SAME white as the product's page and
+   * whose subject is centred in it — there, a cast and a corner draw a frame
+   * around a picture that is mostly empty page, and the frame becomes the
+   * thing you see. The other three are screens with furniture up against their
+   * edges, where the lift is what stops them merging into the card.
+   */
+  visualBare?: boolean;
+  /**
    * Fades the shot out on its right rather than letting the card cut it off.
    * For a screen where one END of it is the claim — the branded nav slab — and
    * the pane beside it is only there to show the nav is attached to something.
@@ -198,9 +208,9 @@ function FeatureCard({
               that fades the shot, so the branding card's cast disappeared
               exactly where the screen is still solid. */}
           <div
-            className={`absolute left-6 top-0 overflow-hidden rounded-tl-xl md:left-8 ${SCREEN_LIFT} ${
-              span === "wide" ? "right-0 h-[130%]" : "h-full"
-            }`}
+            className={`absolute left-6 top-0 overflow-hidden md:left-8 ${
+              pillar.visualBare ? "" : `rounded-tl-xl ${SCREEN_LIFT}`
+            } ${span === "wide" ? "right-0 h-[130%]" : "h-full"}`}
             style={
               span === "wide"
                 ? undefined

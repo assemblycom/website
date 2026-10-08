@@ -22,7 +22,7 @@
 // Everything here reads --mock-* tokens, so it themes with the rest of the set.
 // ─────────────────────────────────────────────────────────────────────────
 
-import { IconChevronDown, IconPlus } from "@/components/home/mock-icons";
+import { IconPlus } from "@/components/home/mock-icons";
 import { IconArrowUp } from "@/components/home/build-step-visual";
 
 const LINE = "border-[var(--mock-line)]";
@@ -51,6 +51,13 @@ export function AddAppMock() {
   // 32px on the left is that difference, which puts the headline and the box
   // where the eye expects them on a screen that continues. Even padding
   // measured correctly and still read as squeezed left.
+  //
+  // THE PAGE IS --mock-window — the product's own page ground, white in light
+  // and #212121 in dark. It was tried on --mock-well, which separates the
+  // composer and the cards from the page they sit on by giving the page a
+  // tint; the screen then read as a recessed tray inside the card rather than
+  // as the app's own page. The objects are told apart by their hairlines
+  // instead, which is how the product does it.
   return (
     <div
       aria-hidden
@@ -73,8 +80,8 @@ export function AddAppMock() {
             treatment the hero's composer and the Describe card both wear, and
             it is what makes the band read as a GAP rather than as a fat
             border: the middle layer is --mock-window, the same tone as the
-            screen behind it, so what you see between the two lines is the page
-            showing through.
+            page behind it, so what you see between the two lines is that page
+            showing through rather than a second border.
 
             The outer line is the brand ramp rather than a hairline — the
             footer aurora's own lime → mint → blue, running top to bottom. It
@@ -110,9 +117,12 @@ export function AddAppMock() {
                   quietly out of date the next time the default changes and that
                   nobody would think to come back here for. Auto is the setting,
                   so it stays true. Same reasoning as the Describe card's. */}
-                  <span className="flex items-center gap-1 rounded-[4px] px-1.5 py-1 text-[11px] leading-none text-[color:var(--mock-ink-soft)]">
+                  {/* The word alone, no chevron. A caret says "this opens",
+                  which in a still picture is a promise the picture cannot
+                  keep — and at 9px it read as a smudge beside the type
+                  rather than as a mark. */}
+                  <span className="rounded-[4px] px-1.5 py-1 text-[11px] leading-none text-[color:var(--mock-ink-soft)]">
                     Auto
-                    <IconChevronDown className="size-[9px] shrink-0" />
                   </span>
                   <span className="flex size-[22px] shrink-0 items-center justify-center rounded-[4px] bg-[var(--mock-ink)] text-[color:var(--mock-window)]">
                     <IconArrowUp className="size-[11px]" />

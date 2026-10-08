@@ -44,11 +44,21 @@ const PILLARS: Pillar[] = [
     // answer is a single box that takes a sentence and decides from the
     // sentence whether what comes back is a client app or a team tool.
     visual: <AddAppMock />,
+    // Flat against the card: no cast, no rounded corner. This screen's ground
+    // is the product's own page white and its subject sits in the middle of
+    // it, so a lift and a corner were drawing a frame around mostly-empty
+    // page — the frame read louder than the box it was framing. The other
+    // three keep theirs; their screens have furniture on every edge.
+    visualBare: true,
   },
   {
     eyebrow: "CRM",
     heading: "One CRM. Every app connects to it",
-    body: "Contacts, companies, and custom fields come built in. Each client only sees what they're allowed to see.",
+    // Shortened, same claim: "come built in" → "built in", and the second
+    // sentence drops its passive tail ("what they're allowed to see" → "what
+    // you allow"), which also puts the firm back in the sentence as the one
+    // doing the allowing. Three lines of copy became two.
+    body: "Contacts, companies, and custom fields built in. Each client sees only what you allow.",
     // The home page's CRM shot: contacts, companies and a custom field.
     visual: <TeamCrmVisual />,
   },
