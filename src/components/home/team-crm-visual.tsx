@@ -148,19 +148,31 @@ function MarkGodo({ className }: { className?: string }) {
  * into the tile, where white holds them. Knockout is also how a logo this
  * small is set everywhere else.
  *
- * HARDCODED HEXES, AND THEY DO NOT FLIP. This is the one case the design
- * guidelines' rule about theme-scoped colour does not cover: these are three
+ * HARDCODED, AND THE TWO COLOURED ONES DO NOT FLIP. This is the case the
+ * design guidelines' rule about theme-scoped colour does not cover: these are
  * fictional firms' brand colours, the same argument as Google's G further down
  * the login mock, and a brand that changed between light and dark would not be
- * a brand. They are mid-tone on purpose, so they hold against the white row in
- * light and the #191919 row in dark without a second value for either.
+ * a brand. Wave's and Godo's are mid-tone on purpose, so they hold against the
+ * white row in light and the near-black one in dark with one value each.
+ *
+ * SYMPHONY IS THE EXCEPTION, and has to be. Its tile is black, and this
+ * screen's ground in dark is rgb(10,10,10) — a black tile on it is not a quiet
+ * tile, it is no tile at all, and the mark knocked out of it would be four
+ * white petals floating in the row. So the monochrome brand inverts: black
+ * slab with a white mark in light, white slab with a black mark in dark. That
+ * is what a one-colour logo does on a dark ground everywhere, and it is the
+ * only one of the three that needs it — the other two are mid-tone and a
+ * mid-tone has somewhere to sit in both themes.
+ *
+ * Class strings rather than hexes, so the override can live in the same place
+ * as the value it overrides.
  */
 const COMPANY_TILES: Record<string, string> = {
-  Symphony: "#7DA4FF",
-  "Wave Marketing": "#63C7B2",
-  Godo: "#F06449",
+  Symphony:
+    "bg-[#111111] text-white [[data-theme=dark]_&]:bg-[#f2f2f2] [[data-theme=dark]_&]:text-[#111111]",
+  "Wave Marketing": "bg-[#63C7B2] text-white",
+  Godo: "bg-[#F06449] text-white",
 };
-
 /**
  * Which mark each company gets, and how big it sits in its 14px tile.
  *
@@ -204,9 +216,8 @@ function CompanyMark({
       // the first avatar circle wears — reused rather than re-picked, so there
       // is one neutral in this picture and not two that nearly match.
       className={`flex size-[14px] shrink-0 items-center justify-center rounded-[3px] ${
-        tile ? "text-white" : AVATAR_TINTS[0]
+        tile ?? AVATAR_TINTS[0]
       } ${className}`}
-      style={tile ? { backgroundColor: tile } : undefined}
     >
       {entry ? (
         <entry.Mark className={entry.size} />
