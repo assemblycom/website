@@ -44,10 +44,17 @@ const TEMPLATES = [
 ];
 
 export function AddAppMock() {
+  // UNEVEN PADDING (pl-14 / pr-6), and it has to be. The card crops this screen
+  // on its RIGHT edge and holds it 32px off its left, so what you see is a
+  // window onto a page that carries on past the right — and content centred in
+  // the window sits left of where it would be on the whole page. The extra
+  // 32px on the left is that difference, which puts the headline and the box
+  // where the eye expects them on a screen that continues. Even padding
+  // measured correctly and still read as squeezed left.
   return (
     <div
       aria-hidden
-      className="pointer-events-none flex h-full select-none flex-col bg-[var(--mock-window)] px-6 pt-10 text-[color:var(--mock-ink)]"
+      className="pointer-events-none flex h-full select-none flex-col bg-[var(--mock-window)] pl-14 pr-6 pt-10 text-[color:var(--mock-ink)]"
     >
       {/* Named, because the product names you. "What app will you add?" on its
           own is a page title; with the name in front of it, it is the workspace
