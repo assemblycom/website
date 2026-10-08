@@ -670,12 +670,24 @@ export function IconTemplateApprovals({ className }: { className?: string }) {
         <clipPath id="approvals-in">
           <path d="M70.0838 42.7135C79.6917 42.7135 89.1557 40.3783 97.6609 35.909L133.734 16.9535C148.397 9.2485 165.997 19.8821 165.997 36.4461V120.532C165.997 137.096 148.397 147.73 133.734 140.025L97.661 121.069C89.1557 116.6 79.6917 114.264 70.0836 114.264H22.0199C9.85865 114.264 0 104.406 0 92.2443V64.7335C0 52.5722 9.85868 42.7135 22.02 42.7135H70.0838Z" />
         </clipPath>
+        {/* userSpaceOnUse, unlike every other mark here, and the stroke is
+            why. A percentage filter region is measured against the filtered
+            content's object bounding box, and SVG computes that box from path
+            GEOMETRY with the stroke excluded. Every other blurred layer in
+            this file is a filled shape, so its box is the shape and -50%/200%
+            is margin to spare. This one is a 35.878-wide stroke on a short
+            path: the real mark is ~18 units wider than its box on every side,
+            and the blur then wants another 3σ (37) past that, so the region
+            cut the frosting off mid-air and left a hard rectangle inside the
+            bubble. In user space the region is just the viewBox with 60 units
+            of margin, which clears both. */}
         <filter
           id="approvals-blur"
-          x="-50%"
-          y="-50%"
-          width="200%"
-          height="200%"
+          filterUnits="userSpaceOnUse"
+          x="-60"
+          y="-60"
+          width="286"
+          height="306"
           colorInterpolationFilters="sRGB"
         >
           <feGaussianBlur stdDeviation="12.28" />

@@ -344,7 +344,18 @@ export default function AiAppBuilderPage() {
               door uses. The other product pages keep the split header, because
               their subject is a portal rather than a prompt. */}
           <div className="mx-auto max-w-3xl text-center">
-            <h1 className="type-display mx-auto max-w-[18ch] text-balance">
+            {/* pretty, NOT balance, and on a phone that is the whole
+                difference between a clean break and a bad one. Balanced, the
+                36px setting came out "The AI app / builder made for / service
+                businesses" — it split "AI app builder", the one phrase on the
+                page that is a name rather than a description, and it did so
+                to buy an even rag. Left to wrap, the same words fall "The AI
+                app builder / made for service / businesses": the name is
+                intact and the three lines step down, 292/274/177.
+                Measured at 360, 375, 390, 414 and 430; from 600px up the two
+                settings are identical, so nothing above the fold on a desktop
+                changes. */}
+            <h1 className="type-display mx-auto max-w-[18ch] text-pretty">
               The AI app builder made for service businesses
             </h1>
             {/* One line of claim, no audience list. It used to end "for
@@ -354,14 +365,23 @@ export default function AiAppBuilderPage() {
                 spent half the lede doing it. The verticals are named further
                 down, where they are the subject rather than a restatement.
                 The own-domain point is carried by the branding pillar. */}
-            {/* text-balance, not text-pretty, and the headline above it is the
+            {/* Three lines on a phone, now two. The cut is the tail — "and
+                your branding built in." became ", branding." — because the
+                threshold is hard: at 36px/16px in a 327px measure the lede
+                wraps to two lines at 91 characters and three at 92, and the
+                sentence was 107. Every content word survives it; what goes is
+                a conjunction, a "your", and a "built in" that "with" was
+                already saying. The list ends unconjoined on purpose, which is
+                the ordinary way a clipped feature list is set.
+
+                text-balance, not text-pretty, and the headline above it is the
                 reason. pretty only protects the LAST line from running short,
-                so it filled line one and left "and your branding built in." on
-                its own under it — a long line over a stub, directly beneath a
-                headline that is itself balanced. balance evens the two. */}
+                so it filled line one and left the tail on its own under it —
+                a long line over a stub. balance evens the two. (The headline
+                itself wants the opposite; see the note on it above.) */}
             <p className="type-lead mx-auto mt-5 max-w-[38rem] text-balance text-muted-foreground">
               Describe what you want. Assembly builds a working app with logins,
-              permissions, and your branding built in.
+              permissions, branding.
             </p>
           </div>
 
