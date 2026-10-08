@@ -50,6 +50,11 @@ const PILLARS: Pillar[] = [
     // page — the frame read louder than the box it was framing. The other
     // three keep theirs; their screens have furniture on every edge.
     visualBare: true,
+    // Dissolved into the card at its foot. The shot ends mid-way through a row
+    // of app cards, and a hard cut there reads as half-drawn cards rather than
+    // as a window onto a page that carries on. 84%, so the ramp covers about
+    // the last row and nothing above it.
+    fadeBottom: 84,
   },
   {
     eyebrow: "CRM",
@@ -68,16 +73,33 @@ const PILLARS: Pillar[] = [
     // heading about companies.
     //
     // The number is set by the NARROWEST card this row draws, not the widest:
-    // at a 1024 viewport the card is 304 and shows 271px of the mock, where
-    // 520 still cut the company name in half. At 490 Name is 156 — enough for
-    // the longest address here with 6px to spare — and Company ends 3px inside
-    // the crop at that width, with room to spare on a wider screen. The type
-    // does not scale with this; only the columns do.
-    visualWidth: 490,
+    // 360 is set from BOTH ends now, and it can be because the table's
+    // columns are fixed with a spacer at the end (see TeamCrmVisual) rather
+    // than Name being flex-1. While Name was flexible these two were the same
+    // number and could not both be satisfied:
+    //
+    //   - it has to be WIDER than the widest card this row draws (~331px of
+    //     mock visible at the 1200 container) or the screen stops short of the
+    //     card's right edge and leaves a strip of card showing;
+    //   - and the Company column has to land inside the NARROWEST (271px at a
+    //     1024 viewport), or the shot is a contact list with no company in it
+    //     under a heading about companies.
+    //
+    // The spacer takes the difference. The type does not scale with this.
+    visualWidth: 360,
+    // Dissolved on the right rather than cut off by the card. A hard crop
+    // through a table's rows reads as the picture being clipped; a ramp reads
+    // as the table carrying on past what the card can show, which is what is
+    // actually true. It starts at 88% and not the default 62 because this
+    // shot's subject runs ACROSS the measure — at 62 the company column would
+    // be read through the middle of the gradient.
+    //
     // Outlined, not cast — the same call as the Apps card beside it. These two
     // sit in one row and a shadow under one with a drawn edge on the other is
     // the row telling you they are different kinds of thing.
     visualBare: true,
+    fadeRight: true,
+    fadeFrom: 88,
   },
   {
     eyebrow: "Security",
@@ -93,6 +115,10 @@ const PILLARS: Pillar[] = [
     // the title, the field, the button — and cropping it on the card's edges
     // cut off the half of it the claim is about.
     visualContained: true,
+    // And dissolved at the foot like the Apps card. The sign-in is taller than
+    // the card, so it ends mid-form; a hard cut there reads as a half-drawn
+    // field rather than as a screen carrying on.
+    fadeBottom: 86,
   },
   {
     eyebrow: "Branding",

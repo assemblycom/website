@@ -194,12 +194,13 @@ export function AddAppMock() {
           The count is the point of the heading, not decoration: "Browse all
           apps" alone is a link, "21" is the claim that the place you just
           typed into is already full. */}
-        {/* mt-12, not mt-8. The library is the screen's SECOND thing, and at
-          32px it sat close enough to the composer to read as part of it —
-          a row of chips hanging off the box rather than a section of its own.
-          The gap is what separates "say what you want" from "or take one of
-          these". */}
-        <div className="mt-12 flex items-baseline gap-2">
+        {/* mt-16. The library is the screen's SECOND thing, and the gap is what
+          separates "say what you want" from "or take one of these" — at 32px
+          the chips read as hanging off the composer, and at 48 they were still
+          close enough to belong to it. 64 is where the two stop being one
+          block; it also puts the composer nearer the optical middle of the
+          part of the screen the card shows. */}
+        <div className="mt-16 flex items-baseline gap-2">
           <span className="text-[11.5px] leading-none text-[color:var(--mock-ink)]">
             Browse all apps
           </span>

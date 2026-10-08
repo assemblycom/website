@@ -72,9 +72,12 @@ const UI_PLAIN = "text-[12.5px] leading-none";
     scene that IS a document — it is read, not glanced at — and it is drawn at
     1:1 in a 560 box with nothing else competing for the width. At the in-mock
     10px it was legible but looked like fine print in a screenshot. */
-const PLAN_TITLE = "text-[13px] leading-[1.3]";
 const PLAN_HEAD = "text-[11px] leading-[1.3]";
-const PLAN_PROSE = "text-[11px] leading-[1.45]";
+/* 1.6, not 1.45. This is the one block on the site that is set as a DOCUMENT
+   — paragraphs and a list, read rather than scanned — and document leading is
+   looser than a UI label's. It also makes the list's bullets land clear of the
+   line above them rather than between two lines. */
+const PLAN_PROSE = "text-[11px] leading-[1.6]";
 
 const LINE = "border-[var(--mock-line)]";
 // ── Corner radius: a SCALE of three, not a value per element ─────────────
@@ -898,7 +901,14 @@ function RequirementsPane() {
               and the fade and the chevron under it say so. Clipping it to fit
               would mean a four-flow plan that happens to end exactly where the
               card does, which no real one ever does. */}
-          <div className="flex min-h-0 flex-1 flex-col gap-1.5 px-4 pb-4 pt-2">
+          {/* Set like a document, not like a panel's contents: a wide inset
+              either side, air between the blocks, and a list that hangs its
+              bullets off the measure rather than butting them against it. The
+              reference for this is any artifact card — the text sits in from
+              the card's edges far enough that the card reads as paper around
+              it. px-6 and not more: this card is ~400px of measure, and every
+              pixel of inset is a pixel the sentences wrap in. */}
+          <div className="flex min-h-0 flex-1 flex-col gap-2 px-6 pb-4 pt-2">
             <span className={`text-[color:var(--mock-ink)] ${PLAN_HEAD}`}>
               Overview
             </span>
@@ -908,11 +918,11 @@ function RequirementsPane() {
             <span className={`mt-1 text-[color:var(--mock-ink)] ${PLAN_HEAD}`}>
               Core Flows
             </span>
-            <ul className="flex flex-col gap-1">
+            <ul className="flex flex-col gap-1.5">
               {PLAN_DOC.flows.map((f) => (
                 <li
                   key={f}
-                  className={`flex gap-1.5 text-[color:var(--mock-ink-soft)] ${PLAN_PROSE}`}
+                  className={`flex gap-2 text-[color:var(--mock-ink-soft)] ${PLAN_PROSE}`}
                 >
                   <span className="shrink-0">•</span>
                   <span className="min-w-0">{f}</span>

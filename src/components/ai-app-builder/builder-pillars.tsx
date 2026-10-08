@@ -41,6 +41,28 @@ export interface Pillar {
    * the pane beside it is only there to show the nav is attached to something.
    */
   fadeRight?: boolean;
+  /**
+   * Where the right-edge fade's solid part ENDS, as a percent of the card.
+   *
+   * The default 62 is drawn for the branding card, whose subject is a slab on
+   * the left and whose right half is only there to show the slab is attached
+   * to something — a fade over most of it loses nothing. A card whose subject
+   * runs ACROSS the measure (a table with a column near the right) needs the
+   * ramp to wait: at 62 the company column would be read through the middle
+   * of the gradient. Per pillar, because it is a fact about the artwork.
+   */
+  fadeFrom?: number;
+  /**
+   * Dissolves the shot into the card at its FOOT, the way `fadeRight` does on
+   * its right edge, with the same meaning: the screen carries on past what the
+   * card can show. The number is where the solid part ends, as a percent of
+   * the visual's height.
+   *
+   * A hard cut is right for a screen whose bottom edge lands on a row boundary
+   * — it reads as a crop. It is wrong for one that ends mid-object, where the
+   * eye reads a half-drawn card rather than a window.
+   */
+  fadeBottom?: number;
 }
 
 /**
@@ -181,31 +203,24 @@ function FeatureCard({
            itself is never cropped — the window ends exactly on the card's
            edge, so the mark, the field and the button are all still there. */
         <div
-          className={`mt-7 min-h-[260px] flex-1 px-6 md:mt-8 md:min-h-[300px] md:px-8 ${SCREEN_LIFT}`}
+          className={`mt-7 min-h-[260px] flex-1 px-6 md:mt-8 md:min-h-[300px] md:px-8 ${
+            pillar.visualBare ? "" : SCREEN_LIFT
+          }`}
+          style={edgeFade(pillar)}
         >
           {pillar.visual}
         </div>
       ) : (
         <div
           className={`relative mt-7 min-h-[260px] flex-1 md:mt-8 md:min-h-[300px] ${
-            pillar.fadeRight
-              ? // Dissolved into the card on the right rather than cut off by
-                // it. A mask, not an overlay: it takes the screen's own pixels
-                // to transparent so the card's --surface shows through, which
-                // costs nothing in dark mode and cannot be the wrong colour in
-                // either theme.
-                // On THIS box, not on the shot inside it: the shot is laid out
-                // at a fixed 760px and cropped by the card, so a mask there
-                // puts its whole gradient off-screen past the card's edge. This
-                // box is the card's own width, which is the width the fade has
-                // to be measured against.
-                // Full strength across the left two thirds, so the slab being
-                // pointed at stays solid, then away over the last third — a
-                // fade that starts at the halfway mark reads as a blur over the
-                // whole shot rather than as an edge.
-                "[mask-image:linear-gradient(to_right,#000_62%,rgba(0,0,0,0.55)_84%,transparent_100%)]"
-              : ""
+            ""
+            // The ramps live in `edgeFade` below, on THIS box and not on the
+            // shot inside it: the shot is laid out at a fixed width and
+            // cropped by the card, so a mask there puts its whole gradient
+            // off-screen past the card's edge. This box is the card's own
+            // size, which is what the fade has to be measured against.
           }`}
+          style={edgeFade(pillar)}
         >
           {/* The lift is on THIS box and not the masked one outside it: a
               filter and a mask on one element make the browser build the
@@ -230,6 +245,46 @@ function FeatureCard({
       )}
     </div>
   );
+}
+
+/**
+ * The right-edge and bottom-edge ramps, as a mask.
+ *
+ * A mask and not an overlay: it takes the shot's own pixels to transparent so
+ * the card's --surface shows through, which costs nothing in dark mode and
+ * cannot be the wrong colour in either theme.
+ *
+ * The midpoint of each ramp sits at the same proportion of what is left as the
+ * original single ramp used (62 → 84), so moving the start gives a shorter
+ * ramp rather than a differently shaped one.
+ *
+ * Two edges compose with `intersect`: each gradient is its own mask layer and
+ * a pixel survives only where BOTH are opaque, which is what makes a corner
+ * fade on both axes instead of one ramp cancelling the other.
+ */
+function edgeFade(pillar: Pillar): React.CSSProperties | undefined {
+  const ramp = (dir: "right" | "bottom", from: number) =>
+    `linear-gradient(to ${dir}, #000 ${from}%, rgba(0,0,0,0.55) ${
+      from + (100 - from) * 0.58
+    }%, transparent 100%)`;
+
+  const layers: string[] = [];
+  if (pillar.fadeRight) layers.push(ramp("right", pillar.fadeFrom ?? 62));
+  if (pillar.fadeBottom !== undefined)
+    layers.push(ramp("bottom", pillar.fadeBottom));
+  if (!layers.length) return undefined;
+
+  const mask = layers.join(", ");
+  return {
+    WebkitMaskImage: mask,
+    maskImage: mask,
+    ...(layers.length > 1
+      ? {
+          WebkitMaskComposite: "source-in",
+          maskComposite: "intersect",
+        }
+      : {}),
+  } as React.CSSProperties;
 }
 
 /** Matches vs-page's own ids, so the two regions slug a subject the same way. */

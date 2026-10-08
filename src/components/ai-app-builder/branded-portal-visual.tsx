@@ -2,7 +2,6 @@ import {
   IconBrandMark,
   IconCard,
   IconChat,
-  IconChevronDown,
   IconDocuments,
   IconFile,
   IconForm,
@@ -122,7 +121,10 @@ export function BrandedPortalVisual({
           <span className="truncate text-[12.5px] leading-none text-white">
             {brand}
           </span>
-          <IconChevronDown className="size-[10px] shrink-0 text-white/50" />
+          {/* No chevron. It is the workspace switcher's mark, and a switcher
+              is not what this card is about — on a still picture it promises a
+              menu that cannot open, and at 10px in white/50 it read as a
+              speck beside the firm's name rather than as a control. */}
         </span>
 
         {STOCK.map(({ icon, label }) => (

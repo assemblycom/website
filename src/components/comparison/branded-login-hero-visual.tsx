@@ -64,6 +64,11 @@ export function BrandedLoginScreen() {
   return (
     <LoginScreen
       framed
+      // No browser bar. The frame still gives the screen its own surface and
+      // its edge; what goes is the band of grey with three dots in it, which
+      // on a card this short was the first thing above the sign-in and said
+      // nothing the card's heading does not.
+      chrome={false}
       domain="portal.brandmages.com"
       mark={
         // The firm's mark on --mock-brand, the family's brand slab, which stays
@@ -84,6 +89,7 @@ function LoginScreen({
   title,
   badge = false,
   framed = false,
+  chrome = true,
 }: {
   domain: string;
   mark: React.ReactNode;
@@ -99,6 +105,16 @@ function LoginScreen({
    * dark) instead of matching whatever ground it happens to land on.
    */
   framed?: boolean;
+  /**
+   * Draws the browser bar — traffic lights and the address — above the screen.
+   *
+   * On it says WHOSE domain the client lands on, which is the whole point in a
+   * comparison hero where the competing product's URL is the argument. On a
+   * pillar card about secure logins it is a grey band with three dots in it
+   * sitting above the thing the card is actually about, and the first ~40px of
+   * a short card go to chrome.
+   */
+  chrome?: boolean;
 }) {
   // One palette, picked once. Every surface below reads from it, so the two
   // contexts this screen renders in differ in exactly one place rather than in
@@ -133,8 +149,9 @@ function LoginScreen({
           : ""
       }`}
     >
-      {/* The address bar is the point: whose domain the client lands on. */}
-      {framed ? (
+      {/* The address bar, where there is one. On the pillar card there is
+          not: see `chrome`. */}
+      {!chrome ? null : framed ? (
         <SafariChrome domain={domain} />
       ) : (
         <div className="flex items-center gap-3 border-b border-border px-4 py-3 [[data-theme=dark]_&]:border-white/10">
