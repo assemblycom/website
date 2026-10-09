@@ -75,8 +75,23 @@ function NavRow({
     <span
       // 4px, the same as the portal nav row in segment-mock. It was 5 here and
       // 6 there for no reason anyone recorded; one element, one radius.
+      // THE PICKED ROW IS QUIETER IN DARK, 9% against light's 15%, and the two
+      // numbers are separate on purpose.
+      //
+      // One value served both, which looked right on the light page and too
+      // loud on the dark one — not because the contrast differs (the slab is
+      // near-black in both themes, #171717 light and #121212 dark, so 15%
+      // lands around #3a3a3a either way) but because of what surrounds it.
+      // On the dark page the slab sits on a #191919 card on a #0a0a0a ground,
+      // so a #3a3a3a pill is the brightest patch in the whole shot — and the
+      // shot's subject is the pane of upload fields beside it, not which row
+      // of the nav is open. 9% lands near #272727: a +21 step off the slab,
+      // still plainly the picked row at a 24px rung, no longer the first thing
+      // the eye goes to. Light is untouched.
       className={`flex items-center gap-2 rounded-[4px] px-2 py-[6px] ${MOCK_PRIMARY} ${
-        active ? "bg-white/15 text-white" : "text-white/70"
+        active
+          ? "bg-white/15 text-white [[data-theme=dark]_&]:bg-white/[0.09]"
+          : "text-white/70"
       }`}
     >
       <span className="flex shrink-0 items-center [&>svg]:size-[12px]">
@@ -238,14 +253,41 @@ export function BrandedPortalVisual({
           {landOnHover.map(({ icon, label }, i) => (
             <div
               key={label}
-              className={`grid -translate-y-[6px] grid-rows-[0fr] opacity-0 transition-[grid-template-rows,opacity,transform] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover/pillar:translate-y-0 group-hover/pillar:grid-rows-[1fr] group-hover/pillar:opacity-100 motion-reduce:translate-y-0 motion-reduce:grid-rows-[1fr] motion-reduce:opacity-100 motion-reduce:transition-none ${
-                i === 1 ? "delay-[380ms]" : "delay-[120ms]"
+              // THE TIMING IS DIFFERENT IN EACH DIRECTION, and it has to be.
+              // Duration, easing and delay are themselves part of the rule
+              // that applies, so the base classes here describe the EXIT and
+              // the `group-hover/pillar:` ones describe the ENTRY. One set of
+              // values served both before, which is what made leaving the card
+              // look broken: the rows sat still for 120ms and 380ms — the
+              // entry stagger, running backwards — and then took 700ms to
+              // close on an ease whose whole curve is spent at the end, so
+              // they crawled shut long after the pointer had gone.
+              //
+              // Entry: 700ms on the eased curve, the second row 260ms behind
+              // the first, so they arrive one after the other.
+              //
+              // Exit: 200ms, ease-out, and the stagger REVERSED — the lower
+              // row goes first and the upper follows 80ms later. Last in,
+              // first out: the stack retracts the way it arrived rather than
+              // unspooling from the top, and it is gone quickly enough that
+              // leaving the card reads as one movement.
+              className={`-mt-[2px] grid -translate-y-[6px] grid-rows-[0fr] opacity-0 transition-[grid-template-rows,opacity,transform] duration-200 ease-out group-hover/pillar:translate-y-0 group-hover/pillar:grid-rows-[1fr] group-hover/pillar:opacity-100 group-hover/pillar:duration-700 group-hover/pillar:ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:translate-y-0 motion-reduce:grid-rows-[1fr] motion-reduce:opacity-100 motion-reduce:transition-none ${
+                i === 1
+                  ? "delay-0 group-hover/pillar:delay-[380ms]"
+                  : "delay-[80ms] group-hover/pillar:delay-[120ms]"
               }`}
             >
               <div className="overflow-hidden">
                 {/* pt-[2px] reproduces the gap-[2px] the static rows above sit
-                    on. A collapsed track cannot carry a flex gap, so the
-                    spacing has to live inside the row that is growing. */}
+                    on, from INSIDE the collapsing track, so it goes to zero
+                    with the row rather than being held open by it.
+                    A collapsed flex item still takes the parent's gap, though,
+                    which the original note here had backwards — so this 2px
+                    was landing on top of the parent's own 2px. The row's
+                    `-mt-[2px]` (above) cancels that: the landing rows sat 4px
+                    apart where the static rows above them sit 2px, and the
+                    nav reserved 4px of dead space under "Year-end docs" at
+                    rest for two rows that were not there. */}
                 <div className="pt-[2px]">
                   <NavRow icon={icon} label={label} />
                 </div>

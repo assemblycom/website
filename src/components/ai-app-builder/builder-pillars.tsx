@@ -38,6 +38,15 @@ export interface Pillar {
    */
   visualBare?: boolean;
   /**
+   * Where the bare frame's lit hairline reaches nothing, as a percentage of
+   * the FRAME's own height — `--lit-fade` on .mock-lit-edge. The default of
+   * 100% assumes the card cuts the frame at its foot; a frame drawn taller
+   * than the card shows only the top of its ramp, so the line is still clearly
+   * there where the crop falls and the edge looks cut rather than faded.
+   * Only meaningful with `visualBare`.
+   */
+  litFade?: string;
+  /**
    * Fades the shot out on its right rather than letting the card cut it off.
    * For a screen where one END of it is the claim — the branded nav slab — and
    * the pane beside it is only there to show the nav is attached to something.
@@ -401,16 +410,28 @@ function FeatureCard({
               pillar.visualBare ? "mock-lit-edge" : ""
             } ${span === "wide" ? "right-0 h-[130%]" : "h-full"}`}
             style={
-              span === "wide"
-                ? undefined
-                : ({
-                    // A VAR, not `width`. An inline width beats any class, so
-                    // `containOnPhone`'s `w-auto` could never win against it.
-                    "--shot-w": `${pillar.visualWidth ?? (span === "tall" ? 860 : 760)}px`,
-                    ...(pillar.containOnPhone
-                      ? undefined
-                      : { width: "var(--shot-w)" }),
-                  } as React.CSSProperties)
+              {
+                // `--lit-fade` INLINE, not as a `[--lit-fade:…]` class. The
+                // value comes from the pillar, so the class would have to be
+                // built by interpolation — and Tailwind generates utilities by
+                // scanning source text for whole class names, so a name it
+                // never sees written out is a name it never emits. The class
+                // would have been silently absent and the frame would have
+                // kept the default ramp, which is the kind of bug that looks
+                // like the value simply not working.
+                ...(pillar.litFade ? { "--lit-fade": pillar.litFade } : {}),
+                ...(span === "wide"
+                  ? {}
+                  : {
+                      // A VAR, not `width`. An inline width beats any class,
+                      // so `containOnPhone`'s `w-auto` could never win
+                      // against it.
+                      "--shot-w": `${pillar.visualWidth ?? (span === "tall" ? 860 : 760)}px`,
+                      ...(pillar.containOnPhone
+                        ? undefined
+                        : { width: "var(--shot-w)" }),
+                    }),
+              } as React.CSSProperties
             }
           >
             {pillar.visual}

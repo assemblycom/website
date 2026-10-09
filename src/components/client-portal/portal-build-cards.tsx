@@ -516,7 +516,7 @@ export function DescribeCard({ plain = false }: SceneProps = {}) {
         <div
           className={
             plain
-              ? "mb-auto rounded-[14px] bg-[linear-gradient(to_bottom,#d9ed92_0%,#9fd6c4_45%,#8ea2f4_100%)] bg-[length:100%_200%] bg-[position:0%_0%] p-px transition-[background-position] duration-700 ease-out group-hover/card:bg-[position:0%_100%] motion-reduce:transition-none sm:mt-[66px]"
+              ? "rounded-[14px] bg-[linear-gradient(to_bottom,#d9ed92_0%,#9fd6c4_45%,#8ea2f4_100%)] bg-[length:100%_200%] bg-[position:0%_0%] p-px transition-[background-position] duration-700 ease-out group-hover/card:bg-[position:0%_100%] motion-reduce:transition-none sm:mb-auto sm:mt-[66px]"
               : "contents"
           }
         >
@@ -567,6 +567,18 @@ export function DescribeCard({ plain = false }: SceneProps = {}) {
               // between the sentence and the controls, which is the thing that
               // made the controls look too small for the box — they were being
               // measured against a box most of which was nothing.
+              //
+              // MOBILE CENTRES IT; ONLY THE DESKTOP PUSH IS ARITHMETIC.
+              // `mb-auto` is `sm:` now, so below that the scene's own
+              // justify-center places the box. Topping it out there was
+              // measured against the CARD, and by that measure it was right —
+              // the box sat within 10px of the card's middle. But the card
+              // opens with a heading and a line of copy, so centring against
+              // its full height spends the top on type and leaves the box
+              // hugging it: 43px between the subtitle and the box, 134px of
+              // empty grey below. The space a reader sees the box sitting in
+              // is the part UNDER the header, and it belongs in the middle of
+              // that.
               //
               // POSITION is still arithmetic. A box centred in the SCENE sits ~60px
               // below the centre of the PANEL, because the panel is a header plus
@@ -661,12 +673,16 @@ export function DescribeCard({ plain = false }: SceneProps = {}) {
                 {plain
                   ? "Add a shared calendar each client books their own time on."
                   : "Add a project tracker each client sees for their own project."}
-                {/* The site's own caret blink (--animate-caret, the one the hero
-              typewriter uses), run only while the card is hovered: at rest
-              it is a resting insertion point, on hover someone is typing.
+                {/* The site's own caret blink (--animate-caret, the one the
+              hero typewriter uses). It BLINKS AT REST now rather than only
+              while the card is hovered: a still caret parked after a finished
+              sentence reads as a stray mark on the mock, where a blinking one
+              says the field is live and someone is mid-thought. It is also the
+              only moving thing in a picture that otherwise does nothing until
+              it is hovered — which on a phone is never.
               No MOVE here — a transition-all fights the keyframes. */}
                 <span
-                  className={`ml-[1px] inline-block w-[1.5px] translate-y-[2px] bg-[var(--mock-ink)] motion-safe:group-hover/card:animate-caret ${plain ? "h-[15px]" : "h-[14px]"}`}
+                  className={`ml-[1px] inline-block w-[1.5px] translate-y-[2px] bg-[var(--mock-ink)] motion-safe:animate-caret ${plain ? "h-[15px]" : "h-[14px]"}`}
                 />
               </p>
 
@@ -1092,7 +1108,30 @@ function RequirementsPane() {
           // short. The bottom border goes for the same reason: a hairline
           // drawn across the cut closes the shape the ramp above it is
           // busy opening.
-          className={`relative flex h-full flex-col overflow-hidden ${R_PANEL} rounded-b-none border border-b-0 bg-[var(--mock-window)] ${LINE}`}
+          // .mock-edge, so the top corner catches light instead of being a
+          // flat hairline. It is the same treatment the composer on the
+          // Describe step wears, which matters: these are two moments of one
+          // sequence, and a lit edge on the first with a dead one on the
+          // second reads as two different materials.
+          //
+          // THE RIGHT TOOL FOR A BORDERED BOX. .mock-lit-edge is the other
+          // lit ring on this site and it could not be used here — it is an
+          // ::after at inset 0, which on a box with a border is the PADDING
+          // box, so it either draws a second hairline just inside this one or,
+          // with the border made transparent, nests two radii a pixel apart.
+          // .mock-edge paints the light INTO the border itself, so there is
+          // only ever one line.
+          //
+          // Default ellipse (540x400), unlike the composer's percentage
+          // sizing: that box is ~100px tall, where only the brightest corner
+          // of the ramp would ever be on screen, so it had to be rescaled.
+          // This panel is about the size the class was drawn for.
+          //
+          // Dark only, which is where the class lives — in light the plain
+          // --mock-line hairline already reads against the card. The missing
+          // bottom border is unaffected: the ramp is painted on the border box
+          // and simply has no band to paint there.
+          className={`mock-edge relative flex h-full flex-col overflow-hidden ${R_PANEL} rounded-b-none border border-b-0 bg-[var(--mock-window)] ${LINE}`}
         >
           {/* The action, in the card's own top-right corner — the corner the
               product puts a document's controls in, and where the eye goes

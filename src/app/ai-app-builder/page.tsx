@@ -64,6 +64,13 @@ const PILLARS: Pillar[] = [
     // page — the frame read louder than the box it was framing. The other
     // three keep theirs; their screens have furniture on every edge.
     visualBare: true,
+    // The hairline is spent by two thirds of the way down the frame, rather
+    // than running its ramp to the frame's own foot. This shot is drawn taller
+    // than the card shows, so the default ramp was still carrying a visible
+    // line where the card crops it — the frame's edge stopped dead beside a
+    // shot that is busy dissolving into the card at the same height. At 66%
+    // the line is gone before the crop and the two agree.
+    litFade: "66%",
     // Dissolved into the card at its foot. The shot ends mid-way through a row
     // of app cards, and a hard cut there reads as half-drawn cards rather than
     // as a window onto a page that carries on. 84%, so the ramp covers about
@@ -356,7 +363,6 @@ const BUILDER_FAQS: FAQEntry[] = [
   },
 ];
 
-
 // Built from the same entries the accordion renders, so the questions a crawler
 // reads can never drift from the ones on the page.
 const FAQ_SCHEMA = {
@@ -400,7 +406,7 @@ export default function AiAppBuilderPage() {
             on the page's own ground. `overflow-hidden` above is what crops the
             ellipses into an arc — without it they are four circles. */}
         <BuilderGlow />
-{/* `builder-hero-lift` takes the block off the centre line on a big
+        {/* `builder-hero-lift` takes the block off the centre line on a big
             screen — see globals.css, where the two gates and the reason they
             are on HEIGHT and not just width are written out. */}
         <div className="relative z-10 mx-auto w-full max-w-[1400px] builder-hero-lift px-6 md:px-10">

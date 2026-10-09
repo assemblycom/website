@@ -49,7 +49,9 @@ export function BuilderCustomerQuotesStack({
   // Keyed by firm rather than by index so the open row survives any reorder
   // of the data; `null` is a legal state because tapping the open row closes
   // it, exactly as the FAQ does.
-  const [openFirm, setOpenFirm] = useState<string | null>(quotes[0]?.firm ?? null);
+  const [openFirm, setOpenFirm] = useState<string | null>(
+    quotes[0]?.firm ?? null,
+  );
 
   return (
     <ul className="mt-10 flex flex-col gap-3 md:hidden">
@@ -72,7 +74,9 @@ export function BuilderCustomerQuotesStack({
           >
             <button
               type="button"
-              onClick={() => setOpenFirm((cur) => (cur === q.firm ? null : q.firm))}
+              onClick={() =>
+                setOpenFirm((cur) => (cur === q.firm ? null : q.firm))
+              }
               aria-expanded={open}
               aria-controls={panelId}
               // Inset ring, for the same reason the FAQ's row carries one: the
@@ -144,22 +148,23 @@ export function BuilderCustomerQuotesStack({
                 aria-label={`Read ${q.firm}'s story`}
                 className="group/story absolute right-4 top-[28px] flex size-8 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-foreground/40"
               >
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 20 20"
-                  fill="none"
+                {/* PP MORI'S OWN ARROW, not a drawn one. The face ships a
+                    U+2192 and it is the arrow the rest of the site's type is
+                    cut to sit beside — its bar weight, its head angle and its
+                    optical size all come from the same drawing as the letters
+                    around it, where the hand-built path was a 1.5px round-cap
+                    stroke that matched nothing on the card.
+                    Verified the glyph is really in the font rather than coming
+                    from a fallback: PP Mori advances U+2192 at 37.84px where
+                    the fallback face advances 40px at the same size.
+                    `leading-none` so the glyph's own line box does not push it
+                    off the centre of the 32px hit area it sits in. */}
+                <span
                   aria-hidden
-                  className="transition-transform duration-200 group-hover/story:translate-x-0.5 motion-reduce:transition-none"
+                  className="text-[20px] leading-none transition-transform duration-200 group-hover/story:translate-x-0.5 motion-reduce:transition-none"
                 >
-                  <path
-                    d="M4.75 10h10.5M10.75 5.5L15.25 10l-4.5 4.5"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
+                  →
+                </span>
               </Link>
             ) : null}
 

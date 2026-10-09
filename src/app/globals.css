@@ -4284,11 +4284,18 @@ html:not([data-authed]) .auth-only {
   inset: 0;
   border-radius: inherit;
   padding: 1px;
+  /* `--lit-fade` is where the ramp reaches nothing, and it is a knob because
+     these frames are cropped by their card at different heights. A frame drawn
+     at 130% of the card spends only the first three quarters of its ramp on
+     screen, so a ramp that reaches transparent at 100% is still carrying
+     noticeable line where the card cuts it — the edge stops rather than fades.
+     Such a frame asks for a lower number; one cropped at its own foot keeps
+     the default. */
   background: linear-gradient(
     var(--lit-angle, 180deg),
     var(--mock-edge-lit) 0%,
-    var(--mock-line) 45%,
-    transparent 100%
+    var(--mock-line) var(--lit-mid, 45%),
+    transparent var(--lit-fade, 100%)
   );
   -webkit-mask:
     linear-gradient(#000 0 0) content-box,
@@ -4520,27 +4527,34 @@ html:not([data-authed]) .auth-only {
      gradient: the ramp's shape and stops stay in one place, and only the
      values this card needs change. Every other .surface-lit box — the How it
      works panel among them — keeps the originals. */
-  /* MONOTONE ON THESE CARDS, and that is the point of setting all three to
-     one value rather than rewriting the ring.
+  /* A SHALLOW FALL, not the monotone this used to be and not the base ramp
+     either.
 
-     The card's outer edge is the FRAME; the lit, falling-off edges belong to
-     the product screens lying inside it (.mock-edge, .mock-lit-edge). With
-     both ramping, the card read as another piece of UI in a stack of UI —
-     two lit objects, one inside the other, each giving out in its own
-     direction — instead of as the surface the screens are sitting on. A frame
-     does not catch light; the things on it do.
+     It was flat — all three stops at 0.1 — on the argument that a frame does
+     not catch light, only the screens lying on it do. That argument holds for
+     the HEAD of the card, and 0.1 there is still right: it lands near #292929
+     on the page's #0a0a0a, which is the weight the grid rails and the
+     dividers already use, so the card is drawn with the page's own line.
 
-     0.1 is the foot's own value, which lands near #292929 — the weight the
-     page's hairlines, the grid rails and the dividers already use. So the
-     card now closes with the same line the rest of the page is drawn with,
-     all the way round.
+     What it got wrong is the foot. A line of one value all the way round is
+     not a frame catching no light — it is a frame lit evenly from everywhere,
+     and on these cards the bottom edge read as brightly as the top while the
+     artwork inside it was busy dissolving into the card. The eye ends up on
+     the card's bottom corners, which is the one place on the pillar with
+     nothing to look at.
 
-     The ramp machinery is untouched and still three stops: every other
-     .surface-lit box, the How it works panel included, keeps its gradient.
-     Only this selector flattens it. */
+     So the head keeps the page's hairline weight and the ring falls to about
+     half of it by the foot: 0.055 lands near #191919, a +15 step off the page
+     rather than +24. Still unmistakably a closed card — which is what the
+     monotone was protecting, and the reason this does not go near the base
+     ramp's 3.5%, where the foot resolved to two points off the page and the
+     card looked open down its sides.
+
+     The base ramp is untouched: every other .surface-lit box, the How it
+     works panel among them, keeps the values it was tuned at. */
   --surface-lit-top: rgba(255, 255, 255, 0.1);
-  --surface-lit-mid: rgba(255, 255, 255, 0.1);
-  --surface-lit-foot: rgba(255, 255, 255, 0.1);
+  --surface-lit-mid: rgba(255, 255, 255, 0.085);
+  --surface-lit-foot: rgba(255, 255, 255, 0.055);
 }
 
 /* ── A PILLAR SHOT'S EDGE RAMPS ──────────────────────────────────────────
