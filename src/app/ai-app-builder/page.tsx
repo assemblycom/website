@@ -550,11 +550,15 @@ export default function AiAppBuilderPage() {
             The wrapper is here rather than in the shared FAQ because it is
             this page's rails it answers to, not anything the FAQ owns. */}
         <div className={`relative bg-background ${BUILDER_RAIL_HALO_WIDE}`}>
+          {/* The shape is the component's default now — this page was where
+              the treatment was first drawn, and the rest of the site has since
+              been moved onto it. All that is left here is `compactQuestions`,
+              which is this page's own: its questions are written long for
+              search, so the row shows the short form while the answer stays
+              filed under the full wording. */}
           <FAQ
             heading="Frequently asked questions"
             items={BUILDER_FAQS}
-            variant="divided"
-            dottedRules
             compactQuestions
           />
         </div>

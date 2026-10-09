@@ -207,9 +207,29 @@ export function BrandedPortalVisual({
               min-height. `overflow-hidden` on the inner div is what lets the
               0fr track actually clip.
 
-              Staggered — the second waits 90ms — so they LAND one after the
-              other rather than appearing as a block. That is the whole reason
-              this is two rows and not one.
+              Staggered so they LAND one after the other rather than appearing
+              as a block. That is the whole reason this is two rows and not
+              one, and the first numbers did not buy it: at 500ms with 90ms
+              between them the two reveals overlapped for four fifths of their
+              run, so what you saw was a block that happened to be slightly
+              ragged at one corner. 260ms apart is wider than it sounds — the
+              rows still overlap, which is what keeps it one gesture — but the
+              first is most of the way open before the second starts moving,
+              which is the point at which an eye reads them as two events.
+
+              THE FIRST ROW WAITS TOO, 120ms. With no delay on it the reveal
+              began on the same frame as the pointer crossing the card, which
+              is what read as sudden: nothing had settled yet and a row was
+              already growing. The beat is short enough not to feel like lag
+              and long enough that the animation looks like a response rather
+              than a twitch.
+
+              700ms, up from 500, and the rows come DOWN 6px as they open.
+              Height alone is a row unfolding in place; the small drop is what
+              makes it read as a row arriving from the stack above it. Both run
+              on the same eased curve as before, which is nearly all of its
+              ease spent at the end — so the row decelerates into its place
+              instead of stopping at it.
 
               Hover only, and deliberately: it is a flourish on a picture, the
               card reads correctly without it, and a touch device simply never
@@ -218,8 +238,8 @@ export function BrandedPortalVisual({
           {landOnHover.map(({ icon, label }, i) => (
             <div
               key={label}
-              className={`grid grid-rows-[0fr] opacity-0 transition-[grid-template-rows,opacity] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover/pillar:grid-rows-[1fr] group-hover/pillar:opacity-100 motion-reduce:grid-rows-[1fr] motion-reduce:opacity-100 motion-reduce:transition-none ${
-                i === 1 ? "delay-[90ms]" : ""
+              className={`grid -translate-y-[6px] grid-rows-[0fr] opacity-0 transition-[grid-template-rows,opacity,transform] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover/pillar:translate-y-0 group-hover/pillar:grid-rows-[1fr] group-hover/pillar:opacity-100 motion-reduce:translate-y-0 motion-reduce:grid-rows-[1fr] motion-reduce:opacity-100 motion-reduce:transition-none ${
+                i === 1 ? "delay-[380ms]" : "delay-[120ms]"
               }`}
             >
               <div className="overflow-hidden">

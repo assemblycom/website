@@ -78,5 +78,5 @@ export function BuiltOnFaq({ firm }: { firm?: BuiltOnFirm }) {
   // The site's standard FAQ treatment, identical to the homepage's: soft
   // rounded rows in two columns under a centred heading. The divided list this
   // used before is the /security variant, not the house style.
-  return <FAQ items={builtOnFaqs(firm)} twoColumn />;
+  return <FAQ items={builtOnFaqs(firm)} />;
 }

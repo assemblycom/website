@@ -261,11 +261,7 @@ export default async function JobsPage() {
         {page.faqs.length > 0 && (
           <>
             <GridDivider />
-            <FAQ
-              heading="Frequently asked questions"
-              items={page.faqs}
-              twoColumn
-            />
+            <FAQ heading="Frequently asked questions" items={page.faqs} />
           </>
         )}
 

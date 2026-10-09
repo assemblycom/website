@@ -202,11 +202,7 @@ export default function SecurityPage() {
       <div className="relative pb-10 md:pb-16">
         <GridRails />
 
-        <FAQ
-          heading="Frequently asked questions"
-          items={SECURITY_FAQS}
-          twoColumn
-        />
+        <FAQ heading="Frequently asked questions" items={SECURITY_FAQS} />
       </div>
 
       {/* Final CTA — parallax chip field naming the platform's baked-in

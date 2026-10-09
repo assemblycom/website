@@ -135,11 +135,12 @@ export function ProgramPage({
         <GridDivider />
       </div>
 
-      {/* The site's FAQ treatment (home, /security): centred heading over two
-          columns of cards, framed by the rails like every other region. */}
+      {/* The site's FAQ treatment, which the component now defaults to:
+          a sticky heading in a left column over a ruled list of questions,
+          framed by the rails like every other region. */}
       <div className="relative pb-10 md:pb-16">
         <GridRails />
-        <FAQ items={faqs} twoColumn />
+        <FAQ items={faqs} />
       </div>
     </>
   );
