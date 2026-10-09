@@ -90,6 +90,33 @@ const PLAN_HEAD = "text-[14px] leading-[1.3] sm:text-[13px]";
 const PLAN_PROSE = "text-[14px] leading-[1.6] sm:text-[13px]";
 
 const LINE = "border-[var(--mock-line)]";
+
+/**
+ * A flow, with its one marked term underlined.
+ *
+ * Splits on the first occurrence and nothing more — no regex over the whole
+ * string, so a term that happens to appear twice is marked where it is
+ * introduced rather than everywhere it is mentioned.
+ *
+ * `decoration-dotted` at 1px with a 3px offset: the dots have to sit clear of
+ * the descenders in "dashboard" and read as a mark rather than as a link,
+ * which on this site is a solid 1px rule. The colour is inherited, so the
+ * mark fades with its line under the foot ramp instead of staying lit after
+ * the words around it have gone.
+ */
+function markedFlow(text: string, mark: string) {
+  const at = text.indexOf(mark);
+  if (at === -1) return text;
+  return (
+    <>
+      {text.slice(0, at)}
+      <span className="underline decoration-dotted decoration-1 underline-offset-[3px]">
+        {mark}
+      </span>
+      {text.slice(at + mark.length)}
+    </>
+  );
+}
 // ── Corner radius: a SCALE of three, not a value per element ─────────────
 // These mocks had five radii — 3, 4, 5, 6 and 8px plus Tailwind's own lg and
 // xl — picked as each was drawn, which on a card showing several at once reads
@@ -917,6 +944,19 @@ const PLAN_DOC = {
     "Client opens the calendar in the client experience and sees their own events and the open slots for their company.",
     "Client books an open slot, gets a confirmation, and a reminder before it starts.",
   ],
+  // The words in the flows above that name a PLACE OR A THING IN THE PRODUCT
+  // rather than describing an action — the surfaces the app is being built
+  // against. A dotted underline is what a plan does with those: it marks the
+  // nouns it is committing to, the way a spec underlines a defined term, and
+  // it reads as the document having been written rather than generated.
+  //
+  // Substrings, matched once each, in the shape faq.tsx already uses for its
+  // answer links — the copy stays a plain sentence and the marks live beside
+  // it, so neither has to be read through the other's markup.
+  //
+  // Deliberately ONE per flow. Two marks in a three-clause sentence and the
+  // underline stops being a mark and becomes the texture of the paragraph.
+  marks: ["dashboard", "New event", "client experience", "reminder"],
 };
 
 /**
@@ -1059,7 +1099,7 @@ function RequirementsPane() {
               Core Flows
             </span>
             <ul className="flex flex-col gap-1.5">
-              {PLAN_DOC.flows.map((f) => (
+              {PLAN_DOC.flows.map((f, i) => (
                 <li
                   key={f}
                   className={`flex gap-2 text-[color:var(--mock-ink-soft)] ${PLAN_PROSE}`}
@@ -1079,7 +1119,9 @@ function RequirementsPane() {
                   <span className="flex h-[22.4px] shrink-0 items-center sm:h-[20.8px]">
                     <span className="size-[3px] rounded-full bg-current" />
                   </span>
-                  <span className="min-w-0">{f}</span>
+                  <span className="min-w-0">
+                    {markedFlow(f, PLAN_DOC.marks[i])}
+                  </span>
                 </li>
               ))}
             </ul>

@@ -1,5 +1,8 @@
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
-import { BUILDER_RAIL_HALO } from "./builder-grid-rails";
+import { BUILDER_RAIL_HALO_WIDE } from "./builder-grid-rails";
 import { BuilderCustomerQuotesStack } from "./builder-customer-quotes-stack";
 import Link from "next/link";
 
@@ -107,6 +110,25 @@ const QUOTES: CustomerQuote[] = [
 ];
 
 export function BuilderCustomerQuotes() {
+  // WHICH CARD THE ROW RESTS ON, as an index into QUOTES.
+  //
+  // It used to rest on the first card, always: `:not(:hover) > li:first-child`
+  // in the row's own class, no state and no JS. The cost was that leaving the
+  // row undid whatever you had just done — you opened Kyle's card, moved the
+  // pointer away to read it, and the row threw it away and reopened Phillip's.
+  // The one card you had asked for is the one it closed.
+  //
+  // So the rest state follows the last card the pointer entered. It still
+  // OPENS on the first, because 0 is where this starts.
+  //
+  // The CSS is otherwise untouched: `:not(:hover)` still gates the rest rules,
+  // so they cannot compete with the `hover:` rules on an individual card, and
+  // the hover behaviour is the same pure-CSS one it always was. All the state
+  // does is move which card the `:not(:hover)` rules select, via `data-rest`.
+  // That is also why this is a `data-` attribute and not a className: the
+  // selector lives with the other rest rules in one place.
+  const [rest, setRest] = useState(0);
+
   return (
     // The measure and rhythm BuilderTemplates uses, so the two sections either
     // side of the divider between them sit on one column.
@@ -140,11 +162,22 @@ export function BuilderCustomerQuotes() {
         // the `hover:` rules on an individual card — the moment the row is
         // hovered they all switch off together and the hovered card is the
         // only thing growing.
-        className="mt-10 hidden md:mt-12 md:flex md:h-[400px] md:flex-row md:gap-3 md:[&:not(:hover)>li:first-child]:grow-[3] md:[&:not(:hover)>li:first-child_blockquote]:mt-5 md:[&:not(:hover)>li:first-child_blockquote]:max-h-40 md:[&:not(:hover)>li:first-child_blockquote]:translate-y-0 md:[&:not(:hover)>li:first-child_blockquote]:opacity-100"
+        className="mt-10 hidden md:mt-12 md:flex md:h-[400px] md:flex-row md:gap-3 md:[&:not(:hover)>li[data-rest]]:grow-[3] md:[&:not(:hover)>li[data-rest]_blockquote]:mt-5 md:[&:not(:hover)>li[data-rest]_blockquote]:max-h-40 md:[&:not(:hover)>li[data-rest]_blockquote]:translate-y-0 md:[&:not(:hover)>li[data-rest]_blockquote]:opacity-100"
       >
-        {QUOTES.map((q) => (
+        {QUOTES.map((q, i) => (
           <li
             key={q.firm}
+            // onMouseEnter, not onMouseOver: the latter fires again for every
+            // child the pointer crosses inside the card, which is a setState
+            // per portrait and per line of the quote.
+            //
+            // onFocus too, so a keyboard leaves the row resting where tabbing
+            // left it — `focus-within` already opens the card, and the rest
+            // state should agree with it rather than snapping elsewhere when
+            // focus moves on.
+            onMouseEnter={() => setRest(i)}
+            onFocus={() => setRest(i)}
+            data-rest={i === rest ? "" : undefined}
             // THE EXPANSION, in one declaration.
             //
             // Every card is flex-1 — four equal columns. The hovered card's
@@ -161,7 +194,7 @@ export function BuilderCustomerQuotes() {
             // A NEUTRAL CARD. --surface is the ground the pillar cards above
             // already use, so the row is the page's own material with pictures
             // set into it and every ink on it is an ordinary token.
-            className={`group overflow-hidden rounded-xl bg-[var(--surface)] p-5 ${BUILDER_RAIL_HALO} transition-[flex-grow] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none md:min-w-0 md:flex-1 md:hover:grow-[3] md:focus-within:grow-[3]`}
+            className={`group overflow-hidden rounded-xl bg-[var(--surface)] p-5 ${BUILDER_RAIL_HALO_WIDE} transition-[flex-grow] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none md:min-w-0 md:flex-1 md:hover:grow-[3] md:focus-within:grow-[3]`}
           >
             <Link href={q.href} className="flex h-full flex-col">
               {/* THE THUMBNAIL IS ONE SIZE IN BOTH STATES.

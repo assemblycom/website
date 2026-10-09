@@ -154,13 +154,20 @@ export function BuilderGridRails() {
       // padding, so the grid arrives with the first heading rather than
       // before it.
       //
+      // AND FADED OUT AT THE FOOT, the same way. The region used to end at
+      // the FAQ, where a rule closed it; it now runs on behind the CTA, whose
+      // foot is the footer's top edge. Six rails stopping together on that
+      // edge is the same 1200px seam the FAQ's top was, so the mask takes
+      // them out over the last 260px instead — the grid is gone before the
+      // footer rather than cut off by it.
+      //
       // A MASK, NOT A GRADIENT FILL. A gradient to a background colour would
       // be a themed colour hardcoded in a component, and would have to be
       // written twice and kept in step. Masking fades the layer's alpha
       // instead, so whatever the wrapper's `bg-background` resolves to in the
       // current theme is what the rails fade into — one declaration, correct
       // in both.
-      className="pointer-events-none absolute inset-0 -z-10 hidden [mask-image:linear-gradient(to_bottom,transparent_0,#000_200px)] min-[1200px]:block"
+      className="pointer-events-none absolute inset-0 -z-10 hidden [mask-image:linear-gradient(to_bottom,transparent_0,#000_200px,#000_calc(100%-260px),transparent_100%)] min-[1200px]:block"
     >
             {/* NO HORIZONTAL PADDING. The rails and the horizontal rules have to
           share one box or the grid does not close at its corners: GridDivider

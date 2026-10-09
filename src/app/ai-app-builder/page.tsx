@@ -322,7 +322,20 @@ export default function AiAppBuilderPage() {
           pushed the composer — the one thing on this page you can actually use
           — most of the way down the first screen. The glow below is unchanged:
           it is drawn to the section's foot, which has not moved. */}
-      <section className="relative flex min-h-[calc(100svh-5rem)] items-start overflow-hidden pb-20 pt-10 md:items-center md:pb-28 md:pt-20">
+      {/* AND LIFTED OFF THE CENTRE LINE ON A BIG SCREEN. `items-center`
+          centres the block between this section's own paddings, which is right
+          up to about a laptop. On a 1500px-tall window the block is ~450px of
+          content in ~1240px of room, so dead centre put the headline a third
+          of the way down with nothing above it, and dropped the composer into
+          the bright band of the arc rather than above it.
+
+          The lift is EXTRA BOTTOM PADDING, not a different alignment: with
+          `items-center` the block centres in the content box, so growing the
+          foot raises the block by half of what it grows. 2xl takes it up 72px,
+          xl 24, and below that nothing changes — the sizes where the centre
+          line was already right are untouched. The arc is unaffected: it is
+          drawn to the section's foot, which the padding does not move. */}
+      <section className="relative flex min-h-[calc(100svh-5rem)] items-start overflow-hidden pb-20 pt-10 md:items-center md:pb-28 md:pt-20 xl:pb-[10rem] 2xl:pb-64">
         {/* The horizon arc behind the headline. It clips to this section and
             fades out before its bottom edge, so the region below still opens
             on the page's own ground. `overflow-hidden` above is what crops the
@@ -484,43 +497,54 @@ export default function AiAppBuilderPage() {
           />
         </div>
 
-        {/* Full-bleed: this rule closes the region, so the rails stop here and
-            there is nothing at its ends for a capped one to land on. */}
+        {/* Full-bleed: the seam between the chapters and the CTA. It no
+            longer closes the RAILS — the CTA is inside the region now, so the
+            grid carries on behind it and the rule is a rule rather than an
+            ending. Nothing capped lands on it, hence full-bleed. */}
         <GridDivider fullBleed lineClass={BUILDER_GRID_LINE} />
-      </div>
 
-      <CTA
-        heading={
-          <>
-            Your next app,
-            <br />
-            built this afternoon
-          </>
-        }
-        // Broken at the sentence, the same place the CTA's own default lead
-        // breaks. Left to wrap it set eight words on line one and "a template."
-        // on line two — `text-pretty` only rescues a single-word last line. The
-        // break is md-up: below that the measure is narrow enough that the two
-        // sentences wrap into a block on their own.
-        subheading={
-          <>
-            {/* "what your business needs" → "what you need". The reader is
-                the business; naming it again was the sentence restating its
-                own audience. 15 words to 13, both offers intact: skip the
-                custom build, and start either from a description or from a
-                template. */}
-            Skip the five-figure custom build.
-            <br className="hidden md:inline" /> Describe what you need, or
-            start from a template.
-          </>
-        }
-        // The page opens on a composer; closing on a second one asks the same
-        // question twice. Two buttons instead, the pair the hero opens with.
-        composer={false}
-        primaryCta={{ label: "Start building for free", href: SIGNUP_URL }}
-        secondaryCta={{ label: "Book demo", href: DEMO_URL }}
-        planChips={false}
-      />
+        {/* INSIDE THE REGION, so the rails run behind it. The CTA is the one
+            block on the page with nothing in it but centred type and two
+            buttons, which is exactly the width of empty page the grid is
+            there to give a floor to — it was the last screen before the
+            footer and the only one with no structure behind it. It carries no
+            ground of its own, so the rails show straight through; the mask on
+            the layer takes them out before the footer. */}
+        <CTA
+          heading={
+            <>
+              Your next app,
+              <br />
+              built this afternoon
+            </>
+          }
+          // Broken at the sentence, the same place the CTA's own default lead
+          // breaks. Left to wrap it set eight words on line one and "a template."
+          // on line two — `text-pretty` only rescues a single-word last line. The
+          // break is md-up: below that the measure is narrow enough that the two
+          // sentences wrap into a block on their own.
+          subheading={
+            <>
+              {/* "what your business needs" → "what you need". The reader is
+                  the business; naming it again was the sentence restating its
+                  own audience. 15 words to 13, both offers intact: skip the
+                  custom build, and start either from a description or from a
+                  template. */}
+              Skip the five-figure custom build.
+              <br className="hidden md:inline" /> Describe what you need, or
+              start from a template.
+            </>
+          }
+          // The page opens on a composer; closing on a second one asks the same
+          // question twice. Two buttons instead, the pair the hero opens with.
+          composer={false}
+          primaryCta={{ label: "Start building for free", href: SIGNUP_URL }}
+          secondaryCta={{ label: "Book demo", href: DEMO_URL }}
+          planChips={false}
+          // No fill of its own, so the rails show through. See the prop.
+          transparent
+        />
+      </div>
     </>
   );
 }
