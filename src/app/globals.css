@@ -306,13 +306,18 @@
      does not change with whatever it happens to sit on. */
   --surface: #191919;
   --surface-2: #242424;
-  /* See --surface-3 in :root. #333333, not the ~7-point step the rungs below
-     take (#191919 → #242424): this rung has to be legible as LIFTED next to
-     a column already on a wash, and across a wide table read at a glance,
-     seven points was a difference you had to go looking for. Fifteen over
-     --surface-2 is the smallest step that reads as a filled column rather
-     than as the same grey. */
-  --surface-3: #333333;
+  /* See --surface-3 in :root. #404040 — well clear of the ~7-point step the
+     rungs below take (#191919 → #242424), and deliberately so.
+
+     This rung is not a surface someone might lay another surface on; it is
+     the comparison table's own column, whose entire job is to be the one
+     column you look at first. Its neighbours land around #151515 (--muted at
+     half strength over the page), so the gap has to carry across a wide
+     table read at a glance. It went #242424, then #333333, and both still
+     read as the same grey as everything else from a normal viewing distance.
+     #404040 is the first value that reads as a filled column. Ink stays
+     --foreground, which clears it comfortably. */
+  --surface-3: #404040;
 
   /* Mock status pills go translucent so they sit on dark surfaces without
      glowing; fg stays desaturated to match the neutral-gray dark scale. */
