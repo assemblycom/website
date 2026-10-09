@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
 import { CTA } from "@/components/home/cta";
-import {
-  Testimonials,
-  type CustomerStory,
-} from "@/components/home/testimonials";
 import { FAQ, type FAQEntry } from "@/components/home/faq";
 import {
   BuilderPillars,
   type Pillar,
 } from "@/components/ai-app-builder/builder-pillars";
+import {
+  BuilderGridRails,
+  BUILDER_GRID_LINE,
+} from "@/components/ai-app-builder/builder-grid-rails";
+import { BuilderCustomerQuotes } from "@/components/ai-app-builder/builder-customer-quotes";
 import { BuilderChapter } from "@/components/ai-app-builder/builder-chapter";
 import { AddAppMock } from "@/components/ai-app-builder/add-app-mock";
 import { BrandedLoginScreen } from "@/components/comparison/branded-login-hero-visual";
@@ -22,7 +23,7 @@ import { BuilderAlternatives } from "@/components/ai-app-builder/builder-alterna
 import { BuilderTemplates } from "@/components/ai-app-builder/builder-templates";
 import { BuilderPrompt } from "@/components/ai-app-builder/builder-prompt";
 import { BuilderGlow } from "@/components/ai-app-builder/builder-glow";
-import { GridDivider, GridRails } from "@/components/ui/grid-lines";
+import { GridDivider } from "@/components/ui/grid-lines";
 import { DEMO_URL, SIGNUP_URL } from "@/lib/constants";
 import { PAGE_SEO, pageMetadata } from "@/lib/seo";
 import { serializeJsonLd } from "@/lib/json-ld";
@@ -282,35 +283,6 @@ const BUILDER_FAQS: FAQEntry[] = [
   },
 ];
 
-/**
- * The featured story the brief names for this page.
- *
- * NOTE: the quote is a tightened paraphrase, not Garrett's published wording.
- * He said "We’ve been able to build out apps in just a few weeks that I don’t
- * know if we could have done within five to ten years before Assembly"
- * (case-studies.ts). It is shortened here on the site owner’s instruction;
- * since it sits in quotation marks under his name, it wants his sign-off
- * before this ships.
- *
- * The homepage carries a third wording of the same sentence (testimonials.tsx),
- * so one customer is currently quoted three ways across the site.
- */
-const ADVERTAI_STORY: CustomerStory = {
-  quote:
-    "We’ve built apps in a few weeks that I don’t think we could have done in 5 to 10 years before Assembly.",
-  name: "Garrett Leonard",
-  firm: "Advertai Marketing",
-  image: "/images/customers/advertai-marketing.jpg",
-  intro:
-    "An 11-person web design agency. The founder built the Message Center his team works in all day, and retired five tools along the way.",
-  stats: [
-    { value: "5", label: "Tools retired" },
-    { value: "Weeks, not years", label: "To build" },
-    { value: "Built by the founder", label: "No developer hired" },
-  ],
-  href: "/customers/advertai-marketing",
-  linkLabel: "Read Advertai's story",
-};
 
 // Built from the same entries the accordion renders, so the questions a crawler
 // reads can never drift from the ones on the page.
@@ -417,11 +389,27 @@ export default function AiAppBuilderPage() {
       {/* The argument, framed by the shared vertical rails so this page draws
           the same grid as home, security and customers. A rule closes each
           chapter, capped to the rails so both ends land on one. */}
-      <div className="relative">
-        <GridRails />
-        {/* Full-bleed: this rule opens the region, so there is no rail yet at
-            its ends for a capped one to land on. */}
-        <GridDivider fullBleed />
+      {/* `isolate` and a ground, both for the rails: see builder-grid-rails.
+          The layer sits at a negative z so that section and card backgrounds
+          paint over it, and a negative z only resolves against a stacking
+          context that has a background of its own to sit above. Without these
+          two the rails either draw on top of every component (z-0) or vanish
+          behind the page (-z, no isolate). */}
+      <div className="relative isolate bg-background">
+        {/* The column grid, in place of the two framing rails this region used
+            to draw. See builder-grid-rails: a backdrop bounded to this wrapper
+            rather than an overlay, so it starts and ends with the chapters.
+            The wrapper stays `relative` because the dividers below still cap
+            to the measure. */}
+        <BuilderGridRails />
+        {/* NO RULE OPENING THE REGION. There was a full-bleed one here, from
+            when the region's only grid was two framing rails and a rule was
+            the single thing marking where the chapters began. The rails now
+            begin at this exact line and run the full width of the measure, so
+            the opening was being stated twice — and the horizontal version
+            crossed the hero's glow edge-to-edge, which is the one place on the
+            page with nothing to rule off. The closing rule stays: it is the
+            seam between the chapters and the CTA. */}
 
         {/* Chapter 1 — the four claims. */}
         <BuilderChapter
@@ -434,7 +422,7 @@ export default function AiAppBuilderPage() {
         />
         <BuilderPillars pillars={PILLARS} />
 
-        <GridDivider />
+        <GridDivider lineClass={BUILDER_GRID_LINE} />
 
         {/* Chapter 2 — the mechanism behind the claims, then the decision the
             reader is actually weighing. The two belong together: the comparison
@@ -446,7 +434,7 @@ export default function AiAppBuilderPage() {
         <BuilderHowItWorks />
 
         {/* Separates the mechanism from the comparison it sets up. */}
-        <GridDivider />
+        <GridDivider lineClass={BUILDER_GRID_LINE} />
 
         <BuilderAlternatives />
 
@@ -454,18 +442,18 @@ export default function AiAppBuilderPage() {
             a divider here was a doubled break. It sits inside the section's
             padding now and closes on its own frame, so the region below it was
             left opening on nothing. */}
-        <GridDivider />
+        <GridDivider lineClass={BUILDER_GRID_LINE} />
 
         {/* Chapter 3 — the reader now believes it works and wants a way in.
             The templates section carries its own heading, so no chapter title
             sits above it. */}
         <BuilderTemplates />
 
-        <GridDivider />
+        <GridDivider lineClass={BUILDER_GRID_LINE} />
 
-        <Testimonials story={ADVERTAI_STORY} />
+        <BuilderCustomerQuotes />
 
-        <GridDivider />
+        <GridDivider lineClass={BUILDER_GRID_LINE} />
 
         {/* The divided variant, as on /security: the heading holds a sticky
             left column and the questions run down the right as a hairline list.
@@ -482,7 +470,7 @@ export default function AiAppBuilderPage() {
 
         {/* Full-bleed: this rule closes the region, so the rails stop here and
             there is nothing at its ends for a capped one to land on. */}
-        <GridDivider fullBleed />
+        <GridDivider fullBleed lineClass={BUILDER_GRID_LINE} />
       </div>
 
       <CTA

@@ -469,11 +469,22 @@ export function TeamCrmVisual() {
                 // address. The pair has to read as one record before the rows
                 // read as a list, so the space BETWEEN records has to beat the
                 // space inside one.
-                // THE ROW ANSWERS THE CURSOR. --mock-well is the recess the
-                // table head already wears, so a hovered row is lit by the
-                // same step the screen uses everywhere else rather than by a
-                // tint invented for this one state — and because it is a
-                // token, it is right in both themes without a second value.
+                // THE ROW ANSWERS THE CURSOR, at --mock-well-2.
+                //
+                // It was --mock-well, on the reasoning that this is the recess
+                // the table head already wears and a hovered row should be lit
+                // by a step the screen already uses. The step was real and it
+                // was not VISIBLE: --mock-well sits 5 points off --mock-window
+                // in light (#f7f8fa on #fcfcfd) and 8 in dark, which is a
+                // legible rung for a panel you look at, and nothing at all for
+                // a state you are supposed to notice arriving under the
+                // pointer. A hover that cannot be seen is a hover that is not
+                // there.
+                //
+                // --mock-well-2 is the next rung, not a new value: 10 points
+                // in light and 15 in dark, enough to read as the row lighting
+                // up without turning it into a selected row. Still a token, so
+                // still one decision for both themes.
                 //
                 // Not on the empty last row: there is no record under the
                 // cursor there, and a blank strip that lights up is the mock
@@ -481,7 +492,7 @@ export function TeamCrmVisual() {
                 className={`flex min-h-[39px] items-center gap-5 border-b border-[var(--mock-line)] py-[9px] pl-5 transition-colors duration-150 last:border-b-0 sm:gap-2 ${
                   i === CONTACTS.length - 1
                     ? ""
-                    : "hover:bg-[var(--mock-well)]"
+                    : "hover:bg-[var(--mock-well-2)]"
                 }`}
               >
                 {/* THE LAST ROW IS EMPTY, and keeps everything else: its

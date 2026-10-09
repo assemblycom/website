@@ -33,7 +33,12 @@ const STEPS: {
   name: string;
   body: string;
   visual: React.ReactNode;
-  /** Runs the scene to the panel's right edge instead of centring it. */
+  /**
+   * This step's scene is a cropped screen rather than a discrete object: it
+   * bleeds off its own frame and needs the phone ramp that runs it out into
+   * the panel ground. It used to ALSO push the slot to the panel's right edge
+   * (`ml-auto`); every step is centred now, so what is left is the crop.
+   */
   flush?: boolean;
   /**
    * Takes the wide box (see PANEL_SCENE_WIDE) rather than the shared 560.
@@ -82,13 +87,14 @@ const STEPS: {
     // 360x300, like Describe: this scene crops rather than reflowing.
     phoneAspect: "aspect-[6/5]",
     wide: true,
-    // The only step that runs to the panel's right edge. Its scene is a whole
-    // portal screen that already bleeds off its own frame, so letting it reach
-    // the panel edge continues the crop the mock is drawn with — the panel
-    // opens onto a screen that carries on past it. The other two are discrete
-    // objects, a composer and a checklist, with a beginning and an end on both
-    // sides; pushed against an edge they read as having slipped off-centre
-    // rather than as continuing, so they stay centred.
+    // The only step whose scene is a whole portal screen rather than a
+    // discrete object. It was pushed to the panel's right edge on the grounds
+    // that this continued the crop the mock is drawn with. On a wide panel it
+    // did not read that way: the screen sat hard against one side with the
+    // whole slack pooled on the other, under the copy, so the panel looked
+    // mis-set rather than cropped. Centred, the slack falls evenly and the
+    // screen reads as placed. Its right side closes from `sm` to match (see
+    // the window in portal-build-cards); the phone still crops and ramps.
     flush: true,
   },
 ];
@@ -135,6 +141,19 @@ export function BuilderHowItWorks() {
           // it reads as an outline drawn around the section — a box the
           // section did not ask for — so this one takes the lift and leaves
           // the hairline. Light is unaffected; see globals.css.
+          //
+          // THE PANEL STAYS INSIDE THE SECTION'S GUTTER ON EVERY WIDTH.
+          //
+          // It was briefly taken to the screen edge on a phone (`-mr-6` plus
+          // `rounded-r-none`) so that Build's portal screen ran off the right
+          // instead of ending on the card's rounded corner. It did end the
+          // corner-cutting, and it cost more than it bought: the panel stopped
+          // being a card at exactly the width where every other object on the
+          // page still is one, so the section read as having slipped its
+          // margin rather than as a screen continuing. Build's right edge is
+          // dissolved instead — see the ramp on the slot below, which runs the
+          // mock out into the panel's own ground and leaves the card's four
+          // corners alone.
           className="surface-ground mt-6 overflow-hidden rounded-3xl bg-[var(--surface)]"
         >
           {/* Keyed on the step so the contents REMOUNT on switch and play the
@@ -158,10 +177,9 @@ export function BuilderHowItWorks() {
                 keeps a 1200px panel from blowing them up past the size their
                 type was set for.
 
-                Alignment is per step (see `flush`): Build takes ml-auto, so
-                the slot's right edge IS the panel's right edge and all the
-                slack collects on the left under the copy. Describe and Plan
-                keep mx-auto.
+                ALL THREE ARE CENTRED. Build used to take ml-auto so its slot's
+                right edge was the panel's, which pooled every pixel of slack on
+                one side; see `flush`.
 
                 620x400 exactly matches the scene the `plain` cards draw at, so
                 the fit is 1:1 — no slack in either axis, which is what keeps
@@ -194,9 +212,29 @@ export function BuilderHowItWorks() {
                     // fits the mock DOWN and shrinks its type.
                     "max-w-[620px] lg:max-w-[900px] lgx:max-w-[1040px]"
                   : "max-w-[620px]"
-              } ${current.flush ? "ml-auto" : "mx-auto"}`}
+              } mx-auto`}
             >
               {current.visual}
+              {/* THE RIGHT EDGE, DISSOLVED — phone only, flush step only.
+                  Build's scene is pinned to the panel's right edge, and at
+                  phone width the panel's own 24px corner radius cuts a curve
+                  across a calendar grid. A crop reads as a crop when it is
+                  straight; a crop that curves reads as the picture being the
+                  wrong shape. The ramp spends the last 64px running the mock
+                  into --surface, so the screen gives out before it ever
+                  reaches the corner.
+                  --surface and not a fixed grey: this is the panel's own
+                  ground, so the ramp lands on whatever that is and the two
+                  themes need no separate value.
+                  From `sm` the scene is centred in a panel with room around
+                  it, no corner is anywhere near the artwork, and the ramp
+                  would be dimming a screen for no reason. */}
+              {current.flush && (
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-r from-transparent to-[var(--surface)] sm:hidden"
+                />
+              )}
             </div>
           </div>
         </div>

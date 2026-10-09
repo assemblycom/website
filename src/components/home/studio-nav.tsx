@@ -440,12 +440,54 @@ export function StudioNav({
     : "bg-foreground/[0.06] text-foreground";
 
   // The nav logo — a clean white SVG mark.
+  //
+  // TWO LOCKUPS, ONE DECISION ABOUT COLOUR. Both files are drawn in near-black
+  // and both ride the same `logoInvert` filter, so over a dark hero they go
+  // white and over a light page they stay black without a second asset or a
+  // theme branch. A mark drawn white instead would need its own inverse.
   const logoMark = (
     <Image
       src="/images/logo-mark.svg"
       alt="Assembly"
       width={22}
       height={22}
+      priority
+      className={`transition-[filter] ${ease} ${logoInvert}`}
+    />
+  );
+
+  // THE FULL LOCKUP — mark and wordmark — on DESKTOP only.
+  //
+  // 20px tall, SIZED OFF THE WORDMARK rather than off the mark.
+  //
+  // It went in at 24, chosen so the lockup's mark landed where the bare
+  // logo-mark.svg had always sat: that file is full-bleed in a square box
+  // where this one's mark fills 94.5% of an 80-unit box, so 24 × 0.945 ≈ 22.7
+  // held the mark steady at ~22px. Holding the MARK steady is the wrong
+  // constraint for a lockup — once a wordmark is next to it, the wordmark is
+  // what sets the scale, and at 24 it ran a clear step above the nav links it
+  // sits beside.
+  //
+  // openai.com is the reference and it is unusually strict about this: at a
+  // 1024 viewport their wordmark is 64×17 against a 17px nav — a height ratio
+  // of exactly 1.0. Ours was 24 against a 14px nav, 1.71. The wordmark's
+  // ascender band is ~71% of this artwork's box (7.5→64.3 of 80), so 14 / 0.71
+  // ≈ 19.7: at 20 the word is set to the same height as the links, which is
+  // the relationship OpenAI's nav is drawing. The mark comes along at 18.9.
+  //
+  // The gap to the first link is left at ml-6. OpenAI runs 20px against a 17px
+  // nav (1.18); ours is 24 against 14 (1.71), already the more generous of the
+  // two, and the shrink above gives the word more air without moving it.
+  //
+  // The mobile header keeps the bare mark: the wordmark is most of the 108px
+  // this lockup needs, and at 375px that is a third of the bar spent on the one
+  // thing the page already says in its title.
+  const logoLockup = (
+    <Image
+      src="/images/logo-lockup.svg"
+      alt="Assembly"
+      width={108}
+      height={20}
       priority
       className={`transition-[filter] ${ease} ${logoInvert}`}
     />
@@ -562,7 +604,7 @@ export function StudioNav({
                 onClick={onLogoClick}
                 className="flex items-center"
               >
-                {logoMark}
+                {logoLockup}
               </Link>
             </div>
 

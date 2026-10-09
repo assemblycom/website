@@ -22,7 +22,6 @@ import {
   IconApp,
   IconCheck,
   IconBrandMark,
-  IconCard,
   IconChat,
   IconFile,
   IconGlobe,
@@ -1459,11 +1458,27 @@ function CalendarPane() {
                   // because both operands are theme-scoped — the mix lands on
                   // each theme's own ground with each theme's own hue, and no
                   // value is written down twice.
-                  className={`absolute inset-x-[2px] overflow-hidden ${R_CHROME} bg-[color-mix(in_srgb,var(--cal-hue)_18%,var(--mock-well-2))] pl-1.5 pr-1 pt-[3px]`}
+                  className={`absolute inset-x-[2px] overflow-hidden ${R_CHROME} bg-[color-mix(in_srgb,var(--cal-hue)_18%,var(--mock-well-2))] pb-[3px] pl-1.5 pr-1 pt-[3px]`}
                   style={
                     {
                       top: y(e.at) + 1,
                       height: y(e.end) - y(e.at) - 2,
+                      // A FLOOR, because duration alone does not guarantee the
+                      // block can hold its own two lines. At CAL_ROW_H 38 an
+                      // hour is 36px and the title/client pair needs 26, so
+                      // most events have room to spare — but the 45-minute one
+                      // (Design review) comes out at 26.5px, which is the two
+                      // lines and half a pixel under them. The block read as
+                      // having its copy pushed against the bottom edge.
+                      //
+                      // 32 = 3px + 10.5 + 2 + 10.5 + 3px: the pair with the
+                      // same breathing room above and below. It costs about
+                      // five minutes of apparent length on the shortest block
+                      // — nothing else on that day is near it, so no event
+                      // gains an overlap it does not have — and a mock whose
+                      // shortest entry can be read is worth more than one
+                      // whose grid is exact to the pixel.
+                      minHeight: 32,
                       "--cal-hue": CAL_HUES[e.who] ?? "var(--mock-ink)",
                     } as React.CSSProperties
                   }
@@ -1502,13 +1517,16 @@ function CalendarPane() {
   );
 }
 
-/** The nav beside the board. Four rows and the app, which is as many as fit
-    before the board loses the width it needs. */
+/** The nav beside the board. Three rows and the app, which is as many as fit
+    before the board loses the width it needs.
+    Billing is deliberately NOT here. The app the step just built is the row
+    that matters in this shot — the claim is that it lands in the nav — and a
+    billing row above it is the one stock entry that pulls toward a different
+    part of the product than the one the card is about. */
 const TEAM_NAV = [
   { icon: <IconGlobe />, label: "Home" },
   { icon: <IconChat />, label: "Messages" },
   { icon: <IconFile />, label: "Files" },
-  { icon: <IconCard />, label: "Billing" },
 ];
 
 /**
@@ -1679,17 +1697,29 @@ export function BuildCard({ plain = false }: SceneProps = {}) {
           // dark sidebar met the ground at what looked like a right angle. It
           // takes the panel step instead, the biggest in the scale, because it
           // belongs to the biggest object.
-          // mock-lit-edge at 135deg: the hairline is brightest at the TOP-LEFT
-          // and spends itself down and across. That corner is the only one
-          // this window has — it bleeds off the right and the bottom — so the
-          // one visible corner is exactly where the light should land, and
-          // the ring's other two sides fall outside the scene anyway.
+          // A PLAIN BORDER, NOT .mock-lit-edge. The lit ring is a ::after at
+          // `inset: 0`, which on a bordered box is the PADDING box — so using
+          // it here meant either two hairlines side by side (the ring beside
+          // the border) or, with the border made transparent to stop that, a
+          // box whose outer curve is 10px while `overflow: hidden` clips the
+          // children at 9px. Two radii a pixel apart do not nest: at the
+          // top-left the near-black sidebar stopped short of the curve and
+          // read as a black line hooked around the corner.
           //
-          // Same class the pillar shots wear, so the window and the screens
-          // on the cards above it state their edges the same way. In light
-          // --mock-edge-lit equals --mock-line and this is the hairline that
-          // was already there; only dark lights up.
-          className={`flex shrink-0 ${WINDOW} ${R_PANEL} mock-lit-edge rounded-b-none rounded-tr-none border-b-0 border-r-0 [--lit-angle:135deg] ${
+          // The ring buys a dark-mode highlight on one edge. It is not worth a
+          // corner artifact in light to get it, and --mock-line states the
+          // edge in both themes the way the rest of the mock family does.
+          // .mock-lit-edge is untouched for the frames that carry no border of
+          // their own — there it is the only edge and nothing nests inside it.
+          // THE RIGHT SIDE CLOSES FROM `sm`. The window used to run off the
+          // panel's right edge, so its top-right was a crop and a border there
+          // would have been a line drawn across open artwork. The panel centres
+          // the scene from `sm` now (see builder-how-it-works), which puts that
+          // edge back inside the card where it can be seen — and a square
+          // corner with no border on a screen whose other three corners are
+          // finished reads as the shot having been cut, not as it continuing.
+          // Below `sm` it still bleeds and still ramps out, so the crop stays.
+          className={`flex shrink-0 ${WINDOW} ${R_PANEL} rounded-b-none rounded-tr-none border-b-0 border-r-0 sm:rounded-tr-[10px] sm:border-r ${
             plain
               ? // 340x280 ON A PHONE, which is the 360x300 box exactly minus
                 // the scene's own 20px top and left padding — so the window
@@ -1699,7 +1729,25 @@ export function BuildCard({ plain = false }: SceneProps = {}) {
                 // and because a bleed scene is pinned to the FOOT of its box
                 // the 80px it overran vertically came off the TOP, taking the
                 // toolbar — the date and the Month/Week/Day control — with it.
-                "h-[280px] w-[340px] sm:h-[380px] sm:w-[600px] lg:w-[800px] xl:w-[1020px]"
+                // From `sm` the window is the box MINUS 40: the scene's own
+                // 20px left pad, and 20 left over on the right to answer it.
+                // The bleed frame only pads the left (`pl-5 pt-5`), which is
+                // correct while the window runs off the right edge — there is
+                // no right side to pad. Now that the slot is centred and the
+                // window's right side closes, that lone left pad was the whole
+                // of the remaining 20px lean, so the window gives it back.
+                // 620→580, 900→860, 1040→1000.
+                //
+                // `lg` was also a rung behind before this (800 in a 900 box),
+                // and the 80px of bare box it left was enough to throw the
+                // scene visibly off-centre on its own. `lgx`, not `xl`: the box
+                // steps at lgx (PANEL_SCENE_WIDE), and a window stepping at a
+                // different breakpoint from its own box is how that got in.
+                //
+                // The PHONE step stays flush at 340 in its 360 box. It still
+                // bleeds off the right and ramps out into the panel, so there
+                // the left pad is doing its job and nothing answers it.
+                "h-[280px] w-[340px] sm:h-[380px] sm:w-[580px] lg:w-[860px] lgx:w-[1000px]"
               : ""
           }`}
         >

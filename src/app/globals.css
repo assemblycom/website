@@ -333,13 +333,33 @@
      which still read as the same grey as everything else at a normal viewing
      distance.
 
-     #4f4f4f, and the ceiling is worth writing down: the cells set their ink
-     in --foreground #d9d9d9, which holds 5.8:1 here and crosses WCAG AA's
-     4.5:1 floor at about #5f5f5f. So there are roughly sixteen points left
-     above this value before the column has to give up its body ink, and
-     anything lighter than that needs the text reconsidered, not just the
-     ground. */
-  --surface-3: #4f4f4f;
+     #1f1f1f, down from #4f4f4f via #3f3f3f and #2b2b2b. The climb UP through #242424 →
+     #333333 → #404040 → #4f4f4f was chasing separation and lost sight of
+     what the separation is for: at #4f4f4f, and still at #3f3f3f, the column
+     read as a lit panel laid on top of the table rather than as one of its
+     columns emphasised. The eye went to the GROUND instead of to the answers
+     printed on it, which is the opposite of the job.
+
+     What was wrong with the climb is the thing it was measured against. In
+     DARK the other two columns carry no background at all — their cells are
+     transparent and the page shows through — so this column is not being read
+     against #151515, it is being read against #0a0a0a. Every value above was
+     picked as though it had to beat a lighter neighbour than it actually has.
+     #1f1f1f is 21 points over the page, which is more separation than
+     --surface gets (#191919, 15 points) for cards that are unmistakably cards.
+     That is enough to make this the column you look at first and not enough to
+     make it the brightest object on the section.
+
+     Contrast is not the constraint in this direction and never was: the cells
+     set --foreground #d9d9d9, which holds 5.8:1 at #4f4f4f and about 11:1
+     here, so every step down buys legibility. The ceiling is still worth
+     writing down for anyone tempted back up — --foreground crosses WCAG AA's
+     4.5:1 floor at about #5f5f5f — but the practical limit turned out to be
+     taste, and it sits a long way below that.
+
+     Light's equivalent is NOT here — see --surface-3 in :root, which keeps
+     #dedede. Every move in this paragraph is dark only. */
+  --surface-3: #1f1f1f;
 
   /* Mock status pills go translucent so they sit on dark surfaces without
      glowing; fg stays desaturated to match the neutral-gray dark scale. */

@@ -242,7 +242,17 @@ function FAQItem({
         <button
           onClick={onToggle}
           aria-expanded={open}
-          className="group relative isolate flex w-full cursor-pointer items-center justify-between gap-6 py-5 text-left outline-none before:absolute before:inset-0 before:-z-10 before:bg-transparent before:transition-colors hover:before:bg-foreground/[0.06] focus-visible:before:bg-foreground/[0.06]"
+          // THE HOVER IS LIGHTER IN LIGHT MODE.
+          //
+          // One value, --foreground at 6%, served both themes. In dark that is
+          // a near-white at 6% over near-black — a faint lift. In light it is
+          // #101114 at 6% over white, which lands around #f0f1f1: a 14-point
+          // step, and against a question set in plain type on an open page it
+          // read as a filled band rather than as a row waking up.
+          // 3.5% in light is about 8 points, which still separates the row
+          // under the pointer without the list looking like it has a selected
+          // item. Dark keeps the 6% it was tuned at.
+          className="group relative isolate flex w-full cursor-pointer items-center justify-between gap-6 py-5 text-left outline-none before:absolute before:inset-0 before:-z-10 before:bg-transparent before:transition-colors hover:before:bg-foreground/[0.035] focus-visible:before:bg-foreground/[0.035] [[data-theme=dark]_&]:hover:before:bg-foreground/[0.06] [[data-theme=dark]_&]:focus-visible:before:bg-foreground/[0.06]"
         >
           <span className="type-body text-foreground">
             {compactQuestions ? (

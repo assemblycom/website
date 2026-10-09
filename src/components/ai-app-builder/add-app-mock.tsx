@@ -139,7 +139,17 @@ export function AddAppMock() {
           // screen is not actually drawn at.
           className={`whitespace-nowrap text-left tracking-[-0.01em] sm:whitespace-normal sm:text-center ${MOCK_TITLE}`}
         >
-          Margot, what app will you add?
+          {/* THE NAME GOES ON A PHONE. "Margot," is the warmest part of the
+              line and the most expendable: at ~180px of pane it is a third of
+              the sentence spent on a word the shot does not need, and it was
+              the reason the question ran out under the card's crop before the
+              question mark. The shortened line asks the same thing and lands
+              inside the pane. Full width keeps the name — there the line has
+              room and the greeting is worth having. */}
+          <span className="sm:hidden">What app will you add?</span>
+          <span className="hidden sm:inline">
+            Margot, what app will you add?
+          </span>
         </p>
 
         {/* The box, at the measure the product gives it rather than the card's

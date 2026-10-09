@@ -19,6 +19,10 @@ import { useRef } from "react";
  *
  * Tabs, not radios: these select which panel is shown, so they carry tablist
  * semantics and the roving arrow-key focus that goes with them.
+ *
+ * TWO SKINS, ONE CONTROL. `variant` picks the clothes; the semantics, the
+ * roving focus and the tab/panel id pair are the same either way, which is the
+ * reason this is a prop rather than a second component. See the prop.
  */
 export function SegmentedTabs({
   options,
@@ -26,6 +30,7 @@ export function SegmentedTabs({
   onChange,
   label,
   idBase,
+  variant = "segmented",
 }: {
   options: { value: string; label: React.ReactNode }[];
   value: string;
@@ -34,6 +39,18 @@ export function SegmentedTabs({
   label: string;
   /** Prefix for the tab/panel id pair, so a panel can point back at its tab. */
   idBase: string;
+  /**
+   * "segmented" — the bordered track and the gliding thumb. The default, and
+   * what a control standing on its own ground wants: it is unmistakably
+   * pressable at a glance.
+   *
+   * "underline" — three plain words with the active one ruled underneath, the
+   * feature-comparison table's own tabs (see feature-comparison.tsx). For a
+   * control that sits INSIDE something it is the head of, where a filled thumb
+   * is the heaviest object in the box and takes the attention the content
+   * below it should be getting. The same three labels, a quarter of the ink.
+   */
+  variant?: "segmented" | "underline";
 }) {
   const refs = useRef<(HTMLButtonElement | null)[]>([]);
   const count = options.length;
@@ -55,6 +72,51 @@ export function SegmentedTabs({
     e.preventDefault();
     onChange(options[next].value);
     refs.current[next]?.focus();
+  }
+
+  // The underline skin: no track, no thumb, nothing to glide. The rule under
+  // the active label is the only mark the control makes.
+  //
+  // NO BASELINE RULE OF ITS OWN, and `-mb-px` so the active label's rule hangs
+  // a pixel below the strip. This skin is for a control that heads something
+  // already ruled — a table whose first row draws the seam — and a border here
+  // would put a second line immediately above that one. The pixel of overhang
+  // lands the active rule ON the seam, so the seam simply darkens under the
+  // live label, which is the whole effect. A caller with nothing underneath
+  // should draw its own rule.
+  //
+  // Same tablist, same roving focus, same ids.
+  if (variant === "underline") {
+    return (
+      <div
+        role="tablist"
+        aria-label={label}
+        onKeyDown={onKeyDown}
+        className="flex gap-6 text-sm"
+      >
+        {options.map((o, i) => (
+          <button
+            key={o.value}
+            ref={(el) => {
+              refs.current[i] = el;
+            }}
+            role="tab"
+            id={`${idBase}-tab-${o.value}`}
+            aria-controls={`${idBase}-panel-${o.value}`}
+            aria-selected={o.value === value}
+            tabIndex={o.value === value ? 0 : -1}
+            onClick={() => onChange(o.value)}
+            className={`-mb-px shrink-0 whitespace-nowrap border-b pb-2.5 pt-1 transition-colors ${
+              o.value === value
+                ? "border-foreground text-foreground"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {o.label}
+          </button>
+        ))}
+      </div>
+    );
   }
 
   return (

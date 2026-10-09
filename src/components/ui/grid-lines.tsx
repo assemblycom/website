@@ -84,9 +84,18 @@ export function GridDivider({
    * sections sit closer together needs the join drawn.
    */
   onMobile = false,
+  /**
+   * Overrides the rule's colour. For a page drawing its own grid in its own
+   * tone — see /ai-app-builder, whose rails are an alpha pair rather than
+   * GRID_LINE's solid one, and whose rules have to match them or become the
+   * brighter half of the grid. Defaults to GRID_LINE, so every existing
+   * caller is unchanged.
+   */
+  lineClass = GRID_LINE,
 }: {
   fullBleed?: boolean;
   onMobile?: boolean;
+  lineClass?: string;
 } = {}) {
   // Below 1200px the cap is wider than the viewport, so the capped rule bleeds
   // to the edges on a phone by itself — dropping `hidden` is the whole change.
@@ -95,8 +104,8 @@ export function GridDivider({
     <div
       className={
         fullBleed
-          ? `border-t ${visibility} ${GRID_LINE}`
-          : `mx-auto max-w-[1200px] border-t ${visibility} ${GRID_LINE}`
+          ? `border-t ${visibility} ${lineClass}`
+          : `mx-auto max-w-[1200px] border-t ${visibility} ${lineClass}`
       }
     />
   );

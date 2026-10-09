@@ -127,7 +127,7 @@ function LoginScreen({
    */
   framed?: boolean;
   /**
-   * Drops the Magic-link button's label IN DARK, for a frame that dissolves
+   * Drops the Magic-link button's label, for a frame that cuts or dissolves
    * this screen's foot into its card (see `fadeFoot` on the pillar and
    * --mock-foot-fade). Off by default — the split hero shows the whole screen
    * with nothing fading, and there the label is the button.
@@ -151,6 +151,20 @@ function LoginScreen({
     ? {
         ink: "text-[color:var(--mock-ink)]",
         inkSoft: "text-[color:var(--mock-ink-soft)]",
+        // A FIELD'S LABEL SITS BELOW READING INK IN DARK.
+        //
+        // "Email" and "Password" took full --mock-ink, which in light is
+        // #101114 on a near-white field — a dark label, quiet because the
+        // ground is bright. Flipped, the same token is near-white on a
+        // near-black screen, and two 10px labels at full strength were the
+        // brightest marks under the title, brighter than the placeholder text
+        // they introduce. A label naming a field should sit under the field.
+        //
+        // --mock-ink-soft, the token the placeholders already use, so this is
+        // a tone the screen has rather than a new one. Dark only: light is
+        // doing the right thing and the user asked for it not to move.
+        labelInk:
+          "text-[color:var(--mock-ink)] [[data-theme=dark]_&]:text-[color:var(--mock-ink-soft)]",
         rule: "bg-[var(--mock-line)]",
         field:
           "border-[var(--mock-line)] bg-[var(--mock-well)] text-[color:var(--mock-ink-soft)]",
@@ -175,6 +189,9 @@ function LoginScreen({
     : {
         ink: "text-foreground",
         inkSoft: "text-muted-foreground",
+        // See the framed palette: the label sits under its field in dark.
+        labelInk:
+          "text-foreground [[data-theme=dark]_&]:text-muted-foreground",
         rule: "bg-border [[data-theme=dark]_&]:bg-white/15",
         field:
           "border-border text-muted-foreground [[data-theme=dark]_&]:border-white/15",
@@ -298,16 +315,22 @@ function LoginScreen({
         <div
           className={`mt-4 flex h-[30px] w-full items-center justify-center rounded-[4px] ${MOCK_PRIMARY} ${c.primary}`}
         >
-          {/* THE LABEL GOES IN DARK when the frame fades this screen's foot.
-              The button is the last object before the card's bottom edge, so
-              it is the one thing the ramp runs through — and a word read at
-              30% through a gradient is not a screen giving out, it is a word
+          {/* THE LABEL GOES IN BOTH THEMES when the frame fades this screen's
+              foot. The button is the last object before the card's bottom
+              edge, so it is the one thing the card's edge runs through — and a
+              half-read word there is not a screen giving out, it is a word
               that failed to render. The slab itself fades cleanly, because a
               flat surface has nothing to half-read. `invisible`, not removed,
               so the button keeps its height and the stack above it does not
-              move. Light keeps the label: it has no ramp (see
-              --mock-foot-fade) and the button is fully legible there. */}
-          <span className={quietFoot ? "[[data-theme=dark]_&]:invisible" : ""}>
+              move.
+
+              This was dark-only, on the grounds that light has no ramp (see
+              --mock-foot-fade) so the label is fully legible there. It is
+              legible, but it is also the one word on the card sitting half
+              under the bottom edge, which reads as the card clipping its own
+              copy rather than as a screen carrying on past the frame. The slab
+              alone says "button" without needing to be read. */}
+          <span className={quietFoot ? "invisible" : ""}>
             Email me a Magic link
           </span>
         </div>
@@ -384,6 +407,8 @@ function SafariChrome({ domain }: { domain: string }) {
 type LoginPalette = {
   ink: string;
   inkSoft: string;
+  /** A field's label. Full ink in light, a step down in dark — see the palette. */
+  labelInk: string;
   rule: string;
   field: string;
   primary: string;
@@ -401,7 +426,7 @@ function Field({
 }) {
   return (
     <div className="mt-3 w-full">
-      <span className={`block ${MOCK_SECONDARY} ${c.ink}`}>{label}</span>
+      <span className={`block ${MOCK_SECONDARY} ${c.labelInk}`}>{label}</span>
       <div
         className={`mt-1 flex h-[30px] w-full items-center rounded-[4px] border px-2.5 ${MOCK_PRIMARY} ${c.field}`}
       >

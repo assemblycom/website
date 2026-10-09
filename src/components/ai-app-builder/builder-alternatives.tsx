@@ -195,31 +195,42 @@ export function BuilderAlternatives() {
           table whose first row happens to be the control that chooses the
           column.
 
-          The site's segmented control, not a row of underlined words. It
-          started as the pricing table's underline tabs, which are the right
-          pattern THERE — that control sits inside a long scrolling table and
-          has five plan names to carry, so it has to be able to scroll. Here
-          there are three short options over five rows, and underlined text at
-          the head of a bordered box reads as a heading that happens to be in
-          three parts rather than as something you can press. SegmentedTabs is
-          unmistakably a control, and it is the SAME one this page already runs
-          one section up for Describe / Plan / Build. It also brings
-          `role="tablist"`, roving arrow-key focus and the tab/panel id pair
-          the rows below point back at, which the hand-rolled `aria-pressed`
-          buttons did not have.
+          UNDERLINE TABS, not the filled segmented track.
+
+          This ran SegmentedTabs' default skin, on the argument that underlined
+          text at the head of a bordered box reads as a heading in three parts
+          rather than as something pressable. The track did fix that, and
+          overshot: a solid black thumb at the top of a five-row card is the
+          heaviest object in it by some way, so the first thing the eye lands
+          on is the control, and the rows it is there to switch — which are the
+          actual comparison — come second. A control at the head of a table is
+          furniture, and furniture should not win.
+
+          The underline carries the same three words with a rule under the live
+          one. It reads as a head because that is what it is, and the rule lands
+          on the card's own first hairline (`-mb-px` in the variant), so the
+          control and the table's first rule are one line. It is also the
+          pattern the feature-comparison table already uses for exactly this
+          job, which is the reason it is a variant on the shared control rather
+          than a third set of buttons: the tablist semantics, the roving
+          arrow-key focus and the tab/panel id pair the rows below point back
+          at are the same ones either skin brings.
 
           The table from `md` up is untouched; it can afford the across-read
           and is still the better object when the width exists. */}
       <div
-        className={`mt-10 overflow-clip rounded-2xl border md:hidden ${GRID_LINE}`}
+        className={`mt-10 overflow-clip rounded-2xl border bg-background md:hidden ${GRID_LINE}`}
       >
-        {/* p-2, and it is as much padding as the head can spend. The track
-            needs ~322px to set three labels without compressing them, and the
-            card is 327 wide at 375 — so every pixel of inset here comes
-            straight off the cells. Two is enough to keep the track's own
-            hairline off the card's. */}
-        <div className="p-2">
+        {/* px-4 to line the labels up with the cells below them, and NO bottom
+            padding: the first row's own `border-t` is the seam between the head
+            and the body, and the active label's rule hangs a pixel into it (see
+            the variant). Any padding here would separate the two and leave the
+            underline floating above the line it is supposed to be part of. The
+            filled track wanted an all-round p-2 to keep its own hairline off
+            the card's; there is no second hairline here to keep clear of. */}
+        <div className="px-4 pt-2">
           <SegmentedTabs
+            variant="underline"
             label="Compare the three ways to get a custom app"
             idBase={TABS_ID}
             value={String(option)}
@@ -279,8 +290,17 @@ export function BuilderAlternatives() {
           stop drawing those two rules twice: the frame IS the table's top and
           bottom now, so the head only rules below itself and the last row
           rules not at all. Nothing straight meets the curve. */}
-      <div
-        className={`mt-12 hidden overflow-hidden rounded-2xl border md:block ${GRID_LINE} ${BLEED}`}
+      {/* AN OPAQUE GROUND, so the page grid does not run through the table.
+            /ai-app-builder draws vertical rails behind its content (see
+            builder-grid-rails). They are meant to cross open page, not
+            components: this table's cells carry no background of their own —
+            only the Assembly column is tinted — so the rails were visible
+            straight through the other three, reading as extra column rules at
+            positions the table does not have. --background rather than a card
+            tone: the table is drawn ON the page here, not raised off it, so
+            the ground it needs is the page's own. */}
+        <div
+        className={`mt-12 hidden overflow-hidden rounded-2xl border bg-background md:block ${GRID_LINE} ${BLEED}`}
       >
         <table className="w-full table-fixed border-collapse text-left">
           <caption className="sr-only">

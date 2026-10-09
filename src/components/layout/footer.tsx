@@ -9,6 +9,7 @@ import {
   type FooterGroup,
   type NavLink,
 } from "@/lib/constants";
+import { GRID_LINE } from "@/components/ui/grid-lines";
 import { DiaGradient } from "@/components/ui/dia-gradient";
 import type { ThemePreference } from "@/components/theme/theme-provider";
 
@@ -255,7 +256,22 @@ export function Footer({
         {/* Full-bleed hairline divider at the footer's top edge — spans the
             full page width, and the home content rails connect into it with no
             gap. */}
-        <div className={`border-t ${light ? "border-border" : "border-[#383838]"}`} />
+        {/* GRID_LINE, not --border. This rule is a section JOIN — the seam
+            between the page and the footer — which is the same job every
+            GridDivider does, and the grid carries its own pair of values for
+            exactly that reason: --border is sized to separate two objects that
+            touch, and reads a step too dark used as a layout line.
+            BOTH BRANCHES, because `light` here is exactly `!dark` (see
+            revealFooterLight in root-shell) — the dark sheet is only ever
+            drawn in dark mode, on the same #0a0a0a ground the dark grid is
+            tuned against. So the aurora branch takes the grid's dark value
+            too, and #383838 goes: it was --border by another name and sat the
+            same step too bright over that ground. */}
+        <div
+          className={`border-t ${
+            light ? GRID_LINE : "border-[#262626]"
+          }`}
+        />
 
         <div className="mx-auto max-w-[1600px] px-6 pb-12 md:px-10 md:pb-16">
           <div className="relative z-10 mt-10 md:mt-12">
