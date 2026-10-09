@@ -64,18 +64,21 @@ export interface Pillar {
    */
   fadeBottom?: number;
   /**
-   * Dissolves a `visualContained` shot into the card at its foot, IN DARK ONLY.
+   * Dissolves a `visualContained` shot into the card at its foot.
    *
    * `fadeBottom` is for the cropped shots and is an inline mask computed per
    * pillar, which means one ramp for both themes. This one is a class whose
-   * ramp is a theme-scoped token (`--mock-foot-fade`), because the problem it
-   * solves only exists in dark: there the card is #191919 and a contained
-   * screen's ground is #212121, so the screen's bottom edge is an eight-point
-   * step running flat across the card. In light the same two grounds are a
-   * point apart and the foot already gives out on its own, so the token is
-   * `none` there and the card renders exactly as it did.
+   * ramp is a theme-scoped token (`--mock-foot-fade`), so each theme can set
+   * its own — though as it happens both now carry the same shape.
+   *
+   * It was dark-only, and was called fadeFootDark for it. The argument was
+   * that dark has an eight-point step where the screen's ground meets the
+   * card's and light has one point, so light had nothing to hide. True, and
+   * beside the point: the ramp is for the CUT, not the step. Light's form
+   * stopped dead on the card's edge with a field half-drawn, which reads as a
+   * rendering fault in either theme.
    */
-  fadeFootDark?: boolean;
+  fadeFoot?: boolean;
   /**
    * CONTAINED AND CENTRED ON A PHONE, cropped from `sm` up.
    *
@@ -242,7 +245,7 @@ function FeatureCard({
         // not given a second mask.
         <div
           className={`mt-5 min-h-[268px] flex-1 px-6 sm:mt-7 sm:min-h-[280px] sm:px-10 md:mt-8 md:min-h-[300px] md:px-16 ${
-            pillar.fadeFootDark ? "mock-foot-fade" : ""
+            pillar.fadeFoot ? "mock-foot-fade" : ""
           }`}
         >
           {pillar.visual}

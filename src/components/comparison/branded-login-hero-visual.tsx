@@ -128,7 +128,7 @@ function LoginScreen({
   framed?: boolean;
   /**
    * Drops the Magic-link button's label IN DARK, for a frame that dissolves
-   * this screen's foot into its card (see `fadeFootDark` on the pillar and
+   * this screen's foot into its card (see `fadeFoot` on the pillar and
    * --mock-foot-fade). Off by default — the split hero shows the whole screen
    * with nothing fading, and there the label is the button.
    */

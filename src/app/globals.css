@@ -206,11 +206,27 @@
      a darker top edge would read as a shadow falling the wrong way. */
   --mock-edge-lit: #e8e9ec;
   /* The ramp that dissolves a CONTAINED shot into the card at its foot — see
-     .mock-foot-fade below. `none` in light, and that is the whole value: a
-     contained shot sits on --surface #fbfbfa with its own --mock-window #fcfcfd
-     a point off it, so the screen's foot already gives out into the card on its
-     own and a ramp over it would only soften the one object the card is about. */
-  --mock-foot-fade: none;
+     .mock-foot-fade below.
+
+     This was `none`, on the reasoning that light has no ground STEP to hide:
+     a contained shot's --mock-window sits about a point off the card's
+     --surface, where dark's two grounds are eight apart. That reasoning was
+     about the wrong thing. The step is not what the ramp is for — the CUT
+     is. In light the form still stops dead on the card's bottom edge, with a
+     half-drawn field and a button sliced through, and a hard edge across a
+     line of UI reads as a rendering fault in any theme. The absent ground
+     step only means light's ramp has to do the work alone rather than
+     finishing something the step started.
+
+     Same shape as dark's, deliberately: one ramp to reason about, and the
+     shot is the same shot. See the dark token for why the stops sit where
+     they do. */
+  --mock-foot-fade: linear-gradient(
+    to bottom,
+    #000 72%,
+    rgba(0, 0, 0, 0.55) 88%,
+    transparent 100%
+  );
   --mock-ink: #101114;
   --mock-ink-soft: #6b7079;
   /* Anything that must sit ABOVE a well — only the segmented thumb so far. */

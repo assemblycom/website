@@ -160,7 +160,7 @@ const PILLARS: Pillar[] = [
     // to 2.0:1), so the wash cannot be both legible and worth having here.
     //
     // The card takes --surface like the other three instead. The sign-in holds
-    // its own against a neutral ground via `fadeFootDark` below, which is what
+    // its own against a neutral ground via `fadeFoot` below, which is what
     // keeps its foot from cutting off flat.
     //
     // `.pillar-brand-wash` and the `brandWash` prop are left in place — this
@@ -180,8 +180,8 @@ const PILLARS: Pillar[] = [
     // running flat across the full width; and the Magic link button is no
     // longer a slab here — it took the Continue-with-Google surface in dark, so
     // there is something low-contrast for the ramp to give out into, which is
-    // exactly what it was missing. See `fadeFootDark` and --mock-foot-fade.
-    fadeFootDark: true,
+    // exactly what it was missing. See `fadeFoot` and --mock-foot-fade.
+    fadeFoot: true,
   },
   {
     eyebrow: "Branding",
