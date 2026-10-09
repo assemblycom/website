@@ -1,3 +1,5 @@
+import { BUILDER_RAIL_HALO } from "./builder-grid-rails";
+
 export interface Pillar {
   /**
    * The category this claim belongs to, in two words or fewer. Not shown: it
@@ -153,8 +155,10 @@ export function BuilderPillars({ pillars }: { pillars: Pillar[] }) {
   );
 }
 
+// BUILDER_RAIL_HALO: the page's rails run behind these cards, and without it
+// each card chops the six of them off on a hard line (see builder-grid-rails).
 const CARD =
-  "surface-lit relative flex flex-col overflow-hidden rounded-3xl bg-[var(--surface)]";
+  `surface-lit relative flex flex-col overflow-hidden rounded-3xl bg-[var(--surface)] ${BUILDER_RAIL_HALO}`;
 /** The mocks' own hairline, so a screen's drawn edge matches the lines in it. */
 const CARD_PAD = "px-5 pt-6 sm:px-6 sm:pt-7 md:px-8 md:pt-8";
 

@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { GRID_LINE } from "@/components/ui/grid-lines";
 import { SegmentedTabs } from "@/components/ui/segmented-tabs";
+import { BUILDER_RAIL_HALO } from "./builder-grid-rails";
 
 // `tab` is the name at switcher width. The full names are written for a column
 // head that has the table's width under it; as tabs, three of them at full
@@ -219,7 +220,7 @@ export function BuilderAlternatives() {
           The table from `md` up is untouched; it can afford the across-read
           and is still the better object when the width exists. */}
       <div
-        className={`mt-10 overflow-clip rounded-2xl border bg-background md:hidden ${GRID_LINE}`}
+        className={`mt-10 overflow-clip rounded-2xl border bg-background md:hidden ${GRID_LINE} ${BUILDER_RAIL_HALO}`}
       >
         {/* px-4 to line the labels up with the cells below them, and NO bottom
             padding: the first row's own `border-t` is the seam between the head
@@ -266,12 +267,18 @@ export function BuilderAlternatives() {
                 {row.label}
               </dt>
               {/* Ranged right, so the five answers line up on one edge and
-                  the option can be read down a single column. */}
-              <dd
-                className={`min-w-0 text-right text-sm leading-snug ${
-                  option === OWN ? "text-foreground" : "text-muted-foreground"
-                }`}
-              >
+                  the option can be read down a single column.
+
+                  FULL-STRENGTH INK ON EVERY TAB, ours included. The answers
+                  used to drop to muted on the two alternative tabs, to keep
+                  our column the strongest thing in the section. On the phone
+                  there is no column: one option is on screen at a time, so
+                  the only thing the muting compared our answers against was
+                  nothing, and it read as the other two tabs being disabled
+                  rather than as ours being emphasised. The answer is the
+                  content either way — the `dt` stays muted, so the row still
+                  reads question-then-answer. */}
+              <dd className="min-w-0 text-right text-sm leading-snug text-foreground">
                 {row.cells[option]}
               </dd>
             </div>
@@ -300,7 +307,7 @@ export function BuilderAlternatives() {
             tone: the table is drawn ON the page here, not raised off it, so
             the ground it needs is the page's own. */}
         <div
-        className={`mt-12 hidden overflow-hidden rounded-2xl border bg-background md:block ${GRID_LINE} ${BLEED}`}
+        className={`mt-12 hidden overflow-hidden rounded-2xl border bg-background md:block ${GRID_LINE} ${BUILDER_RAIL_HALO} ${BLEED}`}
       >
         <table className="w-full table-fixed border-collapse text-left">
           <caption className="sr-only">
@@ -385,14 +392,21 @@ export function BuilderAlternatives() {
                         : ""
                     }`}
                   >
-                    {/* Our column in full-strength text. Set in the same
-                        muted grey as the two alternatives, the answer
-                        carried no more weight than what it is answering. */}
-                    <p
-                      className={`text-sm leading-relaxed ${
-                        i === OWN ? "text-foreground" : "text-muted-foreground"
-                      }`}
-                    >
+                    {/* EVERY ANSWER IN FULL-STRENGTH INK, not just ours.
+                        The two alternative columns were set in muted grey so
+                        our column won on weight as well as on wash. But all
+                        three cells are answers to the same question, and
+                        greying two of them made them read as unavailable
+                        rather than as the routes being compared — the reader
+                        has to actually read "Months" and "You own the
+                        security" for our column to mean anything.
+
+                        Our column is still marked, by the wash it carries on
+                        both the header and the cells (and, in the header, by
+                        the muted/50 the other two take there). That is the
+                        site's own way of marking our side; weight was a
+                        second, louder statement of the same thing. */}
+                    <p className="text-sm leading-relaxed text-foreground">
                       {cell}
                     </p>
                   </td>

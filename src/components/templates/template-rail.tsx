@@ -29,7 +29,18 @@ export type TemplateRailCard = {
   icon?: React.ReactNode;
 };
 
-export function TemplateRail({ cards }: { cards: TemplateRailCard[] }) {
+export function TemplateRail({
+  cards,
+  // Extra classes for each row, for a page whose ground the rows have to do
+  // something about. /ai-app-builder passes BUILDER_RAIL_HALO: it draws
+  // vertical rails behind its content, and a row with an opaque fill cuts them
+  // on a hard line without it. Optional and empty by default, so /templates
+  // and /client-portal render exactly as before.
+  cardClassName = "",
+}: {
+  cards: TemplateRailCard[];
+  cardClassName?: string;
+}) {
   return (
     <div className="mt-12 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
       {cards.map((card) => (
@@ -67,7 +78,7 @@ export function TemplateRail({ cards }: { cards: TemplateRailCard[] }) {
           //
           // With the floor removed the row shrinks to its track and `truncate`
           // does what it was always there to do.
-          className="group flex min-w-0 items-center gap-4 rounded-xl bg-[var(--surface)] p-3 ring-1 ring-transparent transition-[box-shadow,background-color] hover:ring-foreground/10 [[data-theme=dark]_&]:hover:bg-[var(--surface-2)] [[data-theme=dark]_&]:hover:ring-transparent"
+          className={`group flex min-w-0 items-center gap-4 rounded-xl bg-[var(--surface)] p-3 ring-1 ring-transparent transition-[box-shadow,background-color] hover:ring-foreground/10 [[data-theme=dark]_&]:hover:bg-[var(--surface-2)] [[data-theme=dark]_&]:hover:ring-transparent ${cardClassName}`}
         >
           {/* The template shot goes here once the art exists. It takes the
               full `--muted` against the row's half-strength fill, so the slot
@@ -94,11 +105,19 @@ export function TemplateRail({ cards }: { cards: TemplateRailCard[] }) {
               a quiet recess; on dark's #191919 ground the same plate is two
               hundred steps up, the brightest object in the rail by a distance,
               pulling the eye to the icon rather than to the name beside it.
-              Dark gets #c8c9cd, thirteen percent down — enough to take the
+              Dark gets #b4b5b9, twenty-nine percent down — enough to take the
               glare off, still unmistakably a light tile, so the near-black
               artwork keeps the contrast it is drawn for. The blue tint carries
               through (+4 on blue) rather than being greyed out. It went to
-              #d6d7da first, which was still reading hot against #191919.
+              #d6d7da first and then #c8c9cd, both of which were still reading
+              hot against #191919 — six of these tiles sit in one grid, so the
+              plate is repeated across the row and reads brighter in company
+              than a single one does on its own.
+
+              THE FLOOR IS THE ARTWORK. The glyphs are drawn near-black for a
+              light tile, so the plate can only come down as far as still
+              carries them: #b4b5b9 against a #141414 glyph is about 9:1, well
+              clear. Taking it to a mid grey would start eating the icon.
 
               Light keeps #e6e7ea exactly. Dropping it there too would have put
               the icon plate nineteen steps under --surface-2 #e9e9e9 instead
@@ -108,7 +127,7 @@ export function TemplateRail({ cards }: { cards: TemplateRailCard[] }) {
           <span
             className={`flex size-14 shrink-0 items-center justify-center rounded-lg ${
               card.icon
-                ? "bg-[#e6e7ea] [[data-theme=dark]_&]:bg-[#c8c9cd]"
+                ? "bg-[#e6e7ea] [[data-theme=dark]_&]:bg-[#b4b5b9]"
                 : "bg-[var(--surface-2)]"
             }`}
           >

@@ -51,6 +51,50 @@
 export const BUILDER_GRID_LINE =
   "border-[rgba(16,17,20,0.055)] [[data-theme=dark]_&]:border-[rgba(232,237,239,0.085)]";
 
+/**
+ * The soft edge a card gives the rails passing behind it.
+ *
+ * The rails are a BACKDROP — they run the height of the region and every
+ * opaque card on the page cuts them. That interruption is the effect (it is
+ * what makes the grid read as the surface the page is built on), but the CUT
+ * was a hard one: a rail ran at full strength straight into a card's top edge
+ * and stopped on a single scanline, and in the gap between two rows of cards
+ * it left a stub with a square end top and bottom. Six of those per gap read
+ * as tick marks, not as a grid showing through.
+ *
+ * A blurred box-shadow in the PAGE GROUND, drawn just outside the card, takes
+ * the rail down to nothing over about 7px before the card's edge instead. Same
+ * idea as the top fade on the layer itself: the line arrives and leaves rather
+ * than switching on and off.
+ *
+ * `var(--background)` and not a hex, so this is the page's own ground in
+ * whichever theme is rendering and there is no second value to keep in step.
+ * It is invisible on its own account for the same reason — a halo of the
+ * ground, on the ground.
+ *
+ * 2px of spread before 14px of blur: the spread clears the rail off the card's
+ * immediate edge, the blur does the fading. Together they close the 12px gap
+ * between two card rows from both sides, which is what dissolves the stub.
+ */
+export const BUILDER_RAIL_HALO = "shadow-[0_0_14px_2px_var(--background)]";
+
+/**
+ * The same halo, for a block whose edge is the FULL MEASURE rather than a
+ * card's.
+ *
+ * 14px is judged against a 390px card: the rail leaves over a distance that is
+ * a small fraction of the edge it is crossing, so it reads as soft. The FAQ is
+ * one block 1200px wide, and its top edge cuts all six rails on the same
+ * scanline — at 14px that is a 1200px-long horizontal seam with six lines
+ * stopping dead on it, which is the hard cut again at a bigger size.
+ *
+ * 44px of blur over 6px of spread gives the rails about 22px to leave in, so
+ * the seam is a gradient rather than a line. Nothing else on the page needs
+ * this: every other block is a card.
+ */
+export const BUILDER_RAIL_HALO_WIDE =
+  "shadow-[0_0_44px_6px_var(--background)]";
+
 /** The six interior boundaries plus both edges: sevenths of nothing, sixths of the measure. */
 const COLUMNS = [0, 1, 2, 3, 4, 5, 6];
 
@@ -96,7 +140,21 @@ export function BuilderGridRails() {
       // Hidden below the measure. The rails are the 1200px column's own
       // divisions, and under that width the column is the viewport with a
       // 24px gutter — six lines across a phone is a cage, not a guide.
-      className="pointer-events-none absolute inset-0 -z-10 hidden min-[1200px]:block"
+      //
+      // FADED IN AT THE TOP. The region opens straight out of the hero's
+      // glow, so six rails switching on at full strength on one scanline read
+      // as an edge — the thing the opening rule was removed for. The mask
+      // takes the layer from nothing to full over the chapter's own top
+      // padding, so the grid arrives with the first heading rather than
+      // before it.
+      //
+      // A MASK, NOT A GRADIENT FILL. A gradient to a background colour would
+      // be a themed colour hardcoded in a component, and would have to be
+      // written twice and kept in step. Masking fades the layer's alpha
+      // instead, so whatever the wrapper's `bg-background` resolves to in the
+      // current theme is what the rails fade into — one declaration, correct
+      // in both.
+      className="pointer-events-none absolute inset-0 -z-10 hidden [mask-image:linear-gradient(to_bottom,transparent_0,#000_200px)] min-[1200px]:block"
     >
             {/* NO HORIZONTAL PADDING. The rails and the horizontal rules have to
           share one box or the grid does not close at its corners: GridDivider

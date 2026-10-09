@@ -1,3 +1,4 @@
+import { BUILDER_RAIL_HALO } from "./builder-grid-rails";
 import Link from "next/link";
 import { QUIET_BUTTON } from "@/components/ui/quiet-button";
 import { Reveal } from "@/components/ui/reveal";
@@ -117,7 +118,7 @@ export function BuilderTemplates() {
         {/* The same rows /client-portal runs — this was a grid of cover
             cards whose covers are empty frames, which is the one element
             drawn twice that this site's rules exist to stop. */}
-        <TemplateRail cards={cards} />
+        <TemplateRail cards={cards} cardClassName={BUILDER_RAIL_HALO} />
       </Reveal>
     </section>
   );

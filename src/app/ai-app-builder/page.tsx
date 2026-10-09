@@ -8,6 +8,7 @@ import {
 import {
   BuilderGridRails,
   BUILDER_GRID_LINE,
+  BUILDER_RAIL_HALO_WIDE,
 } from "@/components/ai-app-builder/builder-grid-rails";
 import { BuilderCustomerQuotes } from "@/components/ai-app-builder/builder-customer-quotes";
 import { BuilderChapter } from "@/components/ai-app-builder/builder-chapter";
@@ -460,13 +461,28 @@ export default function AiAppBuilderPage() {
             The two-column card grid set these eight long questions as eight
             ragged two-line pills; one flat column lets each sit on its own rule
             without the wording being shortened. */}
-        <FAQ
-          heading="Frequently asked questions"
-          items={BUILDER_FAQS}
-          variant="divided"
-          dottedRules
-          compactQuestions
-        />
+        {/* THE FAQ TAKES THE PAGE GROUND AND THE RAIL HALO.
+            Every other block in this region is an opaque card or table, so the
+            rails pass behind it and are interrupted — that interruption is the
+            effect. The FAQ is the one block with no fill of its own: its rows
+            are transparent and separated by dotted rules, so six rails ran
+            straight down through nine questions and crossed every rule, which
+            put a grid over the one part of the region that is plain reading.
+
+            `bg-background` makes it an opaque block like the rest, and the
+            halo gives that block the same soft edge the cards have instead of
+            a hard start and stop. See BUILDER_RAIL_HALO in builder-grid-rails.
+            The wrapper is here rather than in the shared FAQ because it is
+            this page's rails it answers to, not anything the FAQ owns. */}
+        <div className={`relative bg-background ${BUILDER_RAIL_HALO_WIDE}`}>
+          <FAQ
+            heading="Frequently asked questions"
+            items={BUILDER_FAQS}
+            variant="divided"
+            dottedRules
+            compactQuestions
+          />
+        </div>
 
         {/* Full-bleed: this rule closes the region, so the rails stop here and
             there is nothing at its ends for a capped one to land on. */}

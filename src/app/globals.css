@@ -4408,5 +4408,11 @@ html:not([data-authed]) .auth-only {
 }
 
 [data-theme="dark"] .composer-outer-ring::after {
-  border-color: rgba(255, 255, 255, 0.08);
+  /* 0.14, up from 0.08. The outer ring is the only thing stating the
+     composer's outer edge, and over the hero's arc an 8% white sat close
+     enough to the lit ground that the frame read as one box rather than a
+     field inside a frame. 14% is still well under the gradient ring it sits
+     outside of, so it reads as the quieter of the two edges — which is the
+     job. Dark-scoped: light keeps its own rgba(0,0,0,0.07) above. */
+  border-color: rgba(255, 255, 255, 0.14);
 }

@@ -187,16 +187,22 @@ function ThemeSwitch({
       role="group"
       aria-label="Appearance"
       // Light mode drops the flat gray border: a hard outline over the colourful
-      // aurora read as a pasted-on box. A soft ring plus a lift shadow makes it
-      // sit on the gradient instead, and the higher white opacity stops the
-      // aurora tinting the chip green.
+      // aurora read as a pasted-on box. A soft ring carries the edge instead,
+      // and the higher white opacity stops the aurora tinting the chip green.
+      //
+      // NO LIFT SHADOW IN LIGHT. There was one — 0 4px 16px -8px — to float
+      // the chip off the gradient. On the flat white ground most of the site
+      // actually ends on, it was the only thing on the page casting a shadow,
+      // which made a 32px control read as the one raised object in the footer.
+      // The ring and the 85% white already separate it from both grounds.
+      // Dark is untouched: it has no shadow to remove and its border stays.
       className={`inline-flex items-center gap-0.5 rounded-lg p-0.5 ${
         onDark ? "border border-white/25" : "ring-1 ring-black/[0.05]"
       } ${
         frosted
           ? onDark
             ? "bg-black/30 backdrop-blur-md"
-            : "bg-white/85 shadow-[0_4px_16px_-8px_rgba(16,24,40,0.25)] backdrop-blur-md"
+            : "bg-white/85 backdrop-blur-md"
           : ""
       }`}
     >

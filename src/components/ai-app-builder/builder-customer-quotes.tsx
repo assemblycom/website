@@ -1,4 +1,6 @@
 import Image from "next/image";
+import { BUILDER_RAIL_HALO } from "./builder-grid-rails";
+import { BuilderCustomerQuotesStack } from "./builder-customer-quotes-stack";
 import Link from "next/link";
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -41,7 +43,7 @@ import Link from "next/link";
 // which is how a quote stops being a quote.
 // ─────────────────────────────────────────────────────────────────────────
 
-type CustomerQuote = {
+export type CustomerQuote = {
   quote: string;
   name: string;
   firm: string;
@@ -111,11 +113,20 @@ export function BuilderCustomerQuotes() {
     <section className="mx-auto max-w-[1200px] px-6 py-14 md:px-10 md:py-20">
       <h2 className="type-h3 text-balance">Firms already building</h2>
 
-      {/* BELOW `md` THERE IS NO ROW AND NO EXPANDING.
-          Hover is not a thing a phone has, and four cards that only open under
-          a pointer would be four faces and no quotes on the device most of
-          this page is read on. So the same four entries stack as ordinary
-          cards with everything already visible. */}
+      {/* BELOW `md`, THE SAME FOUR AS AN ACCORDION.
+          Hover is not a thing a phone has, so the row's reveal cannot carry
+          across — but neither can the thing that replaced it first, which was
+          four cards all standing open. That was five screens of scrolling for
+          a section whose job is to say "here are four firms". One row open at
+          a time, tapped, is the row's own behaviour with the one input a
+          phone has. It is a separate component because it needs state, and
+          keeping it out of this file leaves the `md`-and-up row below
+          server-rendered and pure CSS, which is what it was built to be. */}
+      <BuilderCustomerQuotesStack quotes={QUOTES} />
+
+      {/* THE ROW, `md` AND UP ONLY. `hidden md:flex` rather than the old
+          `flex md:flex-row`: the stack above now owns every width below `md`,
+          so the two layouts never both render. */}
       <ul
         // ONE CARD IS ALREADY OPEN, and it is the first.
         //
@@ -129,7 +140,7 @@ export function BuilderCustomerQuotes() {
         // the `hover:` rules on an individual card — the moment the row is
         // hovered they all switch off together and the hovered card is the
         // only thing growing.
-        className="mt-10 flex flex-col gap-4 md:mt-12 md:h-[400px] md:flex-row md:gap-3 md:[&:not(:hover)>li:first-child]:grow-[3] md:[&:not(:hover)>li:first-child_blockquote]:mt-5 md:[&:not(:hover)>li:first-child_blockquote]:max-h-28 md:[&:not(:hover)>li:first-child_blockquote]:translate-y-0 md:[&:not(:hover)>li:first-child_blockquote]:opacity-100"
+        className="mt-10 hidden md:mt-12 md:flex md:h-[400px] md:flex-row md:gap-3 md:[&:not(:hover)>li:first-child]:grow-[3] md:[&:not(:hover)>li:first-child_blockquote]:mt-5 md:[&:not(:hover)>li:first-child_blockquote]:max-h-28 md:[&:not(:hover)>li:first-child_blockquote]:translate-y-0 md:[&:not(:hover)>li:first-child_blockquote]:opacity-100"
       >
         {QUOTES.map((q) => (
           <li
@@ -150,7 +161,7 @@ export function BuilderCustomerQuotes() {
             // A NEUTRAL CARD. --surface is the ground the pillar cards above
             // already use, so the row is the page's own material with pictures
             // set into it and every ink on it is an ordinary token.
-            className="group overflow-hidden rounded-xl bg-[var(--surface)] p-5 transition-[flex-grow] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none md:min-w-0 md:flex-1 md:hover:grow-[3] md:focus-within:grow-[3]"
+            className={`group overflow-hidden rounded-xl bg-[var(--surface)] p-5 ${BUILDER_RAIL_HALO} transition-[flex-grow] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none md:min-w-0 md:flex-1 md:hover:grow-[3] md:focus-within:grow-[3]`}
           >
             <Link href={q.href} className="flex h-full flex-col">
               {/* THE THUMBNAIL IS ONE SIZE IN BOTH STATES.
