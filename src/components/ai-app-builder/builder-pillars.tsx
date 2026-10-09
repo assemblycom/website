@@ -151,7 +151,7 @@ export function BuilderPillars({ pillars }: { pillars: Pillar[] }) {
 }
 
 const CARD =
-  "relative flex flex-col overflow-hidden rounded-3xl bg-[var(--surface)]";
+  "pillar-card relative flex flex-col overflow-hidden rounded-3xl bg-[var(--surface)]";
 /** The mocks' own hairline, so a screen's drawn edge matches the lines in it. */
 const CARD_PAD = "px-5 pt-6 sm:px-6 sm:pt-7 md:px-8 md:pt-8";
 

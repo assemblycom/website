@@ -4148,6 +4148,96 @@ html:not([data-authed]) .auth-only {
   );
 }
 
+/* ── A PILLAR CARD'S SURFACE (DARK ONLY) ─────────────────────────────────
+   The four cards under "What AI app builders promise" are flat --surface
+   #191919 patches on the #0a0a0a page. The step between the two is real, but
+   a step alone is all they have: no edge, no falloff, nothing catching light.
+   Against the mocks sitting ON them — which DO have lit edges, stepped wells
+   and colour — the card reads as the one unresolved surface in the section.
+
+   This is the same idea the mock chrome block further up already builds on:
+   in dark, a surface is stated by light catching its top edge, not by fill
+   alone. The card was the one surface in the family that never got it.
+
+   LIGHT IS UNTOUCHED AND MUST STAY SO. Every declaration here lives under
+   [data-theme="dark"]. In light the cards are #f5f5f5 on white, where the
+   fill step is the whole statement and already legible — an edge there would
+   be outlining something that does not need outlining. The light cards render
+   from .pillar-card exactly as they did before this class existed, which is
+   why .pillar-card itself carries nothing. */
+.pillar-card {
+  /* Deliberately empty in light. The dark block below is the whole feature;
+     naming the class here keeps the hook in one place and makes it obvious at
+     the call site that the treatment is theme-scoped. */
+}
+
+[data-theme="dark"] {
+  /* The card's lit edge, as a three-stop ramp rather than the two-stop one
+     .mock-lit-edge uses. A mock frame is ~300px tall and can spend its
+     highlight by the halfway mark; a pillar card runs 500px and more, and a
+     ramp that reaches transparent over that distance leaves the bottom third
+     of the card with no edge at all — the corner just dissolves. So the foot
+     keeps a residual line instead of going to nothing.
+
+     Values are white alphas, not hexes, because the ramp has to hold over
+     both the plain --surface cards and the brand-wash one, whose ground is a
+     blue-to-lime gradient. A fixed grey would go muddy across it. */
+  --pillar-edge-top: rgba(255, 255, 255, 0.15);
+  --pillar-edge-mid: rgba(255, 255, 255, 0.07);
+  --pillar-edge-foot: rgba(255, 255, 255, 0.035);
+
+  /* The card's own ground, lifted at the head and settling to --surface. Four
+     points, which is half the step from --surface #191919 to --mock-window
+     #212121 — enough that the top of the card is not the same value as its
+     bottom, and not so much that the card starts competing with the panel
+     lying on it. The ramp is spent by 55%: past the midpoint the card is
+     --surface exactly, so a shot cropping off the foot still meets the value
+     it was drawn against. */
+  --pillar-ground-top: #1e1e1e;
+}
+
+[data-theme="dark"] .pillar-card::after {
+  /* The ring. Same mask-composite trick as .mock-lit-edge — a 1px padding box
+     with the gradient painted into it and the middle punched out — so the
+     edge can be a gradient rather than the single flat colour a border
+     accepts.
+
+     z-index because the shots inside the card are absolutely positioned and
+     overhang its foot; without it the ring paints under them and the card's
+     bottom corners lose their edge exactly where the artwork runs out. */
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    180deg,
+    var(--pillar-edge-top) 0%,
+    var(--pillar-edge-mid) 22%,
+    var(--pillar-edge-foot) 60%,
+    var(--pillar-edge-foot) 100%
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* The ground ramp goes on the plain cards only. The brand-wash card sets its
+   own background-image a few rules up — a blue-to-lime ramp that IS its
+   ground — and a second gradient here would either replace it or fight it. */
+[data-theme="dark"] .pillar-card:not(.pillar-brand-wash) {
+  background-image: linear-gradient(
+    to bottom,
+    var(--pillar-ground-top) 0%,
+    var(--surface) 55%
+  );
+}
+
+
 /* ── A PILLAR SHOT'S EDGE RAMPS ──────────────────────────────────────────
    The right- and bottom-edge dissolves on /ai-app-builder's pillar cards.
 
