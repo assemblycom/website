@@ -10,6 +10,7 @@ import {
 } from "@/lib/constants";
 import { AUTH_ATTRIBUTE } from "@/lib/auth-script";
 import { readHeroArmCookie, withHeroArm } from "@/lib/hero-variants";
+import { withSignupAttribution } from "@/lib/signup-attribution";
 import { trackHeroCta } from "./hero-experiment";
 import { TEMPLATES } from "@/lib/templates";
 import { IconArrow, IconFile, IconPaperclip, IconPlay, IconX } from "./icons";
@@ -219,7 +220,7 @@ function openGetStarted(value: string, ctaSurface?: string) {
   // is readable and there is no server render to disagree with. Null for anyone
   // the hero test left out, and then the URL is the one it has always been.
   window.location.href = withHeroArm(
-    buildSignupUrl(trimmed || undefined),
+    withSignupAttribution(buildSignupUrl(trimmed || undefined)),
     readHeroArmCookie(),
   );
 }
@@ -737,7 +738,7 @@ export function V66Composer({ glow = true, surfaceClassName = "bg-white ring-1 r
                           // the one hero click that reached signup anonymous.
                           if (ctaSurface) trackHeroCta(ctaSurface);
                           window.location.href = withHeroArm(
-                            buildSignupUrl(),
+                            withSignupAttribution(buildSignupUrl()),
                             readHeroArmCookie(),
                           );
                         }}
