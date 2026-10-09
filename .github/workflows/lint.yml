@@ -1,0 +1,44 @@
+name: Lint
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lint-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      # Existing lint errors make this informational during the initial rollout.
+      # Remove continue-on-error once the repository has a clean baseline.
+      - name: Run lint (informational)
+        id: lint
+        continue-on-error: true
+        run: npm run lint
+
+      - name: Report lint failures
+        if: steps.lint.outcome == 'failure'
+        run: |
+          echo "::warning::Lint found errors. This check is informational during the initial rollout; see the lint step for details."
+          echo "### Lint needs attention" >> "$GITHUB_STEP_SUMMARY"
+          echo "The lint command failed. See the Run lint step for details." >> "$GITHUB_STEP_SUMMARY"
+          echo "This is informational during the initial rollout and does not fail the PR check." >> "$GITHUB_STEP_SUMMARY"
