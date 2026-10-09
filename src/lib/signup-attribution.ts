@@ -5,6 +5,8 @@ const ACQUISITION_PARAMS = [
 const STORAGE_KEY = "assembly:signup-attribution";
 const SIGNUP_DESTINATION = "https://dashboard.assembly.com/signup";
 const MAX_URL_LENGTH = 2048;
+// Storage can be blocked; keep attribution for navigation in the loaded app.
+const inMemoryAttribution = new WeakMap<Window, string>();
 
 function acquisitionParams(search: string): URLSearchParams {
   const source = new URLSearchParams(search);
@@ -20,17 +22,19 @@ function acquisitionParams(search: string): URLSearchParams {
 export function readSignupAttribution(): URLSearchParams {
   if (typeof window === "undefined") return new URLSearchParams();
   const current = acquisitionParams(window.location.search);
+  if (current.size) inMemoryAttribution.set(window, current.toString());
   try {
     if (current.size) {
       // A new campaign replaces the previous visit rather than combining IDs.
       window.sessionStorage.setItem(STORAGE_KEY, current.toString());
     } else {
-      return acquisitionParams(window.sessionStorage.getItem(STORAGE_KEY) || "");
+      const saved = window.sessionStorage.getItem(STORAGE_KEY);
+      if (saved && !inMemoryAttribution.has(window)) inMemoryAttribution.set(window, saved);
     }
   } catch {
     // Storage restrictions must not stop signup or current-query forwarding.
   }
-  return current;
+  return acquisitionParams(inMemoryAttribution.get(window) || "");
 }
 
 /** Apply at handoff or after hydration, never during server/client rendering. */
@@ -44,9 +48,19 @@ export function withSignupAttribution(href: string): string {
   if (`${url.origin}${url.pathname}` !== SIGNUP_DESTINATION) return href;
   const attribution = readSignupAttribution();
   if (!attribution.size) return href;
+  const addedCampaignFields = new Set<string>();
   for (const [key, value] of attribution) {
     // Referral and powered-by links can already define their own attribution.
-    if (!url.searchParams.has(key)) url.searchParams.set(key, value);
+    if (!url.searchParams.has(key)) {
+      url.searchParams.set(key, value);
+      if (key.startsWith("utm_")) addedCampaignFields.add(key);
+    }
+  }
+  // Drop optional campaign metadata before shortening a user's prompt. Keep
+  // click IDs and fields explicitly supplied by the signup link intact.
+  for (const key of ["utm_content", "utm_term", "utm_campaign", "utm_medium", "utm_source"]) {
+    if (url.toString().length <= MAX_URL_LENGTH) break;
+    if (addedCampaignFields.has(key)) url.searchParams.delete(key);
   }
   // Leave room for attribution without truncating the click identity.
   let prompt = url.searchParams.get("prompt") || "";

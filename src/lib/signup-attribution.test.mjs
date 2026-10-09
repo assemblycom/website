@@ -66,6 +66,35 @@ test('works without browser APIs and without writable session storage', () => {
   delete dom.window.sessionStorage;
 });
 
+test('blocked storage retains the campaign across navigation and replaces it on a new landing', () => {
+  browser('https://assembly.com/?msclkid=landing-click&utm_source=bing');
+  Object.defineProperty(dom.window, 'sessionStorage', { get() { throw new Error('blocked'); } });
+  attribution.readSignupAttribution();
+  dom.reconfigure({ url: 'https://assembly.com/pricing' });
+  let result = new URL(attribution.withSignupAttribution(buildSignupUrl()));
+  assert.equal(result.searchParams.get('msclkid'), 'landing-click');
+  assert.equal(result.searchParams.get('utm_source'), 'bing');
+  dom.reconfigure({ url: 'https://assembly.com/?gclid=new-click&utm_source=google' });
+  attribution.readSignupAttribution();
+  dom.reconfigure({ url: 'https://assembly.com/templates' });
+  result = new URL(attribution.withSignupAttribution(buildSignupUrl()));
+  assert.equal(result.searchParams.get('gclid'), 'new-click');
+  assert.equal(result.searchParams.has('msclkid'), false);
+  assert.equal(result.searchParams.get('utm_source'), 'google');
+});
+
+test('oversized campaign fields fit without a prompt while preserving click IDs and signup inputs', () => {
+  browser('https://assembly.com/?msclkid=landing-click&utm_source=bing&utm_campaign=' + '🧾'.repeat(1000) + '&utm_content=' + 'x'.repeat(3000));
+  const href = attribution.withSignupAttribution(buildSignupUrl(undefined, { id: 'app-1', name: 'Invoices', description: 'Invoice clients' }, 'visitor@example.test') + '&heroArm=control-big');
+  assert.ok(href.length <= 2048);
+  const result = new URL(href);
+  assert.equal(result.searchParams.get('msclkid'), 'landing-click');
+  assert.equal(result.searchParams.get('utm_source'), 'bing');
+  assert.equal(result.searchParams.get('templateId'), 'app-1');
+  assert.equal(result.searchParams.get('email'), 'visitor@example.test');
+  assert.equal(result.searchParams.get('heroArm'), 'control-big');
+});
+
 test('decorates mounted and dynamically added links and survives href replacement', async () => {
   browser('https://assembly.com/?msclkid=landing-click');
   const stop = attribution.observeSignupLinks(document);
