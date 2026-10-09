@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { TEMPLATES, type Template } from "@/lib/templates";
+import { withSignupAttribution } from "@/lib/signup-attribution";
 import { proposalAppName } from "@/lib/proposal-title";
 import {
   MAX_PROMPT_LENGTH,
@@ -894,7 +895,7 @@ function ProposalContent({ catalogue }: { catalogue: Template[] }) {
           onClose={() => setPanelOpen(false)}
           onStart={() => {
             setPanelOpen(false);
-            window.location.href = startHref;
+            window.location.href = withSignupAttribution(startHref);
           }}
         />
       )}
