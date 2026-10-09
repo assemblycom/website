@@ -210,7 +210,13 @@ export function BuilderHowItWorks() {
               // dead ground in it. From `sm` the fixed height returns, because
               // there all three steps share one panel that must not resize as
               // you tab between them.
-              className={`relative mt-6 w-full ${current.phoneAspect} sm:aspect-auto sm:h-[360px] md:mt-8 md:h-[400px] ${
+              // `cursor-default select-none` because this slot holds a PICTURE.
+              // The scenes are built out of real text nodes rather than an
+              // image, so the pointer turned into an I-beam over a screenshot
+              // and a drag selected half a fake calendar — which is the moment
+              // a mock stops reading as a product shot. The copy above the
+              // slot is left alone: that is real page text and still selects.
+              className={`relative mt-6 w-full cursor-default select-none ${current.phoneAspect} sm:aspect-auto sm:h-[360px] md:mt-8 md:h-[400px] ${
                 current.wide
                   ? // Steps with PANEL_SCENE_WIDE exactly — the slot and the
                     // design box are one decision, and a slot that lags the box

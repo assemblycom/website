@@ -219,6 +219,25 @@ export function BuilderCustomerQuotes() {
                 />
               </div>
 
+              {/* ONLY OPACITY AND TRANSFORM ARE TRANSITIONED. The max-height
+                  and the margin still change — they are what keeps a closed
+                  card from reserving space — they just SNAP instead of
+                  animating, and the fade covers the snap.
+
+                  Animating them was half the jitter. The card's width is
+                  already animating (flex-grow), so the quote was being
+                  re-wrapped every frame; animating its max-height at the same
+                  time meant the clamp was moving against text whose line count
+                  was moving too, and the block visibly stepped as a line
+                  crossed the boundary. Snapping the clamp leaves one layout
+                  change, on one frame, under a 500ms fade. Opacity and
+                  transform are composited, so nothing else here touches
+                  layout at all.
+
+                  Nothing moves in the card as a result: its height is fixed
+                  and the attribution is pinned to the foot with mt-auto, so
+                  the clamp opening only uncovers slack that was already
+                  there. */}
               {/* THE QUOTE, which is what opening the card is FOR.
                   It takes NO HEIGHT when the card is closed — max-height and
                   its top margin both go to zero — so a closed card is a
@@ -235,7 +254,7 @@ export function BuilderCustomerQuotes() {
                   160px open is five lines at 19/1.375; the longest of these
                   four sets to four at the width an open card has, so the
                   clamp is headroom rather than a crop. */}
-              <blockquote className="overflow-hidden text-[19px] leading-snug text-foreground transition-[max-height,opacity,margin,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none md:mt-0 md:max-h-0 md:translate-y-1 md:opacity-0 md:group-hover:mt-5 md:group-hover:max-h-40 md:group-hover:translate-y-0 md:group-hover:opacity-100 md:group-focus-within:mt-5 md:group-focus-within:max-h-40 md:group-focus-within:translate-y-0 md:group-focus-within:opacity-100 max-md:mt-5">
+              <blockquote className="overflow-hidden text-[19px] leading-snug text-foreground transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none md:mt-0 md:max-h-0 md:translate-y-1 md:opacity-0 md:group-hover:mt-5 md:group-hover:max-h-40 md:group-hover:translate-y-0 md:group-hover:opacity-100 md:group-focus-within:mt-5 md:group-focus-within:max-h-40 md:group-focus-within:translate-y-0 md:group-focus-within:opacity-100 max-md:mt-5">
                 “{q.quote}”
               </blockquote>
 
@@ -247,10 +266,18 @@ export function BuilderCustomerQuotes() {
                   is its only copy, so an ellipsis would cut the two things the
                   card exists to say. */}
               <div className="mt-auto shrink-0 pt-6">
-                <p className="min-w-0 text-balance text-[15px] leading-snug text-foreground">
+                {/* NO text-balance ON EITHER LINE, and that is a
+                    performance call rather than a typographic one. Balancing
+                    re-runs the line breaker at every width, and these cards
+                    change width continuously for half a second on every
+                    hover — four cards, two paragraphs each, every frame. It
+                    was the other half of the jitter. A name and a firm are
+                    two or three words at a 190px measure; the rag they make
+                    unbalanced is not something anyone can see. */}
+                <p className="min-w-0 text-[15px] leading-snug text-foreground">
                   {q.name}
                 </p>
-                <p className="mt-1 text-balance text-[15px] leading-snug text-muted-foreground">
+                <p className="mt-1 text-[15px] leading-snug text-muted-foreground">
                   {q.firm}
                 </p>
               </div>

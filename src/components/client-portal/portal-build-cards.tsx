@@ -1371,8 +1371,18 @@ function CalendarPane() {
               // are drawn on a well themselves, so at the first rung the
               // header and the block under it were close enough to read as
               // one shape running down the day. The third rung clears them.
+              // DARK STEPS BACK A RUNG. The third rung is right in light,
+              // where the wells are near-white and the whole set sits inside
+              // four points of each other. In dark they are 17 points apart
+              // and --mock-well-3 #3a3a3a against the #212121 window is the
+              // brightest surface in the mock — the day header read as
+              // selected rather than as today. --mock-well-2 #303030 still
+              // clears the events drawn on --mock-well beneath it, which is
+              // the whole reason this is not the first rung.
               className={`min-w-0 flex-1 flex-col items-center gap-[3px] py-1.5 ${
-                d.today ? "bg-[var(--mock-well-3)]" : ""
+                d.today
+                  ? "bg-[var(--mock-well-3)] [[data-theme=dark]_&]:bg-[var(--mock-well-2)]"
+                  : ""
               } ${calDayHidden(
                 i,
                 "flex",
@@ -1930,10 +1940,19 @@ function ClientNavRow({
       // easily by an eye settled into a dark page and is nearly invisible to
       // one adapted to a bright one, and the picked row is the thing this card
       // is pointing at. Dark is left exactly where it was.
+      //
+      // THE UNPICKED ROWS ARE white/40, not white/60. They are furniture:
+      // the nav is in these mocks to say the app has a place in a sidebar,
+      // and the only row that carries meaning is the lit one naming the app
+      // the pane is showing. At 60% the other three were nearly as present as
+      // the picked one, so the list read as four options rather than as one
+      // open app among them. 40% still names them legibly at this size and
+      // puts the step where it belongs. Hover still takes a row to full
+      // white, so the fill and the ink move together.
       className={`flex h-[24px] items-center gap-1.5 ${R_CHROME} px-1.5 transition-colors ${
         active
           ? "bg-white/[0.22] text-white [[data-theme=dark]_&]:bg-white/[0.12]"
-          : "text-white/60 hover:bg-white/[0.12] hover:text-white [[data-theme=dark]_&]:hover:bg-white/[0.07]"
+          : "text-white/40 hover:bg-white/[0.12] hover:text-white [[data-theme=dark]_&]:hover:bg-white/[0.07]"
       }`}
     >
       <span className="flex shrink-0 items-center justify-center [&>svg]:size-[13px]">

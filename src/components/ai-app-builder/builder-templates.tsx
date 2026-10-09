@@ -1,4 +1,7 @@
-import { BUILDER_RAIL_HALO } from "./builder-grid-rails";
+import {
+  BUILDER_RAIL_HALO,
+  BUILDER_RAIL_HALO_WIDE,
+} from "./builder-grid-rails";
 import Link from "next/link";
 import { QUIET_BUTTON } from "@/components/ui/quiet-button";
 import { Reveal } from "@/components/ui/reveal";
@@ -104,26 +107,31 @@ export function BuilderTemplates() {
             paragraph and a rail's width away from it, so it read as a
             control belonging to the section's edge rather than as the
             sentence's own next step. */}
-        <div className="max-w-2xl">
-          <h3 className="type-h3 text-balance">Not a builder? Start here</h3>
-          <p className="mt-4 max-w-2xl text-muted-foreground">
-            20+ templates made for businesses like yours. Install one, then
-            remix it with the builder.
-          </p>
-          {/* THE BUTTON TAKES THE GROUND AND THE HALO TOO.
-              QUIET_BUTTON is an outline with no fill — right everywhere else
-              it is used, and on this page it meant a rail ran straight through
-              the control. `bg-background` makes it opaque like the cards below
-              it; the halo gives it their soft edge. Both are at this call
-              site, not on the shared class: on a page with no rails an opaque
-              fill is a patch, and five other buttons use it. The hover fill
-              still wins, since a hover variant outranks the base class. */}
-          <Link
-            href="/templates"
-            className={`mt-6 ${QUIET_BUTTON} bg-background ${BUILDER_RAIL_HALO}`}
-          >
-            Browse all templates
-          </Link>
+        {/* THE HEADER BAND TAKES THE PAGE GROUND AND THE WIDE HALO, for the
+            same reason the comparison's header does: it is a heading, a lede
+            and one chip, so the rails ran through the type rather than around
+            it.
+
+            THE BAND IS THE FULL MEASURE, not the copy's `max-w-2xl`. Putting
+            the ground on the copy block alone would have stopped the two
+            rails that cross it and left the other four running at full
+            strength beside them, on the same scanlines — four lines and two
+            gaps, which reads worse than six lines. The copy keeps its own
+            measure inside a band that spans the section. */}
+        <div className={`relative bg-background ${BUILDER_RAIL_HALO_WIDE}`}>
+          <div className="max-w-2xl">
+            <h3 className="type-h3 text-balance">Not a builder? Start here</h3>
+            <p className="mt-4 max-w-2xl text-muted-foreground">
+              20+ templates made for businesses like yours. Install one, then
+              remix it with the builder.
+            </p>
+            {/* No ground of its own any more — the band above covers it.
+                It used to carry `bg-background` plus the card halo, from when
+                the rails were stopped per element rather than per band. */}
+            <Link href="/templates" className={`mt-6 ${QUIET_BUTTON}`}>
+              Browse all templates
+            </Link>
+          </div>
         </div>
 
         {/* The same rows /client-portal runs — this was a grid of cover

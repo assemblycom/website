@@ -4327,6 +4327,59 @@ html:not([data-authed]) .auth-only {
 }
 
 
+/* ── THE PILLAR CARDS SIT ON THE PAGE GROUND IN DARK ─────────────────────
+   DARK ONLY. Light is untouched and deliberately so: there the cards are
+   --surface #f5f5f5 on a white page, which is a ten-step lift — enough to
+   read as a panel and not enough to read as a box. Nothing about that is
+   wrong, and this rule is scoped so it cannot reach it.
+
+   In dark the same relationship is much louder. --surface #191919 against a
+   #0a0a0a page, ramped up to #1e1e1e at the head by the ground gradient, made
+   four big slabs noticeably lighter than everything around them — so the
+   section read as four panels laid on the page rather than as four pieces of
+   it, and the mock screens inside them, which are the actual subject, had to
+   compete with the card they sat on.
+
+   On the page's own ground the card is defined by its lit edge instead of by
+   its fill. That ring is already there — .surface-lit draws it a few rules up
+   — and it is the thing doing the work now, which is why this takes the fill
+   away rather than dimming it: a slightly-darker slab is still a slab.
+
+   BOTH the colour and the image, because there are two things to beat. The
+   component's own `bg-[var(--surface)]` sets background-color, and the ground
+   ramp above sets background-image; killing one and leaving the other leaves
+   the card lit by whichever survived.
+
+   The selector carries .surface-lit and the same :not() the ramp does, so it
+   outweighs that rule rather than racing it, and so the brand-wash pillar —
+   whose gradient IS its ground — keeps its own. */
+[data-theme="dark"] .builder-pillar-card.surface-lit:not(.pillar-brand-wash) {
+  background-color: var(--background);
+  background-image: none;
+
+  /* AND THE LIT EDGE HAS TO CLOSE, now that it is the only thing drawing the
+     card. The ring ramps 15% white at the head down to 3.5% from 60% on, and
+     that foot was tuned against a card that had a FILL: on #1e1e1e a 3.5%
+     line is visible, and the card had its own ground to read as anyway. On
+     the page's own #0a0a0a it resolves to about #121212, two percent off the
+     page — so the card appeared to be outlined across the top and open down
+     the sides and bottom.
+
+     The three stops are raised here only. The foot lands near #292929, which
+     is where the page's own hairlines already sit in dark, so the card closes
+     on the same line weight the grid and the dividers use. The head still
+     steps up from it, so the edge still reads as catching light rather than
+     as a flat box.
+
+     Set as the tokens the ring already reads rather than by rewriting the
+     gradient: the ramp's shape and stops stay in one place, and only the
+     values this card needs change. Every other .surface-lit box — the How it
+     works panel among them — keeps the originals. */
+  --surface-lit-top: rgba(255, 255, 255, 0.18);
+  --surface-lit-mid: rgba(255, 255, 255, 0.13);
+  --surface-lit-foot: rgba(255, 255, 255, 0.1);
+}
+
 /* ── A PILLAR SHOT'S EDGE RAMPS ──────────────────────────────────────────
    The right- and bottom-edge dissolves on /ai-app-builder's pillar cards.
 
@@ -4355,6 +4408,31 @@ html:not([data-authed]) .auth-only {
     .pillar-edge-fade {
       -webkit-mask-image: var(--pillar-fade, none);
       mask-image: var(--pillar-fade, none);
+    }
+  }
+
+  /* A LONGER RAMP IN DARK, for a pillar that asks for one.
+     The ramp dissolves a cropped shot into the card it sits on, so how long
+     it has to be depends on how far apart the two grounds are — and on
+     /ai-app-builder they are much further apart in dark since the cards took
+     the page's own #0a0a0a: the shot's --mock-window #212121 now has
+     twenty-three points to travel instead of eight.
+     The CRM shot is the case that showed it. It is clipped by the card's
+     right edge at about 92% of its own width, and a ramp starting at 74 is
+     still a third opaque there — so the picture was cut off mid-dissolve and
+     the step landed exactly on the card's ring, reading as a second outline
+     drawn beside the first rather than as a shot running off the edge.
+     Falls back to the light ramp, so a pillar that does not set the dark
+     tokens behaves exactly as it did. */
+  [data-theme="dark"] .pillar-edge-fade {
+    -webkit-mask-image: var(--pillar-fade-phone-dark, var(--pillar-fade-phone, none));
+    mask-image: var(--pillar-fade-phone-dark, var(--pillar-fade-phone, none));
+  }
+
+  @media (width >= 40rem) {
+    [data-theme="dark"] .pillar-edge-fade {
+      -webkit-mask-image: var(--pillar-fade-dark, var(--pillar-fade, none));
+      mask-image: var(--pillar-fade-dark, var(--pillar-fade, none));
     }
   }
 }
@@ -4451,11 +4529,21 @@ html:not([data-authed]) .auth-only {
 }
 
 [data-theme="dark"] .composer-outer-ring::after {
-  /* 0.14, up from 0.08. The outer ring is the only thing stating the
-     composer's outer edge, and over the hero's arc an 8% white sat close
-     enough to the lit ground that the frame read as one box rather than a
-     field inside a frame. 14% is still well under the gradient ring it sits
-     outside of, so it reads as the quieter of the two edges — which is the
-     job. Dark-scoped: light keeps its own rgba(0,0,0,0.07) above. */
-  border-color: rgba(255, 255, 255, 0.14);
+  /* NO OUTER RING IN DARK.
+
+     It was 8% white, then 14% to make it carry over the hero's arc — and at
+     14% the answer was clear: the composer does not want a second edge in
+     dark at all. The gradient ring is already a lit line against a near-black
+     page, so an outer border two off from it draws a box around a box, and
+     the brighter it gets the more it reads as a selected state rather than as
+     a frame.
+
+     `display: none`, not a transparent border: there is nothing left for this
+     pseudo-element to do in dark, and a 1px transparent box still rounds and
+     insets itself.
+
+     LIGHT IS UNTOUCHED and still carries its rgba(0,0,0,0.07) from the rule
+     above. There the ring is the only thing separating a white field from a
+     white page, so it is load-bearing in a way it never was here. */
+  display: none;
 }

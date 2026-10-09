@@ -68,6 +68,23 @@ const PILLARS: Pillar[] = [
     // as a window onto a page that carries on. 84%, so the ramp covers about
     // the last row and nothing above it.
     fadeBottom: 84,
+    // AND AT ITS RIGHT EDGE, which it had no ramp for at all.
+    //
+    // This shot is laid out `right-0`: its right edge IS the card's right
+    // edge, so the screen was cut dead on the line the card draws its own ring
+    // on. Two edges on one pixel column — the card's lit ring and the shot's
+    // ground ending — read as a doubled border, which is what it looked like.
+    // The other two cropped shots already dissolve before they get there; this
+    // one was the odd case because it is the only one whose shot is pinned to
+    // the card edge rather than overhanging it.
+    //
+    // 90 in light, 74 in dark: the card ground went to the page's own
+    // near-black in dark, so the shot has three times as far to travel before
+    // it is gone. Both ramps land on the empty template placeholders at the
+    // shot's right, not on the composer, which is the part worth reading.
+    fadeRight: true,
+    fadeFrom: 90,
+    fadeFromDark: 74,
   },
   {
     eyebrow: "CRM",
@@ -127,6 +144,13 @@ const PILLARS: Pillar[] = [
     // instead of stopping against it. The Company column still clears it:
     // the ramp is barely on at 74 and does not bite until past the logos.
     fadeFrom: 74,
+    // Dark starts the ramp 34 points earlier. The card's ground went to the
+    // page's own near-black, so the shot has three times as far to dissolve
+    // — and the card clips this shot at about 92% of its width, where a ramp
+    // from 74 is still a third opaque. Cut there, the step landed on the
+    // card's ring and read as a second outline beside it. From 40 the shot
+    // is spent before the edge reaches it.
+    fadeFromDark: 40,
   },
   {
     eyebrow: "Security",

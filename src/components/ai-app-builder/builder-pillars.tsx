@@ -44,6 +44,16 @@ export interface Pillar {
    */
   fadeRight?: boolean;
   /**
+   * Where the RIGHT ramp starts in dark, when that has to differ from light.
+   *
+   * The ramp dissolves the shot into the card, so its length depends on how
+   * far apart the two grounds are — and since the cards took the page's own
+   * ground in dark, the shot has three times the distance to travel there.
+   * Only the pillar that needs it sets this; the rest fall back to `fadeFrom`
+   * in both themes.
+   */
+  fadeFromDark?: number;
+  /**
    * Where the right-edge fade's solid part ENDS, as a percent of the card.
    *
    * The default 62 is drawn for the branding card, whose subject is a slab on
@@ -165,7 +175,7 @@ export function BuilderPillars({ pillars }: { pillars: Pillar[] }) {
 // BUILDER_RAIL_HALO: the page's rails run behind these cards, and without it
 // each card chops the six of them off on a hard line (see builder-grid-rails).
 const CARD =
-  `surface-lit relative flex flex-col overflow-hidden rounded-3xl bg-[var(--surface)] ${BUILDER_RAIL_HALO}`;
+  `builder-pillar-card surface-lit relative flex flex-col overflow-hidden rounded-3xl bg-[var(--surface)] ${BUILDER_RAIL_HALO}`;
 /** The mocks' own hairline, so a screen's drawn edge matches the lines in it. */
 const CARD_PAD = "px-5 pt-6 sm:px-6 sm:pt-7 md:px-8 md:pt-8";
 
@@ -292,19 +302,33 @@ function FeatureCard({
                   // 360 and leaving two thirds of the card empty; at `lg` the
                   // card becomes a third of the row and the fixed width comes
                   // back, which is the number it was drawn for.
-                  "inset-x-5 w-auto rounded-t-xl [--lit-angle:180deg] sm:left-6 sm:right-0 sm:w-auto sm:rounded-tr-none sm:[--lit-angle:135deg] md:left-8 md:right-auto md:w-[var(--shot-w)]"
+                  "inset-x-5 w-auto rounded-t-xl sm:left-6 sm:right-0 sm:w-auto sm:rounded-tr-none md:left-8 md:right-auto md:w-[var(--shot-w)]"
                 : "left-5 rounded-tl-xl sm:left-6 md:left-8"
             } ${
-              // The hairline is a LIT edge now (see .mock-lit-edge): brightest
+              // The hairline is a LIT edge (see .mock-lit-edge): brightest
               // along the top where the light would land, the plain line by
-              // the middle, gone before the right and the foot — which are the
-              // two edges this frame leaves open. 135deg is what runs it
-              // diagonally so neither open edge gets a line down it.
+              // the middle, gone before the foot.
+              //
+              // STRAIGHT DOWN, which is .mock-lit-edge's own default — no
+              // --lit-angle set here at all now. It used to run at 135deg, on
+              // the reasoning that a diagonal keeps a line off the right edge
+              // and the foot, which are the two edges these frames leave open.
+              // What that actually did was spend the highlight across the
+              // frame rather than down it: on a shot as wide as the CRM
+              // table, the top edge was lit at its left corner and had faded
+              // to nothing by the right, so the brightest part of the ring sat
+              // on a corner instead of along the edge the light is supposed to
+              // be landing on. At 180 the whole top edge lights evenly and the
+              // ramp is spent by the middle, which is the thing being drawn.
+              //
+              // The open edges are fine: the ramp reaches them only in its
+              // first 45%, where it is still the plain hairline, and both are
+              // cropped by the card before that matters.
               //
               // In light it is the same hairline as before; only dark lights
               // up, which is where a near-black screen on a near-black card
               // had no edge of its own.
-              pillar.visualBare ? "mock-lit-edge [--lit-angle:135deg]" : ""
+              pillar.visualBare ? "mock-lit-edge" : ""
             } ${span === "wide" ? "right-0 h-[130%]" : "h-full"}`}
             style={
               span === "wide"
@@ -349,10 +373,17 @@ function edgeFade(pillar: Pillar): React.CSSProperties | undefined {
     }%, transparent 100%)`;
 
   const right = pillar.fadeRight ? ramp("right", pillar.fadeFrom ?? 62) : null;
+  const rightDark =
+    pillar.fadeRight && pillar.fadeFromDark !== undefined
+      ? ramp("right", pillar.fadeFromDark)
+      : null;
   const bottom =
     pillar.fadeBottom !== undefined ? ramp("bottom", pillar.fadeBottom) : null;
 
   const all = [right, bottom].filter(Boolean) as string[];
+  const allDark = rightDark
+    ? ([rightDark, bottom].filter(Boolean) as string[])
+    : null;
   // The phone set drops the RIGHT ramp for a shot that is contained there —
   // its right edge is inside the card on a phone, so there is nothing running
   // off to dissolve and the ramp would only be fading the last column of a
@@ -375,9 +406,15 @@ function edgeFade(pillar: Pillar): React.CSSProperties | undefined {
   // Tokens rather than `maskImage`, so .pillar-edge-fade can serve a different
   // set below `sm` — see that rule. `none` is mask-image's initial value, so a
   // phone set that came out empty correctly means "no mask".
+  // The dark set is emitted only when a pillar asked for one; the CSS falls
+  // back to the light tokens otherwise, so an unset pillar is untouched.
+  // The PHONE set never takes the dark right-ramp: a contained shot has no
+  // right edge running off to dissolve there, which is the same reason the
+  // light phone set drops it.
   return {
     "--pillar-fade": all.length ? all.join(", ") : "none",
     "--pillar-fade-phone": phone.length ? phone.join(", ") : "none",
+    ...(allDark?.length ? { "--pillar-fade-dark": allDark.join(", ") } : {}),
   } as React.CSSProperties;
 }
 
