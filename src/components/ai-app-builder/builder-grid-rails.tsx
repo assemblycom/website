@@ -88,12 +88,15 @@ export const BUILDER_RAIL_HALO = "shadow-[0_0_14px_2px_var(--background)]";
  * scanline — at 14px that is a 1200px-long horizontal seam with six lines
  * stopping dead on it, which is the hard cut again at a bigger size.
  *
- * 44px of blur over 6px of spread gives the rails about 22px to leave in, so
- * the seam is a gradient rather than a line. Nothing else on the page needs
+ * 96px of blur over 10px of spread gives the rails about 48px to leave in, so
+ * the seam is a long gradient rather than a line. 44px was tried first and
+ * still read as an edge: the fade has to be long relative to the 1200px it
+ * runs along, not just long in absolute terms, or the eye reads the whole
+ * width of it at once and finds a boundary. Nothing else on the page needs
  * this: every other block is a card.
  */
 export const BUILDER_RAIL_HALO_WIDE =
-  "shadow-[0_0_44px_6px_var(--background)]";
+  "shadow-[0_0_96px_10px_var(--background)]";
 
 /** The six interior boundaries plus both edges: sevenths of nothing, sixths of the measure. */
 const COLUMNS = [0, 1, 2, 3, 4, 5, 6];
