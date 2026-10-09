@@ -4,7 +4,6 @@ import {
 } from "./builder-grid-rails";
 import Link from "next/link";
 import { QUIET_BUTTON } from "@/components/ui/quiet-button";
-import { Reveal } from "@/components/ui/reveal";
 import { TemplateRail } from "@/components/templates/template-rail";
 import {
   IconTemplateApprovals,
@@ -101,7 +100,11 @@ export function BuilderTemplates() {
 
   return (
     <section className="mx-auto max-w-[1200px] px-6 py-14 md:px-10 md:py-20">
-      <Reveal>
+      {/* NO `Reveal` HERE. These sections used to fade and rise as they
+          came into view; the effect read as the page assembling itself under
+          the reader rather than as content already there, so the wrapper is
+          gone and the section renders outright. `Reveal` is untouched and
+          still used by /about, /customers and the home page. */}
         {/* The link sits under the copy rather than off to the right of
             it. Floated right it was level with the second line of the
             paragraph and a rail's width away from it, so it read as a
@@ -138,7 +141,6 @@ export function BuilderTemplates() {
             cards whose covers are empty frames, which is the one element
             drawn twice that this site's rules exist to stop. */}
         <TemplateRail cards={cards} cardClassName={BUILDER_RAIL_HALO} />
-      </Reveal>
     </section>
   );
 }

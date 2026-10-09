@@ -24,6 +24,7 @@ import { BuilderAlternatives } from "@/components/ai-app-builder/builder-alterna
 import { BuilderTemplates } from "@/components/ai-app-builder/builder-templates";
 import { BuilderPrompt } from "@/components/ai-app-builder/builder-prompt";
 import { BuilderGlow } from "@/components/ai-app-builder/builder-glow";
+import { IconClock, IconList } from "@/components/home/mock-icons";
 import { GridDivider } from "@/components/ui/grid-lines";
 import { DEMO_URL, SIGNUP_URL } from "@/lib/constants";
 import { PAGE_SEO, pageMetadata } from "@/lib/seo";
@@ -137,6 +138,15 @@ const PILLARS: Pillar[] = [
     // pixels of overhang and a ramp running through the Company column — where
     // on a desktop the same crop is a real window onto a wider table.
     containOnPhone: true,
+    // 52, against the shared default's 76. Contained on a phone, this shot is
+    // five 48px contact rows in a 268px box, so the card cuts it mid-table —
+    // and what the ramp has to dissolve down there is a row of avatars, names
+    // and email addresses, not empty ground. Over the last quarter that is a
+    // soft cut through readable type: you can still read the half-row it ends
+    // on, which is what makes it look broken rather than continued. From 52
+    // the last row is already giving out before the edge arrives, so the table
+    // reads as carrying on past the card.
+    fadeBottomPhone: 52,
     // 74, not 88. At 88 the ramp had 12% of the card to get from solid to
     // nothing — short enough that it read as a soft cut rather than as the
     // table carrying on past the edge. 74 spends a quarter of the width on
@@ -144,6 +154,18 @@ const PILLARS: Pillar[] = [
     // instead of stopping against it. The Company column still clears it:
     // the ramp is barely on at 74 and does not bite until past the logos.
     fadeFrom: 74,
+    // A FOOT RAMP TOO, which this shot never had.
+    //
+    // It is laid out to the card's full height, so the table's ground and its
+    // own lit ring both stopped dead on the card's bottom edge — the exact row
+    // the card draws its own ring on. Two edges on one pixel row: the card's
+    // hairline crossed a hard step from the shot's --mock-window to the card's
+    // --surface, and read as the border changing colour half way along.
+    //
+    // 80, so the ramp is the last fifth. The shot is gone before the card's
+    // ring gets there, which leaves that ring running over one flat ground.
+    // The phone keeps its own, much longer ramp — see `fadeBottomPhone`.
+    fadeBottom: 80,
     // Dark starts the ramp 34 points earlier. The card's ground went to the
     // page's own near-black, so the shot has three times as far to dissolve
     // — and the card clips this shot at about 92% of its width, where a ramp
@@ -158,6 +180,10 @@ const PILLARS: Pillar[] = [
     // it is the word doing the work, and the three nouns alone would be a
     // feature list rather than a claim about them.
     heading: "Secure logins, permissions, billing built in",
+    // Same words on a phone, with "billing built in" bound by no-break spaces
+    // so the line turns after "permissions," instead of orphaning "built in".
+    // See `headingPhone` for why neither balance nor greedy gets there alone.
+    headingPhone: "Secure logins, permissions, billing built in",
     // 11 words to 10, and the second sentence turns round to lead on the
     // client: "Nothing reaches clients until…" → "Clients see nothing
     // until…". Same gate, same hand on it.
@@ -235,6 +261,15 @@ const PILLARS: Pillar[] = [
         quietPane
         appHeader={false}
         stock={PORTAL_STOCK_CORE}
+        // Two more land under Year-end docs while the card is hovered. The
+        // heading says apps arrive already branded; one row shows that it
+        // happened, and these two show it keeps happening. Both are apps a
+        // firm on this page would plausibly build next — they are named in
+        // the templates section further down.
+        landOnHover={[
+          { icon: <IconList />, label: "Client onboarding" },
+          { icon: <IconClock />, label: "Time tracker" },
+        ]}
       />
     ),
     // The firm's branded nav IS this claim; the app pane beside it only shows
@@ -242,6 +277,19 @@ const PILLARS: Pillar[] = [
     // on the right instead of being cut off by it, and the slab is what the eye
     // lands on.
     fadeRight: true,
+    // NO `visualBare` HERE, and that is deliberate — see the note below.
+    //
+    // It was set, to give this shot the .mock-lit-edge ring the other two
+    // cropped shots wear. That was wrong: unlike them, BrandedPortalVisual
+    // draws its OWN frame (`rounded-t-xl border border-b-0`), so the ring
+    // landed on top of a border that was already there — two 1px edges on the
+    // same frame, which is the doubled border this row has been bitten by
+    // before (see the Apps pillar's note on its right edge).
+    //
+    // The complaint the ring was answering was real — that edge was one flat
+    // value in dark — but it belonged to the visual's own border, not to a
+    // second one. It is now lit by .mock-edge inside the component, which
+    // falls off toward the foot the way the rest of the set does.
   },
 ];
 

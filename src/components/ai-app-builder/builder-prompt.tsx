@@ -109,6 +109,19 @@ export function BuilderPrompt({
           placeholder={placeholder}
           // Always accented — the pill routes to onboarding even over an empty
           // box, so it never reads as disabled.
+          // 15px on a phone, the composer's default 16 from `sm`. The field
+          // was the largest type in the hero after the headline — 16 against
+          // the standfirst's 15 and the submit pill's 13 — so the box read as
+          // zoomed next to the sentence that introduces it. 15 puts it level
+          // with the paragraph above, which is what it is: a line of prose you
+          // are being invited to write.
+          //
+          // THE TRADE, stated: iOS Safari zooms the page when a field under
+          // 16px takes focus. It is the one place that bites, it affects the
+          // phone only, and the box here is primarily a way into onboarding —
+          // the pill routes whether or not anything is typed. Put this back to
+          // "text-base" if the zoom proves worse than the size.
+          fieldText="text-[15px] sm:text-base"
           submitDisabled={false}
           glow={false}
           tone={theme}

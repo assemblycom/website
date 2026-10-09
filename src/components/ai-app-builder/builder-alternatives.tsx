@@ -67,9 +67,33 @@ const COMPARISONS = [
 
 // Cells are cut to roughly one line at the table's column width — a comparison
 // is scanned across, not read down, and a three-line answer stops the scan.
-const ROWS: { label: string; cells: [string, string, string] }[] = [
+const ROWS: {
+  label: string;
+  /**
+   * The label the PHONE list uses, when the full one leaves the answer beside
+   * it too little room to stay on one line.
+   *
+   * The phone row is `label — answer` on a single 325px line, and the label is
+   * `whitespace-nowrap` (see the `dt`), so it takes what it needs and the
+   * answer wraps into what is left. Shortening the label is therefore the way
+   * to buy the answer a line — and it is the right half to cut, because the
+   * label is the same question on all three tabs while the answers are the
+   * whole point of the row.
+   */
+  shortLabel?: string;
+  cells: [string, string, string];
+}[] = [
   {
     label: "Time to a working tool",
+    // "Minutes to a working app" needs 163px and the full label left it 149,
+    // so our answer — the one the row exists to make — was the only one
+    // wrapping to two lines. The short label leaves 204, which fits all three.
+    //
+    // "working" is what goes, and it is the one word here that can: the
+    // answers carry the distinction themselves ("a prototype" against "a
+    // working app"), so the row still reads prototype-versus-working without
+    // the label saying it first.
+    shortLabel: "Time to a tool",
     cells: ["Months", "Minutes to a prototype", "Minutes to a working app"],
   },
   {
@@ -245,7 +269,16 @@ export function BuilderAlternatives() {
             underline floating above the line it is supposed to be part of. The
             filled track wanted an all-round p-2 to keep its own hairline off
             the card's; there is no second hairline here to keep clear of. */}
-        <div className="px-4 pt-2">
+        {/* FILLED, like a thead. The head sat on the card's own --background,
+            the same ground as the five rows under it, so the one thing marking
+            it as the head was the active tab's rule — and a head that is only
+            a rule reads as the first row of the table rather than as the bar
+            that chooses what the table shows. --muted is the site's own
+            quiet fill and a token, so it steps the right way in both themes:
+            a shade up from the card in light, a shade down in dark. It stops
+            exactly on the seam (no bottom padding, as above), so the band ends
+            on the first hairline instead of floating over it. */}
+        <div className="bg-muted px-4 pt-2">
           <SegmentedTabs
             variant="underline"
             label="Compare the three ways to get a custom app"
@@ -280,7 +313,7 @@ export function BuilderAlternatives() {
                   right, and a two-line answer there reads as an answer that
                   needed two lines. */}
               <dt className="shrink-0 whitespace-nowrap pr-4 text-sm text-muted-foreground">
-                {row.label}
+                {row.shortLabel ?? row.label}
               </dt>
               {/* Ranged right, so the five answers line up on one edge and
                   the option can be read down a single column.
@@ -357,18 +390,21 @@ export function BuilderAlternatives() {
                 <th
                   key={column.name}
                   scope="col"
+                  // ONE TONE FOR THE WHOLE COLUMN, via --builder-own-col.
+                  // The token is theme-scoped and the two themes mark the
+                  // column differently on purpose — a brand tint in light, a
+                  // lifted surface in dark. See globals.css for why a grey
+                  // fill is wrong in light specifically.
+                  //
+                  // NO BRAND CAP. A 3px lime-to-blue rule ran across the
+                  // column's head for a while; against a light column it was
+                  // invisible, and against a dark one it was a stripe that
+                  // said nothing the column's own tone was not already
+                  // saying. The colour belongs IN the column, not on a line
+                  // above it.
                   className={`border-l px-6 pb-5 pt-5 text-sm font-normal ${GRID_LINE} ${
                     i === OWN
-                      // Dark takes --surface-3, the same rung the cells under
-                      // it take. In light the header is the stronger wash and
-                      // the cells sit back from it; in dark --muted is #1c1c1c
-                      // — DARKER than the cells — so carrying it here would
-                      // put the column's title in a trough with its answers
-                      // lifted around it. One tone for the whole column
-                      // instead, with the header carried by its full-strength
-                      // ink, which it already has. A further rung up would be
-                      // a fourth grey reading as a different material.
-                      ? `bg-muted text-foreground ${EDGE_R} [[data-theme=dark]_&]:bg-[var(--surface-3)]`
+                      ? `bg-[var(--builder-own-col)] text-foreground ${EDGE_R}`
                       : "bg-muted/50 text-muted-foreground"
                   }`}
                 >
@@ -390,22 +426,16 @@ export function BuilderAlternatives() {
                   <td
                     key={COLUMNS[i].name}
                     className={`border-l px-6 py-6 align-top ${GRID_LINE} ${
-                      // The answer cells are a LIGHTER wash than the header
-                      // above them: the column still reads as one block, but
-                      // the title is what carries the tone and the answers sit
-                      // back from it rather than matching it rung for rung.
-                      // Half-strength --muted, which is the same value the two
-                      // alternative columns' own headers use, so this is a tone
-                      // the table already has rather than a fourth grey.
+                      // THE SAME TONE AS THE HEADER, not a lighter one.
                       //
-                      // Dark is untouched and deliberately so: there the cells
-                      // step UP to --surface-2, because --muted is a quiet wash
-                      // on white but on the near-black ground it barely
-                      // separated from the two alternatives beside it. Lighten
-                      // the light value, leave the dark one alone.
-                      i === OWN
-                        ? `bg-muted/50 ${EDGE_R} [[data-theme=dark]_&]:bg-[var(--surface-3)]`
-                        : ""
+                      // The cells used to sit back from their own header —
+                      // --muted/50 under --muted in light — so the column was
+                      // two washes rather than one object, and the half-rung
+                      // between them was most of what made it read as a faint
+                      // tint. A panel laid on the table is one surface from
+                      // its cap to its foot; the header is already carried by
+                      // its full-strength ink and the brand line above it.
+                      i === OWN ? `bg-[var(--surface-2)] ${EDGE_R}` : ""
                     }`}
                   >
                     {/* EVERY ANSWER IN FULL-STRENGTH INK, not just ours.

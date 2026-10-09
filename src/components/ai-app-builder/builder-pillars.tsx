@@ -76,6 +76,46 @@ export interface Pillar {
    */
   fadeBottom?: number;
   /**
+   * The foot ramp a `containOnPhone` shot uses ON A PHONE, when the shared
+   * default is not enough blending for that particular artwork.
+   *
+   * The default is 76 — the last quarter of the box. That suits a shot whose
+   * foot lands on quiet ground, and not one that is still mid-object down
+   * there: a table cut through a row of avatars and names needs longer to give
+   * out, because the ramp has to carry readable type to nothing rather than
+   * empty ground to nothing. Lower starts the dissolve earlier and spends more
+   * of the height on it.
+   *
+   * Phone only, deliberately. From `sm` the shot is cropped rather than
+   * contained and its foot is a window edge, which is a different problem with
+   * a different answer.
+   */
+  fadeBottomPhone?: number;
+  /**
+   * The same heading, respaced for a phone measure — the words are identical,
+   * but NO-BREAK SPACES bind the groups that must not be split.
+   *
+   * For a heading that is a list, where neither automatic strategy lands well.
+   * "Secure logins, permissions, billing built in" at 287px has three legal
+   * shapes, and both defaults pick a bad one:
+   *
+   *   - `text-balance` minimises the LONGEST line, so it breaks after
+   *     "logins," — 115 over 213, a first line that reads as having given up.
+   *   - greedy fills the first line, so it breaks after "billing" — 274 over
+   *     54, which orphans "built in".
+   *
+   * The wanted shape is after "permissions," (222 / 106), which no strategy
+   * chooses on its own. Binding "billing built in" into one unbreakable run
+   * and letting the line wrap greedily gets there: the run cannot fit beside
+   * "permissions,", so it drops whole. It also degrades properly — on a
+   * narrower phone the heading goes to three lines rather than splitting the
+   * run.
+   *
+   * Phone only. From `sm` the measure is wide enough that the full heading is
+   * balanced as before.
+   */
+  headingPhone?: string;
+  /**
    * Dissolves a `visualContained` shot into the card at its foot.
    *
    * `fadeBottom` is for the cropped shots and is an inline mask computed per
@@ -175,7 +215,12 @@ export function BuilderPillars({ pillars }: { pillars: Pillar[] }) {
 // BUILDER_RAIL_HALO: the page's rails run behind these cards, and without it
 // each card chops the six of them off on a hard line (see builder-grid-rails).
 const CARD =
-  `builder-pillar-card surface-lit relative flex flex-col overflow-hidden rounded-3xl bg-[var(--surface)] ${BUILDER_RAIL_HALO}`;
+  // `group/pillar` is the hover target for anything inside a card that answers
+  // the pointer — the branding shot's `landOnHover` rows so far. NAMED, not a
+  // bare `group`: these visuals are shared with other pages and several carry
+  // their own unnamed groups, and an outer one would quietly start driving
+  // their `group-hover:` classes too.
+  `builder-pillar-card surface-lit group/pillar relative flex flex-col overflow-hidden rounded-3xl bg-[var(--surface)] ${BUILDER_RAIL_HALO}`;
 /** The mocks' own hairline, so a screen's drawn edge matches the lines in it. */
 const CARD_PAD = "px-5 pt-6 sm:px-6 sm:pt-7 md:px-8 md:pt-8";
 
@@ -234,8 +279,25 @@ function FeatureCard({
       }`}
     >
       <div className={CARD_PAD}>
-        <h3 className="type-h4 text-balance leading-[1.25]">
-          {pillar.heading}
+        {/* `text-wrap` is a property of the BLOCK, not of the run inside it,
+            so the phone's greedy wrap has to be a class on the h3 rather than
+            on the span — hence the breakpoint pair here as well as the two
+            spans below. */}
+        <h3
+          className={`type-h4 leading-[1.25] ${
+            pillar.headingPhone
+              ? "[text-wrap:normal] sm:text-balance"
+              : "text-balance"
+          }`}
+        >
+          {pillar.headingPhone ? (
+            <>
+              <span className="sm:hidden">{pillar.headingPhone}</span>
+              <span className="hidden sm:inline">{pillar.heading}</span>
+            </>
+          ) : (
+            pillar.heading
+          )}
         </h3>
         <p className="mt-3 max-w-xl text-pretty text-sm leading-relaxed text-muted-foreground">
           {pillar.body}
@@ -265,7 +327,15 @@ function FeatureCard({
         // that ever needs an edge ramp has to be folded into that same token,
         // not given a second mask.
         <div
-          className={`mt-5 min-h-[268px] flex-1 px-6 sm:mt-7 sm:min-h-[280px] sm:px-10 md:mt-8 md:min-h-[300px] md:px-16 ${
+          // md:px-12, down from px-16. On a 552px card the 64px inset left the
+          // sign-in 424 wide — narrow enough that its fields were shorter than
+          // the body copy above them, which made the screen read as a small
+          // picture of a form rather than as the form. 48px gives it 456, and
+          // the card still has a clear margin on both sides: the shot is
+          // CONTAINED here, so the inset is what tells you it is an object
+          // lying on the card rather than a window cut into it, and spending
+          // all of it would lose that. One rung, not two.
+          className={`mt-5 min-h-[268px] flex-1 px-6 sm:mt-7 sm:min-h-[280px] sm:px-10 md:mt-8 md:min-h-[300px] md:px-12 ${
             pillar.fadeFoot ? "mock-foot-fade" : ""
           }`}
         >
@@ -397,8 +467,17 @@ function edgeFade(pillar: Pillar): React.CSSProperties | undefined {
   // five 48px rows in a 268px box), so something has to happen at the foot,
   // and a dissolve is the one that says "there is more of this" rather than
   // "this is broken". 76, so the ramp is the last quarter only.
+  // `fadeBottomPhone` WINS on a phone when it is set. It used to be consulted
+  // only if `fadeBottom` was absent, so giving a pillar a foot ramp for the
+  // wide layout silently replaced its phone one — the two describe the same
+  // edge at two very different measures and a pillar may legitimately need
+  // both.
+  const bottomPhone =
+    pillar.fadeBottomPhone !== undefined
+      ? ramp("bottom", pillar.fadeBottomPhone)
+      : (bottom ?? ramp("bottom", 76));
   const phone = (
-    pillar.containOnPhone ? [bottom ?? ramp("bottom", 76)] : [right, bottom]
+    pillar.containOnPhone ? [bottomPhone] : [right, bottom]
   ).filter(Boolean) as string[];
 
   if (!all.length && !phone.length) return undefined;

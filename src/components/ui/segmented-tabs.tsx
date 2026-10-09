@@ -31,6 +31,7 @@ export function SegmentedTabs({
   label,
   idBase,
   variant = "segmented",
+  round = "default",
   className = "",
 }: {
   options: { value: string; label: React.ReactNode }[];
@@ -52,6 +53,21 @@ export function SegmentedTabs({
    * below it should be getting. The same three labels, a quarter of the ink.
    */
   variant?: "segmented" | "underline";
+  /**
+   * The track's corner radius.
+   *
+   * "default" — rounded-lg, the control's own shape, and what every call site
+   * that stands on its own ground uses (the pricing billing toggle included).
+   *
+   * "panel" — rounded-3xl, to match a large rounded panel the control sits
+   * directly above, so the two read as one object rather than as a small
+   * square-ish control parked on a soft-cornered box. /ai-app-builder's How it
+   * works is the case: its panel is rounded-3xl and the control is 12px above
+   * it. The thumb's radius follows, so the curves stay concentric.
+   *
+   * "segmented" only — the underline skin has no track to round.
+   */
+  round?: "default" | "panel";
   /**
    * Extra classes for the track, for a page whose ground the control has to
    * do something about. /ai-app-builder passes a background and a rail halo:
@@ -134,12 +150,19 @@ export function SegmentedTabs({
       role="tablist"
       aria-label={label}
       onKeyDown={onKeyDown}
-      className={`relative inline-grid rounded-lg border border-border p-1 text-sm ${className}`}
+      className={`relative inline-grid border border-border p-1 text-sm ${
+        round === "panel" ? "rounded-3xl" : "rounded-lg"
+      } ${className}`}
       style={{ gridTemplateColumns: `repeat(${count}, minmax(0, 1fr))` }}
     >
       <span
         aria-hidden
-        className="pointer-events-none absolute inset-y-1 left-1 z-10 overflow-hidden rounded-md bg-foreground transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
+        // The thumb's radius follows the track's, one step smaller by the
+        // 4px padding between them, so the two curves stay concentric: 8 → 6
+        // by default, 24 → 20 on `panel`.
+        className={`pointer-events-none absolute inset-y-1 left-1 z-10 overflow-hidden bg-foreground transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+          round === "panel" ? "rounded-[20px]" : "rounded-md"
+        }`}
         style={{
           width: `calc((100% - 0.5rem) / ${count})`,
           transform: `translateX(${index * 100}%)`,

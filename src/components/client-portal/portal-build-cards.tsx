@@ -1308,8 +1308,22 @@ function CalendarPane() {
             the subject. At full ink it was the darkest type on the screen and
             the first thing the eye landed on, which is the toolbar winning
             against the calendar. */}
+        {/* A STEP DOWN ON A PHONE ONLY: 10.5px below `sm`, the UI_PRIMARY
+            11.5 from there up. The toolbar loses its Month/Week/Day control at
+            this width (just below), so the date is left as the only thing on
+            the bar — and at the full step it then read as the shot's heading
+            rather than as the label on a toolbar. One rung down puts it back
+            beside the day names it belongs with. The class comes after
+            UI_PRIMARY's own 11.5 from `sm`.
+
+            NOT `${UI_PRIMARY} text-[10.5px]`. Both are plain utilities in the
+            same layer, so which one wins is decided by the order Tailwind
+            emits them, not by the order they appear in the string — written
+            that way the token's 11.5 held at every width. The size is spelled
+            out here and only `leading-none`, which nothing else sets, is
+            carried over from the token. */}
         <span
-          className={`whitespace-nowrap text-[color:var(--mock-ink-soft)] ${UI_PRIMARY}`}
+          className={`whitespace-nowrap text-[10.5px] leading-none text-[color:var(--mock-ink-soft)] sm:text-[11.5px]`}
         >
           Oct 4–10, 2026
         </span>
@@ -1356,7 +1370,12 @@ function CalendarPane() {
               flex-1, so every pixel it holds comes off them — and at 46 it was
               nearly as wide as a whole phone column. 34 still sets "11 AM" on
               one line. */}
-          <div className={`w-[38px] shrink-0 border-r sm:w-[46px] ${LINE}`} />
+          {/* GONE ON A PHONE, with the body's gutter below it. The two are one
+              column and have to appear and disappear together, or the day
+              names stop sitting over their own columns. */}
+          <div
+            className={`hidden w-[38px] shrink-0 border-r sm:block sm:w-[46px] ${LINE}`}
+          />
           {CAL_DAYS.map((d, i) => (
             <div
               key={d.label}
@@ -1465,8 +1484,18 @@ function CalendarPane() {
               pixels: -translate-y-1/2 halves whatever the label's own box turns
               out to be, where the -4px it used to carry was half of a 10.5px
               line rounded down, and drifted the moment the type size moved. */}
+          {/* GONE ON A PHONE. At 38px the gutter was taking a sixth of the
+              visible grid to label hours nobody reads off a picture — the
+              shot's subject is the two events sitting in the week, and the
+              hour lines still say what shape a day is without a number beside
+              each one. The day columns take the width back, which is what
+              makes the two blocks wide enough to read their own titles.
+
+              `sm:block`, not `sm:flex`: the labels inside are absolutely
+              positioned against this box, so it only has to be a block for
+              `relative` to mean anything. */}
           <div
-            className={`relative w-[38px] shrink-0 border-r sm:w-[46px] ${LINE}`}
+            className={`relative hidden w-[38px] shrink-0 border-r sm:block sm:w-[46px] ${LINE}`}
           >
             {CAL_HOURS.map((h, i) => (
               <span

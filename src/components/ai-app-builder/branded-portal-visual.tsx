@@ -91,6 +91,7 @@ export function BrandedPortalVisual({
   brand = "Brandmages",
   stock = STOCK,
   apps = ADDED,
+  landOnHover = [],
   title = "Year-end docs",
   children,
   quietPane = false,
@@ -101,6 +102,13 @@ export function BrandedPortalVisual({
   stock?: PortalApp[];
   /** The firm's own apps, under the stock rows. The last one is open. */
   apps?: PortalApp[];
+  /**
+   * Rows that drop in under `apps` while the pillar card is hovered, one after
+   * the other — the shot saying that new apps keep landing, not just that one
+   * did. Needs an ancestor carrying `group/pillar` (the pillar card does).
+   * Empty by default, so every other caller is unchanged.
+   */
+  landOnHover?: PortalApp[];
   /** The open app's name, in its header. */
   title?: string;
   /** The open app's screen. Defaults to the document checklist below. */
@@ -131,7 +139,20 @@ export function BrandedPortalVisual({
       // radius and a hairline down there closed a window that is meant to
       // carry on past the edge — the corners curled away from the card's own
       // and the brand slab ended in a rounded stub.
-      className={`flex h-full select-none overflow-hidden rounded-t-xl border border-b-0 bg-[var(--mock-window)] text-[color:var(--mock-ink)] ${LINE}`}
+      // .mock-edge, so the hairline is LIT rather than flat. In dark the plain
+      // --mock-line border was one value the whole way round — brightest where
+      // it should be, and exactly as bright at the foot, which on a shot that
+      // runs off the bottom of its card reads as an outline drawn around the
+      // picture instead of a window catching light. .mock-edge paints the
+      // border box with the set's radial: strongest at the top-left and fallen
+      // into the window's own ground by the lower right.
+      //
+      // The border stays REAL and stays `border-b-0` — .mock-edge paints INTO
+      // the border box, so an element with no border has nothing to paint, and
+      // the foot is still open because this screen carries on past the card.
+      // Light is untouched: .mock-edge is dark-only and the --mock-line
+      // hairline there is already right.
+      className={`mock-edge flex h-full select-none overflow-hidden rounded-t-xl border border-b-0 bg-[var(--mock-window)] text-[color:var(--mock-ink)] ${LINE}`}
     >
       {/* The firm's colour, not ours. --mock-brand is the one token that holds
           its value across both themes, because it stands for the client's own
@@ -171,6 +192,45 @@ export function BrandedPortalVisual({
               label={label}
               active={i === apps.length - 1}
             />
+          ))}
+
+          {/* TWO MORE APPS LAND WHEN THE CARD IS HOVERED.
+              The still shot says a new app arrives already branded; this says
+              it keeps happening. They are NOT active — "Year-end docs" stays
+              the open row, because the pane on the right is that app's screen
+              and lighting a second row would make the shot disagree with
+              itself. These just drop in under it.
+
+              0fr → 1fr on the grid rows, the same reveal the quote accordion
+              uses: it animates to the row's own height without anyone
+              measuring it, and it collapses to nothing rather than to a
+              min-height. `overflow-hidden` on the inner div is what lets the
+              0fr track actually clip.
+
+              Staggered — the second waits 90ms — so they LAND one after the
+              other rather than appearing as a block. That is the whole reason
+              this is two rows and not one.
+
+              Hover only, and deliberately: it is a flourish on a picture, the
+              card reads correctly without it, and a touch device simply never
+              sees it. `motion-reduce` holds them open and still, so nothing
+              moves for a reader who asked for that. */}
+          {landOnHover.map(({ icon, label }, i) => (
+            <div
+              key={label}
+              className={`grid grid-rows-[0fr] opacity-0 transition-[grid-template-rows,opacity] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover/pillar:grid-rows-[1fr] group-hover/pillar:opacity-100 motion-reduce:grid-rows-[1fr] motion-reduce:opacity-100 motion-reduce:transition-none ${
+                i === 1 ? "delay-[90ms]" : ""
+              }`}
+            >
+              <div className="overflow-hidden">
+                {/* pt-[2px] reproduces the gap-[2px] the static rows above sit
+                    on. A collapsed track cannot carry a flex gap, so the
+                    spacing has to live inside the row that is growing. */}
+                <div className="pt-[2px]">
+                  <NavRow icon={icon} label={label} />
+                </div>
+              </div>
+            </div>
           ))}
         </div>
       </div>

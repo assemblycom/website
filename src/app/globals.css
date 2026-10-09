@@ -229,6 +229,15 @@
   );
   --mock-ink: #101114;
   --mock-ink-soft: #6b7079;
+  /* The resting rows of a mock nav rail — one rung below --mock-ink-soft.
+     A rail is a list of places you are NOT, and in the Add App shot the open
+     row has to be the only thing in the column that asks to be read; at
+     --mock-ink-soft the five resting labels were legible enough to be read as
+     a list, which is five things between the eye and the composer the shot is
+     actually about. 2.9:1 on the rail's own --muted ground: present, nameable
+     if you look, and not competing. The whole mock is aria-hidden, so this is
+     a picture of type rather than type. */
+  --mock-nav-rest: #8b919b;
   /* Anything that must sit ABOVE a well — only the segmented thumb so far. */
   --mock-raise: #ffffff;
   /* The client's own branded nav slab. Carries the firm's colour, not ours,
@@ -295,6 +304,36 @@
   --builder-glow-lime: rgba(188, 240, 30, 0.92);
   --builder-glow-rim: rgba(255, 255, 255, 0.7);
   --builder-glow-opacity: 1;
+  /* WHERE THE ARC'S MASK LEAVES FULL OPACITY, as a % of the hero's height.
+     What is left after it is the dissolve, so this number sets the ramp's
+     LENGTH as much as its start, and the two pull against each other.
+
+     Light starts EARLIER than dark, at 78%. The instinct is the opposite —
+     push the stop down to keep the colour lower — and it is wrong: taken to
+     96% the ramp had 4% of the hero (~27px) to get from solid to nothing and
+     arrived as a straight edge across the full width, which is worse than
+     stopping short. Reach is bought with the bloom instead (its own scale and
+     blur, below), and this number is spent on a ramp long enough that the
+     band gives out rather than ending: 22% of the hero, ~150px, over which
+     the blue thins into the page.
+
+     Light needs the longer run because its glow dissolves into WHITE, where
+     every step of the ramp is visible; dark's lands on near-black, which hides
+     the tail of its own accord. Dark keeps 86%. */
+  --builder-glow-fade: 78%;
+  /* THE COMPARISON TABLE'S OWN COLUMN — see builder-alternatives.tsx.
+     A BRAND TINT IN LIGHT, NOT A GREY. The column was --surface-2 (#e9e9e9),
+     and a grey fill on a white table reads as RECESSED — the convention for a
+     disabled or inactive column — which is the opposite of what the one
+     column we are arguing for should say. Light has to mark it by hue, not by
+     value: the brand periwinkle at a tenth, which comes out ~#eff2fd. Light
+     enough to keep the table airy, cool enough to separate from two white
+     neighbours, and it is the page's own blue rather than a new accent. */
+  --builder-own-col: rgba(142, 162, 244, 0.13);
+  /* The bloom's size and softness, so light can spread its colour further down
+     than dark without either theme being tuned through the other. */
+  --builder-glow-bloom-scale: 1.16;
+  --builder-glow-bloom-blur: 76px;
 }
 
 /* Site-wide dark theme. The theme toggle writes data-theme="dark" on <html>,
@@ -471,6 +510,11 @@
   );
   --mock-ink: #ededed;
   --mock-ink-soft: #9a9a9a;
+  /* Dark's own value for the resting nav rows, measured on the #1c1c1c rail
+     rather than converted from light's. Same job and the same ratio there —
+     2.9:1 — which in dark is a bigger drop in number than it looks, because
+     the rail is nearly black and every step away from the ink is a long one. */
+  --mock-nav-rest: #686868;
   --mock-raise: #3d3d3d;
   /* Below the window, not above it: the brand slab is the firm's colour and
      has to stay a distinct object, which it cannot do at #171717 against a
@@ -512,6 +556,23 @@
   --builder-glow-lime: rgba(198, 232, 79, 0.42);
   --builder-glow-rim: rgba(255, 255, 255, 0.8);
   --builder-glow-opacity: 1;
+  /* Dark keeps the original ramp and bloom — see the light block for why the
+     two differ. These are the values this arc was drawn with. */
+  --builder-glow-fade: 86%;
+  --builder-glow-bloom-scale: 1.105;
+  --builder-glow-bloom-blur: 58px;
+  /* Dark marks the same column by VALUE instead — a lifted panel. The light
+     trick does not carry here: the brand blue at a tenth over a near-black
+     table is invisible, and dark has the headroom to lift a surface off its
+     ground, which light does not.
+
+     #303030, not --surface-2 (#242424). The table's ground in dark is the
+     page's own near-black, so --surface-2 is only a few points off it and the
+     column read as a slightly-less-black rectangle rather than as the one
+     column being argued for. #303030 is the same value --mock-well-2 uses for
+     a lifted panel elsewhere in the set, and against #ededed ink it has
+     contrast to spare. */
+  --builder-own-col: #303030;
 }
 
 /* ── The mock window's edge, in DARK ─────────────────────────────────────
@@ -3974,11 +4035,16 @@ html:not([data-authed]) .auth-only {
   /* The arc fades out before it reaches the hero's bottom edge, so the section
      ends on the page's own ground and the divider below it lands on a clean
      surface instead of cutting a gradient in half. */
-  mask-image: linear-gradient(to bottom, #000 0%, #000 86%, transparent 100%);
+  mask-image: linear-gradient(
+    to bottom,
+    #000 0%,
+    #000 var(--builder-glow-fade),
+    transparent 100%
+  );
   -webkit-mask-image: linear-gradient(
     to bottom,
     #000 0%,
-    #000 86%,
+    #000 var(--builder-glow-fade),
     transparent 100%
   );
 }
@@ -4002,7 +4068,15 @@ html:not([data-authed]) .auth-only {
      larger ring also reaches a little further down, which is what lets the
      bloom spill past the rim rather than sitting concentric with it. */
   transform: translate(-50%, -100%) scale(var(--arc-scale, 1));
-  will-change: transform, opacity;
+  /* NO `will-change` HERE, and it is a fix rather than an omission.
+     These rings never animate — only their parent does, once, on mount — so
+     the hint promised a change that never came while permanently promoting
+     six ~1200px layers, each carrying a blur of up to 58px and compositing in
+     plus-lighter. A promoted layer that large is rastered in tiles, and when
+     the hero is scrolled part-way out and back the browser can present the
+     tiles it has before the rest are ready: the arc appears cut off along a
+     straight line until the next paint catches up. `will-change` is meant to
+     be set just before a change and removed after, never left on at rest. */
   /* Every LIT ring composites per the theme's mode. The ground ring overrides
      this back to `normal` — it is an occluder, not a light, and adding it would
      brighten the hole instead of punching it. */
@@ -4012,9 +4086,9 @@ html:not([data-authed]) .auth-only {
 /* Outermost and softest: the wide colour cast that tells you the rim is a
    light source rather than a drawn line. */
 .builder-glow__arc--bloom {
-  --arc-scale: 1.105;
+  --arc-scale: var(--builder-glow-bloom-scale);
   background: var(--builder-glow-bloom);
-  filter: blur(58px);
+  filter: blur(var(--builder-glow-bloom-blur));
 }
 
 /* The body of the glow, between the bloom and the rim. */
@@ -4074,10 +4148,21 @@ html:not([data-authed]) .auth-only {
     opacity: 0;
     filter: blur(14px);
   }
+  /* `filter` is deliberately absent from this keyframe. The animation still
+     interpolates it — a filter list against `none` resolves to the zero value,
+     so the blur melts away exactly as before — but the END state is the
+     element's own `filter: none` rather than a `blur(0)` left applied forever
+     by `animation-fill-mode: both`.
+
+     That mattered. A filter, even a zero one, makes the element rasterize its
+     whole subtree into its own surface; this element also carries a mask and
+     `isolation: isolate`, so the arc at rest was a masked, isolated, filtered
+     group with six blurred children inside it — re-composited on scroll, and
+     the thing the clipping was coming out of. With no filter at rest it is an
+     ordinary masked box again. */
   to {
     transform: translateY(0) scale(1);
     opacity: var(--builder-glow-opacity);
-    filter: blur(0);
   }
 }
 .builder-glow {
@@ -4375,8 +4460,26 @@ html:not([data-authed]) .auth-only {
      gradient: the ramp's shape and stops stay in one place, and only the
      values this card needs change. Every other .surface-lit box — the How it
      works panel among them — keeps the originals. */
-  --surface-lit-top: rgba(255, 255, 255, 0.18);
-  --surface-lit-mid: rgba(255, 255, 255, 0.13);
+  /* MONOTONE ON THESE CARDS, and that is the point of setting all three to
+     one value rather than rewriting the ring.
+
+     The card's outer edge is the FRAME; the lit, falling-off edges belong to
+     the product screens lying inside it (.mock-edge, .mock-lit-edge). With
+     both ramping, the card read as another piece of UI in a stack of UI —
+     two lit objects, one inside the other, each giving out in its own
+     direction — instead of as the surface the screens are sitting on. A frame
+     does not catch light; the things on it do.
+
+     0.1 is the foot's own value, which lands near #292929 — the weight the
+     page's hairlines, the grid rails and the dividers already use. So the
+     card now closes with the same line the rest of the page is drawn with,
+     all the way round.
+
+     The ramp machinery is untouched and still three stops: every other
+     .surface-lit box, the How it works panel included, keeps its gradient.
+     Only this selector flattens it. */
+  --surface-lit-top: rgba(255, 255, 255, 0.1);
+  --surface-lit-mid: rgba(255, 255, 255, 0.1);
   --surface-lit-foot: rgba(255, 255, 255, 0.1);
 }
 

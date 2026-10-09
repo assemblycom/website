@@ -361,10 +361,18 @@ export function TeamCrmVisual() {
             {["Companies", "Contacts"].map((tab, i) => (
               <span
                 key={tab}
+                // THE RESTING TAB READS --mock-nav-rest, a rung below
+                // --mock-ink-soft. At soft ink "Companies" was close enough to
+                // "Contacts" that the pair read as two headings rather than as
+                // one open tab and one you could go to — and the open tab is
+                // already doing that work with its rule and its full ink.
+                // Reused rather than re-picked: this is the same token the Add
+                // App rail's resting rows take, which is the same job — a
+                // destination you are NOT on.
                 className={`-mb-px border-b pb-1.5 ${MOCK_PRIMARY} ${
                   i === 1
                     ? "border-[var(--mock-ink)] text-[color:var(--mock-ink)]"
-                    : "border-transparent text-[color:var(--mock-ink-soft)]"
+                    : "border-transparent text-[color:var(--mock-nav-rest)]"
                 }`}
               >
                 {tab}
@@ -517,7 +525,24 @@ export function TeamCrmVisual() {
                           AVATAR_TINTS[i % AVATAR_TINTS.length]
                         }`}
                       >
-                        {initials(contact.name)}
+                        {/* NUDGED DOWN A PIXEL, and it is a real correction
+                        rather than a fudge. `items-center` centres the LINE
+                        BOX, which is the font's ascent plus its descent — and
+                        initials are all caps, so nothing of them is ever in
+                        the descent. Measured in PP Mori at 9.5px: ascent 7,
+                        descent 2, cap ink 6.76 above the baseline. Centring
+                        the box therefore parks the ink 1.07px above the
+                        circle's middle, which at a 20px circle is enough to
+                        see — the letters rode high in every row.
+
+                        On an inner span, not the circle: translating the
+                        circle would move its tint with it. 1px rather than
+                        1.07 so the glyphs stay on the pixel grid; a fractional
+                        shift renders them softer, which is a worse trade than
+                        the 0.07 it buys. */}
+                        <span className="translate-y-px">
+                          {initials(contact.name)}
+                        </span>
                       </span>
                       <span className="min-w-0">
                         <span

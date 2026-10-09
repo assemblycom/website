@@ -221,10 +221,29 @@ export function AddAppMock() {
               STACKED, so the line has leading if it ever wraps. It fits on one
               at this measure, but MOCK_PRIMARY's leading-none would set a
               wrapped sentence solid. */}
+                {/* Two lines, one per width. This shot is laid out `right-0`
+              and overhangs the card, so the composer runs off the right edge
+              and the sentence is cut by it — on a phone the full line was
+              losing its last two words to the crop, and the words it lost
+              ("my clients") were the half that made it a sentence.
+
+              MEASURED AGAINST THE RAMP, not against the edge. The shot's right
+              fade leaves full opacity at 90% of its width, which on a 375px
+              viewport is about 24px before the hard cut — so a line merely
+              short enough to fit still ends in a dimmed word. This one ends
+              clear of the ramp.
+
+              The verb goes rather than the subject. "An onboarding wizard" is
+              the same app the wide line names, and the screen it sits on asks
+              "What app will you add?" — a noun phrase answers that question,
+              where a truncated instruction just looked broken. */}
                 <span
                   className={`text-[color:var(--mock-ink-soft)] ${MOCK_PRIMARY_STACKED}`}
                 >
-                  Build an onboarding wizard for my clients
+                  <span className="sm:hidden">An onboarding wizard</span>
+                  <span className="hidden sm:inline">
+                    Build an onboarding wizard for my clients
+                  </span>
                 </span>
                 {/* Two rows, like every other composer in this set: what you type,
               then the controls under it. */}
@@ -287,15 +306,21 @@ export function AddAppMock() {
           at full ink was louder than its own subject in light too — there it
           just had nowhere bright to go. #6b7079 on #fcfcfd is 5.3:1, so it
           stays a label rather than becoming a whisper. */}
+        {/* GONE ON THE PHONE. On a 327px card the label was a line of type
+          spent on naming a shelf that the covers under it already read as —
+          two rows of blank covers under a composer are recognisably a set of
+          things to start from, and at this width the sentence cost more
+          height than it bought. It stays from `sm` up, where the card has the
+          room and the shelf is wide enough to need saying. */}
         <p
-          // mt-8 under `sm`. 64px between the composer and the shelf is the
-          // right separation on a 709px card; on a 327px one it was a quarter
-          // of the card's height spent on a gap.
-          className={`mt-8 text-[color:var(--mock-ink-soft)] sm:mt-16 ${MOCK_PRIMARY}`}
+          className={`hidden text-[color:var(--mock-ink-soft)] sm:block sm:mt-16 ${MOCK_PRIMARY}`}
         >
           Start from a template
         </p>
-        <div className="mt-2.5 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
+        {/* mt-8 on the phone, where the grid is the first thing under the
+          composer and carries the label's own separation; mt-2.5 from `sm`,
+          where it sits under the label again. */}
+        <div className="mt-8 grid grid-cols-2 gap-2.5 sm:mt-2.5 sm:grid-cols-4">
           {Array.from({ length: TEMPLATE_COUNT }, (_, i) => (
             <div
               key={i}

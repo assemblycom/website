@@ -116,8 +116,16 @@ export function TemplateRail({
 
               THE FLOOR IS THE ARTWORK. The glyphs are drawn near-black for a
               light tile, so the plate can only come down as far as still
-              carries them: #b4b5b9 against a #141414 glyph is about 9:1, well
-              clear. Taking it to a mid grey would start eating the icon.
+              carries them.
+
+              #b4b5b9 was the third try and still read hot: at about 9:1 over
+              the #141414 glyph the plate had contrast to spare, and all of it
+              was being spent on being the brightest thing in a column of
+              near-black rows. #8c8d91 puts the glyph at 5.6:1 — still a clean,
+              unambiguous mark — and the plate at 5.3:1 against the #191919
+              card, so the tile is plainly a tile without being the first thing
+              the eye lands on six times down the list. A mid grey below this
+              is where the icon starts to be eaten.
 
               Light keeps #e6e7ea exactly. Dropping it there too would have put
               the icon plate nineteen steps under --surface-2 #e9e9e9 instead
@@ -127,7 +135,7 @@ export function TemplateRail({
           <span
             className={`flex size-14 shrink-0 items-center justify-center rounded-lg ${
               card.icon
-                ? "bg-[#e6e7ea] [[data-theme=dark]_&]:bg-[#b4b5b9]"
+                ? "bg-[#e6e7ea] [[data-theme=dark]_&]:bg-[#8c8d91]"
                 : "bg-[var(--surface-2)]"
             }`}
           >

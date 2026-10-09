@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Reveal } from "@/components/ui/reveal";
 import { SegmentedTabs } from "@/components/ui/segmented-tabs";
 import { BUILDER_RAIL_HALO } from "./builder-grid-rails";
 import {
@@ -111,7 +110,11 @@ export function BuilderHowItWorks() {
   // what follows is a different chapter.
   return (
     <section className="mx-auto max-w-[1200px] px-6 pb-14 pt-6 md:px-10 md:pb-20 md:pt-8">
-      <Reveal>
+      {/* NO `Reveal` HERE. These sections used to fade and rise as they
+          came into view; the effect read as the page assembling itself under
+          the reader rather than as content already there, so the wrapper is
+          gone and the section renders outright. `Reveal` is untouched and
+          still used by /about, /customers and the home page. */}
         {/* Ranged left, with the chapter heading above it — see the `split`
             on that BuilderChapter. The whole region reads left: the pillars
             above, the panel below and its copy all start on the same line, and
@@ -120,6 +123,10 @@ export function BuilderHowItWorks() {
             button carries them: the track is an outline with no fill, so a
             rail ran straight through the control. */}
         <SegmentedTabs
+          // Rounded like the panel it sits on — see the prop. At 12px apart,
+          // an 8px-cornered control over a 24px-cornered panel read as two
+          // unrelated boxes.
+          round="panel"
           className={`bg-background ${BUILDER_RAIL_HALO}`}
           label="How building works"
           idBase="how-it-works"
@@ -159,7 +166,15 @@ export function BuilderHowItWorks() {
           // dissolved instead — see the ramp on the slot below, which runs the
           // mock out into the panel's own ground and leaves the card's four
           // corners alone.
-          className="surface-ground mt-6 overflow-hidden rounded-3xl bg-[var(--surface)]"
+          // mt-3, down from mt-6. The control and this panel are one object —
+          // the tabs do nothing except change what is in the box — but the gap
+          // under them was 24px against the ~36px over them, which is not
+          // enough of a difference to group them: the control floated between
+          // the chapter heading and the panel, belonging to neither. At 12px
+          // it sits on the panel it drives, and the heading keeps the full
+          // step above. md:mt-4, since the panel is much larger there and a
+          // 12px gap under a control that wide reads as a collision.
+          className="surface-ground mt-3 overflow-hidden rounded-3xl bg-[var(--surface)] md:mt-4"
         >
           {/* Keyed on the step so the contents REMOUNT on switch and play the
               site's own fade rather than swapping hard. Keyed here and not on
@@ -249,7 +264,6 @@ export function BuilderHowItWorks() {
             </div>
           </div>
         </div>
-      </Reveal>
     </section>
   );
 }
