@@ -322,26 +322,16 @@ export default function AiAppBuilderPage() {
           pushed the composer — the one thing on this page you can actually use
           — most of the way down the first screen. The glow below is unchanged:
           it is drawn to the section's foot, which has not moved. */}
-      {/* AND LIFTED OFF THE CENTRE LINE ON A BIG SCREEN. `items-center`
-          centres the block between this section's own paddings, which is right
-          up to about a laptop. On a 1500px-tall window the block is ~450px of
-          content in ~1240px of room, so dead centre put the headline a third
-          of the way down with nothing above it, and dropped the composer into
-          the bright band of the arc rather than above it.
-
-          The lift is EXTRA BOTTOM PADDING, not a different alignment: with
-          `items-center` the block centres in the content box, so growing the
-          foot raises the block by half of what it grows. 2xl takes it up 72px,
-          xl 24, and below that nothing changes — the sizes where the centre
-          line was already right are untouched. The arc is unaffected: it is
-          drawn to the section's foot, which the padding does not move. */}
-      <section className="relative flex min-h-[calc(100svh-5rem)] items-start overflow-hidden pb-20 pt-10 md:items-center md:pb-28 md:pt-20 xl:pb-[10rem] 2xl:pb-64">
+      <section className="relative flex min-h-[calc(100svh-5rem)] items-start overflow-hidden pb-20 pt-10 md:items-center md:pb-28 md:pt-20">
         {/* The horizon arc behind the headline. It clips to this section and
             fades out before its bottom edge, so the region below still opens
             on the page's own ground. `overflow-hidden` above is what crops the
             ellipses into an arc — without it they are four circles. */}
         <BuilderGlow />
-        <div className="relative z-10 mx-auto w-full max-w-[1400px] px-6 md:px-10">
+{/* `builder-hero-lift` takes the block off the centre line on a big
+            screen — see globals.css, where the two gates and the reason they
+            are on HEIGHT and not just width are written out. */}
+        <div className="relative z-10 mx-auto w-full max-w-[1400px] builder-hero-lift px-6 md:px-10">
           {/* Centred, with the composer under the claim rather than a split
               header and a picture beside it. This page's subject IS the box
               you type into, so the hero puts it on the centre line and lets

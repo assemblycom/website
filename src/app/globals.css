@@ -4407,6 +4407,49 @@ html:not([data-authed]) .auth-only {
   pointer-events: none;
 }
 
+/* ── The /ai-app-builder hero, lifted off the centre line ────────────────
+   The hero centres its block in the section's content box, which is right up
+   to about a laptop. Past that the box grows with the window and the block
+   does not — it is ~460px of headline, lede and composer whatever the screen
+   — so dead centre keeps pushing it down: a third of the way into a 1700px
+   window, with nothing above it and the composer sitting in the bright band
+   of the arc instead of above it.
+
+   A TRANSFORM, not padding. Padding is the wrong unit twice over: it lifts by
+   a fixed amount, so it under-corrects on exactly the tall windows that need
+   it most, and it eats the content box, so on a short wide screen it can
+   squeeze the block until centring has nothing left to centre. A transform
+   takes no part in layout, and in `vh` it scales with the window that caused
+   the problem.
+
+   GATED ON HEIGHT AS WELL AS WIDTH. What pushes the block down is a tall
+   window, not a wide one: the same -14vh on an 800px-tall screen would slide
+   the headline up under the nav, and nothing would stop it, because a
+   transform does not take part in layout. The width condition is only there
+   to keep this off a tall phone, where the hero is ranged to the top already
+   and there is no centring to correct.
+
+   WHY THIS IS CSS AND NOT A UTILITY. The Tailwind forms for it —
+   `xl:[@media(min-height:900px)]:` and a single
+   `[@media(min-width:1280px)_and_(min-height:900px)]:` — both compile to
+   NOTHING, silently: the class lands on the element and no rule is ever
+   generated, so the hero just sits where it was. Written out here it is one
+   rule that can be read and one that demonstrably applies.
+
+   Measured on a 2000px-wide window: at 1300px tall the headline goes from 36%
+   of the screen to 25%, at 1700 from 35% to 25%. The arc does not move — it
+   is a separate layer drawn to the section's foot. */
+@media (min-width: 1280px) and (min-height: 900px) {
+  .builder-hero-lift {
+    transform: translateY(-6vh);
+  }
+}
+@media (min-width: 1280px) and (min-height: 1300px) {
+  .builder-hero-lift {
+    transform: translateY(-14vh);
+  }
+}
+
 [data-theme="dark"] .composer-outer-ring::after {
   /* 0.14, up from 0.08. The outer ring is the only thing stating the
      composer's outer edge, and over the hero's arc an 8% white sat close
