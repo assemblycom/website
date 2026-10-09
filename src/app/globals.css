@@ -330,6 +330,10 @@
      enough to keep the table airy, cool enough to separate from two white
      neighbours, and it is the page's own blue rather than a new accent. */
   --builder-own-col: rgba(142, 162, 244, 0.13);
+  /* The column's five ANSWER cells, as against its header. Light wants one
+     tone for the whole column, so this just follows the header here; dark
+     splits them (see the dark block). */
+  --builder-own-col-cell: var(--builder-own-col);
   /* The bloom's size and softness, so light can spread its colour further down
      than dark without either theme being tuned through the other. */
   --builder-glow-bloom-scale: 1.16;
@@ -551,10 +555,38 @@
      accumulates where normal blending would not. */
   --builder-glow-blend: plus-lighter;
   --builder-glow-bloom: rgba(36, 60, 158, 0.62);
-  --builder-glow-mid: rgba(79, 107, 249, 0.5);
-  --builder-glow-halo: rgba(159, 214, 196, 0.32);
-  --builder-glow-lime: rgba(198, 232, 79, 0.42);
-  --builder-glow-rim: rgba(255, 255, 255, 0.8);
+  /* #7FA7FE — the brand blue this arc is meant to be, replacing the deeper
+     #4F6BF9 it was drawn with. It is the ring that carries the visible blue
+     band (the bloom outside it is the darker falloff), so this is the stop
+     that decides what colour the horizon reads as. */
+  --builder-glow-mid: rgba(127, 167, 254, 0.5);
+  /* The mint and lime stops come DOWN with the rim, and for the same reason:
+     all three rings overlap at the arc's hottest point and plus-lighter sums
+     them. At the old alphas the sum was (290, 337, 201) — red and green both
+     clipped to 255, which is what turned the hot line into a pale band no
+     matter what hue the stops carried. At these it lands on (214, 249, 148):
+     under the clip in every channel, so the line keeps its hue. */
+  --builder-glow-halo: rgba(159, 214, 196, 0.24);
+  --builder-glow-lime: rgba(198, 232, 79, 0.32);
+  /* THE RIM CARRIES A HUE NOW. It was pure white at 0.8, on the reasoning
+     that a light source is white and the colour belongs to what it lights.
+     That reasoning ignores the blend: these rings composite plus-lighter, so
+     white at 0.8 does not sit on top of the ramp, it SUMS with every stop
+     under it and saturates all three channels — which is why the arc had a
+     white band across its hottest part instead of a lime one, and why the
+     lime and mint rings under it were invisible exactly where they were
+     brightest.
+     #d9ed92 is BRAND_AURORA's lime-light stop, the same value the footer
+     band peaks on and the composer's ring opens with. Additively it is still
+     the brightest thing in the arc — two channels at full, which reads as a
+     hot line — but it reads as OUR hot line, and the ramp now runs lime to
+     mint to blue out of the hole the way the footer does.
+     0.85, and high BECAUSE it paints rather than adds now (see the blend
+     note on .builder-glow__arc--rim). A translucent lime laid over blue
+     averages toward sage — the trap this file already records — so the stop
+     has to cover most of what is under it to stay lime. At 0.85 the line
+     resolves near (194, 214, 143); at half that it came out olive. */
+  --builder-glow-rim: rgba(217, 237, 146, 0.85);
   --builder-glow-opacity: 1;
   /* Dark keeps the original ramp and bloom — see the light block for why the
      two differ. These are the values this arc was drawn with. */
@@ -573,6 +605,14 @@
      a lifted panel elsewhere in the set, and against #ededed ink it has
      contrast to spare. */
   --builder-own-col: #303030;
+  /* The five answer cells sit a touch above the header — #363636 against
+     #303030. The header is a label and the answers are the content; lifting
+     the content a notch stops the column reading as one flat slab and gives
+     the rows the faint sense of being the thing you are meant to read. Six
+     points is deliberately almost nothing: any more and the header looks
+     like a separate darker bar sitting on top of the column rather than part
+     of it. Light keeps one tone — see :root. */
+  --builder-own-col-cell: #363636;
 }
 
 /* ── The mock window's edge, in DARK ─────────────────────────────────────
@@ -4126,6 +4166,19 @@ html:not([data-authed]) .auth-only {
   --arc-scale: 1.011;
   background: var(--builder-glow-rim);
   filter: blur(7px);
+  /* THE RIM PAINTS, IT DOES NOT ADD — the one ring that opts out of the
+     group's blend.
+     Every other ring sums, which is what makes the arc read as light rather
+     than as stacked gels. The rim cannot: it sits at the hottest point, where
+     the lime and mint rings overlap it AND the blue rings' 34 and 58px blurs
+     have bled all the way in, so five stops land on the same pixels. Summed,
+     that reaches 255 in all three channels no matter what hue the rim itself
+     carries — which is exactly why this line came out white however the stop
+     was set. Painting it puts its own colour down over the sum, so the hot
+     line is the brand's lime and the ramp runs lime → mint → blue out of the
+     hole.
+     Light already composites everything `normal`, so this changes dark only. */
+  mix-blend-mode: normal;
 }
 
 /* The hole. Painted in the page's own ground in BOTH themes via --background,

@@ -435,7 +435,18 @@ export function BuilderAlternatives() {
                       // tint. A panel laid on the table is one surface from
                       // its cap to its foot; the header is already carried by
                       // its full-strength ink and the brand line above it.
-                      i === OWN ? `bg-[var(--surface-2)] ${EDGE_R}` : ""
+                      // --builder-own-col-CELL, the answers' own token.
+                      //
+                      // This was still --surface-2 after the column moved to
+                      // --builder-own-col: the header took the new tone and
+                      // the five cells under it kept the old grey, so in
+                      // light the column was a brand tint with a grey body
+                      // hanging off it. One token family now, header and
+                      // cells, and in dark the cells sit one notch above the
+                      // header — see globals.css.
+                      i === OWN
+                        ? `bg-[var(--builder-own-col-cell)] ${EDGE_R}`
+                        : ""
                     }`}
                   >
                     {/* EVERY ANSWER IN FULL-STRENGTH INK, not just ours.
