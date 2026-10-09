@@ -56,10 +56,26 @@ function Section({
           {heading}
         </h2>
         {/* Two or three columns of links rather than one long ladder: these are
-          scanned for a name, not read in order. */}
-        <ul className="mt-5 grid gap-x-10 gap-y-2.5 sm:grid-cols-2 lg:grid-cols-3">
+          scanned for a name, not read in order.
+
+          COLUMNS, NOT A GRID, and that is the whole fix for the spacing. A
+          grid row is as tall as its tallest cell, and some of these titles are
+          full page titles that wrap to two lines — so a single long entry
+          pushed its entire row taller and left a visible hole under the two
+          short links beside it. The list had no consistent rhythm as a result:
+          most rows 10px apart, a few more than twice that, with no reason a
+          reader could see.
+
+          Multi-column flows each item at its own height, so every link sits
+          the same distance below the one above it whether or not its neighbour
+          wrapped. `break-inside-avoid` keeps a wrapped title whole rather than
+          splitting it across a column break.
+
+          It also reads better: the lists are sorted, and a sorted list is
+          scanned down a column, not across rows. */}
+        <ul className="mt-5 gap-x-10 sm:columns-2 lg:columns-3">
           {urls?.map((url) => (
-            <li key={url.path}>
+            <li key={url.path} className="mb-2.5 break-inside-avoid">
               <Link
                 href={url.path}
                 className="type-body text-muted-foreground transition-colors hover:text-foreground"
@@ -114,7 +130,9 @@ export default async function SitemapPage() {
           {/* Mintlify serves the docs and their own sitemap. One link out rather
             than a copy of a page list this site does not own. */}
           <Section heading="Docs">
-            <li>
+            {/* Same row rhythm the generated links carry — this one is written
+                out by hand, so it has to say it itself. */}
+            <li className="mb-2.5 break-inside-avoid">
               <a
                 href={`${DOCS_URL}${DOCS_WELCOME_PATH}`}
                 className="type-body text-muted-foreground transition-colors hover:text-foreground"
