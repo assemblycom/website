@@ -52,6 +52,23 @@
      overrides --card/--card-foreground inline per theme. */
   --card: #ffffff;
   --card-foreground: #0a0a0a;
+  /* The one grey every picture slot sits on — the tray under a product shot,
+     a rail card's panel, a placeholder holding a slot open. These had drifted
+     apart (bg-muted, bg-neutral-100, --portal-ground, and four different
+     white/[0.0x] in dark), so the same kind of surface read as a different
+     shade from one section to the next. Light and dark are declared in their
+     own blocks and must stay that way. */
+  --surface: #f5f5f5;
+  /* One step down from --surface, for a recess sitting ON a surface: the art
+     slot in a template row, and anything else nested inside a grey panel.
+     Two rungs is the whole scale — a slot either is the surface or sits in it. */
+  --surface-2: #e9e9e9;
+  /* One rung above --surface-2, for a block that has to read as lifted while
+     sitting next to one that is already on --surface-2. The comparison table's
+     own column is the case: its neighbours take the muted wash and it has to
+     clear them. Light defines it for completeness — the light table reaches
+     for bg-muted/50 rather than this — so the ladder is not half a scale. */
+  --surface-3: #dedede;
   --font-pp-mori: "PP Mori", system-ui, sans-serif;
   --font-diatype-mono: "ABC Diatype Mono", ui-monospace, monospace;
 
@@ -79,6 +96,164 @@
   --mock-negative-bg: #fbeceb;
   --mock-negative-fg: #b8443a;
 
+  /* A quieter cut of the positive/warning pair, for the one mock that shows
+     several status pills at once.
+
+     The pills above are already washes rather than brand colour, but they are
+     sized for a screen that carries ONE of them. The onboarding board carries
+     four in a 580px picture — two Uploaded, an Awaiting and a Saved — and at
+     that density the greens and the amber stop reading as the state of a row
+     and start reading as the board's palette, which is the one thing a mock of
+     somebody else's product should not have.
+
+     Still green and still amber, not grey: Uploaded and Awaiting are opposite
+     answers, and a reader should be able to tell them apart before reading
+     either word. The hue is kept and the chroma is roughly halved, so the
+     pills separate from each other without separating from the panel. */
+  --mock-positive-muted-bg: #eef2ef;
+  --mock-positive-muted-fg: #4f7360;
+  --mock-warning-muted-bg: #f4f1ea;
+  --mock-warning-muted-fg: #7d6c4c;
+
+  /* Haze, the brand blue (#7DA4FF on /brand), as a mock tint.
+     
+     Separate from the status trio above and used differently: those three say
+     good / warning / bad, this one just says "ours". A magnitude — how far
+     through an engagement a client is — is not a status, and colouring it
+     green-to-red turns a progress bar into a judgement the dashboard has not
+     earned. The brand tone carries the bar without claiming anything.
+     
+     A RAMP, not one value: Haze at full strength, then stepped into white in
+     three falling tints. This is how the brand's own charts are drawn — one
+     hue, the series separated by tint, the strongest carrying the largest
+     figure — rather than by handing each series a different hue.
+     
+     It replaces two earlier attempts. A green/amber/red traffic light said far
+     more than a progress chart has earned: how far through a job a client is
+     is a magnitude, not a verdict on the client. One flat Haze fixed that but
+     threw away the ordering the colour could carry for free. The ramp keeps
+     the brand tone AND lets the strongest bar read as the strongest.
+     
+     Mixed into white rather than given an alpha, because in light these sit on
+     two different grounds — the card and the bar's own track — and an alpha
+     would come out as two different colours across one row. */
+  --mock-accent-bg: #7da4ff;
+  --mock-accent-bg-2: #a4bfff;
+  --mock-accent-bg-3: #c4d6ff;
+  --mock-accent-bg-4: #dfe8ff;
+
+  /* The project tracker's bar colours, taken from the template itself.
+     
+     Categorical, not a scale: they distinguish one engagement from the next and
+     carry no rank, which is why they are four hues rather than four tints of
+     one. This is the single place on the site where a mock uses colour that is
+     not Haze — a Gantt whose bars are all one colour is a Gantt nobody can
+     follow a row across, and the template's own answer is the right one.
+     
+     All four are mid-tones chosen to carry white type, since the owner's name
+     sits on the bar. */
+  --mock-gantt-1: #3f9185;
+  --mock-gantt-2: #b55561;
+  --mock-gantt-3: #7c2f88;
+  --mock-gantt-4: #7a6fc4;
+
+  /* ── Mock chrome surfaces (LIGHT) ───────────────────────────────────────
+     The product mocks drawn inside rail cards (portal-build-cards) used to
+     reach for --background / --muted / raw white directly. That works in
+     light, where the card ground is --surface #f5f5f5 and a panel laid on it
+     goes UP to white — but it inverts in dark, where --background is the
+     page's near-black and a panel on #191919 went DOWN to #0a0a0a. The window
+     sank into the card instead of lifting off it, which is why the composer
+     and the plan list were barely readable.
+
+     So the mocks read these instead, and each theme decides which DIRECTION a
+     step goes: in light a well is a step down, in dark it is a step up. The
+     component only ever says "window", "well", "line" — see the dark block for
+     the other half. These light values are exactly what rendered before the
+     tokens existed, so light is unchanged. */
+  /* Off-white, not #ffffff. These panels are large and they sit on --surface
+     (#f5f5f5), so at pure white the window was the brightest thing on the page
+     — brighter than the page itself — and a mock read as a hole cut in the card
+     rather than as a screen lying on it. A couple of levels down is enough to
+     seat it.
+
+     The wells move with it. The ladder is what carries meaning here — window
+     above well above well-2 above line — so dropping the top and leaving the
+     rest would have closed the gap between a panel and the recesses in it until
+     a table head stopped reading as one. Same steps, two levels lower. */
+  --mock-window: #fcfcfd;
+  /* The quietest lift off the window, for a panel that should read as an
+     object without competing with the one panel that is stepped forward.
+
+     It is the bottom of a three-rung ladder the onboarding board climbs:
+     --mock-window for the board, this for its ordinary panels, --mock-well-2
+     for the step panel. Each rung has to clear the one below it by enough to
+     be seen and not so much that the board looks like three materials. */
+  --mock-well-soft: #fafafc;
+  /* The faint recess on a window: table heads, the row in play. Was
+     bg-muted/60 over white. */
+  --mock-well: #f7f8fa;
+  /* The solid one: segmented tracks, progress troughs, the chat bubble. */
+  --mock-well-2: #f2f3f6;
+  /* One rung past --mock-well-2, for the one place that has to clear an
+     object already drawn on a well — the calendar's today column, whose
+     events sit directly under it. Light's wells RECESS (they step down from
+     the window), so this is the darkest of the three. */
+  --mock-well-3: #eceef2;
+  --mock-line: #e8e9ec;
+  /* The TOP of a mock frame's lit edge — see .mock-lit-edge below. In light it
+     is just the hairline: a white highlight on a white screen is nothing, and
+     a darker top edge would read as a shadow falling the wrong way. */
+  --mock-edge-lit: #e8e9ec;
+  /* The ramp that dissolves a CONTAINED shot into the card at its foot — see
+     .mock-foot-fade below.
+
+     This was `none`, on the reasoning that light has no ground STEP to hide:
+     a contained shot's --mock-window sits about a point off the card's
+     --surface, where dark's two grounds are eight apart. That reasoning was
+     about the wrong thing. The step is not what the ramp is for — the CUT
+     is. In light the form still stops dead on the card's bottom edge, with a
+     half-drawn field and a button sliced through, and a hard edge across a
+     line of UI reads as a rendering fault in any theme. The absent ground
+     step only means light's ramp has to do the work alone rather than
+     finishing something the step started.
+
+     Same shape as dark's, deliberately: one ramp to reason about, and the
+     shot is the same shot. See the dark token for why the stops sit where
+     they do. */
+  --mock-foot-fade: linear-gradient(
+    to bottom,
+    #000 72%,
+    rgba(0, 0, 0, 0.55) 88%,
+    transparent 100%
+  );
+  --mock-ink: #101114;
+  --mock-ink-soft: #6b7079;
+  /* The resting rows of a mock nav rail — one rung below --mock-ink-soft.
+     A rail is a list of places you are NOT, and in the Add App shot the open
+     row has to be the only thing in the column that asks to be read; at
+     --mock-ink-soft the five resting labels were legible enough to be read as
+     a list, which is five things between the eye and the composer the shot is
+     actually about. 2.9:1 on the rail's own --muted ground: present, nameable
+     if you look, and not competing. The whole mock is aria-hidden, so this is
+     a picture of type rather than type. */
+  --mock-nav-rest: #8b919b;
+  /* Anything that must sit ABOVE a well — only the segmented thumb so far. */
+  --mock-raise: #ffffff;
+  /* The client's own branded nav slab. Carries the firm's colour, not ours,
+     so it stays a dark slab in both themes; dark drops it below the window so
+     it still reads as a separate object rather than merging with it. */
+  --mock-brand: #171717;
+
+  /* macOS window buttons, for a mock that draws a browser window. Deliberately
+     NOT redefined in the dark block: these are the operating system's own
+     colours and are the same in a dark window as in a light one, so the dark
+     block inheriting them from here is the correct behaviour rather than an
+     oversight. They are the one place in the mock family that carries hue. */
+  --mock-traffic-red: #ff5f57;
+  --mock-traffic-amber: #febc2e;
+  --mock-traffic-green: #28c840;
+
   /* The proposal masthead. It carries no colour of its own in either theme: the
      band is the page's own ground and a hairline closes it, rather than a slab in
      a different shade. Kept as tokens so the band and every ink on it stay one
@@ -93,6 +268,93 @@
      another line of the page. */
   --proposal-ink-faint: rgba(16, 17, 20, 0.45);
   --proposal-ink-fill: rgba(16, 17, 20, 0.08);
+
+  /* /ai-app-builder's hero horizon (see builder-glow.tsx). Three lit rings and
+     a ground ring that punches the middle out; the hues are the brand ramp the
+     footer aurora and the composer ring both run, blue blooming out to lime.
+
+     LIGHT. The stops are saturated rather than pastel — the same reason
+     BRAND_AURORA_LIGHT is — because a tint lightened for a white page just
+     turns into the page. They carry their alpha instead, so the arc reads as
+     colour laid ON the white rather than a band of grey-blue sitting in front
+     of it, and the rim is lime with no white in it at all: a white-hot line on
+     a white page is invisible at the trough and a smudge at the ends. The dark
+     values are in the [data-theme="dark"] block and are not these dimmed. */
+  /* Light composites the rings NORMALLY — stacked over white, each stop stays
+     itself and the overlaps stay pale. The additive mode dark uses would drive
+     every overlap on a white ground straight to white. */
+  --builder-glow-blend: normal;
+  /* A step up in saturation on every lit ring, and the reason is the note
+     above taken further: the stops were already pure-ish, but they were
+     carrying their colour at alphas low enough that the arc read as a wash of
+     blue-grey weather behind the headline rather than as the brand ramp. Each
+     hue goes purer AND its alpha up a step, which are the two levers — purer
+     alone is invisible under a 0.36 alpha, more alpha alone just makes a
+     stronger version of the muddy tone.
+
+     The teal moves furthest (118,212,180 → 74,214,170): it was the one stop
+     mixed halfway to white, which is why the band between the lime and the
+     blue read as the gap between them rather than as a colour of its own.
+
+     The rim does NOT move. It is white, saturation is not a thing it has, and
+     raising its alpha only eats the lime next to it. */
+  --builder-glow-bloom: rgba(46, 74, 255, 0.48);
+  --builder-glow-mid: rgba(56, 90, 255, 0.66);
+  --builder-glow-halo: rgba(74, 214, 170, 0.78);
+  --builder-glow-lime: rgba(188, 240, 30, 0.92);
+  --builder-glow-rim: rgba(255, 255, 255, 0.7);
+  --builder-glow-opacity: 1;
+  /* WHERE THE ARC'S MASK LEAVES FULL OPACITY, as a % of the hero's height.
+     What is left after it is the dissolve, so this number sets the ramp's
+     LENGTH as much as its start, and the two pull against each other.
+
+     Light starts EARLIER than dark, at 78%. The instinct is the opposite —
+     push the stop down to keep the colour lower — and it is wrong: taken to
+     96% the ramp had 4% of the hero (~27px) to get from solid to nothing and
+     arrived as a straight edge across the full width, which is worse than
+     stopping short. Reach is bought with the bloom instead (its own scale and
+     blur, below), and this number is spent on a ramp long enough that the
+     band gives out rather than ending: 22% of the hero, ~150px, over which
+     the blue thins into the page.
+
+     Light needs the longer run because its glow dissolves into WHITE, where
+     every step of the ramp is visible; dark's lands on near-black, which hides
+     the tail of its own accord. Dark keeps 86%. */
+  --builder-glow-fade: 78%;
+  /* THE COMPARISON TABLE'S OWN COLUMN — see builder-alternatives.tsx.
+     A BRAND TINT IN LIGHT, NOT A GREY. The column was --surface-2 (#e9e9e9),
+     and a grey fill on a white table reads as RECESSED — the convention for a
+     disabled or inactive column — which is the opposite of what the one
+     column we are arguing for should say.
+
+     A LIGHT GREY, NOT A TINT. A brand-blue wash was tried here and read as a
+     coloured haze over the column rather than as the column being lifted —
+     the one piece of colour in an otherwise black-and-white table, drawing
+     the eye to the fill instead of to the answers in it.
+
+     --surface (#f5f5f5), which is one rung LIGHTER than the --surface-2 that
+     was too dark: ten points off the white table, so the column is plainly
+     its own block without ever reading as greyed out, and it is the tone this
+     site already uses for a raised card. */
+  --builder-own-col: var(--surface);
+  /* The column's five ANSWER cells, as against its header — and they are a
+     separate value in light now, not just in dark.
+     Light carried one tone for the whole column, which made the fill a flat
+     --surface panel with a header printed on it. Dark had already split the
+     two and for a reason that holds in both: the header is a LABEL and the
+     answers are the CONTENT, so lifting the content a step stops the column
+     reading as one slab and gives the five rows the faint sense of being the
+     thing you are meant to read.
+     Lifted means toward the ground in each theme — #fafafa against light's
+     white page, where dark lifts #1e1e1e to #242424 off its near-black. Five
+     points, the same almost-nothing dark uses: any more and the header looks
+     like a separate darker bar sitting on top of the column rather than part
+     of it. The header keeps --surface exactly. */
+  --builder-own-col-cell: #fafafa;
+  /* The bloom's size and softness, so light can spread its colour further down
+     than dark without either theme being tuned through the other. */
+  --builder-glow-bloom-scale: 1.16;
+  --builder-glow-bloom-blur: 76px;
 }
 
 /* Site-wide dark theme. The theme toggle writes data-theme="dark" on <html>,
@@ -116,6 +378,48 @@
   --accent-foreground: #f2f2f2;
   --card: #151515;
   --card-foreground: #d9d9d9;
+  /* See --surface in :root. Dark's own value, not a translucent white, so it
+     does not change with whatever it happens to sit on. */
+  --surface: #191919;
+  --surface-2: #242424;
+  /* See --surface-3 in :root. #404040 — well clear of the ~7-point step the
+     rungs below take (#191919 → #242424), and deliberately so.
+
+     This rung is not a surface someone might lay another surface on; it is
+     the comparison table's own column, whose entire job is to be the one
+     column you look at first. Its neighbours land around #151515 (--muted at
+     half strength over the page), so the gap has to carry across a wide
+     table read at a glance. It went #242424, #333333, then #404040, each of
+     which still read as the same grey as everything else at a normal viewing
+     distance.
+
+     #1f1f1f, down from #4f4f4f via #3f3f3f and #2b2b2b. The climb UP through #242424 →
+     #333333 → #404040 → #4f4f4f was chasing separation and lost sight of
+     what the separation is for: at #4f4f4f, and still at #3f3f3f, the column
+     read as a lit panel laid on top of the table rather than as one of its
+     columns emphasised. The eye went to the GROUND instead of to the answers
+     printed on it, which is the opposite of the job.
+
+     What was wrong with the climb is the thing it was measured against. In
+     DARK the other two columns carry no background at all — their cells are
+     transparent and the page shows through — so this column is not being read
+     against #151515, it is being read against #0a0a0a. Every value above was
+     picked as though it had to beat a lighter neighbour than it actually has.
+     #1f1f1f is 21 points over the page, which is more separation than
+     --surface gets (#191919, 15 points) for cards that are unmistakably cards.
+     That is enough to make this the column you look at first and not enough to
+     make it the brightest object on the section.
+
+     Contrast is not the constraint in this direction and never was: the cells
+     set --foreground #d9d9d9, which holds 5.8:1 at #4f4f4f and about 11:1
+     here, so every step down buys legibility. The ceiling is still worth
+     writing down for anyone tempted back up — --foreground crosses WCAG AA's
+     4.5:1 floor at about #5f5f5f — but the practical limit turned out to be
+     taste, and it sits a long way below that.
+
+     Light's equivalent is NOT here — see --surface-3 in :root, which keeps
+     #dedede. Every move in this paragraph is dark only. */
+  --surface-3: #1f1f1f;
 
   /* Mock status pills go translucent so they sit on dark surfaces without
      glowing; fg stays desaturated to match the neutral-gray dark scale. */
@@ -125,6 +429,118 @@
   --mock-warning-fg: #cdb37a;
   --mock-negative-bg: rgba(224, 122, 113, 0.14);
   --mock-negative-fg: #d9928b;
+
+  /* See --mock-positive-muted-bg in :root. Same job, dark's own values.
+
+     The grounds stay translucent like the full-strength pills above, at 12%
+     rather than 14% — on a dark panel a tint is already most of the way to
+     quiet, so the muting here lives mainly in the foregrounds, which come in
+     off the near-neutral end of the dark scale. */
+  --mock-positive-muted-bg: rgba(150, 196, 168, 0.12);
+  --mock-positive-muted-fg: #9bb6a6;
+  --mock-warning-muted-bg: rgba(206, 186, 143, 0.12);
+  --mock-warning-muted-fg: #b3a68c;
+
+  /* See --mock-accent-bg in :root. Haze again, but laid down at 38% rather
+     than at full value, which is NOT a quieter-in-dark preference — it is the
+     label.
+     
+     The row's name sits ON the bar and runs off the end of it onto the track,
+     so one text colour has to work over both. In light that is easy: near-black
+     ink reads on Haze and on the pale track alike. In dark the ink is #ededed,
+     which reads on the dark track and dies on full Haze. At 38% over the card
+     Haze lands around #41537a — still unmistakably the brand blue, and dark
+     enough that the light label holds all the way across. The three tints
+     under it step down from there, so the ramp runs the same direction it does
+     in light while every rung stays darker than the ink sitting on it. */
+  --mock-accent-bg: #7da4ff;
+  --mock-accent-bg-2: rgba(125, 164, 255, 0.72);
+  --mock-accent-bg-3: rgba(125, 164, 255, 0.46);
+  --mock-accent-bg-4: rgba(125, 164, 255, 0.28);
+
+  /* See --mock-gantt-1 in :root. Lifted about eight percent, because a mid-tone
+     tuned against a near-white card sits heavy on #212121 — the bar stops
+     reading as a filled shape and starts reading as a hole. The hues are
+     unchanged, so a row is the same colour in either theme. */
+  --mock-gantt-1: #4aa396;
+  --mock-gantt-2: #c4646f;
+  --mock-gantt-3: #9240a0;
+  --mock-gantt-4: #8a80d2;
+
+  /* ── Mock chrome surfaces (DARK) ────────────────────────────────────────
+     Rebuilt on the layering Linear uses in dark: surfaces step UP from the
+     ground and never back down, and each nested level is lighter than the one
+     holding it. Linear's own scale runs #08090a → #1c1c1f → #232326 → #28282c
+     with hairlines at #34343a and primary text at #f7f8f8.
+
+     Ours is the same shape against our ground:
+       --background #0a0a0a  the page
+       --surface    #191919  the rail card
+       --mock-window         the panel on the card      ← lifts, never sinks
+       --mock-well / well-2  recesses inside the panel  ← also lift, in dark
+
+     Kept to equal-RGB neutrals rather than copying Linear's slight blue cast,
+     because this scale is declared neutral on purpose further up (any blue
+     reads cheap on OLED). Ink is lifted off the body --foreground #d9d9d9,
+     which went muddy once it sat on a lifted panel instead of the near-black
+     ground. */
+  --mock-window: #212121;
+  /* See --mock-well-soft in :root. Dark's own midpoint, between #212121 and
+     the well's #292929. */
+  --mock-well-soft: #252525;
+  --mock-well: #292929;
+  --mock-well-2: #303030;
+  /* See --mock-well-3 in :root. #3a3a3a, a bigger step than the ~7 points
+     between the rungs below it, and on purpose: this tone's whole job is to
+     clear the event blocks sitting in its column, which are themselves drawn
+     on a well. At #303030 the today column and the event under it were two
+     values close enough to read as one shape. */
+  --mock-well-3: #3a3a3a;
+  /* #2e2e2e, not #3a3a3a. The hairline is a SEPARATION, not a feature, and
+     at #3a on a #212121 panel it was a 25-point step — brighter against its
+     own surface than Linear's #34343a is against #232326, which is the scale
+     this block is built on. Drawn that hard it outlined the mock rather than
+     closing it, and every table rule inside came along with it. 13 points up
+     from the window keeps an edge that reads without announcing itself.
+     Light is unchanged: #e8e9ec on white is already the quiet version of the
+     same idea, and a step DOWN in light is not the same number as a step up
+     in dark. */
+  --mock-line: #2e2e2e;
+  /* In dark it is a real highlight. A near-black screen on a near-black card
+     has no edge of its own, and the hairline alone states one without the
+     screen looking like an object — light catching a top edge is what makes a
+     panel read as sitting in front of the thing behind it. */
+  --mock-edge-lit: rgba(255, 255, 255, 0.16);
+  /* In dark the foot has to be drawn. The card is #191919 and the shot's own
+     ground is #212121, so where a contained screen meets the card's bottom
+     edge there is an eight-point step running flat across the full width — a
+     hard horizontal cut, which reads as the picture being sliced rather than
+     as a window onto something that carries on. Light never has this problem:
+     its two grounds are a point apart.
+
+     The last quarter only, and the same shape as `edgeFade`'s ramps in
+     builder-pillars.tsx — solid, then the midpoint at 58% of what is left,
+     then out. Short on purpose: the form is a single object with a middle, and
+     a ramp that started any higher would be fading the field and the button
+     the card's claim is actually about. */
+  --mock-foot-fade: linear-gradient(
+    to bottom,
+    #000 72%,
+    rgba(0, 0, 0, 0.55) 88%,
+    transparent 100%
+  );
+  --mock-ink: #ededed;
+  --mock-ink-soft: #9a9a9a;
+  /* Dark's own value for the resting nav rows, measured on the #1c1c1c rail
+     rather than converted from light's. Same job and the same ratio there —
+     2.9:1 — which in dark is a bigger drop in number than it looks, because
+     the rail is nearly black and every step away from the ink is a long one. */
+  --mock-nav-rest: #686868;
+  --mock-raise: #3d3d3d;
+  /* Below the window, not above it: the brand slab is the firm's colour and
+     has to stay a distinct object, which it cannot do at #171717 against a
+     #212121 panel. */
+  --mock-brand: #121212;
 
   /* The masthead on the dark ground: the page's own black, with the ink at full
      white rather than the softened --foreground the body copy uses, because the
@@ -137,6 +553,197 @@
   --proposal-ink-soft: rgba(255, 255, 255, 0.75);
   --proposal-ink-faint: rgba(255, 255, 255, 0.5);
   --proposal-ink-fill: rgba(255, 255, 255, 0.15);
+
+  /* /ai-app-builder's hero horizon, in DARK — the arm the effect was designed
+     for, and a separate set of values from the light one in :root rather than
+     the same colours turned up. On near-black the ramp can run its full depth:
+     the bloom is the brand's deepest indigo, the mid ring its blue, and the rim
+     goes to white, which is the one place on this page white is the right ink —
+     it is a light source, not type, and the lime underneath it is what gives
+     the line its colour where it is thinnest. Alphas are high because there is
+     no white page left to show through. */
+  /* Dark composites the rings ADDITIVELY, which is the difference between a
+     glow and a stack of gels. Blended normally, translucent lime over
+     translucent blue AVERAGES — and yellow-green averaged with blue is grey, so
+     the band came out sage-olive no matter how saturated the stops were. Light
+     adds instead: plus-lighter sums them toward white, so each stop keeps its
+     hue and the overlaps brighten rather than dulling.
+     Alphas run lower here than they would otherwise, because adding four rings
+     accumulates where normal blending would not. */
+  --builder-glow-blend: plus-lighter;
+  --builder-glow-bloom: rgba(36, 60, 158, 0.62);
+  /* #7FA7FE — the brand blue this arc is meant to be, replacing the deeper
+     #4F6BF9 it was drawn with. It is the ring that carries the visible blue
+     band (the bloom outside it is the darker falloff), so this is the stop
+     that decides what colour the horizon reads as. */
+  --builder-glow-mid: rgba(127, 167, 254, 0.5);
+  /* The mint and lime stops come DOWN with the rim, and for the same reason:
+     all three rings overlap at the arc's hottest point and plus-lighter sums
+     them. At the old alphas the sum was (290, 337, 201) — red and green both
+     clipped to 255, which is what turned the hot line into a pale band no
+     matter what hue the stops carried. At these it lands on (214, 249, 148):
+     under the clip in every channel, so the line keeps its hue. */
+  --builder-glow-halo: rgba(159, 214, 196, 0.24);
+  --builder-glow-lime: rgba(198, 232, 79, 0.32);
+  /* THE RIM CARRIES A HUE NOW. It was pure white at 0.8, on the reasoning
+     that a light source is white and the colour belongs to what it lights.
+     That reasoning ignores the blend: these rings composite plus-lighter, so
+     white at 0.8 does not sit on top of the ramp, it SUMS with every stop
+     under it and saturates all three channels — which is why the arc had a
+     white band across its hottest part instead of a lime one, and why the
+     lime and mint rings under it were invisible exactly where they were
+     brightest.
+     #d9ed92 is BRAND_AURORA's lime-light stop, the same value the footer
+     band peaks on and the composer's ring opens with. Additively it is still
+     the brightest thing in the arc — two channels at full, which reads as a
+     hot line — but it reads as OUR hot line, and the ramp now runs lime to
+     mint to blue out of the hole the way the footer does.
+     0.85, and high BECAUSE it paints rather than adds now (see the blend
+     note on .builder-glow__arc--rim). A translucent lime laid over blue
+     averages toward sage — the trap this file already records — so the stop
+     has to cover most of what is under it to stay lime. At 0.85 the line
+     resolves near (194, 214, 143); at half that it came out olive. */
+  --builder-glow-rim: rgba(217, 237, 146, 0.85);
+  --builder-glow-opacity: 1;
+  /* Dark keeps the original ramp and bloom — see the light block for why the
+     two differ. These are the values this arc was drawn with. */
+  --builder-glow-fade: 86%;
+  --builder-glow-bloom-scale: 1.105;
+  --builder-glow-bloom-blur: 58px;
+  /* Dark marks the same column by VALUE instead — a lifted panel. The light
+     trick does not carry here: the brand blue at a tenth over a near-black
+     table is invisible, and dark has the headroom to lift a surface off its
+     ground, which light does not.
+
+     Three values deep now, each one down from the last: #303030, then
+     #262626, now #1e1e1e. #303030 is --mock-well-2, a lifted PANEL tone — the
+     right idea for a column inside a card and far too much for one sitting on
+     the open page, where it was the brightest block in the section.
+
+     #1e1e1e is close to the --surface-2 (#242424) this note once argued
+     against, on the grounds that a value that near the page's near-black
+     ground would read as a slightly-less-black rectangle rather than as the
+     one column being argued for. That worry was about the wrong thing: the
+     column is marked by its hairlines, its ranged-left answers and its header
+     as much as by its fill, and the fill only has to say "this group of cells
+     belongs together". It does that at a +20 step. Against #ededed ink there
+     is contrast to spare either way, so nothing is lost by taking the fill
+     down to where it stops being the loudest thing on the section. */
+  --builder-own-col: #1e1e1e;
+  /* The five answer cells sit a touch above the header — six points, the same
+     step they have always had, just carried down with it. The header is a
+     label and the answers are the content; lifting the content a notch stops
+     the column reading as one flat slab and gives the rows the faint sense of
+     being the thing you are meant to read. Six is deliberately almost
+     nothing: any more and the header looks like a separate darker bar sitting
+     on top of the column rather than part of it. Light keeps one tone — see
+     :root. */
+  --builder-own-col-cell: #242424;
+}
+
+/* ── The mock window's edge, in DARK ─────────────────────────────────────
+   A flat hairline all the way round is not how a panel this size is lit.
+   Linear draws the edge as a GRADIENT — brightest along the top, falling
+   away down the sides until it is gone — which reads as light landing on the
+   top lip of a raised surface rather than as an outline someone drew around
+   it. At 160x300 and up, a uniform rule is the giveaway that it is a drawing.
+
+   Done as two backgrounds rather than a border-image: the fill is clipped to
+   the padding box and the ramp to the border box, so the border area shows
+   the ramp and the inside stays --mock-window. The border itself goes
+   transparent and keeps its width, so nothing moves.
+
+   RADIAL from the top-left corner, not a linear ramp. This window draws only
+   two edges — border-l and border-t — and they run perpendicular, so one
+   linear angle cannot fade both: tilt it to carry the top edge out to the
+   right and the left edge stops fading downward, and the other way round.
+   A glow falling off from the corner they meet at is what the effect is
+   anyway — light landing on the top-left lip — and it dies along both.
+
+   The reach is in PIXELS, not percentages, and that is the other half of it:
+   this box is the artwork's own 760px tall and wider than the card, while the
+   card that crops it shows a bit over half the height. Percentage stops are
+   measured against the artwork, so a ramp "finishing at 100%" was only ever
+   half spent by the time the crop arrived, and the edge reached the card's
+   foot still lit. 540x400px is sized to the VISIBLE picture, so the edge is
+   gone before the picture is. Flat --mock-window past that, so the stretch
+   beyond the crop costs nothing.
+
+   DARK ONLY. In light the edge is #e8e9ec on white, which is already a
+   whisper — a ramp there would be invisible at the top and dirty at the
+   bottom. */
+/* The lit edge on a mock's own window: a border painted with a radial that
+   falls from the top-left corner into the card's ground, so the screen reads as
+   catching the light rather than as a flat hairline. Dark only — in light the
+   plain --mock-line hairline is already visible against white.
+
+   The ellipse is sized by the box carrying it, because the falloff has to span
+   THAT box: the 540x400 default is tuned to the hero's 760px-tall screen, and
+   on something short and wide (the composer) it lands entirely inside the
+   bright end and reads as one flat grey. Override with --mock-edge-w / -h.
+
+   The INTERIOR is --mock-edge-fill, defaulting to --mock-window. The first
+   layer below is clipped to the padding box, so it is what the element's inside
+   actually shows — a lit edge painted over a panel that sits on some other
+   ground would repaint that panel back to the window and quietly undo it. Every
+   existing caller is on --mock-window and passes nothing; a panel on
+   --mock-well passes --mock-well and keeps its own tone. */
+[data-theme="dark"] .mock-edge {
+  border-color: transparent;
+  background-image:
+    linear-gradient(
+      var(--mock-edge-fill, var(--mock-window)),
+      var(--mock-edge-fill, var(--mock-window))
+    ),
+    /* The counter-light at the opposite corner.
+
+       The ramp below runs from the top-left and lands on #212121, so the whole
+       lower-right quadrant of the border arrived at the same flat value and the
+       corner furthest from the light had no falloff left in it — a bezel lit
+       from one side only, which reads as a hairline that has been dimmed rather
+       than as an object catching light.
+
+       White at a few percent, not a second grey: it LIFTS whatever the ramp
+       underneath has already put down, so the two never disagree about a value
+       and the corner stays a continuation of the same edge. It dies out well
+       before the midpoint, so the top-left remains the light. */
+    radial-gradient(
+        ellipse var(--mock-edge-w, 540px) var(--mock-edge-h, 400px) at 100% 100%,
+        rgba(255, 255, 255, 0.05) 0%,
+        rgba(255, 255, 255, 0.028) 35%,
+        rgba(255, 255, 255, 0.008) 62%,
+        transparent 80%
+      ),
+    /* The light itself. Its three brightest stops are TOKENS with the
+       original values as defaults, so a box that needs a stronger edge than
+       the set's can say so without forking the rule or touching the boxes that
+       are already right — the tail (#272727 → #212121) is the fade into the
+       window's own ground and is shared by all of them. */
+    radial-gradient(
+      ellipse var(--mock-edge-w, 540px) var(--mock-edge-h, 400px) at 0% 0%,
+      var(--mock-edge-1, #484848) 0%,
+      var(--mock-edge-2, #3a3a3a) 14%,
+      var(--mock-edge-3, #2f2f2f) 32%,
+      #272727 55%,
+      #232323 78%,
+      #212121 100%
+    );
+  background-origin: border-box;
+  background-clip: padding-box, border-box, border-box;
+}
+
+/* One extra breakpoint, at 1152px. The Build step's shot is `ml-auto` and
+   steps its width with the panel, and between `lg` (1024) and `xl` (1280) the
+   panel outgrows the widest box the shot had — 1120px of panel holding an
+   820px shot, which is 300px of bare panel under the copy. 1152 is where the
+   panel first holds the next size up at 1:1.
+
+   REGISTERED RATHER THAN WRITTEN AS `min-[1152px]:`. The arbitrary variant
+   generates, but Tailwind sorts it before the named breakpoints, so `lg:` came
+   after it and won at every width above 1152 — the step silently did nothing.
+   A real breakpoint sorts by its own value. */
+@theme {
+  --breakpoint-lgx: 72rem;
 }
 
 @theme inline {
@@ -812,48 +1419,36 @@ html[data-theme="dark"] body {
   pointer-events: none;
   z-index: 2;
   /* The hero keeps the ring visible at rest so the box always reads as the live
-     entry point. */
-  opacity: 1;
+     entry point. Tokenised: a composer sitting on a lit ground (the
+     /ai-app-builder horizon) needs the ring quieter, because there the sweep is
+     competing with the arc behind it rather than being the only colour on an
+     unlit page. Default 1, so every other box is unchanged. */
+  opacity: var(--composer-ring-opacity, 1);
   transition:
     opacity 0.3s ease,
     border-width 0.45s cubic-bezier(0.25, 1, 0.5, 1),
     filter 0.45s ease;
 }
-.v63-gradient-border {
-  transition: box-shadow 0.5s cubic-bezier(0.25, 1, 0.5, 1);
-}
-/* Hover — the ring thickens just slightly and a soft, single-tone brand-blue
-   bloom settles behind the box. Kept restrained on purpose: no brightness/
-   saturation pump (that read garish on white) and a calmer spin, so it feels
-   premium rather than lit-up. */
-.v63-gradient-border:hover {
-  box-shadow: 0 12px 40px -16px rgba(111, 150, 240, 0.2);
-}
-.v63-gradient-border:hover::before {
-  /* Subtle hover only — a faint brightness lift; the soft bloom below carries
-     it. Ring thickness is left unchanged: animating border-width doesn't
-     interpolate smoothly with the mask, which made the hover feel janky. */
-  filter: brightness(1.03);
-}
+/* No hover glow in light mode. There was a brand-blue bloom behind the box
+   (box-shadow 0 12px 40px -16px) and a brightness lift on the ring. On white
+   the bloom had nothing to sit on and read as a coloured smudge under the
+   composer rather than as the box reacting — and the ring is already the
+   thing that says this is live. The ring stays; nothing lights up around it.
+   Dark's hover is unaffected: it lives entirely in the ring (see below). */
 /* Focus — while typing, the ring calms down: slow spin, dimmed, thin. */
 .v63-gradient-border:focus-within::before {
   border-width: 1.5px;
   filter: none;
-  opacity: 0.5;
+  opacity: calc(var(--composer-ring-opacity, 1) * 0.5);
   animation-duration: 20s;
 }
-.v63-gradient-border:focus-within {
-  box-shadow: none;
-}
 /* Dark-mode hover lives entirely in the RING: the sweep speeds up and pumps
-   brightness + saturation. No bloom behind the box — a drop-shadow glow under
-   the composer reads as a stray gradient sitting on the ground, and the effect
-   is meant to be the gradient edge reacting, not the box lighting up its
-   surroundings. Ring thickness is deliberately not animated either: animating
-   the transparent border's width doesn't interpolate smoothly with the mask. */
-html[data-theme="dark"] .v63-gradient-border:hover {
-  box-shadow: none;
-}
+   brightness + saturation. Never a bloom behind the box — a drop-shadow glow
+   under the composer reads as a stray gradient sitting on the ground, which is
+   why light has none either. The effect is the gradient edge reacting, not the
+   box lighting up its surroundings. Ring thickness is deliberately not animated
+   either: animating the transparent border's width doesn't interpolate smoothly
+   with the mask. */
 html[data-theme="dark"] .v63-gradient-border:hover::before {
   filter: brightness(1.28) saturate(1.15);
   animation-duration: 2.6s;
@@ -862,6 +1457,24 @@ html[data-theme="dark"] .v63-gradient-border:hover::before {
 html[data-theme="dark"] .v63-gradient-border:focus-within:hover::before {
   filter: none;
   animation-duration: 20s;
+}
+/* Opt-in: the ring stops dead while the box has focus, instead of slowing to a
+   20s crawl. A sweep behind the words you are typing is movement in the one
+   place on the page that wants none, and "slower" only makes it a drift you
+   catch out of the corner of your eye. The gradient stays — it is a still
+   coloured edge, so the box still reads as the live one — it just holds its
+   angle until you click away. Carried by .v63-still-on-focus so the composers
+   that are not the thing you came to the page to type into keep their calm-down
+   as it was. */
+.v63-still-on-focus:focus-within::before {
+  animation: none;
+  /* And at the SAME brightness it has at rest. The shared focus rule also
+     halves the opacity, so clicking into the box visibly dimmed the edge at
+     the moment of clicking into it — the one interaction where the box should
+     look more live, not less. Holding the rest value means the ring does not
+     change at all when focus lands: it simply stops moving. */
+  opacity: var(--composer-ring-opacity, 1);
+  filter: none;
 }
 @media (prefers-reduced-motion: reduce) {
   .v63-gradient-border::before {
@@ -886,7 +1499,7 @@ html:not([data-theme="dark"]) .v63-gradient-border::before {
     border-box;
 }
 html:not([data-theme="dark"]) .v63-gradient-border:focus-within::before {
-  opacity: 0.8;
+  opacity: calc(var(--composer-ring-opacity, 1) * 0.8);
 }
 /* Describe-step mock ring: a continuous colour loop (no transparent arc) so the
    small mock's border always reads as coloured and never washes out to white.
@@ -1695,7 +2308,11 @@ html[data-theme="dark"] .v63-ring-solid::before {
   background-position: 130% 0;
   /* Matched to .v69-plot-grid--dots exactly — same circle, same 14px tile, same
      top-left origin. A mask a pixel out of step lights the gaps instead. */
-  -webkit-mask-image: radial-gradient(circle at 1px 1px, #000 1px, transparent 0);
+  -webkit-mask-image: radial-gradient(
+    circle at 1px 1px,
+    #000 1px,
+    transparent 0
+  );
   mask-image: radial-gradient(circle at 1px 1px, #000 1px, transparent 0);
   -webkit-mask-size: 14px 14px;
   mask-size: 14px 14px;
@@ -2861,7 +3478,8 @@ html[data-theme="dark"] .v63-ring-solid::before {
     /* The rule is what says "quote" at a glance — the size alone read as a
        stray block of large text. */
     padding-left: 1.75rem;
-    border-left: 2px solid color-mix(in srgb, var(--foreground) 18%, transparent);
+    border-left: 2px solid
+      color-mix(in srgb, var(--foreground) 18%, transparent);
     font-size: 1.25rem; /* 20px, the sub-head's step, at both breakpoints */
     line-height: 1.45;
     letter-spacing: -0.014em;
@@ -3111,10 +3729,10 @@ html[data-theme="dark"] .v63-ring-solid::before {
     /* The covers scroll with the content and the shadows are pinned to the box,
        so a shadow only shows on a side there is more table to reach. */
     background:
-      linear-gradient(to right, var(--background) 60%, transparent) left center /
-        3rem 100% no-repeat local,
-      linear-gradient(to left, var(--background) 60%, transparent) right center /
-        3rem 100% no-repeat local,
+      linear-gradient(to right, var(--background) 60%, transparent) left
+        center / 3rem 100% no-repeat local,
+      linear-gradient(to left, var(--background) 60%, transparent) right
+        center / 3rem 100% no-repeat local,
       radial-gradient(
           farthest-side at 0 50%,
           color-mix(in srgb, var(--foreground) 14%, transparent),
@@ -3332,4 +3950,797 @@ html:not([data-authed]) .auth-only {
 .dv-range:focus-visible {
   outline: 2px solid rgb(255 255 255 / 0.7);
   outline-offset: 3px;
+}
+
+/* ── The recommended plan's edge ──────────────────────────────────────────
+   A gradient that starts on the brand blue at the card's top and is gone by
+   its middle, rather than a flat blue line round all four sides. The aurora
+   wash behind the card fades out downwards; an edge that did not left the
+   card ringed, with a bright blue hairline still running under the button
+   long after the wash it belongs to had gone.
+
+   Same mechanism as .v63-gradient-border above — a transparent border painted
+   by a border-box background, with a padding-box mask punching out the middle
+   — because that is the one variant in this codebase that keeps rounded
+   corners clean in Chrome. Only the gradient differs: linear and fading, not
+   conic and spinning.
+
+   Dark only. On white the neutral hairline is already right, and a blue edge
+   there reads as a focused form field rather than a recommendation. The card
+   keeps its ordinary border underneath, so the foot is the same hairline as
+   every other card's. */
+[data-theme="dark"] .plan-edge-brand::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid transparent;
+  background: linear-gradient(
+      to bottom,
+      rgba(125, 164, 255, 0.55),
+      rgba(125, 164, 255, 0) 55%
+    )
+    border-box;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) padding-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* ── The builder making a change, inside a mock ───────────────────────────
+   A spinner that runs while something opens and then retires, so the change
+   reads as work being DONE rather than as a column that was always there and
+   merely hidden.
+
+   Same spin + fade pair as .v69-status-load above; it needs its own selector
+   because the rail's cards are a NAMED Tailwind group (`group/card`), which
+   `.group:hover` does not match. The element is opacity-0 at rest, so nothing
+   shows until the pointer arrives.
+
+   Under reduced motion the mark simply never appears: the column still opens,
+   which is the information; the spinner is only the story about who opened
+   it. */
+@keyframes mockBuildSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes mockBuildFade {
+  0% {
+    opacity: 0;
+  }
+  12%,
+  68% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.group\/card:hover .mock-building {
+  animation:
+    mockBuildSpin 0.85s linear infinite,
+    mockBuildFade 1.5s ease-out both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .group\/card:hover .mock-building {
+    animation: none;
+  }
+}
+
+/* ── The composer ring, at rest until pointed at ──────────────────────────
+   A modifier for .v63-gradient-border, not a change to it: the home hero and
+   the CTA both run that ring spinning continuously and are meant to, because
+   each is the one live entry point on its page. /ai-app-builder's hero prompt
+   sits under a headline that is already doing the talking, so it holds the
+   sweep at its resting angle — the colour is still there, it simply is not
+   moving — and runs it while the pointer is on the box.
+
+   Paused rather than un-set, so the gradient keeps its angle instead of
+   snapping back to 0deg when the pointer leaves. */
+.v63-spin-on-hover::before {
+  animation-play-state: paused;
+}
+.v63-spin-on-hover:hover::before {
+  animation-play-state: running;
+}
+@media (prefers-reduced-motion: reduce) {
+  .v63-spin-on-hover::before,
+  .v63-spin-on-hover:hover::before {
+    animation-play-state: paused;
+  }
+}
+
+/* ── /ai-app-builder hero horizon ─────────────────────────────────────────
+   Four concentric ellipses on one centre (see builder-glow.tsx). The largest
+   is the dimmest bloom, the smallest is painted in the page's own ground and
+   sits ON TOP — it occludes the middle, so only a rim survives around its
+   edge. The hero clips the box, so what reaches the reader is the trough of
+   the curve under the headline.
+
+   Sizes are in % of the hero, not pixels, so the curve keeps its shape from a
+   phone to an ultrawide rather than flattening into a straight band on the
+   one and bowing into a circle on the other. The box is wider than it is tall
+   and hangs half above the hero's top edge: that is what puts the lowest point
+   of the arc behind the composer and the rising ends off the left and right.
+
+   Colours come from the two theme blocks above. Nothing here names one. */
+.builder-glow {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+  /* The additive rings must sum against each other and NOT against the page
+     behind the hero, so the group gets its own stacking context. */
+  isolation: isolate;
+  opacity: var(--builder-glow-opacity);
+  /* The arc is a CIRCLE, sized off the viewport WIDTH alone, and the hero's
+     height does not enter into it. Sizing it as a % of both axes is what made
+     it elongate on a phone: 112% x 160% is a sane ratio in landscape, but on a
+     390x844 portrait it resolves to 437 wide by 1350 tall, and the "curve"
+     arrives as two vertical streaks down the sides with no bowl between them.
+     One diameter keeps the same circle on every screen — a phone simply sees a
+     smaller one.
+
+     The vh floor is what keeps it a HORIZON rather than a ring. Width alone
+     gives a portrait phone a circle small enough to fit inside the hero
+     vertically, so its top arc comes back into view and haloes the headline.
+     Holding the diameter to at least the viewport height puts the top off the
+     hero on any shape, leaving only the bottom arc. It costs some depth of
+     curve on a phone — a circle big enough to crop is a circle whose visible
+     run is flatter — and that is the right way to spend it.
+
+     --arc-trough is where the circle's LOWEST point lands down the hero, which
+     is the only thing the height should decide. Just past three quarters puts
+     it behind the composer in both orientations. */
+  --arc-d: max(112vw, 96vh);
+  --arc-trough: 74%;
+  /* The arc fades out before it reaches the hero's bottom edge, so the section
+     ends on the page's own ground and the divider below it lands on a clean
+     surface instead of cutting a gradient in half. */
+  mask-image: linear-gradient(
+    to bottom,
+    #000 0%,
+    #000 var(--builder-glow-fade),
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    #000 0%,
+    #000 var(--builder-glow-fade),
+    transparent 100%
+  );
+}
+
+.builder-glow__arc {
+  position: absolute;
+  left: 50%;
+  top: var(--arc-trough);
+  /* A square box with a 50% radius — so a circle, never an ellipse. Slightly
+     wider than the viewport, which puts the hero's left and right edges out
+     near the circle's horizontal extremes where it turns hardest: that is what
+     makes the ends climb and leaves a trough under the headline. A circle much
+     wider than the viewport would show only its flattest run and read as a
+     horizontal band. */
+  width: var(--arc-d);
+  height: var(--arc-d);
+  border-radius: 50%;
+  /* -100% lifts the circle by its own height, landing its bottom edge exactly
+     on --arc-trough; everything above that is off the top of the hero. The
+     scale is per-ring and set below, and because it works about the centre each
+     larger ring also reaches a little further down, which is what lets the
+     bloom spill past the rim rather than sitting concentric with it. */
+  transform: translate(-50%, -100%) scale(var(--arc-scale, 1));
+  /* NO `will-change` HERE, and it is a fix rather than an omission.
+     These rings never animate — only their parent does, once, on mount — so
+     the hint promised a change that never came while permanently promoting
+     six ~1200px layers, each carrying a blur of up to 58px and compositing in
+     plus-lighter. A promoted layer that large is rastered in tiles, and when
+     the hero is scrolled part-way out and back the browser can present the
+     tiles it has before the rest are ready: the arc appears cut off along a
+     straight line until the next paint catches up. `will-change` is meant to
+     be set just before a change and removed after, never left on at rest. */
+  /* Every LIT ring composites per the theme's mode. The ground ring overrides
+     this back to `normal` — it is an occluder, not a light, and adding it would
+     brighten the hole instead of punching it. */
+  mix-blend-mode: var(--builder-glow-blend);
+}
+
+/* Outermost and softest: the wide colour cast that tells you the rim is a
+   light source rather than a drawn line. */
+.builder-glow__arc--bloom {
+  --arc-scale: var(--builder-glow-bloom-scale);
+  background: var(--builder-glow-bloom);
+  filter: blur(var(--builder-glow-bloom-blur));
+}
+
+/* The body of the glow, between the bloom and the rim. */
+.builder-glow__arc--mid {
+  --arc-scale: 1.062;
+  background: var(--builder-glow-mid);
+  filter: blur(34px);
+}
+
+/* The bridge between the blue and the hot line — the ramp's teal step. It is a
+   separate ring rather than a tint mixed INTO the rim because that is what the
+   rim was at first, and a lime-tinted white over blue comes out khaki: the hue
+   has to sit beside the hot core, not inside it. */
+.builder-glow__arc--halo {
+  --arc-scale: 1.04;
+  background: var(--builder-glow-halo);
+  filter: blur(24px);
+}
+
+/* The ramp's lime step, and the reason the arc reads as Assembly's rather than
+   as a generic blue glow — the footer aurora spends as much of its band on lime
+   and teal as on blue, and an arc that goes straight from blue to a white rim
+   has none of it. */
+.builder-glow__arc--lime {
+  --arc-scale: 1.024;
+  background: var(--builder-glow-lime);
+  filter: blur(16px);
+}
+
+/* The hot line. Barely larger than the ground ring, so only a few pixels of it
+   are ever uncovered — the blur is what makes those pixels read as a lit edge
+   instead of a hairline border. In dark it is pure white, carrying no hue at
+   all: a light source is white and the colour belongs to what it lights. */
+.builder-glow__arc--rim {
+  --arc-scale: 1.011;
+  background: var(--builder-glow-rim);
+  filter: blur(7px);
+  /* THE RIM PAINTS, IT DOES NOT ADD — the one ring that opts out of the
+     group's blend.
+     Every other ring sums, which is what makes the arc read as light rather
+     than as stacked gels. The rim cannot: it sits at the hottest point, where
+     the lime and mint rings overlap it AND the blue rings' 34 and 58px blurs
+     have bled all the way in, so five stops land on the same pixels. Summed,
+     that reaches 255 in all three channels no matter what hue the rim itself
+     carries — which is exactly why this line came out white however the stop
+     was set. Painting it puts its own colour down over the sum, so the hot
+     line is the brand's lime and the ramp runs lime → mint → blue out of the
+     hole.
+     Light already composites everything `normal`, so this changes dark only. */
+  mix-blend-mode: normal;
+}
+
+/* The hole. Painted in the page's own ground in BOTH themes via --background,
+   so it is the one ring that must never be given a colour of its own: the
+   moment it is, the hero stops matching the section under it in one theme or
+   the other. Blurred so the rim meets the ground as a falloff, not a cut. */
+.builder-glow__arc--ground {
+  --arc-scale: 1;
+  background: var(--background);
+  filter: blur(26px);
+  mix-blend-mode: normal;
+}
+
+/* Rises once on mount, the reference's movement: up from below the fold of its
+   own box, settling as it sharpens. One pass, no loop — a horizon that keeps
+   breathing behind a headline is a distraction from the headline. */
+@keyframes builderGlowRise {
+  from {
+    transform: translateY(14%) scale(1.12);
+    opacity: 0;
+    filter: blur(14px);
+  }
+  /* `filter` is deliberately absent from this keyframe. The animation still
+     interpolates it — a filter list against `none` resolves to the zero value,
+     so the blur melts away exactly as before — but the END state is the
+     element's own `filter: none` rather than a `blur(0)` left applied forever
+     by `animation-fill-mode: both`.
+
+     That mattered. A filter, even a zero one, makes the element rasterize its
+     whole subtree into its own surface; this element also carries a mask and
+     `isolation: isolate`, so the arc at rest was a masked, isolated, filtered
+     group with six blurred children inside it — re-composited on scroll, and
+     the thing the clipping was coming out of. With no filter at rest it is an
+     ordinary masked box again. */
+  to {
+    transform: translateY(0) scale(1);
+    opacity: var(--builder-glow-opacity);
+  }
+}
+.builder-glow {
+  animation: builderGlowRise 1.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Reduced motion keeps the arc — it is the section's surface, not an effect —
+   and drops only the travel. */
+@media (prefers-reduced-motion: reduce) {
+  .builder-glow {
+    animation: none;
+    opacity: var(--builder-glow-opacity);
+  }
+}
+
+/* ── A MOCK FRAME'S LIT EDGE ──────────────────────────────────────────────
+   A hairline that is brightest where the light would hit it and gives out
+   before the edges the frame leaves open — the border-side version of the
+   top-lit ground the client-portal hero gives its carousel frames.
+
+   WHY A RING AND NOT A BORDER. `border-image` takes a gradient but ignores
+   border-radius, and these frames are rounded on the corners that are closed.
+   A 1px-padded box masked to its own outline follows the radius, which is the
+   one technique that does both.
+
+   `--lit-angle` is how a frame says which way it is open. 180deg is the
+   default: bright along the top, the plain hairline by the middle, gone by the
+   bottom — for a screen cropped at its foot. 135deg runs it diagonally for a
+   screen cropped at the foot AND the right, so neither open edge gets a line
+   drawn down it.
+
+   The colour stop sits at 45%: the highlight has to be spent by the time the
+   eye is halfway down, or it reads as a glowing box rather than as a lit edge.
+
+   Light mode gets the same ring with --mock-edge-lit equal to --mock-line, so
+   the gradient is flat and this is exactly the hairline that was there before.
+   Only dark actually lights up — see the token. */
+/* IN `@layer components`, and it has to be. Unlayered CSS beats everything in
+   a layer, whatever its specificity — so as a bare `.mock-lit-edge { position:
+   relative }` this silently turned every absolutely-positioned frame wearing
+   the class back into an in-flow one, and `:where()` could not save it either
+   for the same reason. The pillar shots are absolute inside a `min-h` box
+   precisely so they can overhang it; in flow they pushed the box out to their
+   own height and the cards ran ~160px taller than their min-h. It did not show
+   on a desktop grid row, where the cards are height-equalised anyway, and
+   showed on every phone, where they are not.
+
+   The declaration is still needed — an element with no position of its own has
+   to establish a containing block for the ::after ring — it just has to sit
+   under the utilities rather than over them. */
+@layer components {
+  .mock-lit-edge {
+    position: relative;
+  }
+}
+.mock-lit-edge::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  /* `--lit-fade` is where the ramp reaches nothing, and it is a knob because
+     these frames are cropped by their card at different heights. A frame drawn
+     at 130% of the card spends only the first three quarters of its ramp on
+     screen, so a ramp that reaches transparent at 100% is still carrying
+     noticeable line where the card cuts it — the edge stops rather than fades.
+     Such a frame asks for a lower number; one cropped at its own foot keeps
+     the default. */
+  background: linear-gradient(
+    var(--lit-angle, 180deg),
+    var(--mock-edge-lit) 0%,
+    var(--mock-line) var(--lit-mid, 45%),
+    transparent var(--lit-fade, 100%)
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* ── A PILLAR SHOT'S BRAND WASH ──────────────────────────────────────────
+   The ground behind the sign-in pillar: the product's own signed-in backdrop —
+   white at the head, the brand blue through the middle, lime at the foot, and
+   spent before the right edge.
+
+   ONE LAYER, AND IT RUNS STRAIGHT DOWN. At any given height the hue is one
+   colour clean across the card, which is what makes it read as light falling
+   down a page rather than as a corner being lit.
+
+   It took two wrong turns before this. First three radial lobes anchored off
+   the left edge: lobes put colour in a blob, so the hue ran out a tenth of the
+   way across and the card read as grey with a coloured bar down one side. Then
+   the same vertical ramp with a left-to-right washout over it, which only made
+   the bar softer — the ramp still gave out horizontally, so the wash read as
+   diagonal. There is no horizontal component at all now.
+
+   The hues are the site's own ramp and nothing else: #8ea2f4 → #9fd6c4 →
+   #d9ed92 are the composer ring's three stops, which are BRAND_AURORA's blue,
+   mint and lime (footer.tsx). The ring runs them lime-to-blue down its border;
+   this runs them the other way down a page, which is the order the footer
+   aurora and the hero horizon use — blue blooming out to lime.
+
+   LIGHT and DARK are separate value sets, as the guidelines require. Light
+   opens on white rather than on --surface: the head of this card is the one
+   place the ramp has nothing in it, and #f5f5f5 there reads as grey card
+   rather than as the top of a lit page. Dark keeps its own ground and carries
+   the ramp at roughly half the alpha — on #191919 the same values read as a
+   lit panel rather than as a tint. */
+.pillar-brand-wash {
+  /* WHITE, not --surface. The reference lays this ramp on a white page and the
+     card's own #f5f5f5 was the reason ours came out grey-blue: a 30%-alpha
+     periwinkle over grey is a grey, and the head of the card — where the ramp
+     has nothing in it — read as card rather than as the top of a lit page. */
+  background-color: #ffffff;
+  /* NO WHITE AT THE HEAD. The ramp used to open on #ffffff and only reach blue
+     a third of the way down, which left the copy on a plain white band with
+     the colour starting beneath it — a gradient stuck to the card's lower half
+     rather than the card's ground. It opens IN the blue now and spends the
+     full height getting to lime. */
+  background-image: linear-gradient(
+    to bottom,
+    rgba(142, 162, 244, 0.4) 0%,
+    rgba(142, 162, 244, 0.6) 20%,
+    rgba(142, 162, 244, 0.76) 42%,
+    rgba(159, 214, 196, 0.62) 66%,
+    rgba(206, 232, 122, 0.8) 88%,
+    rgba(206, 232, 122, 0.92) 100%
+  );
+}
+
+[data-theme="dark"] .pillar-brand-wash {
+  /* Dark keeps the card's own ground — there is no white page to lay this on,
+     and the ramp is light falling INTO a near-black surface rather than colour
+     laid over a bright one. */
+  background-color: var(--surface);
+  background-image: linear-gradient(
+    to bottom,
+    rgba(142, 162, 244, 0.2) 0%,
+    rgba(142, 162, 244, 0.3) 20%,
+    rgba(142, 162, 244, 0.4) 42%,
+    rgba(159, 214, 196, 0.32) 66%,
+    rgba(206, 232, 122, 0.42) 88%,
+    rgba(206, 232, 122, 0.48) 100%
+  );
+}
+
+/* ── A LIT SURFACE (DARK ONLY) ───────────────────────────────────────────
+   For the big --surface boxes on /ai-app-builder: the four pillar cards and
+   the How it works panel. Both were flat --surface #191919 patches on the
+   #0a0a0a page. The step between the two is real, but
+   a step alone is all they have: no edge, no falloff, nothing catching light.
+   Against the mocks sitting ON them — which DO have lit edges, stepped wells
+   and colour — the card reads as the one unresolved surface in the section.
+
+   This is the same idea the mock chrome block further up already builds on:
+   in dark, a surface is stated by light catching its top edge, not by fill
+   alone. The card was the one surface in the family that never got it.
+
+   LIGHT IS UNTOUCHED AND MUST STAY SO. Every declaration here lives under
+   [data-theme="dark"]. In light these boxes are #f5f5f5 on white, where the
+   fill step is the whole statement and already legible — an edge there would
+   be outlining something that does not need outlining. They render from
+   .surface-lit exactly as they did before this class existed, which is why
+   .surface-lit itself carries nothing.
+
+   The ramps are PERCENTAGES, not pixels, which is what lets one class serve a
+   300px card and a 900px panel: light falls from the head of the box in both
+   cases, and the fraction of the box it has crossed is the thing that should
+   match, not the distance. */
+.surface-lit,
+.surface-ground {
+  /* Deliberately empty in light. The dark block below is the whole feature;
+     naming the class here keeps the hook in one place and makes it obvious at
+     the call site that the treatment is theme-scoped. */
+}
+
+[data-theme="dark"] {
+  /* The card's lit edge, as a three-stop ramp rather than the two-stop one
+     .mock-lit-edge uses. A mock frame is ~300px tall and can spend its
+     highlight by the halfway mark; a pillar card runs 500px and more, and a
+     ramp that reaches transparent over that distance leaves the bottom third
+     of the card with no edge at all — the corner just dissolves. So the foot
+     keeps a residual line instead of going to nothing.
+
+     Values are white alphas, not hexes, because the ramp has to hold over
+     both the plain --surface cards and the brand-wash one, whose ground is a
+     blue-to-lime gradient. A fixed grey would go muddy across it. */
+  --surface-lit-top: rgba(255, 255, 255, 0.15);
+  --surface-lit-mid: rgba(255, 255, 255, 0.07);
+  --surface-lit-foot: rgba(255, 255, 255, 0.035);
+
+  /* The card's own ground, lifted at the head and settling to --surface. Four
+     points, which is half the step from --surface #191919 to --mock-window
+     #212121 — enough that the top of the card is not the same value as its
+     bottom, and not so much that the card starts competing with the panel
+     lying on it. The ramp is spent by 55%: past the midpoint the card is
+     --surface exactly, so a shot cropping off the foot still meets the value
+     it was drawn against. */
+  --surface-lit-ground: #1e1e1e;
+}
+
+[data-theme="dark"] .surface-lit::after {
+  /* The ring. Same mask-composite trick as .mock-lit-edge — a 1px padding box
+     with the gradient painted into it and the middle punched out — so the
+     edge can be a gradient rather than the single flat colour a border
+     accepts.
+
+     z-index because the shots inside the card are absolutely positioned and
+     overhang its foot; without it the ring paints under them and the card's
+     bottom corners lose their edge exactly where the artwork runs out. */
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    180deg,
+    var(--surface-lit-top) 0%,
+    var(--surface-lit-mid) 22%,
+    var(--surface-lit-foot) 60%,
+    var(--surface-lit-foot) 100%
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* ── THE GROUND, ON ITS OWN ──────────────────────────────────────────────
+   .surface-ground is the lift without the hairline, and .surface-lit is both.
+   They are split because the hairline does not scale: around a 300px card it
+   reads as an edge catching light, and around a 900px panel the same line
+   reads as an outline drawn around the section. The How it works panel takes
+   the ground alone for exactly that reason.
+
+   The ground ramp goes on the plain boxes only. The brand-wash pillar sets
+   its own background-image a few rules up — a blue-to-lime ramp that IS its
+   ground — and a second gradient here would either replace it or fight it.
+
+   A :not() rather than an opt-in class, so a box that wears .surface-lit gets
+   the ramp by default and only something carrying its own ground opts out. */
+[data-theme="dark"] .surface-lit:not(.pillar-brand-wash),
+[data-theme="dark"] .surface-ground:not(.pillar-brand-wash) {
+  background-image: linear-gradient(
+    to bottom,
+    var(--surface-lit-ground) 0%,
+    var(--surface) 55%
+  );
+}
+
+
+/* ── THE PILLAR CARDS SIT ON THE PAGE GROUND IN DARK ─────────────────────
+   DARK ONLY. Light is untouched and deliberately so: there the cards are
+   --surface #f5f5f5 on a white page, which is a ten-step lift — enough to
+   read as a panel and not enough to read as a box. Nothing about that is
+   wrong, and this rule is scoped so it cannot reach it.
+
+   In dark the same relationship is much louder. --surface #191919 against a
+   #0a0a0a page, ramped up to #1e1e1e at the head by the ground gradient, made
+   four big slabs noticeably lighter than everything around them — so the
+   section read as four panels laid on the page rather than as four pieces of
+   it, and the mock screens inside them, which are the actual subject, had to
+   compete with the card they sat on.
+
+   On the page's own ground the card is defined by its lit edge instead of by
+   its fill. That ring is already there — .surface-lit draws it a few rules up
+   — and it is the thing doing the work now, which is why this takes the fill
+   away rather than dimming it: a slightly-darker slab is still a slab.
+
+   BOTH the colour and the image, because there are two things to beat. The
+   component's own `bg-[var(--surface)]` sets background-color, and the ground
+   ramp above sets background-image; killing one and leaving the other leaves
+   the card lit by whichever survived.
+
+   The selector carries .surface-lit and the same :not() the ramp does, so it
+   outweighs that rule rather than racing it, and so the brand-wash pillar —
+   whose gradient IS its ground — keeps its own. */
+[data-theme="dark"] .builder-pillar-card.surface-lit:not(.pillar-brand-wash) {
+  background-color: var(--background);
+  background-image: none;
+
+  /* AND THE LIT EDGE HAS TO CLOSE, now that it is the only thing drawing the
+     card. The ring ramps 15% white at the head down to 3.5% from 60% on, and
+     that foot was tuned against a card that had a FILL: on #1e1e1e a 3.5%
+     line is visible, and the card had its own ground to read as anyway. On
+     the page's own #0a0a0a it resolves to about #121212, two percent off the
+     page — so the card appeared to be outlined across the top and open down
+     the sides and bottom.
+
+     The three stops are raised here only. The foot lands near #292929, which
+     is where the page's own hairlines already sit in dark, so the card closes
+     on the same line weight the grid and the dividers use. The head still
+     steps up from it, so the edge still reads as catching light rather than
+     as a flat box.
+
+     Set as the tokens the ring already reads rather than by rewriting the
+     gradient: the ramp's shape and stops stay in one place, and only the
+     values this card needs change. Every other .surface-lit box — the How it
+     works panel among them — keeps the originals. */
+  /* MONOTONE ON THESE CARDS — one value, no ramp — and that is the point of
+     setting all three stops rather than rewriting the ring.
+
+     The card's outer edge is the FRAME; the lit, falling-off edges belong to
+     the product screens lying inside it (.mock-edge, .mock-lit-edge). With
+     both ramping, the card read as another piece of UI in a stack of UI — two
+     lit objects, one inside the other, each giving out in its own direction —
+     instead of as the surface the screens are sitting on. A frame does not
+     catch light; the things on it do.
+
+     This was briefly given a fall to its foot and it was the wrong answer to
+     the right complaint: the edge WAS too white, but what showed once it
+     ramped was the ramp. A border that changes value down its own length
+     draws attention to itself on a card whose business is the artwork inside
+     it, and it put a visible seam where the two side edges met the bottom
+     corners. The fix for "too bright" was a smaller number, not a gradient.
+
+     0.07, down from 0.1. At 0.1 the ring landed near #292929, matched to the
+     weight of the page's own grid rails — which is a defensible number for a
+     hairline and too much for an edge that runs the whole way round a 500px
+     card four times over on one screen. 0.07 lands near #1b1b1b: a +17 step
+     off the page's #0a0a0a, still a continuous closed edge on every side, no
+     longer the first thing the eye finds on the section.
+
+     The base ramp is untouched: every other .surface-lit box, the How it
+     works panel among them, keeps the three-stop gradient it was tuned at. */
+  --surface-lit-top: rgba(255, 255, 255, 0.07);
+  --surface-lit-mid: rgba(255, 255, 255, 0.07);
+  --surface-lit-foot: rgba(255, 255, 255, 0.07);
+}
+
+/* ── A PILLAR SHOT'S EDGE RAMPS ──────────────────────────────────────────
+   The right- and bottom-edge dissolves on /ai-app-builder's pillar cards.
+
+   They used to be an inline `maskImage` computed per pillar, which works until
+   one of them has to differ BETWEEN BREAKPOINTS — an inline style cannot carry
+   a media query. The CRM card is that case: from `sm` up its shot is wider
+   than the card and dissolves off the right edge, and on a phone it is
+   contained and centred instead, where a right-hand ramp would be eating a
+   shot that already ends inside the card.
+
+   So the ramps are tokens now and this class only spends them. The pillar sets
+   `--pillar-fade` (the full set) and `--pillar-fade-phone` (the set a phone
+   should get, which for a contained card is the same minus the right ramp);
+   both default to `none`, which is mask-image's initial value and therefore
+   exactly "no mask". mask-composite is always declared and is harmless on a
+   single layer. */
+@layer components {
+  .pillar-edge-fade {
+    -webkit-mask-image: var(--pillar-fade-phone, none);
+    mask-image: var(--pillar-fade-phone, none);
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
+  }
+
+  @media (width >= 40rem) {
+    .pillar-edge-fade {
+      -webkit-mask-image: var(--pillar-fade, none);
+      mask-image: var(--pillar-fade, none);
+    }
+  }
+
+  /* A LONGER RAMP IN DARK, for a pillar that asks for one.
+     The ramp dissolves a cropped shot into the card it sits on, so how long
+     it has to be depends on how far apart the two grounds are — and on
+     /ai-app-builder they are much further apart in dark since the cards took
+     the page's own #0a0a0a: the shot's --mock-window #212121 now has
+     twenty-three points to travel instead of eight.
+     The CRM shot is the case that showed it. It is clipped by the card's
+     right edge at about 92% of its own width, and a ramp starting at 74 is
+     still a third opaque there — so the picture was cut off mid-dissolve and
+     the step landed exactly on the card's ring, reading as a second outline
+     drawn beside the first rather than as a shot running off the edge.
+     Falls back to the light ramp, so a pillar that does not set the dark
+     tokens behaves exactly as it did. */
+  [data-theme="dark"] .pillar-edge-fade {
+    -webkit-mask-image: var(--pillar-fade-phone-dark, var(--pillar-fade-phone, none));
+    mask-image: var(--pillar-fade-phone-dark, var(--pillar-fade-phone, none));
+  }
+
+  @media (width >= 40rem) {
+    [data-theme="dark"] .pillar-edge-fade {
+      -webkit-mask-image: var(--pillar-fade-dark, var(--pillar-fade, none));
+      mask-image: var(--pillar-fade-dark, var(--pillar-fade, none));
+    }
+  }
+}
+
+/* ── A CONTAINED SHOT'S FOOT ──────────────────────────────────────────────
+   Dissolves a `visualContained` screen into the card at its bottom edge, the
+   way `fadeBottom` does for the cropped shots — except that those carry their
+   ramp as an inline mask computed per pillar, and this one has to differ
+   BETWEEN THEMES, which an inline style cannot do.
+
+   So the ramp is a token and this class only spends it. Light sets it to
+   `none`, which is the initial value of mask-image and therefore the exact
+   behaviour this card had before; dark sets the gradient. Neither theme can be
+   changed by touching the other, and there is no number in this rule to get
+   out of step with a token. */
+.mock-foot-fade {
+  -webkit-mask-image: var(--mock-foot-fade);
+  mask-image: var(--mock-foot-fade);
+}
+
+
+/* ── THE COMPOSER'S OUTER RING ───────────────────────────────────────────
+   A second border outside the conic one, offset 5px, drawn in a neutral.
+
+   The composer's own ring is a colour wheel — it is the brand mark on the
+   page and it is meant to be. What it is not is a BEZEL: a single saturated
+   line at the edge of a large dark box reads as a glowing outline rather than
+   as an inset control, because there is nothing between the line and the page
+   to say the box sits in something. The outer ring is that something. It is
+   quiet, neutral and a few pixels out, so the pair reads as a field recessed
+   into a surround — the inner line belonging to the input, the outer to the
+   page around it.
+
+   `inset: -5px` with a radius 5 larger than the inner one, so the two curves
+   stay concentric at the corners. Pointer-events off, and it sits BEHIND the
+   content (z-index: -1) so it cannot eat a click on the field or the button.
+
+   LIGHT AND DARK ARE SEPARATE VALUES, as the guidelines require. Dark gets a
+   white at low alpha — on a near-black page a neutral ring has to be lighter
+   than its ground to exist at all. Light gets a black at a lower one: on
+   white the same idea runs the other way, and an alpha matched to dark's
+   would have drawn a grey box around the hero. */
+.composer-outer-ring::after {
+  content: "";
+  position: absolute;
+  inset: -5px;
+  z-index: -1;
+  border-radius: calc(var(--radius-lg, 0.5rem) + 5px);
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  pointer-events: none;
+}
+
+/* ── The /ai-app-builder hero, lifted off the centre line ────────────────
+   The hero centres its block in the section's content box, which is right up
+   to about a laptop. Past that the box grows with the window and the block
+   does not — it is ~460px of headline, lede and composer whatever the screen
+   — so dead centre keeps pushing it down: a third of the way into a 1700px
+   window, with nothing above it and the composer sitting in the bright band
+   of the arc instead of above it.
+
+   A TRANSFORM, not padding. Padding is the wrong unit twice over: it lifts by
+   a fixed amount, so it under-corrects on exactly the tall windows that need
+   it most, and it eats the content box, so on a short wide screen it can
+   squeeze the block until centring has nothing left to centre. A transform
+   takes no part in layout, and in `vh` it scales with the window that caused
+   the problem.
+
+   GATED ON HEIGHT AS WELL AS WIDTH. What pushes the block down is a tall
+   window, not a wide one: the same -14vh on an 800px-tall screen would slide
+   the headline up under the nav, and nothing would stop it, because a
+   transform does not take part in layout. The width condition is only there
+   to keep this off a tall phone, where the hero is ranged to the top already
+   and there is no centring to correct.
+
+   WHY THIS IS CSS AND NOT A UTILITY. The Tailwind forms for it —
+   `xl:[@media(min-height:900px)]:` and a single
+   `[@media(min-width:1280px)_and_(min-height:900px)]:` — both compile to
+   NOTHING, silently: the class lands on the element and no rule is ever
+   generated, so the hero just sits where it was. Written out here it is one
+   rule that can be read and one that demonstrably applies.
+
+   Measured on a 2000px-wide window: at 1300px tall the headline goes from 36%
+   of the screen to 25%, at 1700 from 35% to 25%. The arc does not move — it
+   is a separate layer drawn to the section's foot. */
+@media (min-width: 1280px) and (min-height: 900px) {
+  .builder-hero-lift {
+    transform: translateY(-6vh);
+  }
+}
+@media (min-width: 1280px) and (min-height: 1300px) {
+  .builder-hero-lift {
+    transform: translateY(-14vh);
+  }
+}
+
+[data-theme="dark"] .composer-outer-ring::after {
+  /* NO OUTER RING IN DARK.
+
+     It was 8% white, then 14% to make it carry over the hero's arc — and at
+     14% the answer was clear: the composer does not want a second edge in
+     dark at all. The gradient ring is already a lit line against a near-black
+     page, so an outer border two off from it draws a box around a box, and
+     the brighter it gets the more it reads as a selected state rather than as
+     a frame.
+
+     `display: none`, not a transparent border: there is nothing left for this
+     pseudo-element to do in dark, and a 1px transparent box still rounds and
+     insets itself.
+
+     LIGHT IS UNTOUCHED and still carries its rgba(0,0,0,0.07) from the rule
+     above. There the ring is the only thing separating a white field from a
+     white page, so it is load-bearing in a way it never was here. */
+  display: none;
 }

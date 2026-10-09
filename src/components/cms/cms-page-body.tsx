@@ -426,10 +426,11 @@ export function CmsPageBody({ page }: { page: CmsPage }) {
                 <PullQuote quote={section.quote} />
               </Band>
             )}
-            {/* The cards variant, two-column — what /security and /pricing both
-                render. The divided variant is used by no page on this site. */}
+            {/* The house treatment, same as every other page — the component
+                defaults to it, so a CMS FAQ section needs nothing but its own
+                heading and items. */}
             {section.kind === "faq" && (
-              <FAQ heading={section.title} items={section.items} twoColumn />
+              <FAQ heading={section.title} items={section.items} />
             )}
           </div>
         ))}

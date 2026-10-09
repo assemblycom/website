@@ -195,10 +195,10 @@ export function TemplateModalBrowser({
                   {template.longDescription}
                 </p>
                 <p className="mt-4 text-base leading-[1.75] text-foreground/80">
-                  Start from this template and describe what you want to change
-                  in plain English — Assembly adapts the layout, fields,
-                  and flow to your firm, then publishes it to your client
-                  portal in minutes. No code required.
+                  Start from this template and describe what you want to
+                  change — Assembly adapts the layout, fields, and flow to your
+                  firm, then publishes it to your client portal in minutes. No
+                  code required.
                 </p>
 
                 <h3 className="type-h4 mt-10">What you can customize</h3>

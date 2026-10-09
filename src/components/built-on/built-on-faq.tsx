@@ -29,13 +29,13 @@ function builtOnFaqs(firm?: BuiltOnFirm): FAQEntry[] {
     {
       question: `Could I build what ${businessInSentence} has?`,
       answer:
-        "Yes. The branded sign-in, the client portal and the apps inside the portal all run on Assembly. Describe what your clients need in plain English, and Assembly builds the app. Most businesses have a first app live on Assembly the same day.",
+        "Yes. The branded sign-in, the client portal and the apps inside the portal all run on Assembly. Describe what your clients need, and Assembly builds the app. Most businesses have a first app live on Assembly the same day.",
     },
     {
       question: "Do I need to know how to code to use Assembly?",
       shortQuestion: "Do I need to know how to code?",
       answer:
-        "No. Describe what you want, and Assembly asks a few questions, shows you a plan and builds the app once you approve. Later changes work the same way: ask Assembly in plain English.",
+        "No. Describe what you want, and Assembly asks a few questions, shows you a plan and builds the app once you approve. Later changes work the same way: just ask Assembly.",
     },
     {
       question: "What can I build with Assembly?",
@@ -78,5 +78,5 @@ export function BuiltOnFaq({ firm }: { firm?: BuiltOnFirm }) {
   // The site's standard FAQ treatment, identical to the homepage's: soft
   // rounded rows in two columns under a centred heading. The divided list this
   // used before is the /security variant, not the house style.
-  return <FAQ items={builtOnFaqs(firm)} twoColumn />;
+  return <FAQ items={builtOnFaqs(firm)} />;
 }

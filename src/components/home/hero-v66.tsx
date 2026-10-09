@@ -225,13 +225,15 @@ function openGetStarted(value: string, ctaSurface?: string) {
   );
 }
 
-// Once there is a prompt in the box, the button names what happens to it
-// rather than where it takes you. Both auth states converge on the one
-// sentence: the destination still differs, the promise does not. Empty, they
-// diverge again — "Get started" for a visitor, "Open Assembly" for a customer.
-const TYPED_SUBMIT_LABEL = "Build in Assembly";
+// The button used to rename itself the moment you typed — "Build in Assembly"
+// in place of "Get started", on the reasoning that with a prompt in the box the
+// label should name what happens to it rather than where it takes you. True in
+// the abstract, and wrong in the hand: the words change under the pointer while
+// you are mid-sentence and looking at the box right beside them, which reads as
+// the page reacting to you rather than waiting for you. The auth split stays —
+// that one is resolved before paint, not while you type.
 
-export function V66Composer({ glow = true, surfaceClassName = "bg-white ring-1 ring-black/[0.06]", surfaceRadiusClass = "rounded-[22px]", minHeightClass = "min-h-[188px]", tone = "light", typewriter = false, mutedControls = false, submitLabel, authedSubmitLabel, submitDark = false, themeAuto = false, accent = LIME, hidePlus = false, hideHowTo = false, howToLabel = "How it works", howToSide = "left", promptPicker = false, promptPickerLabel = "Select a prompt", promptPickerSide = "left", promptPickerUp = false, promptItems, plusItems, compact = false, minimalControls = false, plusAsAttach = false, footerLeading, showSubmit = true, submitDisabled, textDimmed = false, splitFooter = false, value: valueProp, onValueChange, textareaRef, ctaSurface }: { glow?: boolean; surfaceClassName?: string; surfaceRadiusClass?: string; minHeightClass?: string; tone?: "light" | "dark"; typewriter?: boolean; mutedControls?: boolean; submitLabel?: string; authedSubmitLabel?: string; submitDark?: boolean; themeAuto?: boolean; accent?: string; hidePlus?: boolean; hideHowTo?: boolean; howToLabel?: string; howToSide?: "left" | "right"; promptPicker?: boolean; promptPickerLabel?: string; promptPickerSide?: "left" | "right"; promptPickerUp?: boolean; promptItems?: (string | { label: string; prompt: string })[]; plusItems?: { label: string; icon: "attach" | "transfer" }[]; compact?: boolean; minimalControls?: boolean; plusAsAttach?: boolean; footerLeading?: React.ReactNode; showSubmit?: boolean; submitDisabled?: boolean; textDimmed?: boolean; splitFooter?: boolean; value?: string; onValueChange?: (v: string) => void; textareaRef?: React.Ref<HTMLTextAreaElement>; /** Names this composer as a hero CTA in the test readout. Only the hero passes it. */ ctaSurface?: string } = {}) {
+export function V66Composer({ placeholder = "Describe the workflow you want to turn into an app…", glow = true, surfaceClassName = "bg-white ring-1 ring-black/[0.06]", surfaceRadiusClass = "rounded-[22px]", minHeightClass = "min-h-[188px]", tone = "light", typewriter = false, mutedControls = false, submitLabel, authedSubmitLabel, typewriterExamples, submitDark = false, themeAuto = false, accent = LIME, hidePlus = false, hideHowTo = false, howToLabel = "How it works", howToSide = "left", promptPicker = false, promptPickerLabel = "Select a prompt", promptPickerSide = "left", promptPickerUp = false, promptItems, plusItems, compact = false, fieldText = "text-base", minimalControls = false, plusAsAttach = false, menuGlass = false, unifiedSurface = false, footerLeading, showSubmit = true, submitDisabled, textDimmed = false, splitFooter = false, value: valueProp, onValueChange, textareaRef, ctaSurface }: { glow?: boolean; surfaceClassName?: string; surfaceRadiusClass?: string; minHeightClass?: string; tone?: "light" | "dark"; typewriter?: boolean; mutedControls?: boolean; submitLabel?: string; authedSubmitLabel?: string; typewriterExamples?: string[]; submitDark?: boolean; themeAuto?: boolean; accent?: string; hidePlus?: boolean; hideHowTo?: boolean; howToLabel?: string; howToSide?: "left" | "right"; promptPicker?: boolean; promptPickerLabel?: string; promptPickerSide?: "left" | "right"; promptPickerUp?: boolean; promptItems?: (string | { label: string; prompt: string })[]; plusItems?: { label: string; icon: "attach" | "transfer" }[]; compact?: boolean; /** The field's type size. Defaults to text-base (16px) — the size below which iOS Safari zooms the page on focus, so a caller overriding it is choosing that trade. The ghost overlay takes the same value, since it sits exactly on this text. */ fieldText?: string; minimalControls?: boolean; plusAsAttach?: boolean; /** Frosts the composer's menus to match a glass frame. */ menuGlass?: boolean; /** Drops the inner field's own surface so the composer is ONE pane. */ unifiedSurface?: boolean; footerLeading?: React.ReactNode; showSubmit?: boolean; submitDisabled?: boolean; textDimmed?: boolean; splitFooter?: boolean; value?: string; onValueChange?: (v: string) => void; textareaRef?: React.Ref<HTMLTextAreaElement>; /** Names this composer as a hero CTA in the test readout. Only the hero passes it. */ ctaSurface?: string; /** The static placeholder, shown when the typewriter is off. */ placeholder?: string } = {}) {
 
   // Prompt-picker entries. Default: the shared "Build a …" examples. A hero can
   // pass `promptItems` as plain strings (shown and inserted verbatim) or as
@@ -278,7 +280,10 @@ export function V66Composer({ glow = true, surfaceClassName = "bg-white ring-1 r
   const previewing = !value ? promptPreview : null;
   // Drives the animated placeholder; freezes the moment the user types, and
   // yields to a preview so the two never animate over each other.
-  const typedExample = useAssemblyTypewriter(typewriter && !value && !previewing);
+  const typedExample = useAssemblyTypewriter(
+    typewriter && !value && !previewing,
+    typewriterExamples,
+  );
   const menuRef = useRef<HTMLDivElement>(null);
   const promptRef = useRef<HTMLDivElement>(null);
 
@@ -365,10 +370,13 @@ export function V66Composer({ glow = true, surfaceClassName = "bg-white ring-1 r
   const lightPill = mutedControls
     ? "bg-[var(--v69-chip)] ring-1 ring-[color:var(--v69-chip-border)] shadow-[0_1px_2px_rgba(16,24,40,0.05)] hover:brightness-[0.98]"
     : "bg-white ring-1 ring-black/[0.06] shadow-sm hover:bg-neutral-50";
+  // Same reasoning as the field for the dark placeholder: it is the only label
+  // the box carries, and on a raised field white/40 is the weaker half of an
+  // already thin pair. Tokenised with the shipped value as the default.
   const textCls = themeAuto
-    ? "text-neutral-900 placeholder:text-neutral-400 [[data-theme=dark]_&]:text-white/75 [[data-theme=dark]_&]:placeholder:text-white/40"
+    ? "text-neutral-900 placeholder:text-neutral-400 [[data-theme=dark]_&]:text-white/75 [[data-theme=dark]_&]:placeholder:text-[var(--composer-placeholder,#FFFFFF66)]"
     : dark
-      ? "text-white/75 placeholder:text-white/40"
+      ? "text-white/75 placeholder:text-[var(--composer-placeholder,#FFFFFF66)]"
       : "text-neutral-900 placeholder:text-neutral-400";
   // The ghost/typewriter preview sits on the field, so it follows the same rule.
   const ghostCls = themeAuto
@@ -420,7 +428,31 @@ export function V66Composer({ glow = true, surfaceClassName = "bg-white ring-1 r
   const badgeCls = dark ? "bg-white/70 text-neutral-900" : "bg-neutral-900 text-white";
   // Menu takes the page ground tone (not white) so it reads as part of the
   // canvas instead of a bright card floating over it.
-  const menuSurfaceCls = dark ? "border-white/15 bg-[#262626]" : "border-black/[0.06] bg-[#f7f8fa]";
+  // Every menu that hangs off this composer: the prompt picker, the attach
+  // popover and the model list.
+  //
+  // Light is WHITE, not the #f7f8fa the composer's own surface takes. It was
+  // that grey, which is the one colour it cannot be: the CTA and the builder
+  // hero both fill their composer with #f7f8fa, so a menu opening over that
+  // footer was the same value as the thing behind it and the only edge was a
+  // 6%-black hairline. White is the one tone guaranteed to sit above every
+  // surface the composer is given, and the border is taken up to 10% so the
+  // edge still holds where the menu overhangs the page rather than the box.
+  // Dark already lifts — #262626 on a near-black composer — and is left alone.
+  //
+  // menuGlass is opt-in and takes the same treatment the composer's own frame
+  // wears: a part-transparent fill over a heavy blur, so a menu opening on a
+  // lit ground lets that ground through instead of stamping a flat card on top
+  // of it. Only a composer whose FRAME is already glass asks for it — on a
+  // plain page there is nothing behind the menu for the blur to pick up, and
+  // the opaque fill is the one that reliably sits above whatever it covers.
+  const menuSurfaceCls = menuGlass
+    ? dark
+      ? "border-white/15 bg-[#262626]/80 backdrop-blur-2xl"
+      : "border-black/[0.10] bg-white/80 backdrop-blur-2xl"
+    : dark
+      ? "border-white/15 bg-[#262626]"
+      : "border-black/[0.10] bg-white";
   const menuItemCls = dark ? "text-white/90 hover:bg-white/[0.08]" : "text-neutral-800 hover:bg-black/[0.04]";
   const menuIconCls = dark ? "text-white/50" : "text-neutral-500";
 
@@ -544,11 +576,29 @@ export function V66Composer({ glow = true, surfaceClassName = "bg-white ring-1 r
   // variant lands on the first paint. Callers that pass a fixed tone (the
   // proposal page's "field") keep the single-skin behaviour.
   const FIELD_BASE = "rounded-[10px] md:rounded-[14px] p-3.5 ring-1";
-  const cardCls = themeAuto
-    ? `${FIELD_BASE} bg-white ring-black/[0.06] [[data-theme=dark]_&]:bg-[#1b1b1b] [[data-theme=dark]_&]:ring-white/[0.08]`
-    : dark
-      ? `${FIELD_BASE} bg-[#1b1b1b] ring-white/[0.08]`
-      : `${FIELD_BASE} bg-white ring-black/[0.06]`;
+  // The dark field reads as a token rather than a literal so a caller whose
+  // frame is lit from behind can raise it. On an unlit page #1b1b1b sits far
+  // enough off the background on its own; over the /ai-app-builder horizon the
+  // frame around it is brighter than it is, and the field stops reading as an
+  // inset panel and starts reading as a hole cut through to the page. Default
+  // unchanged, so every other composer on the site is untouched.
+  // unifiedSurface: the field keeps its padding and nothing else — no fill, no
+  // ring, no radius of its own. The composer stops being a panel inside a
+  // frame and becomes ONE pane with text at the top and controls at the foot,
+  // which is what it looks like in the product. Everything that made the field
+  // a separate object is exactly what this drops, so there is no second
+  // surface left to disagree with the first.
+  //
+  // Only a composer whose outer surface is a real material asks for this. On a
+  // plain-background composer the inner field IS the thing that says "type
+  // here", and without it the box is text floating on the page.
+  const cardCls = unifiedSurface
+    ? "px-1.5 pt-1"
+    : themeAuto
+      ? `${FIELD_BASE} bg-white ring-black/[0.06] [[data-theme=dark]_&]:bg-[var(--composer-field,#1b1b1b)] [[data-theme=dark]_&]:ring-white/[0.08]`
+      : dark
+        ? `${FIELD_BASE} bg-[var(--composer-field,#1b1b1b)] ring-white/[0.08]`
+        : `${FIELD_BASE} bg-white ring-black/[0.06]`;
 
   return (
     <div className="relative">
@@ -576,7 +626,7 @@ export function V66Composer({ glow = true, surfaceClassName = "bg-white ring-1 r
               // preview than fits: a prompt longer than the field would otherwise
               // spill over the footer row and out of the composer entirely. The
               // fade says the text continues rather than ending mid-sentence.
-              className={`pointer-events-none absolute inset-0 overflow-hidden px-1 text-base leading-[1.5] transition-colors duration-150 ${ghostCls}`}
+              className={`pointer-events-none absolute inset-0 overflow-hidden px-1 leading-[1.5] transition-colors duration-150 ${fieldText} ${ghostCls}`}
               style={
                 previewing
                   ? {
@@ -619,7 +669,7 @@ export function V66Composer({ glow = true, surfaceClassName = "bg-white ring-1 r
             rows={compact ? 2 : 3}
             maxLength={MAX_PROMPT_LENGTH}
             aria-label="Describe what to build"
-            placeholder={typewriter || previewing ? "" : "Describe the workflow you want to turn into an app…"}
+            placeholder={typewriter || previewing ? "" : placeholder}
             // Grows to fit the prompt up to MAX_TEXTAREA_H, then scrolls; the
             // mask fades whichever edge still hides text so nothing hard-clips.
             style={{
@@ -643,7 +693,18 @@ export function V66Composer({ glow = true, surfaceClassName = "bg-white ring-1 r
             // treatment. The halo was left behind, so clicking in painted a bare
             // 2px rectangle around the text: white-on-white in light, a black
             // block on the dark card in dark.
-            className={`block w-full resize-none overflow-y-auto bg-transparent px-1 text-base leading-[1.5] outline-none focus-visible:shadow-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${textDimmed ? (dark ? "text-white/45" : "text-neutral-500") : textCls}`}
+            // text-base (16px) is .type-lead's md size, so from 768px up the
+            // field matches the lede directly above it. Below 768 .type-lead
+            // steps down to 15 and this deliberately does NOT follow: Safari
+            // on iOS zooms the page when a focused input is under 16px, and
+            // that is the page's primary control on the device where the zoom
+            // is worst. One step off the scale on phones is the cheaper of the
+            // two — don't "fix" it to 15px.
+            //
+            // The ghost/typewriter overlay above sits exactly on this text, so
+            // its text-base/leading pair has to change with this one or not at
+            // all.
+            className={`block w-full resize-none overflow-y-auto bg-transparent px-1 leading-[1.5] outline-none focus-visible:shadow-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${fieldText} ${textDimmed ? (dark ? "text-white/45" : "text-neutral-500") : textCls}`}
           />
         </div>
         </div>
@@ -690,8 +751,13 @@ export function V66Composer({ glow = true, surfaceClassName = "bg-white ring-1 r
         )}
 
         <div
+          // pb-1.5, matching px-1.5. The submit sits in this row's bottom
+          // right corner, so the row's bottom inset and its side inset are the
+          // two gaps you see at once — at pb-0.5 they were 10px and 14px, and
+          // a button 4px nearer the floor than the wall reads as having slipped
+          // rather than as being inset.
           className={`flex items-center justify-between gap-2 ${
-            splitFooter ? "mt-2 px-1.5 pb-0.5" : "mt-3"
+            splitFooter ? "mt-2 px-1.5 pb-1.5" : "mt-3"
           }`}
         >
           {/* Left — creation controls: "+", the prompt picker, and/or video. */}
@@ -715,15 +781,28 @@ export function V66Composer({ glow = true, surfaceClassName = "bg-white ring-1 r
                 {menuOpen && (
                   <div
                     role="dialog"
-                    // mt-1 keeps this level with the prompt-picker menu, which
-                    // hangs off a same-height button in the same footer row.
-                    className={`absolute left-0 top-full z-40 mt-1 w-[288px] max-w-[calc(100vw-3rem)] animate-menu-in rounded-2xl border p-4 text-left shadow-[0_20px_50px_-24px_rgba(0,0,0,0.4)] ${menuSurfaceCls}`}
+                    // top-full is the "+" BUTTON's bottom, not the composer's,
+                    // and in splitFooter the button sits 12px up from the
+                    // composer's edge (pb-0.5 + the surface's p-2 + the ring).
+                    // So mt-1 opened the popover 12.7px INSIDE the frame it
+                    // hangs from — measured — and the card's top corners were
+                    // cut by the composer's own bottom edge. The step that
+                    // clears the edge without putting daylight under it was
+                    // mt-5; the footer's bottom inset then went from pb-0.5 to
+                    // pb-1.5, which lifts this button 4px and takes the whole
+                    // measurement with it, so the step is mt-6 now. If that
+                    // padding moves again, this moves with it.
+                    //
+                    // Unchanged off splitFooter, where the button is the last
+                    // thing in the box and mt-1 already read correctly, and
+                    // level with the prompt-picker menu beside it.
+                    className={`absolute left-0 top-full z-40 ${splitFooter ? "mt-6" : "mt-1"} w-[288px] max-w-[calc(100vw-3rem)] animate-menu-in rounded-2xl border p-4 text-left shadow-[0_20px_50px_-24px_rgba(0,0,0,0.4)] ${menuSurfaceCls}`}
                   >
                     <p className={`text-sm font-medium ${dark ? "text-white" : "text-neutral-900"}`}>
                       Unlock more features
                     </p>
                     <p className={`mt-1 text-sm leading-relaxed ${dark ? "text-white/60" : "text-neutral-500"}`}>
-                      Attach files and images, apply your brand, connect integrations, and more once you have an account.
+                      Attachments, branding, and integrations come with an account.
                     </p>
                     <div className="mt-3.5 flex justify-end">
                       <button
@@ -864,6 +943,11 @@ export function V66Composer({ glow = true, surfaceClassName = "bg-white ring-1 r
               // an aria-label would override it with whichever word is wrong for
               // this visitor.
               aria-label={showsLabel ? undefined : (submitLabel ?? "Build it")}
+              // rounded-lg, the site's button radius — the same 8px the nav's
+              // "Book a demo" and "Get started" carry. A concentric 12 was
+              // tried against the frame's 22 and is the wrong fix: the frame
+              // is what moves to meet the buttons, not the other way round,
+              // so every button on the page is one radius.
               className={`flex ${submitH} items-center justify-center gap-1.5 rounded-lg ${pillText} font-normal transition-all duration-150 ease-out active:scale-[0.98] ${
                 submitActive
                   ? themeAuto
@@ -898,10 +982,7 @@ export function V66Composer({ glow = true, surfaceClassName = "bg-white ring-1 r
                   spot on the page a visitor is already looking. The hidden half
                   is `display:none`, so it leaves the accessible name alone. */}
               {showsLabel &&
-                (typed ? (
-                  // One label for everyone, so no auth split to resolve.
-                  <span className="whitespace-nowrap">{TYPED_SUBMIT_LABEL}</span>
-                ) : authedSubmitLabel ? (
+                (authedSubmitLabel ? (
                   <>
                     <span className="auth-only whitespace-nowrap">{authedSubmitLabel}</span>
                     <span className="unauth-only whitespace-nowrap">{submitLabel}</span>

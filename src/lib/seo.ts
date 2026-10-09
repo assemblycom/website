@@ -41,6 +41,12 @@ export const PAGE_SEO = {
       "Free forever, with real client experience apps included. Paid plans add contacts, build credits, and white-labeling as your firm grows. No credit card required.",
     path: "/pricing",
   },
+  aiAppBuilder: {
+    title: "AI App Builder",
+    description:
+      "Describe the app you need. Assembly builds a working app for your team or your clients, with secure logins, permissions, and your branding built in.",
+    path: "/ai-app-builder",
+  },
   security: {
     title: "Security",
     description:

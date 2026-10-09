@@ -179,10 +179,10 @@ export default async function TemplateDetailPage({ params }: Props) {
                       {template.longDescription}
                     </p>
                     <p className="mt-5 text-base leading-[1.75] text-foreground/80 md:mt-6 md:text-[1.0625rem] md:leading-[1.85]">
-                      Start from this template and describe what you want to change
-                      in plain English — Assembly adapts the layout, fields,
-                      and flow to your firm, then publishes it to your client portal
-                      in minutes. No code required.
+                      Start from this template and describe what you want to
+                      change — Assembly adapts the layout, fields, and flow to
+                      your firm, then publishes it to your client portal in
+                      minutes. No code required.
                     </p>
 
                     <h3 className="mt-12 text-lg font-medium md:mt-14">

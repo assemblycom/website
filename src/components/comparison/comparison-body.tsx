@@ -655,12 +655,7 @@ export function ComparisonBody({ page }: { page: ComparisonPage }) {
   }
   if (page.faqs.length) {
     sections.push(
-      <FAQ
-        key="faq"
-        heading="Frequently asked questions"
-        items={page.faqs}
-        twoColumn
-      />,
+      <FAQ key="faq" heading="Frequently asked questions" items={page.faqs} />,
     );
   }
 

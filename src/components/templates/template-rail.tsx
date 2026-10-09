@@ -1,0 +1,184 @@
+import Link from "next/link";
+
+/**
+ * The compact template rail, shared by /client-portal and /ai-app-builder.
+ *
+ * It was two separate sections. The portal's had already been reworked from
+ * cover cards into rows, because the covers are empty frames — there are no
+ * template shots yet — so a 5:3 panel above each title was mostly grey and six
+ * cards ate a screen. The builder's was still the cover-card version, which is
+ * the reinvention this site's rules exist to prevent: one solved element, two
+ * drawings of it. So the rows moved here and both pages read them.
+ *
+ * The one difference the builder's rail needs is the chips: it is
+ * vertical-tagged to prove range, where the portal's is framed as foundations
+ * and tags nothing. They are optional per row rather than a second component.
+ */
+export type TemplateRailCard = {
+  href: string;
+  title: string;
+  description: string;
+  /** Mono uppercase tags under the row's text; the site's standard tag chip. */
+  chips?: { label: string; outlined?: boolean }[];
+  /**
+   * A mark for the art slot, for the rows that have one drawn. Without it the
+   * slot stays the plain recess it has always been — a row with art and a row
+   * without must still be the same object, so the art goes INSIDE the slot
+   * rather than replacing it.
+   */
+  icon?: React.ReactNode;
+};
+
+export function TemplateRail({
+  cards,
+  // Extra classes for each row, for a page whose ground the rows have to do
+  // something about. /ai-app-builder passes BUILDER_RAIL_HALO: it draws
+  // vertical rails behind its content, and a row with an opaque fill cuts them
+  // on a hard line without it. Optional and empty by default, so /templates
+  // and /client-portal render exactly as before.
+  cardClassName = "",
+}: {
+  cards: TemplateRailCard[];
+  cardClassName?: string;
+}) {
+  return (
+    <div className="mt-12 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+      {cards.map((card) => (
+        <Link
+          key={card.href}
+          href={card.href}
+          // The page's own grey, not a third one. These rows carried bg-muted
+          // at half opacity with bg-muted on hover, which put two more greys on
+          // a page whose picture slots are all --surface — and half-opacity
+          // resolves against whatever is behind it, so the row was a different
+          // colour again on a tinted band. Hover firms up the outline instead
+          // of darkening the fill, the same move the builder hero's cards make.
+          //
+          // The two themes answer the pointer differently, because the same
+          // move does not read the same on both. On white, firming the outline
+          // is enough. In dark it is not: --foreground at a tenth is a
+          // near-black card's ink against a near-black ground, so it was
+          // invisible — and winding it up until it showed just drew a bright
+          // ring around the row, which is a selected state, not a hover.
+          //
+          // So dark lifts the SURFACE instead, one step up the scale it
+          // already has (--surface to --surface-2), and takes no ring at all.
+          // That is the move the rest of this page's dark mode makes: a
+          // surface answering by getting lighter.
+          // min-w-0 ON THE ROW ITSELF, not just on the text inside it.
+          //
+          // A grid item's automatic minimum size is min-width:auto, which
+          // resolves to its MIN-CONTENT — and the two lines inside this row are
+          // `truncate`, which is white-space:nowrap, so their min-content is
+          // the whole untruncated sentence. The row therefore refused to shrink
+          // to its track: at a 375px viewport the track was 327 and the row
+          // laid out at 358, overflowing the section's own padding and getting
+          // clipped by the page. The inner `min-w-0 flex-1` could not fix it,
+          // because it governs the flex child, not the grid item above it.
+          //
+          // With the floor removed the row shrinks to its track and `truncate`
+          // does what it was always there to do.
+          className={`group flex min-w-0 items-center gap-4 rounded-xl bg-[var(--surface)] p-3 ring-1 ring-transparent transition-[box-shadow,background-color] hover:ring-foreground/10 [[data-theme=dark]_&]:hover:bg-[var(--surface-2)] [[data-theme=dark]_&]:hover:ring-transparent ${cardClassName}`}
+        >
+          {/* The template shot goes here once the art exists. It takes the
+              full `--muted` against the row's half-strength fill, so the slot
+              is the darker element — the way a real thumbnail will be once
+              there is one. White on the lighter row read as a hole. */}
+          {/* The art slot: one defined step into the surface it sits on, so it
+              reads as a recess rather than as a second surface colour. */}
+          {/* The slot IS the icon's plate when there is one. An app icon is
+              drawn for a light tile — that is why the artwork is near-black and
+              white — so a row that carries one turns its slot into that tile
+              rather than nesting a second square inside the recess.
+
+              It does not theme, like the artwork on it. A row with no art yet
+              keeps the plain --surface-2 recess, which is what the other five
+              are: a slot waiting for a template shot.
+
+              The PLATE themes even though the artwork on it does not, and the
+              two are separate questions: the icon is drawn near-black for a
+              light tile, which only requires the plate to stay light — not to
+              be the same light in both themes.
+
+              It used to be #e6e7ea flat. That value was picked against light,
+              where it sits fifteen steps under --surface #f5f5f5 and reads as
+              a quiet recess; on dark's #191919 ground the same plate is two
+              hundred steps up, the brightest object in the rail by a distance,
+              pulling the eye to the icon rather than to the name beside it.
+              Dark gets #b4b5b9, twenty-nine percent down — enough to take the
+              glare off, still unmistakably a light tile, so the near-black
+              artwork keeps the contrast it is drawn for. The blue tint carries
+              through (+4 on blue) rather than being greyed out. It went to
+              #d6d7da first and then #c8c9cd, both of which were still reading
+              hot against #191919 — six of these tiles sit in one grid, so the
+              plate is repeated across the row and reads brighter in company
+              than a single one does on its own.
+
+              THE FLOOR IS THE ARTWORK. The glyphs are drawn near-black for a
+              light tile, so the plate can only come down as far as still
+              carries them.
+
+              #b4b5b9 was the third try and still read hot: at about 9:1 over
+              the #141414 glyph the plate had contrast to spare, and all of it
+              was being spent on being the brightest thing in a column of
+              near-black rows. #8c8d91 puts the glyph at 5.6:1 — still a clean,
+              unambiguous mark — and the plate at 5.3:1 against the #191919
+              card, so the tile is plainly a tile without being the first thing
+              the eye lands on six times down the list. A mid grey below this
+              is where the icon starts to be eaten.
+
+              Light keeps #e6e7ea exactly. Dropping it there too would have put
+              the icon plate nineteen steps under --surface-2 #e9e9e9 instead
+              of three, so a row with art would no longer have matched the
+              empty slots beside it — a visible change to the theme that had no
+              problem. */}
+          <span
+            className={`flex size-14 shrink-0 items-center justify-center rounded-lg ${
+              card.icon
+                ? "bg-[#e6e7ea] [[data-theme=dark]_&]:bg-[#8c8d91]"
+                : "bg-[var(--surface-2)]"
+            }`}
+          >
+            {card.icon}
+          </span>
+          <span className="min-w-0 flex-1">
+            {/* Regular, not 500. The rank here is already carried by INK —
+                full foreground over the muted description under it — and
+                adding weight on top of that made the title read as bold
+                against everything else on the page, which is set at 400. */}
+            <span className="block truncate text-sm text-foreground">
+              {card.title}
+            </span>
+            {/* One line, hard. The descriptions are written to fit; the
+                truncate is the guard rather than the mechanism. */}
+            <span className="mt-0.5 block truncate text-sm text-muted-foreground">
+              {card.description}
+            </span>
+            {card.chips?.length ? (
+              // Under the text rather than trailing the row: at the three-column
+              // width a chip on the right leaves the title about 170px, and
+              // these titles are not 170px titles.
+              <span className="mt-2 flex flex-wrap gap-1.5">
+                {card.chips.map((chip) => (
+                  <span
+                    key={chip.label}
+                    // The site's tag chip. The transparent border on the filled
+                    // one boxes it to the same height as an outlined one beside
+                    // it; without it a row holding both was 2px taller.
+                    className={`inline-block rounded-md px-2 py-0.5 font-mono text-[11px] uppercase tracking-wide text-muted-foreground ${
+                      chip.outlined
+                        ? "border border-border"
+                        : "border border-transparent bg-muted [[data-theme=dark]_&]:bg-white/[0.07]"
+                    }`}
+                  >
+                    {chip.label}
+                  </span>
+                ))}
+              </span>
+            ) : null}
+          </span>
+        </Link>
+      ))}
+    </div>
+  );
+}
