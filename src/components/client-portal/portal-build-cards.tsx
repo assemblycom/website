@@ -951,29 +951,12 @@ function RequirementsPane() {
           above it. With the prompt gone there is no exchange left for it to be
           the middle of, and it was narrating a card that says the same thing
           itself: it is headed Requirements and it has Approve on it. */}
-      {/* The document's TITLE, and the action on it, above the card rather
-          than inside it.
-
-          It was the card's own header row. Out here it does three things at
-          once: the card below becomes pure document, so its padding can open
-          up without the title eating the first inch of it; the card gets
-          shorter by exactly the header's height; and the title reads as the
-          reply NAMING what it is sending — which is what it is — instead of
-          as chrome on a pane.
-
-          font-medium, which is as heavy as this site goes (400 and 500, never
-          600/700 — see the design guidelines). Against the soft-ink sentence
-          above it and the soft-ink prose below, 500 at 12.5px is plenty to
-          read as the heading of the block.
-
-          Approve is NOT up here. It belongs to the document, not to the
-          sentence naming it, so it sits in the card's own top-right corner —
-          see below. The title alone out here is the label; the control is on
-          the thing it acts on. */}
-      <div className="shrink-0 text-[12.5px] font-medium leading-none text-[color:var(--mock-ink)]">
-        Requirements
-      </div>
-
+      {/* NO TITLE. "Requirements" sat out here naming what the reply was
+          sending, which is a job that existed while there was a reply: a
+          prompt above, a sentence introducing the card, then the card. With
+          the thread gone it was a label floating over a document that opens
+          on its own heading two lines below it, and the scene read as two
+          starts. The card is the whole scene now and needs no caption. */}
       {/* The card, and the mark saying it continues past the crop.
 
           Relative wrapper rather than one box, because the chevron straddles
