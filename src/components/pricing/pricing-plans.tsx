@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { APP_URL, DEMO_URL, DEMO_CTA_LABEL } from "@/lib/constants";
+import { SIGNUP_URL, DEMO_URL, DEMO_CTA_LABEL } from "@/lib/constants";
 
 interface PlanFeatureGroup {
   label: string;
@@ -391,7 +391,7 @@ function PlanGrid({
               {/* Detached CTA — our standard rounded-lg button. Demo plans route
                   to the demo page; the rest to signup. */}
               <a
-                href={plan.cta === DEMO_CTA_LABEL ? DEMO_URL : APP_URL}
+                href={plan.cta === DEMO_CTA_LABEL ? DEMO_URL : SIGNUP_URL}
                 className="mt-3 rounded-lg bg-foreground px-5 py-2 text-center text-sm text-background transition-opacity hover:opacity-90"
               >
                 {plan.cta}
