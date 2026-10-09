@@ -981,7 +981,14 @@ function RequirementsPane() {
           drawn inside it is clipped by the thing it is meant to hang off. */}
       <div className="relative min-h-0 flex-1">
         <div
-          className={`relative flex h-full flex-col overflow-hidden ${R_PANEL} border bg-[var(--mock-window)] ${LINE}`}
+          // SQUARE AT THE FOOT, and no bottom hairline. The card is cut by
+          // the panel's edge rather than ending at it, and a rounded corner
+          // is a statement that the object finishes here — two of them at the
+          // cut turned the crop back into a card that just happens to stop
+          // short. The bottom border goes for the same reason: a hairline
+          // drawn across the cut closes the shape the ramp above it is
+          // busy opening.
+          className={`relative flex h-full flex-col overflow-hidden ${R_PANEL} rounded-b-none border border-b-0 bg-[var(--mock-window)] ${LINE}`}
         >
           {/* The action, in the card's own top-right corner — the corner the
               product puts a document's controls in, and where the eye goes
