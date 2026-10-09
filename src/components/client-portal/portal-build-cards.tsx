@@ -905,11 +905,17 @@ const PLAN_DOC = {
   // three already demonstrate rather than assert.
   overview:
     "A client-facing calendar app where your team schedules sessions and each client sees and books only their own.",
+  // WRITTEN AS SENTENCES, not as arrow chains. Each flow used to be three
+  // clauses joined by "→", which is notation: it reads as a diagram that
+  // happens to be set in type, and at a wrapped line the arrow lands at the
+  // start of the next row where it points at nothing. Plain connectives say
+  // the same sequence and survive wrapping, which is what this column does
+  // most of.
   flows: [
-    "Internal user opens the app from the dashboard → sees the week across every client → filters by company or status.",
-    "Internal user clicks New event → picks a company, a time and a length → publishes it to that client's calendar.",
-    "Client opens the calendar in the client experience → sees their own events and the open slots for their company.",
-    "Client books an open slot → gets a confirmation, and a reminder before it starts.",
+    "Internal user opens the app from the dashboard, sees the week across every client, and filters by company or status.",
+    "Internal user clicks New event, picks a company, a time and a length, then publishes it to that client's calendar.",
+    "Client opens the calendar in the client experience and sees their own events and the open slots for their company.",
+    "Client books an open slot, gets a confirmation, and a reminder before it starts.",
   ],
 };
 
@@ -1042,7 +1048,7 @@ function RequirementsPane() {
               the two margins are equal and the card has a page in it. The cap
               is a max-width rather than more padding so it still fills the
               column at the narrower widths this scene is drawn at. */}
-          <div className="mx-auto flex min-h-0 w-full max-w-[340px] flex-1 flex-col gap-2 px-6 pb-4 pt-2">
+          <div className="mx-auto flex min-h-0 w-full max-w-[380px] flex-1 flex-col gap-2 px-6 pb-4 pt-2">
             <span className={`text-[color:var(--mock-ink)] ${PLAN_HEAD}`}>
               Overview
             </span>

@@ -140,7 +140,7 @@ export function BuilderCustomerQuotes() {
         // the `hover:` rules on an individual card — the moment the row is
         // hovered they all switch off together and the hovered card is the
         // only thing growing.
-        className="mt-10 hidden md:mt-12 md:flex md:h-[400px] md:flex-row md:gap-3 md:[&:not(:hover)>li:first-child]:grow-[3] md:[&:not(:hover)>li:first-child_blockquote]:mt-5 md:[&:not(:hover)>li:first-child_blockquote]:max-h-28 md:[&:not(:hover)>li:first-child_blockquote]:translate-y-0 md:[&:not(:hover)>li:first-child_blockquote]:opacity-100"
+        className="mt-10 hidden md:mt-12 md:flex md:h-[400px] md:flex-row md:gap-3 md:[&:not(:hover)>li:first-child]:grow-[3] md:[&:not(:hover)>li:first-child_blockquote]:mt-5 md:[&:not(:hover)>li:first-child_blockquote]:max-h-40 md:[&:not(:hover)>li:first-child_blockquote]:translate-y-0 md:[&:not(:hover)>li:first-child_blockquote]:opacity-100"
       >
         {QUOTES.map((q) => (
           <li
@@ -191,10 +191,18 @@ export function BuilderCustomerQuotes() {
                   its top margin both go to zero — so a closed card is a
                   thumbnail with a name under it and nothing is reserved for a
                   sentence that is not showing.
-                  112px open is four lines at 15/1.53; the longest of these
-                  four sets to three at the width an open card has, so the
+                  THE QUOTE IS THE BIGGEST TYPE ON THE CARD, at 19/1.375.
+                  It was 15px — the same size as the name and the firm under
+                  it — so an open card was three blocks of one size and the
+                  thing a reader opened it FOR had no more weight than the
+                  attribution. A pull quote is the content here; the
+                  attribution qualifies it. Snug leading rather than relaxed,
+                  because at 19px document leading opens the block up faster
+                  than the card can give it room.
+                  160px open is five lines at 19/1.375; the longest of these
+                  four sets to four at the width an open card has, so the
                   clamp is headroom rather than a crop. */}
-              <blockquote className="overflow-hidden text-[15px] leading-relaxed text-foreground transition-[max-height,opacity,margin,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none md:mt-0 md:max-h-0 md:translate-y-1 md:opacity-0 md:group-hover:mt-5 md:group-hover:max-h-28 md:group-hover:translate-y-0 md:group-hover:opacity-100 md:group-focus-within:mt-5 md:group-focus-within:max-h-28 md:group-focus-within:translate-y-0 md:group-focus-within:opacity-100 max-md:mt-5">
+              <blockquote className="overflow-hidden text-[19px] leading-snug text-foreground transition-[max-height,opacity,margin,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none md:mt-0 md:max-h-0 md:translate-y-1 md:opacity-0 md:group-hover:mt-5 md:group-hover:max-h-40 md:group-hover:translate-y-0 md:group-hover:opacity-100 md:group-focus-within:mt-5 md:group-focus-within:max-h-40 md:group-focus-within:translate-y-0 md:group-focus-within:opacity-100 max-md:mt-5">
                 “{q.quote}”
               </blockquote>
 

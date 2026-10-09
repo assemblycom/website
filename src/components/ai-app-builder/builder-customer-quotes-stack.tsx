@@ -140,7 +140,11 @@ export function BuilderCustomerQuotesStack({
               >
                 {/* pt-1 is headroom for that focus ring, not spacing. */}
                 <div className="px-4 pb-4 pt-1">
-                  <blockquote className="text-[15px] leading-relaxed text-foreground">
+                  {/* 17px, where the row above `md` runs 19. Same move — the quote
+                      outranks the attribution that opened it — at the size a
+                      ~310px phone measure can carry without setting three
+                      words to a line. */}
+                  <blockquote className="text-[17px] leading-snug text-foreground">
                     “{q.quote}”
                   </blockquote>
                   <Link
