@@ -110,7 +110,18 @@ export function BuilderTemplates() {
             20+ templates made for businesses like yours. Install one, then
             remix it with the builder.
           </p>
-          <Link href="/templates" className={`mt-6 ${QUIET_BUTTON}`}>
+          {/* THE BUTTON TAKES THE GROUND AND THE HALO TOO.
+              QUIET_BUTTON is an outline with no fill — right everywhere else
+              it is used, and on this page it meant a rail ran straight through
+              the control. `bg-background` makes it opaque like the cards below
+              it; the halo gives it their soft edge. Both are at this call
+              site, not on the shared class: on a page with no rails an opaque
+              fill is a patch, and five other buttons use it. The hover fill
+              still wins, since a hover variant outranks the base class. */}
+          <Link
+            href="/templates"
+            className={`mt-6 ${QUIET_BUTTON} bg-background ${BUILDER_RAIL_HALO}`}
+          >
             Browse all templates
           </Link>
         </div>

@@ -72,11 +72,14 @@ export const BUILDER_GRID_LINE =
  * It is invisible on its own account for the same reason — a halo of the
  * ground, on the ground.
  *
- * 2px of spread before 14px of blur: the spread clears the rail off the card's
- * immediate edge, the blur does the fading. Together they close the 12px gap
- * between two card rows from both sides, which is what dissolves the stub.
+ * 3px of spread before 26px of blur: the spread clears the rail off the card's
+ * immediate edge, the blur does the fading, and the rail is gone about 13px
+ * out. That is deliberately more than the 12px gaps inside these grids, so a
+ * rail crossing the gap BETWEEN two cards is taken from both sides and
+ * disappears rather than surviving as a stub down the middle. It was 14px,
+ * which left a visible thread in those gaps.
  */
-export const BUILDER_RAIL_HALO = "shadow-[0_0_14px_2px_var(--background)]";
+export const BUILDER_RAIL_HALO = "shadow-[0_0_26px_3px_var(--background)]";
 
 /**
  * The same halo, for a block whose edge is the FULL MEASURE rather than a

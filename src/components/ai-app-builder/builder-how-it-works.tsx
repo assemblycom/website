@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Reveal } from "@/components/ui/reveal";
 import { SegmentedTabs } from "@/components/ui/segmented-tabs";
+import { BUILDER_RAIL_HALO } from "./builder-grid-rails";
 import {
   BuildCard,
   DescribeCard,
@@ -115,7 +116,11 @@ export function BuilderHowItWorks() {
             on that BuilderChapter. The whole region reads left: the pillars
             above, the panel below and its copy all start on the same line, and
             a centred control between them was the one thing that did not. */}
+        {/* The ground and the rail halo, for the same reason the templates
+            button carries them: the track is an outline with no fill, so a
+            rail ran straight through the control. */}
         <SegmentedTabs
+          className={`bg-background ${BUILDER_RAIL_HALO}`}
           label="How building works"
           idBase="how-it-works"
           value={active}

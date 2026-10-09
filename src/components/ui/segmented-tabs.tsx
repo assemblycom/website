@@ -31,6 +31,7 @@ export function SegmentedTabs({
   label,
   idBase,
   variant = "segmented",
+  className = "",
 }: {
   options: { value: string; label: React.ReactNode }[];
   value: string;
@@ -51,6 +52,15 @@ export function SegmentedTabs({
    * below it should be getting. The same three labels, a quarter of the ink.
    */
   variant?: "segmented" | "underline";
+  /**
+   * Extra classes for the track, for a page whose ground the control has to
+   * do something about. /ai-app-builder passes a background and a rail halo:
+   * the track is an outline with no fill, so without one the page's vertical
+   * rails run straight through the control. Optional and empty by default, so
+   * every other call site is unchanged. "segmented" only — the underline skin
+   * has no track to put them on.
+   */
+  className?: string;
 }) {
   const refs = useRef<(HTMLButtonElement | null)[]>([]);
   const count = options.length;
@@ -124,7 +134,7 @@ export function SegmentedTabs({
       role="tablist"
       aria-label={label}
       onKeyDown={onKeyDown}
-      className="relative inline-grid rounded-lg border border-border p-1 text-sm"
+      className={`relative inline-grid rounded-lg border border-border p-1 text-sm ${className}`}
       style={{ gridTemplateColumns: `repeat(${count}, minmax(0, 1fr))` }}
     >
       <span

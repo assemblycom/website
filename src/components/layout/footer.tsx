@@ -187,8 +187,20 @@ function ThemeSwitch({
       role="group"
       aria-label="Appearance"
       // Light mode drops the flat gray border: a hard outline over the colourful
-      // aurora read as a pasted-on box. A soft ring carries the edge instead,
-      // and the higher white opacity stops the aurora tinting the chip green.
+      // aurora read as a pasted-on box. A soft ring carries the edge instead.
+      //
+      // ACTUAL GLASS, not a white chip with a blur behind it. It was
+      // bg-white/85, which is near-opaque — the blur had almost nothing left
+      // to show, so the control read as a white pill laid on the gradient
+      // rather than as something you can see the gradient through. 55% lets
+      // the aurora come through and read as colour BEHIND glass; the heavier
+      // blur keeps it as diffuse light rather than a picture of the gradient,
+      // and the saturate lifts what does come through, which is the thing
+      // that reads as glass rather than as a translucent sheet.
+      //
+      // 55 is the floor, not a preference: the segments are dark ink and the
+      // active one is only foreground/10, so the fill has to stay light
+      // enough to carry both over whatever part of the aurora it lands on.
       //
       // NO LIFT SHADOW IN LIGHT. There was one — 0 4px 16px -8px — to float
       // the chip off the gradient. On the flat white ground most of the site
@@ -202,7 +214,7 @@ function ThemeSwitch({
         frosted
           ? onDark
             ? "bg-black/30 backdrop-blur-md"
-            : "bg-white/85 backdrop-blur-md"
+            : "bg-white/55 backdrop-blur-xl backdrop-saturate-150"
           : ""
       }`}
     >

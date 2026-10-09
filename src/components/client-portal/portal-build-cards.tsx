@@ -76,12 +76,18 @@ const UI_PLAIN = "text-[12.5px] leading-none";
 // From `sm` the scene is drawn 1:1 at 620 and 11px is already correct there.
 // The document is deliberately cropped (see the foot ramp and the chevron), so
 // larger type costs visible lines rather than breaking the box.
-const PLAN_HEAD = "text-[14px] leading-[1.3] sm:text-[11px]";
+/* 13px from `sm`, not 11. The plan is the one thing in these mocks a reader
+   is expected to actually READ rather than recognise as a shape, and at 11px
+   in a ~400px card it was the smallest type on the page by some way — legible
+   in principle, ignored in practice. 13 is still clearly mock-scale against
+   the 15px body around it. The document already overflows and fades at the
+   foot, so the extra size costs a line of the last flow, not a flow. */
+const PLAN_HEAD = "text-[14px] leading-[1.3] sm:text-[13px]";
 /* 1.6, not 1.45. This is the one block on the site that is set as a DOCUMENT
    — paragraphs and a list, read rather than scanned — and document leading is
    looser than a UI label's. It also makes the list's bullets land clear of the
    line above them rather than between two lines. */
-const PLAN_PROSE = "text-[14px] leading-[1.6] sm:text-[11px]";
+const PLAN_PROSE = "text-[14px] leading-[1.6] sm:text-[13px]";
 
 const LINE = "border-[var(--mock-line)]";
 // ── Corner radius: a SCALE of three, not a value per element ─────────────
@@ -1062,9 +1068,9 @@ function RequirementsPane() {
                       the text. */}
                   {/* The line's own height, so the dot centres on a flow's
                       FIRST line — which means it tracks PLAN_PROSE's
-                      line-height at both sizes: 14 x 1.6 on a phone, 11 x 1.6
-                      from `sm`. */}
-                  <span className="flex h-[22.4px] shrink-0 items-center sm:h-[17.6px]">
+                      line-height at both sizes: 14 x 1.6 on a phone, 13 x 1.6
+                      from `sm`. Both numbers move with PLAN_PROSE. */}
+                  <span className="flex h-[22.4px] shrink-0 items-center sm:h-[20.8px]">
                     <span className="size-[3px] rounded-full bg-current" />
                   </span>
                   <span className="min-w-0">{f}</span>

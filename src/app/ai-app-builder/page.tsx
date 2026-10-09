@@ -373,7 +373,7 @@ export default function AiAppBuilderPage() {
                 itself wants the opposite; see the note on it above.) */}
             <p className="type-lead mx-auto mt-5 max-w-[38rem] text-balance text-muted-foreground">
               Describe what you want. Assembly builds a working app with logins,
-              permissions, branding.
+              permissions, and branding.
             </p>
           </div>
 
