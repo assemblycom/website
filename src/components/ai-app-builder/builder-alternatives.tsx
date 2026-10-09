@@ -53,9 +53,12 @@ const TABS_ID = "builder-alternatives";
  * would have said Lovable is the comparison that matters and Base44 is the
  * afterthought.
  */
+//
+// The named row is held back until /comparison/lovable exists — it is built on
+// the product-and-comparison branch, and linking it from here first would ship
+// a 404. Restore it with that page.
 const COMPARISONS = [
-  { label: "Assembly vs. Lovable", href: "/comparison/lovable", lead: true },
-  { label: "All comparisons", href: "/comparison", lead: false },
+  { label: "All comparisons", href: "/comparison", lead: true },
 ] as const;
 
 // Cells are cut to roughly one line at the table's column width — a comparison
