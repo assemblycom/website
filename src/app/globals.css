@@ -195,6 +195,11 @@
   --mock-well: #f7f8fa;
   /* The solid one: segmented tracks, progress troughs, the chat bubble. */
   --mock-well-2: #f2f3f6;
+  /* One rung past --mock-well-2, for the one place that has to clear an
+     object already drawn on a well — the calendar's today column, whose
+     events sit directly under it. Light's wells RECESS (they step down from
+     the window), so this is the darkest of the three. */
+  --mock-well-3: #eceef2;
   --mock-line: #e8e9ec;
   /* The TOP of a mock frame's lit edge — see .mock-lit-edge below. In light it
      is just the hairline: a white highlight on a white screen is nothing, and
@@ -378,6 +383,12 @@
   --mock-well-soft: #252525;
   --mock-well: #292929;
   --mock-well-2: #303030;
+  /* See --mock-well-3 in :root. #3a3a3a, a bigger step than the ~7 points
+     between the rungs below it, and on purpose: this tone's whole job is to
+     clear the event blocks sitting in its column, which are themselves drawn
+     on a well. At #303030 the today column and the event under it were two
+     values close enough to read as one shape. */
+  --mock-well-3: #3a3a3a;
   /* #2e2e2e, not #3a3a3a. The hairline is a SEPARATION, not a feature, and
      at #3a on a #212121 panel it was a 25-point step — brighter against its
      own surface than Linear's #34343a is against #232326, which is the scale

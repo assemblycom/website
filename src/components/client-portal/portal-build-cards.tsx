@@ -1311,12 +1311,14 @@ function CalendarPane() {
               // header — a filled rectangle in a row of hairlines and grey
               // type — and it marked the date rather than the day. Tinting
               // the cell marks the column, which is what the header column
-              // is for, and it weighs almost nothing: --mock-well is one
-              // rung up from the window the header sits on, the same step
-              // every other recess in this set takes, so it reads as a lit
-              // column rather than as a block dropped on the row.
+              // is for.
+              //
+              // --mock-well-3 and not --mock-well: the events in this column
+              // are drawn on a well themselves, so at the first rung the
+              // header and the block under it were close enough to read as
+              // one shape running down the day. The third rung clears them.
               className={`min-w-0 flex-1 flex-col items-center gap-[3px] py-1.5 ${
-                d.today ? "bg-[var(--mock-well)]" : ""
+                d.today ? "bg-[var(--mock-well-3)]" : ""
               } ${calDayHidden(
                 i,
                 "flex",
