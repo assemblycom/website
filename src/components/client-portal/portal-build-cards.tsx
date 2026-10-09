@@ -1306,7 +1306,18 @@ function CalendarPane() {
           {CAL_DAYS.map((d, i) => (
             <div
               key={d.label}
-              className={`min-w-0 flex-1 flex-col items-center gap-[3px] py-1.5 ${calDayHidden(
+              // TODAY IS THE WHOLE CELL, not a chip under the digit. A slab
+              // behind the numeral alone was the heaviest object in the
+              // header — a filled rectangle in a row of hairlines and grey
+              // type — and it marked the date rather than the day. Tinting
+              // the cell marks the column, which is what the header column
+              // is for, and it weighs almost nothing: --mock-well is one
+              // rung up from the window the header sits on, the same step
+              // every other recess in this set takes, so it reads as a lit
+              // column rather than as a block dropped on the row.
+              className={`min-w-0 flex-1 flex-col items-center gap-[3px] py-1.5 ${
+                d.today ? "bg-[var(--mock-well)]" : ""
+              } ${calDayHidden(
                 i,
                 "flex",
               )} ${i >= CAL_PHONE_FIRST && i <= CAL_PHONE_LAST ? "flex" : "sm:flex"} ${calDayEdge(i)}`}
@@ -1316,8 +1327,10 @@ function CalendarPane() {
               >
                 {d.label}
               </span>
-              {/* Today is a filled disc, the one piece of emphasis in the
-                  header — the same move the product makes.
+              {/* The digit. Its emphasis is the cell's tint plus full ink —
+                  see both below. What follows is the history of the mark
+                  itself, kept because each step was a wrong turn worth not
+                  repeating.
 
                   A SQUARISH OUTLINE, not a filled circle. The disc was the
                   heaviest object in the whole shot — a solid near-black dot in
@@ -1349,21 +1362,14 @@ function CalendarPane() {
                 // today is simply the digit in full ink, and the red now-line
                 // in its column is the other half of the marking, which no
                 // other day has.
+                // NO FILL OF ITS OWN. The cell behind it carries the mark; a
+                // chip inside a tinted cell would be marking today twice, in
+                // two different languages, an eighth of an inch apart. Full
+                // ink against the soft-ink day labels is the whole difference
+                // the digit needs to make.
                 className={`flex size-[18px] items-center justify-center tabular-nums ${UI_PRIMARY} ${
                   d.today
-                    ? // `sm:rounded-[4px]` written out, NOT `sm:${R_CHROME}`.
-                      // Tailwind scans raw source text, so an interpolated
-                      // variant never appears for it to find and the class is
-                      // simply not generated. It matches R_CHROME by value.
-                      // FILLED, not outlined. An outlined numeral next to the
-                      // outlined Week chip and the outlined chrome buttons was
-                      // a fourth bordered box in one toolbar, so "today" was
-                      // marked in the same language as every control beside
-                      // it. A solid slab is the one mark in the header that is
-                      // not a control, which is what a calendar does with
-                      // today anyway. The digit flips to the window's own
-                      // ground so it reads out of the fill in both themes.
-                      "text-[color:var(--mock-ink)] sm:rounded-[4px] sm:bg-[var(--mock-ink)] sm:text-[color:var(--mock-window)]"
+                    ? "text-[color:var(--mock-ink)]"
                     : "text-[color:var(--mock-ink-soft)]"
                 }`}
               >
