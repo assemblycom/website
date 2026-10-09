@@ -337,10 +337,20 @@
      its own block without ever reading as greyed out, and it is the tone this
      site already uses for a raised card. */
   --builder-own-col: var(--surface);
-  /* The column's five ANSWER cells, as against its header. Light wants one
-     tone for the whole column, so this just follows the header here; dark
-     splits them (see the dark block). */
-  --builder-own-col-cell: var(--builder-own-col);
+  /* The column's five ANSWER cells, as against its header — and they are a
+     separate value in light now, not just in dark.
+     Light carried one tone for the whole column, which made the fill a flat
+     --surface panel with a header printed on it. Dark had already split the
+     two and for a reason that holds in both: the header is a LABEL and the
+     answers are the CONTENT, so lifting the content a step stops the column
+     reading as one slab and gives the five rows the faint sense of being the
+     thing you are meant to read.
+     Lifted means toward the ground in each theme — #fafafa against light's
+     white page, where dark lifts #1e1e1e to #242424 off its near-black. Five
+     points, the same almost-nothing dark uses: any more and the header looks
+     like a separate darker bar sitting on top of the column rather than part
+     of it. The header keeps --surface exactly. */
+  --builder-own-col-cell: #fafafa;
   /* The bloom's size and softness, so light can spread its colour further down
      than dark without either theme being tuned through the other. */
   --builder-glow-bloom-scale: 1.16;
@@ -605,16 +615,21 @@
      table is invisible, and dark has the headroom to lift a surface off its
      ground, which light does not.
 
-     NOT --surface-2 (#242424). The table's ground in dark is the page's own
-     near-black, so --surface-2 is only a few points off it and the column read
-     as a slightly-less-black rectangle rather than as the one column being
-     argued for. But #303030 — --mock-well-2's value, a panel tone — went too
-     far the other way: a lifted panel is the right idea for a column inside a
-     card, and this column sits on the open page, where the same value is the
-     brightest block on the whole section. #262626 keeps the column plainly
-     marked at a +28 step off the page without the table turning into a light
-     band. Against #ededed ink it still has contrast to spare. */
-  --builder-own-col: #262626;
+     Three values deep now, each one down from the last: #303030, then
+     #262626, now #1e1e1e. #303030 is --mock-well-2, a lifted PANEL tone — the
+     right idea for a column inside a card and far too much for one sitting on
+     the open page, where it was the brightest block in the section.
+
+     #1e1e1e is close to the --surface-2 (#242424) this note once argued
+     against, on the grounds that a value that near the page's near-black
+     ground would read as a slightly-less-black rectangle rather than as the
+     one column being argued for. That worry was about the wrong thing: the
+     column is marked by its hairlines, its ranged-left answers and its header
+     as much as by its fill, and the fill only has to say "this group of cells
+     belongs together". It does that at a +20 step. Against #ededed ink there
+     is contrast to spare either way, so nothing is lost by taking the fill
+     down to where it stops being the loudest thing on the section. */
+  --builder-own-col: #1e1e1e;
   /* The five answer cells sit a touch above the header — six points, the same
      step they have always had, just carried down with it. The header is a
      label and the answers are the content; lifting the content a notch stops
@@ -623,7 +638,7 @@
      nothing: any more and the header looks like a separate darker bar sitting
      on top of the column rather than part of it. Light keeps one tone — see
      :root. */
-  --builder-own-col-cell: #2c2c2c;
+  --builder-own-col-cell: #242424;
 }
 
 /* ── The mock window's edge, in DARK ─────────────────────────────────────
@@ -4531,34 +4546,35 @@ html:not([data-authed]) .auth-only {
      gradient: the ramp's shape and stops stay in one place, and only the
      values this card needs change. Every other .surface-lit box — the How it
      works panel among them — keeps the originals. */
-  /* A SHALLOW FALL, not the monotone this used to be and not the base ramp
-     either.
+  /* MONOTONE ON THESE CARDS — one value, no ramp — and that is the point of
+     setting all three stops rather than rewriting the ring.
 
-     It was flat — all three stops at 0.1 — on the argument that a frame does
-     not catch light, only the screens lying on it do. That argument holds for
-     the HEAD of the card, and 0.1 there is still right: it lands near #292929
-     on the page's #0a0a0a, which is the weight the grid rails and the
-     dividers already use, so the card is drawn with the page's own line.
+     The card's outer edge is the FRAME; the lit, falling-off edges belong to
+     the product screens lying inside it (.mock-edge, .mock-lit-edge). With
+     both ramping, the card read as another piece of UI in a stack of UI — two
+     lit objects, one inside the other, each giving out in its own direction —
+     instead of as the surface the screens are sitting on. A frame does not
+     catch light; the things on it do.
 
-     What it got wrong is the foot. A line of one value all the way round is
-     not a frame catching no light — it is a frame lit evenly from everywhere,
-     and on these cards the bottom edge read as brightly as the top while the
-     artwork inside it was busy dissolving into the card. The eye ends up on
-     the card's bottom corners, which is the one place on the pillar with
-     nothing to look at.
+     This was briefly given a fall to its foot and it was the wrong answer to
+     the right complaint: the edge WAS too white, but what showed once it
+     ramped was the ramp. A border that changes value down its own length
+     draws attention to itself on a card whose business is the artwork inside
+     it, and it put a visible seam where the two side edges met the bottom
+     corners. The fix for "too bright" was a smaller number, not a gradient.
 
-     So the head keeps the page's hairline weight and the ring falls to about
-     half of it by the foot: 0.055 lands near #191919, a +15 step off the page
-     rather than +24. Still unmistakably a closed card — which is what the
-     monotone was protecting, and the reason this does not go near the base
-     ramp's 3.5%, where the foot resolved to two points off the page and the
-     card looked open down its sides.
+     0.07, down from 0.1. At 0.1 the ring landed near #292929, matched to the
+     weight of the page's own grid rails — which is a defensible number for a
+     hairline and too much for an edge that runs the whole way round a 500px
+     card four times over on one screen. 0.07 lands near #1b1b1b: a +17 step
+     off the page's #0a0a0a, still a continuous closed edge on every side, no
+     longer the first thing the eye finds on the section.
 
      The base ramp is untouched: every other .surface-lit box, the How it
-     works panel among them, keeps the values it was tuned at. */
-  --surface-lit-top: rgba(255, 255, 255, 0.1);
-  --surface-lit-mid: rgba(255, 255, 255, 0.085);
-  --surface-lit-foot: rgba(255, 255, 255, 0.055);
+     works panel among them, keeps the three-stop gradient it was tuned at. */
+  --surface-lit-top: rgba(255, 255, 255, 0.07);
+  --surface-lit-mid: rgba(255, 255, 255, 0.07);
+  --surface-lit-foot: rgba(255, 255, 255, 0.07);
 }
 
 /* ── A PILLAR SHOT'S EDGE RAMPS ──────────────────────────────────────────
