@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { V66Composer } from "@/components/home/hero-v66";
 import { useTheme } from "@/components/theme/theme-provider";
 
@@ -39,6 +39,32 @@ export function BuilderPrompt({
   placeholder?: string;
 } = {}) {
   const [prompt, setPrompt] = useState("");
+
+  // THE TYPED PROMPT SURVIVES THE ROUND TRIP TO SIGNUP.
+  //
+  // Submitting this box runs `openGetStarted` (hero-v66), which stamps what
+  // was typed onto this page's URL as `?prompt=…` with `replaceState` before
+  // navigating away — precisely so that coming back refills the composer
+  // instead of making someone retype the sentence they just wrote. The entry
+  // in the history stack carries it; nothing was reading it back here, so the
+  // box returned empty and the stamping was doing nothing on this page.
+  //
+  // The same effect the bottom CTA already runs, deliberately copied rather
+  // than reinvented: three composers on this site are meant to be one control,
+  // and the carry-back is part of what that control does.
+  //
+  // The setState is deferred a tick rather than called in the effect body.
+  // That is not incidental — `react-hooks/set-state-in-effect` is on here, and
+  // the CTA's copy is written the same way for the same reason.
+  useEffect(() => {
+    const carried = new URLSearchParams(window.location.search)
+      .get("prompt")
+      ?.trim();
+    if (!carried) return;
+    const id = setTimeout(() => setPrompt(carried), 0);
+    return () => clearTimeout(id);
+  }, []);
+
   const { theme } = useTheme();
   const dark = theme === "dark";
 
