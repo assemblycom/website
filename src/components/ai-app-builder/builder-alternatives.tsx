@@ -4,7 +4,10 @@ import { useState } from "react";
 import Link from "next/link";
 import { GRID_LINE } from "@/components/ui/grid-lines";
 import { SegmentedTabs } from "@/components/ui/segmented-tabs";
-import { BUILDER_RAIL_HALO } from "./builder-grid-rails";
+import {
+  BUILDER_RAIL_HALO,
+  BUILDER_RAIL_HALO_WIDE,
+} from "./builder-grid-rails";
 
 // `tab` is the name at switcher width. The full names are written for a column
 // head that has the table's width under it; as tabs, three of them at full
@@ -133,7 +136,20 @@ export function BuilderAlternatives() {
           below lg, the lede reads straight after the heading and the links
           close the block. The links share the left column rather than sitting
           alone under a one-line heading, which would leave the gutter empty. */}
-      <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr] lg:items-start lg:gap-x-16">
+      {/* THE HEADER TAKES THE PAGE GROUND AND THE WIDE HALO.
+          Everything else in this region is an opaque card or table, so the
+          rails pass behind it and are interrupted. This block is heading,
+          lede and one chip — mostly open page — so six rails ran at full
+          strength straight through the title and the sentence beside it,
+          which is the one place on the page they land ON type rather than
+          around it.
+
+          The wide halo and not the card one: this is the full 1200px measure,
+          like the FAQ, and a short fade along an edge that long still reads as
+          a boundary. See BUILDER_RAIL_HALO_WIDE in builder-grid-rails. */}
+      <div
+        className={`relative grid gap-6 bg-background ${BUILDER_RAIL_HALO_WIDE} lg:grid-cols-[1.15fr_0.85fr] lg:items-start lg:gap-x-16`}
+      >
         <h3 className="type-h3 text-balance">
           Three ways to get a custom app. One is ready to use
         </h3>
