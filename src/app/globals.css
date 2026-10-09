@@ -313,11 +313,17 @@
      the comparison table's own column, whose entire job is to be the one
      column you look at first. Its neighbours land around #151515 (--muted at
      half strength over the page), so the gap has to carry across a wide
-     table read at a glance. It went #242424, then #333333, and both still
-     read as the same grey as everything else from a normal viewing distance.
-     #404040 is the first value that reads as a filled column. Ink stays
-     --foreground, which clears it comfortably. */
-  --surface-3: #404040;
+     table read at a glance. It went #242424, #333333, then #404040, each of
+     which still read as the same grey as everything else at a normal viewing
+     distance.
+
+     #4f4f4f, and the ceiling is worth writing down: the cells set their ink
+     in --foreground #d9d9d9, which holds 5.8:1 here and crosses WCAG AA's
+     4.5:1 floor at about #5f5f5f. So there are roughly sixteen points left
+     above this value before the column has to give up its body ink, and
+     anything lighter than that needs the text reconsidered, not just the
+     ground. */
+  --surface-3: #4f4f4f;
 
   /* Mock status pills go translucent so they sit on dark surfaces without
      glowing; fg stays desaturated to match the neutral-gray dark scale. */
@@ -4331,4 +4337,40 @@ html:not([data-authed]) .auth-only {
 .mock-foot-fade {
   -webkit-mask-image: var(--mock-foot-fade);
   mask-image: var(--mock-foot-fade);
+}
+
+
+/* ── THE COMPOSER'S OUTER RING ───────────────────────────────────────────
+   A second border outside the conic one, offset 5px, drawn in a neutral.
+
+   The composer's own ring is a colour wheel — it is the brand mark on the
+   page and it is meant to be. What it is not is a BEZEL: a single saturated
+   line at the edge of a large dark box reads as a glowing outline rather than
+   as an inset control, because there is nothing between the line and the page
+   to say the box sits in something. The outer ring is that something. It is
+   quiet, neutral and a few pixels out, so the pair reads as a field recessed
+   into a surround — the inner line belonging to the input, the outer to the
+   page around it.
+
+   `inset: -5px` with a radius 5 larger than the inner one, so the two curves
+   stay concentric at the corners. Pointer-events off, and it sits BEHIND the
+   content (z-index: -1) so it cannot eat a click on the field or the button.
+
+   LIGHT AND DARK ARE SEPARATE VALUES, as the guidelines require. Dark gets a
+   white at low alpha — on a near-black page a neutral ring has to be lighter
+   than its ground to exist at all. Light gets a black at a lower one: on
+   white the same idea runs the other way, and an alpha matched to dark's
+   would have drawn a grey box around the hero. */
+.composer-outer-ring::after {
+  content: "";
+  position: absolute;
+  inset: -5px;
+  z-index: -1;
+  border-radius: calc(var(--radius-lg, 0.5rem) + 5px);
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  pointer-events: none;
+}
+
+[data-theme="dark"] .composer-outer-ring::after {
+  border-color: rgba(255, 255, 255, 0.08);
 }

@@ -1164,11 +1164,29 @@ const CAL_DAYS = [
  * rather than wrap — at the narrow end the events read as blocks on a grid,
  * which is still unmistakably a calendar.
  */
+/**
+ * A hue per CLIENT, not per event — two meetings with the same company are the
+ * same colour, which is the whole point of colouring a calendar.
+ *
+ * The --mock-gantt-* set, reused rather than extended. It is the one
+ * categorical palette the mocks already have: four mid-tones that carry no
+ * rank and exist to tell one engagement from the next, which is this job
+ * exactly. Both themes define all four, so a client is the same hue in either.
+ *
+ * 1, 2 and 4 — teal, rose, indigo. Not 3, which is a purple sitting close
+ * enough to 4's indigo that two clients a column apart would read as one.
+ */
+const CAL_HUES: Record<string, string> = {
+  Lumen: "var(--mock-gantt-1)",
+  Cascade: "var(--mock-gantt-2)",
+  Brookline: "var(--mock-gantt-4)",
+};
+
 const CAL_EVENTS = [
   { day: 1, at: 10.5, end: 11.5, title: "Kickoff", who: "Lumen" },
   { day: 2, at: 12, end: 13, title: "Catalog review", who: "Cascade" },
   { day: 3, at: 11, end: 12, title: "Content sync", who: "Brookline" },
-  { day: 4, at: 10, end: 10.75, title: "Design review", who: "Cascade" },
+  { day: 5, at: 10, end: 10.75, title: "Design review", who: "Cascade" },
   { day: 4, at: 13, end: 14.25, title: "Client check-in", who: "Lumen" },
   { day: 5, at: 14, end: 15.5, title: "Media plan", who: "Brookline" },
 ];
@@ -1424,15 +1442,33 @@ function CalendarPane() {
               {CAL_EVENTS.filter((e) => e.day === dayIndex).map((e) => (
                 <span
                   key={e.title}
-                  // Monochrome, like everything else on this page — the colour
-                  // budget here is spent on the --mock-* status chips and the
-                  // now-line. An event is a pale block with a dark rule down
-                  // its leading edge, which is the shape a calendar entry has
-                  // without needing a hue to say so.
-                  className={`absolute inset-x-[2px] overflow-hidden ${R_CHROME} bg-[var(--mock-well-2)] pl-1.5 pr-1 pt-[3px]`}
-                  style={{ top: y(e.at) + 1, height: y(e.end) - y(e.at) - 2 }}
+                  // COLOURED BY CLIENT — see CAL_HUES. The blocks were
+                  // monochrome, a grey fill with a dark rule down the leading
+                  // edge, which is the SHAPE of a calendar entry but not the
+                  // information one carries: six identical grey blocks say
+                  // "there are meetings" where the card's claim is that the
+                  // week is legible per client at a glance.
+                  //
+                  // The hue goes in two places, at two strengths. The leading
+                  // rule takes it at full value, where 2px of saturated colour
+                  // is what the eye picks up scanning down a column; the fill
+                  // takes 18% of it mixed into the ground it already had, so
+                  // the block is tinted rather than coloured and the title on
+                  // it is still reading against --mock-well-2 and not against
+                  // a hue. color-mix rather than a prepared token per client,
+                  // because both operands are theme-scoped — the mix lands on
+                  // each theme's own ground with each theme's own hue, and no
+                  // value is written down twice.
+                  className={`absolute inset-x-[2px] overflow-hidden ${R_CHROME} bg-[color-mix(in_srgb,var(--cal-hue)_18%,var(--mock-well-2))] pl-1.5 pr-1 pt-[3px]`}
+                  style={
+                    {
+                      top: y(e.at) + 1,
+                      height: y(e.end) - y(e.at) - 2,
+                      "--cal-hue": CAL_HUES[e.who] ?? "var(--mock-ink)",
+                    } as React.CSSProperties
+                  }
                 >
-                  <span className="absolute inset-y-0 left-0 w-[2px] bg-[var(--mock-ink)]" />
+                  <span className="absolute inset-y-0 left-0 w-[2px] bg-[var(--cal-hue)]" />
                   <span
                     className={`block truncate text-[color:var(--mock-ink)] ${UI_SECONDARY}`}
                   >
@@ -1643,7 +1679,17 @@ export function BuildCard({ plain = false }: SceneProps = {}) {
           // dark sidebar met the ground at what looked like a right angle. It
           // takes the panel step instead, the biggest in the scale, because it
           // belongs to the biggest object.
-          className={`flex shrink-0 ${WINDOW} ${R_PANEL} rounded-b-none rounded-tr-none border-b-0 border-r-0 ${
+          // mock-lit-edge at 135deg: the hairline is brightest at the TOP-LEFT
+          // and spends itself down and across. That corner is the only one
+          // this window has — it bleeds off the right and the bottom — so the
+          // one visible corner is exactly where the light should land, and
+          // the ring's other two sides fall outside the scene anyway.
+          //
+          // Same class the pillar shots wear, so the window and the screens
+          // on the cards above it state their edges the same way. In light
+          // --mock-edge-lit equals --mock-line and this is the hairline that
+          // was already there; only dark lights up.
+          className={`flex shrink-0 ${WINDOW} ${R_PANEL} mock-lit-edge rounded-b-none rounded-tr-none border-b-0 border-r-0 [--lit-angle:135deg] ${
             plain
               ? // 340x280 ON A PHONE, which is the 360x300 box exactly minus
                 // the scene's own 20px top and left padding — so the window

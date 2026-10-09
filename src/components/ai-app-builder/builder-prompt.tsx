@@ -101,7 +101,7 @@ export function BuilderPrompt({
           gradient border and the pane inside it stay on one curve.
           THE BUILDER HERO ONLY. The home hero and the bottom CTA run the same
           component at 18/22 and keep it. */}
-      <div className="v63-gradient-border v63-ring-solid v63-spin-on-hover v63-still-on-focus relative rounded-lg [--composer-submit:var(--color-neutral-900)] [[data-theme=dark]_&]:[--composer-placeholder:#FFFFFF8C] [[data-theme=dark]_&]:[--composer-ring-opacity:0.55] [[data-theme=dark]_&]:[--composer-submit:#EDEDED]">
+      <div className="composer-outer-ring v63-gradient-border v63-ring-solid v63-spin-on-hover v63-still-on-focus relative rounded-lg [--composer-submit:var(--color-neutral-900)] [[data-theme=dark]_&]:[--composer-placeholder:#FFFFFF8C] [[data-theme=dark]_&]:[--composer-ring-opacity:0.55] [[data-theme=dark]_&]:[--composer-submit:#EDEDED]">
         <V66Composer
           // The headline above already names what to type, so this box leads
           // with its own static placeholder rather than the cycling "Build …"
