@@ -1,9 +1,16 @@
 "use client";
 
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useRef, type CSSProperties, type ReactNode } from "react";
 
 interface Props {
   className?: string;
+  /**
+   * Inline styles on the frame. The design box is read off --template-mock-w/h
+   * in computed style, so a caller whose box is not a constant — one that picks
+   * its shape from the slot it is given — sets the two vars here rather than as
+   * Tailwind arbitrary values, which have to be static strings.
+   */
+  style?: CSSProperties;
   /** Never scale past 1:1 — matches .template-mock-fit--cap. */
   cap?: boolean;
   children: ReactNode;
@@ -46,7 +53,7 @@ export const MOCK_DESIGN_SIZE: Record<string, string> = {
  * fraction of its card. Measuring here sets the ratio outright, so the CSS is
  * only the pre-hydration fallback.
  */
-export function MockFit({ className = "", cap = false, children }: Props) {
+export function MockFit({ className = "", style, cap = false, children }: Props) {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -98,10 +105,13 @@ export function MockFit({ className = "", cap = false, children }: Props) {
         scale = Math.min(scale, height / naturalH);
       }
 
-      el.style.setProperty(
-        "--template-mock-scale",
-        String(cap ? Math.min(1, scale) : scale),
-      );
+      // The observer fires every frame while a frame is being resized by a
+      // transition. Writing the same value back each time invalidates the
+      // mock's style subtree for nothing, so only a changed scale is written.
+      const value = String(cap ? Math.min(1, scale) : scale);
+      if (el.style.getPropertyValue("--template-mock-scale") !== value) {
+        el.style.setProperty("--template-mock-scale", value);
+      }
     };
 
     apply();
@@ -120,7 +130,7 @@ export function MockFit({ className = "", cap = false, children }: Props) {
   }, [cap]);
 
   return (
-    <div ref={ref} className={`template-mock-fit ${className}`}>
+    <div ref={ref} style={style} className={`template-mock-fit ${className}`}>
       {children}
     </div>
   );
