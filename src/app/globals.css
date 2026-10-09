@@ -605,21 +605,25 @@
      table is invisible, and dark has the headroom to lift a surface off its
      ground, which light does not.
 
-     #303030, not --surface-2 (#242424). The table's ground in dark is the
-     page's own near-black, so --surface-2 is only a few points off it and the
-     column read as a slightly-less-black rectangle rather than as the one
-     column being argued for. #303030 is the same value --mock-well-2 uses for
-     a lifted panel elsewhere in the set, and against #ededed ink it has
-     contrast to spare. */
-  --builder-own-col: #303030;
-  /* The five answer cells sit a touch above the header — #363636 against
-     #303030. The header is a label and the answers are the content; lifting
-     the content a notch stops the column reading as one flat slab and gives
-     the rows the faint sense of being the thing you are meant to read. Six
-     points is deliberately almost nothing: any more and the header looks
-     like a separate darker bar sitting on top of the column rather than part
-     of it. Light keeps one tone — see :root. */
-  --builder-own-col-cell: #363636;
+     NOT --surface-2 (#242424). The table's ground in dark is the page's own
+     near-black, so --surface-2 is only a few points off it and the column read
+     as a slightly-less-black rectangle rather than as the one column being
+     argued for. But #303030 — --mock-well-2's value, a panel tone — went too
+     far the other way: a lifted panel is the right idea for a column inside a
+     card, and this column sits on the open page, where the same value is the
+     brightest block on the whole section. #262626 keeps the column plainly
+     marked at a +28 step off the page without the table turning into a light
+     band. Against #ededed ink it still has contrast to spare. */
+  --builder-own-col: #262626;
+  /* The five answer cells sit a touch above the header — six points, the same
+     step they have always had, just carried down with it. The header is a
+     label and the answers are the content; lifting the content a notch stops
+     the column reading as one flat slab and gives the rows the faint sense of
+     being the thing you are meant to read. Six is deliberately almost
+     nothing: any more and the header looks like a separate darker bar sitting
+     on top of the column rather than part of it. Light keeps one tone — see
+     :root. */
+  --builder-own-col-cell: #2c2c2c;
 }
 
 /* ── The mock window's edge, in DARK ─────────────────────────────────────

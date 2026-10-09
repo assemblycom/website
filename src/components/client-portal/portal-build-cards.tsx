@@ -1168,8 +1168,17 @@ function RequirementsPane() {
           <div
             className={`flex shrink-0 items-center justify-end gap-2 px-4 pb-0 pt-3`}
           >
+            {/* IT ANSWERS THE CURSOR, like the rows in the other mocks do
+                (ROW_HOVER above, same two tokens). The shot is a picture of a
+                screen whose whole argument is that you can approve or revise
+                before anything is built — and the control carrying that
+                argument was the one object on the card that did not move when
+                you pointed at it, which reads as a flat image of a button
+                rather than as the button.
+                --mock-well is one step off --mock-window in both themes, so
+                this is a tone the screen already has. */}
             <span
-              className={`flex shrink-0 items-center ${R_CHROME} border bg-[var(--mock-window)] px-3 py-1.5 text-[color:var(--mock-ink)] ${PLAN_HEAD} ${LINE}`}
+              className={`flex shrink-0 items-center ${R_CHROME} border bg-[var(--mock-window)] px-3 py-1.5 text-[color:var(--mock-ink)] transition-colors hover:bg-[var(--mock-well)] ${PLAN_HEAD} ${LINE}`}
             >
               Approve
             </span>

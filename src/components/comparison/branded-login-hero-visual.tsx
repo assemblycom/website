@@ -285,8 +285,16 @@ function LoginScreen({
             fields were a hardcoded 26, so the form had two heights in it for
             no reason either one could name. Set explicitly on all three rather
             than left to line-height, which is what let them drift apart. */}
+        {/* THE HOVER IS ON THIS ROW ONLY, not in `c.field`. That palette
+            entry is shared with the Email and Password inputs, and a text
+            field that lights up under the pointer is saying it can be pressed.
+            This one is the button.
+            --mock-well-2 is the step the mock rows elsewhere in the set use to
+            answer the cursor (ROW_HOVER) — one rung off --mock-well in both
+            themes, darker in light and lighter in dark, so it is a tone the
+            screen already owns rather than a new one. */}
         <div
-          className={`mt-5 flex h-[30px] w-full items-center justify-center gap-1.5 rounded-[4px] border ${MOCK_PRIMARY} ${c.field}`}
+          className={`mt-5 flex h-[30px] w-full items-center justify-center gap-1.5 rounded-[4px] border transition-colors hover:bg-[var(--mock-well-2)] ${MOCK_PRIMARY} ${c.field}`}
         >
           <IconGoogleG />
           <span className={c.ink}>Continue with Google</span>
