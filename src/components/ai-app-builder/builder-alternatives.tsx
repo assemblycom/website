@@ -316,7 +316,16 @@ export function BuilderAlternatives() {
                   scope="col"
                   className={`border-l px-6 pb-5 pt-5 text-sm font-normal ${GRID_LINE} ${
                     i === OWN
-                      ? `bg-muted text-foreground ${EDGE_R}`
+                      // Dark takes --surface-3, the same rung the cells under
+                      // it take. In light the header is the stronger wash and
+                      // the cells sit back from it; in dark --muted is #1c1c1c
+                      // — DARKER than the cells — so carrying it here would
+                      // put the column's title in a trough with its answers
+                      // lifted around it. One tone for the whole column
+                      // instead, with the header carried by its full-strength
+                      // ink, which it already has. A further rung up would be
+                      // a fourth grey reading as a different material.
+                      ? `bg-muted text-foreground ${EDGE_R} [[data-theme=dark]_&]:bg-[var(--surface-3)]`
                       : "bg-muted/50 text-muted-foreground"
                   }`}
                 >
@@ -352,7 +361,7 @@ export function BuilderAlternatives() {
                       // separated from the two alternatives beside it. Lighten
                       // the light value, leave the dark one alone.
                       i === OWN
-                        ? `bg-muted/50 ${EDGE_R} [[data-theme=dark]_&]:bg-[var(--surface-2)]`
+                        ? `bg-muted/50 ${EDGE_R} [[data-theme=dark]_&]:bg-[var(--surface-3)]`
                         : ""
                     }`}
                   >

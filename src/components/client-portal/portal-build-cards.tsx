@@ -27,7 +27,6 @@ import {
   IconFile,
   IconGlobe,
   IconPlus,
-  IconChevronDown,
   IconClock,
   IconSearch,
 } from "@/components/home/mock-icons";
@@ -96,13 +95,10 @@ const LINE = "border-[var(--mock-line)]";
 // So three steps, each with a job:
 //   R_CHROME  things INSIDE a screen — nav rows, chips, event blocks, the
 //             segmented control. Small objects, small corner.
-//   R_CARD    buttons and controls that sit ON a card. Readable at a glance
-//             without competing with the card holding them.
 //   R_PANEL   a card, or the one exposed corner of a window. The biggest
 //             object gets the biggest corner.
 // rounded-full is exempt throughout: a circle is not a corner.
 const R_CHROME = "rounded-[4px]";
-const R_CARD = "rounded-[8px]";
 const R_PANEL = "rounded-[10px]";
 const WINDOW = `overflow-hidden ${R_CHROME} border bg-[var(--mock-window)] text-[color:var(--mock-ink)] shadow-[0_1px_2px_rgba(16,24,40,0.04),0_8px_24px_-18px_rgba(16,24,40,0.14)] ${LINE} [[data-theme=dark]_&]:shadow-[0_8px_24px_-18px_rgba(0,0,0,0.5)]`;
 const BRAND_SIDEBAR = "bg-[var(--mock-brand)] text-white";
@@ -161,6 +157,7 @@ function Scene({
   h = H,
   boxClass,
   boxSizeClass,
+  footFlush = false,
 }: {
   children: React.ReactNode;
   /**
@@ -202,6 +199,19 @@ function Scene({
    * width getting TO its subject has to start fading later.
    */
   fadeFrom?: number;
+  /**
+   * Drops the box's bottom inset so a child can run to the scene's foot and be
+   * cut by it.
+   *
+   * The 20px inset is right for a scene whose subject is an object sitting in
+   * a frame — the composer, the board — where the air around it is what makes
+   * it read as placed rather than as cropped. It is wrong for the plan, whose
+   * subject is a DOCUMENT longer than the window it is read in: there the
+   * bottom inset put a 20px band of ground under a card that is supposed to
+   * carry on past the edge, which reads as the card ending early with room to
+   * spare rather than as a page running off the bottom.
+   */
+  footFlush?: boolean;
 }) {
   return (
     <MockFit
@@ -248,7 +258,12 @@ function Scene({
         className={`${boxSizeClass ?? ""} ${
           bleed
             ? "flex flex-col justify-end overflow-hidden pl-5 pt-5"
-            : "flex flex-col justify-center gap-4 p-5"
+            : `flex flex-col gap-4 p-5 ${
+                // justify-center centres a short scene in the box; with the
+                // foot open the child is meant to FILL it and be cut, so it
+                // stretches instead and the centring has nothing to do.
+                footFlush ? "justify-stretch pb-0" : "justify-center"
+              }`
         }`}
       >
         {children}
@@ -726,6 +741,9 @@ export function PlanCard({ plain = false }: SceneProps = {}) {
         <Scene
           boxClass={PANEL_SCENE_PHONE.vars}
           boxSizeClass={PANEL_SCENE_PHONE.size}
+          // The card runs to the panel's bottom edge and is cut by it — see
+          // footFlush, and the deeper foot ramp inside RequirementsPane.
+          footFlush
         >
           <RequirementsPane />
         </Scene>
@@ -913,47 +931,26 @@ const PLAN_DOC = {
 function RequirementsPane() {
   return (
     <div className="flex size-full flex-col gap-2.5">
-      {/* The typed prompt, kept in view above its answer.
+      {/* NO PROMPT BUBBLE AND NO COMPOSER. The scene used to run the whole
+          exchange: the typed sentence as a bubble, the one-line reply, the
+          requirements card, and the composer you would revise in.
 
-          R_PANEL, the same corner as the card and the composer under it. It
-          was rounded-full, on the reasoning that a bubble is not a card and a
-          pill is what says so — which is true of a bubble on its own and
-          wrong here: these three objects sit in one column a few pixels
-          apart, and a pill at the top of a stack of 10px corners is the one
-          shape in the scene that belongs to a different set.
+          Four stacked objects left the card — the thing the step is actually
+          about, the one with Approve on it — holding well under half the
+          scene, and the conversation around it was saying what the Describe
+          step above has already said. The card alone fills the box, the
+          document inside it is legible at the size it is drawn, and the step
+          still reads: here is the plan, approve it.
 
-          --mock-window with a hairline, not a tinted fill. --mock-well-2 is
-          #f2f3f6 against a --surface panel of #f5f5f5 — four points, which is
-          no bubble at all in light. The window tone LIFTS off the surface in
-          both themes, which is the rule the rest of these mocks are drawn on. */}
-      {/* THE THREAD, THE TITLE AND THE COMPOSER ARE PHONE-HIDDEN. Below `sm`
-          this step is the requirements card and nothing else.
-
-          Five stacked objects in a 360px-wide scene is five things each too
-          small to read: the card — the one the step is actually about, the one
-          with Approve on it — was getting less than half the scene, and the
-          box needed 500px of design height to hold the rest. Alone, the card
-          fills a 360x300 box at near 1:1, and the step still says what it says:
-          here is the plan, approve it. The conversation around it is context a
-          phone does not have room for. */}
-      <div className="hidden shrink-0 justify-end sm:flex">
-        <span
-          className={`max-w-[78%] ${R_PANEL} border bg-[var(--mock-window)] px-3 py-2 text-[color:var(--mock-ink)] ${PLAN_PROSE} ${LINE}`}
-        >
-          Add a shared calendar each client books their own time on.
-        </span>
-      </div>
-
-      {/* The reply's one line of prose, which is what makes the card under it
-          read as something that CAME BACK rather than as a panel that was
-          always there. Soft ink: it introduces the document, it is not the
-          document. */}
-      <p
-        className={`hidden shrink-0 text-[color:var(--mock-ink-soft)] sm:block ${PLAN_PROSE}`}
-      >
-        Here&apos;s the plan. Approve it, or tell me what to change.
-      </p>
-
+          This is now what BOTH widths show. The phone cut to the card alone
+          for the same reason and had been carrying the better version of this
+          scene since. */}
+      {/* NO REPLY LINE. "Here's the plan. Approve it, or tell me what to
+          change." was the sentence that made the card read as something that
+          CAME BACK — which it needed while the typed prompt was on screen
+          above it. With the prompt gone there is no exchange left for it to be
+          the middle of, and it was narrating a card that says the same thing
+          itself: it is headed Requirements and it has Approve on it. */}
       {/* The document's TITLE, and the action on it, above the card rather
           than inside it.
 
@@ -973,7 +970,7 @@ function RequirementsPane() {
           sentence naming it, so it sits in the card's own top-right corner —
           see below. The title alone out here is the label; the control is on
           the thing it acts on. */}
-      <div className="hidden shrink-0 text-[12.5px] font-medium leading-none text-[color:var(--mock-ink)] sm:block">
+      <div className="shrink-0 text-[12.5px] font-medium leading-none text-[color:var(--mock-ink)]">
         Requirements
       </div>
 
@@ -1012,14 +1009,15 @@ function RequirementsPane() {
               The rule under it is what makes the pair read as a header rather
               than as the document's first line; it is the same hairline the
               card's own border draws, so nothing new is introduced. */}
+          {/* Just the action now. The card carried a phone-only title on this
+              row because the outside one was hidden below `sm`; the outside
+              title is unconditional since the thread came out, so a second
+              "Requirements" an inch under the first is all that row would add.
+              The sm-only shape — ranged right, no rule under it — is the shape
+              at every width for the same reason. */}
           <div
-            className={`flex shrink-0 items-center justify-between gap-2 border-b px-4 py-2.5 sm:justify-end sm:border-b-0 sm:px-4 sm:pb-0 sm:pt-3 ${LINE}`}
+            className={`flex shrink-0 items-center justify-end gap-2 px-4 pb-0 pt-3`}
           >
-            <span
-              className={`min-w-0 truncate text-[color:var(--mock-ink)] sm:hidden ${PLAN_HEAD}`}
-            >
-              Requirements
-            </span>
             <span
               className={`flex shrink-0 items-center ${R_CHROME} border bg-[var(--mock-window)] px-3 py-1.5 text-[color:var(--mock-ink)] ${PLAN_HEAD} ${LINE}`}
             >
@@ -1086,49 +1084,28 @@ function RequirementsPane() {
             </ul>
           </div>
 
-          {/* The last 40px of the card, ramped to its own ground. A hard crop
+          {/* The last 96px of the card, ramped to its own ground. A hard crop
               across a line of type reads as a rendering fault; a ramp reads as
               the page carrying on. Both stops are --mock-window, so it cannot
-              drift from the card it is painted on in either theme. */}
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-b from-transparent to-[var(--mock-window)]" />
+              drift from the card it is painted on in either theme.
+
+              96 and not 40. At 40 the ramp was shorter than one wrapped flow,
+              so a line went from full ink to nothing inside its own height and
+              the dissolve read as a band laid over the text. Over 96 it
+              crosses three lines, which is slow enough that no single line is
+              visibly inside a gradient — the document just gets quieter until
+              it is gone. Three stops rather than two, so the fade is already
+              under way at the top of the ramp instead of holding full strength
+              and then falling off a cliff at the midpoint. */}
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-[linear-gradient(to_bottom,transparent_0%,color-mix(in_srgb,var(--mock-window)_55%,transparent)_45%,var(--mock-window)_88%)]" />
         </div>
 
-        {/* Half on the card, half off it — the position is the whole message:
-            a control that belongs to the card, pointing out of it. */}
-        <span
-          className={`absolute bottom-0 left-1/2 flex size-[24px] -translate-x-1/2 translate-y-1/2 items-center justify-center rounded-full border bg-[var(--mock-window)] text-[color:var(--mock-ink-soft)] ${LINE}`}
-        >
-          <IconChevronDown className="size-[11px]" />
-        </span>
-      </div>
-
-      {/* The composer, unchanged and now in the place it is actually in: under
-          the reply, not tucked beneath the document as a third stacked card.
-
-          mt-1 on top of the column's gap-2.5, so the chevron hanging 12px off
-          the card's foot clears this box's top edge rather than touching it.
-
-          Two rows, as the product has it: what you type, then the controls
-          under it. One row with the send button inline made a search field out
-          of something you write a paragraph into. */}
-      <div
-        className={`mt-1 hidden shrink-0 flex-col gap-1.5 sm:flex ${R_PANEL} border bg-[var(--mock-window)] px-3 py-2.5 ${LINE}`}
-      >
-        <span
-          className={`min-w-0 truncate text-[color:var(--mock-ink-soft)] ${PLAN_PROSE}`}
-        >
-          Type to revise plan
-        </span>
-        <div className="flex items-center justify-between gap-2">
-          <span className="flex size-[18px] items-center justify-center text-[color:var(--mock-ink)]">
-            <IconPlus className="size-[11px]" />
-          </span>
-          <span
-            className={`flex size-[22px] shrink-0 items-center justify-center ${R_CARD} bg-[var(--mock-well-2)] text-[color:var(--mock-ink-soft)]`}
-          >
-            <IconArrowUp className="size-[10px]" />
-          </span>
-        </div>
+        {/* NO CHEVRON. It used to straddle the card's bottom edge — half on,
+            half off — to say the document carried on past the crop. The card
+            runs to the scene's own foot now, so there is nothing below for it
+            to hang into: it would be a control cut in half by the edge of the
+            picture. The foot ramp below says the same thing and is the part
+            that was always doing the work. */}
       </div>
     </div>
   );

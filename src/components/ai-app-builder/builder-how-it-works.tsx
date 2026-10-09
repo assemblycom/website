@@ -129,7 +129,13 @@ export function BuilderHowItWorks() {
           role="tabpanel"
           id={`how-it-works-panel-${current.value}`}
           aria-labelledby={`how-it-works-tab-${current.value}`}
-          className="mt-6 overflow-hidden rounded-3xl bg-[var(--surface)]"
+          // .surface-ground and NOT .surface-lit: the ground ramp without the
+          // ring. The pillar cards above take both, because at card size an
+          // outline reads as an edge catching light. Around a panel this big
+          // it reads as an outline drawn around the section — a box the
+          // section did not ask for — so this one takes the lift and leaves
+          // the hairline. Light is unaffected; see globals.css.
+          className="surface-ground mt-6 overflow-hidden rounded-3xl bg-[var(--surface)]"
         >
           {/* Keyed on the step so the contents REMOUNT on switch and play the
               site's own fade rather than swapping hard. Keyed here and not on

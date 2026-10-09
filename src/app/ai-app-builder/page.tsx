@@ -118,7 +118,13 @@ const PILLARS: Pillar[] = [
     // pixels of overhang and a ramp running through the Company column — where
     // on a desktop the same crop is a real window onto a wider table.
     containOnPhone: true,
-    fadeFrom: 88,
+    // 74, not 88. At 88 the ramp had 12% of the card to get from solid to
+    // nothing — short enough that it read as a soft cut rather than as the
+    // table carrying on past the edge. 74 spends a quarter of the width on
+    // the dissolve, which is what makes the shot meet the card's ground
+    // instead of stopping against it. The Company column still clears it:
+    // the ramp is barely on at 74 and does not bite until past the logos.
+    fadeFrom: 74,
   },
   {
     eyebrow: "Security",

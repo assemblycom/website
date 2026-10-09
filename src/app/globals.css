@@ -63,6 +63,12 @@
      slot in a template row, and anything else nested inside a grey panel.
      Two rungs is the whole scale — a slot either is the surface or sits in it. */
   --surface-2: #e9e9e9;
+  /* One rung above --surface-2, for a block that has to read as lifted while
+     sitting next to one that is already on --surface-2. The comparison table's
+     own column is the case: its neighbours take the muted wash and it has to
+     clear them. Light defines it for completeness — the light table reaches
+     for bg-muted/50 rather than this — so the ladder is not half a scale. */
+  --surface-3: #dedede;
   --font-pp-mori: "PP Mori", system-ui, sans-serif;
   --font-diatype-mono: "ABC Diatype Mono", ui-monospace, monospace;
 
@@ -295,6 +301,13 @@
      does not change with whatever it happens to sit on. */
   --surface: #191919;
   --surface-2: #242424;
+  /* See --surface-3 in :root. #333333, not the ~7-point step the rungs below
+     take (#191919 → #242424): this rung has to be legible as LIFTED next to
+     a column already on a wash, and across a wide table read at a glance,
+     seven points was a difference you had to go looking for. Fifteen over
+     --surface-2 is the smallest step that reads as a filled column rather
+     than as the same grey. */
+  --surface-3: #333333;
 
   /* Mock status pills go translucent so they sit on dark surfaces without
      glowing; fg stays desaturated to match the neutral-gray dark scale. */
@@ -4148,9 +4161,10 @@ html:not([data-authed]) .auth-only {
   );
 }
 
-/* ── A PILLAR CARD'S SURFACE (DARK ONLY) ─────────────────────────────────
-   The four cards under "What AI app builders promise" are flat --surface
-   #191919 patches on the #0a0a0a page. The step between the two is real, but
+/* ── A LIT SURFACE (DARK ONLY) ───────────────────────────────────────────
+   For the big --surface boxes on /ai-app-builder: the four pillar cards and
+   the How it works panel. Both were flat --surface #191919 patches on the
+   #0a0a0a page. The step between the two is real, but
    a step alone is all they have: no edge, no falloff, nothing catching light.
    Against the mocks sitting ON them — which DO have lit edges, stepped wells
    and colour — the card reads as the one unresolved surface in the section.
@@ -4160,12 +4174,18 @@ html:not([data-authed]) .auth-only {
    alone. The card was the one surface in the family that never got it.
 
    LIGHT IS UNTOUCHED AND MUST STAY SO. Every declaration here lives under
-   [data-theme="dark"]. In light the cards are #f5f5f5 on white, where the
+   [data-theme="dark"]. In light these boxes are #f5f5f5 on white, where the
    fill step is the whole statement and already legible — an edge there would
-   be outlining something that does not need outlining. The light cards render
-   from .pillar-card exactly as they did before this class existed, which is
-   why .pillar-card itself carries nothing. */
-.pillar-card {
+   be outlining something that does not need outlining. They render from
+   .surface-lit exactly as they did before this class existed, which is why
+   .surface-lit itself carries nothing.
+
+   The ramps are PERCENTAGES, not pixels, which is what lets one class serve a
+   300px card and a 900px panel: light falls from the head of the box in both
+   cases, and the fraction of the box it has crossed is the thing that should
+   match, not the distance. */
+.surface-lit,
+.surface-ground {
   /* Deliberately empty in light. The dark block below is the whole feature;
      naming the class here keeps the hook in one place and makes it obvious at
      the call site that the treatment is theme-scoped. */
@@ -4182,9 +4202,9 @@ html:not([data-authed]) .auth-only {
      Values are white alphas, not hexes, because the ramp has to hold over
      both the plain --surface cards and the brand-wash one, whose ground is a
      blue-to-lime gradient. A fixed grey would go muddy across it. */
-  --pillar-edge-top: rgba(255, 255, 255, 0.15);
-  --pillar-edge-mid: rgba(255, 255, 255, 0.07);
-  --pillar-edge-foot: rgba(255, 255, 255, 0.035);
+  --surface-lit-top: rgba(255, 255, 255, 0.15);
+  --surface-lit-mid: rgba(255, 255, 255, 0.07);
+  --surface-lit-foot: rgba(255, 255, 255, 0.035);
 
   /* The card's own ground, lifted at the head and settling to --surface. Four
      points, which is half the step from --surface #191919 to --mock-window
@@ -4193,10 +4213,10 @@ html:not([data-authed]) .auth-only {
      lying on it. The ramp is spent by 55%: past the midpoint the card is
      --surface exactly, so a shot cropping off the foot still meets the value
      it was drawn against. */
-  --pillar-ground-top: #1e1e1e;
+  --surface-lit-ground: #1e1e1e;
 }
 
-[data-theme="dark"] .pillar-card::after {
+[data-theme="dark"] .surface-lit::after {
   /* The ring. Same mask-composite trick as .mock-lit-edge — a 1px padding box
      with the gradient painted into it and the middle punched out — so the
      edge can be a gradient rather than the single flat colour a border
@@ -4213,10 +4233,10 @@ html:not([data-authed]) .auth-only {
   padding: 1px;
   background: linear-gradient(
     180deg,
-    var(--pillar-edge-top) 0%,
-    var(--pillar-edge-mid) 22%,
-    var(--pillar-edge-foot) 60%,
-    var(--pillar-edge-foot) 100%
+    var(--surface-lit-top) 0%,
+    var(--surface-lit-mid) 22%,
+    var(--surface-lit-foot) 60%,
+    var(--surface-lit-foot) 100%
   );
   -webkit-mask:
     linear-gradient(#000 0 0) content-box,
@@ -4226,13 +4246,24 @@ html:not([data-authed]) .auth-only {
   pointer-events: none;
 }
 
-/* The ground ramp goes on the plain cards only. The brand-wash card sets its
-   own background-image a few rules up — a blue-to-lime ramp that IS its
-   ground — and a second gradient here would either replace it or fight it. */
-[data-theme="dark"] .pillar-card:not(.pillar-brand-wash) {
+/* ── THE GROUND, ON ITS OWN ──────────────────────────────────────────────
+   .surface-ground is the lift without the hairline, and .surface-lit is both.
+   They are split because the hairline does not scale: around a 300px card it
+   reads as an edge catching light, and around a 900px panel the same line
+   reads as an outline drawn around the section. The How it works panel takes
+   the ground alone for exactly that reason.
+
+   The ground ramp goes on the plain boxes only. The brand-wash pillar sets
+   its own background-image a few rules up — a blue-to-lime ramp that IS its
+   ground — and a second gradient here would either replace it or fight it.
+
+   A :not() rather than an opt-in class, so a box that wears .surface-lit gets
+   the ramp by default and only something carrying its own ground opts out. */
+[data-theme="dark"] .surface-lit:not(.pillar-brand-wash),
+[data-theme="dark"] .surface-ground:not(.pillar-brand-wash) {
   background-image: linear-gradient(
     to bottom,
-    var(--pillar-ground-top) 0%,
+    var(--surface-lit-ground) 0%,
     var(--surface) 55%
   );
 }
