@@ -137,14 +137,21 @@ export function BuilderPillars({ pillars }: { pillars: Pillar[] }) {
       {/* No heading of its own: the chapter above it is this section's header
           ("What AI app builders promise. What Assembly proves"), so the cards
           open directly under it. */}
-      <div className="grid gap-4 lg:grid-cols-3">
+      {/* THREE COLUMNS FROM `md`, not `lg`.
+          The bento's bottom pair has gone two-across since `sm`, so between
+          768 and 1024 the section read as a stacked column of two full-width
+          cards followed by a row of two — the halves paired up and the cards
+          that are supposed to BE the row did not. Same track from the same
+          width for both rows now, so the bento is a bento wherever it is more
+          than one column wide. */}
+      <div className="grid gap-4 md:grid-cols-3">
         {wide ? <FeatureCard pillar={wide} span="wide" /> : null}
         {tall ? <FeatureCard pillar={tall} span="tall" /> : null}
         {plain.length ? (
           // Their own row, halved, rather than thirds of the grid above: two
           // cards across a three-column track would leave one of them a third
           // of the page for no reason, and these two are peers.
-          <div className="grid gap-4 sm:grid-cols-2 lg:col-span-3">
+          <div className="grid gap-4 sm:grid-cols-2 md:col-span-3">
             {plain.map((pillar) => (
               <FeatureCard key={pillar.heading} pillar={pillar} span="half" />
             ))}
@@ -213,7 +220,7 @@ function FeatureCard({
       // included, which is what the treatment is: a page with a gradient on it
       // and an app window lying on the page.
       className={`${CARD} ${pillar.brandWash ? "pillar-brand-wash" : ""} ${
-        span === "wide" ? "lg:col-span-2" : ""
+        span === "wide" ? "md:col-span-2" : ""
       }`}
     >
       <div className={CARD_PAD}>
@@ -285,7 +292,7 @@ function FeatureCard({
                   // 360 and leaving two thirds of the card empty; at `lg` the
                   // card becomes a third of the row and the fixed width comes
                   // back, which is the number it was drawn for.
-                  "inset-x-5 w-auto rounded-t-xl [--lit-angle:180deg] sm:left-6 sm:right-0 sm:w-auto sm:rounded-tr-none sm:[--lit-angle:135deg] md:left-8 lg:right-auto lg:w-[var(--shot-w)]"
+                  "inset-x-5 w-auto rounded-t-xl [--lit-angle:180deg] sm:left-6 sm:right-0 sm:w-auto sm:rounded-tr-none sm:[--lit-angle:135deg] md:left-8 md:right-auto md:w-[var(--shot-w)]"
                 : "left-5 rounded-tl-xl sm:left-6 md:left-8"
             } ${
               // The hairline is a LIT edge now (see .mock-lit-edge): brightest
