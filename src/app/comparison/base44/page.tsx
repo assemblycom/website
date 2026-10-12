@@ -162,11 +162,11 @@ const PAGE: VsPage = {
       },
       {
         title: "Post-launch growth tooling",
-        body: "SEO and AI social tooling for a public product. Assembly's apps live behind a client login.",
+        body: "SEO and AI social tooling for a public, marketed product.",
       },
       {
         title: "A public web app or store",
-        body: "Not something your clients log into.",
+        body: "Anything anonymous visitors use, rather than clients who sign in.",
       },
     ],
   },

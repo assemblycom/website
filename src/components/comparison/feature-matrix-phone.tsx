@@ -37,12 +37,26 @@ export function FeatureMatrixPhone({
 
   return (
     <div
-      className={`mt-10 overflow-clip rounded-2xl border md:hidden ${GRID_LINE}`}
+      className={`mt-10 overflow-clip rounded-2xl border bg-background md:hidden ${GRID_LINE}`}
     >
-      {/* p-2 is as much as the head can spend: the track needs most of a
-          327px card to set two labels without compressing them. */}
-      <div className="p-2">
+      {/* UNDERLINE TABS IN A FILLED HEAD — /ai-app-builder's alternatives
+          table exactly (see builder-alternatives.tsx), which is the whole
+          point of the two tables sharing a pattern. This ran the default
+          filled track, and a solid black thumb at the top of a ten-row card
+          is the heaviest object in it: the eye lands on the control rather
+          than on the rows it is there to switch. A control at the head of a
+          table is furniture, and furniture should not win.
+
+          px-4 lines the labels up with the cells below, and there is NO
+          bottom padding: the first row's own `border-t` is the seam between
+          head and body, and the active label's rule hangs a pixel into it
+          (see the variant). Padding here would lift the underline off the
+          line it is meant to be part of. --muted fills the band so the head
+          reads as a thead rather than as the table's first row — a token, so
+          it steps up from the card in light and down in dark. */}
+      <div className="bg-muted px-4 pt-2">
         <SegmentedTabs
+          variant="underline"
           label={`Assembly compared with ${competitor}`}
           idBase={TABS_ID}
           value={String(option)}

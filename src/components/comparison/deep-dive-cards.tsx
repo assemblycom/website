@@ -51,7 +51,19 @@ const CARD_PAD = "px-5 pt-6 sm:px-6 sm:pt-7 md:px-8 md:pt-8";
 function DeepDiveCard({ dive, wide = false }: { dive: DeepDive; wide?: boolean }) {
   return (
     <div className={`${CARD} ${wide ? "sm:col-span-2" : ""}`}>
-      <div className={CARD_PAD}>
+      {/* A FLOOR UNDER THE COPY, ON A PHONE ONLY, so the three cards come out
+          the same height. Stacked in one column they sit directly above each
+          other, and one card 23px taller than its neighbours — the whole of
+          it a second heading line, since every body is now one line of copy
+          that wraps to two — reads as a card that got loose rather than as a
+          heading that is longer. 8rem clears a two-line heading over a
+          two-line body, which is the tallest any of the six is.
+
+          A floor and not a fixed height: copy that outgrows it should push
+          the card open rather than be clipped. From `sm` it goes entirely —
+          the pair are grid siblings there and stretch to match on their own,
+          and the lead card is the full width with nothing to match. */}
+      <div className={`${CARD_PAD} min-h-32 sm:min-h-0`}>
         <h3 className="type-h4 text-balance leading-[1.25]">{dive.heading}</h3>
         {/* max-w-xl on the lead card too, though it has the width for more.
             The card is wide so its SHOT can be; a paragraph run to 1100px is
@@ -78,9 +90,19 @@ function DeepDiveCard({ dive, wide = false }: { dive: DeepDive; wide?: boolean }
           `ratio` is not passed for the same reason — with both the insets and
           the height definite, an aspect ratio has nothing left to decide. */}
       <div
+        // ALL THREE WINDOWS ARE THE SAME HEIGHT ON A PHONE. The cards are a
+        // stacked column there — the bento is a bento only from `sm` — so the
+        // lead card is not leading anything, it is just the first of three,
+        // and 60px more shot than the two under it read as one card being
+        // bigger for no reason a reader can see. The lead's extra height is
+        // worth having where it is actually wide; below that it is noise.
+        //
+        // 240 is the height, not a shrunk 300: a 287px-wide frame on a 375px
+        // phone, which is close to square and leaves the three cards at about
+        // 370px each, so more than one is on screen at a time.
         className={`relative mt-6 overflow-hidden ${
           wide
-            ? "h-[300px] sm:h-[360px] md:h-[420px]"
+            ? "h-[240px] sm:h-[360px] md:h-[420px]"
             : "h-[240px] sm:h-[260px] md:h-[300px]"
         }`}
       >

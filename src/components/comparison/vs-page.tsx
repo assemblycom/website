@@ -4,7 +4,7 @@ import { FAQ, type FAQEntry } from "@/components/home/faq";
 import { Testimonials } from "@/components/home/testimonials";
 import { DeepDiveCards } from "@/components/comparison/deep-dive-cards";
 import { FeatureMatrix } from "@/components/comparison/feature-matrix";
-import { GRID_LINE, GridDivider, GridRails } from "@/components/ui/grid-lines";
+import { GridDivider, GridRails } from "@/components/ui/grid-lines";
 import { PillarsTabs } from "@/components/comparison/pillars-tabs";
 import { PortalPricing } from "@/components/client-portal/portal-pricing";
 import { Reveal } from "@/components/ui/reveal";
@@ -161,11 +161,13 @@ export function VsComparisonPage({
             <p className="mx-auto mt-4 max-w-2xl text-balance text-center text-muted-foreground">
               {page.glance.sub}
             </p>
-            {/* Bled to the rails, so the heading reads as its own band above
-                the table the way the two headings below it do. */}
-            <div
-              className={`-mx-6 mt-12 hidden border-t md:-mx-10 md:block ${GRID_LINE}`}
-            />
+            {/* NO RULE between the heading and the table. There was one, bled
+                to the rails, on the reasoning that it made the heading its
+                own band — but the two sections below this one head their
+                content with nothing, and the table already opens on a hairline
+                of its own, so the rule was a second line a few pixels above
+                the first and a full stop between a heading and the thing it
+                introduces. */}
             <FeatureMatrix
               rows={page.glance.rows}
               competitor={page.competitor}

@@ -81,13 +81,16 @@ const ARROW =
 // fully on screen, and 96% everywhere fixed that but left about thirteen
 // pixels on a phone, which is not a fade, just a slightly blurred guillotine.
 //
-// BEHIND is the left edge, and it has almost nothing to dissolve: snap-start
-// parks the current card's own left edge ON the rail's edge, so most of the
-// time there is no cut there at all — only a free scroll between snap points
-// puts one. Short is right. It takes the hard edge off that case without
-// touching type that is meant to be read.
+// BEHIND — the left edge — is GONE, and the reason it had to go is the same
+// reason it was short: snap-start parks the current card's own left edge ON
+// the rail's edge. So the behind ramp never had a cut to dissolve. What it
+// had instead was the in-focus card, and at 96% on a 327px phone rail it
+// spent its whole 13px run dimming that card's left edge and the first
+// letters of its caption — every snap point, on the one card the reader is
+// actually looking at. The case it was for, a free scroll resting between two
+// snap points, is transient and rare, and a hard edge there is a fairer price
+// than a permanently unwell front card.
 const FADE_AHEAD = 82;
-const FADE_BEHIND = 96;
 
 const RAIL_W =
   "w-[78%] shrink-0 snap-start sm:w-[62%] md:w-[calc((100%-1rem)/2)] lg:w-[calc((100%-2rem)/3)]";
@@ -138,15 +141,15 @@ export function CardRail({
   // mid-word, and a guillotined line reads as a layout fault rather than as
   // copy carrying on past the frame.
   //
-  // So the clip dissolves instead, on the site's own curve. Only on the side
-  // that actually has more: a rail at its start has nothing off to the left to
-  // suggest, and dimming that edge would only make the first card look unwell.
-  // A set that fits gets neither, which is what leaves the three-step cut
-  // reading as a plain row.
-  const edgeMasks = [
-    atStart ? null : fadeMask("to left", FADE_BEHIND),
-    atEnd ? null : fadeMask("to right", FADE_AHEAD),
-  ].filter((m): m is string => m !== null);
+  // So the clip dissolves instead, on the site's own curve. AHEAD ONLY — the
+  // trailing edge is where a card and its caption are genuinely cut, and the
+  // leading edge is where the in-focus card begins. See FADE_AHEAD.
+  //
+  // At the end of the rail there is nothing further ahead to suggest, so the
+  // ramp goes and the last card meets the column cleanly. A set that fits gets
+  // no mask at all, which is what leaves the three-step row reading as a plain
+  // row.
+  const edgeMasks = atEnd ? [] : [fadeMask("to right", FADE_AHEAD)];
 
   // ── Drag to scroll ────────────────────────────────────────────────────
   // Touch and trackpad already drag this rail natively; a mouse did not, so on
