@@ -22,6 +22,9 @@ export function RootShell({ children }: { children: React.ReactNode }) {
   const { theme, preference, setPreference } = useTheme();
   const dark = theme === "dark";
   const isHome = pathname === "/";
+  // Paid landing pages: the same shell, with a nav cut down to the account
+  // actions so an ad click has fewer ways off the page. See StudioNav `landing`.
+  const isLanding = pathname.startsWith("/lp/");
   // Every page this shell renders gets the reveal footer. It used to be an
   // allowlist of known routes, which meant anything not on it — in practice
   // only the 404 — fell through to a plain footer that ended flat, with no
@@ -56,6 +59,7 @@ export function RootShell({ children }: { children: React.ReactNode }) {
       // horizontally when navigating between home and the content pages.
       maxWidthClass="max-w-[1600px]"
       restPaddingClass="px-6 md:px-10"
+      landing={isLanding}
     />
   );
 

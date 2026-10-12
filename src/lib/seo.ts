@@ -47,6 +47,15 @@ export const PAGE_SEO = {
       "Describe the app you need. Assembly builds a working app for your team or your clients, with secure logins, permissions, and your branding built in.",
     path: "/ai-app-builder",
   },
+  // The Google Ads landing page for the same product. Noindex and out of the
+  // sitemap; the title and description still matter, as the tab and the share
+  // card an ad click lands on.
+  aiAppBuilderLanding: {
+    title: "AI App Builder for Business",
+    description:
+      "Build business apps with AI. Describe what you need and Assembly builds a secure, working app for your clients and team, with logins, permissions, and your branding.",
+    path: "/lp/ai-app-builder",
+  },
   security: {
     title: "Security",
     description:

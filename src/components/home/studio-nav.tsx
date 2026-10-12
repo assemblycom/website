@@ -70,6 +70,7 @@ export function StudioNav({
   maxWidthClass,
   restPaddingClass,
   minimal = false,
+  landing = false,
   themeToggle,
 }: {
   fullWidth?: boolean;
@@ -88,6 +89,11 @@ export function StudioNav({
   // and same sizes, but the marketing links and account actions collapse to a
   // single way back to the site. There's no menu to open, so no burger either.
   minimal?: boolean;
+  // Paid landing pages (/lp/*): a visitor arrived from an ad with one thing to
+  // do, so the marketing links and the menu go and only the account actions
+  // stay — Log in, Book a demo, Get started. On mobile the menu trigger is
+  // replaced by the Get started button itself.
+  landing?: boolean;
   // Optional light/dark toggle rendered in the nav (used by themeable heroes).
   themeToggle?: { theme: "light" | "dark"; onToggle: () => void };
 }) {
@@ -562,7 +568,16 @@ export function StudioNav({
               "Back to homepage" button was the loudest thing on the screen, and
               the logo beside it already goes home. It stays on desktop, where
               there's room for it. */}
-          {minimal ? null : (
+          {minimal ? null : landing ? (
+            <span className="pointer-events-auto flex items-center">
+              <a href={SIGNUP_URL} className={`unauth-only ${ctaCls}`}>
+                Get started
+              </a>
+              <a href={APP_URL} className={`auth-only ${ctaCls}`}>
+                Open Assembly
+              </a>
+            </span>
+          ) : (
             <button
               ref={menuTriggerRef}
               onClick={() => setMobileMenuOpen(true)}
@@ -591,7 +606,7 @@ export function StudioNav({
             className={`pointer-events-none absolute inset-x-0 top-0 h-full transition-opacity ${ease} ${scrolled ? "opacity-100" : "opacity-0"}`}
             style={navStripStyle}
           />
-          {!minimal && <NavBarFill />}
+          {!minimal && !landing && <NavBarFill />}
           <div
             className={`relative z-10 mx-auto flex items-center ${contentRail} ${scrolled ? "h-14" : "h-16"}`}
             style={{ transition: rowTransition }}
@@ -610,7 +625,7 @@ export function StudioNav({
 
             {/* Primary nav — left, beside the logo */}
             <nav
-              className={`ml-6 flex shrink-0 justify-start ${minimal ? "hidden" : ""}`}
+              className={`ml-6 flex shrink-0 justify-start ${minimal || landing ? "hidden" : ""}`}
             >
               <ul className="flex items-center">
                 {NAV_ENTRIES.map((entry) =>
@@ -752,7 +767,7 @@ export function StudioNav({
           {/* The grouped entries' panel. A child of the sticky header, so
             `inset-x-0 top-full` puts it flush under the bar at full viewport
             width with nothing to measure. */}
-          {!minimal && (
+          {!minimal && !landing && (
             <NavMegaPanel entries={NAV_ENTRIES} railClassName={contentRail} />
           )}
         </NavDropdownGroup>

@@ -64,6 +64,10 @@ const EXCLUDED = new Set<string>([
   // An internal contact sheet of the template cover mocks. Unlisted and
   // noindex; it exists to look at while designing, not to be found.
   "/covers",
+  // Paid landing pages for Google Ads. Each duplicates an indexable page with
+  // ad-specific copy, so they are noindex in their own metadata and kept out
+  // of search; ad traffic reaches them directly.
+  "/lp/ai-app-builder",
   // The hero test's rewrite targets, which serve the homepage's own content
   // under /hero-variant/<arm>. findStaticRoutes already skips them for being a
   // dynamic segment, so this is belt and braces — but the day somebody adds a
