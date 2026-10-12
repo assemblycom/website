@@ -9,6 +9,7 @@ import {
   type FooterGroup,
   type NavLink,
 } from "@/lib/constants";
+import { GRID_LINE } from "@/components/ui/grid-lines";
 import { DiaGradient } from "@/components/ui/dia-gradient";
 import type { ThemePreference } from "@/components/theme/theme-provider";
 
@@ -186,16 +187,34 @@ function ThemeSwitch({
       role="group"
       aria-label="Appearance"
       // Light mode drops the flat gray border: a hard outline over the colourful
-      // aurora read as a pasted-on box. A soft ring plus a lift shadow makes it
-      // sit on the gradient instead, and the higher white opacity stops the
-      // aurora tinting the chip green.
+      // aurora read as a pasted-on box. A soft ring carries the edge instead.
+      //
+      // ACTUAL GLASS, not a white chip with a blur behind it. It was
+      // bg-white/85, which is near-opaque — the blur had almost nothing left
+      // to show, so the control read as a white pill laid on the gradient
+      // rather than as something you can see the gradient through. 55% lets
+      // the aurora come through and read as colour BEHIND glass; the heavier
+      // blur keeps it as diffuse light rather than a picture of the gradient,
+      // and the saturate lifts what does come through, which is the thing
+      // that reads as glass rather than as a translucent sheet.
+      //
+      // 55 is the floor, not a preference: the segments are dark ink and the
+      // active one is only foreground/10, so the fill has to stay light
+      // enough to carry both over whatever part of the aurora it lands on.
+      //
+      // NO LIFT SHADOW IN LIGHT. There was one — 0 4px 16px -8px — to float
+      // the chip off the gradient. On the flat white ground most of the site
+      // actually ends on, it was the only thing on the page casting a shadow,
+      // which made a 32px control read as the one raised object in the footer.
+      // The ring and the 85% white already separate it from both grounds.
+      // Dark is untouched: it has no shadow to remove and its border stays.
       className={`inline-flex items-center gap-0.5 rounded-lg p-0.5 ${
         onDark ? "border border-white/25" : "ring-1 ring-black/[0.05]"
       } ${
         frosted
           ? onDark
             ? "bg-black/30 backdrop-blur-md"
-            : "bg-white/85 shadow-[0_4px_16px_-8px_rgba(16,24,40,0.25)] backdrop-blur-md"
+            : "bg-white/55 backdrop-blur-xl backdrop-saturate-150"
           : ""
       }`}
     >
@@ -255,7 +274,22 @@ export function Footer({
         {/* Full-bleed hairline divider at the footer's top edge — spans the
             full page width, and the home content rails connect into it with no
             gap. */}
-        <div className={`border-t ${light ? "border-border" : "border-[#383838]"}`} />
+        {/* GRID_LINE, not --border. This rule is a section JOIN — the seam
+            between the page and the footer — which is the same job every
+            GridDivider does, and the grid carries its own pair of values for
+            exactly that reason: --border is sized to separate two objects that
+            touch, and reads a step too dark used as a layout line.
+            BOTH BRANCHES, because `light` here is exactly `!dark` (see
+            revealFooterLight in root-shell) — the dark sheet is only ever
+            drawn in dark mode, on the same #0a0a0a ground the dark grid is
+            tuned against. So the aurora branch takes the grid's dark value
+            too, and #383838 goes: it was --border by another name and sat the
+            same step too bright over that ground. */}
+        <div
+          className={`border-t ${
+            light ? GRID_LINE : "border-[#262626]"
+          }`}
+        />
 
         <div className="mx-auto max-w-[1600px] px-6 pb-12 md:px-10 md:pb-16">
           <div className="relative z-10 mt-10 md:mt-12">

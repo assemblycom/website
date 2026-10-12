@@ -138,12 +138,31 @@ function findStaticRoutes(dir = APP_DIR, route = ""): string[] {
   return routes;
 }
 
+/**
+ * Slug words that carry their own casing, because sentence case gets them
+ * wrong and a reader notices: "/ai-app-builder" was titled "Ai app builder"
+ * and "/legal/ai-policy" was "Ai policy".
+ *
+ * Only words that are genuinely initialisms belong here — this runs on every
+ * static route, so anything added is applied everywhere that word appears in a
+ * slug.
+ */
+const SLUG_INITIALISMS = new Map([["ai", "AI"]]);
+
 /** Turns "/solutions/accounting-client-portal" into "Accounting client portal". */
 function titleFromPath(path: string): string {
   if (path === "/") return "Home";
   const last = path.split("/").filter(Boolean).pop() ?? path;
-  const words = last.replace(/-/g, " ");
-  return words.charAt(0).toUpperCase() + words.slice(1);
+  // Sentence case: the first word takes a capital, the rest stay lowercase —
+  // except an initialism, which keeps its own form wherever it falls.
+  return last
+    .split("-")
+    .map((word, i) => {
+      const initialism = SLUG_INITIALISMS.get(word);
+      if (initialism) return initialism;
+      return i === 0 ? word.charAt(0).toUpperCase() + word.slice(1) : word;
+    })
+    .join(" ");
 }
 
 /**

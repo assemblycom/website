@@ -1,3 +1,5 @@
+import { BUILDER_RAIL_HALO } from "./builder-grid-rails";
+
 export interface Pillar {
   /**
    * The category this claim belongs to, in two words or fewer. Not shown: it
@@ -36,11 +38,30 @@ export interface Pillar {
    */
   visualBare?: boolean;
   /**
+   * Where the bare frame's lit hairline reaches nothing, as a percentage of
+   * the FRAME's own height — `--lit-fade` on .mock-lit-edge. The default of
+   * 100% assumes the card cuts the frame at its foot; a frame drawn taller
+   * than the card shows only the top of its ramp, so the line is still clearly
+   * there where the crop falls and the edge looks cut rather than faded.
+   * Only meaningful with `visualBare`.
+   */
+  litFade?: string;
+  /**
    * Fades the shot out on its right rather than letting the card cut it off.
    * For a screen where one END of it is the claim — the branded nav slab — and
    * the pane beside it is only there to show the nav is attached to something.
    */
   fadeRight?: boolean;
+  /**
+   * Where the RIGHT ramp starts in dark, when that has to differ from light.
+   *
+   * The ramp dissolves the shot into the card, so its length depends on how
+   * far apart the two grounds are — and since the cards took the page's own
+   * ground in dark, the shot has three times the distance to travel there.
+   * Only the pillar that needs it sets this; the rest fall back to `fadeFrom`
+   * in both themes.
+   */
+  fadeFromDark?: number;
   /**
    * Where the right-edge fade's solid part ENDS, as a percent of the card.
    *
@@ -64,18 +85,61 @@ export interface Pillar {
    */
   fadeBottom?: number;
   /**
-   * Dissolves a `visualContained` shot into the card at its foot, IN DARK ONLY.
+   * The foot ramp a `containOnPhone` shot uses ON A PHONE, when the shared
+   * default is not enough blending for that particular artwork.
+   *
+   * The default is 76 — the last quarter of the box. That suits a shot whose
+   * foot lands on quiet ground, and not one that is still mid-object down
+   * there: a table cut through a row of avatars and names needs longer to give
+   * out, because the ramp has to carry readable type to nothing rather than
+   * empty ground to nothing. Lower starts the dissolve earlier and spends more
+   * of the height on it.
+   *
+   * Phone only, deliberately. From `sm` the shot is cropped rather than
+   * contained and its foot is a window edge, which is a different problem with
+   * a different answer.
+   */
+  fadeBottomPhone?: number;
+  /**
+   * The same heading, respaced for a phone measure — the words are identical,
+   * but NO-BREAK SPACES bind the groups that must not be split.
+   *
+   * For a heading that is a list, where neither automatic strategy lands well.
+   * "Secure logins, permissions, billing built in" at 287px has three legal
+   * shapes, and both defaults pick a bad one:
+   *
+   *   - `text-balance` minimises the LONGEST line, so it breaks after
+   *     "logins," — 115 over 213, a first line that reads as having given up.
+   *   - greedy fills the first line, so it breaks after "billing" — 274 over
+   *     54, which orphans "built in".
+   *
+   * The wanted shape is after "permissions," (222 / 106), which no strategy
+   * chooses on its own. Binding "billing built in" into one unbreakable run
+   * and letting the line wrap greedily gets there: the run cannot fit beside
+   * "permissions,", so it drops whole. It also degrades properly — on a
+   * narrower phone the heading goes to three lines rather than splitting the
+   * run.
+   *
+   * Phone only. From `sm` the measure is wide enough that the full heading is
+   * balanced as before.
+   */
+  headingPhone?: string;
+  /**
+   * Dissolves a `visualContained` shot into the card at its foot.
    *
    * `fadeBottom` is for the cropped shots and is an inline mask computed per
    * pillar, which means one ramp for both themes. This one is a class whose
-   * ramp is a theme-scoped token (`--mock-foot-fade`), because the problem it
-   * solves only exists in dark: there the card is #191919 and a contained
-   * screen's ground is #212121, so the screen's bottom edge is an eight-point
-   * step running flat across the card. In light the same two grounds are a
-   * point apart and the foot already gives out on its own, so the token is
-   * `none` there and the card renders exactly as it did.
+   * ramp is a theme-scoped token (`--mock-foot-fade`), so each theme can set
+   * its own — though as it happens both now carry the same shape.
+   *
+   * It was dark-only, and was called fadeFootDark for it. The argument was
+   * that dark has an eight-point step where the screen's ground meets the
+   * card's and light has one point, so light had nothing to hide. True, and
+   * beside the point: the ramp is for the CUT, not the step. Light's form
+   * stopped dead on the card's edge with a field half-drawn, which reads as a
+   * rendering fault in either theme.
    */
-  fadeFootDark?: boolean;
+  fadeFoot?: boolean;
   /**
    * CONTAINED AND CENTRED ON A PHONE, cropped from `sm` up.
    *
@@ -132,14 +196,21 @@ export function BuilderPillars({ pillars }: { pillars: Pillar[] }) {
       {/* No heading of its own: the chapter above it is this section's header
           ("What AI app builders promise. What Assembly proves"), so the cards
           open directly under it. */}
-      <div className="grid gap-4 lg:grid-cols-3">
+      {/* THREE COLUMNS FROM `md`, not `lg`.
+          The bento's bottom pair has gone two-across since `sm`, so between
+          768 and 1024 the section read as a stacked column of two full-width
+          cards followed by a row of two — the halves paired up and the cards
+          that are supposed to BE the row did not. Same track from the same
+          width for both rows now, so the bento is a bento wherever it is more
+          than one column wide. */}
+      <div className="grid gap-4 md:grid-cols-3">
         {wide ? <FeatureCard pillar={wide} span="wide" /> : null}
         {tall ? <FeatureCard pillar={tall} span="tall" /> : null}
         {plain.length ? (
           // Their own row, halved, rather than thirds of the grid above: two
           // cards across a three-column track would leave one of them a third
           // of the page for no reason, and these two are peers.
-          <div className="grid gap-4 sm:grid-cols-2 lg:col-span-3">
+          <div className="grid gap-4 sm:grid-cols-2 md:col-span-3">
             {plain.map((pillar) => (
               <FeatureCard key={pillar.heading} pillar={pillar} span="half" />
             ))}
@@ -150,8 +221,15 @@ export function BuilderPillars({ pillars }: { pillars: Pillar[] }) {
   );
 }
 
+// BUILDER_RAIL_HALO: the page's rails run behind these cards, and without it
+// each card chops the six of them off on a hard line (see builder-grid-rails).
 const CARD =
-  "relative flex flex-col overflow-hidden rounded-3xl bg-[var(--surface)]";
+  // `group/pillar` is the hover target for anything inside a card that answers
+  // the pointer — the branding shot's `landOnHover` rows so far. NAMED, not a
+  // bare `group`: these visuals are shared with other pages and several carry
+  // their own unnamed groups, and an outer one would quietly start driving
+  // their `group-hover:` classes too.
+  `builder-pillar-card surface-lit group/pillar relative flex flex-col overflow-hidden rounded-3xl bg-[var(--surface)] ${BUILDER_RAIL_HALO}`;
 /** The mocks' own hairline, so a screen's drawn edge matches the lines in it. */
 const CARD_PAD = "px-5 pt-6 sm:px-6 sm:pt-7 md:px-8 md:pt-8";
 
@@ -206,12 +284,29 @@ function FeatureCard({
       // included, which is what the treatment is: a page with a gradient on it
       // and an app window lying on the page.
       className={`${CARD} ${pillar.brandWash ? "pillar-brand-wash" : ""} ${
-        span === "wide" ? "lg:col-span-2" : ""
+        span === "wide" ? "md:col-span-2" : ""
       }`}
     >
       <div className={CARD_PAD}>
-        <h3 className="type-h4 text-balance leading-[1.25]">
-          {pillar.heading}
+        {/* `text-wrap` is a property of the BLOCK, not of the run inside it,
+            so the phone's greedy wrap has to be a class on the h3 rather than
+            on the span — hence the breakpoint pair here as well as the two
+            spans below. */}
+        <h3
+          className={`type-h4 leading-[1.25] ${
+            pillar.headingPhone
+              ? "[text-wrap:normal] sm:text-balance"
+              : "text-balance"
+          }`}
+        >
+          {pillar.headingPhone ? (
+            <>
+              <span className="sm:hidden">{pillar.headingPhone}</span>
+              <span className="hidden sm:inline">{pillar.heading}</span>
+            </>
+          ) : (
+            pillar.heading
+          )}
         </h3>
         <p className="mt-3 max-w-xl text-pretty text-sm leading-relaxed text-muted-foreground">
           {pillar.body}
@@ -241,8 +336,16 @@ function FeatureCard({
         // that ever needs an edge ramp has to be folded into that same token,
         // not given a second mask.
         <div
-          className={`mt-5 min-h-[268px] flex-1 px-6 sm:mt-7 sm:min-h-[280px] sm:px-10 md:mt-8 md:min-h-[300px] md:px-16 ${
-            pillar.fadeFootDark ? "mock-foot-fade" : ""
+          // md:px-12, down from px-16. On a 552px card the 64px inset left the
+          // sign-in 424 wide — narrow enough that its fields were shorter than
+          // the body copy above them, which made the screen read as a small
+          // picture of a form rather than as the form. 48px gives it 456, and
+          // the card still has a clear margin on both sides: the shot is
+          // CONTAINED here, so the inset is what tells you it is an object
+          // lying on the card rather than a window cut into it, and spending
+          // all of it would lose that. One rung, not two.
+          className={`mt-5 min-h-[268px] flex-1 px-6 sm:mt-7 sm:min-h-[280px] sm:px-10 md:mt-8 md:min-h-[300px] md:px-12 ${
+            pillar.fadeFoot ? "mock-foot-fade" : ""
           }`}
         >
           {pillar.visual}
@@ -278,31 +381,57 @@ function FeatureCard({
                   // 360 and leaving two thirds of the card empty; at `lg` the
                   // card becomes a third of the row and the fixed width comes
                   // back, which is the number it was drawn for.
-                  "inset-x-5 w-auto rounded-t-xl [--lit-angle:180deg] sm:left-6 sm:right-0 sm:w-auto sm:rounded-tr-none sm:[--lit-angle:135deg] md:left-8 lg:right-auto lg:w-[var(--shot-w)]"
+                  "inset-x-5 w-auto rounded-t-xl sm:left-6 sm:right-0 sm:w-auto sm:rounded-tr-none md:left-8 md:right-auto md:w-[var(--shot-w)]"
                 : "left-5 rounded-tl-xl sm:left-6 md:left-8"
             } ${
-              // The hairline is a LIT edge now (see .mock-lit-edge): brightest
+              // The hairline is a LIT edge (see .mock-lit-edge): brightest
               // along the top where the light would land, the plain line by
-              // the middle, gone before the right and the foot — which are the
-              // two edges this frame leaves open. 135deg is what runs it
-              // diagonally so neither open edge gets a line down it.
+              // the middle, gone before the foot.
+              //
+              // STRAIGHT DOWN, which is .mock-lit-edge's own default — no
+              // --lit-angle set here at all now. It used to run at 135deg, on
+              // the reasoning that a diagonal keeps a line off the right edge
+              // and the foot, which are the two edges these frames leave open.
+              // What that actually did was spend the highlight across the
+              // frame rather than down it: on a shot as wide as the CRM
+              // table, the top edge was lit at its left corner and had faded
+              // to nothing by the right, so the brightest part of the ring sat
+              // on a corner instead of along the edge the light is supposed to
+              // be landing on. At 180 the whole top edge lights evenly and the
+              // ramp is spent by the middle, which is the thing being drawn.
+              //
+              // The open edges are fine: the ramp reaches them only in its
+              // first 45%, where it is still the plain hairline, and both are
+              // cropped by the card before that matters.
               //
               // In light it is the same hairline as before; only dark lights
               // up, which is where a near-black screen on a near-black card
               // had no edge of its own.
-              pillar.visualBare ? "mock-lit-edge [--lit-angle:135deg]" : ""
+              pillar.visualBare ? "mock-lit-edge" : ""
             } ${span === "wide" ? "right-0 h-[130%]" : "h-full"}`}
             style={
-              span === "wide"
-                ? undefined
-                : ({
-                    // A VAR, not `width`. An inline width beats any class, so
-                    // `containOnPhone`'s `w-auto` could never win against it.
-                    "--shot-w": `${pillar.visualWidth ?? (span === "tall" ? 860 : 760)}px`,
-                    ...(pillar.containOnPhone
-                      ? undefined
-                      : { width: "var(--shot-w)" }),
-                  } as React.CSSProperties)
+              {
+                // `--lit-fade` INLINE, not as a `[--lit-fade:…]` class. The
+                // value comes from the pillar, so the class would have to be
+                // built by interpolation — and Tailwind generates utilities by
+                // scanning source text for whole class names, so a name it
+                // never sees written out is a name it never emits. The class
+                // would have been silently absent and the frame would have
+                // kept the default ramp, which is the kind of bug that looks
+                // like the value simply not working.
+                ...(pillar.litFade ? { "--lit-fade": pillar.litFade } : {}),
+                ...(span === "wide"
+                  ? {}
+                  : {
+                      // A VAR, not `width`. An inline width beats any class,
+                      // so `containOnPhone`'s `w-auto` could never win
+                      // against it.
+                      "--shot-w": `${pillar.visualWidth ?? (span === "tall" ? 860 : 760)}px`,
+                      ...(pillar.containOnPhone
+                        ? undefined
+                        : { width: "var(--shot-w)" }),
+                    }),
+              } as React.CSSProperties
             }
           >
             {pillar.visual}
@@ -335,10 +464,17 @@ function edgeFade(pillar: Pillar): React.CSSProperties | undefined {
     }%, transparent 100%)`;
 
   const right = pillar.fadeRight ? ramp("right", pillar.fadeFrom ?? 62) : null;
+  const rightDark =
+    pillar.fadeRight && pillar.fadeFromDark !== undefined
+      ? ramp("right", pillar.fadeFromDark)
+      : null;
   const bottom =
     pillar.fadeBottom !== undefined ? ramp("bottom", pillar.fadeBottom) : null;
 
   const all = [right, bottom].filter(Boolean) as string[];
+  const allDark = rightDark
+    ? ([rightDark, bottom].filter(Boolean) as string[])
+    : null;
   // The phone set drops the RIGHT ramp for a shot that is contained there —
   // its right edge is inside the card on a phone, so there is nothing running
   // off to dissolve and the ramp would only be fading the last column of a
@@ -352,8 +488,17 @@ function edgeFade(pillar: Pillar): React.CSSProperties | undefined {
   // five 48px rows in a 268px box), so something has to happen at the foot,
   // and a dissolve is the one that says "there is more of this" rather than
   // "this is broken". 76, so the ramp is the last quarter only.
+  // `fadeBottomPhone` WINS on a phone when it is set. It used to be consulted
+  // only if `fadeBottom` was absent, so giving a pillar a foot ramp for the
+  // wide layout silently replaced its phone one — the two describe the same
+  // edge at two very different measures and a pillar may legitimately need
+  // both.
+  const bottomPhone =
+    pillar.fadeBottomPhone !== undefined
+      ? ramp("bottom", pillar.fadeBottomPhone)
+      : (bottom ?? ramp("bottom", 76));
   const phone = (
-    pillar.containOnPhone ? [bottom ?? ramp("bottom", 76)] : [right, bottom]
+    pillar.containOnPhone ? [bottomPhone] : [right, bottom]
   ).filter(Boolean) as string[];
 
   if (!all.length && !phone.length) return undefined;
@@ -361,9 +506,15 @@ function edgeFade(pillar: Pillar): React.CSSProperties | undefined {
   // Tokens rather than `maskImage`, so .pillar-edge-fade can serve a different
   // set below `sm` — see that rule. `none` is mask-image's initial value, so a
   // phone set that came out empty correctly means "no mask".
+  // The dark set is emitted only when a pillar asked for one; the CSS falls
+  // back to the light tokens otherwise, so an unset pillar is untouched.
+  // The PHONE set never takes the dark right-ramp: a contained shot has no
+  // right edge running off to dissolve there, which is the same reason the
+  // light phone set drops it.
   return {
     "--pillar-fade": all.length ? all.join(", ") : "none",
     "--pillar-fade-phone": phone.length ? phone.join(", ") : "none",
+    ...(allDark?.length ? { "--pillar-fade-dark": allDark.join(", ") } : {}),
   } as React.CSSProperties;
 }
 

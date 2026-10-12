@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { V66Composer } from "@/components/home/hero-v66";
 import { useTheme } from "@/components/theme/theme-provider";
 
@@ -39,6 +39,32 @@ export function BuilderPrompt({
   placeholder?: string;
 } = {}) {
   const [prompt, setPrompt] = useState("");
+
+  // THE TYPED PROMPT SURVIVES THE ROUND TRIP TO SIGNUP.
+  //
+  // Submitting this box runs `openGetStarted` (hero-v66), which stamps what
+  // was typed onto this page's URL as `?prompt=…` with `replaceState` before
+  // navigating away — precisely so that coming back refills the composer
+  // instead of making someone retype the sentence they just wrote. The entry
+  // in the history stack carries it; nothing was reading it back here, so the
+  // box returned empty and the stamping was doing nothing on this page.
+  //
+  // The same effect the bottom CTA already runs, deliberately copied rather
+  // than reinvented: three composers on this site are meant to be one control,
+  // and the carry-back is part of what that control does.
+  //
+  // The setState is deferred a tick rather than called in the effect body.
+  // That is not incidental — `react-hooks/set-state-in-effect` is on here, and
+  // the CTA's copy is written the same way for the same reason.
+  useEffect(() => {
+    const carried = new URLSearchParams(window.location.search)
+      .get("prompt")
+      ?.trim();
+    if (!carried) return;
+    const id = setTimeout(() => setPrompt(carried), 0);
+    return () => clearTimeout(id);
+  }, []);
+
   const { theme } = useTheme();
   const dark = theme === "dark";
 
@@ -101,7 +127,7 @@ export function BuilderPrompt({
           gradient border and the pane inside it stay on one curve.
           THE BUILDER HERO ONLY. The home hero and the bottom CTA run the same
           component at 18/22 and keep it. */}
-      <div className="v63-gradient-border v63-ring-solid v63-spin-on-hover v63-still-on-focus relative rounded-lg [--composer-submit:var(--color-neutral-900)] [[data-theme=dark]_&]:[--composer-placeholder:#FFFFFF8C] [[data-theme=dark]_&]:[--composer-ring-opacity:0.55] [[data-theme=dark]_&]:[--composer-submit:#EDEDED]">
+      <div className="composer-outer-ring v63-gradient-border v63-ring-solid v63-spin-on-hover v63-still-on-focus relative rounded-lg [--composer-submit:var(--color-neutral-900)] [[data-theme=dark]_&]:[--composer-placeholder:#FFFFFF8C] [[data-theme=dark]_&]:[--composer-ring-opacity:0.55] [[data-theme=dark]_&]:[--composer-submit:#EDEDED]">
         <V66Composer
           // The headline above already names what to type, so this box leads
           // with its own static placeholder rather than the cycling "Build …"
@@ -109,6 +135,19 @@ export function BuilderPrompt({
           placeholder={placeholder}
           // Always accented — the pill routes to onboarding even over an empty
           // box, so it never reads as disabled.
+          // 15px on a phone, the composer's default 16 from `sm`. The field
+          // was the largest type in the hero after the headline — 16 against
+          // the standfirst's 15 and the submit pill's 13 — so the box read as
+          // zoomed next to the sentence that introduces it. 15 puts it level
+          // with the paragraph above, which is what it is: a line of prose you
+          // are being invited to write.
+          //
+          // THE TRADE, stated: iOS Safari zooms the page when a field under
+          // 16px takes focus. It is the one place that bites, it affects the
+          // phone only, and the box here is primarily a way into onboarding —
+          // the pill routes whether or not anything is typed. Put this back to
+          // "text-base" if the zoom proves worse than the size.
+          fieldText="text-[15px] sm:text-base"
           submitDisabled={false}
           glow={false}
           tone={theme}

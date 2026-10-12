@@ -62,9 +62,32 @@ function NavItem({
       //
       // The `muted` prop is gone with it: it existed to make this one
       // distinction and the rule now covers it.
-      className={`flex h-[22px] items-center gap-2 rounded px-1.5 ${
-        active ? "text-foreground" : "text-muted-foreground"
-      } ${active ? "bg-border/70" : ""}`}
+      // THE INACTIVE ROWS ANSWER THE POINTER. A nav drawn in a mock is still a
+      // nav, and the one thing a still picture cannot say is that these are
+      // things you can go to — so the rows say it when the pointer arrives.
+      //
+      // The hover is the SAME pair the open row already wears, at half
+      // strength: the fill steps to bg-border/40 against the open row's /70,
+      // and the ink comes up to full. So a hovered row reads as on its way to
+      // being the open one rather than as a third state with a look of its
+      // own, and the open row stays the strongest thing in the rail.
+      //
+      // Only the inactive rows: hovering the row you are already on should do
+      // nothing, and giving it a hover fill would make it flicker between two
+      // nearly identical greys.
+      // --mock-nav-rest, not --muted-foreground. The resting rows went one
+      // rung quieter still: muted-foreground is the site's ordinary secondary
+      // ink, and five rows of it down a 132px rail still read as a list to be
+      // read rather than as the furniture around the open row. The token is
+      // defined per theme (see globals.css), so this is the same decision in
+      // light and dark rather than a number that happens to suit the dark
+      // screenshot. Hover and the open row are untouched — they still come up
+      // to full ink, so the rail's range is wider now, not dimmer overall.
+      className={`flex h-[22px] items-center gap-2 rounded px-1.5 transition-colors duration-150 ${
+        active
+          ? "bg-border/70 text-foreground"
+          : "text-[color:var(--mock-nav-rest)] hover:bg-border/40 hover:text-foreground"
+      }`}
     >
       <span className="[&>svg]:size-[13px] flex shrink-0 items-center justify-center">
         {icon}

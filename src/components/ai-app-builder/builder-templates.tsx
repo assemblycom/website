@@ -1,6 +1,9 @@
+import {
+  BUILDER_RAIL_HALO,
+  BUILDER_RAIL_HALO_WIDE,
+} from "./builder-grid-rails";
 import Link from "next/link";
 import { QUIET_BUTTON } from "@/components/ui/quiet-button";
-import { Reveal } from "@/components/ui/reveal";
 import { TemplateRail } from "@/components/templates/template-rail";
 import {
   IconTemplateApprovals,
@@ -97,28 +100,47 @@ export function BuilderTemplates() {
 
   return (
     <section className="mx-auto max-w-[1200px] px-6 py-14 md:px-10 md:py-20">
-      <Reveal>
+      {/* NO `Reveal` HERE. These sections used to fade and rise as they
+          came into view; the effect read as the page assembling itself under
+          the reader rather than as content already there, so the wrapper is
+          gone and the section renders outright. `Reveal` is untouched and
+          still used by /about, /customers and the home page. */}
         {/* The link sits under the copy rather than off to the right of
             it. Floated right it was level with the second line of the
             paragraph and a rail's width away from it, so it read as a
             control belonging to the section's edge rather than as the
             sentence's own next step. */}
-        <div className="max-w-2xl">
-          <h3 className="type-h3 text-balance">Not a builder? Start here</h3>
-          <p className="mt-4 max-w-2xl text-muted-foreground">
-            20+ templates made for businesses like yours. Install one, then
-            remix it with the builder.
-          </p>
-          <Link href="/templates" className={`mt-6 ${QUIET_BUTTON}`}>
-            Browse all templates
-          </Link>
+        {/* THE HEADER BAND TAKES THE PAGE GROUND AND THE WIDE HALO, for the
+            same reason the comparison's header does: it is a heading, a lede
+            and one chip, so the rails ran through the type rather than around
+            it.
+
+            THE BAND IS THE FULL MEASURE, not the copy's `max-w-2xl`. Putting
+            the ground on the copy block alone would have stopped the two
+            rails that cross it and left the other four running at full
+            strength beside them, on the same scanlines — four lines and two
+            gaps, which reads worse than six lines. The copy keeps its own
+            measure inside a band that spans the section. */}
+        <div className={`relative bg-background ${BUILDER_RAIL_HALO_WIDE}`}>
+          <div className="max-w-2xl">
+            <h3 className="type-h3 text-balance">Not a builder? Start here</h3>
+            <p className="mt-4 max-w-2xl text-muted-foreground">
+              20+ templates made for businesses like yours. Install one, then
+              remix it with the builder.
+            </p>
+            {/* No ground of its own any more — the band above covers it.
+                It used to carry `bg-background` plus the card halo, from when
+                the rails were stopped per element rather than per band. */}
+            <Link href="/templates" className={`mt-6 ${QUIET_BUTTON}`}>
+              Browse all templates
+            </Link>
+          </div>
         </div>
 
         {/* The same rows /client-portal runs — this was a grid of cover
             cards whose covers are empty frames, which is the one element
             drawn twice that this site's rules exist to stop. */}
-        <TemplateRail cards={cards} />
-      </Reveal>
+        <TemplateRail cards={cards} cardClassName={BUILDER_RAIL_HALO} />
     </section>
   );
 }

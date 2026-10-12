@@ -53,7 +53,7 @@ export default function PricingPage() {
       <div className={`hidden border-t md:block ${GRID_LINE}`} />
       <div className="relative pb-16 md:pb-24">
         <GridRails />
-        <FAQ items={PRICING_FAQS} twoColumn />
+        <FAQ items={PRICING_FAQS} />
       </div>
 
       {/* Final CTA — the shared parallax chip-field panel (frameless), matching

@@ -22,12 +22,10 @@ import {
   IconApp,
   IconCheck,
   IconBrandMark,
-  IconCard,
   IconChat,
   IconFile,
   IconGlobe,
   IconPlus,
-  IconChevronDown,
   IconClock,
   IconSearch,
 } from "@/components/home/mock-icons";
@@ -78,14 +76,47 @@ const UI_PLAIN = "text-[12.5px] leading-none";
 // From `sm` the scene is drawn 1:1 at 620 and 11px is already correct there.
 // The document is deliberately cropped (see the foot ramp and the chevron), so
 // larger type costs visible lines rather than breaking the box.
-const PLAN_HEAD = "text-[14px] leading-[1.3] sm:text-[11px]";
+/* 13px from `sm`, not 11. The plan is the one thing in these mocks a reader
+   is expected to actually READ rather than recognise as a shape, and at 11px
+   in a ~400px card it was the smallest type on the page by some way — legible
+   in principle, ignored in practice. 13 is still clearly mock-scale against
+   the 15px body around it. The document already overflows and fades at the
+   foot, so the extra size costs a line of the last flow, not a flow. */
+const PLAN_HEAD = "text-[14px] leading-[1.3] sm:text-[13px]";
 /* 1.6, not 1.45. This is the one block on the site that is set as a DOCUMENT
    — paragraphs and a list, read rather than scanned — and document leading is
    looser than a UI label's. It also makes the list's bullets land clear of the
    line above them rather than between two lines. */
-const PLAN_PROSE = "text-[14px] leading-[1.6] sm:text-[11px]";
+const PLAN_PROSE = "text-[14px] leading-[1.6] sm:text-[13px]";
 
 const LINE = "border-[var(--mock-line)]";
+
+/**
+ * A flow, with its one marked term underlined.
+ *
+ * Splits on the first occurrence and nothing more — no regex over the whole
+ * string, so a term that happens to appear twice is marked where it is
+ * introduced rather than everywhere it is mentioned.
+ *
+ * `decoration-dotted` at 1px with a 3px offset: the dots have to sit clear of
+ * the descenders in "dashboard" and read as a mark rather than as a link,
+ * which on this site is a solid 1px rule. The colour is inherited, so the
+ * mark fades with its line under the foot ramp instead of staying lit after
+ * the words around it have gone.
+ */
+function markedFlow(text: string, mark: string) {
+  const at = text.indexOf(mark);
+  if (at === -1) return text;
+  return (
+    <>
+      {text.slice(0, at)}
+      <span className="underline decoration-dotted decoration-1 underline-offset-[3px]">
+        {mark}
+      </span>
+      {text.slice(at + mark.length)}
+    </>
+  );
+}
 // ── Corner radius: a SCALE of three, not a value per element ─────────────
 // These mocks had five radii — 3, 4, 5, 6 and 8px plus Tailwind's own lg and
 // xl — picked as each was drawn, which on a card showing several at once reads
@@ -96,13 +127,10 @@ const LINE = "border-[var(--mock-line)]";
 // So three steps, each with a job:
 //   R_CHROME  things INSIDE a screen — nav rows, chips, event blocks, the
 //             segmented control. Small objects, small corner.
-//   R_CARD    buttons and controls that sit ON a card. Readable at a glance
-//             without competing with the card holding them.
 //   R_PANEL   a card, or the one exposed corner of a window. The biggest
 //             object gets the biggest corner.
 // rounded-full is exempt throughout: a circle is not a corner.
 const R_CHROME = "rounded-[4px]";
-const R_CARD = "rounded-[8px]";
 const R_PANEL = "rounded-[10px]";
 const WINDOW = `overflow-hidden ${R_CHROME} border bg-[var(--mock-window)] text-[color:var(--mock-ink)] shadow-[0_1px_2px_rgba(16,24,40,0.04),0_8px_24px_-18px_rgba(16,24,40,0.14)] ${LINE} [[data-theme=dark]_&]:shadow-[0_8px_24px_-18px_rgba(0,0,0,0.5)]`;
 const BRAND_SIDEBAR = "bg-[var(--mock-brand)] text-white";
@@ -161,6 +189,7 @@ function Scene({
   h = H,
   boxClass,
   boxSizeClass,
+  footFlush = false,
 }: {
   children: React.ReactNode;
   /**
@@ -202,6 +231,19 @@ function Scene({
    * width getting TO its subject has to start fading later.
    */
   fadeFrom?: number;
+  /**
+   * Drops the box's bottom inset so a child can run to the scene's foot and be
+   * cut by it.
+   *
+   * The 20px inset is right for a scene whose subject is an object sitting in
+   * a frame — the composer, the board — where the air around it is what makes
+   * it read as placed rather than as cropped. It is wrong for the plan, whose
+   * subject is a DOCUMENT longer than the window it is read in: there the
+   * bottom inset put a 20px band of ground under a card that is supposed to
+   * carry on past the edge, which reads as the card ending early with room to
+   * spare rather than as a page running off the bottom.
+   */
+  footFlush?: boolean;
 }) {
   return (
     <MockFit
@@ -248,7 +290,12 @@ function Scene({
         className={`${boxSizeClass ?? ""} ${
           bleed
             ? "flex flex-col justify-end overflow-hidden pl-5 pt-5"
-            : "flex flex-col justify-center gap-4 p-5"
+            : `flex flex-col gap-4 p-5 ${
+                // justify-center centres a short scene in the box; with the
+                // foot open the child is meant to FILL it and be cut, so it
+                // stretches instead and the centring has nothing to do.
+                footFlush ? "justify-stretch pb-0" : "justify-center"
+              }`
         }`}
       >
         {children}
@@ -428,134 +475,218 @@ export function DescribeCard({ plain = false }: SceneProps = {}) {
           WINDOW's drop shadow goes with it. A cast under the box and a double
           outline around it are two ways of saying the same thing, and on this
           card the cast was a grey smudge on the ground rather than a lift. */}
+        {/* THE OUTER LINE IS THE BRAND RAMP, on the panel only — the same
+            treatment the Add App mock's composer wears under "Build client
+            apps and internal tools in one place". Both pictures are of the one
+            box you type an app into, so the one place this family carries
+            colour is that box, and it should be the same colour in both.
+
+            It is the footer aurora's lime → mint → blue, running top to
+            bottom. Painted as a 1px-padded gradient box rather than a
+            border-image or a spread shadow, because neither of those takes a
+            gradient and follows a radius — which is also why the double
+            outline moved off the composer's own `shadow` and onto these two
+            wrappers. The middle layer is --surface, the card's own ground, so
+            what reads between the two lines is still the card showing through
+            rather than a second border.
+
+            The radii step with the layers: 10 inside (R_PANEL), +3 for the
+            band, +1 for the line. Any other numbers and the three curves stop
+            being concentric, which is the one way this effect reads as a
+            mistake.
+
+            THE RAMP TRAVELS ON HOVER, like the Add App one: the ring is
+            painted at twice the box's height and parked at its top, so the
+            band at rest is the lime→mint half of it; hovering the card slides
+            the paint to its other end and the blue comes up. Nothing moves and
+            nothing re-renders — it is one background-position. Keyed off
+            `group/card` rather than the ring's own hover, because every other
+            flourish on this card (the caret, the send button) answers the card
+            and a ring that answered only itself would fire at a different
+            moment from them.
+
+            700ms and ease-out. This is decoration on a picture, and at the
+            150ms a control would use it snapped — which asks to be noticed, on
+            the one object the step is already pointing at.
+
+            THE RAIL IS UNCHANGED. There the box sits on a photograph, where a
+            band of --surface is a grey stripe over the picture rather than a
+            gap in it; `contents` makes both wrappers vanish from the layout so
+            that case is structurally exactly what it was. */}
         <div
-          // .mock-edge, the same lit border the hero's composer and the Live
-          // screen beside it wear: a radial falling from the top-left corner into
-          // the card's ground, painted into the border itself. This box is the
-          // same object as the hero's composer, so it catches the light the same
-          // way.
-          //
-          // Sized in PERCENT, like the hero's. The class defaults to a 540x400
-          // ellipse, tuned to a 760px-tall screen; on a box this small the whole
-          // border sits inside the bright end of it and comes out flat. At 120%
-          // the ramp always ends a fifth past the right edge, whatever width the
-          // rail gives the card.
-          //
-          // Dark only, which is where the class lives — in light the plain
-          // --mock-line hairline already reads against the card.
-          //
-          // THE DOUBLE RING. A hairline, a 3px band of the ground, a second
-          // hairline. It used to be dark-only, and the reason it was is worth
-          // keeping: on the RAIL this box sits on a photograph, so a band of
-          // --surface there is a grey stripe over the picture rather than a gap
-          // in it, and the pair read as one fat border. That still holds, so
-          // the rail is unchanged.
-          //
-          // The panel is the opposite case. There the composer sits on a plain
-          // --surface card, so the band IS the card showing through — the eye
-          // reads a gap, not a stripe, which is the whole trick — and it works
-          // in light exactly as it does in dark. Both themes take tokens, so
-          // neither can drift from the card behind it.
-          // plain: the photograph is gone, so the composer takes the scene's
-          // full WIDTH — it is the only thing left on the frame and at the
-          // rail's width it read as a small panel adrift in an empty one.
-          //
-          // SIZED BY ITS CONTENT on the panel, not to a fixed height — the
-          // same shape the Plan step's revise box has, which is what makes the
-          // two steps read as the same control at two moments rather than two
-          // different boxes.
-          //
-          // It was a fixed slab: 240 first, then 150, with the control row
-          // pinned to the floor by mt-auto. Both left a band of empty white
-          // between the sentence and the controls, which is the thing that
-          // made the controls look too small for the box — they were being
-          // measured against a box most of which was nothing.
-          //
-          // POSITION is still arithmetic. A box centred in the SCENE sits ~60px
-          // below the centre of the PANEL, because the panel is a header plus
-          // this scene and the header is all taken off the top. So it is topped
-          // out and pushed down by `120 - height/2` — 120 being the distance
-          // from the scene's content edge to the panel's middle. At 92px tall
-          // that is 74. Re-measure it if the row ever grows a line.
-          className={`mock-edge [--mock-edge-h:150%] [--mock-edge-w:120%] flex flex-col ${
+          className={
             plain
-              ? // A STRONGER EDGE ON THE PANEL, via the three tokens the rule
-                // exposes (see .mock-edge). The shared ramp is tuned for a
-                // frame the size of a whole screen; on a box this small only
-                // its brightest corner is ever on screen, so the hairline came
-                // out close to flat and the composer — the one object this
-                // step is about — had the quietest edge in the panel. Lifted
-                // about two stops at the top of the ramp and left to meet the
-                // shared tail, so it is the same light, just further up.
-                //
-                // The rail keeps the default: there the box sits on a
-                // photograph rather than a --surface card, and a brighter edge
-                // over artwork reads as a glow around the box.
-                "[--mock-edge-1:#6e6e6e] [--mock-edge-2:#555555] [--mock-edge-3:#3e3e3e]"
-              : ""
-          } ${plain ? `${R_PANEL} gap-2.5` : R_CHROME} border bg-[var(--mock-window)] text-[color:var(--mock-ink)] ${LINE} ${
-            plain
-              ? // py-6 against the rail's p-4. The box is sized by its content
-                // and at p-4 it measured 92px — a sentence and a control row
-                // with very little air around either, which on a 620px scene
-                // read as a control squeezed rather than a composer. The extra
-                // 16px goes above and below the pair, not between them.
-                //
-                // mt-[66px], down from 74, and the two numbers move together:
-                // the box is topped out and pushed to the panel's optical
-                // middle by `120 - height/2`, so a 16px taller box comes down
-                // 8px less. Re-measure both if the row ever grows a line.
-                // TOPPED OUT IN THE SCENE AT EVERY WIDTH; only the push down
-                // is `sm`-only.
-                //
-                // The offset below is arithmetic against the DESKTOP panel: a
-                // box centred in the scene sits ~60px under the centre of the
-                // panel, because the panel is a header plus this scene and the
-                // header comes off the top, so the box is topped out and
-                // pushed down by `120 - height/2`. None of those numbers hold
-                // on a phone — the header wraps to two lines and the scene is
-                // the 360x300 box, not 620x400 — so the same push put the
-                // composer near the floor with a third of the panel empty
-                // above it.
-                //
-                // Letting the scene's own `justify-center` centre it there was
-                // the first correction, and it was still wrong — just less so.
-                // The scene is only the LOWER part of the panel, so a box
-                // centred in it sits ~64px under the centre of the card: the
-                // header costs that much off the top and nothing below pays it
-                // back. Topping the box out is what actually centres it, and
-                // the arithmetic is a coincidence worth writing down — the
-                // scene's vertical slack (~121px) is almost exactly twice that
-                // offset, so moving the box to the top of the scene lands its
-                // middle within ~4px of the card's. The header is balanced by
-                // the scene's own foot.
-                "mb-auto px-4 py-6 shadow-[0_0_0_3px_var(--surface),0_0_0_4px_var(--mock-line)] sm:mt-[66px]"
-              : "overflow-hidden p-4 [[data-theme=dark]_&]:shadow-[0_0_0_3px_var(--surface),0_0_0_4px_var(--mock-line)]"
-          }`}
+              ? "rounded-[14px] bg-[linear-gradient(to_bottom,#d9ed92_0%,#9fd6c4_45%,#8ea2f4_100%)] bg-[length:100%_200%] bg-[position:0%_0%] p-px transition-[background-position] duration-700 ease-out group-hover/card:bg-[position:0%_100%] motion-reduce:transition-none sm:mb-auto sm:mt-[66px]"
+              : "contents"
+          }
         >
-          <p
-            className={`text-[color:var(--mock-ink)] ${plain ? CARD_BODY_PLAIN : CARD_BODY}`}
+          <div
+            className={
+              plain ? "rounded-[13px] bg-[var(--surface)] p-[3px]" : "contents"
+            }
           >
-            {/* The panel and the rail ask for DIFFERENT apps, and have to.
+            <div
+              // .mock-edge, the same lit border the hero's composer and the Live
+              // screen beside it wear: a radial falling from the top-left corner into
+              // the card's ground, painted into the border itself. This box is the
+              // same object as the hero's composer, so it catches the light the same
+              // way.
+              //
+              // Sized in PERCENT, like the hero's. The class defaults to a 540x400
+              // ellipse, tuned to a 760px-tall screen; on a box this small the whole
+              // border sits inside the bright end of it and comes out flat. At 120%
+              // the ramp always ends a fifth past the right edge, whatever width the
+              // rail gives the card.
+              //
+              // Dark only, which is where the class lives — in light the plain
+              // --mock-line hairline already reads against the card.
+              //
+              // THE DOUBLE RING. A hairline, a 3px band of the ground, a second
+              // hairline. It used to be dark-only, and the reason it was is worth
+              // keeping: on the RAIL this box sits on a photograph, so a band of
+              // --surface there is a grey stripe over the picture rather than a gap
+              // in it, and the pair read as one fat border. That still holds, so
+              // the rail is unchanged.
+              //
+              // The panel is the opposite case. There the composer sits on a plain
+              // --surface card, so the band IS the card showing through — the eye
+              // reads a gap, not a stripe, which is the whole trick — and it works
+              // in light exactly as it does in dark. Both themes take tokens, so
+              // neither can drift from the card behind it.
+              // plain: the photograph is gone, so the composer takes the scene's
+              // full WIDTH — it is the only thing left on the frame and at the
+              // rail's width it read as a small panel adrift in an empty one.
+              //
+              // SIZED BY ITS CONTENT on the panel, not to a fixed height — the
+              // same shape the Plan step's revise box has, which is what makes the
+              // two steps read as the same control at two moments rather than two
+              // different boxes.
+              //
+              // It was a fixed slab: 240 first, then 150, with the control row
+              // pinned to the floor by mt-auto. Both left a band of empty white
+              // between the sentence and the controls, which is the thing that
+              // made the controls look too small for the box — they were being
+              // measured against a box most of which was nothing.
+              //
+              // MOBILE CENTRES IT; ONLY THE DESKTOP PUSH IS ARITHMETIC.
+              // `mb-auto` is `sm:` now, so below that the scene's own
+              // justify-center places the box. Topping it out there was
+              // measured against the CARD, and by that measure it was right —
+              // the box sat within 10px of the card's middle. But the card
+              // opens with a heading and a line of copy, so centring against
+              // its full height spends the top on type and leaves the box
+              // hugging it: 43px between the subtitle and the box, 134px of
+              // empty grey below. The space a reader sees the box sitting in
+              // is the part UNDER the header, and it belongs in the middle of
+              // that.
+              //
+              // POSITION is still arithmetic. A box centred in the SCENE sits ~60px
+              // below the centre of the PANEL, because the panel is a header plus
+              // this scene and the header is all taken off the top. So it is topped
+              // out and pushed down by `120 - height/2` — 120 being the distance
+              // from the scene's content edge to the panel's middle. At 92px tall
+              // that is 74. Re-measure it if the row ever grows a line.
+              className={`mock-edge [--mock-edge-h:150%] [--mock-edge-w:120%] flex flex-col ${
+                plain
+                  ? // A STRONGER EDGE ON THE PANEL, via the three tokens the rule
+                    // exposes (see .mock-edge). The shared ramp is tuned for a
+                    // frame the size of a whole screen; on a box this small only
+                    // its brightest corner is ever on screen, so the hairline came
+                    // out close to flat and the composer — the one object this
+                    // step is about — had the quietest edge in the panel. Lifted
+                    // about two stops at the top of the ramp and left to meet the
+                    // shared tail, so it is the same light, just further up.
+                    //
+                    // The rail keeps the default: there the box sits on a
+                    // photograph rather than a --surface card, and a brighter edge
+                    // over artwork reads as a glow around the box.
+                    "[--mock-edge-1:#6e6e6e] [--mock-edge-2:#555555] [--mock-edge-3:#3e3e3e]"
+                  : ""
+              } ${plain ? `${R_PANEL} gap-[26px]` : R_CHROME} border bg-[var(--mock-window)] text-[color:var(--mock-ink)] ${LINE} ${
+                plain
+                  ? // py-6 against the rail's p-4. The box is sized by its content
+                    // and at p-4 it measured 92px — a sentence and a control row
+                    // with very little air around either, which on a 620px scene
+                    // read as a control squeezed rather than a composer. The extra
+                    // 16px goes above and below the pair, not between them.
+                    //
+                    // mt-[66px], down from 74, and the two numbers move together:
+                    // the box is topped out and pushed to the panel's optical
+                    // middle by `120 - height/2`, so a 16px taller box comes down
+                    // 8px less. Re-measure both if the row ever grows a line.
+                    // TOPPED OUT IN THE SCENE AT EVERY WIDTH; only the push down
+                    // is `sm`-only.
+                    //
+                    // The offset below is arithmetic against the DESKTOP panel: a
+                    // box centred in the scene sits ~60px under the centre of the
+                    // panel, because the panel is a header plus this scene and the
+                    // header comes off the top, so the box is topped out and
+                    // pushed down by `120 - height/2`. None of those numbers hold
+                    // on a phone — the header wraps to two lines and the scene is
+                    // the 360x300 box, not 620x400 — so the same push put the
+                    // composer near the floor with a third of the panel empty
+                    // above it.
+                    //
+                    // Letting the scene's own `justify-center` centre it there was
+                    // the first correction, and it was still wrong — just less so.
+                    // The scene is only the LOWER part of the panel, so a box
+                    // centred in it sits ~64px under the centre of the card: the
+                    // header costs that much off the top and nothing below pays it
+                    // back. Topping the box out is what actually centres it, and
+                    // the arithmetic is a coincidence worth writing down — the
+                    // scene's vertical slack (~121px) is almost exactly twice that
+                    // offset, so moving the box to the top of the scene lands its
+                    // middle within ~4px of the card's. The header is balanced by
+                    // the scene's own foot.
+                    // The double outline and the position now live on the two
+                    // wrappers above (see the brand ramp there), because the outer
+                    // line is a gradient and a box-shadow cannot take one. All
+                    // this box keeps is its own padding and its own hairline.
+                    // py-4 with a 26px gap, from py-6 with 10. The box is
+                    // sized by its content, so where the sentence and the
+                    // control row sit inside it is decided entirely by how
+                    // that 104px is split between padding and the gap — and
+                    // at 24/10/24 the two rows were a tight pair floating in
+                    // the middle of the box, which is what a composer never
+                    // looks like. A real one tops the sentence out and leaves
+                    // the controls on the floor.
+                    //
+                    // 16/26/16 is the same 104px total, so the arithmetic that
+                    // places the box in the panel (sm:mt-[66px] ≈ 120 -
+                    // height/2, on the wrapper above) still holds and nothing
+                    // below it moves. The sentence rises 8px and the control
+                    // row drops 8px, which is the whole change.
+                    "px-4 py-4"
+                  : "overflow-hidden p-4 [[data-theme=dark]_&]:shadow-[0_0_0_3px_var(--surface),0_0_0_4px_var(--mock-line)]"
+              }`}
+            >
+              <p
+                className={`text-[color:var(--mock-ink)] ${plain ? CARD_BODY_PLAIN : CARD_BODY}`}
+              >
+                {/* The panel and the rail ask for DIFFERENT apps, and have to.
                 These three scenes are one sequence — what you typed, what came
                 back, what got built — so the prompt has to name the app the
                 other two steps show. The panel's Plan and Build are now the
                 calendar; /client-portal's rail still runs the project tracker
                 through its own Plan and Build, and a prompt shared between them
                 would be wrong on one page whichever app it named. */}
-            {plain
-              ? "Add a shared calendar each client books their own time on."
-              : "Add a project tracker each client sees for their own project."}
-            {/* The site's own caret blink (--animate-caret, the one the hero
-              typewriter uses), run only while the card is hovered: at rest
-              it is a resting insertion point, on hover someone is typing.
+                {plain
+                  ? "Add a shared calendar each client books their own time on."
+                  : "Add a project tracker each client sees for their own project."}
+                {/* The site's own caret blink (--animate-caret, the one the
+              hero typewriter uses). It BLINKS AT REST now rather than only
+              while the card is hovered: a still caret parked after a finished
+              sentence reads as a stray mark on the mock, where a blinking one
+              says the field is live and someone is mid-thought. It is also the
+              only moving thing in a picture that otherwise does nothing until
+              it is hovered — which on a phone is never.
               No MOVE here — a transition-all fights the keyframes. */}
-            <span
-              className={`ml-[1px] inline-block w-[1.5px] translate-y-[2px] bg-[var(--mock-ink)] motion-safe:group-hover/card:animate-caret ${plain ? "h-[15px]" : "h-[14px]"}`}
-            />
-          </p>
+                <span
+                  className={`ml-[1px] inline-block w-[1.5px] translate-y-[2px] bg-[var(--mock-ink)] motion-safe:animate-caret ${plain ? "h-[15px]" : "h-[14px]"}`}
+                />
+              </p>
 
-          {/* The composer's control row, where the product puts it.
+              {/* The composer's control row, where the product puts it.
 
               The PANEL gets the product's full row — attach on the left, the
               model picker and send on the right — because at 580px wide there
@@ -568,43 +699,45 @@ export function DescribeCard({ plain = false }: SceneProps = {}) {
               quietly goes out of date the next time the default changes — and
               nobody would think to come back here for that. Auto is the
               setting, not the model, so it stays true. */}
-          <div
-            className={`${plain ? "" : "mt-6"} flex items-center ${
-              plain ? "justify-between" : "justify-end"
-            } gap-2`}
-          >
-            {/* Full ink on the attach control, not the soft step. It is an
+              <div
+                className={`${plain ? "" : "mt-6"} flex items-center ${
+                  plain ? "justify-between" : "justify-end"
+                } gap-2`}
+              >
+                {/* Full ink on the attach control, not the soft step. It is an
                 action, and the reference draws it as dark as the type above
                 it; at --mock-ink-soft beside a near-black send button it read
                 as disabled rather than quiet. */}
-            {plain ? (
-              <span className="flex size-[26px] shrink-0 items-center justify-center text-[color:var(--mock-ink)]">
-                <IconPlus className="size-[16px]" />
-              </span>
-            ) : null}
-            <span className="flex items-center gap-2">
-              {plain ? (
-                // The word alone, no chevron — the same call the Add App
-                // mock's composer already made. A caret says "this opens",
-                // which in a still picture is a promise the picture cannot
-                // keep, and at 10px it read as a smudge beside the type rather
-                // than as a mark.
-                <span
-                  className={`flex items-center ${R_CHROME} px-1.5 py-1 text-[color:var(--mock-ink-soft)] ${UI_PLAIN}`}
-                >
-                  Auto
+                {plain ? (
+                  <span className="flex size-[26px] shrink-0 items-center justify-center text-[color:var(--mock-ink)]">
+                    <IconPlus className="size-[16px]" />
+                  </span>
+                ) : null}
+                <span className="flex items-center gap-2">
+                  {plain ? (
+                    // The word alone, no chevron — the same call the Add App
+                    // mock's composer already made. A caret says "this opens",
+                    // which in a still picture is a promise the picture cannot
+                    // keep, and at 10px it read as a smudge beside the type rather
+                    // than as a mark.
+                    <span
+                      className={`flex items-center ${R_CHROME} px-1.5 py-1 text-[color:var(--mock-ink-soft)] ${UI_PLAIN}`}
+                    >
+                      Auto
+                    </span>
+                  ) : null}
+                  <span
+                    className={`${MOVE} flex shrink-0 items-center justify-center ${R_CHROME} bg-[var(--mock-ink)] text-[color:var(--mock-window)] group-hover/card:scale-110 ${
+                      plain ? "size-[26px]" : "size-[20px]"
+                    }`}
+                  >
+                    <IconArrowUp
+                      className={plain ? "size-[13px]" : "size-[10px]"}
+                    />
+                  </span>
                 </span>
-              ) : null}
-              <span
-                className={`${MOVE} flex shrink-0 items-center justify-center ${R_CHROME} bg-[var(--mock-ink)] text-[color:var(--mock-window)] group-hover/card:scale-110 ${
-                  plain ? "size-[26px]" : "size-[20px]"
-                }`}
-              >
-                <IconArrowUp
-                  className={plain ? "size-[13px]" : "size-[10px]"}
-                />
-              </span>
-            </span>
+              </div>
+            </div>
           </div>
         </div>
       </Scene>
@@ -726,6 +859,9 @@ export function PlanCard({ plain = false }: SceneProps = {}) {
         <Scene
           boxClass={PANEL_SCENE_PHONE.vars}
           boxSizeClass={PANEL_SCENE_PHONE.size}
+          // The card runs to the panel's bottom edge and is cut by it — see
+          // footFlush, and the deeper foot ramp inside RequirementsPane.
+          footFlush
         >
           <RequirementsPane />
         </Scene>
@@ -882,12 +1018,31 @@ const PLAN_DOC = {
   // three already demonstrate rather than assert.
   overview:
     "A client-facing calendar app where your team schedules sessions and each client sees and books only their own.",
+  // WRITTEN AS SENTENCES, not as arrow chains. Each flow used to be three
+  // clauses joined by "→", which is notation: it reads as a diagram that
+  // happens to be set in type, and at a wrapped line the arrow lands at the
+  // start of the next row where it points at nothing. Plain connectives say
+  // the same sequence and survive wrapping, which is what this column does
+  // most of.
   flows: [
-    "Internal user opens the app from the dashboard → sees the week across every client → filters by company or status.",
-    "Internal user clicks New event → picks a company, a time and a length → publishes it to that client's calendar.",
-    "Client opens the calendar in the client experience → sees their own events and the open slots for their company.",
-    "Client books an open slot → gets a confirmation, and a reminder before it starts.",
+    "Internal user opens the app from the dashboard, sees the week across every client, and filters by company or status.",
+    "Internal user clicks New event, picks a company, a time and a length, then publishes it to that client's calendar.",
+    "Client opens the calendar in the client experience and sees their own events and the open slots for their company.",
+    "Client books an open slot, gets a confirmation, and a reminder before it starts.",
   ],
+  // The words in the flows above that name a PLACE OR A THING IN THE PRODUCT
+  // rather than describing an action — the surfaces the app is being built
+  // against. A dotted underline is what a plan does with those: it marks the
+  // nouns it is committing to, the way a spec underlines a defined term, and
+  // it reads as the document having been written rather than generated.
+  //
+  // Substrings, matched once each, in the shape faq.tsx already uses for its
+  // answer links — the copy stays a plain sentence and the marks live beside
+  // it, so neither has to be read through the other's markup.
+  //
+  // Deliberately ONE per flow. Two marks in a three-clause sentence and the
+  // underline stops being a mark and becomes the texture of the paragraph.
+  marks: ["dashboard", "New event", "client experience", "reminder"],
 };
 
 /**
@@ -913,70 +1068,32 @@ const PLAN_DOC = {
 function RequirementsPane() {
   return (
     <div className="flex size-full flex-col gap-2.5">
-      {/* The typed prompt, kept in view above its answer.
+      {/* NO PROMPT BUBBLE AND NO COMPOSER. The scene used to run the whole
+          exchange: the typed sentence as a bubble, the one-line reply, the
+          requirements card, and the composer you would revise in.
 
-          R_PANEL, the same corner as the card and the composer under it. It
-          was rounded-full, on the reasoning that a bubble is not a card and a
-          pill is what says so — which is true of a bubble on its own and
-          wrong here: these three objects sit in one column a few pixels
-          apart, and a pill at the top of a stack of 10px corners is the one
-          shape in the scene that belongs to a different set.
+          Four stacked objects left the card — the thing the step is actually
+          about, the one with Approve on it — holding well under half the
+          scene, and the conversation around it was saying what the Describe
+          step above has already said. The card alone fills the box, the
+          document inside it is legible at the size it is drawn, and the step
+          still reads: here is the plan, approve it.
 
-          --mock-window with a hairline, not a tinted fill. --mock-well-2 is
-          #f2f3f6 against a --surface panel of #f5f5f5 — four points, which is
-          no bubble at all in light. The window tone LIFTS off the surface in
-          both themes, which is the rule the rest of these mocks are drawn on. */}
-      {/* THE THREAD, THE TITLE AND THE COMPOSER ARE PHONE-HIDDEN. Below `sm`
-          this step is the requirements card and nothing else.
-
-          Five stacked objects in a 360px-wide scene is five things each too
-          small to read: the card — the one the step is actually about, the one
-          with Approve on it — was getting less than half the scene, and the
-          box needed 500px of design height to hold the rest. Alone, the card
-          fills a 360x300 box at near 1:1, and the step still says what it says:
-          here is the plan, approve it. The conversation around it is context a
-          phone does not have room for. */}
-      <div className="hidden shrink-0 justify-end sm:flex">
-        <span
-          className={`max-w-[78%] ${R_PANEL} border bg-[var(--mock-window)] px-3 py-2 text-[color:var(--mock-ink)] ${PLAN_PROSE} ${LINE}`}
-        >
-          Add a shared calendar each client books their own time on.
-        </span>
-      </div>
-
-      {/* The reply's one line of prose, which is what makes the card under it
-          read as something that CAME BACK rather than as a panel that was
-          always there. Soft ink: it introduces the document, it is not the
-          document. */}
-      <p
-        className={`hidden shrink-0 text-[color:var(--mock-ink-soft)] sm:block ${PLAN_PROSE}`}
-      >
-        Here&apos;s the plan. Approve it, or tell me what to change.
-      </p>
-
-      {/* The document's TITLE, and the action on it, above the card rather
-          than inside it.
-
-          It was the card's own header row. Out here it does three things at
-          once: the card below becomes pure document, so its padding can open
-          up without the title eating the first inch of it; the card gets
-          shorter by exactly the header's height; and the title reads as the
-          reply NAMING what it is sending — which is what it is — instead of
-          as chrome on a pane.
-
-          font-medium, which is as heavy as this site goes (400 and 500, never
-          600/700 — see the design guidelines). Against the soft-ink sentence
-          above it and the soft-ink prose below, 500 at 12.5px is plenty to
-          read as the heading of the block.
-
-          Approve is NOT up here. It belongs to the document, not to the
-          sentence naming it, so it sits in the card's own top-right corner —
-          see below. The title alone out here is the label; the control is on
-          the thing it acts on. */}
-      <div className="hidden shrink-0 text-[12.5px] font-medium leading-none text-[color:var(--mock-ink)] sm:block">
-        Requirements
-      </div>
-
+          This is now what BOTH widths show. The phone cut to the card alone
+          for the same reason and had been carrying the better version of this
+          scene since. */}
+      {/* NO REPLY LINE. "Here's the plan. Approve it, or tell me what to
+          change." was the sentence that made the card read as something that
+          CAME BACK — which it needed while the typed prompt was on screen
+          above it. With the prompt gone there is no exchange left for it to be
+          the middle of, and it was narrating a card that says the same thing
+          itself: it is headed Requirements and it has Approve on it. */}
+      {/* NO TITLE. "Requirements" sat out here naming what the reply was
+          sending, which is a job that existed while there was a reply: a
+          prompt above, a sentence introducing the card, then the card. With
+          the thread gone it was a label floating over a document that opens
+          on its own heading two lines below it, and the scene read as two
+          starts. The card is the whole scene now and needs no caption. */}
       {/* The card, and the mark saying it continues past the crop.
 
           Relative wrapper rather than one box, because the chevron straddles
@@ -984,7 +1101,37 @@ function RequirementsPane() {
           drawn inside it is clipped by the thing it is meant to hang off. */}
       <div className="relative min-h-0 flex-1">
         <div
-          className={`relative flex h-full flex-col overflow-hidden ${R_PANEL} border bg-[var(--mock-window)] ${LINE}`}
+          // SQUARE AT THE FOOT, and no bottom hairline. The card is cut by
+          // the panel's edge rather than ending at it, and a rounded corner
+          // is a statement that the object finishes here — two of them at the
+          // cut turned the crop back into a card that just happens to stop
+          // short. The bottom border goes for the same reason: a hairline
+          // drawn across the cut closes the shape the ramp above it is
+          // busy opening.
+          // .mock-edge, so the top corner catches light instead of being a
+          // flat hairline. It is the same treatment the composer on the
+          // Describe step wears, which matters: these are two moments of one
+          // sequence, and a lit edge on the first with a dead one on the
+          // second reads as two different materials.
+          //
+          // THE RIGHT TOOL FOR A BORDERED BOX. .mock-lit-edge is the other
+          // lit ring on this site and it could not be used here — it is an
+          // ::after at inset 0, which on a box with a border is the PADDING
+          // box, so it either draws a second hairline just inside this one or,
+          // with the border made transparent, nests two radii a pixel apart.
+          // .mock-edge paints the light INTO the border itself, so there is
+          // only ever one line.
+          //
+          // Default ellipse (540x400), unlike the composer's percentage
+          // sizing: that box is ~100px tall, where only the brightest corner
+          // of the ramp would ever be on screen, so it had to be rescaled.
+          // This panel is about the size the class was drawn for.
+          //
+          // Dark only, which is where the class lives — in light the plain
+          // --mock-line hairline already reads against the card. The missing
+          // bottom border is unaffected: the ramp is painted on the border box
+          // and simply has no band to paint there.
+          className={`mock-edge relative flex h-full flex-col overflow-hidden ${R_PANEL} rounded-b-none border border-b-0 bg-[var(--mock-window)] ${LINE}`}
         >
           {/* The action, in the card's own top-right corner — the corner the
               product puts a document's controls in, and where the eye goes
@@ -1012,16 +1159,26 @@ function RequirementsPane() {
               The rule under it is what makes the pair read as a header rather
               than as the document's first line; it is the same hairline the
               card's own border draws, so nothing new is introduced. */}
+          {/* Just the action now. The card carried a phone-only title on this
+              row because the outside one was hidden below `sm`; the outside
+              title is unconditional since the thread came out, so a second
+              "Requirements" an inch under the first is all that row would add.
+              The sm-only shape — ranged right, no rule under it — is the shape
+              at every width for the same reason. */}
           <div
-            className={`flex shrink-0 items-center justify-between gap-2 border-b px-4 py-2.5 sm:justify-end sm:border-b-0 sm:px-4 sm:pb-0 sm:pt-3 ${LINE}`}
+            className={`flex shrink-0 items-center justify-end gap-2 px-4 pb-0 pt-3`}
           >
+            {/* IT ANSWERS THE CURSOR, like the rows in the other mocks do
+                (ROW_HOVER above, same two tokens). The shot is a picture of a
+                screen whose whole argument is that you can approve or revise
+                before anything is built — and the control carrying that
+                argument was the one object on the card that did not move when
+                you pointed at it, which reads as a flat image of a button
+                rather than as the button.
+                --mock-well is one step off --mock-window in both themes, so
+                this is a tone the screen already has. */}
             <span
-              className={`min-w-0 truncate text-[color:var(--mock-ink)] sm:hidden ${PLAN_HEAD}`}
-            >
-              Requirements
-            </span>
-            <span
-              className={`flex shrink-0 items-center ${R_CHROME} border bg-[var(--mock-window)] px-3 py-1.5 text-[color:var(--mock-ink)] ${PLAN_HEAD} ${LINE}`}
+              className={`flex shrink-0 items-center ${R_CHROME} border bg-[var(--mock-window)] px-3 py-1.5 text-[color:var(--mock-ink)] transition-colors hover:bg-[var(--mock-well)] ${PLAN_HEAD} ${LINE}`}
             >
               Approve
             </span>
@@ -1049,7 +1206,7 @@ function RequirementsPane() {
               the two margins are equal and the card has a page in it. The cap
               is a max-width rather than more padding so it still fills the
               column at the narrower widths this scene is drawn at. */}
-          <div className="mx-auto flex min-h-0 w-full max-w-[340px] flex-1 flex-col gap-2 px-6 pb-4 pt-2">
+          <div className="mx-auto flex min-h-0 w-full max-w-[380px] flex-1 flex-col gap-2 px-6 pb-4 pt-2">
             <span className={`text-[color:var(--mock-ink)] ${PLAN_HEAD}`}>
               Overview
             </span>
@@ -1060,7 +1217,7 @@ function RequirementsPane() {
               Core Flows
             </span>
             <ul className="flex flex-col gap-1.5">
-              {PLAN_DOC.flows.map((f) => (
+              {PLAN_DOC.flows.map((f, i) => (
                 <li
                   key={f}
                   className={`flex gap-2 text-[color:var(--mock-ink-soft)] ${PLAN_PROSE}`}
@@ -1075,60 +1232,41 @@ function RequirementsPane() {
                       the text. */}
                   {/* The line's own height, so the dot centres on a flow's
                       FIRST line — which means it tracks PLAN_PROSE's
-                      line-height at both sizes: 14 x 1.6 on a phone, 11 x 1.6
-                      from `sm`. */}
-                  <span className="flex h-[22.4px] shrink-0 items-center sm:h-[17.6px]">
+                      line-height at both sizes: 14 x 1.6 on a phone, 13 x 1.6
+                      from `sm`. Both numbers move with PLAN_PROSE. */}
+                  <span className="flex h-[22.4px] shrink-0 items-center sm:h-[20.8px]">
                     <span className="size-[3px] rounded-full bg-current" />
                   </span>
-                  <span className="min-w-0">{f}</span>
+                  <span className="min-w-0">
+                    {markedFlow(f, PLAN_DOC.marks[i])}
+                  </span>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* The last 40px of the card, ramped to its own ground. A hard crop
+          {/* The last 96px of the card, ramped to its own ground. A hard crop
               across a line of type reads as a rendering fault; a ramp reads as
               the page carrying on. Both stops are --mock-window, so it cannot
-              drift from the card it is painted on in either theme. */}
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-b from-transparent to-[var(--mock-window)]" />
+              drift from the card it is painted on in either theme.
+
+              96 and not 40. At 40 the ramp was shorter than one wrapped flow,
+              so a line went from full ink to nothing inside its own height and
+              the dissolve read as a band laid over the text. Over 96 it
+              crosses three lines, which is slow enough that no single line is
+              visibly inside a gradient — the document just gets quieter until
+              it is gone. Three stops rather than two, so the fade is already
+              under way at the top of the ramp instead of holding full strength
+              and then falling off a cliff at the midpoint. */}
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-[linear-gradient(to_bottom,transparent_0%,color-mix(in_srgb,var(--mock-window)_55%,transparent)_45%,var(--mock-window)_88%)]" />
         </div>
 
-        {/* Half on the card, half off it — the position is the whole message:
-            a control that belongs to the card, pointing out of it. */}
-        <span
-          className={`absolute bottom-0 left-1/2 flex size-[24px] -translate-x-1/2 translate-y-1/2 items-center justify-center rounded-full border bg-[var(--mock-window)] text-[color:var(--mock-ink-soft)] ${LINE}`}
-        >
-          <IconChevronDown className="size-[11px]" />
-        </span>
-      </div>
-
-      {/* The composer, unchanged and now in the place it is actually in: under
-          the reply, not tucked beneath the document as a third stacked card.
-
-          mt-1 on top of the column's gap-2.5, so the chevron hanging 12px off
-          the card's foot clears this box's top edge rather than touching it.
-
-          Two rows, as the product has it: what you type, then the controls
-          under it. One row with the send button inline made a search field out
-          of something you write a paragraph into. */}
-      <div
-        className={`mt-1 hidden shrink-0 flex-col gap-1.5 sm:flex ${R_PANEL} border bg-[var(--mock-window)] px-3 py-2.5 ${LINE}`}
-      >
-        <span
-          className={`min-w-0 truncate text-[color:var(--mock-ink-soft)] ${PLAN_PROSE}`}
-        >
-          Type to revise plan
-        </span>
-        <div className="flex items-center justify-between gap-2">
-          <span className="flex size-[18px] items-center justify-center text-[color:var(--mock-ink)]">
-            <IconPlus className="size-[11px]" />
-          </span>
-          <span
-            className={`flex size-[22px] shrink-0 items-center justify-center ${R_CARD} bg-[var(--mock-well-2)] text-[color:var(--mock-ink-soft)]`}
-          >
-            <IconArrowUp className="size-[10px]" />
-          </span>
-        </div>
+        {/* NO CHEVRON. It used to straddle the card's bottom edge — half on,
+            half off — to say the document carried on past the crop. The card
+            runs to the scene's own foot now, so there is nothing below for it
+            to hang into: it would be a control cut in half by the edge of the
+            picture. The foot ramp below says the same thing and is the part
+            that was always doing the work. */}
       </div>
     </div>
   );
@@ -1197,11 +1335,29 @@ const CAL_DAYS = [
  * rather than wrap — at the narrow end the events read as blocks on a grid,
  * which is still unmistakably a calendar.
  */
+/**
+ * A hue per CLIENT, not per event — two meetings with the same company are the
+ * same colour, which is the whole point of colouring a calendar.
+ *
+ * The --mock-gantt-* set, reused rather than extended. It is the one
+ * categorical palette the mocks already have: four mid-tones that carry no
+ * rank and exist to tell one engagement from the next, which is this job
+ * exactly. Both themes define all four, so a client is the same hue in either.
+ *
+ * 1, 2 and 4 — teal, rose, indigo. Not 3, which is a purple sitting close
+ * enough to 4's indigo that two clients a column apart would read as one.
+ */
+const CAL_HUES: Record<string, string> = {
+  Lumen: "var(--mock-gantt-1)",
+  Cascade: "var(--mock-gantt-2)",
+  Brookline: "var(--mock-gantt-4)",
+};
+
 const CAL_EVENTS = [
   { day: 1, at: 10.5, end: 11.5, title: "Kickoff", who: "Lumen" },
   { day: 2, at: 12, end: 13, title: "Catalog review", who: "Cascade" },
   { day: 3, at: 11, end: 12, title: "Content sync", who: "Brookline" },
-  { day: 4, at: 10, end: 10.75, title: "Design review", who: "Cascade" },
+  { day: 5, at: 10, end: 10.75, title: "Design review", who: "Cascade" },
   { day: 4, at: 13, end: 14.25, title: "Client check-in", who: "Lumen" },
   { day: 5, at: 14, end: 15.5, title: "Media plan", who: "Brookline" },
 ];
@@ -1270,8 +1426,22 @@ function CalendarPane() {
             the subject. At full ink it was the darkest type on the screen and
             the first thing the eye landed on, which is the toolbar winning
             against the calendar. */}
+        {/* A STEP DOWN ON A PHONE ONLY: 10.5px below `sm`, the UI_PRIMARY
+            11.5 from there up. The toolbar loses its Month/Week/Day control at
+            this width (just below), so the date is left as the only thing on
+            the bar — and at the full step it then read as the shot's heading
+            rather than as the label on a toolbar. One rung down puts it back
+            beside the day names it belongs with. The class comes after
+            UI_PRIMARY's own 11.5 from `sm`.
+
+            NOT `${UI_PRIMARY} text-[10.5px]`. Both are plain utilities in the
+            same layer, so which one wins is decided by the order Tailwind
+            emits them, not by the order they appear in the string — written
+            that way the token's 11.5 held at every width. The size is spelled
+            out here and only `leading-none`, which nothing else sets, is
+            carried over from the token. */}
         <span
-          className={`whitespace-nowrap text-[color:var(--mock-ink-soft)] ${UI_PRIMARY}`}
+          className={`whitespace-nowrap text-[10.5px] leading-none text-[color:var(--mock-ink-soft)] sm:text-[11.5px]`}
         >
           Oct 4–10, 2026
         </span>
@@ -1318,11 +1488,39 @@ function CalendarPane() {
               flex-1, so every pixel it holds comes off them — and at 46 it was
               nearly as wide as a whole phone column. 34 still sets "11 AM" on
               one line. */}
-          <div className={`w-[38px] shrink-0 border-r sm:w-[46px] ${LINE}`} />
+          {/* GONE ON A PHONE, with the body's gutter below it. The two are one
+              column and have to appear and disappear together, or the day
+              names stop sitting over their own columns. */}
+          <div
+            className={`hidden w-[38px] shrink-0 border-r sm:block sm:w-[46px] ${LINE}`}
+          />
           {CAL_DAYS.map((d, i) => (
             <div
               key={d.label}
-              className={`min-w-0 flex-1 flex-col items-center gap-[3px] py-1.5 ${calDayHidden(
+              // TODAY IS THE WHOLE CELL, not a chip under the digit. A slab
+              // behind the numeral alone was the heaviest object in the
+              // header — a filled rectangle in a row of hairlines and grey
+              // type — and it marked the date rather than the day. Tinting
+              // the cell marks the column, which is what the header column
+              // is for.
+              //
+              // --mock-well-3 and not --mock-well: the events in this column
+              // are drawn on a well themselves, so at the first rung the
+              // header and the block under it were close enough to read as
+              // one shape running down the day. The third rung clears them.
+              // DARK STEPS BACK A RUNG. The third rung is right in light,
+              // where the wells are near-white and the whole set sits inside
+              // four points of each other. In dark they are 17 points apart
+              // and --mock-well-3 #3a3a3a against the #212121 window is the
+              // brightest surface in the mock — the day header read as
+              // selected rather than as today. --mock-well-2 #303030 still
+              // clears the events drawn on --mock-well beneath it, which is
+              // the whole reason this is not the first rung.
+              className={`min-w-0 flex-1 flex-col items-center gap-[3px] py-1.5 ${
+                d.today
+                  ? "bg-[var(--mock-well-3)] [[data-theme=dark]_&]:bg-[var(--mock-well-2)]"
+                  : ""
+              } ${calDayHidden(
                 i,
                 "flex",
               )} ${i >= CAL_PHONE_FIRST && i <= CAL_PHONE_LAST ? "flex" : "sm:flex"} ${calDayEdge(i)}`}
@@ -1332,8 +1530,10 @@ function CalendarPane() {
               >
                 {d.label}
               </span>
-              {/* Today is a filled disc, the one piece of emphasis in the
-                  header — the same move the product makes.
+              {/* The digit. Its emphasis is the cell's tint plus full ink —
+                  see both below. What follows is the history of the mark
+                  itself, kept because each step was a wrong turn worth not
+                  repeating.
 
                   A SQUARISH OUTLINE, not a filled circle. The disc was the
                   heaviest object in the whole shot — a solid near-black dot in
@@ -1365,21 +1565,14 @@ function CalendarPane() {
                 // today is simply the digit in full ink, and the red now-line
                 // in its column is the other half of the marking, which no
                 // other day has.
+                // NO FILL OF ITS OWN. The cell behind it carries the mark; a
+                // chip inside a tinted cell would be marking today twice, in
+                // two different languages, an eighth of an inch apart. Full
+                // ink against the soft-ink day labels is the whole difference
+                // the digit needs to make.
                 className={`flex size-[18px] items-center justify-center tabular-nums ${UI_PRIMARY} ${
                   d.today
-                    ? // `sm:rounded-[4px]` written out, NOT `sm:${R_CHROME}`.
-                      // Tailwind scans raw source text, so an interpolated
-                      // variant never appears for it to find and the class is
-                      // simply not generated. It matches R_CHROME by value.
-                      // FILLED, not outlined. An outlined numeral next to the
-                      // outlined Week chip and the outlined chrome buttons was
-                      // a fourth bordered box in one toolbar, so "today" was
-                      // marked in the same language as every control beside
-                      // it. A solid slab is the one mark in the header that is
-                      // not a control, which is what a calendar does with
-                      // today anyway. The digit flips to the window's own
-                      // ground so it reads out of the fill in both themes.
-                      "text-[color:var(--mock-ink)] sm:rounded-[4px] sm:bg-[var(--mock-ink)] sm:text-[color:var(--mock-window)]"
+                    ? "text-[color:var(--mock-ink)]"
                     : "text-[color:var(--mock-ink-soft)]"
                 }`}
               >
@@ -1409,8 +1602,18 @@ function CalendarPane() {
               pixels: -translate-y-1/2 halves whatever the label's own box turns
               out to be, where the -4px it used to carry was half of a 10.5px
               line rounded down, and drifted the moment the type size moved. */}
+          {/* GONE ON A PHONE. At 38px the gutter was taking a sixth of the
+              visible grid to label hours nobody reads off a picture — the
+              shot's subject is the two events sitting in the week, and the
+              hour lines still say what shape a day is without a number beside
+              each one. The day columns take the width back, which is what
+              makes the two blocks wide enough to read their own titles.
+
+              `sm:block`, not `sm:flex`: the labels inside are absolutely
+              positioned against this box, so it only has to be a block for
+              `relative` to mean anything. */}
           <div
-            className={`relative w-[38px] shrink-0 border-r sm:w-[46px] ${LINE}`}
+            className={`relative hidden w-[38px] shrink-0 border-r sm:block sm:w-[46px] ${LINE}`}
           >
             {CAL_HOURS.map((h, i) => (
               <span
@@ -1449,15 +1652,49 @@ function CalendarPane() {
               {CAL_EVENTS.filter((e) => e.day === dayIndex).map((e) => (
                 <span
                   key={e.title}
-                  // Monochrome, like everything else on this page — the colour
-                  // budget here is spent on the --mock-* status chips and the
-                  // now-line. An event is a pale block with a dark rule down
-                  // its leading edge, which is the shape a calendar entry has
-                  // without needing a hue to say so.
-                  className={`absolute inset-x-[2px] overflow-hidden ${R_CHROME} bg-[var(--mock-well-2)] pl-1.5 pr-1 pt-[3px]`}
-                  style={{ top: y(e.at) + 1, height: y(e.end) - y(e.at) - 2 }}
+                  // COLOURED BY CLIENT — see CAL_HUES. The blocks were
+                  // monochrome, a grey fill with a dark rule down the leading
+                  // edge, which is the SHAPE of a calendar entry but not the
+                  // information one carries: six identical grey blocks say
+                  // "there are meetings" where the card's claim is that the
+                  // week is legible per client at a glance.
+                  //
+                  // The hue goes in two places, at two strengths. The leading
+                  // rule takes it at full value, where 2px of saturated colour
+                  // is what the eye picks up scanning down a column; the fill
+                  // takes 18% of it mixed into the ground it already had, so
+                  // the block is tinted rather than coloured and the title on
+                  // it is still reading against --mock-well-2 and not against
+                  // a hue. color-mix rather than a prepared token per client,
+                  // because both operands are theme-scoped — the mix lands on
+                  // each theme's own ground with each theme's own hue, and no
+                  // value is written down twice.
+                  className={`absolute inset-x-[2px] overflow-hidden ${R_CHROME} bg-[color-mix(in_srgb,var(--cal-hue)_18%,var(--mock-well-2))] pb-[3px] pl-1.5 pr-1 pt-[3px]`}
+                  style={
+                    {
+                      top: y(e.at) + 1,
+                      height: y(e.end) - y(e.at) - 2,
+                      // A FLOOR, because duration alone does not guarantee the
+                      // block can hold its own two lines. At CAL_ROW_H 38 an
+                      // hour is 36px and the title/client pair needs 26, so
+                      // most events have room to spare — but the 45-minute one
+                      // (Design review) comes out at 26.5px, which is the two
+                      // lines and half a pixel under them. The block read as
+                      // having its copy pushed against the bottom edge.
+                      //
+                      // 32 = 3px + 10.5 + 2 + 10.5 + 3px: the pair with the
+                      // same breathing room above and below. It costs about
+                      // five minutes of apparent length on the shortest block
+                      // — nothing else on that day is near it, so no event
+                      // gains an overlap it does not have — and a mock whose
+                      // shortest entry can be read is worth more than one
+                      // whose grid is exact to the pixel.
+                      minHeight: 32,
+                      "--cal-hue": CAL_HUES[e.who] ?? "var(--mock-ink)",
+                    } as React.CSSProperties
+                  }
                 >
-                  <span className="absolute inset-y-0 left-0 w-[2px] bg-[var(--mock-ink)]" />
+                  <span className="absolute inset-y-0 left-0 w-[2px] bg-[var(--cal-hue)]" />
                   <span
                     className={`block truncate text-[color:var(--mock-ink)] ${UI_SECONDARY}`}
                   >
@@ -1491,13 +1728,16 @@ function CalendarPane() {
   );
 }
 
-/** The nav beside the board. Four rows and the app, which is as many as fit
-    before the board loses the width it needs. */
+/** The nav beside the board. Three rows and the app, which is as many as fit
+    before the board loses the width it needs.
+    Billing is deliberately NOT here. The app the step just built is the row
+    that matters in this shot — the claim is that it lands in the nav — and a
+    billing row above it is the one stock entry that pulls toward a different
+    part of the product than the one the card is about. */
 const TEAM_NAV = [
   { icon: <IconGlobe />, label: "Home" },
   { icon: <IconChat />, label: "Messages" },
   { icon: <IconFile />, label: "Files" },
-  { icon: <IconCard />, label: "Billing" },
 ];
 
 /**
@@ -1668,7 +1908,29 @@ export function BuildCard({ plain = false }: SceneProps = {}) {
           // dark sidebar met the ground at what looked like a right angle. It
           // takes the panel step instead, the biggest in the scale, because it
           // belongs to the biggest object.
-          className={`flex shrink-0 ${WINDOW} ${R_PANEL} rounded-b-none rounded-tr-none border-b-0 border-r-0 ${
+          // A PLAIN BORDER, NOT .mock-lit-edge. The lit ring is a ::after at
+          // `inset: 0`, which on a bordered box is the PADDING box — so using
+          // it here meant either two hairlines side by side (the ring beside
+          // the border) or, with the border made transparent to stop that, a
+          // box whose outer curve is 10px while `overflow: hidden` clips the
+          // children at 9px. Two radii a pixel apart do not nest: at the
+          // top-left the near-black sidebar stopped short of the curve and
+          // read as a black line hooked around the corner.
+          //
+          // The ring buys a dark-mode highlight on one edge. It is not worth a
+          // corner artifact in light to get it, and --mock-line states the
+          // edge in both themes the way the rest of the mock family does.
+          // .mock-lit-edge is untouched for the frames that carry no border of
+          // their own — there it is the only edge and nothing nests inside it.
+          // THE RIGHT SIDE CLOSES FROM `sm`. The window used to run off the
+          // panel's right edge, so its top-right was a crop and a border there
+          // would have been a line drawn across open artwork. The panel centres
+          // the scene from `sm` now (see builder-how-it-works), which puts that
+          // edge back inside the card where it can be seen — and a square
+          // corner with no border on a screen whose other three corners are
+          // finished reads as the shot having been cut, not as it continuing.
+          // Below `sm` it still bleeds and still ramps out, so the crop stays.
+          className={`flex shrink-0 ${WINDOW} ${R_PANEL} rounded-b-none rounded-tr-none border-b-0 border-r-0 sm:rounded-tr-[10px] sm:border-r ${
             plain
               ? // 340x280 ON A PHONE, which is the 360x300 box exactly minus
                 // the scene's own 20px top and left padding — so the window
@@ -1678,7 +1940,25 @@ export function BuildCard({ plain = false }: SceneProps = {}) {
                 // and because a bleed scene is pinned to the FOOT of its box
                 // the 80px it overran vertically came off the TOP, taking the
                 // toolbar — the date and the Month/Week/Day control — with it.
-                "h-[280px] w-[340px] sm:h-[380px] sm:w-[600px] lg:w-[800px] xl:w-[1020px]"
+                // From `sm` the window is the box MINUS 40: the scene's own
+                // 20px left pad, and 20 left over on the right to answer it.
+                // The bleed frame only pads the left (`pl-5 pt-5`), which is
+                // correct while the window runs off the right edge — there is
+                // no right side to pad. Now that the slot is centred and the
+                // window's right side closes, that lone left pad was the whole
+                // of the remaining 20px lean, so the window gives it back.
+                // 620→580, 900→860, 1040→1000.
+                //
+                // `lg` was also a rung behind before this (800 in a 900 box),
+                // and the 80px of bare box it left was enough to throw the
+                // scene visibly off-centre on its own. `lgx`, not `xl`: the box
+                // steps at lgx (PANEL_SCENE_WIDE), and a window stepping at a
+                // different breakpoint from its own box is how that got in.
+                //
+                // The PHONE step stays flush at 340 in its 360 box. It still
+                // bleeds off the right and ramps out into the panel, so there
+                // the left pad is doing its job and nothing answers it.
+                "h-[280px] w-[340px] sm:h-[380px] sm:w-[580px] lg:w-[860px] lgx:w-[1000px]"
               : ""
           }`}
         >
@@ -1791,15 +2071,17 @@ function ClientNavRow({
       // picked row wears, one stop down. The picked row is already at its
       // fill and does not move.
       //
-      // LIGHT carries the fill harder, 22% against dark's 12%, and the hover
-      // follows it at 12% against 7% so the two keep their one-stop gap.
+      // LIGHT carries the fill harder, 16% against dark's 12%, and the hover
+      // follows it at 8% against 7% so the two keep their one-stop gap.
       //
-      // The value was found by overshooting from both sides. 18% composites to
-      // #414141 on the slab — a 26-point step, measurable but not visible at
-      // this scale, where a 24px row is drawn down into a card. 30% reached
-      // #5d5d5d and went the other way, reading as a lit chip rather than as a
-      // row that happens to be the current one. 22% lands near #4a4a4a, which
-      // is the picked row being quietly obvious.
+      // The value was found by overshooting from both sides. 30% reached
+      // #5d5d5d and read as a lit chip rather than as a row that happens to be
+      // the current one. 22% landed near #4a4a4a and was still too light a
+      // patch on a near-black slab — on the Build step, where the picked row
+      // is the only object on an otherwise empty nav, it was the brightest
+      // thing in a shot whose subject is the pane beside it. 16% composites to
+      // about #3c3c3c: a 37-point step off the slab, which is enough to read
+      // as the picked row at a 24px rung without becoming a chip.
       //
       // The slab is near-black in BOTH themes (--mock-brand #171717 light,
       // #121212 dark), so this is not a contrast difference — 12% lands at
@@ -1807,10 +2089,19 @@ function ClientNavRow({
       // easily by an eye settled into a dark page and is nearly invisible to
       // one adapted to a bright one, and the picked row is the thing this card
       // is pointing at. Dark is left exactly where it was.
+      //
+      // THE UNPICKED ROWS ARE white/40, not white/60. They are furniture:
+      // the nav is in these mocks to say the app has a place in a sidebar,
+      // and the only row that carries meaning is the lit one naming the app
+      // the pane is showing. At 60% the other three were nearly as present as
+      // the picked one, so the list read as four options rather than as one
+      // open app among them. 40% still names them legibly at this size and
+      // puts the step where it belongs. Hover still takes a row to full
+      // white, so the fill and the ink move together.
       className={`flex h-[24px] items-center gap-1.5 ${R_CHROME} px-1.5 transition-colors ${
         active
-          ? "bg-white/[0.22] text-white [[data-theme=dark]_&]:bg-white/[0.12]"
-          : "text-white/60 hover:bg-white/[0.12] hover:text-white [[data-theme=dark]_&]:hover:bg-white/[0.07]"
+          ? "bg-white/[0.16] text-white [[data-theme=dark]_&]:bg-white/[0.12]"
+          : "text-white/40 hover:bg-white/[0.08] hover:text-white [[data-theme=dark]_&]:hover:bg-white/[0.07]"
       }`}
     >
       <span className="flex shrink-0 items-center justify-center [&>svg]:size-[13px]">

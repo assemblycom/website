@@ -121,9 +121,15 @@ const FAQS: FAQEntry[] = [
   },
 ];
 
-// "cards" = soft muted-fill rounded rows (home). "divided" = a flat single-column
-// list separated by hairlines with a plus/minus toggle (a Vercel-style list, used
-// on /security).
+// "divided" = a flat single-column list separated by hairlines, under a sticky
+// heading in its own column. It is the default and what every page on the site
+// renders.
+//
+// "cards" = soft muted-fill rounded rows. NO PAGE RENDERS THIS any more; it is
+// kept because it is the only other shape this component knows how to be, and
+// deleting it would mean the next page that wants something other than the
+// house treatment invents its own instead of asking for this one. Nothing
+// should pass it without a reason that survives being written down here.
 type FAQVariant = "cards" | "divided";
 
 function FAQItem({
@@ -169,10 +175,11 @@ function FAQItem({
             // wrapper clips its overflow, so a link on the answer's first line
             // had its outline cropped along the top.
             variant === "divided"
-              ? // pl-4 matches the question's own indent so the answer starts
-                // under it; pr-14 is the old pr-10 plus that indent, keeping
-                // the measure clear of where the chevron sits.
-                "space-y-4 pb-6 pl-2 pr-10 pt-2 sm:pl-4 sm:pr-14"
+              ? // pl-3 matches the question's own inset (see the button's
+                // px-3) so the answer starts on the same vertical as the
+                // question above it. The right inset is the question's 12px
+                // plus the 40px of measure the prose already kept.
+                "space-y-4 pb-6 pl-3 pr-[52px] pt-2"
               : "space-y-4 px-5 pb-4 pt-2"
           }
         >
@@ -232,7 +239,7 @@ function FAQItem({
             answers focus-visible, so a keyboard gets the row as well as the
             ring.
 
-            ONE value for both themes, --foreground at 3.5%, rather than a light
+            ONE value for both themes, --foreground at 6%, rather than a light
             tint plus a dark override. The ink token already flips — near-black
             on the light page, near-white on the dark one — so six percent of it
             is a plate a shade off the ground either way, and there is no second
@@ -244,16 +251,35 @@ function FAQItem({
         <button
           onClick={onToggle}
           aria-expanded={open}
-          // 8px on a phone, 16 from sm. A phone row is ~327px wide and the
-          // question is the longest thing on it; 16 a side there was 32px of
-          // the measure spent on inset, which pushed two-line questions to
-          // three. This is the plate's padding, not the row's. `before:inset-0` is the
-          // button's whole border box, padding included, so the tint still runs
-          // the full width of the row and still stops exactly on the dotted
-          // rules — the question and the chevron just sit inside it instead of
-          // against its ends. Unhovered the row looks the same as it always
-          // did, give or take the indent.
-          className="group relative isolate flex w-full cursor-pointer items-center justify-between gap-6 px-2 py-5 text-left sm:px-4 outline-none before:absolute before:inset-0 before:-z-10 before:bg-transparent before:transition-colors hover:before:bg-foreground/[0.035] focus-visible:before:bg-foreground/[0.035]"
+          // THE HOVER IS LIGHTER IN LIGHT MODE.
+          //
+          // One value, --foreground at 6%, served both themes. In dark that is
+          // a near-white at 6% over near-black — a faint lift. In light it is
+          // #101114 at 6% over white, which lands around #f0f1f1: a 14-point
+          // step, and against a question set in plain type on an open page it
+          // read as a filled band rather than as a row waking up.
+          // 3.5% in light is about 8 points, which still separates the row
+          // under the pointer without the list looking like it has a selected
+          // item. Dark keeps the 6% it was tuned at.
+          // px-3 — THE PLATE NEEDS AIR, and it is paid for by the list rather
+          // than by the text. The row had no horizontal padding at all, so on
+          // hover the tint began exactly at the question's first letter and
+          // ended exactly at the chevron: a plate the size of its contents,
+          // which reads as a band clamped onto the words rather than as the
+          // row lighting up.
+          //
+          // The 12px is given back by a -mx-3 on the list (see Accordion), so
+          // the question still starts on the column's own left edge — level
+          // with the heading beside it on a desktop and directly under it on a
+          // phone. What moves is the chrome: the dotted rules and the hover
+          // plate now run 12px past the type on each side.
+          //
+          // That is the opposite trade from the one this plate was given when
+          // it was first drawn — it used to bleed 12px past a row whose rules
+          // stopped at the text, so the highlight was wider than the row it
+          // highlighted. Here the rules move with it, so the plate is still
+          // exactly the row's own box. It is the box that grew.
+          className="group relative isolate flex w-full cursor-pointer items-center justify-between gap-6 px-3 py-5 text-left outline-none before:absolute before:inset-0 before:-z-10 before:bg-transparent before:transition-colors hover:before:bg-foreground/[0.035] focus-visible:before:bg-foreground/[0.035] [[data-theme=dark]_&]:hover:before:bg-foreground/[0.06] [[data-theme=dark]_&]:focus-visible:before:bg-foreground/[0.06]"
         >
           <span className="type-body text-foreground">
             {compactQuestions ? (
@@ -403,6 +429,13 @@ export function Accordion({
     return (
       <div
         className={[
+          // -mx-3 pays for the 12px of horizontal padding each row carries
+          // (see the button in FAQItem). The rows' rules and hover plates run
+          // 12px wider than the column on each side; the type inside them is
+          // pushed back to the column's own edge, so the first letter of every
+          // question still lines up with the heading. Without this the whole
+          // list would sit indented from everything around it.
+          "-mx-3",
           flushTop ? "[&>div:first-child>button]:pt-0" : "",
           // Opening rule, so the list reads as bounded rather than as a stack
           // that happens to start. Only with the dotted treatment: a solid one
@@ -436,13 +469,26 @@ export function Accordion({
   return <div className="mt-12 space-y-3">{items.map(renderItem)}</div>;
 }
 
+/**
+ * THE SITE'S ONE FAQ TREATMENT, and it is the default rather than something a
+ * page opts into: a sticky heading in a left column, the questions as a flat
+ * ruled list down the right, dotted hairlines between them.
+ *
+ * It used to default to `cards` + `twoColumn`, and every page passed
+ * `twoColumn` to get it — eight call sites all repeating the same two props to
+ * arrive at the same place. One page (/ai-app-builder) then passed
+ * `variant="divided" dottedRules` instead, which is how the site ended up
+ * answering the same question in two different shapes. The defaults are now
+ * the shape we want, so a page that wants the house FAQ passes nothing but its
+ * own items, and there is no prop to forget.
+ */
 export function FAQ({
   heading = "Frequently asked questions",
   items = FAQS,
   twoColumn = false,
-  variant = "cards",
+  variant = "divided",
   compactQuestions = false,
-  dottedRules = false,
+  dottedRules = true,
 }: {
   heading?: string;
   items?: FAQEntry[];
@@ -519,9 +565,9 @@ export function FAQ({
   );
 }
 
-// Homepage FAQ — same treatment as /security: heading on the left, the divided
-// question list on the right. The home page's own content wrapper supplies the
-// vertical guide rails, so this just renders the divided FAQ inside them.
+// Homepage FAQ — the house treatment, like every other page: heading on the
+// left, the ruled question list on the right. The home page's own content
+// wrapper supplies the vertical guide rails, so this just renders inside them.
 export function HomeFAQ() {
-  return <FAQ items={FAQS} twoColumn />;
+  return <FAQ items={FAQS} />;
 }

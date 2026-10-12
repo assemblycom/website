@@ -6,6 +6,7 @@ import { FeaturedPostProvider } from "@/components/layout/featured-post";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { SegmentScript } from "@/components/analytics/segment-script";
 import { GtmScript, GtmNoScript } from "@/components/analytics/gtm-script";
+import { SignupAttributionLinks } from "@/components/analytics/signup-attribution-links";
 import { PageTracker } from "@/components/analytics/page-tracker";
 // Imported from the plain module, never from the "use client" provider — a
 // server importer of a client export gets a throwing proxy, not the string.
@@ -218,6 +219,7 @@ export default async function RootLayout({
         {/* No gate needed: it calls window.analytics?.page(), and off the
             production host the Segment snippet never runs, so there is no
             window.analytics for it to call. */}
+        <SignupAttributionLinks />
         <PageTracker />
       </body>
     </html>

@@ -24,7 +24,19 @@ export function CTA({
   promptPicker = true,
   composer = false,
   primaryCta,
+  /**
+   * Drops the section's own `bg-background`.
+   *
+   * That fill is a BLOCK background, which CSS paints above a negative-z
+   * positioned layer (see builder-grid-rails) — so on a page drawing rails
+   * behind its content, the CTA covered them no matter where it sat in the
+   * DOM. /ai-app-builder passes this so the grid runs behind its closing
+   * screen; everywhere else the fill stays, because the CTA is its own
+   * canvas there and the page behind it may be a tinted band.
+   */
+  transparent = false,
 }: {
+  transparent?: boolean;
   // Overrides the default close for a page whose argument ends somewhere else
   // (e.g. the AI app builder page closes on what you would build today).
   heading?: ReactNode;
@@ -89,7 +101,9 @@ export function CTA({
   // bg-background in both themes so the CTA sits on the same canvas as the
   // rest of the landing page instead of introducing its own tint.
   return (
-    <section className="bg-background px-6 py-14 md:py-20">
+    <section
+      className={`px-6 py-14 md:py-20 ${transparent ? "" : "bg-background"}`}
+    >
       {/* Some bottom room so the Prompt Ideas menu (opens downward) has space
           before the footer, without leaving a large empty gap. */}
       <div className="mx-auto max-w-3xl pb-16 pt-16 text-center md:pb-24 md:pt-24">

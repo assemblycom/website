@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
 import { CTA } from "@/components/home/cta";
-import {
-  Testimonials,
-  type CustomerStory,
-} from "@/components/home/testimonials";
 import { FAQ, type FAQEntry } from "@/components/home/faq";
 import {
   BuilderPillars,
   type Pillar,
 } from "@/components/ai-app-builder/builder-pillars";
+import {
+  BuilderGridRails,
+  BUILDER_GRID_LINE,
+  BUILDER_RAIL_HALO_WIDE,
+} from "@/components/ai-app-builder/builder-grid-rails";
+import { BuilderCustomerQuotes } from "@/components/ai-app-builder/builder-customer-quotes";
 import { BuilderChapter } from "@/components/ai-app-builder/builder-chapter";
 import { AddAppMock } from "@/components/ai-app-builder/add-app-mock";
 import { BrandedLoginScreen } from "@/components/comparison/branded-login-hero-visual";
@@ -22,7 +24,8 @@ import { BuilderAlternatives } from "@/components/ai-app-builder/builder-alterna
 import { BuilderTemplates } from "@/components/ai-app-builder/builder-templates";
 import { BuilderPrompt } from "@/components/ai-app-builder/builder-prompt";
 import { BuilderGlow } from "@/components/ai-app-builder/builder-glow";
-import { GridDivider, GridRails } from "@/components/ui/grid-lines";
+import { IconClock, IconList } from "@/components/home/mock-icons";
+import { GridDivider } from "@/components/ui/grid-lines";
 import { DEMO_URL, SIGNUP_URL } from "@/lib/constants";
 import { PAGE_SEO, pageMetadata } from "@/lib/seo";
 import { serializeJsonLd } from "@/lib/json-ld";
@@ -61,11 +64,35 @@ const PILLARS: Pillar[] = [
     // page — the frame read louder than the box it was framing. The other
     // three keep theirs; their screens have furniture on every edge.
     visualBare: true,
+    // The hairline is spent by two thirds of the way down the frame, rather
+    // than running its ramp to the frame's own foot. This shot is drawn taller
+    // than the card shows, so the default ramp was still carrying a visible
+    // line where the card crops it — the frame's edge stopped dead beside a
+    // shot that is busy dissolving into the card at the same height. At 66%
+    // the line is gone before the crop and the two agree.
+    litFade: "66%",
     // Dissolved into the card at its foot. The shot ends mid-way through a row
     // of app cards, and a hard cut there reads as half-drawn cards rather than
     // as a window onto a page that carries on. 84%, so the ramp covers about
     // the last row and nothing above it.
     fadeBottom: 84,
+    // AND AT ITS RIGHT EDGE, which it had no ramp for at all.
+    //
+    // This shot is laid out `right-0`: its right edge IS the card's right
+    // edge, so the screen was cut dead on the line the card draws its own ring
+    // on. Two edges on one pixel column — the card's lit ring and the shot's
+    // ground ending — read as a doubled border, which is what it looked like.
+    // The other two cropped shots already dissolve before they get there; this
+    // one was the odd case because it is the only one whose shot is pinned to
+    // the card edge rather than overhanging it.
+    //
+    // 90 in light, 74 in dark: the card ground went to the page's own
+    // near-black in dark, so the shot has three times as far to travel before
+    // it is gone. Both ramps land on the empty template placeholders at the
+    // shot's right, not on the composer, which is the part worth reading.
+    fadeRight: true,
+    fadeFrom: 90,
+    fadeFromDark: 74,
   },
   {
     eyebrow: "CRM",
@@ -118,7 +145,41 @@ const PILLARS: Pillar[] = [
     // pixels of overhang and a ramp running through the Company column — where
     // on a desktop the same crop is a real window onto a wider table.
     containOnPhone: true,
-    fadeFrom: 88,
+    // 52, against the shared default's 76. Contained on a phone, this shot is
+    // five 48px contact rows in a 268px box, so the card cuts it mid-table —
+    // and what the ramp has to dissolve down there is a row of avatars, names
+    // and email addresses, not empty ground. Over the last quarter that is a
+    // soft cut through readable type: you can still read the half-row it ends
+    // on, which is what makes it look broken rather than continued. From 52
+    // the last row is already giving out before the edge arrives, so the table
+    // reads as carrying on past the card.
+    fadeBottomPhone: 52,
+    // 74, not 88. At 88 the ramp had 12% of the card to get from solid to
+    // nothing — short enough that it read as a soft cut rather than as the
+    // table carrying on past the edge. 74 spends a quarter of the width on
+    // the dissolve, which is what makes the shot meet the card's ground
+    // instead of stopping against it. The Company column still clears it:
+    // the ramp is barely on at 74 and does not bite until past the logos.
+    fadeFrom: 74,
+    // A FOOT RAMP TOO, which this shot never had.
+    //
+    // It is laid out to the card's full height, so the table's ground and its
+    // own lit ring both stopped dead on the card's bottom edge — the exact row
+    // the card draws its own ring on. Two edges on one pixel row: the card's
+    // hairline crossed a hard step from the shot's --mock-window to the card's
+    // --surface, and read as the border changing colour half way along.
+    //
+    // 80, so the ramp is the last fifth. The shot is gone before the card's
+    // ring gets there, which leaves that ring running over one flat ground.
+    // The phone keeps its own, much longer ramp — see `fadeBottomPhone`.
+    fadeBottom: 80,
+    // Dark starts the ramp 34 points earlier. The card's ground went to the
+    // page's own near-black, so the shot has three times as far to dissolve
+    // — and the card clips this shot at about 92% of its width, where a ramp
+    // from 74 is still a third opaque. Cut there, the step landed on the
+    // card's ring and read as a second outline beside it. From 40 the shot
+    // is spent before the edge reaches it.
+    fadeFromDark: 40,
   },
   {
     eyebrow: "Security",
@@ -126,6 +187,10 @@ const PILLARS: Pillar[] = [
     // it is the word doing the work, and the three nouns alone would be a
     // feature list rather than a claim about them.
     heading: "Secure logins, permissions, billing built in",
+    // Same words on a phone, with "billing built in" bound by no-break spaces
+    // so the line turns after "permissions," instead of orphaning "built in".
+    // See `headingPhone` for why neither balance nor greedy gets there alone.
+    headingPhone: "Secure logins, permissions, billing built in",
     // 11 words to 10, and the second sentence turns round to lead on the
     // client: "Nothing reaches clients until…" → "Clients see nothing
     // until…". Same gate, same hand on it.
@@ -154,7 +219,7 @@ const PILLARS: Pillar[] = [
     // to 2.0:1), so the wash cannot be both legible and worth having here.
     //
     // The card takes --surface like the other three instead. The sign-in holds
-    // its own against a neutral ground via `fadeFootDark` below, which is what
+    // its own against a neutral ground via `fadeFoot` below, which is what
     // keeps its foot from cutting off flat.
     //
     // `.pillar-brand-wash` and the `brandWash` prop are left in place — this
@@ -174,8 +239,8 @@ const PILLARS: Pillar[] = [
     // running flat across the full width; and the Magic link button is no
     // longer a slab here — it took the Continue-with-Google surface in dark, so
     // there is something low-contrast for the ramp to give out into, which is
-    // exactly what it was missing. See `fadeFootDark` and --mock-foot-fade.
-    fadeFootDark: true,
+    // exactly what it was missing. See `fadeFoot` and --mock-foot-fade.
+    fadeFoot: true,
   },
   {
     eyebrow: "Branding",
@@ -203,6 +268,15 @@ const PILLARS: Pillar[] = [
         quietPane
         appHeader={false}
         stock={PORTAL_STOCK_CORE}
+        // Two more land under Year-end docs while the card is hovered. The
+        // heading says apps arrive already branded; one row shows that it
+        // happened, and these two show it keeps happening. Both are apps a
+        // firm on this page would plausibly build next — they are named in
+        // the templates section further down.
+        landOnHover={[
+          { icon: <IconList />, label: "Client onboarding" },
+          { icon: <IconClock />, label: "Time tracker" },
+        ]}
       />
     ),
     // The firm's branded nav IS this claim; the app pane beside it only shows
@@ -210,6 +284,19 @@ const PILLARS: Pillar[] = [
     // on the right instead of being cut off by it, and the slab is what the eye
     // lands on.
     fadeRight: true,
+    // NO `visualBare` HERE, and that is deliberate — see the note below.
+    //
+    // It was set, to give this shot the .mock-lit-edge ring the other two
+    // cropped shots wear. That was wrong: unlike them, BrandedPortalVisual
+    // draws its OWN frame (`rounded-t-xl border border-b-0`), so the ring
+    // landed on top of a border that was already there — two 1px edges on the
+    // same frame, which is the doubled border this row has been bitten by
+    // before (see the Apps pillar's note on its right edge).
+    //
+    // The complaint the ring was answering was real — that edge was one flat
+    // value in dark — but it belonged to the visual's own border, not to a
+    // second one. It is now lit by .mock-edge inside the component, which
+    // falls off toward the foot the way the rest of the set does.
   },
 ];
 
@@ -276,36 +363,6 @@ const BUILDER_FAQS: FAQEntry[] = [
   },
 ];
 
-/**
- * The featured story the brief names for this page.
- *
- * NOTE: the quote is a tightened paraphrase, not Garrett's published wording.
- * He said "We’ve been able to build out apps in just a few weeks that I don’t
- * know if we could have done within five to ten years before Assembly"
- * (case-studies.ts). It is shortened here on the site owner’s instruction;
- * since it sits in quotation marks under his name, it wants his sign-off
- * before this ships.
- *
- * The homepage carries a third wording of the same sentence (testimonials.tsx),
- * so one customer is currently quoted three ways across the site.
- */
-const ADVERTAI_STORY: CustomerStory = {
-  quote:
-    "We’ve built apps in a few weeks that I don’t think we could have done in 5 to 10 years before Assembly.",
-  name: "Garrett Leonard",
-  firm: "Advertai Marketing",
-  image: "/images/customers/advertai-marketing.jpg",
-  intro:
-    "An 11-person web design agency. The founder built the Message Center his team works in all day, and retired five tools along the way.",
-  stats: [
-    { value: "5", label: "Tools retired" },
-    { value: "Weeks, not years", label: "To build" },
-    { value: "Built by the founder", label: "No developer hired" },
-  ],
-  href: "/customers/advertai-marketing",
-  linkLabel: "Read Advertai's story",
-};
-
 // Built from the same entries the accordion renders, so the questions a crawler
 // reads can never drift from the ones on the page.
 const FAQ_SCHEMA = {
@@ -349,7 +406,10 @@ export default function AiAppBuilderPage() {
             on the page's own ground. `overflow-hidden` above is what crops the
             ellipses into an arc — without it they are four circles. */}
         <BuilderGlow />
-        <div className="relative z-10 mx-auto w-full max-w-[1400px] px-6 md:px-10">
+        {/* `builder-hero-lift` takes the block off the centre line on a big
+            screen — see globals.css, where the two gates and the reason they
+            are on HEIGHT and not just width are written out. */}
+        <div className="relative z-10 mx-auto w-full max-w-[1400px] builder-hero-lift px-6 md:px-10">
           {/* Centred, with the composer under the claim rather than a split
               header and a picture beside it. This page's subject IS the box
               you type into, so the hero puts it on the centre line and lets
@@ -394,7 +454,7 @@ export default function AiAppBuilderPage() {
                 itself wants the opposite; see the note on it above.) */}
             <p className="type-lead mx-auto mt-5 max-w-[38rem] text-balance text-muted-foreground">
               Describe what you want. Assembly builds a working app with logins,
-              permissions, branding.
+              permissions, and branding.
             </p>
           </div>
 
@@ -411,11 +471,27 @@ export default function AiAppBuilderPage() {
       {/* The argument, framed by the shared vertical rails so this page draws
           the same grid as home, security and customers. A rule closes each
           chapter, capped to the rails so both ends land on one. */}
-      <div className="relative">
-        <GridRails />
-        {/* Full-bleed: this rule opens the region, so there is no rail yet at
-            its ends for a capped one to land on. */}
-        <GridDivider fullBleed />
+      {/* `isolate` and a ground, both for the rails: see builder-grid-rails.
+          The layer sits at a negative z so that section and card backgrounds
+          paint over it, and a negative z only resolves against a stacking
+          context that has a background of its own to sit above. Without these
+          two the rails either draw on top of every component (z-0) or vanish
+          behind the page (-z, no isolate). */}
+      <div className="relative isolate bg-background">
+        {/* The column grid, in place of the two framing rails this region used
+            to draw. See builder-grid-rails: a backdrop bounded to this wrapper
+            rather than an overlay, so it starts and ends with the chapters.
+            The wrapper stays `relative` because the dividers below still cap
+            to the measure. */}
+        <BuilderGridRails />
+        {/* NO RULE OPENING THE REGION. There was a full-bleed one here, from
+            when the region's only grid was two framing rails and a rule was
+            the single thing marking where the chapters began. The rails now
+            begin at this exact line and run the full width of the measure, so
+            the opening was being stated twice — and the horizontal version
+            crossed the hero's glow edge-to-edge, which is the one place on the
+            page with nothing to rule off. The closing rule stays: it is the
+            seam between the chapters and the CTA. */}
 
         {/* Chapter 1 — the four claims. */}
         <BuilderChapter
@@ -428,7 +504,7 @@ export default function AiAppBuilderPage() {
         />
         <BuilderPillars pillars={PILLARS} />
 
-        <GridDivider />
+        <GridDivider lineClass={BUILDER_GRID_LINE} />
 
         {/* Chapter 2 — the mechanism behind the claims, then the decision the
             reader is actually weighing. The two belong together: the comparison
@@ -440,7 +516,7 @@ export default function AiAppBuilderPage() {
         <BuilderHowItWorks />
 
         {/* Separates the mechanism from the comparison it sets up. */}
-        <GridDivider />
+        <GridDivider lineClass={BUILDER_GRID_LINE} />
 
         <BuilderAlternatives />
 
@@ -448,69 +524,99 @@ export default function AiAppBuilderPage() {
             a divider here was a doubled break. It sits inside the section's
             padding now and closes on its own frame, so the region below it was
             left opening on nothing. */}
-        <GridDivider />
+        <GridDivider lineClass={BUILDER_GRID_LINE} />
 
         {/* Chapter 3 — the reader now believes it works and wants a way in.
             The templates section carries its own heading, so no chapter title
             sits above it. */}
         <BuilderTemplates />
 
-        <GridDivider />
+        <GridDivider lineClass={BUILDER_GRID_LINE} />
 
-        <Testimonials story={ADVERTAI_STORY} />
+        <BuilderCustomerQuotes />
 
-        <GridDivider />
+        <GridDivider lineClass={BUILDER_GRID_LINE} />
 
         {/* The divided variant, as on /security: the heading holds a sticky
             left column and the questions run down the right as a hairline list.
             The two-column card grid set these eight long questions as eight
             ragged two-line pills; one flat column lets each sit on its own rule
             without the wording being shortened. */}
-        <FAQ
-          heading="Frequently asked questions"
-          items={BUILDER_FAQS}
-          variant="divided"
-          dottedRules
-          compactQuestions
+        {/* THE FAQ TAKES THE PAGE GROUND AND THE RAIL HALO.
+            Every other block in this region is an opaque card or table, so the
+            rails pass behind it and are interrupted — that interruption is the
+            effect. The FAQ is the one block with no fill of its own: its rows
+            are transparent and separated by dotted rules, so six rails ran
+            straight down through nine questions and crossed every rule, which
+            put a grid over the one part of the region that is plain reading.
+
+            `bg-background` makes it an opaque block like the rest, and the
+            halo gives that block the same soft edge the cards have instead of
+            a hard start and stop. See BUILDER_RAIL_HALO in builder-grid-rails.
+            The wrapper is here rather than in the shared FAQ because it is
+            this page's rails it answers to, not anything the FAQ owns. */}
+        <div className={`relative bg-background ${BUILDER_RAIL_HALO_WIDE}`}>
+          {/* The shape is the component's default now — this page was where
+              the treatment was first drawn, and the rest of the site has since
+              been moved onto it. All that is left here is `compactQuestions`,
+              which is this page's own: its questions are written long for
+              search, so the row shows the short form while the answer stays
+              filed under the full wording. */}
+          <FAQ
+            heading="Frequently asked questions"
+            items={BUILDER_FAQS}
+            compactQuestions
+          />
+        </div>
+
+        {/* Full-bleed: the seam between the chapters and the CTA. It no
+            longer closes the RAILS — the CTA is inside the region now, so the
+            grid carries on behind it and the rule is a rule rather than an
+            ending. Nothing capped lands on it, hence full-bleed. */}
+        <GridDivider fullBleed lineClass={BUILDER_GRID_LINE} />
+
+        {/* INSIDE THE REGION, so the rails run behind it. The CTA is the one
+            block on the page with nothing in it but centred type and two
+            buttons, which is exactly the width of empty page the grid is
+            there to give a floor to — it was the last screen before the
+            footer and the only one with no structure behind it. It carries no
+            ground of its own, so the rails show straight through; the mask on
+            the layer takes them out before the footer. */}
+        <CTA
+          heading={
+            <>
+              Your next app,
+              <br />
+              built this afternoon
+            </>
+          }
+          // Broken at the sentence, the same place the CTA's own default lead
+          // breaks. Left to wrap it set eight words on line one and "a template."
+          // on line two — `text-pretty` only rescues a single-word last line. The
+          // break is md-up: below that the measure is narrow enough that the two
+          // sentences wrap into a block on their own.
+          subheading={
+            <>
+              {/* "what your business needs" → "what you need". The reader is
+                  the business; naming it again was the sentence restating its
+                  own audience. 15 words to 13, both offers intact: skip the
+                  custom build, and start either from a description or from a
+                  template. */}
+              Skip the five-figure custom build.
+              <br className="hidden md:inline" /> Describe what you need, or
+              start from a template.
+            </>
+          }
+          // The page opens on a composer; closing on a second one asks the same
+          // question twice. Two buttons instead, the pair the hero opens with.
+          composer={false}
+          primaryCta={{ label: "Start building for free", href: SIGNUP_URL }}
+          secondaryCta={{ label: "Book demo", href: DEMO_URL }}
+          planChips={false}
+          // No fill of its own, so the rails show through. See the prop.
+          transparent
         />
-
-        {/* Full-bleed: this rule closes the region, so the rails stop here and
-            there is nothing at its ends for a capped one to land on. */}
-        <GridDivider fullBleed />
       </div>
-
-      <CTA
-        heading={
-          <>
-            Your next app,
-            <br />
-            built this afternoon
-          </>
-        }
-        // Broken at the sentence, the same place the CTA's own default lead
-        // breaks. Left to wrap it set eight words on line one and "a template."
-        // on line two — `text-pretty` only rescues a single-word last line. The
-        // break is md-up: below that the measure is narrow enough that the two
-        // sentences wrap into a block on their own.
-        subheading={
-          <>
-            {/* "what your business needs" → "what you need". The reader is
-                the business; naming it again was the sentence restating its
-                own audience. 15 words to 13, both offers intact: skip the
-                custom build, and start either from a description or from a
-                template. */}
-            Skip the five-figure custom build.
-            <br className="hidden md:inline" /> Describe what you need, or
-            start from a template.
-          </>
-        }
-        // The page opens on a composer; closing on a second one asks the same
-        // question twice. Two buttons instead, the pair the hero opens with.
-        composer={false}
-        primaryCta={{ label: "Start building for free", href: SIGNUP_URL }}
-        secondaryCta={{ label: "Book demo", href: DEMO_URL }}
-        planChips={false}
-      />
     </>
   );
 }
