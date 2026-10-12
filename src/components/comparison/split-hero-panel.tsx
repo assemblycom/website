@@ -14,8 +14,14 @@ const PANEL_BG = [
   `linear-gradient(160deg in oklab, color-mix(in oklab, ${PERIWINKLE} 70%, white), color-mix(in oklab, ${LIME} 70%, white))`,
 ].join(", ");
 
+// No shadow. The card sits on a gradient panel that is already doing the
+// lifting — the white against the colour is the separation — and a 60px drop
+// under it pooled into a grey smudge on the panel's pale foot, which read as a
+// dirty mark on the artwork rather than as depth.
+// Both views share one grid cell rather than being absolutely positioned, so
+// the stack is as tall as the taller of them and no taller. See the slot.
 const CARD =
-  "absolute inset-0 overflow-hidden rounded-[28px] bg-background shadow-[0_2px_4px_rgba(16,24,40,0.06),0_30px_60px_-30px_rgba(16,24,40,0.35)] transition-opacity duration-500 motion-reduce:transition-none";
+  "[grid-area:1/1] overflow-hidden rounded-[28px] bg-background transition-opacity duration-500 motion-reduce:transition-none";
 
 /**
  * The right half of a comparison page's split hero: a brand panel, a two-way
@@ -36,8 +42,17 @@ export function SplitHeroPanel({
       className="flex h-full flex-col items-center justify-center gap-6 px-6 py-10 md:py-14"
       style={{ background: PANEL_BG }}
     >
+      {/* A track around the pair, so the control reads as a switch with two
+          positions rather than as one lit pill beside a loose word. The outline
+          is what draws the second position: unframed, the inactive label had no
+          edge of its own and the thing looked like a button with a caption.
+
+          White-alpha rather than --border: the panel is a fixed gradient that
+          does not flip with the theme (the labels already hardcode a dark-mode
+          ink for the same reason), so a token that flips would go dark on a
+          surface that stayed light. */}
       <div
-        className="flex items-center gap-1"
+        className="flex items-center gap-1 rounded-full border border-white/55 bg-white/15 p-1"
         role="tablist"
         aria-label={label}
       >
@@ -48,10 +63,10 @@ export function SplitHeroPanel({
             role="tab"
             aria-selected={i === view}
             onClick={() => setView(i)}
-            className={`rounded-full px-4 py-2 text-sm transition-colors duration-300 ${
+            className={`rounded-full px-4 py-1.5 text-sm transition-colors duration-300 ${
               i === view
                 ? "bg-background text-foreground shadow-[0_1px_2px_rgba(16,24,40,0.08)]"
-                : "text-foreground/80 hover:bg-white/30 [[data-theme=dark]_&]:text-black/70"
+                : "text-foreground/70 hover:bg-white/30 [[data-theme=dark]_&]:text-black/60"
             }`}
           >
             {v.label}
@@ -59,18 +74,33 @@ export function SplitHeroPanel({
         ))}
       </div>
 
-      {/* A fixed height on a phone, where the card's width alone left too
-          little room for the card's contents. */}
-      <div className="relative h-[480px] w-full max-w-[400px] lg:aspect-[4/5] lg:h-auto">
-        {views.map((v, i) => (
-          <div
-            key={v.label}
-            aria-hidden={view !== i}
-            className={`${CARD} ${view === i ? "opacity-100" : "pointer-events-none opacity-0"}`}
-          >
-            {v.content}
-          </div>
-        ))}
+      {/* On a phone the card is a FIXED window and the screen inside it
+          crops on the bottom edge, which is what /client-portal's hero does
+          (a 760px mock inside a shorter box, clipped). Sized to its contents
+          it was 449px on this page and 381 on the other — honest, but still
+          most of a phone screen spent on a mock, below the copy and the
+          buttons the reader came for.
+
+          360 shows the whole top of either screen and cuts the foot, so the
+          card reads as a window onto something that continues rather than as
+          a shrunken picture of the whole thing. Nothing is compressed: the
+          inner stack keeps its natural height and the box clips it.
+
+          From lg the aspect ratio governs again and the stack fills it, as
+          before — there the panel is a column of the hero and its proportion
+          is the design. */}
+      <div className="relative h-[360px] w-full max-w-[400px] overflow-hidden rounded-[28px] lg:h-auto lg:aspect-[4/5]">
+        <div className="absolute inset-x-0 top-0 grid lg:bottom-0">
+          {views.map((v, i) => (
+            <div
+              key={v.label}
+              aria-hidden={view !== i}
+              className={`${CARD} ${view === i ? "opacity-100" : "pointer-events-none opacity-0"}`}
+            >
+              {v.content}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

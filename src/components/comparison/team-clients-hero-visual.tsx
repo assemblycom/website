@@ -23,7 +23,11 @@ export function TeamClientsHeroVisual() {
 function BuildChat() {
   return (
     <div aria-hidden className="flex h-full select-none flex-col p-5">
-      <span className="flex size-9 items-center justify-center rounded-full bg-foreground text-background">
+      {/* Square, at the login screen's radius for a mark this size. It was a
+          circle, which made it the only round-cornered object on a card whose
+          every other corner is a rectangle's — and the brand mark is drawn
+          square everywhere else in the mock family. */}
+      <span className="flex size-9 items-center justify-center rounded-[10px] bg-foreground text-background">
         <IconBrandMark className="size-4" />
       </span>
       {/* Copy review: the prompt is mine; the reply, the plan card's title
@@ -36,14 +40,19 @@ function BuildChat() {
         <p className="max-w-[85%] rounded-2xl bg-muted px-4 py-2.5 text-[14px] leading-[1.5] text-foreground [[data-theme=dark]_&]:bg-white/[0.08]">
           Here is the plan. Approve it and I will start building.
         </p>
-        <div className="rounded-2xl border border-border px-4 py-3 [[data-theme=dark]_&]:border-white/15">
+        {/* 12px, the mock family's window radius (the builder hero's WINDOW
+            draws the same card at the same step). At 16 it was rounder than
+            the window it sits in. */}
+        <div className="rounded-xl border border-border px-4 py-3 [[data-theme=dark]_&]:border-white/15">
           <p className="text-[13px] text-foreground">
             Client onboarding wizard
           </p>
           <p className="mt-1 text-[12px] text-muted-foreground">
             Multi-step onboarding flow with saved progress
           </p>
-          <span className="mt-3 inline-flex rounded-md bg-foreground px-3 py-1.5 text-[12px] leading-none text-background">
+          {/* 8px: the site's button radius, the one the real buttons on this
+              page use. It was 6, which is a control radius, not a button's. */}
+          <span className="mt-3 inline-flex rounded-lg bg-foreground px-3 py-1.5 text-[12px] leading-none text-background">
             Approve
           </span>
         </div>

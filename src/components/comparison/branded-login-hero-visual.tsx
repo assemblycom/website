@@ -24,6 +24,7 @@ export function BrandedLoginHeroVisual() {
           label: "Your portal",
           content: (
             <LoginScreen
+              chrome={false}
               domain="portal.brandmages.com"
               mark={
                 <span className="flex size-11 items-center justify-center rounded-xl bg-foreground text-background">
@@ -38,6 +39,7 @@ export function BrandedLoginHeroVisual() {
           label: "Hosted app",
           content: (
             <LoginScreen
+              chrome={false}
               domain="your-app.hosted-platform.app"
               mark={
                 <span className="size-11 rounded-xl bg-muted [[data-theme=dark]_&]:bg-white/[0.08]" />
@@ -136,11 +138,13 @@ function LoginScreen({
   /**
    * Draws the browser bar — traffic lights and the address — above the screen.
    *
-   * On it says WHOSE domain the client lands on, which is the whole point in a
-   * comparison hero where the competing product's URL is the argument. On a
-   * pillar card about secure logins it is a grey band with three dots in it
-   * sitting above the thing the card is actually about, and the first ~40px of
-   * a short card go to chrome.
+   * Off everywhere now. It is a grey band with three dots in it sitting above
+   * the thing the shot is actually about, and it costs the first ~40px of the
+   * screen to say something the screen already says: the hero's two views are
+   * told apart by the mark, the title and the platform badge, which are the
+   * branding the comparison is about, rather than by two URLs set in 11px
+   * grey. `domain` is still passed and still unused, for the day one of these
+   * wants its bar back.
    */
   chrome?: boolean;
 }) {
