@@ -118,10 +118,11 @@ const PAGE: VsPage = {
       },
     },
   ],
+  deepDivesHeading: "What you don't have to build",
   deepDives: [
     {
       heading: "Describe it. Approve it. Clients use it",
-      body: "Assembly shows you a plan — what it builds, what data it uses, who sees it — and waits for your approval. New apps stay hidden until you make them visible.",
+      body: "Assembly shows you a plan and waits for your approval before anything builds.",
       visual: {
         label: "Deep dive, the plan",
         description:
@@ -130,7 +131,7 @@ const PAGE: VsPage = {
     },
     {
       heading: "A full client experience, not just a builder",
-      body: "Lovable gives you a blank canvas. Assembly gives you the CRM, the client portal and ready-made apps, so you build only the part that is yours.",
+      body: "Lovable gives a blank canvas. Assembly gives the CRM, portal and apps.",
       visual: {
         label: "Deep dive, the platform",
         description:
@@ -139,7 +140,7 @@ const PAGE: VsPage = {
     },
     {
       heading: "Stop carrying the maintenance yourself",
-      body: "With Lovable every app is a codebase you maintain, and every AI edit can break what worked. On Assembly the hard parts are engineered once and inherited by every app.",
+      body: "The hard parts are engineered once and inherited by every app.",
       // EDITORIAL, not rendered: "Use the phrase engineered once and inherited
       // by every app. Do not write that security fixes ship platform-wide, which
       // is not documented in those words."

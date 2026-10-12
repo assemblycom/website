@@ -120,10 +120,11 @@ const PAGE: VsPage = {
       },
     },
   ],
+  deepDivesHeading: "What you don't have to build",
   deepDives: [
     {
       heading: "Built for clients, not just builders",
-      body: "Team tools land in your dashboard, client apps in your branded experience with logins handled. New apps stay hidden until you make them visible.",
+      body: "Team tools land in your dashboard, client apps in your branded experience.",
       visual: {
         label: "Deep dive, the plan",
         description:
@@ -132,7 +133,7 @@ const PAGE: VsPage = {
     },
     {
       heading: "The stack Base44 makes you build is already assembled",
-      body: "A built-in CRM, a client login and ready-made apps for billing, projects and onboarding. Connect what you already run through integrations or embeds.",
+      body: "A built-in CRM, a client login and ready-made business apps.",
       visual: {
         label: "Deep dive, the platform",
         description:
@@ -141,7 +142,7 @@ const PAGE: VsPage = {
     },
     {
       heading: "Security you don't generate",
-      body: "Each app gets its own database and deployment, scoped to your workspace. Logins and permissions are platform infrastructure, not generated per app.",
+      body: "Logins and permissions are platform infrastructure, not generated.",
       // EDITORIAL, not rendered: "Confirm Base44's current certifications at its
       // Trust Center before any comparative security claim ships."
       visual: {

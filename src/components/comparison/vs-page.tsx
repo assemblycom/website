@@ -2,6 +2,7 @@ import { CardRail, RailCard } from "@/components/ui/card-rail";
 import { CTA } from "@/components/home/cta";
 import { FAQ, type FAQEntry } from "@/components/home/faq";
 import { Testimonials } from "@/components/home/testimonials";
+import { DeepDiveCards } from "@/components/comparison/deep-dive-cards";
 import { FeatureMatrix } from "@/components/comparison/feature-matrix";
 import { GRID_LINE, GridDivider, GridRails } from "@/components/ui/grid-lines";
 import { PillarsTabs } from "@/components/comparison/pillars-tabs";
@@ -45,6 +46,8 @@ export interface VsPage {
     body: string;
     visual: Visual;
   }[];
+  /** The deep dives' section heading. Same job `pillarsHeading` does above. */
+  deepDivesHeading: string;
   deepDives: {
     heading: string;
     body: string;
@@ -196,29 +199,15 @@ export function VsComparisonPage({
 
         <GridDivider />
 
+        {/* Heading ranged left and in the same section as the cards, matching
+            the pillars above: these two are the page's two argument sections
+            and a centred title over one of them would make them a pair that
+            does not match. */}
         <section className={`${RAIL} py-16 md:py-24`}>
+          <h2 className="type-h2 text-balance">{page.deepDivesHeading}</h2>
           <Reveal>
-            <div className="space-y-14">
-              {page.deepDives.map((dive) => (
-                <div
-                  key={dive.heading}
-                  className="grid gap-10 md:grid-cols-2 md:gap-16"
-                >
-                  <div className="md:self-start">
-                    <h3 className="type-h3 text-balance leading-[1.2]">
-                      {dive.heading}
-                    </h3>
-                    <p className="mt-4 max-w-md text-muted-foreground">
-                      {dive.body}
-                    </p>
-                  </div>
-                  <VisualSlot
-                    ratio="4 / 3"
-                    label={dive.visual.label}
-                    description={dive.visual.description}
-                  />
-                </div>
-              ))}
+            <div className="mt-10 md:mt-12">
+              <DeepDiveCards dives={page.deepDives} />
             </div>
           </Reveal>
         </section>
