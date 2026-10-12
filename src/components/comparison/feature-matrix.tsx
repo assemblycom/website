@@ -1,4 +1,6 @@
+import { FeatureMatrixPhone } from "@/components/comparison/feature-matrix-phone";
 import { GRID_LINE } from "@/components/ui/grid-lines";
+import { Mark } from "@/components/comparison/mark";
 import type { ComparisonRow } from "@/lib/comparisons";
 
 /**
@@ -6,49 +8,6 @@ import type { ComparisonRow } from "@/lib/comparisons";
  * and the hand-built ones (Lovable, Base44) so the table is the same object in
  * both places.
  */
-
-/**
- * The tick and cross in a matrix cell, each set in a disc so a row scans as a
- * verdict rather than as two hairlines of type. Both stay neutral — a green
- * tick against a red cross is louder than this site's palette goes anywhere
- * else — so the contrast is weight, not hue: a solid disc for what a product
- * does, a faint one for what it doesn't.
- */
-function Mark({ value }: { value: boolean }) {
-  const label = value ? "Included" : "Not included";
-  return (
-    <span
-      role="img"
-      aria-label={label}
-      className={`flex h-5 w-5 items-center justify-center rounded-full ${
-        value
-          ? "bg-foreground text-background"
-          : "bg-foreground/10 text-muted-foreground"
-      }`}
-    >
-      <svg
-        width="12"
-        height="12"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.75"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden
-      >
-        {value ? (
-          <path d="M20 6 9 17l-5-5" />
-        ) : (
-          <>
-            <path d="M18 6 6 18" />
-            <path d="m6 6 12 12" />
-          </>
-        )}
-      </svg>
-    </span>
-  );
-}
 
 /**
  * A mark sits centred in its column, the way a tick in a table always has. Prose
@@ -88,73 +47,59 @@ export function FeatureMatrix({
   rows,
   competitor,
   caption,
-  bleedToRails = false,
+  framed = false,
 }: {
   rows: ComparisonRow[];
   competitor: string;
   caption: string;
   /**
-   * Pulls the table out past a `px-10` rail container so its row rules end on
-   * the page's vertical guides instead of stopping short of them, then puts the
-   * same inset back on the outer cells so the text still clears the lines. Off
-   * for the CMS pages, whose band is narrower than the rails.
+   * Draws the table as its own outlined block instead of letting it run to the
+   * page's vertical guides. Bled to the rails, the row rules landed on the
+   * guides and the table stopped being an object — it read as page furniture
+   * ruled by the grid, and the first column's text sat right on the left guide
+   * with nothing between them. Framed, it is a panel with an edge of its own
+   * and a margin inside that edge. Off for the CMS pages, whose band is
+   * narrower than the rails and which never had the problem.
    */
-  bleedToRails?: boolean;
+  framed?: boolean;
 }) {
-  // Only the outer cells take the inset back; the middle column keeps its own.
-  const edgeL = bleedToRails ? "pl-10" : "";
-  const edgeR = bleedToRails ? "pr-10" : "";
+  // The frame's own gutter. Only the outer cells carry it; the middle column
+  // keeps the padding it already had.
+  const edgeL = framed ? "pl-8" : "";
+  const edgeR = framed ? "pr-8" : "";
   return (
     <>
-      {/* Below md the same rows as a stack, one capability at a time.
-          Three columns will not fit a phone: at 375px the label column alone
-          took 240 of the 327 available, which left the Assembly column clipped
-          in half and the competitor's off-screen entirely, behind a horizontal
-          scroll with nothing to say it was there. Stacked, both sides of every
-          row are on screen and nothing scrolls sideways. */}
-      <ul className="mt-10 space-y-7 md:hidden">
-        {rows.map((row) => (
-          <li key={row.label}>
-            <p className="type-body text-foreground">{row.label}</p>
-            {row.detail && (
-              <p className="type-caption mt-1 text-muted-foreground">
-                {row.detail}
-              </p>
-            )}
-            {/* The two sides in one outlined card, split by a hairline. The wash
-                alone did not hold them together: only the Assembly row carried
-                it, so it read as a loose grey bar floating over an unstyled row
-                rather than as our side of a pair — and at --muted on white the
-                bar was faint enough to look like a rendering artefact. The
-                outline is what says "these two belong to the label above". */}
-            <div
-              className={`mt-3 divide-y overflow-hidden rounded-lg border ${GRID_LINE} divide-border [[data-theme=dark]_&]:divide-[#383838]`}
-            >
-              <StackedValue name="Assembly" value={row.assembly} own />
-              <StackedValue name={competitor} value={row.competitor} />
-            </div>
-          </li>
-        ))}
-      </ul>
+      <FeatureMatrixPhone rows={rows} competitor={competitor} />
 
-      <div
-        className={`mt-10 hidden overflow-x-auto md:block ${
-          bleedToRails ? "md:-mx-10" : ""
-        }`}
-      >
+      <div className="mt-10 hidden overflow-x-auto md:block">
         {/* table-fixed with declared columns, so the two product columns are the
             same width in every section. Auto layout sized each table to its own
             content, and scrolling the page stepped through five tables whose
             columns never lined up with each other. */}
-        <table className="w-full table-fixed border-collapse text-left">
+        {/* Framed, the frame is drawn by the body cells rather than by a box
+            around the whole table, so the header strip stays OUTSIDE it: the
+            blank top-left cell was the one thing the box enclosed that had
+            nothing in it, and a rule running round an empty corner read as a
+            mistake. Cell-drawn borders need `separate`, since a collapsed
+            table resolves radii away. */}
+        <table
+          className={`w-full table-fixed text-left ${
+            framed ? "border-separate border-spacing-0" : "border-collapse"
+          }`}
+        >
           <caption className="sr-only">{caption}</caption>
+          {/* The label column holds two or three words; at 44% it was the
+              widest column in the table and spent most of itself on white
+              space, while the two columns doing the actual comparing wrapped
+              every other cell to a second line. 30/35/35 gives the prose the
+              room and leaves the labels more than they need. */}
           <colgroup>
-            <col className="w-[44%]" />
-            <col className="w-[28%]" />
-            <col className="w-[28%]" />
+            <col className="w-[30%]" />
+            <col className="w-[35%]" />
+            <col className="w-[35%]" />
           </colgroup>
           <thead>
-            <tr className={`border-b ${GRID_LINE}`}>
+            <tr className={framed ? "" : `border-b ${GRID_LINE}`}>
               <th scope="col" className={`pb-5 pr-8 ${edgeL}`}>
                 <span className="sr-only">Capability</span>
               </th>
@@ -173,88 +118,69 @@ export function FeatureMatrix({
             </tr>
           </thead>
           <tbody>
-            {rows.map((row, i) => (
-              // No rule under the last row: it would cut across the rounded foot
-              // of the wash, and the section divider already closes the block.
-              <tr
-                key={row.label}
-                className={i === rows.length - 1 ? "" : `border-b ${GRID_LINE}`}
-              >
-                <th
-                  scope="row"
-                  className={`py-6 pr-8 align-top font-normal ${edgeL}`}
+            {rows.map((row, i) => {
+              const first = i === 0;
+              const last = i === rows.length - 1;
+              // Framed: every body cell carries the row rule, and the outer
+              // cells carry the frame's sides, so the box closes around the
+              // rows alone. Unframed: the rule stays on the row, and the last
+              // one goes without — it would cut across the rounded foot of the
+              // wash, and the section divider already closes the block.
+              const edge = framed
+                ? `${GRID_LINE} border-b ${first ? "border-t" : ""}`
+                : "";
+              return (
+                <tr
+                  key={row.label}
+                  className={framed || last ? "" : `border-b ${GRID_LINE}`}
                 >
-                  <span className="type-body block text-foreground">
-                    {row.label}
-                  </span>
-                  {row.detail && (
-                    <span className="type-caption mt-1 block text-muted-foreground">
-                      {row.detail}
+                  <th
+                    scope="row"
+                    className={`py-6 pr-8 align-top font-normal ${edgeL} ${edge} ${
+                      framed
+                        ? `border-l ${first ? "rounded-tl-xl" : ""} ${
+                            last ? "rounded-bl-xl" : ""
+                          }`
+                        : ""
+                    }`}
+                  >
+                    <span className="type-body block text-foreground">
+                      {row.label}
                     </span>
-                  )}
-                </th>
-                {/* The wash closes on the last row, so the column reads as one
-                  panel rather than as a fill that runs off the bottom. */}
-                <td
-                  className={`px-6 py-6 align-top ${OWN_COLUMN} ${
-                    i === rows.length - 1 ? "rounded-b-lg" : ""
-                  }`}
-                >
-                  <Cell value={row.assembly} />
-                </td>
-                <td className={`py-6 pl-6 align-top ${edgeR || "pr-6"}`}>
-                  <Cell value={row.competitor} />
-                </td>
-              </tr>
-            ))}
+                    {row.detail && (
+                      <span className="type-caption mt-1 block text-muted-foreground">
+                        {row.detail}
+                      </span>
+                    )}
+                  </th>
+                  {/* Unframed the wash closes on the last row, so the column
+                  reads as one panel rather than as a fill that runs off the
+                  bottom. Framed, the frame's own bottom edge closes it, and a
+                  radius here would curl the wash away from a square corner. */}
+                  <td
+                    className={`px-6 py-6 align-top ${OWN_COLUMN} ${edge} ${
+                      !framed && last ? "rounded-b-lg" : ""
+                    }`}
+                  >
+                    <Cell value={row.assembly} />
+                  </td>
+                  <td
+                    className={`py-6 pl-6 align-top ${edgeR || "pr-6"} ${edge} ${
+                      framed
+                        ? `border-r ${first ? "rounded-tr-xl" : ""} ${
+                            last ? "rounded-br-xl" : ""
+                          }`
+                        : ""
+                    }`}
+                  >
+                    <Cell value={row.competitor} />
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
     </>
-  );
-}
-
-/**
- * One side of one capability, on a phone: who it is, then what they offer.
- *
- * The Assembly side keeps the wash it has in the table, so the highlight
- * survives the change of shape rather than being a desktop-only flourish.
- */
-function StackedValue({
-  name,
-  value,
-  own = false,
-}: {
-  name: string;
-  value: ComparisonRow["assembly"];
-  own?: boolean;
-}) {
-  return (
-    <div
-      className={`flex items-baseline gap-4 px-4 py-3.5 ${own ? OWN_COLUMN : ""}`}
-    >
-      <span
-        className={`w-24 shrink-0 text-sm ${
-          own ? "text-foreground" : "text-muted-foreground"
-        }`}
-      >
-        {name}
-      </span>
-      {/* A mark goes to the far edge of the row, not up against the name: the
-          two names are the same width, so a mark next to them had a card's worth
-          of empty space to its right and read as unplaced. At the edge the two
-          marks line up under each other with the row's width between them and
-          their labels, which is what makes the pair scannable. Prose still fills
-          the row from the name onward — it needs the measure. */}
-      {typeof value === "boolean" ? (
-        <span className="ml-auto">
-          <Mark value={value} />
-        </span>
-      ) : (
-        <p className="type-caption min-w-0 flex-1 text-muted-foreground">
-          {value}
-        </p>
-      )}
-    </div>
   );
 }
