@@ -126,7 +126,6 @@ const FAQS: FAQEntry[] = [
 // on /security).
 type FAQVariant = "cards" | "divided";
 
-
 function FAQItem({
   question,
   shortQuestion,
@@ -170,7 +169,10 @@ function FAQItem({
             // wrapper clips its overflow, so a link on the answer's first line
             // had its outline cropped along the top.
             variant === "divided"
-              ? "space-y-4 pb-6 pr-10 pt-2"
+              ? // pl-4 matches the question's own indent so the answer starts
+                // under it; pr-14 is the old pr-10 plus that indent, keeping
+                // the measure clear of where the chevron sits.
+                "space-y-4 pb-6 pl-2 pr-10 pt-2 sm:pl-4 sm:pr-14"
               : "space-y-4 px-5 pb-4 pt-2"
           }
         >
@@ -230,7 +232,7 @@ function FAQItem({
             answers focus-visible, so a keyboard gets the row as well as the
             ring.
 
-            ONE value for both themes, --foreground at 6%, rather than a light
+            ONE value for both themes, --foreground at 3.5%, rather than a light
             tint plus a dark override. The ink token already flips — near-black
             on the light page, near-white on the dark one — so six percent of it
             is a plate a shade off the ground either way, and there is no second
@@ -242,11 +244,20 @@ function FAQItem({
         <button
           onClick={onToggle}
           aria-expanded={open}
-          className="group relative isolate flex w-full cursor-pointer items-center justify-between gap-6 py-5 text-left outline-none before:absolute before:inset-0 before:-z-10 before:bg-transparent before:transition-colors hover:before:bg-foreground/[0.06] focus-visible:before:bg-foreground/[0.06]"
+          // 8px on a phone, 16 from sm. A phone row is ~327px wide and the
+          // question is the longest thing on it; 16 a side there was 32px of
+          // the measure spent on inset, which pushed two-line questions to
+          // three. This is the plate's padding, not the row's. `before:inset-0` is the
+          // button's whole border box, padding included, so the tint still runs
+          // the full width of the row and still stops exactly on the dotted
+          // rules — the question and the chevron just sit inside it instead of
+          // against its ends. Unhovered the row looks the same as it always
+          // did, give or take the indent.
+          className="group relative isolate flex w-full cursor-pointer items-center justify-between gap-6 px-2 py-5 text-left sm:px-4 outline-none before:absolute before:inset-0 before:-z-10 before:bg-transparent before:transition-colors hover:before:bg-foreground/[0.035] focus-visible:before:bg-foreground/[0.035]"
         >
           <span className="type-body text-foreground">
             {compactQuestions ? (
-              shortQuestion ?? question
+              (shortQuestion ?? question)
             ) : (
               <>
                 <span className="sm:hidden">{shortQuestion ?? question}</span>
@@ -301,7 +312,7 @@ function FAQItem({
       >
         <span className="type-body text-foreground">
           {compactQuestions ? (
-            shortQuestion ?? question
+            (shortQuestion ?? question)
           ) : (
             <>
               <span className="sm:hidden">{shortQuestion ?? question}</span>
