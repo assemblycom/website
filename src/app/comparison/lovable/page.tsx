@@ -32,55 +32,55 @@ const PAGE: VsPage = {
     rows: [
       {
         label: "Best for",
-        assembly: "Service businesses building apps their clients log into",
-        competitor: "Developers and technical founders building any web app",
+        assembly: "Firms whose clients log in",
+        competitor: "Developers and technical founders",
       },
       {
         label: "Time to a working app",
-        assembly: "Minutes to a working app",
-        competitor: "Minutes to a prototype",
+        assembly: "Minutes",
+        competitor: "Minutes — to a prototype",
       },
       {
-        label: "Ready for clients on day one",
-        assembly: "Yes, live in your branded client experience",
-        competitor: "You secure, host, and connect it first",
+        label: "Ready on day one?",
+        assembly: "Yes, in your portal",
+        competitor: "After you secure and host it",
       },
       {
         label: "Logins and permissions",
-        assembly: "Built and maintained by Assembly, not AI-generated",
-        competitor: "Supabase Auth. Access rules generated per app",
+        assembly: "Built in, maintained by us",
+        competitor: "Supabase Auth, per app",
       },
       {
         label: "Client data",
-        assembly: "Built-in CRM. Import your clients, every app uses it",
-        competitor: "Start from an empty database you design",
+        assembly: "One shared CRM",
+        competitor: "Empty database you design",
       },
       {
         label: "Branding",
-        assembly:
-          "Your logo and colors on every plan. Your own domain on Professional and up",
-        competitor: "On-brand at enterprise tier",
+        assembly: "Every plan; domain on Professional",
+        competitor: "Enterprise tier only",
       },
       {
-        label: "Client-facing experience",
-        assembly: "Included: a branded client experience out of the box",
-        competitor: "You build the login and portal yourself",
+        label: "Client experience",
+        assembly: "Included",
+        competitor: "You build it",
       },
       {
-        label: "Code ownership and export",
-        detail: "A real Lovable strength",
-        assembly:
-          "You own your apps and data. Apps live in your Assembly workspace, with no source-code export",
-        competitor: "Full code, GitHub sync, no lock-in",
+        // No `detail` line. It read "A real Lovable strength", which was the
+        // only cell in the table set over two lines, and the competitor cell
+        // beside it already says what the strength is.
+        label: "Code export",
+        assembly: "Yours, no code export",
+        competitor: "Full code, GitHub sync",
       },
       {
-        label: "Pricing after you publish",
-        assembly: "Using live apps consumes no build credits",
-        competitor: "Credits also fund hosting and live-app AI",
+        label: "Live app pricing",
+        assembly: "No credits for live apps",
+        competitor: "Credits fund hosting and AI",
       },
       {
-        label: "HIPAA compliant options",
-        assembly: "Advanced plan and above",
+        label: "HIPAA options",
+        assembly: "Advanced and up",
         competitor: false,
       },
     ],
@@ -89,8 +89,8 @@ const PAGE: VsPage = {
   pillars: [
     {
       heading: "Apps your clients can use",
-      sub: "Lovable ships a prototype at its own address. Assembly builds into a branded client experience ready for your clients to use.",
-      body: "Every Assembly app has two sides: your team works in the dashboard, and each client sees only their own view inside your client experience. There is no second app to secure or connect.",
+      tabLabel: "Client apps",
+      body: "Lovable ships a prototype at its own address. Assembly builds into your branded experience, each client seeing only their own view.",
       visual: {
         label: "Pillar 1 visual",
         description:
@@ -99,8 +99,8 @@ const PAGE: VsPage = {
     },
     {
       heading: "Logins and permissions built in",
-      sub: "Assembly lets you customize access rules and handles authentication, so you do not have to worry about it.",
-      body: "On Lovable, access rules are generated per app. On Assembly we maintain the platform infrastructure, so the logins, permissions, and the boundary between what your team sees and what each client sees stay secure.",
+      tabLabel: "Logins",
+      body: "Lovable generates access rules per app. Assembly maintains the infrastructure, so the team-client boundary holds.",
       visual: {
         label: "Pillar 2 visual",
         description:
@@ -109,7 +109,8 @@ const PAGE: VsPage = {
     },
     {
       heading: "One CRM behind every app",
-      body: "Assembly includes a full CRM: contacts, companies, and custom fields. Every app you build connects to it automatically, and each client only sees what they're allowed to see.",
+      tabLabel: "One CRM",
+      body: "Contacts, companies, custom fields. Every app connects automatically, and each client sees only their own.",
       visual: {
         label: "Pillar 3 visual",
         description:
@@ -120,7 +121,7 @@ const PAGE: VsPage = {
   deepDives: [
     {
       heading: "Describe it. Approve it. Clients use it",
-      body: "Assembly asks a few questions, shows a plan covering what it builds, what data it uses and who sees it, then waits for your approval. Only then does it publish into your client experience. New apps stay hidden from clients until you make them visible, and you can keep chatting to change anything, before launch or six months later.",
+      body: "Assembly shows you a plan — what it builds, what data it uses, who sees it — and waits for your approval. New apps stay hidden until you make them visible.",
       visual: {
         label: "Deep dive, the plan",
         description:
@@ -129,7 +130,7 @@ const PAGE: VsPage = {
     },
     {
       heading: "A full client experience, not just a builder",
-      body: "Lovable gives you a blank canvas. Assembly gives you a client portal out of the box, so you build the part that is distinctly yours. The built-in CRM, the client experience, and ready-made apps for billing, messaging and onboarding are already there.",
+      body: "Lovable gives you a blank canvas. Assembly gives you the CRM, the client portal and ready-made apps, so you build only the part that is yours.",
       visual: {
         label: "Deep dive, the platform",
         description:
@@ -138,8 +139,10 @@ const PAGE: VsPage = {
     },
     {
       heading: "Stop carrying the maintenance yourself",
-      body: "With tools like Lovable, every app is a codebase you own and maintain, and every AI edit can break what worked. On Assembly the most important parts of your clients' experience are engineered once and inherited by every app, on a platform thousands of professional businesses already run on.",
-      note: "Use the phrase engineered once and inherited by every app. Do not write that security fixes ship platform-wide, which is not documented in those words.",
+      body: "With Lovable every app is a codebase you maintain, and every AI edit can break what worked. On Assembly the hard parts are engineered once and inherited by every app.",
+      // EDITORIAL, not rendered: "Use the phrase engineered once and inherited
+      // by every app. Do not write that security fixes ship platform-wide, which
+      // is not documented in those words."
       visual: {
         label: "Deep dive, the platform layer",
         description:
@@ -152,28 +155,22 @@ const PAGE: VsPage = {
     sub: "We would rather tell you than waste your time.",
     items: [
       {
-        title: "You want to sync to GitHub and hand off to developers",
+        title: "GitHub and a dev hand-off",
         body: "Lovable supports that better than Assembly at the moment.",
       },
       {
-        title: "You are building a public site or a consumer app",
+        title: "A public site or consumer app",
         body: "Assembly builds apps people log into, not anonymous web traffic.",
       },
       {
-        title: "You want a fast prototype you are willing to maintain",
+        title: "A prototype you will maintain",
         body: "If the app is not expected to grow, a code-first tool is the shorter path.",
       },
     ],
   },
   pricing: {
     heading: "Predictable pricing by design",
-    sub: "Lovable's credits also fund hosting and your live app's AI usage, so an active app keeps spending.",
-    body: "On Assembly, build credits are used only when the app builder creates or edits an app. Using your live apps consumes none, so a busy client-facing app does not compete with your own building. Hosting is included at no more than $5 a month, and clients can use your apps as much as they want.",
-    visual: {
-      label: "Pricing visual",
-      description:
-        "A two-meter comparison. Left: one credit pool draining from several taps, labelled build, hosting and live-app AI. Right: an Assembly build-credit meter beside a separate, stable running apps bar. Diagrammatic and honest, not a fear graphic.",
-    },
+    body: "Lovable's credits also fund hosting and live AI. Assembly's are spent only on building, and a live app is $5 a month.",
   },
   proof: {
     heading: "Built on Assembly, ready for clients in weeks",

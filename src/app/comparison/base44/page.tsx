@@ -20,7 +20,7 @@ const PAGE: VsPage = {
   competitor: "Base44",
   hero: {
     h1: "The client-ready alternative to Base44",
-    sub: "Base44 ships a fast hosted app. Assembly ships apps into a client experience that is fully branded as yours, ready to use with team and clients.",
+    sub: "Base44 ships a fast hosted app. Assembly ships apps into a client experience branded as yours, ready for team and clients.",
     visual: {
       label: "Hero shot",
       description:
@@ -33,55 +33,48 @@ const PAGE: VsPage = {
     rows: [
       {
         label: "Best for",
-        assembly: "Service businesses building apps their clients log into",
-        competitor: "Non-technical founders shipping a hosted MVP fast",
+        assembly: "Firms whose clients log in",
+        competitor: "Founders shipping an MVP",
       },
       {
         label: "Branding on login",
-        assembly:
-          "Your logo and colors from the first screen. Your own domain with no Assembly badge on Professional and up",
-        competitor: "Base44 logo on the login splash, even on custom domains",
+        assembly: "Yours; no badge on Professional",
+        competitor: "Base44 logo, even on your domain",
       },
       {
         label: "Client experience",
-        assembly: "A branded client experience included out of the box",
-        competitor:
-          "Client-facing apps are possible, but you assemble the experience yourself",
+        assembly: "Branded, included",
+        competitor: "You assemble it",
       },
       {
         label: "Client data",
-        assembly: "Built-in CRM. Import your clients, every app uses it",
-        competitor: "An empty database you design per app",
+        assembly: "One shared CRM",
+        competitor: "Empty database per app",
       },
       {
-        label: "Team and client separation",
-        assembly: "A structural boundary maintained by the platform",
+        label: "Team and client split",
+        assembly: "Held by the platform",
         competitor: "You configure roles",
       },
       {
         label: "Pricing model",
-        assembly: "Build credits for building. Live apps consume none",
-        competitor:
-          "Two credit types, message plus integration. No rollover, no top-up without upgrading",
+        assembly: "Build credits only",
+        competitor: "Two types, no rollover",
       },
       {
         label: "Your data",
-        assembly:
-          "Export your client data anytime. Assembly never trains AI on your data",
-        competitor:
-          "Frontend code export only. Backend and database stay on Base44",
+        assembly: "Yours; never trains AI",
+        competitor: "Frontend code only",
       },
       {
         label: "Beyond the app",
-        assembly: "CRM, billing, messaging, files and contracts, all included",
+        assembly: "CRM, billing, messaging, files",
         competitor: "Added separately",
       },
       {
         label: "Compliance",
-        assembly:
-          "SOC 2 Type II. HIPAA BAA on Advanced. Each app gets its own dedicated database",
-        competitor:
-          "SOC 2 Type II and ISO 27001 per base44.com/security. No public HIPAA BAA",
+        assembly: "SOC 2 Type II; HIPAA on Advanced",
+        competitor: "SOC 2 Type II, ISO 27001",
       },
     ],
   },
@@ -89,9 +82,12 @@ const PAGE: VsPage = {
   pillars: [
     {
       heading: "Your brand, from the very first screen",
-      sub: "Assembly offers full white-labeling on the Professional plan.",
-      body: "Customization and white-labeling is one of the top three reasons customers choose Assembly, raised in 27% of 2,926 sales calls.",
-      note: "The Base44 login-splash claim is current as of September 2026 and sourced to Base44's own feedback board. Base44 shipped platform-wide custom login pages in June 2026 and could close the gap, so re-verify before every refresh of this page.",
+      tabLabel: "Your brand",
+      body: "Full white-labeling on the Professional plan — a top-three reason customers choose Assembly, raised in 27% of 2,926 sales calls.",
+      // EDITORIAL, not rendered: "The Base44 login-splash claim is current as of
+      // September 2026 and sourced to Base44's own feedback board. Base44
+      // shipped platform-wide custom login pages in June 2026 and could close
+      // the gap, so re-verify before every refresh of this page."
       visual: {
         label: "Pillar 1 visual",
         description:
@@ -100,8 +96,8 @@ const PAGE: VsPage = {
     },
     {
       heading: "A real client experience, included",
-      sub: "Every app has a team side and a per-client side.",
-      body: "Base44 can build a client-facing app, but you assemble the client experience yourself. Assembly comes with a branded one out of the box. Apps ship straight into it, and each client sees only their own view.",
+      tabLabel: "Client experience",
+      body: "Base44 builds the app; you assemble the experience. Assembly's comes branded, each client seeing only their own view.",
       visual: {
         label: "Pillar 2 visual",
         description:
@@ -110,9 +106,13 @@ const PAGE: VsPage = {
     },
     {
       heading: "One credit meter, not two",
-      sub: "Using your live apps in Assembly does not require credits.",
-      body: "Base44 meters building and live usage separately, and neither rolls over. On Assembly, once an app is live you pay $5 a month hosting and your clients use it as much as they want. Credits roll over for one month, and you can change your plan whenever you want.",
-      note: "Confirm the exact figures against the live pricing page before publish: paid plans include 200 build credits a month and Free includes 50, unused credits roll over one additional month, extra credits are $0.60 each, extra apps are $5 a month. The rollover policy changed recently.",
+      tabLabel: "Credits",
+      body: "Base44 meters building and usage separately, neither rolling over. Assembly's roll over a month, and a live app is $5.",
+      // EDITORIAL, not rendered: "Confirm the exact figures against the live
+      // pricing page before publish: paid plans include 200 build credits a
+      // month and Free includes 50, unused credits roll over one additional
+      // month, extra credits are $0.60 each, extra apps are $5 a month. The
+      // rollover policy changed recently."
       visual: {
         label: "Pillar 3 visual",
         description:
@@ -123,7 +123,7 @@ const PAGE: VsPage = {
   deepDives: [
     {
       heading: "Built for clients, not just builders",
-      body: "Tools for your team land in your dashboard. Client-facing apps land in your branded client experience with logins already handled. Assembly shows you a plan before it builds, and new apps stay hidden from clients until you make them visible.",
+      body: "Team tools land in your dashboard, client apps in your branded experience with logins handled. New apps stay hidden until you make them visible.",
       visual: {
         label: "Deep dive, the plan",
         description:
@@ -132,7 +132,7 @@ const PAGE: VsPage = {
     },
     {
       heading: "The stack Base44 makes you build is already assembled",
-      body: "Assembly comes with a built-in CRM, a client login experience, and ready-to-use apps for billing, project management and onboarding. Connect the tools you already run through native integrations, embeds, or by asking the builder to integrate them for you.",
+      body: "A built-in CRM, a client login and ready-made apps for billing, projects and onboarding. Connect what you already run through integrations or embeds.",
       visual: {
         label: "Deep dive, the platform",
         description:
@@ -141,8 +141,9 @@ const PAGE: VsPage = {
     },
     {
       heading: "Security you don't generate",
-      body: "Each app in Assembly is scoped to your workspace with its own dedicated database and deployment, and a maintained boundary between team and client data. Logins and permissions are platform infrastructure maintained by Assembly, not generated per app.",
-      note: "Confirm Base44's current certifications at its Trust Center before any comparative security claim ships.",
+      body: "Each app gets its own database and deployment, scoped to your workspace. Logins and permissions are platform infrastructure, not generated per app.",
+      // EDITORIAL, not rendered: "Confirm Base44's current certifications at its
+      // Trust Center before any comparative security claim ships."
       visual: {
         label: "Deep dive, isolation",
         description:
@@ -155,15 +156,15 @@ const PAGE: VsPage = {
     sub: "We would rather tell you than waste your time.",
     items: [
       {
-        title: "You want the fastest possible hosted MVP",
+        title: "The fastest hosted MVP",
         body: "No clients and no brand requirements yet, just an idea to validate.",
       },
       {
-        title: "You want built-in post-launch growth tooling",
-        body: "SEO and GEO dashboards, AI social content and analytics for a public product. Assembly's apps live behind a client login, so those tools do not apply.",
+        title: "Post-launch growth tooling",
+        body: "SEO and AI social tooling for a public product. Assembly's apps live behind a client login.",
       },
       {
-        title: "You are building a public web app or an online store",
+        title: "A public web app or store",
         body: "Not something your clients log into.",
       },
     ],

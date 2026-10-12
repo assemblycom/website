@@ -1,9 +1,11 @@
+import { CardRail, RailCard } from "@/components/ui/card-rail";
 import { CTA } from "@/components/home/cta";
 import { FAQ, type FAQEntry } from "@/components/home/faq";
 import { Testimonials } from "@/components/home/testimonials";
 import { FeatureMatrix } from "@/components/comparison/feature-matrix";
 import { GRID_LINE, GridDivider, GridRails } from "@/components/ui/grid-lines";
-import { PostToc } from "@/components/blog/post-toc";
+import { PillarsTabs } from "@/components/comparison/pillars-tabs";
+import { PortalPricing } from "@/components/client-portal/portal-pricing";
 import { Reveal } from "@/components/ui/reveal";
 import { VisualSlot } from "@/components/ui/visual-slot";
 import { DEMO_URL, SIGNUP_URL } from "@/lib/constants";
@@ -36,16 +38,16 @@ export interface VsPage {
   pillarsHeading: string;
   pillars: {
     heading: string;
-    sub?: string;
+    /** Shown on the pillars control in place of `heading`. The headings are
+     *  written as claims and are too long for a cell; same job `shortQuestion`
+     *  does on an FAQ row. */
+    tabLabel?: string;
     body: string;
-    /** A fact-check or legal flag the page must not outrun. */
-    note?: string;
     visual: Visual;
   }[];
   deepDives: {
     heading: string;
     body: string;
-    note?: string;
     visual: Visual;
   }[];
   betterFit: {
@@ -56,9 +58,8 @@ export interface VsPage {
   /** Only the Lovable page runs pricing as its own section. */
   pricing?: {
     heading: string;
-    sub: string;
+    /** One paragraph. PortalPricing takes a single lead under its heading. */
     body: string;
-    visual: Visual;
   };
   proof: {
     heading: string;
@@ -120,13 +121,13 @@ export function VsComparisonPage({
             <div className="mx-auto mt-8 flex w-full max-w-xs flex-col items-stretch gap-3 sm:w-auto sm:max-w-none sm:flex-row sm:items-center sm:justify-center">
               <a
                 href={SIGNUP_URL}
-                className="rounded-lg bg-foreground px-5 py-2.5 text-center text-sm text-background transition-opacity hover:opacity-90"
+                className="w-full rounded-lg border border-transparent bg-foreground px-5 py-3 text-center text-sm text-background transition-opacity hover:opacity-90 sm:w-auto sm:py-2.5"
               >
                 Start building for free
               </a>
               <a
                 href={DEMO_URL}
-                className="rounded-lg border border-foreground/20 bg-transparent px-5 py-2.5 text-center text-sm text-foreground transition-colors hover:bg-foreground/5"
+                className="w-full rounded-lg border border-foreground/20 bg-transparent px-5 py-3 text-center text-sm text-foreground transition-colors hover:bg-foreground/5 sm:w-auto sm:py-2.5 [[data-theme=dark]_&]:border-white/25"
               >
                 Book a demo
               </a>
@@ -166,69 +167,31 @@ export function VsComparisonPage({
               rows={page.glance.rows}
               competitor={page.competitor}
               caption={`Assembly compared with ${page.competitor}`}
-              bleedToRails
+              framed
             />
           </Reveal>
         </section>
 
         <GridDivider />
 
+        {/* The three pillars as one tabbed panel — /ai-app-builder's
+            how-it-works shape, on the same control. See PillarsTabs for why
+            the contents rail that used to stand beside them went.
+
+            Heading and control are ONE section with no rule between them. They
+            were two, divided, which read as a title band and then a separate
+            region that happened to follow it — and the rule put a full stop
+            between a heading and the thing it introduces. Ranged left for the
+            same reason /ai-app-builder ranges its how-it-works left: the
+            control, the panel and all of the panel's copy start on that line,
+            and a centred heading over them was the one thing that did not. */}
         <section className={`${RAIL} py-16 md:py-24`}>
-          <h2 className="type-h2 text-balance text-center">
-            {page.pillarsHeading}
-          </h2>
-        </section>
-
-        <GridDivider />
-
-        {/* One region rather than a section per pillar, with the site's own
-            contents rail standing beside it. Six full-width sections in a row
-            gave the reader no sense of how long the argument was or where they
-            were in it; the rail answers both without pinning the scroll. */}
-        <section className={`${RAIL} py-16 md:py-24`}>
-          <div className="grid gap-12 md:grid-cols-[13rem_minmax(0,1fr)] md:gap-16">
-            <PostToc
-              headings={page.pillars.map((pillar) => ({
-                id: pillarId(pillar.heading),
-                text: pillar.heading,
-              }))}
-              // Sticky, not fixed: it holds beside the pillars and lets go at
-              // the end of them, so it never outlives the region it indexes.
-              className="hidden md:sticky md:top-28 md:block md:self-start"
-            />
-
-            <div className="space-y-16 md:space-y-24">
-              {page.pillars.map((pillar) => (
-                <div
-                  key={pillar.heading}
-                  id={pillarId(pillar.heading)}
-                  // Matches the line the rail counts a heading as reached at,
-                  // so a jumped-to pillar is current the moment it lands.
-                  className="scroll-mt-28"
-                >
-                  <Reveal>
-                    <h3 className="type-h3 text-balance leading-[1.2]">
-                      {pillar.heading}
-                    </h3>
-                    {pillar.sub && (
-                      <p className="mt-4 max-w-xl text-muted-foreground">
-                        {pillar.sub}
-                      </p>
-                    )}
-                    <p className="mt-4 max-w-xl text-muted-foreground">
-                      {pillar.body}
-                    </p>
-                    {pillar.note && <Note>{pillar.note}</Note>}
-                    <VisualSlot
-                      className="mt-8"
-                      label={pillar.visual.label}
-                      description={pillar.visual.description}
-                    />
-                  </Reveal>
-                </div>
-              ))}
+          <h2 className="type-h2 text-balance">{page.pillarsHeading}</h2>
+          <Reveal>
+            <div className="mt-10 md:mt-12">
+              <PillarsTabs pillars={page.pillars} />
             </div>
-          </div>
+          </Reveal>
         </section>
 
         <GridDivider />
@@ -248,7 +211,6 @@ export function VsComparisonPage({
                     <p className="mt-4 max-w-md text-muted-foreground">
                       {dive.body}
                     </p>
-                    {dive.note && <Note>{dive.note}</Note>}
                   </div>
                   <VisualSlot
                     ratio="4 / 3"
@@ -265,9 +227,10 @@ export function VsComparisonPage({
 
         {/* The honest boundary. Visually calmer than the pillars on purpose:
             it should read as a fair-minded aside, not another pitch. */}
-        {/* No bottom padding on desktop: the columns carry it instead, so the
-            rules between them run all the way down to the section's own rule. */}
-        <section className={`${RAIL} pb-16 pt-16 md:pb-0 md:pt-24`}>
+        {/* The section carries its own bottom padding again. It used to hand
+            that to the columns so the rules between them could run down to the
+            section's rule; the cards have no rules to run. */}
+        <section className={`${RAIL} py-16 md:py-24`}>
           <Reveal>
             <h2 className="type-h2 text-balance text-center">
               {page.betterFit.heading}
@@ -275,28 +238,28 @@ export function VsComparisonPage({
             <p className="mx-auto mt-4 max-w-2xl text-balance text-center text-muted-foreground">
               {page.betterFit.sub}
             </p>
-            {/* Bled out to the rails and divided by them rather than boxed:
-                three outlined cards read as three offers, which is the one
-                thing this section is not. */}
-            <div className="-mx-6 mt-12 md:-mx-10">
-              <div className={`hidden border-t md:block ${GRID_LINE}`} />
-              <div className="grid md:grid-cols-3">
-                {page.betterFit.items.map((item, i) => (
-                  <div
+            {/* The site's card rail, which is what /client-portal runs for
+                its build steps — so on a phone these three step sideways with
+                arrows under them instead of stacking into three full-width
+                panels and a screen and a half of scrolling. RailCard's default
+                shape is already this one: a square --surface panel with the
+                copy under it, which is why there is no bespoke card here any
+                more. The panels are empty until the visuals land.
+
+                From lg the rail fits all three and its arrows go quiet on
+                their own, so the desktop row is unchanged. */}
+            <div className="mt-12">
+              <CardRail label={page.betterFit.heading}>
+                {page.betterFit.items.map((item) => (
+                  <RailCard
                     key={item.title}
-                    className={`px-6 py-8 md:px-10 md:pb-24 md:pt-12 ${
-                      i > 0
-                        ? `border-t md:border-l md:border-t-0 ${GRID_LINE}`
-                        : ""
-                    }`}
+                    name={item.title}
+                    caption={item.body}
                   >
-                    <p className="text-sm">{item.title}</p>
-                    <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                      {item.body}
-                    </p>
-                  </div>
+                    {null}
+                  </RailCard>
                 ))}
-              </div>
+              </CardRail>
             </div>
           </Reveal>
         </section>
@@ -304,28 +267,19 @@ export function VsComparisonPage({
         {page.pricing && (
           <>
             <GridDivider />
-            <section className={`${RAIL} py-16 md:py-24`}>
-              <Reveal>
-                <div className="grid gap-10 md:grid-cols-2 md:gap-16">
-                  <div className="md:self-start">
-                    <h2 className="type-h2 text-balance">
-                      {page.pricing.heading}
-                    </h2>
-                    <p className="mt-4 max-w-md text-muted-foreground">
-                      {page.pricing.sub}
-                    </p>
-                    <p className="mt-4 max-w-md text-muted-foreground">
-                      {page.pricing.body}
-                    </p>
-                  </div>
-                  <VisualSlot
-                    ratio="4 / 3"
-                    label={page.pricing.visual.label}
-                    description={page.pricing.visual.description}
-                  />
-                </div>
-              </Reveal>
-            </section>
+            {/* /client-portal's pricing block, rendered as-is: the same four
+                outlined cards, the same tiers, the same quiet button under the
+                copy. Pricing is one object on this site, and a comparison page
+                that drew its own version of it would be a second — which is
+                what the first two attempts here were, one of them a hand-built
+                card that came out nothing like the rest of the site.
+
+                It brings its own section, padding and 1200px rail, matching
+                the RAIL this page uses elsewhere. */}
+            <PortalPricing
+              heading={page.pricing.heading}
+              body={page.pricing.body}
+            />
           </>
         )}
 
@@ -352,30 +306,41 @@ export function VsComparisonPage({
 
       <div className="relative pb-10 md:pb-16">
         <GridRails />
-        <FAQ heading="Frequently asked questions" items={page.faqs} twoColumn />
+        {/* The divided list, matching the other hand-built pages in this family
+            (/ai-app-builder, /client-portal and the two vertical pages). The
+            two-column card grid is the CMS pages' FAQ; these pages read as one
+            set, so they take one FAQ. */}
+        <FAQ
+          heading="Frequently asked questions"
+          items={page.faqs}
+          variant="divided"
+          dottedRules
+          compactQuestions
+        />
       </div>
 
       <div className="border-t border-border [[data-theme=dark]_&]:border-[#383838]" />
 
-      <CTA heading={page.cta.heading} />
+      {/* The short lead, the one /pricing, /templates, /customers and the
+          embeds page already close on — not a third version of this sentence.
+          The CTA's own default is the long form, which the homepage and the
+          builder and portal pages still use. */}
+      <CTA
+        heading={page.cta.heading}
+        subheading={
+          <>
+            Stop stitching together tools that were never meant to fit.
+            {/* One sentence per line from sm up. The CTA's own default breaks
+                at md, which left every width between 640 and 768 wrapping the
+                pair into three ragged lines — 400px, then 192, then 72. The
+                first sentence fits a 640px column on its own, so the break
+                can start there. Below sm it wraps naturally. */}
+            <br className="hidden sm:inline" /> Run and build everything in one
+            place.
+          </>
+        }
+      />
     </>
-  );
-}
-
-/** A fact-check or legal flag, kept beside the claim it qualifies. */
-/** A pillar's anchor, derived from its heading so the two can never drift. */
-function pillarId(heading: string) {
-  return `pillar-${heading
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "")}`;
-}
-
-function Note({ children }: { children: React.ReactNode }) {
-  return (
-    <p className="mt-5 max-w-md rounded-lg bg-muted p-4 text-sm leading-relaxed text-muted-foreground">
-      {children}
-    </p>
   );
 }
 
@@ -408,16 +373,16 @@ function SplitHero({
         <p className="type-lead mt-6 max-w-lg text-pretty text-muted-foreground">
           {page.hero.sub}
         </p>
-        <div className="mt-8 flex flex-wrap items-center gap-3">
+        <div className="mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-center">
           <a
             href={SIGNUP_URL}
-            className="rounded-lg bg-foreground px-5 py-2.5 text-center text-sm text-background transition-opacity hover:opacity-90"
+            className="w-full rounded-lg border border-transparent bg-foreground px-5 py-3 text-center text-sm text-background transition-opacity hover:opacity-90 sm:w-auto sm:py-2.5"
           >
             Start building for free
           </a>
           <a
             href={DEMO_URL}
-            className="rounded-lg border border-foreground/20 bg-transparent px-5 py-2.5 text-center text-sm text-foreground transition-colors hover:bg-foreground/5"
+            className="w-full rounded-lg border border-foreground/20 bg-transparent px-5 py-3 text-center text-sm text-foreground transition-colors hover:bg-foreground/5 sm:w-auto sm:py-2.5 [[data-theme=dark]_&]:border-white/25"
           >
             Book a demo
           </a>
