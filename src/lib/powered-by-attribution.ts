@@ -1,4 +1,4 @@
-import { PORTAL_SIGNUP_URL } from "@/lib/portal-api";
+import { PORTAL_ID, PORTAL_SIGNUP_URL } from "@/lib/portal-api";
 
 /**
  * The tracking contract for /powered-by and /built-by, as the growth-loops PRD
@@ -8,6 +8,9 @@ import { PORTAL_SIGNUP_URL } from "@/lib/portal-api";
  *
  *   /powered-by?utm_source=assembly&utm_medium=powered_by&utm_campaign=badge
  *              &utm_content=client_login&ref=<workspace id>&firm=<firm name>
+ *
+ * /referrals links land here too (see referral-link.ts), with
+ * `utm_medium=referral` and the two referral params, `first` and `referred`.
  */
 
 /**
@@ -42,6 +45,10 @@ export interface PoweredByAttribution {
    * anyone can write it, so the page names only a firm the lookup found.
    */
   firm?: string;
+  /** The referrer's first name, from a /referrals link. Signup shows it. */
+  first?: string;
+  /** The referral code, from a /referrals link on the old program. */
+  referred?: string;
   utm: Partial<Record<UtmKey, string>>;
 }
 
@@ -54,6 +61,8 @@ const BADGE_UTM = {
 
 // A firm name long enough to break the heading is not one a badge wrote.
 const MAX_FIRM_LENGTH = 80;
+// Matches referral-link.ts, which drops a longer first name from the slug.
+const MAX_FIRST_NAME_LENGTH = 50;
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
@@ -80,9 +89,16 @@ export function attributionFromSearchParams(
     if (value) utm[key] = value;
   }
   const firm = first(params, "firm");
+  const firstName = first(params, "first");
+  const referred = first(params, "referred");
   return {
     ref: first(params, "ref"),
     firm: firm && firm.length <= MAX_FIRM_LENGTH ? firm : undefined,
+    first:
+      firstName && firstName.length <= MAX_FIRST_NAME_LENGTH
+        ? firstName
+        : undefined,
+    referred: referred && PORTAL_ID.test(referred) ? referred : undefined,
     utm,
   };
 }
@@ -99,7 +115,13 @@ export function shareAttribution(ref: string): PoweredByAttribution {
 }
 
 /** Signup, with everything the visit carried. */
-export function signupHref({ ref, firm, utm }: PoweredByAttribution): string {
+export function signupHref({
+  ref,
+  firm,
+  first,
+  referred,
+  utm,
+}: PoweredByAttribution): string {
   const params = new URLSearchParams();
   for (const key of UTM_KEYS) {
     const value = utm[key];
@@ -107,6 +129,8 @@ export function signupHref({ ref, firm, utm }: PoweredByAttribution): string {
   }
   if (ref) params.set("ref", ref);
   if (firm) params.set("firm", firm);
+  if (first) params.set("first", first);
+  if (referred) params.set("referred", referred);
   const query = params.toString();
   // PORTAL_SIGNUP_URL already carries `?referrer=`, which the app needs to
   // create the workspace on the current pricing model.

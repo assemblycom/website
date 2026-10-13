@@ -1,14 +1,16 @@
 import "server-only";
 
 import { getFirmName } from "@/lib/firm-branding";
-import {
-  PORTAL_API_URL,
-  PORTAL_ID,
-  PORTAL_SIGNUP_URL,
-} from "@/lib/portal-api";
+import { PORTAL_API_URL, PORTAL_ID } from "@/lib/portal-api";
 
 /**
- * Where a referral link, `/referrals/{firstName}_{code}`, sends the visitor.
+ * Where a referral link, `/referrals/{firstName}_{code}`, sends the visitor:
+ * /powered-by, which says what Assembly is before asking for a signup. Old
+ * links travel well past the invite they were made for (one sits in a
+ * third-party review of client portals), and a reader there knows nothing
+ * about us yet. /powered-by forwards every param below to signup unchanged, so
+ * the referrer is credited exactly as when the link went straight there.
+ *
  * Every visit gets the PRD's Loop 2 UTMs, so every referral click is tracked.
  * On top of them:
  *
@@ -22,7 +24,7 @@ import {
 const DEADLINE_MS = 3_000;
 const MAX_FIRST_NAME_LENGTH = 50;
 
-export async function referralSignupUrl(
+export async function referralLandingPath(
   slug: string,
   viaEmail: boolean,
 ): Promise<string> {
@@ -36,12 +38,12 @@ export async function referralSignupUrl(
   };
 
   const referral = await lookupReferral(code);
-  if (!referral) return signupWith(utm);
+  if (!referral) return poweredByWith(utm);
 
   const ref = referral.referrerPortalId;
-  if (!ref) return signupWith({ ...utm, referred: code });
+  if (!ref) return poweredByWith({ ...utm, referred: code });
 
-  return signupWith({
+  return poweredByWith({
     ...utm,
     ref,
     firm: await beforeDeadline(getFirmName(ref), deadline),
@@ -93,14 +95,13 @@ async function lookupReferral(
   }
 }
 
-/** Signup with these params added. Empty ones are left out. */
-function signupWith(params: Record<string, string | undefined>): string {
+/** /powered-by with these params. Empty ones are left out. */
+function poweredByWith(params: Record<string, string | undefined>): string {
   const query = new URLSearchParams();
   for (const [key, value] of Object.entries(params)) {
     if (value) query.set(key, value);
   }
-  // PORTAL_SIGNUP_URL already has a query string (`?referrer=`), so this appends.
-  return `${PORTAL_SIGNUP_URL}&${query}`;
+  return `/powered-by?${query}`;
 }
 
 /** The promise's value, or undefined if it hasn't settled by the deadline. */

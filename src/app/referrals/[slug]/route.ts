@@ -1,11 +1,11 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-import { referralSignupUrl } from "@/lib/referral-link";
+import { referralLandingPath } from "@/lib/referral-link";
 
 /**
  * The referral link the product hands out, for copy-link and the invite email
- * (which adds `?via=email`). Always redirects to signup, never an error page;
- * see referral-link.ts for where each kind of code lands.
+ * (which adds `?via=email`). Always redirects to /powered-by, never an error
+ * page; see referral-link.ts for the params each kind of code carries.
  */
 export async function GET(
   request: NextRequest,
@@ -17,7 +17,7 @@ export async function GET(
   // 307 and no-store: where a code leads depends on the referrer's
   // growth-loops flag, which can change under the same link.
   const response = NextResponse.redirect(
-    await referralSignupUrl(slug, viaEmail),
+    new URL(await referralLandingPath(slug, viaEmail), request.url),
     307,
   );
   response.headers.set("Cache-Control", "no-store");
