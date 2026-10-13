@@ -150,7 +150,20 @@ export function StackPicker({
       //
       // Below lg the card does not bleed — the grid has padding on both sides
       // there — so it keeps a plain closed panel with its border all round.
-      className="relative flex h-[300px] flex-col justify-center gap-1 rounded-2xl border border-border bg-[var(--surface)] p-4 md:h-[380px] md:p-5 lg:h-[440px] lg:rounded-r-none lg:border-r-0 lg:border-transparent lg:bg-transparent [[data-theme=dark]_&]:border-[#383838] [[data-theme=dark]_&]:lg:border-transparent"
+      // AND FROM lg IT GETS AN EDGE BACK, as a lit ring rather than a border.
+      //
+      // Dropping the border at lg is right — there is no right side to draw on
+      // a card that runs off the grid — but it left the panel with no edge at
+      // ALL on the three sides that do exist, so in dark a near-black list sat
+      // on a near-black page as rows floating in space rather than as a screen.
+      //
+      // .mock-lit-edge is the site's own answer to exactly that: a 1px ring lit
+      // at the top, down to the plain hairline by 45%, gone by the foot — the
+      // same edge the cropped product shots wear. --bleed-right masks it to
+      // dissolve rightward on the card's own fill stops so the one edge that is
+      // a crop stays a crop, and switches the whole ring off below lg, where
+      // the border is still there doing the job. See globals.css.
+      className="mock-lit-edge mock-lit-edge--bleed-right relative flex h-[300px] flex-col justify-center gap-1 rounded-2xl border border-border bg-[var(--surface)] p-4 md:h-[380px] md:p-5 lg:h-[440px] lg:rounded-r-none lg:border-r-0 lg:border-transparent lg:bg-transparent [[data-theme=dark]_&]:border-[#383838] [[data-theme=dark]_&]:lg:border-transparent"
       // THE SELECTION STAYS WHERE YOU LEFT IT.
       //
       // Leaving the panel used to snap it back to the first row, on the

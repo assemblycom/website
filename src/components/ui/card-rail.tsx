@@ -423,6 +423,26 @@ export function CardRail({
     setDragging(false);
   };
 
+  // THE BROWSER'S OWN DRAG IS NOT THIS ONE, and it has to be called off.
+  //
+  // An <img> is natively draggable, so a mousedown that lands on a card's
+  // artwork and then moves starts an HTML5 drag — the picture lifts out under
+  // a translucent ghost and follows the cursor, and the rail stays put.
+  // Grabbing a photo to scroll the rail is the most natural place to grab it,
+  // so the one gesture this component exists to serve was the one that broke
+  // it, and only on the cards that happen to carry an image.
+  //
+  // select-none below does not cover this: it governs TEXT selection, and a
+  // native image drag is a separate mechanism that fires regardless. It is
+  // also applied off `dragging`, a state flip that lands a frame after the
+  // pointer went down — by which time dragstart has already fired.
+  //
+  // Suppressed unconditionally rather than behind `steppable`: dragging a
+  // marketing card's photograph out of the page is not a gesture worth
+  // preserving at any width, and leaving it live below the breakpoint would
+  // mean the same grab behaved differently either side of it.
+  const onDragStart = (e: React.DragEvent) => e.preventDefault();
+
   // A drag that ends on top of a card would otherwise fire that card's click.
   const onClickCapture = (e: React.MouseEvent) => {
     if (!drag.current?.moved) return;
@@ -489,6 +509,7 @@ export function CardRail({
             onPointerMove={onPointerMove}
             onPointerUp={endDrag}
             onPointerCancel={endDrag}
+            onDragStart={onDragStart}
             onClickCapture={onClickCapture}
             role="group"
             aria-label={label}

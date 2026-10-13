@@ -142,14 +142,22 @@ export function BrandedLoginScreen({
         // logo half of it and none of the colour half — the screen could
         // belong to any firm. Coloured, the mark and the button are the same
         // one value, which is what a brand setting actually does.
+        // 6px, down from 10. At 10 on a 36px tile the radius was 28% of the
+        // side — past an app icon's own proportion and into a pill, so the
+        // firm's mark read as a rounded badge rather than as a logo someone
+        // uploaded. 6px is a sixth of the side, which is the shape a square
+        // logo tile actually wears, and it leaves the 16px glyph inside more
+        // room at the corners. Both branches move together: they are one tile
+        // drawn in two colours, and a radius that differed between them would
+        // be visible the moment the brand setting is toggled.
         brand ? (
           <span
-            className={`flex size-9 items-center justify-center rounded-[10px] ${BRAND_FILL}`}
+            className={`flex size-9 items-center justify-center rounded-[6px] ${BRAND_FILL}`}
           >
             <IconBrandMark className="size-4" />
           </span>
         ) : (
-          <span className="flex size-9 items-center justify-center rounded-[10px] bg-[var(--mock-brand)] text-white [[data-theme=dark]_&]:bg-[#f2f2f2] [[data-theme=dark]_&]:text-[#111111]">
+          <span className="flex size-9 items-center justify-center rounded-[6px] bg-[var(--mock-brand)] text-white [[data-theme=dark]_&]:bg-[#f2f2f2] [[data-theme=dark]_&]:text-[#111111]">
             <IconBrandMark className="size-4" />
           </span>
         )

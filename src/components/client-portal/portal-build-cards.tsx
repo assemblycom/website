@@ -200,6 +200,32 @@ const MOVE =
   "motion-safe:transition-all motion-safe:duration-500 motion-safe:ease-out motion-reduce:transition-none";
 
 /** The frame each card's scene is drawn in, scaled to whatever the rail gives it. */
+// How far a BLEED scene's box overruns its own design height, in design px.
+//
+// It covers a rounding slack that is nobody's bug in particular. MockFit sizes
+// the scene by `el.clientHeight`, which is an INTEGER, while the card it is
+// measuring is a fraction of a pixel taller than that — a rail card's height
+// comes from a percentage width through an aspect ratio, so 255.05 is the
+// normal case and 255 is what the scale gets told. The scene therefore lands
+// flush against a card that is still 0.05px deeper, and in a bleed scene,
+// where the artwork is supposed to run off the foot, that last sliver is the
+// card's GROUND: on step 3 a periwinkle hairline drawn under the whole width
+// of the screen, which reads as an outline somebody added rather than as the
+// crop it is.
+//
+// Fixed here rather than in MockFit on purpose. Measuring the fractional
+// height there would re-scale every mock on the site to chase a rounding
+// error, and the seam only has consequences where artwork meets the card's
+// edge — which is this flag and no other scene.
+//
+// 2px, not 1: the overrun is spent in DESIGN pixels and then scaled down with
+// everything else, and these scenes run at about 0.56 on a phone, so one pixel
+// buys half of one on screen — not reliably more than a slack that can be just
+// under a whole pixel. Two buys a little over one and still costs nothing: the
+// box is centred, so this is ~0.5px added at the top and bottom of a scene
+// whose foot is already a crop.
+const BLEED_FOOT_OVERRUN = 2;
+
 function Scene({
   children,
   bleed = false,
@@ -290,7 +316,10 @@ function Scene({
             : bleed
               ? {
                   width: w,
-                  height: h,
+                  // See BLEED_FOOT_OVERRUN. The box is a touch taller than the
+                  // design height it is SCALED by — --template-mock-h stays `h`,
+                  // so the scale is unchanged and only the box's own edges move.
+                  height: h + BLEED_FOOT_OVERRUN,
                   // The right edge only. It was a two-stop ramp that changed rate
                   // hard enough to draw a vertical line down the card; the shared
                   // eased curve is what fixed that — see fade-mask.ts.
@@ -308,7 +337,19 @@ function Scene({
         }
         className={`${boxSizeClass ?? ""} ${
           bleed
-            ? "flex flex-col justify-end overflow-hidden pl-5 pt-5"
+            ? // WHICH END THE CROP FALLS ON, and it changes with the slot.
+              //
+              // A bleed scene is taller than its card, so one end is always
+              // lost. From `sm` the card is 3:4 and the scene is pinned to the
+              // FOOT: the board's rows run off the bottom, where a cut row
+              // still reads as a list carrying on.
+              //
+              // On a phone the card is square and the box loses 113px, which
+              // at the foot took the sidebar's own header — the firm's mark
+              // and name — off the top of a card whose subject is the firm's
+              // portal. Pinned to the top instead, the same 113px comes off
+              // the bottom, which is the end that was always meant to be cut.
+              "flex flex-col justify-start overflow-hidden pl-5 pt-5 sm:justify-end"
             : `flex flex-col gap-4 p-5 ${
                 // justify-center centres a short scene in the box; with the
                 // foot open the child is meant to FILL it and be cut, so it
@@ -370,6 +411,44 @@ type SceneProps = { plain?: boolean };
  * below `sm` (see BuilderHowItWorks), so the scene lands on the slot exactly
  * and there is no dead panel in either axis at any phone width.
  */
+/**
+ * The rail scene's box on a PHONE, where the card is square.
+ *
+ * The default box is 340x453 — 3:4, which is the shape a rail card takes from
+ * `sm` up and the reason that number was chosen. On a phone the card is
+ * `aspect-square`, and MockFit fits the WHOLE box, so a 3:4 scene in a 1:1
+ * slot is sized by its height: it scales to 255/453 and sits centred with a
+ * band of card down either side.
+ *
+ * Two things follow from that, and they were reported separately as if they
+ * were separate bugs. The type comes out small — every size in these mocks is
+ * drawn at design scale and then multiplied by 0.56, so 12px lands near 7px.
+ * And a window meant to BLEED off the right edge cannot reach it, because the
+ * artwork stops short of the card on both sides; the crop that makes a screen
+ * read as a window onto something larger simply does not happen.
+ *
+ * Squaring the box on a phone fixes both at once: width and height constrain
+ * equally, so the scene fills the card instead of being letterboxed, the scale
+ * goes to 255/340 — about a third larger — and the right-hand bleed lands on
+ * the card's own edge. From `sm` the box goes back to 453 and nothing changes,
+ * because from `sm` the card is 3:4 again and the default was always right.
+ *
+ * Content is centred in the box, so the 113px a phone loses off the design
+ * height comes off the empty air above and below the artwork rather than the
+ * artwork. Any scene whose subject is TALLER than 340 would be cropped by this
+ * and should not take it — which is why it is opt-in per card rather than the
+ * new default.
+ */
+const RAIL_SCENE_PHONE = {
+  vars: "[--template-mock-w:340px] [--template-mock-h:340px] sm:[--template-mock-h:453px]",
+  size: "w-[340px] h-[340px] sm:h-[453px]",
+};
+/** Spread form, so a card opts in with one line and cannot pair the wrong two. */
+const RAIL_SCENE_PHONE_PROPS = {
+  boxClass: RAIL_SCENE_PHONE.vars,
+  boxSizeClass: RAIL_SCENE_PHONE.size,
+};
+
 const PANEL_SCENE_PHONE = {
   vars: "[--template-mock-w:360px] [--template-mock-h:300px] sm:[--template-mock-w:620px] sm:[--template-mock-h:400px]",
   size: "w-[360px] h-[300px] sm:w-[620px] sm:h-[400px]",
@@ -868,9 +947,22 @@ function ChecklistWindow({
       {/* The header takes the well's tint. On --mock-window it was the same
             white as the rows under it, so the card opened on five identical
             bands and the one naming the thing had nothing marking it as the
-            header — the rule under it was doing that job alone. */}
+            header — the rule under it was doing that job alone.
+
+            A RUNG HIGHER IN DARK. --mock-well is #292929 against the window's
+            #212121 — eight points, which is enough to separate a header from
+            rows on a card where the window is the only object, and not enough
+            once the window is a panel lying on a PHOTOGRAPH. There the whole
+            thing reads as one dark rectangle on a bright picture and the
+            eight-point step inside it disappears, so the list opened on five
+            bands again. --mock-well-2 is #303030, fifteen points up, which
+            holds the header apart at the distance the photograph now demands.
+
+            Light is untouched: there the wells RECESS from the window, the
+            step is read against a near-white panel, and nothing about the
+            ground behind it changed. */}
       <div
-        className={`flex items-center gap-2.5 border-b bg-[var(--mock-well)] px-4 py-3 ${LINE}`}
+        className={`flex items-center gap-2.5 border-b bg-[var(--mock-well)] px-4 py-3 [[data-theme=dark]_&]:bg-[var(--mock-well-2)] ${LINE}`}
       >
         <Ring value={done / items.length} />
         <span
@@ -1923,7 +2015,18 @@ export function BuildCard({ plain = false }: SceneProps = {}) {
               boxClass: PANEL_SCENE_WIDE.vars,
               boxSizeClass: PANEL_SCENE_WIDE.size,
             }
-          : {})}
+          : // The phone box, like the other rail cards — see RAIL_SCENE_PHONE.
+            // It matters more here than anywhere: this card's whole idea is a
+            // screen running off the card's right edge, and letterboxed into a
+            // square slot it could not reach that edge, so the one card built
+            // to be a crop was the one that read as a framed picture.
+            //
+            // It is a BLEED scene, so the 113px the box loses on a phone comes
+            // off the TOP rather than off the middle — the window is pinned to
+            // the foot. That is the right end to lose it: the board's rows
+            // carry on down past the cut either way, and the sidebar's own
+            // header stays inside what is left.
+            RAIL_SCENE_PHONE_PROPS)}
       >
         {/* 320 wide, which is exactly what the card shows — the scene is 340 and
           the bleed insets it by 20. So the board is cropped on the BOTTOM only,
@@ -2400,6 +2503,46 @@ const REVIEW_COMMENT = {
 // itself does not show that.
 const REVIEW_PIN = { initials: "AB" };
 
+// THE PIN'S FACE IS A PERSON'S COLOUR, NOT THE FIRM'S.
+//
+// It read --mock-brand, which is the wrong token for an avatar: that is the
+// FIRM's colour — the slab behind the branded sidebar, the logo tile, the
+// document mark — and it is near-black in both themes by design. Borrowed for
+// a face it made the one client in the scene a black disc, which is the same
+// object the brand mark is and reads as chrome rather than as somebody.
+//
+// #5c78b9 is the site's own periwinkle at its INK step — AVATAR_TINTS
+// .periwinkle.fg in whole-stack.tsx, where the mock avatar palette lives and
+// the rule is one colour per person. Nothing new enters the palette.
+//
+// PINNED ACROSS BOTH THEMES, like the tick on the approval plates and for the
+// same reason: this mark sits on a photograph and inside a hardcoded white
+// bubble, neither of which themes, so a token that flipped underneath it
+// would be the mismatch rather than the fix.
+//
+// The ink step rather than the accent itself (#7da4ff): the disc carries 8px
+// white initials, and on the lighter value they wash out. #5c78b9 holds them.
+const PIN_FACE = "bg-[#5c78b9]";
+
+// CLARA'S FACE, AND IT HAS TO BE A DIFFERENT ONE.
+//
+// She read --mock-brand too, for the same wrong reason the pin did: that is
+// the firm's near-black slab, not a person. With the pin moved to periwinkle
+// she was also the only black disc left in a scene that now had a coloured
+// one, which reads as the two marks being different KINDS of object rather
+// than two people.
+//
+// #b34b5f is AVATAR_TINTS.rose.fg from whole-stack.tsx, where the mock avatar
+// palette lives and the rule is one colour per person — so this is a second
+// person, not a second style. Rose rather than another cool tint: the pin
+// beside her is periwinkle and two blues at 18px read as one person twice.
+// It also carries 8px white initials at a little over 4.5:1, which the paler
+// tints in that palette do not.
+//
+// Pinned across both themes like the pin, and for the same reason: it sits on
+// a photograph, inside a bubble whose ground is already theme-scoped.
+const COMMENT_FACE = "bg-[#b34b5f]";
+
 export function ReviewCard({ plain = false }: SceneProps = {}) {
   return (
     <>
@@ -2411,8 +2554,8 @@ export function ReviewCard({ plain = false }: SceneProps = {}) {
         <div className="absolute -inset-px bg-[#101010] [[data-theme=dark]_&]:bg-[#FBFBF5]" />
       )}
       <Scene
-        boxClass={plain ? PANEL_SCENE_PHONE.vars : undefined}
-        boxSizeClass={plain ? PANEL_SCENE_PHONE.size : undefined}
+        boxClass={plain ? PANEL_SCENE_PHONE.vars : RAIL_SCENE_PHONE.vars}
+        boxSizeClass={plain ? PANEL_SCENE_PHONE.size : RAIL_SCENE_PHONE.size}
       >
         {/* WINDOW WITHOUT ITS HAIRLINE. Every other scene in the set is a
             product screen, where the border separates a white UI from a white
@@ -2497,7 +2640,17 @@ export function ReviewCard({ plain = false }: SceneProps = {}) {
                       outside it would mark a row. */}
                   {picked ? (
                     <span
-                      className={`absolute left-1.5 top-1.5 flex size-[14px] items-center justify-center ${R_CHROME} bg-white text-black shadow-[0_1px_3px_rgba(0,0,0,0.25)]`}
+                      // NO CAST UNDER IT. The white tile had a drop shadow, on
+                      // the reasoning that a white mark on a photograph needs
+                      // separating from it. It does not: the tile is the
+                      // brightest thing on the plate and its own fill is the
+                      // separation. What the shadow actually did was make a
+                      // 14px square look like it was floating above the
+                      // artwork — a sticker on the picture rather than a mark
+                      // ON it — and it was the only lifted object on a card
+                      // whose other marks (the approval plates' tick, the
+                      // collapsed note's bubble) sit flat.
+                      className={`absolute left-1.5 top-1.5 flex size-[14px] items-center justify-center ${R_CHROME} bg-white text-black`}
                     >
                       <IconCheck className="size-[8px]" />
                     </span>
@@ -2511,7 +2664,9 @@ export function ReviewCard({ plain = false }: SceneProps = {}) {
                       the artwork rather than queued down one side. */}
                   {picked ? (
                     <span className="absolute right-2.5 top-[30%] flex rounded-full rounded-bl-none bg-white p-[3px] shadow-[0_2px_8px_-1px_rgba(16,24,40,0.45)]">
-                      <span className="flex size-[18px] items-center justify-center rounded-full bg-[var(--mock-brand)] text-[8px] leading-none text-white">
+                      <span
+                        className={`flex size-[18px] items-center justify-center rounded-full ${PIN_FACE} text-[8px] leading-none text-white`}
+                      >
                         {REVIEW_PIN.initials}
                       </span>
                     </span>
@@ -2565,12 +2720,43 @@ export function ReviewCard({ plain = false }: SceneProps = {}) {
               as something lying on a photograph. Floating it clear on all
               four sides is what makes it sit ON the work: the plate shows
               around it, which is the whole reason it is there. */}
-          <div className="absolute bottom-10 left-7 right-[72px] flex gap-2 rounded-[10px] rounded-bl-none bg-[var(--mock-window)] p-2.5 shadow-[0_10px_28px_-8px_rgba(16,24,40,0.5)]">
+          {/* ITS GROUND LIFTS IN DARK, and only in dark.
+
+              --mock-window is the right ground in light: #fcfcfd on a
+              photograph is a white card lying on a picture, and the shadow
+              under it does the separating. In dark the same token is #212121
+              — the EXACT value of the window the note is lying in — so the
+              bubble had no edge of its own anywhere it overran the plate, and
+              where it covered the black knitwear it was two near-blacks
+              meeting. The shadow could not rescue it either: a navy-black at
+              50% on a near-black ground is nothing, because a shadow
+              separates by darkening and there is nothing left to darken.
+
+              --mock-well-2 is the token for this exact object — globals.css
+              names it "the chat bubble" where it is defined — and it moves
+              the right way per theme on its own: in dark it LIFTS to #303030,
+              15 points clear of the window and clear of the dark clothing
+              under it, which is what gives the note an edge without drawing
+              one. Light is left untouched: it already reads, and well-2's
+              #f2f3f6 would have RECESSED the bubble there, which is the
+              opposite move.
+
+              NO RULE AROUND IT. A 10% white hairline was added with the
+              lifted ground, to hold the bubble's shape where a bright crop
+              runs up against #303030. The ground does that job on its own,
+              and the rule cost more than it bought: an outline on a card
+              lying on a photograph reads as a box that has been drawn there,
+              which is the one thing this note must not look like — it is
+              something somebody SAID. The shadow and the lift are the
+              separation. */}
+          <div className="absolute bottom-10 left-7 right-[72px] flex gap-2 rounded-[10px] rounded-bl-none bg-[var(--mock-window)] p-2.5 shadow-[0_10px_28px_-8px_rgba(16,24,40,0.5)] [[data-theme=dark]_&]:bg-[var(--mock-well-2)]">
             {/* Round and filled, not a tinted square: this is the default
                 avatar a person gets before they upload a photo, and at 18px a
                 tinted square with two grey letters read as a file icon rather
                 than as somebody. */}
-            <span className="flex size-[18px] shrink-0 items-center justify-center rounded-full bg-[var(--mock-brand)] text-[8px] leading-none text-white">
+            <span
+              className={`flex size-[18px] shrink-0 items-center justify-center rounded-full ${COMMENT_FACE} text-[8px] leading-none text-white`}
+            >
               {REVIEW_COMMENT.initials}
             </span>
             <div className="min-w-0 flex-1">
@@ -2623,12 +2809,45 @@ const ONBOARD_ITEMS = [
 export function OnboardCard({ plain = false }: SceneProps = {}) {
   return (
     <>
-      {/* The Plan card's ground and the same reason for it: a white window
-          needs a near-black card to lift it, and the pair flips in dark. */}
+      {/* A PHOTOGRAPH, NOT A FLAT GROUND — the same one the Describe card
+          carries, reused rather than re-shot. The stage is the client's first
+          steps, and the picture is a person on their phone with the list open:
+          it puts the checklist in somebody's hands instead of on a swatch,
+          which is the half of "intake, document collection, a clear
+          first-steps checklist" that a flat ground cannot show.
+
+          The SAME FILE as Describe, deliberately. These two are the only
+          photographic grounds in the set, and one image used twice reads as
+          one product being shown in two moments; a second photo would be a
+          second place and a second person.
+
+          ONE ARTWORK FOR BOTH THEMES, like Describe's. A photograph carries
+          its own light and has nothing to lose to the panel in front of it,
+          so it does not flip — which is also why the near-black/#FBFBF5 pair
+          it replaces is simply gone rather than kept underneath.
+
+          -inset-px, not inset-0, for the reason the other grounds carry it:
+          the card box under this paints --surface, and at fractional widths
+          the rounding leaves a sub-pixel sliver of it along an edge. The
+          parent is overflow-hidden, so the extra pixel is clipped and the
+          radius is unaffected.
+
+          Decorative, so empty alt; no priority, because it is well below the
+          fold and must not compete with the hero for bandwidth. */}
       {!plain && (
-        <div className="absolute -inset-px bg-[#101010] [[data-theme=dark]_&]:bg-[#FBFBF5]" />
+        <div className="absolute -inset-px">
+          <Image
+            src="/images/mocks/describe-phone.webp"
+            alt=""
+            fill
+            sizes="(min-width: 1024px) 420px, 90vw"
+            className="object-cover"
+          />
+        </div>
       )}
-      <Scene>
+      <Scene
+        {...(plain ? {} : RAIL_SCENE_PHONE_PROPS)}
+      >
         {/* "First steps", not "Onboarding". The window is the CLIENT's screen,
             and onboarding is the firm's word for it — the client is just being
             told what to do first. It is also the phrase the caption under the
@@ -2702,18 +2921,39 @@ const INVOICE_LINES = [
   { what: "Website design", qty: "1", amount: "$1,500" },
 ];
 
-// Subtotal and tax, then the total on its own footing. Two quiet rows and a
-// loud one: the arithmetic is what makes a list of prices an invoice, and
-// without it the Total is just a fourth line item with bolder type it is not
-// allowed to have.
-const INVOICE_SUMS = [
-  { label: "Subtotal", amount: "$4,500" },
-  { label: "Tax (10%)", amount: "$450" },
-];
+// NO SUBTOTAL AND NO TAX ROW. They were here on the argument that the
+// arithmetic is what turns a list of prices into an invoice — true of a real
+// one, and beside the point in a card this size. The panel carried a header,
+// a column rule, two services and three more rows of sums, and at mock scale
+// that reads as a dense table rather than as a document: the reader counts
+// rows instead of taking in the shape. What the stage claims is "invoices to
+// pay", and two services with a total says that in three lines.
+//
+// The figures were re-done with them, not just left behind. 3,000 + 1,500 is
+// 4,500, so the total is 4,500 and the masthead figure is 4,500.00 — it used
+// to read 4,000.00 over a 4,950 total, which disagreed with itself twice over
+// and would have gone on disagreeing once the tax row was gone.
 
 export function InvoiceCard({ plain = false }: SceneProps = {}) {
   return (
     <>
+      {/* THE COLLABORATE CARD'S PAPER, not the Build card's Haze.
+
+          This ground has been round the houses: paper first, then Haze on the
+          argument that a near-black document needs lifting the way the Build
+          card's near-black SCREEN does. The two cases are not the same. Build
+          shows a product screen that themes with the product, so a fixed tone
+          can only ever serve one theme and Haze earns the departure. This card
+          shows a DOCUMENT, and a document's ground is paper — the same #FBFBF5
+          the Collaborate card puts behind its cover plates two stages back.
+
+          It also settles the rail's rhythm. With Haze here, stages 3 and 4 were
+          two blue cards running together and the set read as having a blue
+          half; with paper, Haze belongs to the Build card alone, which is the
+          one place it was chosen for.
+
+          Light stays #101010 — there the document is near-white and the black
+          ground is what lifts it, so only the dark branch ever moves. */}
       {!plain && (
         <div className="absolute -inset-px bg-[#101010] [[data-theme=dark]_&]:bg-[#FBFBF5]" />
       )}
@@ -2724,7 +2964,9 @@ export function InvoiceCard({ plain = false }: SceneProps = {}) {
           giving out rather than as paper continuing. Short enough to end, it
           is better as an object in the frame: Scene's default centring places
           it, and the air above and below is what makes it read as placed. */}
-      <Scene>
+      <Scene
+        {...(plain ? {} : RAIL_SCENE_PHONE_PROPS)}
+      >
         {/* The page. WINDOW's own ground is the panel tone, which is what the
             cards INSIDE this one need, so the page itself steps down a rung
             to --mock-well and they lift off it. */}
@@ -2758,7 +3000,7 @@ export function InvoiceCard({ plain = false }: SceneProps = {}) {
           {/* The figure. Still the biggest type on the card: whatever else an
               invoice says, the amount is what it is for. */}
           <p className="mt-[9px] px-1 text-[23px] leading-none text-[color:var(--mock-ink)]">
-            $4,000.00
+            $4,500.00
           </p>
 
           {/* The dashed rule, straight off the real screen. A solid hairline
@@ -2823,23 +3065,6 @@ export function InvoiceCard({ plain = false }: SceneProps = {}) {
               </div>
             ))}
 
-            {INVOICE_SUMS.map(({ label, amount }) => (
-              <div
-                key={label}
-                className={`flex items-center border-b px-[10px] py-[6px] ${LINE}`}
-              >
-                <span
-                  className={`min-w-0 flex-1 truncate text-[color:var(--mock-ink-soft)] ${UI_SECONDARY}`}
-                >
-                  {label}
-                </span>
-                <span
-                  className={`shrink-0 text-[color:var(--mock-ink-soft)] ${UI_SECONDARY}`}
-                >
-                  {amount}
-                </span>
-              </div>
-            ))}
 
             {/* The total. Same two sizes as everything else in the rail — it
                 is separated by its ROW (a well behind it, no rule under it)
@@ -2856,7 +3081,7 @@ export function InvoiceCard({ plain = false }: SceneProps = {}) {
               <span
                 className={`shrink-0 text-[color:var(--mock-ink)] ${UI_PRIMARY}`}
               >
-                $4,950
+                $4,500
               </span>
             </div>
           </div>
@@ -2876,11 +3101,16 @@ export function InvoiceCard({ plain = false }: SceneProps = {}) {
 // the product and a strange thing to end a client-journey rail on: the last
 // card said who can see the app rather than what the client does next.
 //
-// TWO ROWS AND A HEADER. It was three, which filled the window and made the
-// queue look like a backlog — the claim here is that requests land somewhere
-// and get answered, not that there are a lot of them. Two is also the fewest
-// that still reads as a list rather than as one message, and it leaves the
-// badged row with something to be distinguished FROM.
+// ONE ROW AND A HEADER. It was three, then two, and is now one — each cut for
+// the same reason, which is that this card gained a photograph behind it. The
+// window is no longer the only thing in the frame: it is a panel lying on a
+// picture of two people at their desks, and every row it grows covers more of
+// them. At one row it states the claim — a request came in, it is sitting in a
+// queue, somebody is about to answer it — in the smallest object that can.
+//
+// The badge survives the cut and matters more for it. With nothing to be
+// distinguished FROM it stops being a way of picking one row out of a list and
+// becomes what it says: this one is new.
 const SUPPORT_REQUESTS = [
   {
     subject: "Best practice for organising files",
@@ -2888,21 +3118,50 @@ const SUPPORT_REQUESTS = [
     tag: "General",
     state: "New",
   },
-  {
-    subject: "Can we add a second approver?",
-    who: "Daniel Okafor",
-    tag: "Account",
-  },
 ];
 
 export function SupportCard({ plain = false }: SceneProps = {}) {
   return (
     <>
+      {/* A PHOTOGRAPH, like Onboard at the other end of the rail. Support is
+          the stage about people answering people — a request queue, a library,
+          an assistant — and two colleagues reading a screen together is what
+          that looks like before anyone opens a ticket.
+
+          THE RAIL IS BOOKENDED BY THEM, deliberately: Onboard opens on a
+          client alone with their phone, Support closes on the firm at their
+          desk. The three stages between are product screens on flat grounds,
+          so the photographs sit at the ends rather than scattered through —
+          which is the difference between a set with two bookends and a set
+          that cannot decide what it is.
+
+          One artwork for both themes, like the others: a photograph carries
+          its own light and has nothing to lose to the panel in front of it.
+
+          -inset-px for the sub-pixel sliver the other grounds pay for too;
+          empty alt because it is decorative; no priority because the rail is
+          well below the fold. */}
       {!plain && (
-        <div className="absolute -inset-px bg-[#101010] [[data-theme=dark]_&]:bg-[#FBFBF5]" />
+        <div className="absolute -inset-px">
+          <Image
+            src="/images/mocks/support-desk.webp"
+            alt=""
+            fill
+            sizes="(min-width: 1024px) 420px, 90vw"
+            className="object-cover"
+          />
+        </div>
       )}
-      <Scene>
-        <div className={`flex flex-col ${WINDOW}`}>
+      <Scene
+        {...(plain ? {} : RAIL_SCENE_PHONE_PROPS)}
+      >
+        {/* PUSHED BELOW THE MIDDLE. Centred, the panel sat across the standing
+            figure's face — the one part of a photograph of people that the
+            picture is actually for, and the one place a UI panel must not
+            land. mt-auto drops it to the lower half, where it covers the desk
+            instead: papers, a laptop, two coffees. The work, not the person.
+            The Scene's own bottom padding still holds it off the foot. */}
+        <div className={`sm:mt-auto flex flex-col ${WINDOW}`}>
           <div
             className={`flex items-center gap-2.5 border-b bg-[var(--mock-well)] px-4 py-3 ${LINE}`}
           >

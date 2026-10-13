@@ -1578,53 +1578,79 @@ export function OnboardingMock() {
 // the rest of this file draws whole screens at mock scale. The rail's 10.5px
 // secondary would be a caption under a 19px host — the same relationship the
 // rail has, at four times the distance. One step up carries it.
-const UI_SECONDARY_LG = "text-[12px] leading-none";
+// The host, and its own length. The keyframes step in `ch`, so the character
+// count is the one number the animation is built from — see the domain-type
+// note in globals.css. Kept beside the string so the two cannot drift apart.
+const DOMAIN = "portal.brandmages.com";
+const DOMAIN_CH = DOMAIN.length;
 
 export function CustomDomainMock() {
   return (
     <div
       aria-hidden
-      className="pointer-events-none flex h-full select-none flex-col justify-center bg-[var(--mock-window)] px-6 text-[color:var(--mock-ink)] sm:px-10"
+      // TOPPED OUT, NOT CENTRED. Centring put the field in the middle of the
+      // scene, which on this card is a long way under the copy above it — a
+      // band of empty panel between the sentence and the thing it describes,
+      // and the field reading as floating rather than as the first thing on a
+      // settings screen. Against the top it sits where a domain field
+      // actually sits, and the empty space collects at the foot where the
+      // screen is cropped anyway.
+      //
+      // pt matches the px either side, so the field keeps one inset all round
+      // rather than being pushed flush to the top edge.
+      className="pointer-events-none flex h-full select-none flex-col justify-start bg-[var(--mock-window)] px-6 pt-6 text-[color:var(--mock-ink)] sm:px-10 sm:pt-10"
     >
-      {/* The field's own label, which is the one piece of chrome kept: without
-          it this is an address bar, and an address bar says the client is
-          already there rather than that the firm sets it. */}
-      {/* The label, with the state riding beside it as a tag. It was a line
-          of its own under the field, paired with the sending address — two
-          more things to read under the one thing the card is about. As a tag
-          on the label it is answered where it is asked: this is the portal's
-          domain, and it is live. */}
-      <div className="flex items-center gap-2.5">
-        <p className={`text-[color:var(--mock-ink-soft)] ${UI_SECONDARY_LG}`}>
-          Portal domain
-        </p>
-        <span
-          className={`rounded px-1.5 py-[3px] text-[11px] leading-none text-[color:var(--mock-positive-fg)] [background:var(--mock-positive-bg)]`}
-        >
-          Connected
-        </span>
-      </div>
-
+      {/* THE LABEL AND ITS TAG ARE GONE. "Portal domain / Connected" was a
+          second thing to read on a card whose whole subject is the host
+          arriving in the field, and the tag in particular made a claim the
+          picture does not need: the card's copy already says what this is.
+          Without them the field is the only object in the frame, which is
+          what the scene was zoomed in for. */}
       <div
-        className={`mt-2.5 flex items-center gap-2 overflow-hidden rounded-lg border bg-[var(--mock-well)] px-3.5 py-3 ${LINE}`}
+        className={`flex items-center gap-2 overflow-hidden rounded-lg border bg-[var(--mock-well)] px-3.5 py-3 ${LINE}`}
       >
         <IconGlobe className="size-[15px] shrink-0 text-[color:var(--mock-ink-soft)]" />
-        {/* The host, with the caret riding the edge of the reveal.
+        {/* ONE ELEMENT, ONE ANIMATION, AND THE CARET IS ITS OWN RIGHT BORDER.
 
-            The wrapper is content-width and relative: that makes it the
-            definite box both keyframes measure their percentages against —
-            the clip on the text, and the caret's `left`. Neither has to know
-            the other's width, so the two stay in step at any card size. */}
-        <span className="relative inline-flex min-w-0 items-center">
-          <span className="motion-safe:animate-[domain-type_8s_steps(80,end)_infinite] whitespace-nowrap text-[17px] leading-none text-[color:var(--mock-ink)] sm:text-[19px]">
-            portal.brandmages.com
-          </span>
-          {/* Hidden under reduced motion rather than parked: with the text
-              shown whole and nothing moving, a caret after it is a cursor
-              sitting in a field nobody is typing in. */}
-          <span className="motion-safe:animate-[domain-caret-move_8s_steps(80,end)_infinite] pointer-events-none absolute left-full top-1/2 ml-[2px] -translate-y-1/2 motion-reduce:hidden">
-            <span className="motion-safe:animate-[domain-caret_8s_linear_infinite] block h-[17px] w-[1.5px] bg-[color:var(--mock-ink)] sm:h-[19px]" />
-          </span>
+            This was three animations on three elements — a clip-path on the
+            text, a `left` on a caret wrapper, and a blink inside it — all
+            timed to the same 8s and relied upon to stay in step. They are
+            different kinds of property: a clip is paint, `left` is layout,
+            and the browser is free to land them on different frames, so the
+            caret drifted in and out of the last letter. That was half the
+            glitch.
+
+            Now the revealed box IS the caret's anchor: `width` grows, the
+            overflow clips the rest of the host, and `border-right` is drawn
+            on the edge of that same box. The caret cannot desync from the
+            text because it is not a separate thing being kept alongside it.
+
+            MONO, AND THAT IS WHAT FIXED THE REST OF IT. The reveal used to
+            step in equal PERCENTAGES of a proportional string, so its edge
+            fell wherever 1/21 of the total width happened to land — through
+            the middle of an `m`, past a `.` and into the letter after it. The
+            host appeared a sliver at a time rather than a character at a
+            time, which is what read as jitter. In a monospace a `ch` is every
+            glyph's advance, so stepping in `ch` lands the edge exactly on a
+            character boundary every time.
+
+            A hostname is also the right thing to set in mono: it is an
+            identifier, which is the same argument the filter chips and stat
+            chips on this site are already set that way for.
+
+            Under reduced motion the field shows the finished host with no
+            border: the claim is the domain, and the typing is only how it is
+            introduced. */}
+        <span
+          style={
+            {
+              "--domain-ch": `${DOMAIN_CH}ch`,
+              "--domain-steps": DOMAIN_CH,
+            } as React.CSSProperties
+          }
+          className="domain-typing block shrink-0 font-mono text-[15px] leading-none text-[color:var(--mock-ink)] sm:text-[17px]"
+        >
+          {DOMAIN}
         </span>
       </div>
     </div>

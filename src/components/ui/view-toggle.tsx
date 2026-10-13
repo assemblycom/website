@@ -23,18 +23,39 @@ export function ViewToggle({
   view,
   onSelect,
   label,
+  onPaper = false,
 }: {
   options: readonly string[];
   view: number;
   onSelect: (i: number) => void;
   /** Names the group for a screen reader, e.g. "Which portal to show". */
   label?: string;
+  /**
+   * The control is sitting on a PAPER card while the page is in dark mode.
+   *
+   * Every other caller puts this on a surface that follows the theme, so its
+   * dark treatment — a white hairline track and a white-wash thumb — is keyed
+   * off `[data-theme="dark"]` and is right. The builder hero's cards are
+   * near-white in BOTH themes, so in dark those same classes paint a white
+   * ring and a white thumb onto white paper and the control disappears.
+   *
+   * With this set the dark variants are simply not emitted, and the base
+   * classes — which read --border/--background/--foreground — are left to
+   * resolve against whatever ladder the card scopes onto its subtree.
+   *
+   * A prop rather than a second component: this is the same object in the
+   * same role, on a different ground. Forking it would be the variation the
+   * file's own note argues against.
+   */
+  onPaper?: boolean;
 }) {
   return (
     <div
       role="group"
       aria-label={label}
-      className="flex items-center gap-0.5 rounded-full border border-border p-1 [[data-theme=dark]_&]:border-white/15"
+      className={`flex items-center gap-0.5 rounded-full border border-border p-1 ${
+        onPaper ? "" : "[[data-theme=dark]_&]:border-white/15"
+      }`}
     >
       {options.map((option, i) => (
         <button
@@ -50,7 +71,11 @@ export function ViewToggle({
                 // there — lifted to 8% so it still reads once the ring is
                 // gone. Light keeps its border, because a white thumb on a
                 // near-white card has nothing else to separate it.
-                "border-border bg-background text-foreground [[data-theme=dark]_&]:border-transparent [[data-theme=dark]_&]:bg-white/[0.08]"
+                `border-border bg-background text-foreground ${
+                  onPaper
+                    ? ""
+                    : "[[data-theme=dark]_&]:border-transparent [[data-theme=dark]_&]:bg-white/[0.08]"
+                }`
               : "border-transparent text-muted-foreground hover:text-foreground"
           }`}
         >

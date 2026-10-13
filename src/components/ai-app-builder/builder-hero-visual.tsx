@@ -60,12 +60,20 @@ const BRAND_FILL = "bg-foreground text-background";
 // --mock-brand, because that token is also the branded nav on /ai-app-builder
 // and in the comparison mocks, and those are not what was asked for.
 //
-// Near-black in both themes, from --mock-brand. Blue was tried here and taken
-// back out: a slab is a large flat FIELD, and a colour that reads as a
-// pleasant accent on a chip glares at 160x300 against a near-black card.
-// Dropped to a deep navy it stopped glaring but also stopped being worth the
-// departure, so the slab stays the firm's own near-black.
-const BRAND_SIDEBAR = "bg-[var(--mock-brand)] text-white";
+// LIGHT KEEPS THE FIRM'S NEAR-BLACK; DARK CARRIES COLOUR.
+//
+// Blue was tried here once and taken back out, correctly: a slab is a large
+// flat FIELD, and a value that reads as a pleasant accent on a chip glares at
+// 164x300 against a near-black card. The answer was not to give up on colour
+// but to stop reaching for an accent at accent strength — --mock-brand-slab
+// is the site's own Haze mixed most of the way into the near-black it
+// replaces, so it is plainly a colour without being a light source.
+//
+// Light is that token's own near-black, unchanged, because there the slab
+// already reads as a brand against a white card. Dark is the theme that had
+// the problem: at #121212 on a #191919 card the sidebar was ABSENCE rather
+// than a brand, which is the one thing this screen cannot say.
+const BRAND_SIDEBAR = "bg-[var(--mock-brand-slab)] text-white";
 
 const LINE = "border-[var(--mock-line)]";
 // The result views' shared furniture, after the dashboards they stand in for:
@@ -171,8 +179,38 @@ const CARD =
   "flex flex-col overflow-hidden rounded-[28px] transition-[background-color,box-shadow] duration-300";
 // Both cards share one grey; the clicked card is marked by width, not colour,
 // and hover only firms up the outline.
+// PAPER IN BOTH THEMES, and the ladder that makes that survivable.
+//
+// The cards take #FBFBF5 in dark — the same ground stage 2 of the journey rail
+// stands its cover plates on — so the hero and the rail show one material.
+//
+// A BACKGROUND ALONE WOULD NOT HAVE BEEN ENOUGH, and that is the whole reason
+// for the tokens below. Everything drawn inside these cards resolves page
+// tokens that are tuned for the near-black ground the cards used to have: the
+// two labels read --muted-foreground (#8f8f8f in dark, invisible on paper),
+// the composer's double outline and both edge fades are built from --surface
+// (#191919, a dark band and a dark smear on a white card), and the toggle
+// reads --border/--background/--foreground. Flipping the fill and leaving
+// those is exactly the light-on-dark bleed this repo's CLAUDE.md warns about.
+//
+// So the card scopes its own ladder, the way .v76-card-row does for the home
+// rail: light values for the four page tokens its subtree reads, declared
+// ONLY in the dark branch, so light mode resolves the same numbers it always
+// did and nothing here can reach it.
+//
+// --surface is set to the card's own colour rather than light's #f5f5f5: it
+// is read as "the ground this sits on", and on these cards that ground is now
+// the paper itself. That one substitution is what makes the composer's 3px
+// band read as a gap again and both fades dissolve into the card.
+//
+// The --mock-* tokens are deliberately NOT touched. The screens inside stay
+// dark-themed, which is the same relationship the rail's paper cards have
+// with the dark checklist and cover plates standing on them.
+const PAPER_LADDER =
+  "[[data-theme=dark]_&]:bg-[#FBFBF5] [[data-theme=dark]_&]:[--surface:#FBFBF5] [[data-theme=dark]_&]:[--foreground:#101114] [[data-theme=dark]_&]:[--muted-foreground:#6b7079] [[data-theme=dark]_&]:[--border:#e8e9ec] [[data-theme=dark]_&]:[--background:#ffffff]";
+
 const cardTone = (active: boolean) =>
-  `bg-[var(--surface)] ring-1 ${
+  `bg-[var(--surface)] ${PAPER_LADDER} ring-1 ${
     active
       ? "ring-black/[0.06] hover:ring-black/[0.12] [[data-theme=dark]_&]:ring-white/10 [[data-theme=dark]_&]:hover:ring-white/20"
       : "ring-transparent hover:ring-black/[0.08] [[data-theme=dark]_&]:hover:ring-white/15"
@@ -323,7 +361,7 @@ export function BuilderHeroVisual() {
             <p className="type-body hidden text-muted-foreground lg:block">
               Live for your team and your clients
             </p>
-            <ViewToggle options={VIEWS} view={view} onSelect={setView} />
+            <ViewToggle onPaper options={VIEWS} view={view} onSelect={setView} />
           </div>
           {/* One screen, running off the card's right and bottom edges, so it
             reads as a window into the product rather than a framed picture.
@@ -769,7 +807,59 @@ function Composer({ run, typing }: { run: number; typing: boolean }) {
         // Dark only. In light --mock-window is near-white on a light card and
         // the step is already read; dropping light onto --mock-well would be
         // tuning the theme that has no problem.
-        className={`mock-edge [--mock-edge-h:150%] [--mock-edge-w:120%] overflow-hidden rounded-xl border bg-[var(--mock-window)] shadow-[0_0_0_3px_var(--surface),0_0_0_4px_var(--mock-line)] [[data-theme=dark]_&]:bg-[var(--mock-well)] ${LINE}`}
+        // THE LIFT HAS TO GO THROUGH --mock-edge-fill, NOT background-color.
+        //
+        // The rung above was declared as `bg-[var(--mock-well)]` and never
+        // rendered. .mock-edge paints its own fill as the FIRST background
+        // IMAGE layer, clipped to the padding box, and an image is drawn over
+        // the background colour — so the box came out --mock-window #212121
+        // whatever the colour said, eight points over the card it sits on,
+        // which is the step the comment below was written to get away from.
+        // The rule exposes --mock-edge-fill for exactly this; setting the
+        // colour instead was writing to the layer underneath.
+        //
+        // --mock-well-2 rather than --mock-well now that it actually paints:
+        // this is the hero, the composer IS the subject, and at #303030 it is
+        // twenty-three points clear of the card instead of eight.
+        //
+        // AND THE SAME STRONGER RAMP THE PANEL COMPOSER ALREADY USES. The
+        // shared .mock-edge ramp is tuned for a frame the size of a whole
+        // screen; on a box this small only its brightest corner is ever on
+        // screen, so the edge came out nearly flat — the quietest object in
+        // the hero, on the half of it that is supposed to be the subject.
+        // These are the three values the `plain` composer in
+        // portal-build-cards.tsx lifts to, reused rather than re-picked, so
+        // the two boxes catch the light identically.
+        //
+        // The rail composer's reason for keeping the default does not apply
+        // here: that one sits on a PHOTOGRAPH, where a brighter edge reads as
+        // a glow around the box. This one sits on a --surface card, same as
+        // the panel.
+        //
+        // Dark only, all of it. In light --mock-window is near-white on a
+        // light card, the step is already read, and .mock-edge does not apply.
+        // THE GRADIENT OUTLINE, AND IT IS THE SITE'S OWN.
+        //
+        // v63-gradient-border is the conic blue→lime ring the other composer
+        // on this site already wears (see builder-prompt.tsx): a 1.5px loop
+        // painted on a masked ::before so the box's own surface shows through.
+        // --ring-solid is the continuous loop rather than the fading sweep,
+        // and --spin-on-hover holds it at its resting angle until the pointer
+        // is on the box, then runs it — so the outline is a still coloured
+        // edge at rest and moves when a reader reaches for it.
+        //
+        // pointer-events-auto is what makes that possible. This card's whole
+        // interior is pointer-events-none so the replay button underneath can
+        // take the click, which means :hover never reached the box. The cost
+        // is that a click landing exactly on the composer no longer replays
+        // the demo — the rest of the card still does, and a box you can point
+        // at is worth more than one more place to click.
+        //
+        // It rides ON TOP of .mock-edge rather than replacing it: that one
+        // paints the element's own border area as a fixed lit edge, this is a
+        // separate ::before above it, so the box keeps its lift in both
+        // themes and gains the ring.
+        className={`v63-gradient-border v63-ring-solid v63-spin-on-hover pointer-events-auto relative mock-edge [--mock-edge-h:150%] [--mock-edge-w:120%] overflow-hidden rounded-xl border bg-[var(--mock-window)] shadow-[0_0_0_3px_var(--surface),0_0_0_4px_var(--mock-line)] [[data-theme=dark]_&]:bg-[var(--mock-well-2)] [[data-theme=dark]_&]:[--mock-edge-1:#6e6e6e] [[data-theme=dark]_&]:[--mock-edge-2:#555555] [[data-theme=dark]_&]:[--mock-edge-3:#3e3e3e] [[data-theme=dark]_&]:[--mock-edge-fill:var(--mock-well-2)] ${LINE}`}
       >
         {box}
       </div>

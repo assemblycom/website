@@ -228,6 +228,10 @@
     transparent 100%
   );
   --mock-ink: #101114;
+  /* The one FILLED button inside a mock — the sign-in's "email me a link".
+     Light is --mock-ink's own value, so this theme is unchanged; dark is
+     where they part, and the dark block says why. */
+  --mock-cta: #101114;
   --mock-ink-soft: #6b7079;
   /* The resting rows of a mock nav rail — one rung below --mock-ink-soft.
      A rail is a list of places you are NOT, and in the Add App shot the open
@@ -244,6 +248,12 @@
      so it stays a dark slab in both themes; dark drops it below the window so
      it still reads as a separate object rather than merging with it. */
   --mock-brand: #171717;
+
+  /* The CLIENT-FACING slab only — the branded sidebar in the hero's client
+     view. Light is --mock-brand's own value, so this theme is unchanged and
+     the two stay one colour here; dark is where they part. See the dark
+     block for why. */
+  --mock-brand-slab: #171717;
 
   /* macOS window buttons, for a mock that draws a browser window. Deliberately
      NOT redefined in the dark block: these are the operating system's own
@@ -531,6 +541,14 @@
   );
   --mock-ink: #ededed;
   --mock-ink-soft: #9a9a9a;
+  /* A FILL IS NOT TYPE, and it cannot take type's value. --mock-ink is
+     #ededed because that is what body copy needs to read on near-black; the
+     same value spread across a 320x44 button is a panel of near-white on a
+     #212121 card — the brightest object on the whole screen, and brighter
+     than the mark and the heading it is meant to sit under. Stepped down far
+     enough to stop glaring, still plainly the primary action, and the dark
+     label on it (--mock-window) clears 9:1. */
+  --mock-cta: #d0d0d0;
   /* Dark's own value for the resting nav rows, measured on the #1c1c1c rail
      rather than converted from light's. Same job and the same ratio there —
      2.9:1 — which in dark is a bigger drop in number than it looks, because
@@ -541,6 +559,23 @@
      has to stay a distinct object, which it cannot do at #171717 against a
      #212121 panel. */
   --mock-brand: #121212;
+
+  /* THE CLIENT SLAB CARRIES COLOUR IN DARK. At --mock-brand #121212 on a
+     #191919 card the sidebar read as ABSENCE rather than as a brand — a hole
+     in the card — which is the one thing a screen captioned "your brand" must
+     not do. A firm's portal colour cannot be shown by drawing nothing.
+
+     Scoped to this token rather than moved into --mock-brand, which is also
+     the branded nav on /ai-app-builder, the comparison mocks and the invoice
+     mark; none of those were asked for and a slab is not a 15px glyph.
+
+     DEEP, AND DERIVED. A saturated blue was tried here before and taken out
+     for good reason: a slab is a large flat FIELD, and a value that is a
+     pleasant accent on a chip glares at 164x300 against near-black. So this
+     is the site's own Haze mixed most of the way into the near-black it
+     replaces — plainly a colour, nowhere near a glare, and not a new hue
+     entering the palette. White type sits on it at roughly 7:1. */
+  --mock-brand-slab: color-mix(in oklab, var(--mock-accent-bg) 30%, #121212);
 
   /* The masthead on the dark ground: the page's own black, with the ink at full
      white rather than the softened --foreground the body copy uses, because the
@@ -4324,6 +4359,40 @@ html:not([data-authed]) .auth-only {
   pointer-events: none;
 }
 
+/* ── A lit edge for a frame that BLEEDS OFF THE RIGHT ─────────────────────
+   For the integrations card, which is a closed panel on a phone and runs off
+   the grid's right edge from lg. At that width it drops its own border (there
+   is no right side to draw) and was left with no edge at all — a list of rows
+   floating on the page rather than a screen, which is what "doesn't look like
+   UI" was.
+
+   The plain ring cannot be used as-is there: it would draw a vertical line
+   down the right edge, which is the one edge that is supposed to be a crop.
+   So the ring is masked to dissolve rightward on THE SAME STOPS as the card's
+   own fill gradient (solid to 58%, gone by 100%), and the edge gives out
+   exactly where the surface it belongs to does. One idea in two places; if the
+   fill's stops move, this moves with them.
+
+   OFF BELOW lg, where the card is closed and keeps its ordinary border all
+   round. The ring there would be a second line on top of the first, and a
+   top-lit ramp would leave the card's foot with no edge at all. */
+.mock-lit-edge--bleed-right::after {
+  display: none;
+}
+@media (min-width: 64rem) {
+  .mock-lit-edge--bleed-right::after {
+    display: block;
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(to right, #000 0%, #000 58%, transparent 100%);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(to right, #000 0%, #000 58%, transparent 100%);
+    mask-composite: exclude;
+  }
+}
+
 /* ── A PILLAR SHOT'S BRAND WASH ──────────────────────────────────────────
    The ground behind the sign-in pillar: the product's own signed-in backdrop —
    white at the head, the brand blue through the middle, lime at the foot, and
@@ -4749,110 +4818,140 @@ html:not([data-authed]) .auth-only {
    The white-label card's whole subject is the domain, so the one thing moving
    on it is the domain arriving.
 
-   THE STEP COUNT IS FOR THE WHOLE CYCLE, NOT FOR THE TYPING. This is the trap
-   that made the first version lurch. steps(n) divides the ENTIRE iteration, so
-   with 21 steps across 8s and the typing finished by 26%, only about five of
-   those steps fell inside the typing — the host arrived in five chunks of four
-   or five letters and the caret jumped the same way. The steps have to be
-   counted against the full duration: 80 steps over 8s is one every 100ms, and
-   the 21 that land before 26.25% are the 21 characters, at a speed a hand
-   actually types at. Change the string's length and this number moves with it
-   (chars / 0.2625), or the last letters arrive early.
+   ONE STEP PER CHARACTER, AND THE COUNT IS THE STRING'S LENGTH. The earlier
+   version ran steps(80) on the reasoning that steps(n) divides the whole
+   iteration, so 80 steps over 8s would put 21 of them inside a reveal that
+   finishes at 26.25%. That is not what steps() does: animation-timing-function
+   applies to EACH KEYFRAME SEGMENT separately, so all 80 landed inside the
+   2.1s reveal — one every 26ms, cutting the host into eighty slivers roughly a
+   quarter of a character wide. That is the jitter; the count was never a
+   typing speed at all.
 
-   CLIP-PATH, NOT max-width. The obvious typewriter animates the text box's own
-   width to 100%, which needs a parent with a definite width to resolve that
-   percentage against. Here the parent is sized BY the text — it is a
-   content-width inline box — so the percentage resolved against a width that
-   depended on the thing it was setting, and the reveal sat at zero forever: a
-   field that never filled.
+   Per segment, the count is simply the number of characters: 21 steps across
+   2.1s is one character every 100ms, which is a speed a hand actually types
+   at. --domain-steps carries it from the component beside the string it was
+   counted from.
 
-   clip-path has no such circularity. Its percentages resolve against the
-   element's OWN border box, which is the text's natural width and definite
-   whatever the parent does, so the reveal is correct at any card size and in
-   any face. It also means nothing is painted over the letters — they are
-   clipped, not covered, so there is no second surface to keep in step with the
-   theme.
+   `ch`, AND THE TEXT IS SET IN MONO SO THAT MEANS SOMETHING. The reveal was a
+   clip-path stepped in PERCENTAGES of the string's width, which is exact only
+   if every glyph is the same width — and in the site's proportional face none
+   of them are. The edge landed wherever 1/21 of the total happened to fall:
+   through the middle of an `m`, past a `.` and into the letter after it. The
+   host came in a sliver at a time instead of a character at a time, which is
+   what read as jitter.
 
-   Not `ch` either, which is the other common fix: the site sets these mocks in
-   its own proportional face, where a ch is the width of a zero and every other
-   glyph is something else, so a ch-stepped reveal drifts ahead of the text and
-   uncovers the next letter early.
+   In a monospace a `ch` is every glyph's advance, so stepping the width in
+   `ch` puts the edge on a character boundary every time. --domain-ch carries
+   the string's length from the component, so the keyframes never hold a count
+   that the copy can change out from under.
 
-   The caret rides the same curve and the same step count, against the same
-   content-width parent, so the two cannot drift.
+   WIDTH, NOT clip-path, AND THE CARET IS THE SAME BOX'S BORDER. The earlier
+   version could not animate width because its box was sized BY the text — a
+   percentage width resolved against a width that depended on it, and the
+   reveal sat at zero forever. In `ch` there is no such circularity: the width
+   is an absolute length, definite whatever the parent does. That matters
+   beyond the reveal, because it lets the caret be this element's own
+   border-right rather than a second element flown alongside it on `left` — a
+   paint property and a layout property on separate elements, which the
+   browser is free to land on different frames, and which is why the caret used
+   to drift in and out of the last letter.
 
-   THE CARET DOES NOT BLINK WHILE IT IS TYPING. It had its own 1.1s loop
-   running independently of the reveal, so it winked on and off WHILE jumping
-   between positions, which is what read as glitching rather than as a cursor.
-   A real caret is solid under the hand and blinks when the hand stops, so the
-   blink is on the same 8s timeline: held on through the typing, blinking only
-   across the hold. */
+   The animation is CSS only, and it has to be: per the repo's CLAUDE.md the
+   preview pane runs with visibilityState "hidden", where IntersectionObserver
+   never fires and rAF is paused. It also means the whole thing works before
+   hydration. */
+/* The typed box itself. Declared here rather than as utilities because the
+   step count has to come from the string's length, and a Tailwind arbitrary
+   value has to be a static string — the component passes --domain-ch and
+   --domain-steps and nothing here hardcodes the host.
+
+   content-box ON PURPOSE. The site sets border-box globally, which would make
+   `width: 21ch` include the 1.5px caret and clip a pixel and a half off the
+   last character — the one glyph a reader is most likely to be looking at
+   when the typing stops. Sized by its content, the caret sits outside the
+   text the way a real one does.
+
+   The resting state is the FINISHED host with a transparent caret, so that is
+   also what reduced motion gets, and what renders before the animation is
+   applied. */
+.domain-typing {
+  box-sizing: content-box;
+  width: var(--domain-ch);
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 1.5px solid transparent;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .domain-typing {
+    width: 0;
+    animation:
+      domain-type 8s steps(var(--domain-steps), end) infinite,
+      domain-caret 8s step-end infinite;
+  }
+}
+
 @keyframes domain-type {
   0% {
-    clip-path: inset(0 100% 0 0);
+    width: 0ch;
   }
   26.25% {
-    clip-path: inset(0 0 0 0);
+    width: var(--domain-ch);
   }
   100% {
-    clip-path: inset(0 0 0 0);
+    width: var(--domain-ch);
   }
 }
-@keyframes domain-caret-move {
-  0% {
-    left: 0%;
-  }
-  26.25% {
-    left: 100%;
-  }
-  100% {
-    left: 100%;
-  }
-}
+/* The caret is the typed box's own right border, so it needs no position of
+   its own — only a colour that comes and goes. Solid for the whole of the
+   typing and the beat after it, then blinking across the hold, on the same 8s
+   timeline so the two can never disagree about when the hand stopped.
+
+   step-end, not linear: a caret that FADES is a caret being animated. Real
+   ones are on or off. */
 @keyframes domain-caret {
   0%,
   33% {
-    opacity: 1;
+    border-right-color: var(--mock-ink);
   }
   33.01%,
   40% {
-    opacity: 0;
+    border-right-color: transparent;
   }
   40.01%,
   47% {
-    opacity: 1;
+    border-right-color: var(--mock-ink);
   }
   47.01%,
   54% {
-    opacity: 0;
+    border-right-color: transparent;
   }
   54.01%,
   61% {
-    opacity: 1;
+    border-right-color: var(--mock-ink);
   }
   61.01%,
   68% {
-    opacity: 0;
+    border-right-color: transparent;
   }
   68.01%,
   75% {
-    opacity: 1;
+    border-right-color: var(--mock-ink);
   }
   75.01%,
   82% {
-    opacity: 0;
+    border-right-color: transparent;
   }
   82.01%,
   89% {
-    opacity: 1;
+    border-right-color: var(--mock-ink);
   }
   89.01%,
   96% {
-    opacity: 0;
+    border-right-color: transparent;
   }
   96.01%,
   100% {
-    opacity: 1;
+    border-right-color: var(--mock-ink);
   }
 }
 
@@ -4901,3 +5000,4 @@ html:not([data-authed]) .auth-only {
     ),
     linear-gradient(158deg, #08080a 0%, #131722 55%, #0b0d10 100%);
 }
+

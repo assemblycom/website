@@ -158,7 +158,10 @@ export default function ClientPortalPage() {
               against the homepage band's "250K+", a conflict the handoff
               flags for Vivienne, and it is explicit that this page must not
               introduce a third figure. */}
-          <PortalSocialProof heading="Trusted by 1,250+ professional service firms" />
+          {/* No heading. PortalSocialProof renders the bare logo row without
+              one — the marks make the claim, and a line of type counting the
+              firms says in words what the row already shows. */}
+          <PortalSocialProof />
         </div>
       </section>
 

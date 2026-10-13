@@ -118,7 +118,12 @@ export function SignInMock() {
             </span>
           </div>
 
-          <div className="mt-3 flex w-full items-center justify-center rounded-lg bg-[color:var(--mock-ink)] px-3 py-3">
+          {/* --mock-cta, not --mock-ink. A fill cannot take type's value: in
+              dark --mock-ink is #ededed because that is what body copy needs
+              on near-black, and the same number spread across the width of
+              this card was the brightest object on the screen — louder than
+              the mark and the heading it sits under. See globals.css. */}
+          <div className="mt-3 flex w-full items-center justify-center rounded-lg bg-[color:var(--mock-cta)] px-3 py-3">
             <span className="whitespace-nowrap text-[14px] leading-none text-[color:var(--mock-window)]">
               Email me a sign-in link
             </span>
@@ -152,7 +157,15 @@ export function SignInMock() {
             right and bottom are off the card (the scene bleeds right and its
             foot is masked), so a radius there would be a corner drawn on a
             picture that is supposed to be carrying on. */}
-        <div className="hidden w-[42%] shrink-0 flex-col pl-5 pt-6 sm:flex">
+        {/* NO LEFT PAD. The form column already pays px-8 on its right, so a
+            further pl-5 here made the gap before the picture 52px against the
+            28/32px holding the form off the frame's left edge — the block read
+            as pushed left rather than centred in its column. Dropping it makes
+            the two insets the same number, measured where the eye actually
+            reads them: frame edge to button on one side, button to picture on
+            the other. pt-6 is untouched; the top inset is doing a different
+            job (see below). */}
+        <div className="hidden w-[42%] shrink-0 flex-col pt-6 sm:flex">
           <div className="min-h-0 flex-1 overflow-hidden rounded-tl-2xl [background:var(--signin-brand-wash)]" />
         </div>
       </div>
