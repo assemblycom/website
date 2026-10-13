@@ -65,20 +65,12 @@ const WAYS: {
  */
 export function PortalStack({
   heading = "Keep the tools you already use",
-  body = "Embed the tools your clients already use inside your portal, connect what you run through the API and MCP connector, Zapier, or Make, and automate the busywork with the automation builder.",
+  body = "Embed the tools your clients already use inside your portal, connect what you run through the API and MCP connector, Zapier, or Make, and automate the busywork with the automation builder. Every app connects to the same client records.",
   ways = WAYS,
-  supportLine,
   visualTitle = "Stack visual — an outside tool running as an app inside the portal: Assembly's sidebar with a scheduler open in the content area, marked Embedded, cropped right so the screen continues past the rail.",
 }: {
   heading?: string;
   body?: string;
-  /**
-   * One line under the list. Undefined by default rather than carrying
-   * /client-portal's wording, unlike the other props here: both
-   * /solutions/* pages render this section with `ways={[]}` and would
-   * otherwise inherit a sentence their briefs never asked for.
-   */
-  supportLine?: string;
   ways?: typeof WAYS;
   visualTitle?: string;
 } = {}) {
@@ -213,16 +205,6 @@ export function PortalStack({
                   </li>
                 ))}
               </ul>
-            ) : null}
-
-            {/* The handoff's support line. It used to be the tail of the lead
-                paragraph above; v2 pulls it out, and it reads better there —
-                the lead is about the three ways in, and this is the one thing
-                true of all of them once they are in. */}
-            {supportLine ? (
-              <p className="mt-8 text-sm text-muted-foreground">
-                {supportLine}
-              </p>
             ) : null}
           </div>
 

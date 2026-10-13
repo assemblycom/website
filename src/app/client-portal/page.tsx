@@ -10,7 +10,7 @@ import { PortalFrictionless } from "@/components/client-portal/portal-frictionle
 import { PortalStack } from "@/components/client-portal/portal-stack";
 import { PortalTrust } from "@/components/client-portal/portal-trust";
 import { PortalPricing } from "@/components/client-portal/portal-pricing";
-import { FEATURED, PortalProof } from "@/components/client-portal/portal-proof";
+import { BuilderCustomerQuotes } from "@/components/ai-app-builder/builder-customer-quotes";
 import { BuilderHeroVisual } from "@/components/ai-app-builder/builder-hero-visual";
 import { DEMO_URL, SIGNUP_URL } from "@/lib/constants";
 import { PAGE_SEO, pageMetadata } from "@/lib/seo";
@@ -227,9 +227,11 @@ export default function ClientPortalPage() {
         <PortalFrictionless />
         <GridDivider />
 
-        {/* Section 7. The support line used to be the tail of this section's
-            lead paragraph; v2 gives it its own line. */}
-        <PortalStack supportLine="Every app connects to the same client records." />
+        {/* Section 7. The handoff sets "Every app connects to the same
+            client records" as a support line of its own; it reads as an
+            orphan under the three rows, so it stays in the lead paragraph
+            where this page already had it. */}
+        <PortalStack />
 
         <PortalTrust />
         <GridDivider />
@@ -237,7 +239,60 @@ export default function ClientPortalPage() {
 
       <div className="relative">
         <GridRails />
-        <PortalProof featured={FEATURED} />
+        {/* The same quotes row /ai-app-builder runs, rather than this page's
+            own proof band. One component, two pages.
+
+            THE QUOTES ARE ALL POSITIVE, and that is load-bearing. Handoff v2's
+            section 9 sets two before-state lines (Capital One on spreadsheets,
+            Sargent on a portal that "feels very corporate") as small cards
+            under a featured story, where the lead frames them as what those
+            firms left behind. This row has no lead — four equal cards, each
+            read on its own — so the same lines would read as complaints about
+            Assembly, which is the fault the quotes component's own notes
+            record and avoid.
+
+            Sargent is not here for a second reason: it has no portrait in
+            /public/images/customers, and its quote is already on this page in
+            the customizations section, where it is making a point this row
+            would only repeat. */}
+        <BuilderCustomerQuotes
+          heading="Firms that stopped settling"
+          body="See how firms replaced rigid tools with a portal they built around their own workflow."
+          quotes={[
+            {
+              quote:
+                "It let us flexibly build our own version of a client portal, uniting elements of their technology with existing external core applications.",
+              name: "Kyle Pearson",
+              firm: "Collective CPA",
+              image: "/images/customers/collective-cpa.jpg",
+              href: "/customers/collective-cpa",
+            },
+            {
+              quote:
+                "Every client said this was such an easy onboarding experience. The first step of working together feels effortless, and that creates a powerful first impression.",
+              name: "Leah McCool",
+              firm: "Orca Accounting",
+              image: "/images/customers/orca-accounting.jpg",
+              href: "/customers/orca-accounting",
+            },
+            {
+              quote:
+                "Our portal really improves our client satisfaction with our firm and definitely saves time. Having everything in one spot is huge.",
+              name: "Eliana Emery",
+              firm: "Heritage Law Partners",
+              image: "/images/customers/heritage-law-partners.jpg",
+              href: "/customers/heritage-law-partners",
+            },
+            {
+              quote:
+                "What excites me is how our partner data collected in Assembly flows directly into our internal quality control processes.",
+              name: "Phillip LaRue",
+              firm: "Capital One",
+              image: "/images/customers/capital-one-hero.jpg",
+              href: "/customers/capital-one-luxury-travel",
+            },
+          ]}
+        />
         <GridDivider />
         <PortalPricing />
         <GridDivider />

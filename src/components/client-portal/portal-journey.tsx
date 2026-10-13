@@ -1,56 +1,106 @@
 import Link from "next/link";
 import { QUIET_BUTTON } from "@/components/ui/quiet-button";
+import { CardRail, RailCard } from "@/components/ui/card-rail";
 import { Reveal } from "@/components/ui/reveal";
+import {
+  ApprovalsMock,
+  OnboardingMock,
+} from "@/components/client-portal/segment-mock";
+import { ProgressMock } from "@/components/client-portal/progress-chart";
 
 /**
- * Section 4 of handoff v2, and the page's new centre of gravity: one client's
- * whole year in one portal frame, five stages deep.
+ * Section 4 of handoff v2, and the page's new centre of gravity: a client's
+ * whole journey, from onboarding to ongoing support, in one portal.
  *
- * WHY THIS IS NOT A TAB STRIP. The live page made this argument with four tabs,
- * and the handoff is explicit that it ships as a sequence instead — a tab strip
- * asks the reader to choose which stage to look at, when the claim is that
- * there is no choosing, the whole journey is in one place. Read top to bottom,
- * the five stages are the argument; clicked one at a time they are five
- * features.
+ * A RAIL, NOT A STICKY FRAME. The handoff draws V4 as one portal frame whose
+ * main panel changes across five scroll-driven beats, and the first pass here
+ * built that layout with the frame as a pending slot. It shipped as one large
+ * empty rectangle beside a numbered list, because the art for it does not
+ * exist — the section carrying the page's weight was the only one on the page
+ * with nothing in it.
  *
- * THE FRAME IS STICKY, THE CARDS SCROLL. V4 in the handoff is one portal frame
- * whose main panel changes as each stage comes up. The art for it is marked
- * "Needs design", so what ships here is the layout that art will drop into: the
- * frame holds its place in the left column while the five cards pass it on the
- * right. When the shot exists it becomes the frame's contents and the five
- * beats key off the cards already in place.
+ * Three of the five stages already had artwork drawn for them in the segment
+ * grid (which handoff v2 retires), so the rail reuses those rather than
+ * waiting on V4: the onboarding wizard is Onboard, the approvals flow is
+ * Collaborate, and the progress dashboard is Track. Transact and Support are
+ * the two that had no picture and still carry a pending slot each — two card
+ * sized gaps rather than one section-sized one.
  *
- * NOTE FOR WHOEVER WIRES THE BEATS UP. Driving the frame from scroll position
- * means IntersectionObserver, which per the repo's CLAUDE.md never fires in the
- * preview pane — the pane runs with `document.visibilityState === "hidden"`, so
- * the frame will look stuck there and be fine in a real browser. Check it on a
- * preview URL, not in the pane. The handoff's own fallback for reduced motion
- * is a static filmstrip of the five beats, which is also what this layout
- * degrades to on a phone, where the frame is not sticky and the cards simply
- * stack.
+ * CardRail is the site's own stepped row: arrows at the foot, snap points,
+ * drag to scroll, and all three stand down at a width where every card
+ * already fits. It is what /client-portal's build rail runs, so the two rails
+ * on this page are one object. It also replaces what the sticky frame needed
+ * and could not have here — per the repo's CLAUDE.md, IntersectionObserver
+ * never fires in the preview pane, so a scroll-driven sequence cannot be
+ * checked there; a rail is driven by the reader instead and has nothing to
+ * verify in a real browser that the pane cannot show.
  */
-const STAGES: { name: string; body: string }[] = [
+const STAGES: {
+  name: string;
+  body: string;
+  visual: React.ReactNode;
+}[] = [
   {
     name: "Onboard",
     body: "Walk new clients through intake, document collection, and a clear first-steps checklist, with progress saved along the way.",
+    visual: <Window><OnboardingMock /></Window>,
   },
   {
     name: "Collaborate",
     body: "Clients review work, leave feedback, and sign off round by round, with shared files in the same place.",
+    visual: <Window><ApprovalsMock /></Window>,
   },
   {
     name: "Track",
     body: "Every client sees the status, milestones, and key dates on their own engagement without asking.",
+    // No frame: progress is a shape rather than a screen, so the diagram is
+    // drawn straight onto the card. Same call the segment grid made for it.
+    visual: (
+      <div className="h-full overflow-hidden">
+        <ProgressMock />
+      </div>
+    ),
   },
   {
     name: "Transact",
     body: "Proposals clients can accept, contracts they can sign, and invoices they can pay, all in your brand.",
+    visual: (
+      <PendingSlot title="V4 Transact — a proposal accepted, a contract signed and an invoice marked Paid, stacked in one view in the client's brand. Art direction pending." />
+    ),
   },
   {
     name: "Support",
     body: "Clients get help from a request queue, a resource library, and an assistant that answers from your own docs.",
+    visual: (
+      <PendingSlot title="V4 Support — a help request answered beside the resource library open to a guide, with the messages drawer carrying a 'Replied by email' badge. Art direction pending." />
+    ),
   },
 ];
+
+/**
+ * The window the two screen-type mocks sit in: `.mock-edge` on a top-left
+ * corner with no right or bottom border, so the screen runs off the card the
+ * way the same mocks did in the segment grid. Lifted verbatim from there
+ * rather than redrawn, so the two treatments cannot drift.
+ */
+function Window({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="mock-edge h-full overflow-hidden rounded-tl-xl border-l border-t border-[var(--mock-line)] bg-[var(--mock-window)] shadow-[0_1px_2px_rgba(16,24,40,0.04),0_18px_40px_-28px_rgba(16,24,40,0.28)] [[data-theme=dark]_&]:shadow-[0_18px_44px_-28px_rgba(0,0,0,0.6)]">
+      {children}
+    </div>
+  );
+}
+
+/** A card whose picture is not drawn yet, at the shape the art will take. */
+function PendingSlot({ title }: { title: string }) {
+  return (
+    <div
+      aria-hidden
+      title={title}
+      className="h-full rounded-tl-xl bg-[var(--surface)] [[data-theme=dark]_&]:bg-white/[0.04]"
+    />
+  );
+}
 
 export function PortalJourney({
   id,
@@ -60,6 +110,7 @@ export function PortalJourney({
   supportLine = "Running through every stage: secure messaging clients can answer from their inbox, and a personalized Home screen that shows each client only what is theirs.",
   templatesLine = "30+ ready-made app templates. Every one is a working app: install it, use it as is, or tell the builder what to change.",
   link = { label: "Browse templates", href: "/templates" },
+  railLabel = "The client journey",
 }: {
   /** An anchor, for a section above that jumps here. */
   id?: string;
@@ -69,6 +120,7 @@ export function PortalJourney({
   supportLine?: string;
   templatesLine?: string;
   link?: { label: string; href: string };
+  railLabel?: string;
 } = {}) {
   return (
     <section
@@ -81,48 +133,27 @@ export function PortalJourney({
           <p className="mt-4 text-muted-foreground">{body}</p>
         </div>
 
-        <div className="mt-12 grid gap-10 md:mt-16 lg:grid-cols-2 lg:gap-16">
-          {/* THE FRAME. Sticky only from lg, where there is a second column
-              for the cards to pass it in. Below that it is a plain picture at
-              the top of the stack, because a frame that sticks on a phone
-              covers the copy it is supposed to illustrate.
-
-              `top-24` clears the site header; the height is V4's 16:9 at this
-              column's measure, so the slot holds the proportion the art is
-              being drawn to rather than collapsing to nothing before it
-              lands. */}
-          <div
-            aria-hidden
-            title="V4 — one client's year in one Brandmages portal frame: a journey path of five nodes across the top, the messages drawer open throughout, and the main panel changing through onboard, collaborate, track, transact and support. Art direction pending."
-            className="h-[260px] rounded-3xl bg-[var(--surface)] sm:h-[340px] lg:sticky lg:top-24 lg:h-[420px]"
-          />
-
-          {/* The five stages, numbered. The number is the sequence made
-              visible — it is the one thing distinguishing this from a feature
-              list, and it is why they are an ordered list rather than a grid
-              of cards. Dotted rules are this page's list treatment, used by
-              the FAQ and the stack section; a sixth idea about dividers would
-              only be a sixth idea. */}
-          <ol className="flex flex-col">
+        {/* Numbered, because the five are a sequence rather than a feature
+            set — it is the one thing distinguishing this rail from the build
+            rail further down, which numbers its cards for the same reason. */}
+        <div className="mt-12 md:mt-14">
+          <CardRail label={railLabel}>
             {stages.map((stage, i) => (
-              <li
+              <RailCard
                 key={stage.name}
-                className="flex gap-5 border-t border-border py-6 first:border-t-0 first:pt-0 [[data-theme=dark]_&]:border-[#383838]"
+                index={`Stage ${i + 1}`}
+                name={stage.name}
+                caption={stage.body}
+                // The scenes are drawn larger than the card and are windows
+                // onto something that continues, so they start under the
+                // caption and crop at the foot rather than being shrunk to
+                // fit. Same choice the segment grid made for these two.
+                picture="below"
               >
-                <span className="type-caption shrink-0 pt-0.5 font-mono tabular-nums text-muted-foreground">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <div className="min-w-0">
-                  <p className="text-base leading-snug text-foreground">
-                    {stage.name}
-                  </p>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                    {stage.body}
-                  </p>
-                </div>
-              </li>
+                {stage.visual}
+              </RailCard>
             ))}
-          </ol>
+          </CardRail>
         </div>
 
         {/* The two support lines close the section. The first is what runs
