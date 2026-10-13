@@ -255,20 +255,6 @@ export default function ClientPortalPage() {
           variant="divided"
           dottedRules
         />
-        {/* The handoff closes the FAQ on a way out. On the page rather than
-            inside <FAQ>, which has no footer slot and is shared with seven
-            other callers that do not want one. */}
-        <div className="mx-auto max-w-[1200px] px-6 pt-10 md:px-10">
-          <p className="text-sm text-muted-foreground">
-            Still have questions?{" "}
-            <a
-              href={DEMO_URL}
-              className="text-foreground underline underline-offset-4 transition-opacity hover:opacity-70"
-            >
-              Book a demo
-            </a>
-          </p>
-        </div>
       </div>
 
       <div className="border-t border-border [[data-theme=dark]_&]:border-[#383838]" />
