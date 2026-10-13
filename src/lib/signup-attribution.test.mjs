@@ -65,6 +65,17 @@ test('every signup link on /powered-by carries the referral credit, across navig
   assert.equal(later.searchParams.get('referred'), 'code_1');
 });
 
+test('a link that names its own referrer takes none of a saved one', () => {
+  browser('https://assembly.com/powered-by?referred=code_A&firm=Firm%20A&first=Ann');
+  attribution.readSignupAttribution();
+  dom.reconfigure({ url: 'https://assembly.com/built-by/portal_B' });
+  const builtBy = new URL(attribution.withSignupAttribution(buildSignupUrl() + '&ref=portal_B&utm_content=share'));
+  assert.equal(builtBy.searchParams.get('ref'), 'portal_B');
+  for (const key of ['referred', 'firm', 'first']) assert.equal(builtBy.searchParams.has(key), false);
+  const plain = new URL(attribution.withSignupAttribution(buildSignupUrl()));
+  assert.equal(plain.searchParams.get('referred'), 'code_A');
+});
+
 test('ignores referral fields anywhere but /powered-by, and invalid ones there', () => {
   browser('https://assembly.com/pricing?ref=producthunt&utm_source=producthunt');
   const elsewhere = new URL(attribution.withSignupAttribution(buildSignupUrl()));

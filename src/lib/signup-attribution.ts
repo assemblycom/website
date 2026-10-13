@@ -69,7 +69,11 @@ export function withSignupAttribution(href: string): string {
   const attribution = readSignupAttribution();
   if (!attribution.size) return href;
   const addedCampaignFields = new Set<string>();
+  // The referral fields describe one referrer, so they travel together: a link
+  // that names its own (a /built-by CTA) takes none from an earlier visit.
+  const linkHasReferral = REFERRAL_PARAMS.some((key) => url.searchParams.has(key));
   for (const [key, value] of attribution) {
+    if (linkHasReferral && (REFERRAL_PARAMS as readonly string[]).includes(key)) continue;
     // Referral and powered-by links can already define their own attribution.
     if (!url.searchParams.has(key)) {
       url.searchParams.set(key, value);
