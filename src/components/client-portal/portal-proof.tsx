@@ -8,37 +8,63 @@ import { Reveal } from "@/components/ui/reveal";
  * anywhere else — the shared `Testimonials` block carries a single story with a
  * portrait and figures, which is a different object from this.
  *
- * Three peers rather than one lead and three supports: no featured card, no
- * imagery, just who said it and what they said. The columns are divided by the
- * page's own hairline instead of each being boxed, so the three read as one
- * band rather than three objects.
+ * Two shapes. Without `featured` it is three peers divided by the page's own
+ * hairline, which is what the /solutions/* pages render. With `featured` it is
+ * handoff v2's section 9: one lead story carrying a pull quote, its figures and
+ * a link, then the three beneath it as subordinate cards.
  *
- * Every quote is positive and published. The earlier set used the firms'
- * before-state ("bolted-on software, an afterthought"), which needed a line
- * above it explaining that it described the old tool; as peers under a plain
- * heading those would simply read as complaints about Assembly.
+ * ONE THING TO KNOW BEFORE EDITING THE QUOTE SET. An earlier pass here
+ * deliberately used only positive, published quotes, having found that the
+ * firms' before-state lines ("bolted-on software, an afterthought") read as
+ * complaints about Assembly when set as peers under a plain heading. Handoff
+ * v2 puts two before-state quotes back in the subordinate cards — Capital One
+ * on spreadsheets, Sargent on a portal that "feels very corporate" — and they
+ * only stay readable because the featured story above them is unambiguously
+ * positive and sets the frame as "what these firms left behind". If the
+ * featured story is ever removed, these three go back to reading as
+ * complaints; re-read them before changing the lead.
  */
+/**
+ * The lead story. Its figures are the handoff's three: the first two are the
+ * story's own `stats` entries, and "Google Drive migration done in one week"
+ * is lifted from the body of the same story rather than from its stats array,
+ * which carries "100% improved intake" in that third slot.
+ */
+export const FEATURED = {
+  slug: "collective-cpa",
+  quote:
+    "It let us flexibly build our own version of a client portal, uniting elements of their technology with existing external core applications.",
+  name: "Kyle Pearson",
+  role: "Founder @ Collective CPA and Advisors",
+  href: "/customers/collective-cpa",
+  stats: [
+    "4x faster change management",
+    "200+ tax clients migrated",
+    "Google Drive migration done in one week",
+  ],
+  linkLabel: "Read Collective CPA's story",
+};
+
 const STORIES = [
   {
-    slug: "collective-cpa",
+    slug: "capital-one-luxury-travel",
     quote:
-      "It let us flexibly build our own version of a client portal, uniting elements of their technology with existing external core applications.",
-    name: "Kyle Pearson",
-    role: "Founder @ Collective CPA",
-    href: "/customers/collective-cpa",
+      "Before Assembly, we were managing hotel partners through Google spreadsheets and long email chains.",
+    name: "Phillip LaRue",
+    role: "Senior Director of Luxury Travel @ Capital One",
+    href: "/customers/capital-one-luxury-travel",
   },
   {
     slug: "sargent-cpa",
     quote:
-      "When clients log into the portal, they see our branded colors and our logos. They feel like it’s a safe, trusted place, with custom features in the side menu that are exactly what we need for our clients.",
+      "On the client side it feels very corporate. It didn’t look friendly or seem inviting.",
     name: "Anthony Drozd",
     role: "Operations Manager @ Sargent CPAs",
     href: "/customers/sargent-cpa",
   },
   {
     slug: "heritage-law-partners",
-    quote:
-      "I really like how smooth it is and intuitive for our clients to use. Our approach definitely puts us in the top tier for client care among estate planning firms.",
+    quote: "Having everything in one spot is huge.",
     name: "Eliana Emery",
     role: "Managing Attorney @ Heritage Law Partners",
     href: "/customers/heritage-law-partners",
@@ -58,6 +84,7 @@ export function PortalProof({
   heading = "Firms that stopped settling",
   body = "See how firms replaced rigid tools with a portal they built around their own workflow.",
   stories = STORIES,
+  featured,
   linkLabel,
   visual,
 }: {
@@ -72,6 +99,13 @@ export function PortalProof({
     specialty?: string;
     stats?: string[];
   }[];
+  /**
+   * The lead story above the three. Pass `FEATURED` for handoff v2's shape;
+   * omit it for the three-peer band the /solutions/* pages render. Opt-in
+   * rather than defaulted for the same reason the social-proof band is: those
+   * two pages pass their own `stories` but would inherit this.
+   */
+  featured?: typeof FEATURED;
   /** A named link per card, where the brief asks for one. */
   linkLabel?: string;
   /** The picture beside a single story. Ignored when there are three. */
@@ -91,11 +125,55 @@ export function PortalProof({
           </p>
         </div>
 
+        {/* THE LEAD STORY. A block on the page's own measure rather than a
+            card: it is the one thing in this section that is not in the grid
+            below, and boxing it would have made it the first of four objects
+            instead of the thing the other three sit under. */}
+        {featured ? (
+          <Link
+            href={featured.href}
+            className="group mt-12 flex flex-col items-center text-center"
+          >
+            <span className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-muted p-2.5 text-foreground/80 transition-colors group-hover:bg-background group-hover:text-foreground [[data-theme=dark]_&]:bg-white/[0.06] [[data-theme=dark]_&]:group-hover:bg-white/[0.12]">
+              <CustomerLogo slug={featured.slug} fit />
+            </span>
+            <blockquote className="type-lead mt-6 max-w-3xl text-pretty text-foreground">
+              &ldquo;{featured.quote}&rdquo;
+            </blockquote>
+            <div className="pt-6">
+              <p className="text-sm text-foreground">{featured.name}</p>
+              <p className="type-caption mt-0.5 text-muted-foreground">
+                {featured.role}
+              </p>
+            </div>
+            {/* The same stat chip the rest of the site uses. */}
+            <ul className="mt-6 flex flex-wrap items-center justify-center gap-1.5">
+              {featured.stats.map((stat) => (
+                <li
+                  key={stat}
+                  className="rounded-md bg-muted px-3 py-1.5 font-mono text-[11px] uppercase leading-none tracking-wide text-muted-foreground [[data-theme=dark]_&]:bg-white/[0.06]"
+                >
+                  {stat}
+                </li>
+              ))}
+            </ul>
+            <p className="mt-6 text-sm text-muted-foreground transition-colors group-hover:text-foreground">
+              {featured.linkLabel}
+            </p>
+          </Link>
+        ) : null}
+
         {/* Dividers between the columns rather than a border around each: the
             rule only appears from md, where the three actually sit side by
             side. Stacked below that, each card keeps its own top rule so the
             set still reads as divided. */}
-        <div className={single ? "mt-12" : "mt-12 grid md:grid-cols-3"}>
+        <div
+          className={
+            single
+              ? "mt-12"
+              : `grid md:grid-cols-3 ${featured ? "mt-14" : "mt-12"}`
+          }
+        >
           {stories.map((story, i) => (
             <Link
               key={story.href}
@@ -148,7 +226,11 @@ export function PortalProof({
                   mark sits back at 80%; once the hover fill comes in behind
                   it, that grey is the same value as the fill, so the tile
                   vanished and took the logo's contrast with it. */}
-              <span className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-muted p-2.5 text-foreground/80 transition-colors group-hover:bg-background group-hover:text-foreground [[data-theme=dark]_&]:bg-white/[0.06] [[data-theme=dark]_&]:group-hover:bg-white/[0.12]">
+              <span
+                className={`flex shrink-0 items-center justify-center rounded-lg bg-muted text-foreground/80 transition-colors group-hover:bg-background group-hover:text-foreground [[data-theme=dark]_&]:bg-white/[0.06] [[data-theme=dark]_&]:group-hover:bg-white/[0.12] ${
+                  featured ? "size-9 p-2" : "size-12 p-2.5"
+                }`}
+              >
                 <CustomerLogo slug={story.slug} fit />
               </span>
               {story.specialty ? (
@@ -168,8 +250,13 @@ export function PortalProof({
                   ))}
                 </ul>
               ) : null}
+              {/* Subordinate under a lead: the pull quote above is the one
+                  that carries the section, so these drop to the body size the
+                  cards' own attribution uses rather than competing with it. */}
               <blockquote
-                className={`mt-6 text-pretty text-foreground ${single ? "type-lead" : ""}`}
+                className={`mt-6 text-pretty ${single ? "type-lead text-foreground" : ""} ${
+                  featured ? "text-sm text-muted-foreground" : "text-foreground"
+                }`}
               >
                 &ldquo;{story.quote}&rdquo;
               </blockquote>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { QUIET_BUTTON } from "@/components/ui/quiet-button";
 import { CustomerLogo } from "@/components/customers/customer-logos";
 import { EdgeFadeScroller } from "@/components/ui/edge-fade-scroller";
 import { getCaseStudyBySlug } from "@/lib/case-studies";
@@ -43,7 +44,72 @@ const LOGO_SLUGS = [
 ];
 const DESKTOP_COUNT = 5;
 
-export function PortalSocialProof() {
+/**
+ * Handoff v2 gives this section a heading, a lead, four stat cells and a link
+ * out to the stories. All four are OPT-IN rather than defaulted, which is the
+ * opposite of how the rest of this family works.
+ *
+ * The reason: both /solutions/* pages render this component bare, with no
+ * props at all, and their briefs ask for a plain row of marks under the hero.
+ * Every other component here can default to /client-portal's copy because
+ * those pages override each prop; this one they do not, so a default would
+ * silently put a stats band on two pages that never asked for one.
+ *
+ * The stat cells reuse the site's stat chip — mono, uppercase, rounded-md on
+ * muted — the same object the case-study pages and the customers review strip
+ * already carry, rather than a fourth idea about small labelled numbers.
+ */
+export function PortalSocialProof({
+  heading,
+  body,
+  stats,
+  link,
+}: {
+  heading?: string;
+  body?: string;
+  /** The four figures. Each is one chip. */
+  stats?: string[];
+  link?: { label: string; href: string };
+} = {}) {
+  return (
+    <div>
+      {heading || body || stats?.length ? (
+        <div className="px-6 pt-16 text-center md:px-10 md:pt-24">
+          {heading ? (
+            <h2 className="type-h2 mx-auto max-w-3xl text-balance">
+              {heading}
+            </h2>
+          ) : null}
+          {body ? (
+            <p className="mx-auto mt-4 max-w-2xl text-balance text-muted-foreground">
+              {body}
+            </p>
+          ) : null}
+          {stats?.length ? (
+            <ul className="mt-8 flex flex-wrap items-center justify-center gap-1.5">
+              {stats.map((stat) => (
+                <li
+                  key={stat}
+                  className="rounded-md bg-muted px-3 py-1.5 font-mono text-[11px] uppercase leading-none tracking-wide text-muted-foreground [[data-theme=dark]_&]:bg-white/[0.06]"
+                >
+                  {stat}
+                </li>
+              ))}
+            </ul>
+          ) : null}
+          {link ? (
+            <Link href={link.href} className={`mt-6 ${QUIET_BUTTON}`}>
+              {link.label}
+            </Link>
+          ) : null}
+        </div>
+      ) : null}
+      <LogoRow />
+    </div>
+  );
+}
+
+function LogoRow() {
   return (
     // The ends dissolve instead of cutting. On a phone the row scrolls and the
     // mark at the right edge was being sliced down its middle — on a wordmark

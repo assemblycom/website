@@ -4,16 +4,13 @@ import { FAQ, type FAQEntry } from "@/components/home/faq";
 import { GridDivider, GridRails } from "@/components/ui/grid-lines";
 import { PortalSocialProof } from "@/components/client-portal/portal-social-proof";
 import { PortalProblem } from "@/components/client-portal/portal-problem";
-import { PortalReadyMade } from "@/components/client-portal/portal-ready-made";
-import {
-  BUILD_STEPS,
-  PortalBuild,
-} from "@/components/client-portal/portal-build";
-import { PortalTailor } from "@/components/client-portal/portal-tailor";
+import { PortalJourney } from "@/components/client-portal/portal-journey";
+import { PortalCustomizations } from "@/components/client-portal/portal-customizations";
+import { PortalFrictionless } from "@/components/client-portal/portal-frictionless";
 import { PortalStack } from "@/components/client-portal/portal-stack";
 import { PortalTrust } from "@/components/client-portal/portal-trust";
 import { PortalPricing } from "@/components/client-portal/portal-pricing";
-import { PortalProof } from "@/components/client-portal/portal-proof";
+import { FEATURED, PortalProof } from "@/components/client-portal/portal-proof";
 import { BuilderHeroVisual } from "@/components/ai-app-builder/builder-hero-visual";
 import { DEMO_URL, SIGNUP_URL } from "@/lib/constants";
 import { PAGE_SEO, pageMetadata } from "@/lib/seo";
@@ -21,54 +18,58 @@ import { PAGE_SEO, pageMetadata } from "@/lib/seo";
 export const metadata: Metadata = pageMetadata(PAGE_SEO.clientPortal);
 
 /**
- * Every question carries "client portal" for search, and every answer carries
- * the page's thesis: this is the portal you can build on. Earnest objections
- * first, the two search questions last.
+ * Handoff v2's eight, verbatim. Every question carries "client portal" in full
+ * rather than the shortened forms this page shipped with ("Can I build my own
+ * apps into it?"): the handoff writes them long on purpose, because the
+ * question text is what the page is filed under in search, and "it" matches
+ * nothing. None of the eight wraps at the list's measure, so none carries a
+ * `shortQuestion`; add one here if a future edit lengthens a question past a
+ * single row rather than shortening the question itself.
  */
 const PORTAL_FAQS: FAQEntry[] = [
   {
     question: "What is a client portal?",
     answer:
-      "A client portal is a secure, branded hub where your clients message you, pay invoices, sign contracts, share files, and track work in one place. Assembly gives you those as ready-made apps you install in a click, then lets you build custom apps into the same portal.",
+      "A secure, branded hub where clients message you, pay invoices, sign contracts, share files, and track work. Assembly gives you those as ready-made apps, then lets you build custom apps into the same portal.",
   },
   {
-    question: "Can I build my own apps into it?",
+    question: "Can I build my own apps into the client portal?",
     answer:
-      "Yes. Describe the app you need and Assembly's AI app builder shows you a plan to approve or edit, then ships a real app into your portal with logins, permissions, and branding already handled. Change it later the same way, by chatting.",
-    links: [{ label: "Assembly's AI app builder", href: "/ai-app-builder" }],
+      "Yes. Describe the app in plain English. Assembly shows a plan to approve or edit, then ships a real app into your portal with logins, permissions, and branding handled. Change it later by chatting.",
+    links: [{ label: "Describe the app in plain English", href: "/ai-app-builder" }],
   },
   {
-    question: "Do I need to code to customize it?",
+    question: "Do I need to code to customize the client portal?",
     answer:
-      "No. There is nothing to code. You describe what you want, review a plan, and publish. You can also start from 30+ ready-made templates, each a working app, and tell the builder what to change.",
-    links: [{ label: "30+ ready-made templates", href: "/templates" }],
+      "No. You describe what you want, review a plan, and publish. You can also start from one of 30+ templates, each a working app, and tell the builder what to change.",
+    links: [{ label: "30+ templates", href: "/templates" }],
   },
   {
-    question: "Can I white-label it?",
+    question: "Can I white-label the client portal?",
     answer:
-      "Yes. Your logo and colors are on every plan. On Professional and up, clients sign in on your own domain with the Assembly badge removed, so the whole experience feels like your firm's software. Every new app you build inherits the brand automatically.",
+      "Yes. Your logo and colors are on every plan. On Professional and up, clients sign in on your own domain with the Assembly badge removed, and every new app inherits your brand.",
   },
   {
     question: "Is my client portal secure?",
     answer:
-      "Yes. Logins, permissions, and data isolation are platform infrastructure maintained by Assembly, never generated by AI. Assembly is SOC 2 Type II certified and GDPR and CCPA aligned, clients sign in with a secure email link or Google, and each app runs in its own sandboxed database.",
+      "Yes. Assembly is SOC 2 Type II certified and supports HIPAA, GDPR, and CCPA. Data is encrypted in transit and at rest, each client sees only their own data, and MFA is on every plan.",
     links: [{ label: "SOC 2 Type II certified", href: "/security" }],
   },
   {
-    question: "Is there a HIPAA-compliant portal?",
+    question: "Does Assembly offer a HIPAA-compliant client portal?",
     answer:
-      "Assembly supports HIPAA with a BAA on the Advanced plan. Ready-made apps like secure messaging, files, and contracts can handle PHI as long as the app does not use AI. Apps built with the AI app builder are not HIPAA-covered, because the build uses AI. Talk to us and we will map what fits.",
+      "Yes, with a BAA on the Advanced plan. Ready-made apps that do not use AI can handle PHI; apps built with the AI app builder are not covered. Talk to us to map what fits.",
     links: [{ label: "Talk to us", href: DEMO_URL }],
   },
   {
-    question: "The best client portal for service firms?",
+    question: "What is the best client portal software for service firms?",
     answer:
-      "The best client portal is the one clients actually log in to, and the one your firm does not have to settle for. Assembly combines ready-made messaging, billing, files, contracts, forms, and tasks with an AI app builder, so agencies, accountants, consultants, and coaches get the essentials on day one and the custom apps only their firm needs.",
+      "The one clients actually log in to and your firm never settles for. Assembly pairs ready-made apps with an AI app builder: essentials on day one, custom apps when you need them.",
   },
   {
-    question: "What is it not good for?",
+    question: "What is the client portal not good for?",
     answer:
-      "Public marketing websites. Assembly builds authenticated experiences for your team and your logged-in clients. A public site is better built elsewhere and linked from inside your portal.",
+      "Public marketing websites. Assembly builds experiences for your team and your signed-in clients. Build a public site elsewhere and link to it from inside your portal.",
   },
 ];
 
@@ -107,8 +108,8 @@ export default function ClientPortalPage() {
               The client portal you can build on
             </h1>
             <p className="type-lead mx-auto max-w-[34rem] text-pretty text-muted-foreground md:mx-0 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:pt-2">
-              Ready-made apps for the work every firm shares, plus an AI app
-              builder for the work that is only yours.
+              Everything your clients need from you, in one place. Tailor your
+              white-label portal with AI to fit perfectly to your firm.
             </p>
             <div>
               {/* Stacked and full width on phones, side by side from md.
@@ -124,7 +125,7 @@ export default function ClientPortalPage() {
                   href={SIGNUP_URL}
                   className="w-full rounded-lg bg-foreground px-5 py-3 text-center text-sm text-background transition-opacity hover:opacity-90 sm:w-auto sm:py-2.5"
                 >
-                  Get started free
+                  Get started
                 </a>
                 <a
                   href={DEMO_URL}
@@ -133,6 +134,13 @@ export default function ClientPortalPage() {
                   Book a demo
                 </a>
               </div>
+              {/* The handoff's hero support line. Under the buttons rather
+                  than above them: it qualifies the first one ("free forever",
+                  "no card"), and a reassurance read before there is anything
+                  to be reassured about is just a claim. */}
+              <p className="type-caption mt-4 text-muted-foreground">
+                Free forever plan. No credit card required.
+              </p>
             </div>
           </div>
 
@@ -143,8 +151,26 @@ export default function ClientPortalPage() {
               finished screens was not showing. */}
           <BuilderHeroVisual />
           {/* Credibility right under the product shot, before the argument
-              starts. */}
-          <PortalSocialProof />
+              starts. Section 2 of the handoff: the figures and the roster are
+              one claim, so the band and the logo row are one component.
+
+              The four figures are the homepage stats band's, which is what
+              the handoff specifies. NOTE: /customers states "1M+ clients"
+              against this band's "250K+". The handoff flags the conflict for
+              Vivienne and is explicit that this page must not introduce a
+              third figure, so it carries the homepage's until that is
+              settled. */}
+          <PortalSocialProof
+            heading="Trusted by 1,250+ professional service firms"
+            body="Agencies, accountants, and consultants run their client relationships on Assembly."
+            stats={[
+              "1,250+ businesses powered",
+              "10,000+ apps created",
+              "250K+ clients managed",
+              "$100M+ payments processed",
+            ]}
+            link={{ label: "See customer stories", href: "/customers" }}
+          />
         </div>
       </section>
 
@@ -152,34 +178,58 @@ export default function ClientPortalPage() {
         <GridRails />
         <GridDivider fullBleed />
 
-        <PortalProblem />
+        {/* Section 3. The quote carries the problem now — the handoff
+            removed this section's bullets, so the two captions above the tray
+            are gone with them and the jump link points at section 5, which
+            is where the page answers it. */}
+        <PortalProblem
+          body="Stop bending your workflow to fit someone else's product."
+          quote={{
+            text: "It felt like bolted-on software, an afterthought.",
+            attribution:
+              "Eliana Emery, Managing Attorney, Heritage Law Partners, on the portals built into legal practice management software",
+            href: "/customers/heritage-law-partners",
+          }}
+          link={{
+            label: "See how firms build their own",
+            href: "#customizations",
+          }}
+        />
         <GridDivider />
 
-        <PortalReadyMade />
+        {/* Section 4, and the page's centre of gravity. It absorbs what the
+            template rail used to say here: the handoff carries "30+ ready-made
+            app templates" and the Browse templates link as this section's
+            second support line rather than as a section of its own. */}
+        <PortalJourney />
         <GridDivider />
 
-        {/* Three cards, not five. Describe, Plan, Build is the arc; Iterate
-            and Secured were a fourth and fifth beat on a rail that then had to
-            be stepped through to be seen at all. Nothing is lost by cutting
-            them here — the "built by Assembly, never by the AI" claim the
-            Secured card made has its own section further down this page
-            (PortalTrust), where it is the heading rather than a footnote.
+        {/* Section 5, and the target of the jump link above.
 
-            Sliced from BUILD_STEPS rather than restated, so this page's
-            captions cannot drift from the full set. */}
-        <PortalBuild steps={BUILD_STEPS.slice(0, 3)} />
+            THREE SECTIONS CAME OFF THE PAGE HERE, all absorbed into this one
+            and the one above, per the handoff's "argument, in order":
+
+            - PortalReadyMade (the template rail) — now section 4's second
+              support line and its Browse templates link.
+            - PortalBuild (Describe / Plan / Build) — the handoff puts the
+              build mechanics on /ai-app-builder and keeps one sentence of
+              them in this section's second card.
+            - PortalTailor (the segment grid) — its per-client point is this
+              section's support line, and the handoff lists the segment
+              example tiles as out of scope outright.
+
+            All three components are still used by the two /solutions/* pages
+            and were left alone. */}
+        <PortalCustomizations id="customizations" />
         <GridDivider />
 
-        {/* No divider after this one: the segment grid closes on its own
-            rule, which already runs rail to rail, and a second line below it
-            read as a doubled break. */}
-        <PortalTailor />
+        {/* Section 6. */}
+        <PortalFrictionless />
+        <GridDivider />
 
-        {/* The claim about a firm's existing stack, which used to be a fifth
-            card inside the grid above. No divider between them: the section
-            draws its own rules, and a third line in the same inch read as a
-            stutter. */}
-        <PortalStack />
+        {/* Section 7. The support line used to be the tail of this section's
+            lead paragraph; v2 gives it its own line. */}
+        <PortalStack supportLine="Every app connects to the same client records." />
 
         <PortalTrust />
         <GridDivider />
@@ -187,7 +237,7 @@ export default function ClientPortalPage() {
 
       <div className="relative">
         <GridRails />
-        <PortalProof />
+        <PortalProof featured={FEATURED} />
         <GridDivider />
         <PortalPricing />
         <GridDivider />
@@ -200,11 +250,25 @@ export default function ClientPortalPage() {
             uses, so the two lists on one page read as one control. No short
             forms needed: every question here already sets on one line. */}
         <FAQ
-          heading="Frequently asked questions"
+          heading="Client portal questions, answered"
           items={PORTAL_FAQS}
           variant="divided"
           dottedRules
         />
+        {/* The handoff closes the FAQ on a way out. On the page rather than
+            inside <FAQ>, which has no footer slot and is shared with seven
+            other callers that do not want one. */}
+        <div className="mx-auto max-w-[1200px] px-6 pt-10 md:px-10">
+          <p className="text-sm text-muted-foreground">
+            Still have questions?{" "}
+            <a
+              href={DEMO_URL}
+              className="text-foreground underline underline-offset-4 transition-opacity hover:opacity-70"
+            >
+              Book a demo
+            </a>
+          </p>
+        </div>
       </div>
 
       <div className="border-t border-border [[data-theme=dark]_&]:border-[#383838]" />
@@ -217,9 +281,11 @@ export default function ClientPortalPage() {
             only your firm could
           </>
         }
-        // The free plan and the no-card point are both already made by the
-        // pricing section further up this page, so the chips restated them.
+        // The chips are off, but the point they made is back as the
+        // handoff's one-line body: v2 closes on "Free forever plan. No credit
+        // card required.", the same line the hero opens on.
         planChips={false}
+        subheading="Free forever plan. No credit card required."
         // TWO BUTTONS, not a second prompt box. This page opens on a composer
         // in its hero, and a page that both opens and closes on the same
         // control asks the visitor the same question twice — the second time
@@ -230,7 +296,7 @@ export default function ClientPortalPage() {
         // promptPicker goes with it: there is no composer left for an Ideas
         // menu to sit on.
         composer={false}
-        primaryCta={{ label: "Get started free", href: SIGNUP_URL }}
+        primaryCta={{ label: "Get started", href: SIGNUP_URL }}
         secondaryCta={{ label: "Book a demo", href: DEMO_URL }}
       />
     </>

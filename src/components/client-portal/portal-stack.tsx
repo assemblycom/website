@@ -39,19 +39,19 @@ const WAYS: {
 }[] = [
   {
     label: "Embeds",
-    body: "Drop a tool your clients already open straight into the portal.",
+    body: "Put any link or dashboard inside your portal, next to your apps.",
     href: GUIDE_URL,
     icon: IconTemplateEmbeds,
   },
   {
     label: "Integrations",
-    body: "Connect what your team runs to the same client records.",
+    body: "API and MCP connector on every paid plan, plus Zapier and Make.",
     href: API_REFERENCE_URL,
     icon: IconTemplateIntegrations,
   },
   {
     label: "Automations",
-    body: "Hand the busywork between them without anyone retyping it.",
+    body: "An action in one app fires a workflow, so your team stops doing the handoffs by hand.",
     href: GUIDE_URL,
     icon: IconTemplateAutomations,
   },
@@ -65,12 +65,20 @@ const WAYS: {
  */
 export function PortalStack({
   heading = "Keep the tools you already use",
-  body = "Embed what your clients already use, connect what you run, and automate the busywork. Every app connects to the same client records.",
+  body = "Embed the tools your clients already use inside your portal, connect what you run through the API and MCP connector, Zapier, or Make, and automate the busywork with the automation builder.",
   ways = WAYS,
+  supportLine,
   visualTitle = "Stack visual — an outside tool running as an app inside the portal: Assembly's sidebar with a scheduler open in the content area, marked Embedded, cropped right so the screen continues past the rail.",
 }: {
   heading?: string;
   body?: string;
+  /**
+   * One line under the list. Undefined by default rather than carrying
+   * /client-portal's wording, unlike the other props here: both
+   * /solutions/* pages render this section with `ways={[]}` and would
+   * otherwise inherit a sentence their briefs never asked for.
+   */
+  supportLine?: string;
   ways?: typeof WAYS;
   visualTitle?: string;
 } = {}) {
@@ -123,7 +131,7 @@ export function PortalStack({
                 three words that would otherwise be three nouns. */}
             {ways.length ? (
               <ul className="mt-10 flex flex-col">
-                {ways.map(({ label, href }, i) => (
+                {ways.map(({ label, body, href }, i) => (
                   <li key={label}>
                     <Link
                       href={href}
@@ -152,20 +160,28 @@ export function PortalStack({
                       // above them; the band having room is worth more than
                       // that alignment, since the band is the thing you see
                       // move.
-                      className={`group relative flex items-center gap-4 px-3 py-4 transition-colors before:absolute before:inset-x-0 before:top-0 before:h-px before:content-[''] hover:bg-foreground/[0.04] ${DOTTED_RULE_BEFORE} ${
+                      className={`group relative flex items-start gap-4 px-3 py-4 transition-colors before:absolute before:inset-x-0 before:top-0 before:h-px before:content-[''] hover:bg-foreground/[0.04] ${DOTTED_RULE_BEFORE} ${
                         i === ways.length - 1
                           ? `after:absolute after:inset-x-0 after:bottom-0 after:h-px after:content-[''] ${DOTTED_RULE_AFTER}`
                           : ""
                       } [[data-theme=dark]_&]:hover:bg-white/[0.04]`}
                     >
-                      {/* THE LABEL ALONE. Each row carried a sentence under it
-                          explaining the word — and in a list of three whose
-                          words are Embeds, Integrations and Automations, the
-                          sentence was explaining terms the section's own lead
-                          has just defined. Three names and three destinations
-                          is the list; the argument is the paragraph above it. */}
-                      <span className="min-w-0 flex-1 truncate text-[15px] text-foreground">
-                        {label}
+                      {/* Label and its sentence, per handoff v2, which writes
+                          these three as cards rather than as bare destinations.
+                          An earlier pass ran the label alone on the grounds
+                          that the lead above already defines the words; v2
+                          names a plan boundary in each one ("on every paid
+                          plan", "any link or dashboard"), which is the kind of
+                          thing a reader cannot infer from the word. So the
+                          sentence is back, and the row is a block rather than
+                          a line: no `truncate`, since these wrap by design. */}
+                      <span className="min-w-0 flex-1">
+                        <span className="block text-[15px] text-foreground">
+                          {label}
+                        </span>
+                        <span className="mt-1 block text-sm leading-relaxed text-muted-foreground">
+                          {body}
+                        </span>
                       </span>
                       {/* AN ARROW, not a caret.
 
@@ -197,6 +213,16 @@ export function PortalStack({
                   </li>
                 ))}
               </ul>
+            ) : null}
+
+            {/* The handoff's support line. It used to be the tail of the lead
+                paragraph above; v2 pulls it out, and it reads better there —
+                the lead is about the three ways in, and this is the one thing
+                true of all of them once they are in. */}
+            {supportLine ? (
+              <p className="mt-8 text-sm text-muted-foreground">
+                {supportLine}
+              </p>
             ) : null}
           </div>
 

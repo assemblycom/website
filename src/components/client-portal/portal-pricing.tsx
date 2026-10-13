@@ -77,7 +77,7 @@ const TIERS: Tier[] = [
  */
 export function PortalPricing({
   heading = "Start free. Build as you grow.",
-  body = "The free plan never expires and includes real, publishable apps. Paid plans add contacts, apps, your own domain, and more as your firm grows.",
+  body = "The free plan never expires and includes real, publishable apps. Paid plans add your own domain, more clients, and more apps.",
   link = { label: "See full pricing", href: "/pricing" },
   tiers = TIERS,
   aside,

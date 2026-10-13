@@ -36,18 +36,6 @@ import {
  * two windows onto the same idea rather than two framed pictures.
  */
 
-/** Both columns' copy, above the screen each one describes. */
-const SIDES: { label: string; body: string }[] = [
-  {
-    label: "Almost fits",
-    body: "The portal you bought has the apps it has. Everything your firm actually does lives in tabs beside it.",
-  },
-  {
-    label: "Fits",
-    body: "Not a feature request in someone's queue. An app in your sidebar, named for the job your firm actually does.",
-  },
-];
-
 /**
  * A screen in the tray.
  *
@@ -230,9 +218,9 @@ function ScreenPair() {
  * this with no props and is unchanged.
  */
 export function PortalProblem({
-  heading = "Off-the-shelf portals make you fit the software. Not here.",
+  heading = "Other portals make your firm fit the software. Not Assembly.",
   body,
-  sides = SIDES,
+  sides = [],
   screens,
   quote,
   link,
@@ -240,7 +228,11 @@ export function PortalProblem({
   heading?: string;
   /** A lead under the heading. /client-portal deliberately has none. */
   body?: string;
-  /** Empty drops the two captions entirely, for a page whose brief has none. */
+  /**
+   * The two captions above the tray. Empty by default: handoff v2 removed
+   * section 3's bullets from /client-portal and lets the quote carry the
+   * problem. A vertical page whose brief has them passes its own pair.
+   */
   sides?: { label: string; body: string }[];
   /**
    * What sits in the tray. Defaults to the two overlapping portal screens.
