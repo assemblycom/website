@@ -50,27 +50,27 @@ const STAGES: {
 }[] = [
   {
     name: "Onboard",
-    body: "Walk new clients through intake, document collection, and a clear first-steps checklist, with progress saved along the way.",
+    body: "Intake, document collection, and a clear first-steps checklist, with progress saved as they go.",
     visual: <DescribeCard />,
   },
   {
     name: "Collaborate",
-    body: "Clients review work, leave feedback, and sign off round by round, with shared files in the same place.",
+    body: "Clients review work, leave feedback, and sign off round by round, with files in one place.",
     visual: <PlanCard />,
   },
   {
     name: "Track",
-    body: "Every client sees the status, milestones, and key dates on their own engagement without asking.",
+    body: "Every client sees status, milestones, and key dates on their engagement without asking.",
     visual: <BuildCard />,
   },
   {
     name: "Transact",
-    body: "Proposals clients can accept, contracts they can sign, and invoices they can pay, all in your brand.",
+    body: "Proposals to accept, contracts to sign, and invoices to pay, all in your brand.",
     visual: <IterateCard />,
   },
   {
     name: "Support",
-    body: "Clients get help from a request queue, a resource library, and an assistant that answers from your own docs.",
+    body: "A request queue, a resource library, and an assistant that answers from your own docs.",
     visual: <SecuredCard />,
   },
 ];

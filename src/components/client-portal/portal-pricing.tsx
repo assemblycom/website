@@ -39,7 +39,7 @@ const TIERS: Tier[] = [
   {
     name: "Starter",
     price: "$29",
-    cadence: "per month, billed annually",
+    cadence: "per month",
     perksLabel: "Everything in Free, plus:",
     perks: ["50 active contacts", "API and MCP connector"],
     cta: "Get started",
@@ -48,7 +48,7 @@ const TIERS: Tier[] = [
   {
     name: "Professional",
     price: "$99",
-    cadence: "per month, billed annually",
+    cadence: "per month",
     perksLabel: "Everything in Starter, plus:",
     perks: ["Custom domain", "Assembly badge removed", "Automation builder"],
     cta: "Get started",
@@ -58,7 +58,7 @@ const TIERS: Tier[] = [
   {
     name: "Advanced",
     price: "$499",
-    cadence: "per month, billed annually",
+    cadence: "per month",
     perksLabel: "Everything in Professional, plus:",
     perks: ["Unlimited contacts", "HIPAA BAA", "Enforced MFA"],
     cta: DEMO_CTA_LABEL,
@@ -157,7 +157,7 @@ export function PortalPricing({
               // a card. In light --card is #ffffff on a white page, so nothing
               // moves there — correct, because on white the hairline already
               // draws the box and a tint would be a second way of saying it.
-              className="relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card p-6 [[data-theme=dark]_&]:border-[#383838]"
+              className="relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card p-5 sm:p-6 [[data-theme=dark]_&]:border-[#383838]"
             >
               {/* No wash. Every card carried a grey one fading out by 120px,
                   which at this block's card height sat behind the plan name
@@ -170,15 +170,35 @@ export function PortalPricing({
                   /pricing's own table is untouched and still runs both washes
                   — the shared values in plan-wash.ts stay as they are. */}
               <h3 className="text-lg">{tier.name}</h3>
-              <p className="mt-2 text-3xl leading-none">{tier.price}</p>
-              <p className="mt-2 text-xs text-muted-foreground">
-                {tier.cadence}
+              {/* THE CADENCE RIDES THE PRICE rather than sitting on its own
+                  line under it. A figure and the terms it is quoted on are one
+                  statement — "$29 / per month" is how a price is written — and
+                  on its own line the cadence took a third step down the card
+                  for something that cannot be read without the number above it
+                  anyway.
+
+                  items-baseline, so the small grey sits ON the price's
+                  baseline rather than being centred against a 30px line box
+                  and floating half a cap height high. flex-wrap is the
+                  backstop: every cadence here fits beside its price even in a
+                  phone's full-measure card, but a longer one would drop to its
+                  own line instead of pushing the card open. */}
+              <p className="mt-2 flex flex-wrap items-baseline gap-x-1.5 text-3xl leading-none">
+                {tier.price}
+                <span className="text-xs text-muted-foreground">
+                  / {tier.cadence}
+                </span>
               </p>
 
-              <p className="mt-6 text-sm text-muted-foreground">
+              {/* TIGHTER ON A PHONE. Stacked one-up, each card runs the full
+                  measure and these steps are read as vertical air rather than
+                  as separation — four cards of it is a lot of scrolling past
+                  nothing. The steps still rank the same way, they are just
+                  one notch down until there are columns to breathe into. */}
+              <p className="mt-5 text-sm text-muted-foreground sm:mt-6">
                 {tier.perksLabel}
               </p>
-              <ul className="mb-8 mt-3 space-y-2 text-sm">
+              <ul className="mb-6 mt-3 space-y-2 text-sm sm:mb-8">
                 {tier.perks.map((perk) => (
                   <li key={perk} className="flex items-start gap-2">
                     <span className="mt-0.5">

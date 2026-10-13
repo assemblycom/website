@@ -341,10 +341,13 @@ export function PortalProblem({
             grey — a smear in light, buying something the geometry gives for
             free. The bottom is a straight crop against the tray's edge, which
             is what these screens are: windows onto something that continues. */}
-        {/* The tray. Its top margin is the section's full step again now
-            that the toggle lives inside it rather than above it. */}
-        <div className="order-1 mt-10 overflow-hidden rounded-2xl bg-[var(--surface)] p-4 pb-0 md:order-2 md:mt-10 md:rounded-3xl md:p-6 md:pb-0">
-          {/* THEIRS / OURS, inside the tray and above the screens.
+        {/* The tray, plus the phone's copy of the toggle under it. Wrapped so
+            the two move as one block in the section's order, rather than the
+            toggle needing a slot of its own between the tray and the columns. */}
+        <div className="order-1 mt-10 md:order-2 md:mt-10">
+          <div className="overflow-hidden rounded-2xl bg-[var(--surface)] p-4 pb-0 md:rounded-3xl md:p-6 md:pb-0">
+            {/* THEIRS / OURS, inside the tray and above the screens — FROM md.
+              On a phone it moves out from under the tray; see the copy below.
 
               The handoff labels the two screens underneath them, which names
               what you are looking at but leaves the pair reading as two
@@ -375,8 +378,53 @@ export function PortalProblem({
               section's own left-ranged copy and read as the next line of it.
               In the corner the screens have the tray to themselves and the
               switch is plainly furniture. */}
+            {!screens ? (
+              <div className="hidden justify-end md:mb-6 md:flex">
+                <ViewToggle
+                  options={["Theirs", "Ours"]}
+                  view={selected}
+                  onSelect={setSelected}
+                  label="Which portal to show"
+                />
+              </div>
+            ) : null}
+
+            {/* Two masks, nested rather than two layers on one element: CSS
+              composites mask layers by union, so declared together the right
+              fade and the bottom fade would each hold the other's edge open
+              instead of both applying. Only the right one is left — see the
+              tray above for why the bottom needs none. */}
+            <div>
+              <div
+                style={{
+                  WebkitMaskImage: SCREEN_FADE,
+                  maskImage: SCREEN_FADE,
+                }}
+              >
+                {screens ?? (
+                  <ScreenPair selected={selected} setSelected={setSelected} />
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* THE PHONE'S COPY: under the tray, on the page's own ground, centred
+            — the same move the builder hero makes with its two cards.
+
+            In the tray's top-right corner it works on a wide screen, where the
+            screens have room to spare beside it. On a 375px phone the tray is
+            the full measure and the control sat on top of the picture it
+            switches, taking a row out of the shot and reading as part of the
+            app in it. Under the tray it is plainly a control for the thing
+            above it, and the screens get the whole tray back.
+
+            Rendered a second time rather than moved with order utilities: it
+            has to leave the tray's padding and its overflow-hidden box to sit
+            on the page at all, and the two are in different stacking parents.
+            Both drive the same `selected` state, so there is nothing to keep
+            in sync. */}
           {!screens ? (
-            <div className="mb-4 flex justify-end md:mb-6">
+            <div className="mt-4 flex justify-center md:hidden">
               <ViewToggle
                 options={["Theirs", "Ours"]}
                 view={selected}
@@ -385,24 +433,6 @@ export function PortalProblem({
               />
             </div>
           ) : null}
-
-          {/* Two masks, nested rather than two layers on one element: CSS
-              composites mask layers by union, so declared together the right
-              fade and the bottom fade would each hold the other's edge open
-              instead of both applying. Only the right one is left — see the
-              tray above for why the bottom needs none. */}
-          <div>
-            <div
-              style={{
-                WebkitMaskImage: SCREEN_FADE,
-                maskImage: SCREEN_FADE,
-              }}
-            >
-              {screens ?? (
-                <ScreenPair selected={selected} setSelected={setSelected} />
-              )}
-            </div>
-          </div>
         </div>
 
         {/* Quote and jump link close the section, under the picture that is its

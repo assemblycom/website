@@ -104,8 +104,7 @@ const TOOLS: {
  * one value here means the picture's tiles and the copy's tiles are plainly
  * the same object, which is most of what ties the two halves together.
  */
-const PLATE =
-  "bg-[#e6e7ea] text-[#101114] [[data-theme=dark]_&]:bg-[#c8c9cd]";
+const PLATE = "bg-[#e6e7ea] text-[#101114] [[data-theme=dark]_&]:bg-[#c8c9cd]";
 
 // Which rows survive which breakpoint; see the note on the row's className.
 const ROW_AT: Record<number, string> = {
@@ -198,7 +197,13 @@ export function StackPicker({
             // nothing, and five tools still make the point that a stack is
             // mixed. The mechanisms stay mixed at every length because they
             // alternate down the list rather than being grouped.
-            className={`${ROW_AT[i] ?? "flex"} relative items-center gap-3 rounded-xl px-3 py-2.5 transition-colors ${
+            // min-w-0: a flex item floors at its own min-content width unless
+            // told otherwise, and this row's floor — plate, name, and a right
+            // column that does not shrink — came to ~376px. On a phone that
+            // propped the section's single grid track open past the viewport
+            // and took the heading over the edge with it. See the note on the
+            // track in portal-stack.tsx.
+            className={`${ROW_AT[i] ?? "flex"} relative min-w-0 items-center gap-3 rounded-xl px-3 py-2.5 transition-colors ${
               on
                 ? "bg-foreground/[0.06] [[data-theme=dark]_&]:bg-white/[0.07]"
                 : ""
@@ -227,7 +232,15 @@ export function StackPicker({
                 <span className="block translate-y-[0.1em]">{initials}</span>
               </span>
             )}
-            <span className="min-w-0 truncate text-[15px] text-foreground">
+            {/* THE NAME DOES NOT GIVE WAY FIRST. Now that the row shrinks on
+                a phone, something in it has to lose width, and between a
+                tool's name and a description of what it does, the name is the
+                token being scanned for — "DocuSi…" beside "Signatures and
+                rec…" is two truncations where one would have done. shrink-0
+                keeps it whole and the description absorbs the squeeze; the
+                cap is the backstop, so a name longer than any here still
+                cannot take the row. */}
+            <span className="min-w-0 max-w-[60%] shrink-0 truncate text-[15px] text-foreground">
               {name}
             </span>
             {/* The link's name on its own is a product Assembly does not make.
@@ -235,7 +248,9 @@ export function StackPicker({
                 where it leads, is the kind of thing that reads as an outbound
                 link to Google. The destination said out loud, for anyone not
                 reading the button. */}
-            <span className="sr-only">— connect it in Assembly, get started</span>
+            <span className="sr-only">
+              — connect it in Assembly, get started
+            </span>
             {/* WHAT IT DOES at rest, WHAT YOU DO WITH IT on hover.
 
                 The right column carried the mechanism in both states, which
@@ -257,7 +272,10 @@ export function StackPicker({
                 The label is the mechanism AS A VERB — Embed, Connect,
                 Automate — so the button is both the action and the answer to
                 how this tool arrives. */}
-            <span className="ml-auto shrink-0 pl-3">
+            {/* The pill never shrinks — it is a control, and a truncated verb
+                is not one. The description does, so that on a narrow row it
+                gives way with an ellipsis instead of holding the row open. */}
+            <span className={`ml-auto pl-3 ${on ? "shrink-0" : "min-w-0"}`}>
               {on ? (
                 <span className="inline-block whitespace-nowrap rounded-lg bg-foreground px-3 py-1.5 text-sm text-background">
                   {how}

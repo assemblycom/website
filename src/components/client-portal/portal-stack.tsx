@@ -92,13 +92,38 @@ export function PortalStack({
     // between the page and the slot inside it, which is what a band is for.
     <section className="border-y border-border bg-[var(--surface)]/50 [[data-theme=dark]_&]:border-[#383838]">
       <Reveal>
-        {/* No right padding from lg up: the picture runs off the rail and past
+        {/* grid-cols-[minmax(0,1fr)] IS LOAD-BEARING BELOW lg. A grid track
+            sized `auto` floors at its content's min-content width, and a
+            default grid item floors at its own (min-width: auto). The picker
+            below is a column of rows — icon, name, role, button — whose
+            min-content width comes to ~376px, so the single track below lg
+            opened to 376 inside a 327px content box. Everything in the first
+            cell inherited that width: the h2 ran 25px past the viewport and
+            was cut mid-word, and the dotted rules ran out under the edge.
+            minmax(0,1fr) lets the track shrink to the box; the rows below
+            carry min-w-0 so they shrink with it rather than pushing back.
+            Tailwind's lg:grid-cols-2 is already repeat(2,minmax(0,1fr)), so
+            the two-column layout is unchanged.
+
+            No right padding from lg up: the picture runs off the rail and past
             the viewport's edge, so it reads as a portal that continues rather
             than a screenshot centred in a band. */}
-        <div className="mx-auto grid max-w-[1200px] items-center gap-10 px-6 py-16 md:px-10 md:py-24 lg:grid-cols-2 lg:gap-16 lg:pr-0">
-          <div className="max-w-xl">
-            <h2 className="type-h2 text-balance">{heading}</h2>
-            <p className="mt-5 text-muted-foreground">{body}</p>
+        <div className="mx-auto flex max-w-[1200px] flex-col gap-10 px-6 py-16 md:px-10 md:py-24 lg:grid lg:grid-cols-2 lg:items-center lg:gap-16 lg:pr-0">
+          {/* `contents` BELOW lg, a block from lg. The picture goes directly
+              under the body copy on a phone — it is what the sentence is
+              describing, and three rows of list in between meant a reader met
+              the claim, then a menu, and only then the thing itself. But from
+              lg the heading, the copy and the list are one column beside the
+              picture, so they have to be one box again.
+              display:contents dissolves this wrapper below lg, which puts the
+              heading block and the list straight into the flex column where
+              `order` can interleave them with the picker. No duplicated
+              markup, and the lg layout is untouched. */}
+          <div className="contents lg:block lg:max-w-xl">
+            <div className="order-1 lg:contents">
+              <h2 className="type-h2 text-balance">{heading}</h2>
+              <p className="mt-5 text-muted-foreground">{body}</p>
+            </div>
 
             {/* THE DIVIDED LIST, the one this page already draws.
 
@@ -126,7 +151,11 @@ export function PortalStack({
                 and the body copy stays: it is the sentence that distinguishes
                 three words that would otherwise be three nouns. */}
             {ways.length ? (
-              <ul className="mt-10 flex flex-col">
+              // order-3 puts the list AFTER the picture below lg; from lg
+              // the wrapper is a block again and order means nothing. The top
+              // margin goes with it: as a flex item the column's gap-10
+              // already separates it, and mt-10 on top of that was 80px.
+              <ul className="order-3 mt-0 flex flex-col lg:order-none lg:mt-10">
                 {ways.map(({ label, body, href }, i) => (
                   <li key={label}>
                     <Link
@@ -229,7 +258,12 @@ export function PortalStack({
 
               `visualTitle` still rides through as the slot's art direction for
               any page that wants its own picture here. */}
-          <StackPicker title={visualTitle} />
+          {/* order-2: directly under the body copy on a phone, before the
+              list. From lg the parent is a two-column grid and this is simply
+              the second cell again. */}
+          <div className="order-2 min-w-0 lg:order-none">
+            <StackPicker title={visualTitle} />
+          </div>
         </div>
       </Reveal>
     </section>

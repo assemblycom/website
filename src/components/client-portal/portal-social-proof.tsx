@@ -83,7 +83,11 @@ export function PortalSocialProof({
     // still carries its own, because the two /solutions/* pages place it
     // differently and that row has always been drawn to its own measure.
     <div className="pt-16 md:pt-24">
-      <p className="text-center text-[15px] leading-snug text-muted-foreground">
+      {/* NOT ON A PHONE. At 375px the line wraps to two, and two centred lines
+          of grey over a row of marks is a caption competing with the hero
+          directly above it — the marks make the same claim without it. From sm
+          it sets on one line and reads as the label it was written to be. */}
+      <p className="hidden text-center text-[15px] leading-snug text-muted-foreground sm:block">
         {heading}
       </p>
 
@@ -102,16 +106,31 @@ export function PortalSocialProof({
           the six read as a block. Plain cells on the page's own ground: no
           border, no dividers, no tint, with the gap doing the separating —
           wider down than across, so the two rows stay two rows rather than
-          reading as one twelve-mark field. */}
-      <EdgeFadeScroller className="mt-10 flex gap-x-6 overflow-x-auto overflow-y-hidden overscroll-x-contain [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:grid sm:grid-cols-3 sm:gap-x-12 sm:gap-y-10 sm:overflow-visible md:mt-12">
+          reading as one twelve-mark field.
+
+          ONE ROW FROM lg. Six across is a line of marks under a hero, which
+          is the claim this section is making; two rows of three is a logo
+          wall, which is a heavier one and sits taller than the hero above it
+          wants. It waits for lg because the width has to pay for it: at 1024
+          the six cells come to ~122px each against a 132px cap, so nothing is
+          squeezed, while at sm six across would be ~85px and "Metta Health"
+          stops being readable well before it stops fitting — the same reason
+          the phone scrolls rather than fitting all six. */}
+      <EdgeFadeScroller className="mt-0 flex gap-x-6 overflow-x-auto overflow-y-hidden overscroll-x-contain [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mt-10 sm:grid sm:grid-cols-3 sm:gap-x-12 sm:gap-y-10 sm:overflow-visible md:mt-12 lg:grid-cols-6 lg:gap-x-10">
         {LOGO_SLUGS.map((slug) => (
           <Link
             key={slug}
             href={`/customers/${slug}`}
             aria-label={`Read the ${getCaseStudyBySlug(slug)?.company ?? ""} case study`}
-            className="flex h-8 w-[38%] shrink-0 items-center justify-center text-foreground/45 transition-colors duration-200 hover:text-foreground sm:w-auto"
+            // SMALLER ON THE PHONE so more of the row is in view at once.
+            // At 38% a 327px scroller showed two marks and a sliver, which
+            // reads as a row that happens to be cut rather than one with more
+            // in it — and a reader who does not realise it scrolls sees two
+            // of the six. At 30% three sit on screen with the fourth clearly
+            // begun, which is what says "keep going" without a control.
+            className="flex h-7 w-[30%] shrink-0 items-center justify-center text-foreground/45 transition-colors duration-200 hover:text-foreground sm:h-8 sm:w-auto"
           >
-            <span className="flex h-full w-full max-w-[132px] items-center justify-center">
+            <span className="flex h-full w-full max-w-[104px] items-center justify-center sm:max-w-[132px]">
               <CustomerLogo slug={slug} fit />
             </span>
           </Link>

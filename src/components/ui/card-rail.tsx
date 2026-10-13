@@ -92,6 +92,31 @@ const ARROW =
 // than a permanently unwell front card.
 const FADE_AHEAD = 82;
 
+// Below Tailwind's `sm`, where RAIL_W is 78% and the peeking card is a sliver.
+const PHONE_MAX = 640;
+
+// THE PHONE FROSTS THE CUT INSTEAD OF BLEACHING IT.
+//
+// An alpha ramp dissolves the peeking card towards the page, which on this
+// page means dissolving a near-black photograph towards white across ~56px of
+// visible sliver. However long the run and however eased the curve, the middle
+// of it is a grey wash laid over a picture — the fade announces itself as a
+// smear rather than reading as the row carrying on.
+//
+// A blur has no colour of its own. The card keeps its own ink and its own
+// tone and simply goes out of focus towards the edge, which is the same thing
+// a camera does and reads as depth rather than as damage. It also works in
+// both themes untouched, for the same reason the mask did: there is no second
+// value to tune, because nothing is being painted.
+//
+// The ramp is on the OVERLAY'S mask, so the blur strength eases in rather than
+// starting at full force on a hard line — an abrupt backdrop-filter boundary
+// is its own visible edge. A little alpha rides along at the very end so the
+// last few pixels still give out instead of stopping dead against the gutter.
+const BLUR_EDGE = "w-[84px]";
+const BLUR_RAMP =
+  "linear-gradient(to right, rgba(0,0,0,0) 0%, rgba(0,0,0,0.12) 28%, rgba(0,0,0,0.4) 55%, rgba(0,0,0,0.72) 76%, rgba(0,0,0,0.92) 90%, #000 100%)";
+
 // Tailwind's `lg`, which is where RAIL_W below switches to
 // `calc((100%-2rem)/3)`: three cards and the two 1rem gaps between them come
 // to exactly 100%, so at a snap point the third card's right edge lands ON the
@@ -147,13 +172,19 @@ export function CardRail({
   // false so the server render and first paint carry the fade, which is the
   // right answer at every width below lg and is corrected within the frame.
   const [wholeTrack, setWholeTrack] = useState(false);
+  // Same shape as wholeTrack: starts false so the server render carries the
+  // wide-screen ramp, and sync() corrects it within the frame.
+  const [phone, setPhone] = useState(false);
 
   const sync = useCallback(() => {
     const el = ref.current;
     if (!el) return;
     setAtStart(el.scrollLeft <= END_SLACK);
     setAtEnd(el.scrollLeft >= el.scrollWidth - el.clientWidth - END_SLACK);
-    setWholeTrack(window.matchMedia(`(min-width: ${WHOLE_TRACK_MIN}px)`).matches);
+    setWholeTrack(
+      window.matchMedia(`(min-width: ${WHOLE_TRACK_MIN}px)`).matches,
+    );
+    setPhone(window.matchMedia(`(max-width: ${PHONE_MAX - 0.02}px)`).matches);
   }, []);
 
   useEffect(() => {
@@ -193,7 +224,13 @@ export function CardRail({
         atStart
         ? []
         : [fadeMask("to left", 100 - FADE_BEHIND)]
-      : [fadeMask("to right", FADE_AHEAD)];
+      : phone
+        ? // The frosted edge replaces it below sm — see BLUR_RAMP. Running
+          // both would put the wash back over the blur.
+          []
+        : [fadeMask("to right", FADE_AHEAD)];
+  // Whether the frosted edge is the thing covering the trailing cut.
+  const blurAhead = phone && !wholeTrack && !atEnd;
 
   // ── Drag to scroll ────────────────────────────────────────────────────
   // Touch and trackpad already drag this rail natively; a mouse did not, so on
@@ -283,44 +320,62 @@ export function CardRail({
           vertical padding cancelled by a negative margin, so the clip is
           horizontal only and shadows still breathe above and below. The arrow
           is what says there is more. */}
-      <div
-        className="-my-4 overflow-hidden py-4"
-        style={edgeMasks.length ? fadeMaskStyle(edgeMasks) : undefined}
-      >
+      {/* The positioning context is THIS box, not the whole rail: the arrows
+          sit below the viewport inside the same component, and anchored to
+          the rail the frosted edge reached down over the "next" button and
+          blurred the one control the reader needs. */}
+      <div className="relative">
+        {/* THE FROSTED EDGE, over the viewport rather than inside the
+          scroller: it has to stay put while the cards move under it, and
+          anything inside the scroller would scroll away with them.
+          pointer-events-none so it never eats a drag or a tap on the card
+          beneath it. */}
+        {blurAhead ? (
+          <div
+            aria-hidden
+            className={`pointer-events-none absolute inset-y-0 right-0 z-10 ${BLUR_EDGE} backdrop-blur-[5px]`}
+            style={{ WebkitMaskImage: BLUR_RAMP, maskImage: BLUR_RAMP }}
+          />
+        ) : null}
         <div
-          ref={ref}
-          onScroll={sync}
-          onPointerDown={onPointerDown}
-          onPointerMove={onPointerMove}
-          onPointerUp={endDrag}
-          onPointerCancel={endDrag}
-          onClickCapture={onClickCapture}
-          role="group"
-          aria-label={label}
-          // overflow-y-hidden is load-bearing, not tidying: `overflow-x: auto`
-          // against a visible y makes the browser compute y to auto too, so
-          // this was a vertical scroll container as well as a horizontal one,
-          // and a page scroll that landed on it could be swallowed by it.
-          //
-          // snap-proximity, not mandatory: mandatory means the browser must
-          // always come to rest on a snap point, so it re-snaps during a
-          // vertical scroll that merely passes over the rail — which is the
-          // scroll getting caught and pulled back. Proximity snaps when you
-          // are already near a card and leaves the scroll alone otherwise.
-          //
-          // While dragging, the cursor becomes the grabbing hand and text
-          // selection is off — a drag across two cards would otherwise select
-          // their captions. Smooth scrolling is turned off for the drag too,
-          // but imperatively in onPointerDown; see there for why.
-          className={`flex snap-x snap-proximity gap-4 overflow-x-auto overflow-y-hidden overscroll-x-contain scroll-smooth [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${
-            !steppable
-              ? ""
-              : dragging
-                ? "cursor-grabbing select-none"
-                : "cursor-grab"
-          }`}
+          className="-my-4 overflow-hidden py-4"
+          style={edgeMasks.length ? fadeMaskStyle(edgeMasks) : undefined}
         >
-          {children}
+          <div
+            ref={ref}
+            onScroll={sync}
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={endDrag}
+            onPointerCancel={endDrag}
+            onClickCapture={onClickCapture}
+            role="group"
+            aria-label={label}
+            // overflow-y-hidden is load-bearing, not tidying: `overflow-x: auto`
+            // against a visible y makes the browser compute y to auto too, so
+            // this was a vertical scroll container as well as a horizontal one,
+            // and a page scroll that landed on it could be swallowed by it.
+            //
+            // snap-proximity, not mandatory: mandatory means the browser must
+            // always come to rest on a snap point, so it re-snaps during a
+            // vertical scroll that merely passes over the rail — which is the
+            // scroll getting caught and pulled back. Proximity snaps when you
+            // are already near a card and leaves the scroll alone otherwise.
+            //
+            // While dragging, the cursor becomes the grabbing hand and text
+            // selection is off — a drag across two cards would otherwise select
+            // their captions. Smooth scrolling is turned off for the drag too,
+            // but imperatively in onPointerDown; see there for why.
+            className={`flex snap-x snap-proximity gap-4 overflow-x-auto overflow-y-hidden overscroll-x-contain scroll-smooth [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${
+              !steppable
+                ? ""
+                : dragging
+                  ? "cursor-grabbing select-none"
+                  : "cursor-grab"
+            }`}
+          >
+            {children}
+          </div>
         </div>
       </div>
 

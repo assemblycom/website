@@ -6,6 +6,10 @@ import {
   OnboardingMock,
 } from "@/components/client-portal/segment-mock";
 import { ProgressMock } from "@/components/client-portal/progress-chart";
+import {
+  CustomerLogo,
+  hasCustomerLogo,
+} from "@/components/customers/customer-logos";
 import { SIGNUP_URL } from "@/lib/constants";
 
 /**
@@ -81,6 +85,8 @@ const QUOTE = {
   text: "When clients log into the portal, they see our branded colors and our logos. They feel like it’s a safe, trusted place, with custom features in the side menu that are exactly what we need for our clients.",
   attribution: "Anthony Drozd, Operations Manager, Sargent CPAs",
   href: "/customers/sargent-cpa",
+  /** Whose mark heads the card. Keyed to CUSTOMER_LOGO_SPECS. */
+  slug: "sargent-cpa",
 };
 
 export function PortalCustomizations({
@@ -103,7 +109,14 @@ export function PortalCustomizations({
   heading?: string;
   body?: string;
   cards?: typeof CARDS;
-  quote?: { text: string; attribution: string; href: string };
+  // `slug` keys the mark over the quote; optional, so a page passing its own
+  // quote with no logo on file simply gets the card without a tile.
+  quote?: {
+    text: string;
+    attribution: string;
+    href: string;
+    slug?: string;
+  };
   cta?: { label: string; href: string };
 } = {}) {
   return (
@@ -219,6 +232,27 @@ export function PortalCustomizations({
                   picture, so the slack it would have taken collects under the
                   quote instead; the attribution is pinned to the foot so the
                   card still closes on the same line as its neighbour. */}
+              {/* THE FIRM'S MARK, in a square tile over the quote.
+                  This card is the only one in the row with no picture, and it
+                  opened cold on a sentence in quotation marks — the reader
+                  learned whose words they were at the foot, after reading
+                  them. The mark says it first, and it gives the card the same
+                  "something, then copy" shape its three neighbours have.
+
+                  A SQUARE TILE rather than the bare wordmark: these marks are
+                  drawn to their own proportions, and set loose on the card a
+                  wide one and a stacked one read as two different sizes of
+                  heading. A fixed box with the mark contained inside it is how
+                  the logo row below already handles the same problem.
+
+                  On --background rather than the card's own --surface, so the
+                  tile reads as a thing set INTO the card instead of a patch of
+                  it; the hairline keeps its edge when a mark is light. */}
+              {quote.slug && hasCustomerLogo(quote.slug) ? (
+                <div className="mb-6 flex size-14 shrink-0 items-center justify-center rounded-xl bg-background p-3 text-foreground ring-1 ring-black/[0.06] [[data-theme=dark]_&]:ring-white/10">
+                  <CustomerLogo slug={quote.slug} fit />
+                </div>
+              ) : null}
               <blockquote className="type-lead text-pretty text-foreground">
                 &ldquo;{quote.text}&rdquo;
               </blockquote>
