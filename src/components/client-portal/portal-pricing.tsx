@@ -30,7 +30,11 @@ const TIERS: Tier[] = [
   {
     name: "Free",
     price: "$0",
-    cadence: "Free forever",
+    // Lowercase, like the "per month" the other three carry: these all sit
+    // after a slash as the terms the figure is quoted on, not as labels in
+    // their own right, and a capital here made the Free card the only one
+    // that read as starting a new sentence beside its price.
+    cadence: "free forever",
     perksLabel: "Includes:",
     perks: ["5 active contacts", "3 apps"],
     cta: "Get started",
