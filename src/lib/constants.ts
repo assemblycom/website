@@ -463,12 +463,14 @@ export const FOOTER_COLUMNS: FooterGroup[][] = [
   [
     {
       // Compare shares the last column with Legal rather than taking a track of
-      // its own: one link does not fill one, and Legal is the shortest shelf
+      // its own: three links do not fill one, and Legal is the shortest shelf
       // here, so there is room above it. Compare sits first because it is a
       // destination someone reads on the way to deciding, while Legal is what
       // you go looking for.
       label: "Compare",
       links: [
+        { label: "Assembly vs Lovable", href: "/comparison/lovable" },
+        { label: "Assembly vs Base44", href: "/comparison/base44" },
         { label: "All comparisons", href: "/comparison" },
       ],
     },
