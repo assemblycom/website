@@ -190,7 +190,12 @@ function FAQItem({
                 // of its own row rather than as a trim — /client-portal's
                 // trust section is half a two-column grid, where the 52px is
                 // an eighth of the measure.
-                `space-y-4 pb-6 pl-3 pt-2 ${narrowAnswer ? "pr-3" : "pr-[52px]"}`
+                //
+                // Both insets drop by the question's 12px on a phone, where
+                // the row gives up its px-3 so the rules can sit on the page
+                // measure — the answer has to follow the question's left edge
+                // or the two stop lining up.
+                `space-y-4 pb-6 pl-3 pt-2 max-sm:pl-0 ${narrowAnswer ? "pr-3 max-sm:pr-0" : "pr-[52px] max-sm:pr-10"}`
               : "space-y-4 px-5 pb-4 pt-2"
           }
         >
@@ -220,7 +225,9 @@ function FAQItem({
                 // Not from sm: the measure is wide enough there that the rag
                 // is shallow and justifying would be solving nothing.
                 className={`type-body whitespace-pre-line text-muted-foreground ${
-                  justifyAnswers ? "max-sm:hyphens-auto max-sm:text-justify" : ""
+                  justifyAnswers
+                    ? "max-sm:hyphens-auto max-sm:text-justify"
+                    : ""
                 }`}
               >
                 {renderAnswer(para, links)}
@@ -306,7 +313,7 @@ function FAQItem({
           // stopped at the text, so the highlight was wider than the row it
           // highlighted. Here the rules move with it, so the plate is still
           // exactly the row's own box. It is the box that grew.
-          className="group relative isolate flex w-full cursor-pointer items-center justify-between gap-6 px-3 py-5 text-left outline-none before:absolute before:inset-0 before:-z-10 before:bg-transparent before:transition-colors hover:before:bg-foreground/[0.035] focus-visible:before:bg-foreground/[0.035] [[data-theme=dark]_&]:hover:before:bg-foreground/[0.06] [[data-theme=dark]_&]:focus-visible:before:bg-foreground/[0.06]"
+          className="group relative isolate flex w-full cursor-pointer items-center justify-between gap-6 px-3 py-5 text-left outline-none max-sm:px-0 before:absolute before:inset-0 before:-z-10 before:bg-transparent before:transition-colors hover:before:bg-foreground/[0.035] focus-visible:before:bg-foreground/[0.035] [[data-theme=dark]_&]:hover:before:bg-foreground/[0.06] [[data-theme=dark]_&]:focus-visible:before:bg-foreground/[0.06]"
         >
           <span className="type-body text-foreground">
             {compactQuestions ? (
@@ -473,7 +480,16 @@ export function Accordion({
           // pushed back to the column's own edge, so the first letter of every
           // question still lines up with the heading. Without this the whole
           // list would sit indented from everything around it.
-          "-mx-3",
+          //
+          // NOT ON A PHONE, where the page gutter is 24px and the bleed ate
+          // half of it: the rules and the hover plate ran 12px past the
+          // measure everything else on the page keeps, so they sat closer to
+          // the screen edge than the heading above them. The row button drops
+          // its px-3 to match, which keeps the question on the measure — and
+          // the plate loses nothing by it, because at this width the row is
+          // the full measure already, so the tint reads as the row lighting
+          // up rather than as a band around the words.
+          "-mx-3 max-sm:mx-0",
           flushTop ? "[&>div:first-child>button]:pt-0" : "",
           // Opening rule, so the list reads as bounded rather than as a stack
           // that happens to start. Only with the dotted treatment: a solid one
