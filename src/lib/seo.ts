@@ -73,18 +73,6 @@ export const PAGE_SEO = {
       "A branded client portal for marketing agencies, with ready-made apps for approvals, reports, proposals, and files, plus AI that builds the rest. Book a demo.",
     path: "/solutions/marketing-agency-client-portal",
   },
-  vsLovable: {
-    title: "Assembly vs Lovable: The Client-Facing AI App Builder",
-    description:
-      "Compare Assembly and Lovable. Assembly ships AI-built apps into a branded client experience with logins, a CRM, and permissions included, not a prototype.",
-    path: "/comparison/lovable",
-  },
-  vsBase44: {
-    title: "Assembly vs Base44: Client-Ready AI App Builder",
-    description:
-      "Compare Assembly and Base44. Assembly puts your brand on every app, includes a client experience and CRM, and lets clients use your apps at no credit cost.",
-    path: "/comparison/base44",
-  },
   security: {
     title: "Security",
     description:
