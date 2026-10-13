@@ -152,6 +152,10 @@ const BRAND_SIDEBAR = "bg-[var(--mock-brand)] text-white";
 const TABLE_HEAD = `flex items-center gap-3 border-b bg-[var(--mock-well)] px-3.5 py-2 text-[color:var(--mock-ink-soft)] ${UI_SECONDARY} ${LINE}`;
 const CHIP = `rounded px-1.5 py-[4px] ${UI_SECONDARY}`;
 const NEUTRAL = `${CHIP} bg-[var(--mock-well-2)] text-[color:var(--mock-ink-soft)]`;
+// The settled state — a paid invoice, an approved plan. Same pair of tokens
+// the other mocks on the site reach for (see segment-mock, build-step-visual),
+// so "good" is one colour decision across every picture rather than per card.
+const POSITIVE = `${CHIP} bg-[var(--mock-positive-bg)] text-[color:var(--mock-positive-fg)]`;
 
 // ONE type scale for the whole rail, and TWO sizes in it. Nothing else.
 //
@@ -2416,9 +2420,25 @@ export function ReviewCard({ plain = false }: SceneProps = {}) {
             drawn around them on a near-black card reads as a mount — the
             plates looked matted rather than cropped. Everything else (radius,
             ground, shadow, ink) is WINDOW's, copied rather than overridden so
-            no utility has to fight another for width. */}
+            no utility has to fight another for width.
+
+            IT RUNS TO THE CARD'S RIGHT EDGE. The scene is drawn in a box with
+            20px of air on every side, which left the window floating with an
+            even margin all round — a picture of a screen with a mount around
+            it, where the Track card beside it in the same rail runs off its
+            edge and reads as a window onto something larger. -mr-5 pays back
+            the box's right inset so this one does the same, and the right
+            radius goes with it: a rounded corner on an edge that is supposed
+            to be a CUT is the one detail that gives a crop away.
+
+            BOTH THEMES, though the gap was reported in dark. The inset is the
+            same 20px either way — dark only makes it obvious, because there
+            the card is near-white and the window near-black, so the margin is
+            a bright band around a dark panel rather than the other way round.
+            A layout that differed by theme would be a worse answer than the
+            gap. */}
         <div
-          className={`relative flex flex-col overflow-hidden ${R_WINDOW} bg-[var(--mock-window)] p-3 text-[color:var(--mock-ink)]`}
+          className={`relative -mr-5 flex flex-col overflow-hidden ${R_WINDOW} rounded-r-none bg-[var(--mock-window)] p-3 text-[color:var(--mock-ink)]`}
         >
           {/* TWO PLATES, THE SECOND PEEKING. One plate filling the window was
               a photograph with a caption — a picture of a cover, which says
@@ -2637,19 +2657,58 @@ export function OnboardCard({ plain = false }: SceneProps = {}) {
 // AND NO PAY BUTTON. It was here to say the invoice is payable in place, but
 // a filled control is the loudest thing a mock can hold and it was pulling
 // rank on the figure above it — on a card the reader cannot click, a button
-// is a picture of a button. The amount carries the same claim: nobody reads
-// "$7,000.00 due" on a client portal and wonders whether they can pay it.
-// FIVE LINES, not three. The document was short enough to end inside the
-// card, which made it a small white panel sitting on a large black one. A
-// document is tall; the way you say so is to run out of card before you run
-// out of document. The last two are never read — they are there to be under
-// the ramp.
+// is a picture of a button. The status pill says it better anyway: "Paid" is
+// the outcome the button was only promising.
+//
+// ── Drawn from the product's own invoice, not invented ───────────────────
+// This was a single flat panel: a head, a figure, then line items stacked
+// against the same ground. It read as an invoice in outline and as nothing
+// the product actually renders. The real screen is a PAGE WITH PANELS ON IT
+// — summary at the top set straight on the page, a dashed rule under it, and
+// the parties and the arithmetic each in their own lifted card. That nesting
+// is the whole reason the real one looks like software rather than a
+// receipt, so the mock now has it:
+//
+// A PANEL HAS TO LIFT IN BOTH THEMES, and no single token does that. As
+// segment-mock's PANEL_TINT puts it: lifting a surface off white means going
+// darker, so the move that means "forward" on black means "back" on white.
+// That card could shrug and let light give the lift up. This one cannot —
+// the nesting is the whole structure here, not an emphasis on one panel of
+// four — so each theme names its own two rungs, and both pick a pair that
+// steps UP:
+//
+//            page               panels standing on it
+//   light    --mock-well        --mock-window     (#f7f8fa → #fcfcfd)
+//   dark     --mock-window      --mock-well-2     (#212121 → #303030)
+//
+// Both pairs are adjacent rungs of the ladder the rail already climbs, and
+// dark's is the same step PANEL_TINT lifts its step panel by. Written as a
+// base class with a [[data-theme=dark]] override so the two value sets stay
+// separate — per the repo's CLAUDE.md, a shared hardcoded colour across both
+// themes is how this family regresses.
+//
+// NOTE the bg cannot simply be appended to WINDOW: WINDOW already sets
+// bg-[var(--mock-window)], and two classes of equal specificity are settled
+// by stylesheet order, not by the order they appear in the string. The first
+// pass did append it, and the page and its panels rendered the same tone in
+// both themes. So the page spells its own box out instead.
+//
+// The two sub-panels wear R_CHROME, the page wears R_WINDOW: objects inside a
+// screen get the small corner, the screen gets the big one.
+const DOC_PAGE = `overflow-hidden ${R_WINDOW} border bg-[var(--mock-well)] text-[color:var(--mock-ink)] [[data-theme=dark]_&]:bg-[var(--mock-window)] ${LINE}`;
+const DOC_PANEL = `${R_CHROME} border bg-[var(--mock-window)] [[data-theme=dark]_&]:bg-[var(--mock-well-2)] ${LINE}`;
 const INVOICE_LINES = [
-  { what: "Brand identity — phase 2", amount: "$4,200.00" },
-  { what: "Web design retainer", amount: "$2,800.00" },
-  { what: "Discovery workshop", amount: "$1,500.00" },
-  { what: "Photography — half day", amount: "$1,100.00" },
-  { what: "Print production", amount: "$940.00" },
+  { what: "Mobile app development", qty: "1", amount: "$3,000" },
+  { what: "Website design", qty: "1", amount: "$1,500" },
+];
+
+// Subtotal and tax, then the total on its own footing. Two quiet rows and a
+// loud one: the arithmetic is what makes a list of prices an invoice, and
+// without it the Total is just a fourth line item with bolder type it is not
+// allowed to have.
+const INVOICE_SUMS = [
+  { label: "Subtotal", amount: "$4,500" },
+  { label: "Tax (10%)", amount: "$450" },
 ];
 
 export function InvoiceCard({ plain = false }: SceneProps = {}) {
@@ -2658,110 +2717,154 @@ export function InvoiceCard({ plain = false }: SceneProps = {}) {
       {!plain && (
         <div className="absolute -inset-px bg-[#101010] [[data-theme=dark]_&]:bg-[#FBFBF5]" />
       )}
-      {/* IT STARTS PARTWAY DOWN AND RUNS OFF THE FOOT. Filling the card top
-          to bottom made a tall white panel whose lower third was empty —
-          a document does not get more convincing by having more blank paper
-          in it. mt-auto drops it to the bottom of the box and footFlush
-          removes the padding under it, so the head sits in from the card's
-          top edge and the line items are cut by its bottom. That is the same
-          crop the Track card uses, and it says the same thing: this continues.
-       */}
-      <Scene footFlush>
-        {/* THE FOOT DISSOLVES INTO THE CARD. Cut flat against the card's
-            bottom edge, the document ended on a hard white-to-black line,
-            which reads as a panel that has been trimmed rather than as paper
-            continuing past the frame — and on this card the line fell across
-            a row of type, so the last item was sliced through its middle.
-            The site's own ramp takes it out instead: full opacity to 62%,
-            then the eased curve in fade-mask.ts down to nothing, so the last
-            rows give out into the ground the card is already painted in. A
-            mask, not a gradient overlay, so it fades to whatever is behind it
-            and needs no second value for dark. */}
-        <div
-          className={`mt-auto flex flex-col ${WINDOW}`}
-          style={{
-            WebkitMaskImage: fadeMask("to bottom", 62),
-            maskImage: fadeMask("to bottom", 62),
-          }}
-        >
-          {/* THE HEAD IS WHO IS BILLING, not the word "Invoice". The word was
-              the first and largest thing on the card and it is the one piece
-              of information a reader does not need — the shape already says
-              invoice. The firm's mark and name say whose it is, which is the
-              "all in your brand" half of the caption, and the number rides
-              along at the right because that is where a document number
-              lives. */}
+      {/* IT SITS WHOLE AND CENTRED. It used to start partway down and run off
+          the foot under a ramp, on the argument that a document is tall and
+          should say so by being cut. At five line items that made the card
+          mostly document, and the fade over the last rows read as the artwork
+          giving out rather than as paper continuing. Short enough to end, it
+          is better as an object in the frame: Scene's default centring places
+          it, and the air above and below is what makes it read as placed. */}
+      <Scene>
+        {/* The page. WINDOW's own ground is the panel tone, which is what the
+            cards INSIDE this one need, so the page itself steps down a rung
+            to --mock-well and they lift off it. */}
+        <div className={`flex flex-col ${DOC_PAGE} px-3 py-[10px]`}>
+          {/* THE SUMMARY, set straight on the page rather than in a panel of
+              its own — it is the document's masthead, not one of its parts.
+
+              The brand mark leads the line where the real screen puts a
+              document glyph. The glyph says "this is a document", which the
+              shape has already said; the mark says whose document it is,
+              which is the "all in your brand" half of the caption and the one
+              claim this card exists to make. */}
+          <div className="flex items-center gap-2 px-1">
+            <span
+              className={`flex size-[15px] shrink-0 items-center justify-center ${R_CHROME} bg-[var(--mock-brand)] text-white`}
+            >
+              <IconBrandMark className="size-[8px]" />
+            </span>
+            <span
+              className={`min-w-0 truncate text-[color:var(--mock-ink-soft)] ${UI_PRIMARY}`}
+            >
+              INV-110450
+            </span>
+            {/* Paid, in the rail's own positive pill. The status belongs up
+                here beside the number, where one glance settles whether this
+                is a bill or a receipt — and it is the only colour on the
+                card, so it is also what the eye lands on first. */}
+            <span className={POSITIVE}>Paid</span>
+          </div>
+
+          {/* The figure. Still the biggest type on the card: whatever else an
+              invoice says, the amount is what it is for. */}
+          <p className="mt-[9px] px-1 text-[23px] leading-none text-[color:var(--mock-ink)]">
+            $4,000.00
+          </p>
+
+          {/* The dashed rule, straight off the real screen. A solid hairline
+              here would read as the same divider that separates the table's
+              rows below; dashed says this is a FOLD — the amount above, what
+              makes it up underneath.
+
+              WHAT USED TO SIT EITHER SIDE OF IT. An Issued/Due pair rode under
+              the figure and a "Billed to" panel under the rule. Both were true
+              and neither was the point: the card is captioned "invoices to
+              pay, all in your brand", and a reader takes that from the mark,
+              the figure and the itemisation. The dates and the client's email
+              were detail at a size nobody reads on a card they cannot click,
+              and they were most of the document's height. Cut, the invoice
+              says the same thing with two blocks instead of four. */}
           <div
-            className={`flex items-center gap-2 border-b bg-[var(--mock-well)] px-4 py-3 ${LINE}`}
-          >
-            <span
-              className={`flex size-[16px] shrink-0 items-center justify-center ${R_CHROME} bg-[var(--mock-brand)] text-white`}
-            >
-              <IconBrandMark className="size-[9px]" />
-            </span>
-            <span
-              className={`min-w-0 flex-1 truncate text-[color:var(--mock-ink)] ${UI_PRIMARY}`}
-            >
-              Brandmages
-            </span>
-            <span
-              className={`shrink-0 text-[color:var(--mock-ink-soft)] ${UI_SECONDARY}`}
-            >
-              INV-2041
-            </span>
-          </div>
+            className={`mx-1 mt-[13px] border-t border-dashed ${LINE}`}
+            aria-hidden
+          />
 
-          {/* THE AMOUNT LEADS, because the document is cropped: whatever is at
-              the top is what the reader gets, and of everything on an invoice
-              the sum and the date are what a client actually reads. It used
-              to sit under the line items, which is where it belongs on a
-              sheet of paper that ends — here it meant the one number that
-              matters was the last thing above the crop.
-
-              Who it is billed to rides on the same line as the date. Two
-              labelled columns for "From" and "Billed to" spent a whole band
-              on a fact that fits in three words, and the firm is already
-              named in the head above. */}
-          <div className={`border-b px-4 py-3 ${LINE}`}>
-            <p className={`text-[color:var(--mock-ink-soft)] ${UI_SECONDARY}`}>
-              Amount due
-            </p>
-            <p className="mt-1.5 text-[22px] leading-none text-[color:var(--mock-ink)]">
-              $7,000.00
-            </p>
+          {/* ── Item details ──────────────────────────────────────────── */}
+          <div className={`mt-[9px] overflow-hidden ${DOC_PANEL}`}>
             <p
-              className={`mt-2 text-[color:var(--mock-ink-soft)] ${UI_SECONDARY}`}
+              className={`px-[10px] pb-[9px] pt-[10px] text-[color:var(--mock-ink)] ${UI_PRIMARY}`}
             >
-              Meridian Corp · due 25 July
+              Item details
             </p>
-          </div>
 
-          {/* The detail, which is the part that gets cut. Three lines rather
-              than two so the last one is plainly mid-list at the crop rather
-              than looking like the end of a short invoice. */}
-          {INVOICE_LINES.map(({ what, amount }) => (
+            {/* Description / QTY / Price, in the rail's shared table head, so
+                this table and the Track card's read as one product. The two
+                number columns are fixed widths rather than flex, so the
+                figures line up under their headings instead of drifting with
+                the length of each description. */}
             <div
-              key={what}
-              className={`flex items-center gap-3 border-b px-4 py-[11px] last:border-b-0 ${LINE}`}
+              className={`flex items-center border-y bg-[var(--mock-well)] px-[10px] py-[6px] text-[color:var(--mock-ink-soft)] ${UI_SECONDARY} ${LINE}`}
+            >
+              <span className="min-w-0 flex-1 truncate">Description</span>
+              <span className="w-[26px] shrink-0 text-right">QTY</span>
+              <span className="w-[52px] shrink-0 text-right">Price</span>
+            </div>
+
+            {INVOICE_LINES.map(({ what, qty, amount }) => (
+              <div
+                key={what}
+                className={`flex items-center border-b px-[10px] py-[7px] ${LINE}`}
+              >
+                <span
+                  className={`min-w-0 flex-1 truncate text-[color:var(--mock-ink)] ${UI_PRIMARY}`}
+                >
+                  {what}
+                </span>
+                <span
+                  className={`w-[26px] shrink-0 text-right text-[color:var(--mock-ink-soft)] ${UI_SECONDARY}`}
+                >
+                  {qty}
+                </span>
+                <span
+                  className={`w-[52px] shrink-0 text-right text-[color:var(--mock-ink)] ${UI_SECONDARY}`}
+                >
+                  {amount}
+                </span>
+              </div>
+            ))}
+
+            {INVOICE_SUMS.map(({ label, amount }) => (
+              <div
+                key={label}
+                className={`flex items-center border-b px-[10px] py-[6px] ${LINE}`}
+              >
+                <span
+                  className={`min-w-0 flex-1 truncate text-[color:var(--mock-ink-soft)] ${UI_SECONDARY}`}
+                >
+                  {label}
+                </span>
+                <span
+                  className={`shrink-0 text-[color:var(--mock-ink-soft)] ${UI_SECONDARY}`}
+                >
+                  {amount}
+                </span>
+              </div>
+            ))}
+
+            {/* The total. Same two sizes as everything else in the rail — it
+                is separated by its ROW (a well behind it, no rule under it)
+                rather than by weight, because the site is 400/500 only and a
+                mock is not where that gets broken. */}
+            <div
+              className={`flex items-center bg-[var(--mock-well)] px-[10px] py-[8px]`}
             >
               <span
-                className={`min-w-0 flex-1 truncate text-[color:var(--mock-ink-soft)] ${UI_PRIMARY}`}
+                className={`min-w-0 flex-1 truncate text-[color:var(--mock-ink)] ${UI_PRIMARY}`}
               >
-                {what}
+                Total
               </span>
               <span
-                className={`shrink-0 text-[color:var(--mock-ink)] ${UI_SECONDARY}`}
+                className={`shrink-0 text-[color:var(--mock-ink)] ${UI_PRIMARY}`}
               >
-                {amount}
+                $4,950
               </span>
             </div>
-          ))}
+          </div>
         </div>
       </Scene>
     </>
   );
 }
-
 // ── Support ──────────────────────────────────────────────────────────────
 // THE REQUEST QUEUE, which is the first of the three things the stage names
 // ("a request queue, a resource library, and an assistant that answers from

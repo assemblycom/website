@@ -4744,3 +4744,160 @@ html:not([data-authed]) .auth-only {
      white page, so it is load-bearing in a way it never was here. */
   display: none;
 }
+
+/* ── Custom-domain mock: the host being typed into its field ──────────────
+   The white-label card's whole subject is the domain, so the one thing moving
+   on it is the domain arriving.
+
+   THE STEP COUNT IS FOR THE WHOLE CYCLE, NOT FOR THE TYPING. This is the trap
+   that made the first version lurch. steps(n) divides the ENTIRE iteration, so
+   with 21 steps across 8s and the typing finished by 26%, only about five of
+   those steps fell inside the typing — the host arrived in five chunks of four
+   or five letters and the caret jumped the same way. The steps have to be
+   counted against the full duration: 80 steps over 8s is one every 100ms, and
+   the 21 that land before 26.25% are the 21 characters, at a speed a hand
+   actually types at. Change the string's length and this number moves with it
+   (chars / 0.2625), or the last letters arrive early.
+
+   CLIP-PATH, NOT max-width. The obvious typewriter animates the text box's own
+   width to 100%, which needs a parent with a definite width to resolve that
+   percentage against. Here the parent is sized BY the text — it is a
+   content-width inline box — so the percentage resolved against a width that
+   depended on the thing it was setting, and the reveal sat at zero forever: a
+   field that never filled.
+
+   clip-path has no such circularity. Its percentages resolve against the
+   element's OWN border box, which is the text's natural width and definite
+   whatever the parent does, so the reveal is correct at any card size and in
+   any face. It also means nothing is painted over the letters — they are
+   clipped, not covered, so there is no second surface to keep in step with the
+   theme.
+
+   Not `ch` either, which is the other common fix: the site sets these mocks in
+   its own proportional face, where a ch is the width of a zero and every other
+   glyph is something else, so a ch-stepped reveal drifts ahead of the text and
+   uncovers the next letter early.
+
+   The caret rides the same curve and the same step count, against the same
+   content-width parent, so the two cannot drift.
+
+   THE CARET DOES NOT BLINK WHILE IT IS TYPING. It had its own 1.1s loop
+   running independently of the reveal, so it winked on and off WHILE jumping
+   between positions, which is what read as glitching rather than as a cursor.
+   A real caret is solid under the hand and blinks when the hand stops, so the
+   blink is on the same 8s timeline: held on through the typing, blinking only
+   across the hold. */
+@keyframes domain-type {
+  0% {
+    clip-path: inset(0 100% 0 0);
+  }
+  26.25% {
+    clip-path: inset(0 0 0 0);
+  }
+  100% {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes domain-caret-move {
+  0% {
+    left: 0%;
+  }
+  26.25% {
+    left: 100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+@keyframes domain-caret {
+  0%,
+  33% {
+    opacity: 1;
+  }
+  33.01%,
+  40% {
+    opacity: 0;
+  }
+  40.01%,
+  47% {
+    opacity: 1;
+  }
+  47.01%,
+  54% {
+    opacity: 0;
+  }
+  54.01%,
+  61% {
+    opacity: 1;
+  }
+  61.01%,
+  68% {
+    opacity: 0;
+  }
+  68.01%,
+  75% {
+    opacity: 1;
+  }
+  75.01%,
+  82% {
+    opacity: 0;
+  }
+  82.01%,
+  89% {
+    opacity: 1;
+  }
+  89.01%,
+  96% {
+    opacity: 0;
+  }
+  96.01%,
+  100% {
+    opacity: 1;
+  }
+}
+
+/* ── The sign-in scene's brand panel ──────────────────────────────────────
+   A WASH, NOT A PICTURE. It was an exported PNG, which meant one artwork for
+   both themes: the file is a near-black field, so in light it sat on a white
+   screen as a dark slab — the heaviest object on a card whose subject is two
+   buttons, and plainly a different surface from the one it was attached to.
+   Drawn in CSS it is two values instead of one file, and each theme gets the
+   version that belongs on its ground.
+
+   Same construction in both so they read as one idea at two weights: a soft
+   blue lobe from the top, a green one crossing it from the right, over a base
+   that carries the theme. Light keeps them pale and low-contrast against a
+   near-white base; dark runs them at full strength over near-black, which is
+   where this kind of wash actually earns its place.
+
+   The blue is the site's own periwinkle — the same value the branding card
+   fills its sign-in button with — so a reader meeting both cards sees one
+   firm's colour rather than two. */
+:root {
+  --signin-brand-wash:
+    radial-gradient(
+      120% 80% at 112% 38%,
+      rgba(141, 199, 175, 0.72) 0%,
+      rgba(141, 199, 175, 0) 52%
+    ),
+    radial-gradient(
+      125% 95% at 72% 6%,
+      rgba(124, 150, 214, 0.68) 0%,
+      rgba(124, 150, 214, 0) 58%
+    ),
+    linear-gradient(158deg, #eef2fb 0%, #e6edf7 55%, #edf3ee 100%);
+}
+[data-theme="dark"] {
+  --signin-brand-wash:
+    radial-gradient(
+      120% 80% at 112% 38%,
+      rgba(124, 185, 160, 0.95) 0%,
+      rgba(124, 185, 160, 0) 48%
+    ),
+    radial-gradient(
+      125% 95% at 72% 6%,
+      rgba(123, 150, 214, 0.9) 0%,
+      rgba(123, 150, 214, 0) 54%
+    ),
+    linear-gradient(158deg, #08080a 0%, #131722 55%, #0b0d10 100%);
+}

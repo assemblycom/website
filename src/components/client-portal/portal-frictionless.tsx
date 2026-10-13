@@ -73,7 +73,11 @@ export function PortalFrictionless({
           {cards.map((card) => (
             <div
               key={card.title}
-              className="flex min-w-0 flex-col rounded-3xl bg-[var(--surface)] p-6 md:p-8"
+              // overflow-hidden is new, and it is what makes the bleed below
+              // safe: without it a scene that runs past the card's right edge
+              // also runs past its rounded corner, so the card reads as having
+              // a square corner on one side.
+              className="flex min-w-0 flex-col overflow-hidden rounded-3xl bg-[var(--surface)] p-6 md:p-8"
             >
               {/* NO GROUND OF ITS OWN. The scene sits straight on the card.
                   It used to be inset on a lighter panel, which put a second
@@ -83,8 +87,38 @@ export function PortalFrictionless({
                   a third edge between them and the card.
 
                   The aspect ratio stays: it is what gives both cards the same
-                  picture height whatever their scene does. */}
-              <div className="aspect-[4/3] w-full overflow-hidden">
+                  picture height whatever their scene does.
+
+                  IT BLEEDS RIGHT AND DISSOLVES AT THE FOOT. Held whole and
+                  inset on all four sides, both scenes were objects floating in
+                  a card with a margin of empty ground around them — which is
+                  why they read as small however large the card got. Running
+                  one edge off the card is what gives a scene a scale: there is
+                  no longer a frame around it saying how little of the card it
+                  occupies.
+
+                  The foot is the opposite problem. Bleeding it too would run
+                  the scene straight into the caption, so instead it is masked
+                  out — .mock-foot-fade, the ramp the rest of this family uses
+                  to dissolve a contained shot into its card. The scene gives
+                  out into --surface before the copy starts rather than ending
+                  on a hard line a few pixels above it.
+
+                  w-full is gone with the bleed: an explicit 100% width would
+                  hold the box at the content measure and let the negative
+                  margin only overlap what follows, where a block box at auto
+                  width actually grows by it.
+
+                  THE RAMP IS FROM sm UP, and that is not tidying. 4:3 of a
+                  phone's card width is about 245px tall, and the sign-in's
+                  form is nearly 200 of them — so the ramp, which starts at
+                  72%, fell across the primary button and dissolved half of
+                  it. A button faded through its middle does not read as a
+                  screen carrying on past the frame; it reads as a button that
+                  failed to paint. Written inline against the same token
+                  rather than through .mock-foot-fade, because that is a plain
+                  class and a variant cannot be prefixed onto it. */}
+              <div className="-mr-6 aspect-[4/3] overflow-hidden sm:[-webkit-mask-image:var(--mock-foot-fade)] sm:[mask-image:var(--mock-foot-fade)] md:-mr-8">
                 {card.visual}
               </div>
               <p className="mt-6 text-base leading-snug text-foreground">

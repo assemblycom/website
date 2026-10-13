@@ -1,8 +1,12 @@
 import {
+  IconBell,
   IconBook,
   IconBookBlank,
   IconBrandMark,
+  IconCard,
   IconChat,
+  IconFolder,
+  IconForm,
   IconGlobe,
   IconPlus,
   IconUsers,
@@ -34,16 +38,34 @@ import { MOCK_MICRO, MOCK_PRIMARY } from "@/components/ui/mock-type";
 // ─────────────────────────────────────────────────────────────────────────
 
 /** Which row is lit. `Add App` lights the action at the foot of the list. */
-export type WorkspaceNavRow = "CRM" | "Team" | "Home" | "Messages" | "Add App";
+export type WorkspaceNavRow =
+  "CRM" | "Team" | "Notifications" | "Home" | "Messages" | "Add App";
 
 function NavItem({
   icon,
   label,
   active,
+  badge,
+  quiet = false,
 }: {
   icon: React.ReactNode;
   label: string;
   active?: boolean;
+  /** A count riding at the row's right edge — unread notifications, so far. */
+  badge?: string;
+  /**
+   * Draws the row a rung under the resting ones.
+   *
+   * For `Add App` on the one card whose subject is the sidebar itself. There
+   * the list is long enough to read as a list, and the action that extends it
+   * should sit below the places it extends — otherwise the last row of the
+   * nav is as loud as the apps above it and reads as a sixth destination.
+   *
+   * Opt-in, because this was once the default for `Add App` and was removed
+   * on purpose: on the shorter navs, where the claim is about the pane and
+   * not the rail, a quieted action was a distinction nobody was reading.
+   */
+  quiet?: boolean;
 }) {
   return (
     <div
@@ -86,13 +108,26 @@ function NavItem({
       className={`flex h-[22px] items-center gap-2 rounded px-1.5 transition-colors duration-150 ${
         active
           ? "bg-border/70 text-foreground"
-          : "text-[color:var(--mock-nav-rest)] hover:bg-border/40 hover:text-foreground"
+          : quiet
+            ? "text-[color:var(--mock-nav-rest)] opacity-60 hover:bg-border/40 hover:text-foreground hover:opacity-100"
+            : "text-[color:var(--mock-nav-rest)] hover:bg-border/40 hover:text-foreground"
       }`}
     >
       <span className="[&>svg]:size-[13px] flex shrink-0 items-center justify-center">
         {icon}
       </span>
       <span className={`min-w-0 flex-1 truncate ${MOCK_PRIMARY}`}>{label}</span>
+      {badge ? (
+        // The count, on the row's own resting ink over a --muted pill. Not a
+        // coloured badge: an unread count is the product's own chrome, and a
+        // red dot in a mock whose subject is the list of apps would be the
+        // first thing read on the card.
+        <span
+          className={`shrink-0 rounded bg-border/70 px-1 py-[2px] text-[8.5px] leading-none ${MOCK_MICRO}`}
+        >
+          {badge}
+        </span>
+      ) : null}
     </div>
   );
 }
@@ -113,9 +148,26 @@ export function WorkspaceSidebar({
    * every pixel here is a pixel the subject does not get.
    */
   className = "hidden w-[148px] sm:flex md:w-[164px]",
+  showcase = false,
 }: {
   active: WorkspaceNavRow;
   className?: string;
+  /**
+   * Draws the rail as the SUBJECT rather than as the furniture beside one.
+   *
+   * Everything above is tuned for a card whose claim is about the pane: the
+   * stock rows are cut to two, the apps to one, and nothing in the column is
+   * allowed to pull rank on the screen it introduces. /client-portal has one
+   * card where that is exactly backwards — "Fill the sidebar with the apps
+   * your firm needs" — and there a two-row nav under a one-app group is a
+   * picture of a sidebar with nothing in it.
+   *
+   * So this adds what the real rail has and the short one drops: the
+   * Notifications row with its count, a filled-out Apps group, and `Add App`
+   * set a rung under the rows it extends. The short list stays the default,
+   * so the four cards that were tuned against it do not move.
+   */
+  showcase?: boolean;
 }) {
   return (
     <div
@@ -137,6 +189,14 @@ export function WorkspaceSidebar({
 
       <NavItem icon={<IconBook />} label="CRM" active={active === "CRM"} />
       <NavItem icon={<IconUsers />} label="Team" active={active === "Team"} />
+      {showcase ? (
+        <NavItem
+          icon={<IconBell />}
+          label="Notifications"
+          active={active === "Notifications"}
+          badge="99+"
+        />
+      ) : null}
 
       <SectionLabel>Apps</SectionLabel>
       <NavItem icon={<IconGlobe />} label="Home" active={active === "Home"} />
@@ -157,7 +217,25 @@ export function WorkspaceSidebar({
           added app, also Year-end docs. Two shots of the same workspace in one
           section should not disagree about how many apps it has. */}
       <NavItem icon={<IconBookBlank />} label="Year-end docs" />
-      <NavItem icon={<IconPlus />} label="Add App" active={active === "Add App"} />
+      {/* The rest of what a filled sidebar holds, on the one card that is
+          about the sidebar being filled. Stock-sounding names rather than
+          more invented apps: the claim beside this is "install or tailor apps
+          in one click, or build a completely custom app with AI", so the
+          group should read as a mix of what came with the workspace and what
+          the firm added, not as five bespoke builds. */}
+      {showcase ? (
+        <>
+          <NavItem icon={<IconCard />} label="Billing" />
+          <NavItem icon={<IconFolder />} label="Files" />
+          <NavItem icon={<IconForm />} label="Intake forms" />
+        </>
+      ) : null}
+      <NavItem
+        icon={<IconPlus />}
+        label="Add App"
+        active={active === "Add App"}
+        quiet={showcase && active !== "Add App"}
+      />
     </div>
   );
 }

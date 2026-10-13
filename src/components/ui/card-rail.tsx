@@ -23,6 +23,77 @@ const GAP_PX = 16;
 // scrollLeft, so the ends are judged with a little slack rather than exactly.
 const END_SLACK = 2;
 
+// ── How a released drag is thrown ────────────────────────────────────────
+// How far back the release velocity is read. Short enough that the last
+// flick is what counts rather than the whole gesture, long enough to span
+// several pointer events on a slow mouse — two or three frames is noise, and
+// a velocity read off noise throws the rail somewhere nobody asked for.
+const VELOCITY_WINDOW_MS = 90;
+// How long the rail would coast at its release speed, in ms. This is the one
+// number that decides how far a flick carries: the projection is simply
+// velocity × this. 220 lands a brisk flick two or three cards on and an
+// ordinary push one, which is the range the gesture can actually aim at.
+const FLING_MS = 220;
+// Below this (px/ms) a release is a release and not a throw — the rail
+// settles onto the nearest card instead of being projected anywhere. Set by
+// what a hand does when it means to stop: letting go of a stationary pointer
+// still registers a pixel or two of travel.
+const FLING_MIN_V = 0.08;
+
+/**
+ * Pointer speed at the moment of release, px/ms, positive when moving right.
+ *
+ * Measured across the whole surviving trail rather than between the last two
+ * events: pointer events do not arrive evenly, so a single pair can be a
+ * 2ms gap that reports a speed the hand never reached.
+ */
+function releaseVelocity(trail: { t: number; x: number }[], endT: number) {
+  const first = trail[0];
+  const last = trail[trail.length - 1];
+  if (!first || !last) return 0;
+  // A pointer held still before release emits nothing, so the gap between the
+  // last move and the release is real evidence of having stopped — count it.
+  const dt = Math.max(endT, last.t) - first.t;
+  if (dt <= 0) return 0;
+  return (last.x - first.x) / dt;
+}
+
+/**
+ * Lands the rail on a card, carrying it on by whatever the release was worth.
+ *
+ * The stride is read off the DOM exactly as the arrow step reads it, so the
+ * throw and the arrows always agree about where the cards are — a projection
+ * computed from the breakpoint instead would drift the moment a card width
+ * changed in one place and not the other.
+ */
+function throwTo(el: HTMLElement, velocity: number) {
+  const card = el.firstElementChild as HTMLElement | null;
+  const stride = (card?.offsetWidth ?? el.clientWidth) + GAP_PX;
+  if (stride <= 0) return;
+  // The pointer and the scroll run opposite ways: dragging RIGHT (positive
+  // velocity) pulls earlier cards back into view, which is scrollLeft going
+  // DOWN. Same inversion as `scrollLeft = left - dx` in the move handler.
+  const coast = Math.abs(velocity) < FLING_MIN_V ? 0 : velocity * FLING_MS;
+  const projected = el.scrollLeft - coast;
+  // Clamped AFTER rounding: the last card's snap position is short of a whole
+  // stride whenever the track does not divide evenly, and the rail should
+  // rest against its end rather than at the multiple just before it.
+  const max = el.scrollWidth - el.clientWidth;
+  const landed = Math.min(
+    Math.max(Math.round(projected / stride) * stride, 0),
+    max,
+  );
+  el.scrollTo({
+    left: landed,
+    // The landing is still a landing under reduced motion — it just arrives
+    // rather than travels. Dropping it entirely would leave the rail resting
+    // mid-card, which is the thing this exists to prevent.
+    behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      ? "auto"
+      : "smooth",
+  });
+}
+
 function Chevron({ direction }: { direction: "prev" | "next" }) {
   return (
     <svg
@@ -238,7 +309,35 @@ export function CardRail({
   // draggable without being so. This adds the mouse case only — pointerType
   // "touch" is left alone, because intercepting it would replace the browser's
   // own momentum and rubber-banding with a worse version of both.
-  const drag = useRef<{ x: number; left: number; moved: boolean } | null>(null);
+  //
+  // ── Releasing it THROWS the rail ──────────────────────────────────────
+  // The drag used to stop dead where the pointer let go, leaving the rail
+  // resting wherever that happened to be — usually mid-card, because a hand
+  // does not release on a boundary. snap-proximity would tidy it only if the
+  // rest point was already close to one. So a rail you dragged looked like a
+  // rail you had broken: two half cards and no column.
+  //
+  // It now carries on the way every touch surface does. The pointer's speed
+  // at the moment of release is projected forward, and the rail lands on the
+  // card nearest that projection — so a flick crosses several cards, a push
+  // crosses one, and a slow drag just settles onto whichever card it was
+  // already nearest. Every release ends on a card either way.
+  //
+  // WHY NOT snap-mandatory, which also always lands on a card: mandatory
+  // governs every scroll the element sees, including a vertical page scroll
+  // that merely passes over it, which it then grabs and pulls back. See the
+  // scroller's own comment. Doing the landing here keeps it bound to the one
+  // gesture that should cause it.
+  //
+  // Touch still never reaches any of this (see the pointerType check): the
+  // browser's own momentum is better than this, and the two would fight.
+  const drag = useRef<{
+    x: number;
+    left: number;
+    moved: boolean;
+    /** Recent pointer positions, newest last, for the release velocity. */
+    trail: { t: number; x: number }[];
+  } | null>(null);
   const [dragging, setDragging] = useState(false);
 
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -248,12 +347,30 @@ export function CardRail({
     // width where the rail has become a complete row, a grab that moves
     // nothing is worse than no grab at all. See `steppable`.
     if (!steppable) return;
-    drag.current = { x: e.clientX, left: el.scrollLeft, moved: false };
+    drag.current = {
+      x: e.clientX,
+      left: el.scrollLeft,
+      moved: false,
+      trail: [{ t: e.timeStamp, x: e.clientX }],
+    };
     // Imperatively, not through the className below: smooth scrolling animates
     // towards each scrollLeft we assign, so the rail would lag the pointer and
     // never catch up — and a React state flip only lands a frame later, which
     // is exactly the frames the drag starts on.
     el.style.scrollBehavior = "auto";
+    // AND SNAP COMES OFF FOR THE DURATION. This is what made the drag feel
+    // stuck: snapping is applied to any scroll the element comes to rest at,
+    // and every scrollLeft we assign mid-drag IS a rest. So while the pointer
+    // was still inside the current card's proximity the browser pulled each
+    // assignment straight back to the card it came from, and the rail did not
+    // move at all until the pointer crossed the halfway line, at which point
+    // it jumped a whole card. A 55px drag measured 0px of travel.
+    //
+    // With snap off the rail tracks the pointer exactly, and the landing is
+    // handled on release by throwTo, which aims at a card anyway. The
+    // reference rail does the same thing — mid-drag its style attribute reads
+    // `scroll-snap-type: none` with the real value stashed beside it.
+    el.style.scrollSnapType = "none";
     setDragging(true);
   };
 
@@ -275,18 +392,33 @@ export function CardRail({
       } catch {}
     }
     el.scrollLeft = d.left - dx;
+
+    // Only the last VELOCITY_WINDOW of travel decides the throw, so a drag
+    // that wandered around the rail and then stopped is read as stopped
+    // rather than as the average of everywhere it has been.
+    d.trail.push({ t: e.timeStamp, x: e.clientX });
+    const cutoff = e.timeStamp - VELOCITY_WINDOW_MS;
+    while (d.trail.length > 2 && d.trail[0].t < cutoff) d.trail.shift();
   };
 
   const endDrag = (e: React.PointerEvent<HTMLDivElement>) => {
     const el = ref.current;
-    // Back to the stylesheet's smooth, which the arrow buttons rely on.
-    if (el) el.style.scrollBehavior = "";
+    const d = drag.current;
+    // Back to the stylesheet's smooth, which the arrow buttons rely on — and
+    // which the throw below is animated by. Snap comes back at the same time:
+    // throwTo only ever aims at a snap position, so proximity has nothing left
+    // to correct and cannot pull the landing somewhere else.
+    if (el) {
+      el.style.scrollBehavior = "";
+      el.style.scrollSnapType = "";
+    }
     try {
       if (el?.hasPointerCapture(e.pointerId))
         el.releasePointerCapture(e.pointerId);
     } catch {}
+    if (el && d?.moved) throwTo(el, releaseVelocity(d.trail, e.timeStamp));
     // Kept until the click that follows this release has been swallowed below.
-    if (drag.current?.moved) requestAnimationFrame(() => (drag.current = null));
+    if (d?.moved) requestAnimationFrame(() => (drag.current = null));
     else drag.current = null;
     setDragging(false);
   };

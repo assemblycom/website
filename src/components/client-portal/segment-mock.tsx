@@ -15,6 +15,7 @@
 
 import { ApprovalCovers } from "@/components/client-portal/approval-covers";
 import { fadeMask } from "@/components/ui/fade-mask";
+import { WorkspaceSidebar } from "@/components/home/workspace-sidebar";
 
 import {
   IconBrandMark,
@@ -408,10 +409,27 @@ export function ApprovalsMock() {
       aria-hidden
       className="pointer-events-none flex h-full select-none bg-[var(--mock-window)] text-[color:var(--mock-ink)]"
     >
-      {/* The firm's own colour. This is the card that claims the portal is
-          yours, so the nav it shows should be yours — a neutral grey slab here
-          was the one screen in the set making that claim in words only. */}
-      <PortalSidebar app="Approvals" branded />
+      {/* THE FIRM'S OWN WORKSPACE RAIL, not the client's portal nav.
+
+          This card is captioned "fill the sidebar with the apps your firm
+          needs", and it used to draw the CLIENT's sidebar — the branded slab a
+          client signs into — which is a different sidebar belonging to a
+          different person. The apps a firm installs land in the firm's own
+          workspace, so that is the rail the claim is about, and it is the grey
+          internal one rather than a brand slab.
+
+          `showcase` is what makes it the subject: Notifications with its
+          count, the apps group filled out, and Add App sitting a rung under
+          the rows it extends. See WorkspaceSidebar. */}
+      <WorkspaceSidebar
+        active="Home"
+        showcase
+        // 148, not the 136 the portal nav beside it used: "Notifications" is
+        // the longest label in the product's rail and at 136 it truncated to
+        // "Notificat…", which on the one card about what the rail CONTAINS is
+        // the wrong row to clip.
+        className="hidden w-[148px] shrink-0 sm:flex"
+      />
       <div className="flex min-w-0 flex-1 flex-col">
         {/* No chip. "Decision needed" restated the pair of buttons at the foot
             of the round, and alone on the header row it read as a stray pill
@@ -537,7 +555,10 @@ const SUBMITTED = [
 function IconFilePdf({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 23.5 21.5" className={className} aria-hidden>
-      <path d="M8.125 1.875H3.75C3.40625 1.875 3.125 2.15625 3.125 2.5V17.5C3.125 17.8438 3.40625 18.125 3.75 18.125H6.875V20H3.75C2.37109 20 1.25 18.8789 1.25 17.5V2.5C1.25 1.12109 2.37109 0 3.75 0H8.96484C9.62891 0 10.2656 0.261719 10.7344 0.730469L15.5195 5.51953C15.9883 5.98828 16.25 6.625 16.25 7.28906V13.1289H14.375V8.12891H10.9375C9.38281 8.12891 8.125 6.87109 8.125 5.31641V1.87891V1.875ZM13.5977 6.25L10 2.65234V5.3125C10 5.83203 10.418 6.25 10.9375 6.25H13.5977ZM9.375 14.8438H10.625C11.918 14.8438 12.9688 15.8945 12.9688 17.1875C12.9688 18.4805 11.918 19.5312 10.625 19.5312H10.1562V20.625C10.1562 21.0547 9.80469 21.4062 9.375 21.4062C8.94531 21.4062 8.59375 21.0547 8.59375 20.625V15.625C8.59375 15.1953 8.94531 14.8438 9.375 14.8438ZM10.625 17.9688C11.0547 17.9688 11.4062 17.6172 11.4062 17.1875C11.4062 16.7578 11.0547 16.4062 10.625 16.4062H10.1562V17.9688H10.625ZM14.375 14.8438H15.625C16.7461 14.8438 17.6562 15.7539 17.6562 16.875V19.375C17.6562 20.4961 16.7461 21.4062 15.625 21.4062H14.375C13.9453 21.4062 13.5938 21.0547 13.5938 20.625V15.625C13.5938 15.1953 13.9453 14.8438 14.375 14.8438ZM15.625 19.8438C15.8828 19.8438 16.0938 19.6328 16.0938 19.375V16.875C16.0938 16.6172 15.8828 16.4062 15.625 16.4062H15.1562V19.8438H15.625ZM18.5938 15.625C18.5938 15.1953 18.9453 14.8438 19.375 14.8438H21.25C21.6797 14.8438 22.0312 15.1953 22.0312 15.625C22.0312 16.0547 21.6797 16.4062 21.25 16.4062H20.1562V17.3438H21.25C21.6797 17.3438 22.0312 17.6953 22.0312 18.125C22.0312 18.5547 21.6797 18.9062 21.25 18.9062H20.1562V20.625C20.1562 21.0547 19.8047 21.4062 19.375 21.4062C18.9453 21.4062 18.5938 21.0547 18.5938 20.625V15.625Z" fill="currentColor" />
+      <path
+        d="M8.125 1.875H3.75C3.40625 1.875 3.125 2.15625 3.125 2.5V17.5C3.125 17.8438 3.40625 18.125 3.75 18.125H6.875V20H3.75C2.37109 20 1.25 18.8789 1.25 17.5V2.5C1.25 1.12109 2.37109 0 3.75 0H8.96484C9.62891 0 10.2656 0.261719 10.7344 0.730469L15.5195 5.51953C15.9883 5.98828 16.25 6.625 16.25 7.28906V13.1289H14.375V8.12891H10.9375C9.38281 8.12891 8.125 6.87109 8.125 5.31641V1.87891V1.875ZM13.5977 6.25L10 2.65234V5.3125C10 5.83203 10.418 6.25 10.9375 6.25H13.5977ZM9.375 14.8438H10.625C11.918 14.8438 12.9688 15.8945 12.9688 17.1875C12.9688 18.4805 11.918 19.5312 10.625 19.5312H10.1562V20.625C10.1562 21.0547 9.80469 21.4062 9.375 21.4062C8.94531 21.4062 8.59375 21.0547 8.59375 20.625V15.625C8.59375 15.1953 8.94531 14.8438 9.375 14.8438ZM10.625 17.9688C11.0547 17.9688 11.4062 17.6172 11.4062 17.1875C11.4062 16.7578 11.0547 16.4062 10.625 16.4062H10.1562V17.9688H10.625ZM14.375 14.8438H15.625C16.7461 14.8438 17.6562 15.7539 17.6562 16.875V19.375C17.6562 20.4961 16.7461 21.4062 15.625 21.4062H14.375C13.9453 21.4062 13.5938 21.0547 13.5938 20.625V15.625C13.5938 15.1953 13.9453 14.8438 14.375 14.8438ZM15.625 19.8438C15.8828 19.8438 16.0938 19.6328 16.0938 19.375V16.875C16.0938 16.6172 15.8828 16.4062 15.625 16.4062H15.1562V19.8438H15.625ZM18.5938 15.625C18.5938 15.1953 18.9453 14.8438 19.375 14.8438H21.25C21.6797 14.8438 22.0312 15.1953 22.0312 15.625C22.0312 16.0547 21.6797 16.4062 21.25 16.4062H20.1562V17.3438H21.25C21.6797 17.3438 22.0312 17.6953 22.0312 18.125C22.0312 18.5547 21.6797 18.9062 21.25 18.9062H20.1562V20.625C20.1562 21.0547 19.8047 21.4062 19.375 21.4062C18.9453 21.4062 18.5938 21.0547 18.5938 20.625V15.625Z"
+        fill="currentColor"
+      />
     </svg>
   );
 }
@@ -1451,7 +1472,6 @@ export function OnboardingMock() {
               ))}
             </div>
           </div>
-
         </div>
 
         {/* Cropped by the card edge. */}
@@ -1523,6 +1543,89 @@ export function OnboardingMock() {
             ))}
           </div>
         </Panel>
+      </div>
+    </div>
+  );
+}
+
+// ── Fully white-label — the domain, and nothing else ────────────────────
+// ONE SUBJECT. The card's copy opens on "your own custom domain", so the
+// picture is the domain: the field it is entered into, drawn large enough to
+// read at a glance and with nothing else in the frame.
+//
+// It got here by two wrong turns. First a Gantt chart, which is a picture of
+// scheduling — the component that owned it said so itself. Then a browser on
+// the firm's host with the whole portal under it: true, and three quarters of
+// it was a sidebar and a list of rows that the two cards beside this one
+// already show. The domain was a line of 10px grey in the corner of a picture
+// of something else.
+//
+// SO IT IS ZOOMED IN, which is the only way a single field fills a card, and
+// the host TYPES ITSELF. A still field with a finished domain in it is a
+// screenshot of a settings page; the same field with the host arriving is the
+// firm claiming it, which is the thing being sold. See the domain-type and
+// domain-caret keyframes in globals.css for why the cycle is shaped the way
+// it is.
+//
+// The animation is CSS only, and it has to be: per the repo's CLAUDE.md the
+// preview pane runs with visibilityState "hidden", where IntersectionObserver
+// never fires and rAF is paused — so anything driven from JS could not be
+// checked here and would look broken when it was fine. It also means the
+// whole thing works before hydration. Reduced motion gets the finished state,
+// not a frozen empty field: the claim is the domain, and the animation is how
+// it is introduced rather than what it says.
+// This scene is drawn at the card's full width with one field in it, where
+// the rest of this file draws whole screens at mock scale. The rail's 10.5px
+// secondary would be a caption under a 19px host — the same relationship the
+// rail has, at four times the distance. One step up carries it.
+const UI_SECONDARY_LG = "text-[12px] leading-none";
+
+export function CustomDomainMock() {
+  return (
+    <div
+      aria-hidden
+      className="pointer-events-none flex h-full select-none flex-col justify-center bg-[var(--mock-window)] px-6 text-[color:var(--mock-ink)] sm:px-10"
+    >
+      {/* The field's own label, which is the one piece of chrome kept: without
+          it this is an address bar, and an address bar says the client is
+          already there rather than that the firm sets it. */}
+      {/* The label, with the state riding beside it as a tag. It was a line
+          of its own under the field, paired with the sending address — two
+          more things to read under the one thing the card is about. As a tag
+          on the label it is answered where it is asked: this is the portal's
+          domain, and it is live. */}
+      <div className="flex items-center gap-2.5">
+        <p className={`text-[color:var(--mock-ink-soft)] ${UI_SECONDARY_LG}`}>
+          Portal domain
+        </p>
+        <span
+          className={`rounded px-1.5 py-[3px] text-[11px] leading-none text-[color:var(--mock-positive-fg)] [background:var(--mock-positive-bg)]`}
+        >
+          Connected
+        </span>
+      </div>
+
+      <div
+        className={`mt-2.5 flex items-center gap-2 overflow-hidden rounded-lg border bg-[var(--mock-well)] px-3.5 py-3 ${LINE}`}
+      >
+        <IconGlobe className="size-[15px] shrink-0 text-[color:var(--mock-ink-soft)]" />
+        {/* The host, with the caret riding the edge of the reveal.
+
+            The wrapper is content-width and relative: that makes it the
+            definite box both keyframes measure their percentages against —
+            the clip on the text, and the caret's `left`. Neither has to know
+            the other's width, so the two stay in step at any card size. */}
+        <span className="relative inline-flex min-w-0 items-center">
+          <span className="motion-safe:animate-[domain-type_8s_steps(80,end)_infinite] whitespace-nowrap text-[17px] leading-none text-[color:var(--mock-ink)] sm:text-[19px]">
+            portal.brandmages.com
+          </span>
+          {/* Hidden under reduced motion rather than parked: with the text
+              shown whole and nothing moving, a caret after it is a cursor
+              sitting in a field nobody is typing in. */}
+          <span className="motion-safe:animate-[domain-caret-move_8s_steps(80,end)_infinite] pointer-events-none absolute left-full top-1/2 ml-[2px] -translate-y-1/2 motion-reduce:hidden">
+            <span className="motion-safe:animate-[domain-caret_8s_linear_infinite] block h-[17px] w-[1.5px] bg-[color:var(--mock-ink)] sm:h-[19px]" />
+          </span>
+        </span>
       </div>
     </div>
   );

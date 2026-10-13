@@ -3,9 +3,9 @@ import { QUIET_BUTTON } from "@/components/ui/quiet-button";
 import { Reveal } from "@/components/ui/reveal";
 import {
   ApprovalsMock,
-  OnboardingMock,
+  CustomDomainMock,
 } from "@/components/client-portal/segment-mock";
-import { ProgressMock } from "@/components/client-portal/progress-chart";
+import { BrandedLoginScreen } from "@/components/comparison/branded-login-hero-visual";
 import {
   CustomerLogo,
   hasCustomerLogo,
@@ -62,7 +62,22 @@ const CARDS: {
   {
     title: "Make it look like your firm",
     body: "Your logo, images, colors, and typography on every screen, down to the sign-in page clients see first.",
-    visual: <OnboardingMock />,
+    // THE SIGN-IN, because the copy names it: "down to the sign-in page
+    // clients see first". It drew an onboarding FORM, which is a screen deep
+    // inside the portal and carries no branding at all beyond an avatar — the
+    // one card about the firm's logo and colours was illustrated with neither.
+    //
+    // `brand` puts the firm's colour on the mark and the button, which is the
+    // "colors" half of the claim. Without it the screen is the same neutral
+    // black-and-white one the comparison page shows, and the card would again
+    // be making its point in words only.
+    // quietFoot off: that default is for a card that ramps this screen's
+    // foot, and this one shows the whole button — where an unlabelled slab is
+    // just a coloured rectangle.
+    // frame={false}: the card's picture box below already draws the
+    // window — hairline, radius and .mock-edge — so a screen that frames
+    // itself puts a second one a pixel inside it.
+    visual: <BrandedLoginScreen brand quietFoot={false} frame={false} />,
     span: "lg:col-span-2",
   },
   {
@@ -74,7 +89,11 @@ const CARDS: {
   {
     title: "Fully white-label",
     body: "Your own custom domain, emails from your address, and no mention of Assembly. On Professional and up.",
-    visual: <ProgressMock />,
+    // The firm's host in a browser bar, over the firm's own portal. It drew a
+    // Gantt chart, which the note at the top of this file already flagged as
+    // the loosest fit in the section — a progress chart is not a domain. See
+    // CustomDomainMock.
+    visual: <CustomDomainMock />,
     pictureClass: "h-[200px] md:h-[240px]",
     span: "lg:col-span-3",
   },
