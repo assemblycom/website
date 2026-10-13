@@ -95,6 +95,46 @@
   --mock-warning-fg: #8f6a12;
   --mock-negative-bg: #fbeceb;
   --mock-negative-fg: #b8443a;
+  /* The fourth of the family, for a state that is neither good nor bad but
+     wants picking out — the "New" badge on the support card's request row.
+     Same wash-plus-ink shape as the three above, cut in the blue the mocks
+     already use for accent (--mock-accent-bg). */
+  --mock-info-bg: #e7edfd;
+  --mock-info-fg: #2f5bc4;
+
+  /* ── Glyph tints for the mock app rails ────────────────────────────────
+     The brand file's own mark pairings — the three MARK_TINTS in
+     app-marks.tsx that the hero's template tiles are set in — brought into
+     the mock family so a rail can carry colour without inventing a palette
+     for it.
+
+     COLOUR SITS IN THE MARK, NEVER IN THE LABEL. That is the whole rule, and
+     it is the one Linear's dark rails run on: the glyph beside a row is
+     saturated, the word next to it stays at the rail's resting ink, so a
+     filled sidebar reads as a set of distinct apps rather than as a column of
+     coloured text. Tint every label and the rail stops being furniture.
+
+     Dark takes the brand values as written — they were drawn for a dark tile.
+     Light takes a darker cut of each hue, because a tint tuned to glow on
+     near-black is a pastel on a near-white rail; the hue is the same in both,
+     so an app's mark is the same colour in either theme. */
+  --mock-tint-lavender: #6a53cc;
+  --mock-tint-blue: #3f55c9;
+  --mock-tint-mint: #237f5b;
+
+  /* THE SAMPLE FIRM'S OWN COLOUR — the periwinkle every mock means when it
+     shows "your brand": the logo tile on the branded sign-in, that screen's
+     primary button, and the same pair on the frictionless card's sign-in.
+     It agrees with whole-stack's brand-colour swatch (#5c78b9), which is
+     where it comes from.
+
+     A token rather than a constant in one component, because two screens on
+     one page now wear it and a firm whose colour differs between two shots of
+     its own portal is not a firm. --mock-firm-ink is what sits ON it, white
+     in both themes: the slab is the client's colour, and type that flipped
+     with our theme would be reading the wrong thing off it. */
+  --mock-firm: #5c78b9;
+  --mock-firm-ink: #ffffff;
 
   /* A quieter cut of the positive/warning pair, for the one mock that shows
      several status pills at once.
@@ -439,6 +479,26 @@
   --mock-warning-fg: #cdb37a;
   --mock-negative-bg: rgba(224, 122, 113, 0.14);
   --mock-negative-fg: #d9928b;
+  /* See --mock-info-bg in :root. Translucent ground and a desaturated blue
+     ink, like the three pills above, so it sits on a dark panel without
+     glowing. */
+  --mock-info-bg: rgba(125, 164, 255, 0.16);
+  --mock-info-fg: #9ab6f5;
+
+  /* See --mock-tint-lavender in :root. Dark is where these came from: the
+     three values are the brand file's MARK_TINTS verbatim. */
+  --mock-tint-lavender: #b3a4f7;
+  --mock-tint-blue: #6b84ef;
+  --mock-tint-mint: #9be3c0;
+
+  /* See --mock-firm in :root. A step and a half lighter than light's #5c78b9,
+     which is the same move --mock-gantt-* makes and for the same reason: a
+     mid-tone picked against a white screen sits heavy on --mock-window, and
+     the one object carrying the firm's branding was reading as a blue-grey
+     rather than as a colour. The hue does not move, so the mark is the same
+     periwinkle in either theme — only its value is. */
+  --mock-firm: #7389d6;
+  --mock-firm-ink: #ffffff;
 
   /* See --mock-positive-muted-bg in :root. Same job, dark's own values.
 
@@ -4955,49 +5015,4 @@ html:not([data-authed]) .auth-only {
   }
 }
 
-/* ── The sign-in scene's brand panel ──────────────────────────────────────
-   A WASH, NOT A PICTURE. It was an exported PNG, which meant one artwork for
-   both themes: the file is a near-black field, so in light it sat on a white
-   screen as a dark slab — the heaviest object on a card whose subject is two
-   buttons, and plainly a different surface from the one it was attached to.
-   Drawn in CSS it is two values instead of one file, and each theme gets the
-   version that belongs on its ground.
-
-   Same construction in both so they read as one idea at two weights: a soft
-   blue lobe from the top, a green one crossing it from the right, over a base
-   that carries the theme. Light keeps them pale and low-contrast against a
-   near-white base; dark runs them at full strength over near-black, which is
-   where this kind of wash actually earns its place.
-
-   The blue is the site's own periwinkle — the same value the branding card
-   fills its sign-in button with — so a reader meeting both cards sees one
-   firm's colour rather than two. */
-:root {
-  --signin-brand-wash:
-    radial-gradient(
-      120% 80% at 112% 38%,
-      rgba(141, 199, 175, 0.72) 0%,
-      rgba(141, 199, 175, 0) 52%
-    ),
-    radial-gradient(
-      125% 95% at 72% 6%,
-      rgba(124, 150, 214, 0.68) 0%,
-      rgba(124, 150, 214, 0) 58%
-    ),
-    linear-gradient(158deg, #eef2fb 0%, #e6edf7 55%, #edf3ee 100%);
-}
-[data-theme="dark"] {
-  --signin-brand-wash:
-    radial-gradient(
-      120% 80% at 112% 38%,
-      rgba(124, 185, 160, 0.95) 0%,
-      rgba(124, 185, 160, 0) 48%
-    ),
-    radial-gradient(
-      125% 95% at 72% 6%,
-      rgba(123, 150, 214, 0.9) 0%,
-      rgba(123, 150, 214, 0) 54%
-    ),
-    linear-gradient(158deg, #08080a 0%, #131722 55%, #0b0d10 100%);
-}
 

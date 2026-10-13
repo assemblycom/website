@@ -2848,11 +2848,9 @@ export function OnboardCard({ plain = false }: SceneProps = {}) {
       <Scene
         {...(plain ? {} : RAIL_SCENE_PHONE_PROPS)}
       >
-        {/* "First steps", not "Onboarding". The window is the CLIENT's screen,
-            and onboarding is the firm's word for it — the client is just being
-            told what to do first. It is also the phrase the caption under the
-            card already uses, so the picture and the sentence say one thing. */}
-        <ChecklistWindow title="First steps" items={ONBOARD_ITEMS} />
+        {/* "Onboarding" — the window is titled with the stage it belongs to,
+            so the card's label and the screen inside it name the same thing. */}
+        <ChecklistWindow title="Onboarding" items={ONBOARD_ITEMS} />
       </Scene>
     </>
   );
@@ -3192,10 +3190,16 @@ export function SupportCard({ plain = false }: SceneProps = {}) {
                 </span>
                 {/* Only the unanswered one is badged. A state chip on every
                     row is a column, and a column of identical chips says
-                    nothing — the badge is here to pick ONE row out. */}
+                    nothing — the badge is here to pick ONE row out.
+
+                    BLUE, through --mock-info-*, rather than a tint of the
+                    row's own ink: a grey chip on a grey panel is the same
+                    object as the row it is meant to lift out of. The token
+                    carries its own value per theme, so the wash stays a wash
+                    in light and does not glow in dark. */}
                 {state ? (
                   <span
-                    className={`shrink-0 ${R_CHROME} bg-[var(--mock-ink)]/10 px-1.5 py-0.5 text-[color:var(--mock-ink)] ${UI_SECONDARY}`}
+                    className={`shrink-0 ${R_CHROME} bg-[var(--mock-info-bg)] px-1.5 py-0.5 text-[color:var(--mock-info-fg)] ${UI_SECONDARY}`}
                   >
                     {state}
                   </span>

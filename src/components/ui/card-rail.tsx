@@ -714,22 +714,31 @@ export function RailCard({
   if (copyInside) {
     return (
       <div className={`group/card ${RAIL_W}`}>
-        {/* SQUARE BELOW sm, three-quarters from there.
-  
+        {/* SQUARE UNTIL THE RAIL GOES THREE-UP, three-quarters from there.
+
                 The card is 78% of the rail below sm, so its width grows with the
                 viewport while the ratio holds — at 375px it is a reasonable
                 255x340, but by 600px it is 400x533, which is two thirds of a
                 phone screen for one card in a rail you are meant to swipe
                 through. The ratio was set for the desktop rail, where three
                 cards share the row and none of them can run away with it.
-  
+
                 Square takes a quarter off the height across that whole range
                 without touching the desktop proportion. The mocks inside are
                 absolutely positioned and the card clips, so they crop further
                 from the foot — which is what they already do, and what says the
-                screen continues. */}
+                screen continues.
 
-        <div className="relative flex aspect-square w-full select-none flex-col overflow-hidden rounded-3xl bg-[var(--surface)] sm:aspect-[3/4]">
+                THE BREAK IS AT lg, NOT sm, and the arithmetic is why. The card
+                is 62% of the rail at sm and half of it at md; at 820px that is
+                a 362px card, which at 3/4 is 483px tall — the exact height it
+                has on a 1280px desktop, on a viewport two thirds as tall. The
+                ratio is only earned once three cards share the row and the
+                page is wide enough to carry them, which is lg. Below that the
+                card is as wide as a desktop card with none of the height to
+                spend, so it stays square. */}
+
+        <div className="relative flex aspect-square w-full select-none flex-col overflow-hidden rounded-3xl bg-[var(--surface)] lg:aspect-[3/4]">
           <div className="relative z-10 shrink-0 px-6 pb-4 pt-6 md:px-7 md:pt-7">
             {copy}
           </div>
@@ -804,7 +813,12 @@ export function RailCard({
 
   return (
     <div className={`group/card ${RAIL_W}`}>
-      <div className="relative aspect-square w-full select-none overflow-hidden rounded-3xl bg-[var(--surface)] sm:aspect-[3/4]">
+      {/* Same ratio ladder as the copyInside card above, and for the same
+          reason — see the note there. This is the variant /client-portal's
+          journey rail runs, and it is where the tall card actually showed:
+          with the copy UNDER the card, a 483px picture on a tablet pushed its
+          own caption most of a screen down the page. */}
+      <div className="relative aspect-square w-full select-none overflow-hidden rounded-3xl bg-[var(--surface)] lg:aspect-[3/4]">
         {children}
       </div>
       <div className="mt-4 px-1">{copy}</div>

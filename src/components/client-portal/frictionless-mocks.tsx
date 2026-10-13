@@ -34,7 +34,13 @@ const LINE = "border-[var(--mock-line)]";
  */
 function Brandmark() {
   return (
-    <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-[color:var(--mock-ink)] text-[color:var(--mock-window)]">
+    // THE FIRM'S COLOUR, not the screen's ink. It was --mock-ink, which makes
+    // the mark a near-black tile in light and a near-white one in dark — a
+    // logo that changes colour with OUR theme, on the one object in the shot
+    // that belongs to the client. --mock-firm is the periwinkle the branding
+    // section's sign-in already wears, so the two screens show one firm
+    // rather than two; see globals.css.
+    <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-[var(--mock-firm)] text-[color:var(--mock-firm-ink)]">
       <IconBrandMark className="size-[15px]" />
     </span>
   );
@@ -59,16 +65,21 @@ function Brandmark() {
  * it. The type inside it was 9.5–12px to fit, so the claim — "no password to
  * remember" — was set smaller than any caption around it.
  *
- * So it fills its box and splits, which is the shape a sign-in page actually
- * has: the form on one side, the firm's own imagery on the other. That also
- * pays for itself twice — the panel gives the empty half something to be, and
- * the photograph is the firm's, which is the same claim the branding section
- * makes about every other screen.
+ * So it fills its box, at the card's own width and the card's own type sizes.
  *
- * The image drops below sm. At a phone's card width the split leaves a form
- * column too narrow for "Continue with Google" to set on one line, and a
- * sign-in that wraps its own button label reads as broken rather than as
- * responsive.
+ * IT USED TO SPLIT, with a brand wash down 42% of the right-hand side, on the
+ * argument that a sign-in page carries the firm's imagery beside its form.
+ * True of a full-page sign-in; false of this card, which shows the screen at
+ * about 360px wide. At that size the wash was not imagery, it was a coloured
+ * rectangle taking two fifths of the picture away from the two buttons the
+ * card is actually about — and because it bled off the card's right edge, the
+ * form it left behind was centred in its own column but sat left of centre on
+ * the card.
+ *
+ * So the wash is gone, the form takes the whole frame, and the frame closes
+ * on its left and right rather than running off the edge: the one thing this
+ * scene has to show is a sign-in with no password field in it, and that reads
+ * best centred, whole, with nothing beside it.
  */
 export function SignInMock() {
   return (
@@ -76,13 +87,27 @@ export function SignInMock() {
       {/* The scene carries its own window: this card sets its picture straight
           on the card ground with no panel of its own (see portal-frictionless),
           so the frame has to come from here or there is no screen edge at all. */}
-      {/* The frame closes on the two edges that are still on the card, and
-          opens on the two that are not: the scene bleeds off the right and is
-          masked out at the foot (see portal-frictionless), so a border or a
-          radius there would be an edge drawn across a picture that is supposed
-          to be carrying on. Same shape the customization cards' windows use. */}
+      {/* Closed on three sides, open at the foot. This scene no longer bleeds
+          right — see the note above, and `bleed` in portal-frictionless — so
+          the right edge is an edge like the left one. The foot is still masked
+          into the card, which is why there is nothing to draw down there.
+
+          .mock-lit-edge RATHER THAN A FLAT HAIRLINE. With the brand wash gone
+          the screen is one even surface inside one even line, which on a dark
+          card is a rectangle with no light on it anywhere. The family's own
+          ring puts the light where it would fall — brightest along the top,
+          the plain hairline by the middle, spent before the open foot — so
+          the frame reads as an object catching light instead of as a box that
+          was drawn. The same ring the branding card's screen and the hero's
+          carousel frames wear, reused rather than re-tuned.
+
+          No border utility with it: the ring IS the 1px outline (it paints a
+          padded box masked to its own edge), and a real border under it would
+          be a second line a pixel inside the first. Light is unaffected —
+          there --mock-edge-lit equals --mock-line, so the gradient is flat and
+          this is the hairline it has always been. */}
       <div
-        className={`flex h-full overflow-hidden rounded-tl-xl border-l border-t bg-[var(--mock-window)] ${LINE}`}
+        className="mock-lit-edge flex h-full overflow-hidden rounded-t-xl bg-[var(--mock-window)]"
       >
         {/* ONE ALIGNMENT DOWN THE COLUMN, and it is centred — the way this
             site's other sign-in draws it and the way most sign-ins do. It was
@@ -118,56 +143,31 @@ export function SignInMock() {
             </span>
           </div>
 
-          {/* --mock-cta, not --mock-ink. A fill cannot take type's value: in
-              dark --mock-ink is #ededed because that is what body copy needs
-              on near-black, and the same number spread across the width of
-              this card was the brightest object on the screen — louder than
-              the mark and the heading it sits under. See globals.css. */}
-          <div className="mt-3 flex w-full items-center justify-center rounded-lg bg-[color:var(--mock-cta)] px-3 py-3">
-            <span className="whitespace-nowrap text-[14px] leading-none text-[color:var(--mock-window)]">
+          {/* THE TWO WAYS IN ARE DRAWN THE SAME, and that is the claim.
+
+              This was a filled slab — neutral first, then the firm's
+              periwinkle — and both were saying the same wrong thing: that one
+              of these is the way in and the other is the fallback. The card is
+              called "sign in without a password", and what it is showing is
+              that there are two doors and neither of them is a password. A
+              primary ranks them.
+
+              It also freed the screen's one colour. With a coloured button
+              under it the periwinkle mark was the second-loudest periwinkle
+              thing in the frame rather than the firm's logo; alone, it is the
+              only colour on the screen and reads as the branding it is.
+
+              Same surface and border as the Google row above, with full ink
+              on the label — a button, not a field. */}
+          <div
+            className={`mt-3 flex w-full items-center justify-center rounded-lg border bg-[var(--mock-well-soft)] px-3 py-3 ${LINE}`}
+          >
+            <span className="whitespace-nowrap text-[14px] leading-none text-[color:var(--mock-ink)]">
               Email me a sign-in link
             </span>
           </div>
         </div>
 
-        {/* The firm's own imagery, the way a sign-in page carries it: a panel
-            down one side rather than a picture inside the form. Its width is a
-            fraction rather than a fixed value, so the form column keeps the
-            same proportion of whatever the card gives it.
-
-            A WASH, NOT A PICTURE — and not a file either. It showed the
-            portrait the approvals screen reviews a few sections up, which put
-            the loudest thing a picture can hold beside a form whose subject is
-            two buttons: the reader looked at her. Replacing it with an
-            exported abstract fixed that and introduced the theme problem, one
-            artwork on two grounds — a near-black slab sitting on a white
-            screen in light.
-
-            --signin-brand-wash is the same wash drawn in CSS with a value per
-            theme, so each ground gets the version that belongs on it. See
-            globals.css. It also carries the site's periwinkle, which is the
-            colour the branding card's sign-in button wears, so the two cards
-            show one firm.
-
-            INSET AT THE TOP AND ROUNDED INTO THE FORM. The panel ran the full
-            height flush to the frame's top edge, which made it a second
-            surface butted against the screen rather than something sitting on
-            it. A gap above and a radius on the corner that faces the form is
-            what reads as placed. The other three corners are left alone —
-            right and bottom are off the card (the scene bleeds right and its
-            foot is masked), so a radius there would be a corner drawn on a
-            picture that is supposed to be carrying on. */}
-        {/* NO LEFT PAD. The form column already pays px-8 on its right, so a
-            further pl-5 here made the gap before the picture 52px against the
-            28/32px holding the form off the frame's left edge — the block read
-            as pushed left rather than centred in its column. Dropping it makes
-            the two insets the same number, measured where the eye actually
-            reads them: frame edge to button on one side, button to picture on
-            the other. pt-6 is untouched; the top inset is doing a different
-            job (see below). */}
-        <div className="hidden w-[42%] shrink-0 flex-col pt-6 sm:flex">
-          <div className="min-h-0 flex-1 overflow-hidden rounded-tl-2xl [background:var(--signin-brand-wash)]" />
-        </div>
       </div>
     </div>
   );

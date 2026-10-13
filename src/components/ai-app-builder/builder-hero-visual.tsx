@@ -427,10 +427,26 @@ export function BuilderHeroVisual() {
               the highest-contrast thing this ramp can be asked to do. That
               screen keeps its hard bottom edge. Faded out rather than
               unmounted, on the same 500ms the two views cross on, so it leaves
-              with the screen it belongs to instead of popping. */}
+              with the screen it belongs to instead of popping.
+
+              A THIRD AS LONG IN DARK, and that is the same argument arriving
+              at the team view. 144px of cream laid over a near-black screen is
+              not a dissolve, it is fog: the last four rows of the table sat
+              under a pale smear with their ink still legible through it, so
+              the shot read as mis-rendered rather than as cropped. The gap in
+              value is what sets the length — in light the screen and the card
+              are both near-white and a long ramp is invisible, in dark they
+              are opposite ends of the scale and only a short one reads as an
+              edge. 56px is about where it stops looking like weather.
+
+              Two dark-only booster ramps used to sit over these, taking the
+              tails to solid because "4% of #ededed still reads on #191919".
+              That was true of a #191919 card; these cards are #FBFBF5 paper in
+              dark now (see PAPER_LADDER), so the boosters were stacking more
+              cream onto the smear they were meant to finish. Both are gone. */}
           <div
             aria-hidden
-            className={`pointer-events-none absolute inset-x-0 bottom-0 z-10 h-36 transition-opacity duration-500 motion-reduce:transition-none ${
+            className={`pointer-events-none absolute inset-x-0 bottom-0 z-10 h-36 transition-opacity duration-500 motion-reduce:transition-none [[data-theme=dark]_&]:h-14 ${
               view === 0 ? "opacity-100" : "opacity-0"
             }`}
             style={{ backgroundImage: edgeFade("to bottom") }}
@@ -442,33 +458,15 @@ export function BuilderHeroVisual() {
               through its run, which is why the status chips stayed solid right
               up to the cut. On the card it finishes where the picture actually
               ends. Spans the card's full height; the head row above carries
-              z-20 so the toggle stays clear of it. */}
+              z-20 so the toggle stays clear of it.
+
+              Short in dark for the reason the bottom ramp is — see there. 48px
+              against 112px: enough to take the sliced Status column off a hard
+              line, not enough to lay cream over the rows beside it. */}
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-y-0 right-0 z-10 w-28"
+            className="pointer-events-none absolute inset-y-0 right-0 z-10 w-28 [[data-theme=dark]_&]:w-12"
             style={{ backgroundImage: edgeFade("to right") }}
-          />
-          {/* And the dark-only second pass over its tail: the long ramp ends at
-              96% of --surface, invisible on white but 4% of #ededed still
-              reads on #191919. */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-y-0 right-0 z-10 hidden w-14 [[data-theme=dark]_&]:block"
-            style={{ backgroundImage: edgeFade("to right") }}
-          />
-          {/* A second, shorter ramp, DARK ONLY. The one above ends at 96% of
-              --surface a row short of the crop, which is invisible on white
-              but not on #191919: 4% of #ededed ink still reads, so the last
-              row sat there as a legible ghost instead of giving out. Stacking
-              a 64px ramp over the tail of the long one takes that stretch to
-              solid without touching the light ramp, which is already right —
-              see the globals.css note on tuning one theme into the other. */}
-          <div
-            aria-hidden
-            className={`pointer-events-none absolute inset-x-0 bottom-0 z-10 hidden h-16 transition-opacity duration-500 motion-reduce:transition-none [[data-theme=dark]_&]:block ${
-              view === 0 ? "opacity-100" : "opacity-0"
-            }`}
-            style={{ backgroundImage: edgeFade("to bottom") }}
           />
         </div>
       </div>
@@ -942,7 +940,31 @@ function TeamDashboard({ live }: { live: boolean }) {
         // client names across the pane — so the furniture read as loud as the
         // content it frames. 12/26/10 lands back level with the table and
         // leaves the names the largest thing on the screen.
-        className={`flex w-[164px] shrink-0 flex-col border-r bg-[var(--mock-well)] px-1.5 py-2 [--mock-nav-size:12px] [--mock-nav-row:26px] [--mock-section-size:10px] ${LINE} [&>div:not(:first-child)]:h-[26px] [&>div:not(:first-child)]:transition-colors [&>div:not(:first-child):hover]:bg-border/50`}
+        // THE RAIL READS THE MOCK PALETTE, NOT THE PAGE'S.
+        //
+        // NavItem is written against --foreground / --muted-foreground /
+        // --border, which is right everywhere else it is used. It is wrong
+        // here, and it took the paper cards to make that visible: PAPER_LADDER
+        // rewrites exactly those four page tokens to LIGHT values inside this
+        // card, because the card itself is #FBFBF5 in dark — and then the rail
+        // paints them onto --mock-well, which is a dark surface. The result in
+        // dark was #101114 labels on a near-black rail, so five of the seven
+        // rows were legible only as shapes, and the open row was a #e8e9ec
+        // slab lit up brighter than anything else on the screen.
+        //
+        // That is the bleed CLAUDE.md names, arriving by the back door: no
+        // colour here was hardcoded, the component just inherited a ladder
+        // built for the card and not for the screen standing on it. So the
+        // three tokens are re-pointed at the mock family's own, which carry a
+        // value per theme and are what every other surface in this window is
+        // already drawn with. --mock-nav-rest for the muted row is the token
+        // named for that exact job (see globals.css).
+        //
+        // Scoped to this rail rather than fixed in NavItem: the component is
+        // shared with the how-it-works mocks and /ai-app-builder's Add App
+        // shot, which sit on ordinary cards where the page tokens resolve
+        // correctly. Nothing outside this card moves.
+        className={`flex w-[164px] shrink-0 flex-col border-r bg-[var(--mock-well)] px-1.5 py-2 [--mock-nav-size:12px] [--mock-nav-row:26px] [--mock-section-size:10px] [--foreground:var(--mock-ink)] [--muted-foreground:var(--mock-nav-rest)] [--border:var(--mock-line)] ${LINE} [&>div:not(:first-child)]:h-[26px] [&>div:not(:first-child)]:transition-colors [&>div:not(:first-child):hover]:bg-border/50`}
       >
         <div className="flex items-center gap-1.5 px-1.5 pb-4 pt-3">
           <span className="flex size-[16px] items-center justify-center rounded-[3px] bg-foreground text-background">
@@ -952,12 +974,38 @@ function TeamDashboard({ live }: { live: boolean }) {
             BrandMages
           </span>
         </div>
+        {/* THE APPS CARRY COLOUR; THE WORKSPACE ROWS DO NOT.
+
+            The rail was eight rows of one grey, which on a dark screen is the
+            flattest thing a product UI can be — nothing in it said that the
+            apps under the group label are separate things a firm installed
+            rather than more of the same furniture. The tints are the brand's
+            own mark pairings (see --mock-tint-* in globals.css), on the GLYPH
+            only: every label stays at the rail's resting ink, so the column
+            still reads as a nav and not as a list of coloured words.
+
+            CRM and Team keep their grey on purpose. They are what every
+            workspace opens with, not apps; colouring them would make the
+            group label underneath them meaningless. `Add App` stays grey for
+            the same reason in reverse — it is an action, not an app. */}
         <NavItem icon={<IconBook />} label="CRM" />
         <NavItem icon={<IconUsers />} label="Team" />
         <SectionLabel>Apps</SectionLabel>
-        <NavItem icon={<IconGlobe />} label="Home" />
-        <NavItem icon={<IconChat />} label="Messages" />
-        <NavItem icon={<IconBookBlank />} label="Year-end docs" active={live} />
+        <NavItem
+          icon={<IconGlobe className="text-[color:var(--mock-tint-blue)]" />}
+          label="Home"
+        />
+        <NavItem
+          icon={<IconChat className="text-[color:var(--mock-tint-mint)]" />}
+          label="Messages"
+        />
+        <NavItem
+          icon={
+            <IconBookBlank className="text-[color:var(--mock-tint-lavender)]" />
+          }
+          label="Year-end docs"
+          active={live}
+        />
         <NavItem icon={<IconPlus />} label="Add App" muted />
       </div>
       <div className="@container flex min-w-0 flex-1 flex-col">

@@ -41,18 +41,39 @@ import { MOCK_MICRO, MOCK_PRIMARY } from "@/components/ui/mock-type";
 export type WorkspaceNavRow =
   "CRM" | "Team" | "Notifications" | "Home" | "Messages" | "Add App";
 
+/**
+ * Written out rather than interpolated: Tailwind reads the source as text, so
+ * a class built from a variable is a class it never sees and never emits.
+ */
+const TINT_CLASS = {
+  lavender: "text-[color:var(--mock-tint-lavender)]",
+  blue: "text-[color:var(--mock-tint-blue)]",
+  mint: "text-[color:var(--mock-tint-mint)]",
+} as const;
+
 function NavItem({
   icon,
   label,
   active,
   badge,
   quiet = false,
+  tint,
 }: {
   icon: React.ReactNode;
   label: string;
   active?: boolean;
   /** A count riding at the row's right edge — unread notifications, so far. */
   badge?: string;
+  /**
+   * The row's glyph colour, as one of the mock family's tints.
+   *
+   * The LABEL never takes it — see the --mock-tint-* note in globals.css. A
+   * rail where the words are coloured stops being furniture and starts
+   * competing with the pane; a rail where the marks are coloured reads as a
+   * set of distinct apps, which is the whole claim on the one card that shows
+   * this rail as its subject.
+   */
+  tint?: "lavender" | "blue" | "mint";
   /**
    * Draws the row a rung under the resting ones.
    *
@@ -113,7 +134,15 @@ function NavItem({
             : "text-[color:var(--mock-nav-rest)] hover:bg-border/40 hover:text-foreground"
       }`}
     >
-      <span className="[&>svg]:size-[13px] flex shrink-0 items-center justify-center">
+      {/* The glyph takes the tint where it has one and the row's own ink
+          where it does not. Not on the open row: there the fill and the full
+          ink are already saying "you are here", and a coloured mark inside a
+          lit row is a third signal for one state. */}
+      <span
+        className={`[&>svg]:size-[13px] flex shrink-0 items-center justify-center ${
+          tint && !active ? TINT_CLASS[tint] : ""
+        }`}
+      >
         {icon}
       </span>
       <span className={`min-w-0 flex-1 truncate ${MOCK_PRIMARY}`}>{label}</span>
@@ -199,11 +228,30 @@ export function WorkspaceSidebar({
       ) : null}
 
       <SectionLabel>Apps</SectionLabel>
-      <NavItem icon={<IconGlobe />} label="Home" active={active === "Home"} />
+      {/* COLOUR ON THE APPS, AND ONLY IN SHOWCASE.
+          The rail is grey furniture on the four cards whose subject is the
+          pane beside it, and it should stay that way there — a coloured mark
+          on every row would pull the eye out of the screen the card is about.
+          On the one card that IS about the rail, the opposite holds: eight
+          rows of one grey is a picture of a sidebar with nothing distinct in
+          it, which is a strange illustration for "fill the sidebar with the
+          apps your firm needs".
+          The tints cycle lavender → blue → mint down the group, so no two
+          neighbours share one, and the stock rows above (CRM, Team,
+          Notifications) keep their grey: they are what the workspace comes
+          with, not apps, and colouring them would make the group label
+          meaningless. */}
+      <NavItem
+        icon={<IconGlobe />}
+        label="Home"
+        active={active === "Home"}
+        tint={showcase ? "blue" : undefined}
+      />
       <NavItem
         icon={<IconChat />}
         label="Messages"
         active={active === "Messages"}
+        tint={showcase ? "mint" : undefined}
       />
       {/* ONE app the firm has built, and back to one on purpose. It was three
           — Year-end docs, Design approvals, Calendar — on the reasoning that a
@@ -216,7 +264,11 @@ export function WorkspaceSidebar({
           the same page, whose portal lists the stock rows and exactly one
           added app, also Year-end docs. Two shots of the same workspace in one
           section should not disagree about how many apps it has. */}
-      <NavItem icon={<IconBookBlank />} label="Year-end docs" />
+      <NavItem
+        icon={<IconBookBlank />}
+        label="Year-end docs"
+        tint={showcase ? "lavender" : undefined}
+      />
       {/* The rest of what a filled sidebar holds, on the one card that is
           about the sidebar being filled. Stock-sounding names rather than
           more invented apps: the claim beside this is "install or tailor apps
@@ -225,9 +277,9 @@ export function WorkspaceSidebar({
           the firm added, not as five bespoke builds. */}
       {showcase ? (
         <>
-          <NavItem icon={<IconCard />} label="Billing" />
-          <NavItem icon={<IconFolder />} label="Files" />
-          <NavItem icon={<IconForm />} label="Intake forms" />
+          <NavItem icon={<IconCard />} label="Billing" tint="blue" />
+          <NavItem icon={<IconFolder />} label="Files" tint="mint" />
+          <NavItem icon={<IconForm />} label="Intake forms" tint="lavender" />
         </>
       ) : null}
       <NavItem

@@ -22,11 +22,25 @@ import {
  * labels used two of the three, which is why this section's wording does not
  * carry over from it.
  */
-const CARDS: { title: string; body: string; visual: React.ReactNode }[] = [
+const CARDS: {
+  title: string;
+  body: string;
+  visual: React.ReactNode;
+  /**
+   * Whether the scene runs off the card's right edge.
+   *
+   * On for a scene that is a crop of something larger — the thread, which is
+   * a window onto a conversation that carries on past the frame. Off for one
+   * that is composed whole: the sign-in is a single centred screen, and a
+   * centred thing cannot be centred in a box that hangs 24px off the card.
+   */
+  bleed?: boolean;
+}[] = [
   {
     title: "Sign in without a password",
     body: "Add a client and send invoices, forms, and contracts. They open them with Google sign-in or a one-click email link.",
     visual: <SignInMock />,
+    bleed: false,
   },
   {
     title: "Reply by email",
@@ -89,7 +103,8 @@ export function PortalFrictionless({
                   The aspect ratio stays: it is what gives both cards the same
                   picture height whatever their scene does.
 
-                  IT BLEEDS RIGHT AND DISSOLVES AT THE FOOT. Held whole and
+                  IT BLEEDS RIGHT AND DISSOLVES AT THE FOOT — the bleed per
+                  card now, see `bleed` in the data. Held whole and
                   inset on all four sides, both scenes were objects floating in
                   a card with a margin of empty ground around them — which is
                   why they read as small however large the card got. Running
@@ -118,7 +133,11 @@ export function PortalFrictionless({
                   failed to paint. Written inline against the same token
                   rather than through .mock-foot-fade, because that is a plain
                   class and a variant cannot be prefixed onto it. */}
-              <div className="-mr-6 aspect-[4/3] overflow-hidden sm:[-webkit-mask-image:var(--mock-foot-fade)] sm:[mask-image:var(--mock-foot-fade)] md:-mr-8">
+              <div
+                className={`aspect-[4/3] overflow-hidden sm:[-webkit-mask-image:var(--mock-foot-fade)] sm:[mask-image:var(--mock-foot-fade)] ${
+                  card.bleed === false ? "" : "-mr-6 md:-mr-8"
+                }`}
+              >
                 {card.visual}
               </div>
               <p className="mt-6 text-base leading-snug text-foreground">
