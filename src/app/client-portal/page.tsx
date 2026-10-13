@@ -37,7 +37,9 @@ const PORTAL_FAQS: FAQEntry[] = [
     question: "Can I build my own apps into the client portal?",
     answer:
       "Yes. Describe the app in plain English. Assembly shows a plan to approve or edit, then ships a real app into your portal with logins, permissions, and branding handled. Change it later by chatting.",
-    links: [{ label: "Describe the app in plain English", href: "/ai-app-builder" }],
+    links: [
+      { label: "Describe the app in plain English", href: "/ai-app-builder" },
+    ],
   },
   {
     question: "Do I need to code to customize the client portal?",
@@ -59,7 +61,7 @@ const PORTAL_FAQS: FAQEntry[] = [
   {
     question: "Does Assembly offer a HIPAA-compliant client portal?",
     answer:
-      "Yes, with a BAA on the Advanced plan. Ready-made apps that do not use AI can handle PHI; apps built with the AI app builder are not covered. Talk to us to map what fits.",
+      "Yes, with a BAA on the Advanced plan. Ready-made apps that do not use AI can handle PHI. Apps built with the AI app builder are not covered. Talk to us to map what fits.",
     links: [{ label: "Talk to us", href: DEMO_URL }],
   },
   {

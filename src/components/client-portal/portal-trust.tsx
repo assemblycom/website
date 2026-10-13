@@ -23,7 +23,7 @@ const CLAIMS: FAQEntry[] = [
   {
     question: "Per-client permissions",
     answer:
-      "Clients see only their own data; permissions follow your contact and company records.",
+      "Clients see only their own data. Permissions follow your contact and company records.",
   },
   {
     question: "Multi-factor authentication",
@@ -37,7 +37,7 @@ const CLAIMS: FAQEntry[] = [
     // later; the boundary is stated once now, and "because the build process
     // uses AI" went with it since the rule above it already gives the reason.
     answer:
-      "HIPAA compliance with a BAA on the Advanced plan. Ready-made apps like secure messaging, file sharing, and contracts can handle PHI as long as they do not use AI; apps built with the AI app builder are not covered. If you are a covered entity, talk to us and we will map what fits.",
+      "HIPAA compliance with a BAA on the Advanced plan. Ready-made apps like secure messaging, file sharing, and contracts can handle PHI as long as they do not use AI. Apps built with the AI app builder are not covered. If you are a covered entity, talk to us and we will map what fits.",
   },
 ];
 

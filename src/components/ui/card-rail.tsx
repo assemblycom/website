@@ -324,7 +324,16 @@ export function CardRail({
           sit below the viewport inside the same component, and anchored to
           the rail the frosted edge reached down over the "next" button and
           blurred the one control the reader needs. */}
-      <div className="relative">
+      {/* FULL-BLEED BELOW sm, so the frosted edge reaches the screen.
+          Clipped at the measure, the peeking card stopped 24px short of the
+          viewport and the page's gutter showed as a white strip beside it —
+          with an alpha fade that strip was the end of the fade and read as
+          nothing, but a blurred card simply stops there, and the gap reads as
+          a margin error. Bled to the edge, the picture runs off the screen
+          the way it runs off the tray in the section above.
+          The scroller below pads itself back to the measure so the cards
+          still line up with the heading. */}
+      <div className="relative max-sm:-mx-6">
         {/* THE FROSTED EDGE, over the viewport rather than inside the
           scroller: it has to stay put while the cards move under it, and
           anything inside the scroller would scroll away with them.
@@ -366,7 +375,11 @@ export function CardRail({
             // selection is off — a drag across two cards would otherwise select
             // their captions. Smooth scrolling is turned off for the drag too,
             // but imperatively in onPointerDown; see there for why.
-            className={`flex snap-x snap-proximity gap-4 overflow-x-auto overflow-y-hidden overscroll-x-contain scroll-smooth [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${
+            // max-sm:px-6 / scroll-px-6 pay back the bleed above: the track
+            // starts and ends on the section's measure, and snap-start parks
+            // a card there rather than against the screen edge, so only the
+            // cards either side of the current one run off.
+            className={`flex snap-x snap-proximity gap-4 overflow-x-auto overflow-y-hidden overscroll-x-contain scroll-smooth [-ms-overflow-style:none] [scrollbar-width:none] max-sm:scroll-px-6 max-sm:px-6 [&::-webkit-scrollbar]:hidden ${
               !steppable
                 ? ""
                 : dragging
