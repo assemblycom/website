@@ -2,10 +2,10 @@ import { CardRail, RailCard } from "@/components/ui/card-rail";
 import { Reveal } from "@/components/ui/reveal";
 import {
   BuildCard,
-  DescribeCard,
-  IterateCard,
-  PlanCard,
-  SecuredCard,
+  InvoiceCard,
+  OnboardCard,
+  ReviewCard,
+  SupportCard,
 } from "@/components/client-portal/portal-build-cards";
 
 /**
@@ -51,12 +51,12 @@ const STAGES: {
   {
     name: "Onboard",
     body: "Intake, document collection, and a clear first-steps checklist, with progress saved as they go.",
-    visual: <DescribeCard />,
+    visual: <OnboardCard />,
   },
   {
     name: "Collaborate",
     body: "Clients review work, leave feedback, and sign off round by round, with files in one place.",
-    visual: <PlanCard />,
+    visual: <ReviewCard />,
   },
   {
     name: "Track",
@@ -66,12 +66,12 @@ const STAGES: {
   {
     name: "Transact",
     body: "Proposals to accept, contracts to sign, and invoices to pay, all in your brand.",
-    visual: <IterateCard />,
+    visual: <InvoiceCard />,
   },
   {
     name: "Support",
     body: "A request queue, a resource library, and an assistant that answers from your own docs.",
-    visual: <SecuredCard />,
+    visual: <SupportCard />,
   },
 ];
 

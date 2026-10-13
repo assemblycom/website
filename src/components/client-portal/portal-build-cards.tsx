@@ -23,8 +23,11 @@ import {
   IconCheck,
   IconBrandMark,
   IconChat,
+  IconCreditCard,
+  IconDocuments,
   IconFile,
   IconGlobe,
+  IconPenFilled,
   IconPlus,
   IconClock,
   IconSearch,
@@ -127,12 +130,24 @@ function markedFlow(text: string, mark: string) {
 // So three steps, each with a job:
 //   R_CHROME  things INSIDE a screen — nav rows, chips, event blocks, the
 //             segmented control. Small objects, small corner.
+//   R_WINDOW  the screen itself — the outer box every scene is drawn in. It
+//             borrowed R_CHROME, which is the reason a 250px window wore the
+//             same 4px corner as a 22px chip inside it: the corner vanished
+//             at that size and the screen read as a rectangle of paper.
 //   R_PANEL   a card, or the one exposed corner of a window. The biggest
 //             object gets the biggest corner.
 // rounded-full is exempt throughout: a circle is not a corner.
 const R_CHROME = "rounded-[4px]";
+const R_WINDOW = "rounded-[8px]";
 const R_PANEL = "rounded-[10px]";
-const WINDOW = `overflow-hidden ${R_CHROME} border bg-[var(--mock-window)] text-[color:var(--mock-ink)] shadow-[0_1px_2px_rgba(16,24,40,0.04),0_8px_24px_-18px_rgba(16,24,40,0.14)] ${LINE} [[data-theme=dark]_&]:shadow-[0_8px_24px_-18px_rgba(0,0,0,0.5)]`;
+// NO DROP SHADOW. The window used to cast one, which is what a floating panel
+// does — but these screens are not floating on anything: each is set INTO a
+// card that is itself the artwork, and a shadow under it lifted the screen off
+// its own card and made the card read as a backdrop the UI had been pasted
+// onto. The ground, the radius and (where it is needed) the hairline do all
+// the separating these need. The comment bubble in the Collaborate scene keeps
+// its shadow, because that one IS floating — it lies on top of a photograph.
+const WINDOW = `overflow-hidden ${R_WINDOW} border bg-[var(--mock-window)] text-[color:var(--mock-ink)] ${LINE}`;
 const BRAND_SIDEBAR = "bg-[var(--mock-brand)] text-white";
 const TABLE_HEAD = `flex items-center gap-3 border-b bg-[var(--mock-well)] px-3.5 py-2 text-[color:var(--mock-ink-soft)] ${UI_SECONDARY} ${LINE}`;
 const CHIP = `rounded px-1.5 py-[4px] ${UI_SECONDARY}`;
@@ -602,7 +617,7 @@ export function DescribeCard({ plain = false }: SceneProps = {}) {
                     // over artwork reads as a glow around the box.
                     "[--mock-edge-1:#6e6e6e] [--mock-edge-2:#555555] [--mock-edge-3:#3e3e3e]"
                   : ""
-              } ${plain ? `${R_PANEL} gap-[26px]` : R_CHROME} border bg-[var(--mock-window)] text-[color:var(--mock-ink)] ${LINE} ${
+              } ${plain ? `${R_PANEL} gap-[26px]` : R_WINDOW} border bg-[var(--mock-window)] text-[color:var(--mock-ink)] ${LINE} ${
                 plain
                   ? // py-6 against the rail's p-4. The box is sized by its content
                     // and at p-4 it measured 92px — a sentence and a control row
@@ -781,7 +796,6 @@ const PLAN_ITEMS = [
   { label: "Track name, milestones, status", done: true },
   { label: "Due date on each milestone", done: false },
 ];
-const DONE = PLAN_ITEMS.filter((i) => i.done).length;
 
 /**
  * The header's progress ring.
@@ -821,6 +835,96 @@ function Ring({ value }: { value: number }) {
         className="stroke-[var(--mock-ink)]"
       />
     </svg>
+  );
+}
+
+/**
+ * THE CHECKLIST WINDOW, shared by the Plan and Onboard scenes.
+ *
+ * Extracted when the Onboard stage took the same picture: a titled header
+ * with a progress ring and a count, then one ruled row per item, settled rows
+ * ticked and dimmed. Two copies of sixty lines would have drifted the first
+ * time either one's row padding was touched, and the two are deliberately the
+ * SAME object — a plan and an onboarding checklist are both "a list of things
+ * that get ticked off", and the page is stronger for them looking it.
+ *
+ * The caller supplies the title and the rows; everything else — the ring, the
+ * two mark states, the hover — is fixed here.
+ */
+function ChecklistWindow({
+  title,
+  items,
+}: {
+  title: string;
+  items: { label: string; done: boolean }[];
+}) {
+  const done = items.filter((i) => i.done).length;
+  return (
+    <div className={`flex flex-col ${WINDOW}`}>
+      {/* The header takes the well's tint. On --mock-window it was the same
+            white as the rows under it, so the card opened on five identical
+            bands and the one naming the thing had nothing marking it as the
+            header — the rule under it was doing that job alone. */}
+      <div
+        className={`flex items-center gap-2.5 border-b bg-[var(--mock-well)] px-4 py-3 ${LINE}`}
+      >
+        <Ring value={done / items.length} />
+        <span
+          className={`flex-1 truncate text-[color:var(--mock-ink)] ${UI_PRIMARY}`}
+        >
+          {title}
+        </span>
+        <span
+          className={`shrink-0 text-[color:var(--mock-ink-soft)] ${UI_SECONDARY}`}
+        >
+          {done} of {items.length}
+        </span>
+      </div>
+
+      {items.map(({ label, done }) => {
+        return (
+          <div
+            key={label}
+            // Hover is per ROW, not per card. One row used to be marked as
+            // "the one in play" — a tint and a heavier ring on the first
+            // unsettled item — which picked a row out of a list where
+            // nothing had been picked yet, and left the reader with a state
+            // they could not change. Now the two open requirements look the
+            // same as each other and the pointer is what lights one up.
+            //
+            // --mock-well-2, the solid well, not --mock-well: the faint one
+            // is two percent off white and a hover nobody can see is not a
+            // hover state.
+            className={`flex items-center gap-2.5 border-b px-4 py-[11px] last:border-b-0 ${ROW_HOVER} ${LINE}`}
+          >
+            {/* Two states, not three: filled with a check for settled, a
+                dashed faint circle for everything still open. All of them
+                share the 16px outer diameter, so the column lines up and no
+                mark looks heavier than another. */}
+            <span className="flex size-[18px] shrink-0 items-center justify-center">
+              {done ? (
+                <span className="flex size-[16px] items-center justify-center rounded-full bg-[var(--mock-ink)] text-[color:var(--mock-window)]">
+                  <IconCheck className="size-[10px]" />
+                </span>
+              ) : (
+                <span
+                  className={`size-[16px] rounded-full border border-dashed ${CIRCLE_TRACK}`}
+                />
+              )}
+            </span>
+            <span
+              className={`min-w-0 flex-1 truncate ${UI_PRIMARY} ${
+                done
+                  ? "text-[color:var(--mock-ink-soft)]"
+                  : "text-[color:var(--mock-ink)]"
+              }`}
+            >
+              {label}
+            </span>
+          </div>
+        );
+      })}
+    </div>
   );
 }
 
@@ -867,71 +971,7 @@ export function PlanCard({ plain = false }: SceneProps = {}) {
         </Scene>
       ) : (
         <Scene>
-          <div className={`flex flex-col ${WINDOW}`}>
-            {/* The header takes the well's tint. On --mock-window it was the same
-            white as the rows under it, so the card opened on five identical
-            bands and the one naming the thing had nothing marking it as the
-            header — the rule under it was doing that job alone. */}
-            <div
-              className={`flex items-center gap-2.5 border-b bg-[var(--mock-well)] px-4 py-3 ${LINE}`}
-            >
-              <Ring value={DONE / PLAN_ITEMS.length} />
-              <span
-                className={`flex-1 truncate text-[color:var(--mock-ink)] ${UI_PRIMARY}`}
-              >
-                Plan
-              </span>
-              <span
-                className={`shrink-0 text-[color:var(--mock-ink-soft)] ${UI_SECONDARY}`}
-              >
-                {DONE} of {PLAN_ITEMS.length}
-              </span>
-            </div>
-
-            {PLAN_ITEMS.map(({ label, done }) => {
-              return (
-                <div
-                  key={label}
-                  // Hover is per ROW, not per card. One row used to be marked as
-                  // "the one in play" — a tint and a heavier ring on the first
-                  // unsettled item — which picked a row out of a list where
-                  // nothing had been picked yet, and left the reader with a state
-                  // they could not change. Now the two open requirements look the
-                  // same as each other and the pointer is what lights one up.
-                  //
-                  // --mock-well-2, the solid well, not --mock-well: the faint one
-                  // is two percent off white and a hover nobody can see is not a
-                  // hover state.
-                  className={`flex items-center gap-2.5 border-b px-4 py-[11px] last:border-b-0 ${ROW_HOVER} ${LINE}`}
-                >
-                  {/* Two states, not three: filled with a check for settled, a
-                dashed faint circle for everything still open. All of them
-                share the 16px outer diameter, so the column lines up and no
-                mark looks heavier than another. */}
-                  <span className="flex size-[18px] shrink-0 items-center justify-center">
-                    {done ? (
-                      <span className="flex size-[16px] items-center justify-center rounded-full bg-[var(--mock-ink)] text-[color:var(--mock-window)]">
-                        <IconCheck className="size-[10px]" />
-                      </span>
-                    ) : (
-                      <span
-                        className={`size-[16px] rounded-full border border-dashed ${CIRCLE_TRACK}`}
-                      />
-                    )}
-                  </span>
-                  <span
-                    className={`min-w-0 flex-1 truncate ${UI_PRIMARY} ${
-                      done
-                        ? "text-[color:var(--mock-ink-soft)]"
-                        : "text-[color:var(--mock-ink)]"
-                    }`}
-                  >
-                    {label}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
+          <ChecklistWindow title="Plan" items={PLAN_ITEMS} />
         </Scene>
       )}
     </>
@@ -1728,16 +1768,32 @@ function CalendarPane() {
   );
 }
 
-/** The nav beside the board. Three rows and the app, which is as many as fit
-    before the board loses the width it needs.
-    Billing is deliberately NOT here. The app the step just built is the row
-    that matters in this shot — the claim is that it lands in the nav — and a
-    billing row above it is the one stock entry that pulls toward a different
-    part of the product than the one the card is about. */
+/** The nav beside the board.
+ *
+ * Six stock rows and then the app. It was three, on the argument that a
+ * billing row pulls toward a different part of the product than the card is
+ * about — but that reasoning only held while the nav was short enough to read
+ * as a sketch. At three rows the rail was mostly empty under them, and a
+ * portal whose whole claim is that it holds the client relationship showed a
+ * client a home, a chat and a folder. The money rows are the ones a reader
+ * scans for, and their absence was louder than their presence.
+ *
+ * ORDERED BY THE ENGAGEMENT, not alphabetically: a proposal is accepted, a
+ * contract is signed, an invoice is paid. That is the same order the Transact
+ * stage states in its own copy a few cards along, so the mock and the sentence
+ * agree.
+ *
+ * The glyphs are the padded (-4 -4 28 28) product set, so they carry the same
+ * optical weight as Home/Messages/Files beside them — IconDocument was the
+ * obvious pick for Proposals and is the SAME path as IconFile, which would
+ * have put two identical marks in one rail. */
 const TEAM_NAV = [
   { icon: <IconGlobe />, label: "Home" },
   { icon: <IconChat />, label: "Messages" },
   { icon: <IconFile />, label: "Files" },
+  { icon: <IconDocuments />, label: "Proposals" },
+  { icon: <IconPenFilled />, label: "Contracts" },
+  { icon: <IconCreditCard />, label: "Invoices" },
 ];
 
 /**
@@ -1930,7 +1986,30 @@ export function BuildCard({ plain = false }: SceneProps = {}) {
           // corner with no border on a screen whose other three corners are
           // finished reads as the shot having been cut, not as it continuing.
           // Below `sm` it still bleeds and still ramps out, so the crop stays.
-          className={`flex shrink-0 ${WINDOW} ${R_PANEL} rounded-b-none rounded-tr-none border-b-0 border-r-0 sm:rounded-tr-[10px] sm:border-r ${
+          // NO HAIRLINE IN LIGHT. WINDOW carries one so a white screen can be
+          // told from a white page, which is right for every scene whose card
+          // is near-black — there the line never shows. This card is the one
+          // with a LIGHT ground, and on it the #e8e9ec rule read as a pale
+          // outline drawn around the shot: a mount, not an edge. The window's
+          // own white already separates it from the grey it sits on.
+          // Transparent rather than border-0, so the 1px stays in the box and
+          // nothing inside shifts; dark keeps the line, where the ground is
+          // dark enough to need it. The dark variant is spelled out rather
+          // than interpolated from LINE: Tailwind generates CSS by scanning
+          // source text, so a class only assembled at runtime never gets a
+          // rule written for it.
+          //
+          // background-clip IS THE OTHER HALF OF IT, and without it the fix
+          // made things worse. A transparent border is not a gap: by default
+          // the element paints its own background under the border box, so the
+          // 1px simply showed --mock-window instead of --mock-line — a grey
+          // hairline became a WHITE one, which is brighter against this card's
+          // grey ground than the rule it replaced. Clipping the background to
+          // the padding box leaves the border area genuinely empty, so the
+          // card's own ground shows through and there is no line at all. Dark
+          // clips to the border box again, because there the border is painted
+          // and wants the ground behind it.
+          className={`flex shrink-0 ${WINDOW} ${R_PANEL} rounded-b-none rounded-tr-none border-transparent [background-clip:padding-box] border-b-0 border-r-0 sm:rounded-tr-[10px] sm:border-r [[data-theme=dark]_&]:border-[var(--mock-line)] [[data-theme=dark]_&]:[background-clip:border-box] ${
             plain
               ? // 340x280 ON A PHONE, which is the 360x300 box exactly minus
                 // the scene's own 20px top and left padding — so the window
@@ -2260,5 +2339,515 @@ export function SecuredCard() {
         </div>
       </div>
     </Scene>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// REVIEW CARD — the Collaborate stage's scene.
+//
+// It replaced the plan checklist, which was the right picture for a different
+// claim. "Clients review work, leave feedback, and sign off round by round"
+// is three verbs about a piece of work, and a list of ticked requirements
+// shows none of them: a checklist is what a build produces, not what a client
+// does to it. The Plan card is still the Plan card and still the right scene
+// on /ai-app-builder, which is why this is a new component rather than an
+// edit to that one.
+//
+// SO THE WORK ITSELF IS THE SUBJECT. A cover plate fills the window — the
+// same pair the Approvals mock picks between, so the two screens are showing
+// one product rather than two inventions — and the round is marked on it: the
+// tick at the corner says this is the one being run, and the comment says
+// what is still being said about it. Between them they carry "review",
+// "leave feedback" and "sign off" in one still, which is what the sentence
+// under the card promises.
+//
+// THE COMMENT OVERLAPS THE PLATE rather than sitting under it. Parked below,
+// it reads as a caption describing the picture; laid across its foot it reads
+// as a note left ON the work, which is the thing being demonstrated. It is
+// ranged left and stops short of the right edge so the plate is still plainly
+// a plate behind it.
+// ─────────────────────────────────────────────────────────────────────────
+
+/** The comment on the cover, and the only copy in the scene. */
+const REVIEW_COMMENT = {
+  // Invented, like every other name in these mocks (Dana Whitfield, Priya
+  // Raman, Meridian Corp). The first draft borrowed a real colleague's name
+  // off the reference screenshot, which is not a name to ship on a public
+  // marketing page.
+  who: "Clara Mendes",
+  initials: "CM",
+  when: "3 hr. ago",
+  // Cut mid-sentence on purpose. A note someone is still writing reads as a
+  // live thread; a complete, tidy sentence reads as a caption written for the
+  // mock. The reply count under it says the thread continued.
+  text: "Clearer crop on this round — the shoulder is doing a lot of…",
+  replies: "1 reply",
+};
+
+// A SECOND NOTE, COLLAPSED. The product draws an unopened comment as its
+// author's avatar in the same bubble the open one wears, pinned where it was
+// left on the artwork — so one picture can carry several without becoming a
+// wall of text. Two marks is also what makes the open one read as OPEN: on
+// its own it is just a card lying on a photograph, and the pin beside it says
+// the card is one of these, expanded.
+//
+// A client rather than a second person from the firm: the stage's sentence is
+// "clients review work, leave feedback", and a thread with the firm talking to
+// itself does not show that.
+const REVIEW_PIN = { initials: "AB" };
+
+export function ReviewCard({ plain = false }: SceneProps = {}) {
+  return (
+    <>
+      {/* The same ground the Plan card used, and for the same reason: a cover
+          plate is a bright object and a near-black card is what lifts it.
+          Flipped in dark, where a near-black card under a photograph loses the
+          plate's own edge — see the Plan card's note on this pair. */}
+      {!plain && (
+        <div className="absolute -inset-px bg-[#101010] [[data-theme=dark]_&]:bg-[#FBFBF5]" />
+      )}
+      <Scene
+        boxClass={plain ? PANEL_SCENE_PHONE.vars : undefined}
+        boxSizeClass={plain ? PANEL_SCENE_PHONE.size : undefined}
+      >
+        {/* WINDOW WITHOUT ITS HAIRLINE. Every other scene in the set is a
+            product screen, where the border separates a white UI from a white
+            page. This one is a picker full of photographs, and a light rule
+            drawn around them on a near-black card reads as a mount — the
+            plates looked matted rather than cropped. Everything else (radius,
+            ground, shadow, ink) is WINDOW's, copied rather than overridden so
+            no utility has to fight another for width. */}
+        <div
+          className={`relative flex flex-col overflow-hidden ${R_WINDOW} bg-[var(--mock-window)] p-3 text-[color:var(--mock-ink)]`}
+        >
+          {/* TWO PLATES, THE SECOND PEEKING. One plate filling the window was
+              a photograph with a caption — a picture of a cover, which says
+              nothing about reviewing one. A round has options in it, and the
+              second plate cut by the window's edge is what says so: this is a
+              choice being made, not an image being shown. It is also what
+              brings the first plate down to a size the comment can sit on
+              without covering a face.
+
+              -mr-3 pays back the window's padding on the right only, so the
+              row runs under the edge and B is clipped by the window's own
+              overflow rather than ending neatly inside it. */}
+          {/* A FIXED ROW HEIGHT, not flex-1. Filling the card made each
+              plate a tall portrait slot, and a 4:5 photograph cropped into
+              one shows a head at the top and a lot of dark clothing under it
+              — the picture got bigger and less legible at once. At 196 the
+              plates keep a portrait crop a cover thumbnail actually wears,
+              and the window shrinks to its contents instead of being a tall
+              white sheet with pictures at the top of it. 248 rather than 196:
+              at the shorter height the note covered most of the artwork, and
+              a review screen whose comment hides the work is the one thing
+              this card must not be. */}
+          <div className="-mr-3 flex h-[248px] gap-2.5">
+            {[
+              {
+                name: "Cover A",
+                src: "/images/mocks/covers/cover-1.jpg",
+                picked: true,
+              },
+              { name: "Cover B", src: "/images/mocks/covers/cover-2.jpg" },
+            ].map(({ name, src, picked }) => (
+              <div
+                key={name}
+                // The picked plate takes the room; the other is the sliver.
+                // 4:1 — the second plate is a sliver cut by the window's
+                // edge, not a second column. At 2.4:1 it was simply a smaller
+                // picture sitting beside the first, which reads as a pair
+                // being compared rather than as a row continuing.
+                className={`flex min-w-0 flex-col ${picked ? "flex-[4]" : "flex-[1]"}`}
+              >
+                <div
+                  className={`relative min-h-0 flex-1 overflow-hidden ${R_CHROME}`}
+                >
+                  <Image
+                    src={src}
+                    alt=""
+                    fill
+                    sizes="320px"
+                    // object-top: these are head-and-shoulders shots, so a
+                    // crop taken from the middle loses the face first.
+                    className="object-cover object-top"
+                  />
+                  {/* THE TICK, on the plate rather than beside it. This is the
+                      chosen cover, which is the "sign off" half of the
+                      sentence; on the plate it marks the artwork, parked
+                      outside it would mark a row. */}
+                  {picked ? (
+                    <span
+                      className={`absolute left-1.5 top-1.5 flex size-[14px] items-center justify-center ${R_CHROME} bg-white text-black shadow-[0_1px_3px_rgba(0,0,0,0.25)]`}
+                    >
+                      <IconCheck className="size-[8px]" />
+                    </span>
+                  ) : null}
+                  {/* THE COLLAPSED NOTE. The same bubble as the open one —
+                      round but for a squared bottom-left — shrunk to hold
+                      nothing but the avatar, which is how an unopened comment
+                      is drawn. Pinned high and right so it is clear of the
+                      tick at one corner and the open note at the foot, and so
+                      the two notes read as having been left in two places on
+                      the artwork rather than queued down one side. */}
+                  {picked ? (
+                    <span className="absolute right-2.5 top-[30%] flex rounded-full rounded-bl-none bg-white p-[3px] shadow-[0_2px_8px_-1px_rgba(16,24,40,0.45)]">
+                      <span className="flex size-[18px] items-center justify-center rounded-full bg-[var(--mock-brand)] text-[8px] leading-none text-white">
+                        {REVIEW_PIN.initials}
+                      </span>
+                    </span>
+                  ) : null}
+                </div>
+                {/* THE NAME AS A CAPTION, not a filled bar. It was a strip of
+                    --mock-well under the plate, which on a near-black card was
+                    the brightest thing in the scene — a band of near-white
+                    competing with the photograph it was supposed to label.
+                    Set on the window's own ground in the muted step it is a
+                    caption again, which is all it ever needed to be. */}
+                <p
+                  className={`mt-2 truncate text-[color:var(--mock-ink-soft)] ${UI_SECONDARY}`}
+                >
+                  {name}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          {/* THE NOTE, lying across the plates rather than under them.
+
+              DRAWN AS A COMMENT, not as a panel. The first pass was a bordered
+              rectangle with the name ranged left and the time pushed to the
+              far right, which is the anatomy of a LIST ROW — and a list row
+              laid on a photograph reads as a widget dropped onto it. A comment
+              in this product is a soft-cornered card with no outline, a round
+              avatar, and the name and time set together as one line, because
+              they are one fact: who said this, and when. The shadow does the
+              separating the border used to, which is also what lets it sit on
+              a photograph without cutting a hard edge into it.
+
+              Body and meta are indented to the NAME, not to the avatar, so the
+              attribution and the words it belongs to share a left edge and the
+              avatar sits in its own gutter.
+
+              ONE CORNER IS SQUARE. Rounded on all four it is a card, and a
+              card laid on a photograph is a panel floating there; squaring the
+              bottom-left anchors it — the same move a speech bubble makes with
+              its tail, which is what tells you this is something someone SAID
+              rather than a box of text. Bottom-left because that is the corner
+              nearest the avatar.
+
+              RAISED OFF THE FOOT. At the plate's bottom edge it read as a
+              caption bar fixed to the picture; a third of the way up it reads
+              as a note left on it, and the face above it stays clear. */}
+          {/* INSET FROM THE PLATE ON EVERY SIDE. Flush to the window's own
+              padding, the note's left edge landed exactly on the picked
+              plate's left edge and its right ran to the sliver — two edges
+              agreeing like that read as a bar docked across the screen, not
+              as something lying on a photograph. Floating it clear on all
+              four sides is what makes it sit ON the work: the plate shows
+              around it, which is the whole reason it is there. */}
+          <div className="absolute bottom-10 left-7 right-[72px] flex gap-2 rounded-[10px] rounded-bl-none bg-[var(--mock-window)] p-2.5 shadow-[0_10px_28px_-8px_rgba(16,24,40,0.5)]">
+            {/* Round and filled, not a tinted square: this is the default
+                avatar a person gets before they upload a photo, and at 18px a
+                tinted square with two grey letters read as a file icon rather
+                than as somebody. */}
+            <span className="flex size-[18px] shrink-0 items-center justify-center rounded-full bg-[var(--mock-brand)] text-[8px] leading-none text-white">
+              {REVIEW_COMMENT.initials}
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="flex items-baseline gap-1.5">
+                <span
+                  className={`truncate font-medium text-[color:var(--mock-ink)] ${UI_PRIMARY}`}
+                >
+                  {REVIEW_COMMENT.who}
+                </span>
+                <span
+                  className={`shrink-0 text-[color:var(--mock-ink-soft)] ${UI_SECONDARY}`}
+                >
+                  {REVIEW_COMMENT.when}
+                </span>
+              </p>
+              <p className={`mt-1 text-[color:var(--mock-ink)] ${CARD_BODY}`}>
+                {REVIEW_COMMENT.text}
+              </p>
+              <p
+                className={`mt-1.5 text-[color:var(--mock-ink-soft)] ${UI_SECONDARY}`}
+              >
+                {REVIEW_COMMENT.replies}
+              </p>
+            </div>
+          </div>
+        </div>
+      </Scene>
+    </>
+  );
+}
+
+// ── Onboard ──────────────────────────────────────────────────────────────
+// The client's own first-steps list, which is what the stage's sentence
+// promises: "intake, document collection, and a clear first-steps checklist,
+// with progress saved as they go."
+//
+// It takes the checklist window the Plan scene uses — see ChecklistWindow for
+// why that is shared rather than copied. The rows are the CLIENT's steps, not
+// the firm's: each one is a thing the client did, in their words, and the
+// three ticked against one open row is the "saved as they go" half of the
+// sentence — a list someone is partway through rather than one they are
+// looking at for the first time.
+const ONBOARD_ITEMS = [
+  { label: "Intake form completed", done: true },
+  { label: "ID and documents uploaded", done: true },
+  { label: "Engagement letter signed", done: true },
+  { label: "Kickoff call booked", done: false },
+];
+
+export function OnboardCard({ plain = false }: SceneProps = {}) {
+  return (
+    <>
+      {/* The Plan card's ground and the same reason for it: a white window
+          needs a near-black card to lift it, and the pair flips in dark. */}
+      {!plain && (
+        <div className="absolute -inset-px bg-[#101010] [[data-theme=dark]_&]:bg-[#FBFBF5]" />
+      )}
+      <Scene>
+        {/* "First steps", not "Onboarding". The window is the CLIENT's screen,
+            and onboarding is the firm's word for it — the client is just being
+            told what to do first. It is also the phrase the caption under the
+            card already uses, so the picture and the sentence say one thing. */}
+        <ChecklistWindow title="First steps" items={ONBOARD_ITEMS} />
+      </Scene>
+    </>
+  );
+}
+
+// ── Transact ─────────────────────────────────────────────────────────────
+// THE INVOICE ITSELF, rather than a screen about invoicing.
+//
+// The stage says "proposals to accept, contracts to sign, and invoices to
+// pay, all in your brand", and of the three the invoice is the one with a
+// recognisable shape — a reader knows what they are looking at before they
+// read a word of it, which no list of settings achieves. It is also the only
+// one of the three that carries the brand claim visibly: the firm's name is
+// the thing issuing it.
+//
+// DRAWN AS THE DOCUMENT, not as the app around it. No tab bar, no toolbar —
+// those name the product, and the product is not the subject here. The
+// amount is the biggest type on the card because paying is the action the
+// stage is about.
+//
+// AND NO PAY BUTTON. It was here to say the invoice is payable in place, but
+// a filled control is the loudest thing a mock can hold and it was pulling
+// rank on the figure above it — on a card the reader cannot click, a button
+// is a picture of a button. The amount carries the same claim: nobody reads
+// "$7,000.00 due" on a client portal and wonders whether they can pay it.
+// FIVE LINES, not three. The document was short enough to end inside the
+// card, which made it a small white panel sitting on a large black one. A
+// document is tall; the way you say so is to run out of card before you run
+// out of document. The last two are never read — they are there to be under
+// the ramp.
+const INVOICE_LINES = [
+  { what: "Brand identity — phase 2", amount: "$4,200.00" },
+  { what: "Web design retainer", amount: "$2,800.00" },
+  { what: "Discovery workshop", amount: "$1,500.00" },
+  { what: "Photography — half day", amount: "$1,100.00" },
+  { what: "Print production", amount: "$940.00" },
+];
+
+export function InvoiceCard({ plain = false }: SceneProps = {}) {
+  return (
+    <>
+      {!plain && (
+        <div className="absolute -inset-px bg-[#101010] [[data-theme=dark]_&]:bg-[#FBFBF5]" />
+      )}
+      {/* IT STARTS PARTWAY DOWN AND RUNS OFF THE FOOT. Filling the card top
+          to bottom made a tall white panel whose lower third was empty —
+          a document does not get more convincing by having more blank paper
+          in it. mt-auto drops it to the bottom of the box and footFlush
+          removes the padding under it, so the head sits in from the card's
+          top edge and the line items are cut by its bottom. That is the same
+          crop the Track card uses, and it says the same thing: this continues.
+       */}
+      <Scene footFlush>
+        {/* THE FOOT DISSOLVES INTO THE CARD. Cut flat against the card's
+            bottom edge, the document ended on a hard white-to-black line,
+            which reads as a panel that has been trimmed rather than as paper
+            continuing past the frame — and on this card the line fell across
+            a row of type, so the last item was sliced through its middle.
+            The site's own ramp takes it out instead: full opacity to 62%,
+            then the eased curve in fade-mask.ts down to nothing, so the last
+            rows give out into the ground the card is already painted in. A
+            mask, not a gradient overlay, so it fades to whatever is behind it
+            and needs no second value for dark. */}
+        <div
+          className={`mt-auto flex flex-col ${WINDOW}`}
+          style={{
+            WebkitMaskImage: fadeMask("to bottom", 62),
+            maskImage: fadeMask("to bottom", 62),
+          }}
+        >
+          {/* THE HEAD IS WHO IS BILLING, not the word "Invoice". The word was
+              the first and largest thing on the card and it is the one piece
+              of information a reader does not need — the shape already says
+              invoice. The firm's mark and name say whose it is, which is the
+              "all in your brand" half of the caption, and the number rides
+              along at the right because that is where a document number
+              lives. */}
+          <div
+            className={`flex items-center gap-2 border-b bg-[var(--mock-well)] px-4 py-3 ${LINE}`}
+          >
+            <span
+              className={`flex size-[16px] shrink-0 items-center justify-center ${R_CHROME} bg-[var(--mock-brand)] text-white`}
+            >
+              <IconBrandMark className="size-[9px]" />
+            </span>
+            <span
+              className={`min-w-0 flex-1 truncate text-[color:var(--mock-ink)] ${UI_PRIMARY}`}
+            >
+              Brandmages
+            </span>
+            <span
+              className={`shrink-0 text-[color:var(--mock-ink-soft)] ${UI_SECONDARY}`}
+            >
+              INV-2041
+            </span>
+          </div>
+
+          {/* THE AMOUNT LEADS, because the document is cropped: whatever is at
+              the top is what the reader gets, and of everything on an invoice
+              the sum and the date are what a client actually reads. It used
+              to sit under the line items, which is where it belongs on a
+              sheet of paper that ends — here it meant the one number that
+              matters was the last thing above the crop.
+
+              Who it is billed to rides on the same line as the date. Two
+              labelled columns for "From" and "Billed to" spent a whole band
+              on a fact that fits in three words, and the firm is already
+              named in the head above. */}
+          <div className={`border-b px-4 py-3 ${LINE}`}>
+            <p className={`text-[color:var(--mock-ink-soft)] ${UI_SECONDARY}`}>
+              Amount due
+            </p>
+            <p className="mt-1.5 text-[22px] leading-none text-[color:var(--mock-ink)]">
+              $7,000.00
+            </p>
+            <p
+              className={`mt-2 text-[color:var(--mock-ink-soft)] ${UI_SECONDARY}`}
+            >
+              Meridian Corp · due 25 July
+            </p>
+          </div>
+
+          {/* The detail, which is the part that gets cut. Three lines rather
+              than two so the last one is plainly mid-list at the crop rather
+              than looking like the end of a short invoice. */}
+          {INVOICE_LINES.map(({ what, amount }) => (
+            <div
+              key={what}
+              className={`flex items-center gap-3 border-b px-4 py-[11px] last:border-b-0 ${LINE}`}
+            >
+              <span
+                className={`min-w-0 flex-1 truncate text-[color:var(--mock-ink-soft)] ${UI_PRIMARY}`}
+              >
+                {what}
+              </span>
+              <span
+                className={`shrink-0 text-[color:var(--mock-ink)] ${UI_SECONDARY}`}
+              >
+                {amount}
+              </span>
+            </div>
+          ))}
+        </div>
+      </Scene>
+    </>
+  );
+}
+
+// ── Support ──────────────────────────────────────────────────────────────
+// THE REQUEST QUEUE, which is the first of the three things the stage names
+// ("a request queue, a resource library, and an assistant that answers from
+// your own docs") and the only one that is a place rather than a capability.
+//
+// A queue also shows the two facts the other two cannot: that a request has a
+// STATE — new, open, answered — and that it belongs to a named client. The
+// previous scene here was a permissions panel, which is a true thing about
+// the product and a strange thing to end a client-journey rail on: the last
+// card said who can see the app rather than what the client does next.
+//
+// TWO ROWS AND A HEADER. It was three, which filled the window and made the
+// queue look like a backlog — the claim here is that requests land somewhere
+// and get answered, not that there are a lot of them. Two is also the fewest
+// that still reads as a list rather than as one message, and it leaves the
+// badged row with something to be distinguished FROM.
+const SUPPORT_REQUESTS = [
+  {
+    subject: "Best practice for organising files",
+    who: "Amelia Brooks",
+    tag: "General",
+    state: "New",
+  },
+  {
+    subject: "Can we add a second approver?",
+    who: "Daniel Okafor",
+    tag: "Account",
+  },
+];
+
+export function SupportCard({ plain = false }: SceneProps = {}) {
+  return (
+    <>
+      {!plain && (
+        <div className="absolute -inset-px bg-[#101010] [[data-theme=dark]_&]:bg-[#FBFBF5]" />
+      )}
+      <Scene>
+        <div className={`flex flex-col ${WINDOW}`}>
+          <div
+            className={`flex items-center gap-2.5 border-b bg-[var(--mock-well)] px-4 py-3 ${LINE}`}
+          >
+            <span
+              className={`flex-1 truncate text-[color:var(--mock-ink)] ${UI_PRIMARY}`}
+            >
+              Requests
+            </span>
+            {/* Counted off the array, so the header cannot disagree with the
+                rows under it the next time one is added or dropped. */}
+            <span
+              className={`shrink-0 text-[color:var(--mock-ink-soft)] ${UI_SECONDARY}`}
+            >
+              {SUPPORT_REQUESTS.length} open
+            </span>
+          </div>
+
+          {SUPPORT_REQUESTS.map(({ subject, who, tag, state }) => (
+            <div
+              key={subject}
+              className={`border-b px-4 py-[11px] last:border-b-0 ${ROW_HOVER} ${LINE}`}
+            >
+              <div className="flex items-center gap-2">
+                <span
+                  className={`min-w-0 flex-1 truncate text-[color:var(--mock-ink)] ${UI_PRIMARY}`}
+                >
+                  {subject}
+                </span>
+                {/* Only the unanswered one is badged. A state chip on every
+                    row is a column, and a column of identical chips says
+                    nothing — the badge is here to pick ONE row out. */}
+                {state ? (
+                  <span
+                    className={`shrink-0 ${R_CHROME} bg-[var(--mock-ink)]/10 px-1.5 py-0.5 text-[color:var(--mock-ink)] ${UI_SECONDARY}`}
+                  >
+                    {state}
+                  </span>
+                ) : null}
+              </div>
+              <p
+                className={`mt-1.5 truncate text-[color:var(--mock-ink-soft)] ${UI_SECONDARY}`}
+              >
+                {who} · {tag}
+              </p>
+            </div>
+          ))}
+        </div>
+      </Scene>
+    </>
   );
 }
