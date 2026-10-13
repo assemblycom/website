@@ -59,8 +59,9 @@ const BADGE_UTM = {
   utm_campaign: "badge",
 } as const;
 
-// A firm name long enough to break the heading is not one a badge wrote.
-const MAX_FIRM_LENGTH = 80;
+// Forwarded, never drawn, so this is a sanity bound and not a layout one. It
+// matches the longest company name the product accepts at registration.
+const MAX_FIRM_LENGTH = 100;
 // Matches referral-link.ts, which drops a longer first name from the slug.
 const MAX_FIRST_NAME_LENGTH = 50;
 
