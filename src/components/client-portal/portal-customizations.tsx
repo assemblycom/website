@@ -1,6 +1,11 @@
 import Link from "next/link";
 import { QUIET_BUTTON } from "@/components/ui/quiet-button";
 import { Reveal } from "@/components/ui/reveal";
+import {
+  ApprovalsMock,
+  OnboardingMock,
+} from "@/components/client-portal/segment-mock";
+import { ProgressMock } from "@/components/client-portal/progress-chart";
 import { SIGNUP_URL } from "@/lib/constants";
 
 /**
@@ -17,28 +22,57 @@ import { SIGNUP_URL } from "@/lib/constants";
  * three titles scannable down the row, which is the whole reason the section is
  * three cards and not a paragraph.
  *
- * Visuals are V5's three 4:3 cards and are marked "Needs design"; each card
- * carries the slot at that proportion with its art direction on the element,
- * the same way the agency page stubs its trust shot.
+ * THE THREE SCENES COME FROM THE SEGMENT GRID that handoff v2 retires. V5's
+ * own art is marked "Needs design", and these were already drawn for cards of
+ * this size, so each slot takes the one that argues nearest to its claim:
+ * the branded intake form under "make it look like your firm", the portal
+ * sidebar with its apps under "fill the sidebar", and the per-client
+ * dashboard under "fully white-label".
+ *
+ * The third is the loosest fit — a progress chart is not a domain — and it is
+ * the first to replace when V5 lands.
  */
-const CARDS: { title: string; body: string; visual: string }[] = [
+const CARDS: {
+  title: string;
+  body: string;
+  visual: React.ReactNode;
+  /**
+   * The picture's height, as a fixed value (see the note at the render).
+   * Per card rather than one constant because the third one sits alone on the
+   * second row beside the quote, and at the first row's height that row was a
+   * tall gantt next to four lines of type and a great deal of empty card. The
+   * two rows do not have to match — they are not read side by side — and only
+   * cards within a row need a common height.
+   */
+  pictureClass?: string;
+  /**
+   * The card's share of the row, in fifths of a five-column track. Two equal
+   * halves made every scene the same width, which is the one thing these
+   * three are not: the approvals screen carries a sidebar AND a content pane,
+   * the gantt is a wide timeline, and the intake form is a column. A 2/3 split
+   * that alternates down the rows gives each one closer to its own
+   * proportion, and stops the grid reading as a sheet of identical tiles.
+   */
+  span?: string;
+}[] = [
   {
     title: "Make it look like your firm",
     body: "Your logo, images, colors, and typography on every screen, down to the sign-in page clients see first.",
-    visual:
-      "V5 Card 1 — the theme panel open with logo upload, image slot, color swatches and typography picker, beside a live preview of the client sign-in screen in Brandmages colors. Art direction pending.",
+    visual: <OnboardingMock />,
+    span: "lg:col-span-2",
   },
   {
     title: "Fill the sidebar with the apps your firm needs",
     body: "Install or tailor apps in one click, or build a completely custom app with AI.",
-    visual:
-      "V5 Card 2 — the sidebar in edit mode with drag handles and a per-client visibility toggle, beside a build panel showing a plan and an Approve button, with a new Project Tracker item appearing in the sidebar. Art direction pending.",
+    visual: <ApprovalsMock />,
+    span: "lg:col-span-3",
   },
   {
     title: "Fully white-label",
-    body: "Bring in your own custom domain, send email notifications from your company address, and remove any mention of Assembly.",
-    visual:
-      "V5 Card 3 — a browser frame at portal.brandmages.com showing the Brandmages sign-in screen with no Assembly badge, and a notification email preview sent from a brandmages.com address. Art direction pending.",
+    body: "Your own custom domain, emails from your address, and no mention of Assembly. On Professional and up.",
+    visual: <ProgressMock />,
+    pictureClass: "h-[200px] md:h-[240px]",
+    span: "lg:col-span-3",
   },
 ];
 
@@ -52,9 +86,16 @@ const QUOTE = {
 export function PortalCustomizations({
   id,
   heading = "Customize everything, from your brand to your apps",
-  body = "Your logo, colors, and domain on every screen.",
+  // The handoff writes this as a one-line lead plus a separate support line
+  // under the cards. Both say what the section customizes, so split they read
+  // as the same claim made twice, a grid apart.
+  //
+  // Joined whole it ran to three lines, so it is cut to two: what is yours,
+  // and what a new app inherits. The plan boundary that closed it moved onto
+  // the white-label card, which is the card it actually bounds — a custom
+  // domain and badge removal are exactly what that one offers.
+  body = "Your logo, colors, and domain on every screen. New apps inherit your brand, logins, and permissions, and you choose which apps each client sees.",
   cards = CARDS,
-  supportLine = "New apps land with your brand, logins, and permissions already in place. Choose which apps each client sees. Custom domain and badge removal are on Professional and up.",
   quote = QUOTE,
   cta = { label: "Describe your first app", href: SIGNUP_URL },
 }: {
@@ -62,7 +103,6 @@ export function PortalCustomizations({
   heading?: string;
   body?: string;
   cards?: typeof CARDS;
-  supportLine?: string;
   quote?: { text: string; attribution: string; href: string };
   cta?: { label: string; href: string };
 } = {}) {
@@ -72,69 +112,127 @@ export function PortalCustomizations({
       className="mx-auto max-w-[1200px] px-6 py-16 md:px-10 md:py-24"
     >
       <Reveal>
+        {/* Heading, copy, then the way in — the shape the templates section
+            above and the stack section below both use, so the page's section
+            heads agree.
+
+            The lead carries what used to be a separate support line under
+            the cards. It qualifies all three of them (what a new app
+            inherits, per-client visibility, which plan the domain is on), and
+            read after the grid it landed as a footnote to a section that had
+            already finished. */}
         <div className="max-w-2xl">
           <h2 className="type-h2 text-balance">{heading}</h2>
-          <p className="mt-4 text-muted-foreground">{body}</p>
+          <p className="mt-4 text-pretty text-muted-foreground">{body}</p>
+          {cta ? (
+            <a href={cta.href} className={`mt-6 ${QUIET_BUTTON}`}>
+              {cta.label}
+            </a>
+          ) : null}
         </div>
 
-        {/* Three equal cards. The tinted pad is the same object the tailor
-            grid below uses — same radius, same ground — so the two card rows
-            on this page read as one family rather than two. */}
-        <div className="mt-12 grid gap-4 md:mt-14 md:gap-5 lg:grid-cols-3">
+        {/* TWO UP, TWO DOWN. Three across made each card a narrow column, and
+            these scenes are wide — the picture was the first thing to suffer
+            for it. On a two-column grid each card is half the measure rather
+            than a third, so the same scene lands about 50% larger and the
+            captions stop setting to three short lines.
+
+            That leaves a fourth cell under the third card, and the quote
+            takes it. It was a loose figure below the grid before, which put
+            the section's proof after its support line and left the row
+            visibly one card short. As the fourth card it closes the grid and
+            reads as part of the set.
+
+            The tinted pad is the same object the rest of the page's cards
+            use — same radius, same ground — so the set reads as one family. */}
+        <div className="mt-12 grid gap-4 md:mt-14 md:gap-5 lg:grid-cols-5">
           {cards.map((card) => (
             <div
               key={card.title}
-              className="flex flex-col rounded-3xl bg-[var(--surface)] p-6 md:p-8"
+              // min-w-0 AND overflow-hidden, both load-bearing. These scenes
+              // are drawn around 580px wide, and a grid item defaults to
+              // `min-width: auto` — it refuses to shrink below its content's
+              // min-content width. So on a phone each card grew to the width
+              // of the mock inside it, ran off the viewport, and took its own
+              // caption with it: the body copy was clipped mid-sentence while
+              // the page itself reported no horizontal overflow, because an
+              // ancestor was hiding it. min-w-0 lets the card take the
+              // column's width; overflow-hidden is then what crops the scene
+              // to it, and the crop is the intended treatment anyway.
+              className={`flex min-w-0 flex-col overflow-hidden rounded-3xl bg-[var(--surface)] p-6 md:p-8 ${card.span ?? "lg:col-span-2"}`}
             >
-              {/* 4:3, per V5. aspect-[4/3] rather than a pixel height so the
-                  slot keeps the proportion at every column width instead of
-                  going letterbox on a tablet. */}
-              <div
-                aria-hidden
-                title={card.visual}
-                className="aspect-[4/3] w-full rounded-2xl bg-background/60 [[data-theme=dark]_&]:bg-white/[0.04]"
-              />
-              <p className="mt-6 text-base leading-snug text-foreground">
+              {/* COPY FIRST, PICTURE UNDER IT. The scene used to sit on top
+                  with the caption beneath, which put the three titles on a
+                  different line in each card — they are one, two and one line
+                  long — and left the reader meeting a screenshot before being
+                  told what it was. Above, the titles line up across the row
+                  and each scene illustrates a claim already made.
+
+                  max-w-md on the body so the measure stays readable at the
+                  card's full width. */}
+              <p className="text-base leading-snug text-foreground">
                 {card.title}
               </p>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
                 {card.body}
               </p>
+
+              {/* The scene, cropped by the card rather than fitted into it.
+                  It bleeds to the card's right edge AND its foot, so it reads
+                  as a window onto an app that continues past the frame —
+                  the same treatment and the same `.mock-edge` these carried in
+                  the grid they come from.
+
+                  THE SCENE'S HEIGHT IS FIXED, AND THE SLACK SITS ABOVE IT.
+                  A min-height here does not do what it looks like it does: a
+                  flex column still takes its intrinsic height from its
+                  content, so the mock's own height set the card's and the
+                  min-height never bound anything — the second row came out
+                  taller than the first however low that number went.
+
+                  So the picture is a fixed height, and the box around it
+                  flexes with `justify-end` instead. Where the grid stretches a
+                  card to match its neighbour (the titles are one, two and one
+                  line), the extra falls between the copy and the picture, and
+                  the picture stays flush with the card's foot where the bleed
+                  needs it. */}
+              <div className="-mb-6 -mr-6 mt-6 flex min-h-0 flex-1 flex-col justify-end overflow-hidden md:-mb-8 md:-mr-8 md:mt-8">
+                <div
+                  className={`shrink-0 overflow-hidden ${card.pictureClass ?? "h-[300px] md:h-[380px]"}`}
+                >
+                  <div className="mock-edge h-full overflow-hidden rounded-tl-xl border-l border-t border-[var(--mock-line)] bg-[var(--mock-window)]">
+                    {card.visual}
+                  </div>
+                </div>
+              </div>
             </div>
           ))}
+
+          {/* THE FOURTH CARD IS THE QUOTE. No picture, so the quote itself
+              takes the space one would have had and sets at lead size — it is
+              the card's content rather than a caption under something else.
+              The attribution is pinned to the foot with mt-auto so it lands
+              on the same line as the other cards' captions. */}
+          {quote ? (
+            <figure className="flex min-w-0 flex-col rounded-3xl bg-[var(--surface)] p-6 md:p-8 lg:col-span-2">
+              {/* Ranged top, with the other cards' copy. This one has no
+                  picture, so the slack it would have taken collects under the
+                  quote instead; the attribution is pinned to the foot so the
+                  card still closes on the same line as its neighbour. */}
+              <blockquote className="type-lead text-pretty text-foreground">
+                &ldquo;{quote.text}&rdquo;
+              </blockquote>
+              <figcaption className="type-caption mt-auto pt-8 text-muted-foreground">
+                <Link
+                  href={quote.href}
+                  className="transition-colors hover:text-foreground"
+                >
+                  {quote.attribution}
+                </Link>
+              </figcaption>
+            </figure>
+          ) : null}
         </div>
-
-        {/* Support line, then the proof, then the way in. The plan boundary
-            lives in this line rather than in the Domain card above: the
-            handoff moved it here to keep that card under length, and it is
-            the one sentence on the page that qualifies all three cards. */}
-        {supportLine ? (
-          <p className="mt-10 max-w-3xl text-sm text-muted-foreground">
-            {supportLine}
-          </p>
-        ) : null}
-
-        {quote ? (
-          <figure className="mt-10 max-w-2xl">
-            <blockquote className="text-pretty text-foreground">
-              &ldquo;{quote.text}&rdquo;
-            </blockquote>
-            <figcaption className="type-caption mt-3 text-muted-foreground">
-              <Link
-                href={quote.href}
-                className="transition-colors hover:text-foreground"
-              >
-                {quote.attribution}
-              </Link>
-            </figcaption>
-          </figure>
-        ) : null}
-
-        {cta ? (
-          <a href={cta.href} className={`mt-8 ${QUIET_BUTTON}`}>
-            {cta.label}
-          </a>
-        ) : null}
       </Reveal>
     </section>
   );

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { QUIET_BUTTON } from "@/components/ui/quiet-button";
+import { ViewToggle } from "@/components/ui/view-toggle";
 import Link from "next/link";
 import { Reveal } from "@/components/ui/reveal";
 import {
@@ -185,12 +186,21 @@ const SCREEN_FADE =
   "linear-gradient(to right, #000 0 90%, rgba(0,0,0,0.72) 95%, " +
   "rgba(0,0,0,0.3) 98%, transparent 100%)";
 
-function ScreenPair() {
-  // Which screen is in front. It persists: pointing at one brings it forward
-  // and it stays there, so you can actually look at the screen you raised.
+function ScreenPair({
+  selected,
+  setSelected,
+}: {
+  selected: number;
+  setSelected: (i: number) => void;
+}) {
+  // Which screen is in front is OWNED BY THE SECTION now, not by this pair,
+  // because the Theirs/Ours toggle above the tray sets the same thing. Pointing
+  // at a screen still brings it forward and it stays there, and doing so moves
+  // the toggle with it — the two are one control in two places rather than two
+  // controls that can disagree.
+  //
   // The lit frame does NOT persist — that is plain hover on the screen itself,
   // so nothing is outlined once the pointer leaves the picture.
-  const [selected, setSelected] = useState(1);
   return (
     <div className="flex">
       <Screen selected={selected === 0} onSelect={() => setSelected(0)}>
@@ -224,6 +234,7 @@ export function PortalProblem({
   screens,
   quote,
   link,
+  linkFirst = false,
 }: {
   heading?: string;
   /** A lead under the heading. /client-portal deliberately has none. */
@@ -244,7 +255,19 @@ export function PortalProblem({
   /** Quoted from case-studies.ts, so the page and the story cannot drift. */
   quote?: { text: string; attribution: string; href: string };
   link?: { label: string; href: string };
+  /**
+   * Put the link directly under the lead instead of at the section's foot.
+   * /client-portal does: its link sets up a later section, and read after
+   * the picture it arrived once the argument was already made. Default is
+   * the foot, which is where /solutions/accounting-client-portal wants its
+   * own link and where this section has always put it.
+   */
+  linkFirst?: boolean;
 } = {}) {
+  // 1, the built app, because that is the half the section argues for; the
+  // generic portal is the before. Only the default pair reads this — a page
+  // passing its own `screens` gets no toggle and nothing to drive.
+  const [selected, setSelected] = useState(1);
   return (
     <section className="mx-auto max-w-[1200px] px-6 py-16 md:px-10 md:py-24">
       <Reveal className="flex flex-col">
@@ -318,7 +341,51 @@ export function PortalProblem({
             grey — a smear in light, buying something the geometry gives for
             free. The bottom is a straight crop against the tray's edge, which
             is what these screens are: windows onto something that continues. */}
+        {/* The tray. Its top margin is the section's full step again now
+            that the toggle lives inside it rather than above it. */}
         <div className="order-1 mt-10 overflow-hidden rounded-2xl bg-[var(--surface)] p-4 pb-0 md:order-2 md:mt-10 md:rounded-3xl md:p-6 md:pb-0">
+          {/* THEIRS / OURS, inside the tray and above the screens.
+
+              The handoff labels the two screens underneath them, which names
+              what you are looking at but leaves the pair reading as two
+              pictures. As a control it is the section's argument in two
+              words, and it gives the comparison a way in on a touch screen,
+              where the hover that drives the pair does not exist.
+
+              IN THE TRAY, not above it: the thing it switches is in the tray,
+              and parked on the page outside it the control read as belonging
+              to the section rather than to the picture.
+
+              OUTSIDE THE MASK below, though. The screens carry a fade on
+              their right edge, and anything inside that wrapper fades with
+              them — a control dissolving at one end is a rendering fault, not
+              a crop.
+
+              Only on the default pair: a page passing its own `screens` has
+              no two states for this to switch between.
+
+              THE HERO'S TOGGLE, not the page's segmented control. Both
+              exist and they are for different grounds: SegmentedTabs has a
+              filled track, which on a tray reads as a second panel laid on
+              the first. This one is a hairline with no fill, so the tray
+              reads through it — see ui/view-toggle.tsx.
+
+              TOP RIGHT, not top left. It is a control on a picture rather
+              than a heading for one: at the left it sat directly under the
+              section's own left-ranged copy and read as the next line of it.
+              In the corner the screens have the tray to themselves and the
+              switch is plainly furniture. */}
+          {!screens ? (
+            <div className="mb-4 flex justify-end md:mb-6">
+              <ViewToggle
+                options={["Theirs", "Ours"]}
+                view={selected}
+                onSelect={setSelected}
+                label="Which portal to show"
+              />
+            </div>
+          ) : null}
+
           {/* Two masks, nested rather than two layers on one element: CSS
               composites mask layers by union, so declared together the right
               fade and the bottom fade would each hold the other's edge open
@@ -331,7 +398,9 @@ export function PortalProblem({
                 maskImage: SCREEN_FADE,
               }}
             >
-              {screens ?? <ScreenPair />}
+              {screens ?? (
+                <ScreenPair selected={selected} setSelected={setSelected} />
+              )}
             </div>
           </div>
         </div>
@@ -357,7 +426,7 @@ export function PortalProblem({
         {link ? (
           <Link
             href={link.href}
-            className={`order-4 mt-8 sm:self-start ${QUIET_BUTTON}`}
+            className={`${linkFirst ? "order-0 mt-6" : "order-4 mt-8"} sm:self-start ${QUIET_BUTTON}`}
           >
             {link.label}
           </Link>

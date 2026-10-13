@@ -32,8 +32,12 @@ const CLAIMS: FAQEntry[] = [
   },
   {
     question: "HIPAA",
+    // Shortened without losing a claim. The old wording opened on "ready-made
+    // apps that do not use AI" and then said it again in full a sentence
+    // later; the boundary is stated once now, and "because the build process
+    // uses AI" went with it since the rule above it already gives the reason.
     answer:
-      "HIPAA compliance with a BAA on the Advanced plan for ready-made apps that do not use AI. Ready-made apps like secure messaging, file sharing, and contracts can handle PHI as long as the app does not use AI; apps built with the AI app builder are not covered, because the build process uses AI. If you are a covered entity, talk to us and we will map what fits where.",
+      "HIPAA compliance with a BAA on the Advanced plan. Ready-made apps like secure messaging, file sharing, and contracts can handle PHI as long as they do not use AI; apps built with the AI app builder are not covered. If you are a covered entity, talk to us and we will map what fits.",
   },
 ];
 
@@ -90,13 +94,28 @@ export function PortalTrust({
               than one per caller. The padding overrides stay — those are this
               section's own measure, not a second opinion on a shared state. */}
           {claims.length ? (
-            <div className="[&>div>div>*]:pl-5 [&>div>div>*]:pr-5">
+            // NO PADDING OVERRIDE. This used to carry
+            // `[&>div>div>*]:pl-5 [&>div>div>*]:pr-5`, and it misaligned the
+            // rows: the selector reaches the question button and the answer's
+            // outer wrapper, but the answer has its own `pl-3` a level deeper,
+            // which the override cannot see. So the question indented to 20px
+            // and the answer to 20 + 12 = 32, and every open row set its copy
+            // 12px right of the label above it.
+            //
+            // Dropping it rather than chasing the inner padding with a deeper
+            // selector: the accordion's own `px-3` already aligns the two, and
+            // without the override this list is pixel-identical to the FAQ
+            // further down the page — which is what the note below says these
+            // rows are for.
+            <div>
               <Accordion
                 items={claims}
                 twoColumn={false}
                 variant="divided"
                 dottedRules
                 flushTop={false}
+                narrowAnswer
+                justifyAnswers
               />
             </div>
           ) : (

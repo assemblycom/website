@@ -99,9 +99,26 @@ export function PortalPricing({
   return (
     <section className="mx-auto max-w-[1200px] px-6 py-16 md:px-10 md:py-24">
       <Reveal>
-        <div className="text-center">
-          <h2 className="type-h2 mx-auto max-w-3xl text-balance">{heading}</h2>
-          <p className="mx-auto mt-4 max-w-2xl text-balance text-muted-foreground">
+        {/* RANGED LEFT ON A PHONE, centred from sm.
+        
+            Centred, this lead sets to three or four lines at 375px, and every
+            one of them starts at a different x — the eye has to find the
+            beginning of each line instead of returning to one edge. That is
+            the cost of centring a paragraph at a narrow measure, and it is
+            paid on the one screen where reading is hardest.
+        
+            From sm the measure is wide enough that the lead is one or two
+            lines, where centring costs nothing and the section keeps the
+            centred head it shares with the rest of the page.
+        
+            The max-widths go with it: `mx-auto` on a measure narrower than
+            the column is what does the centring, so it only applies where the
+            text is centred. Same pattern the hero uses for the same reason. */}
+        <div className="text-left sm:text-center">
+          <h2 className="type-h2 max-w-3xl text-balance sm:mx-auto">
+            {heading}
+          </h2>
+          <p className="mt-4 max-w-2xl text-pretty text-muted-foreground sm:mx-auto sm:text-balance">
             {body}
           </p>
           <Link href={link.href} className={`mt-6 ${QUIET_BUTTON}`}>

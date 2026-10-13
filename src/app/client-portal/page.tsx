@@ -5,6 +5,7 @@ import { GridDivider, GridRails } from "@/components/ui/grid-lines";
 import { PortalSocialProof } from "@/components/client-portal/portal-social-proof";
 import { PortalProblem } from "@/components/client-portal/portal-problem";
 import { PortalJourney } from "@/components/client-portal/portal-journey";
+import { PortalReadyMade } from "@/components/client-portal/portal-ready-made";
 import { PortalCustomizations } from "@/components/client-portal/portal-customizations";
 import { PortalFrictionless } from "@/components/client-portal/portal-frictionless";
 import { PortalStack } from "@/components/client-portal/portal-stack";
@@ -134,13 +135,6 @@ export default function ClientPortalPage() {
                   Book a demo
                 </a>
               </div>
-              {/* The handoff's hero support line. Under the buttons rather
-                  than above them: it qualifies the first one ("free forever",
-                  "no card"), and a reassurance read before there is anything
-                  to be reassured about is just a claim. */}
-              <p className="type-caption mt-4 text-muted-foreground">
-                Free forever plan. No credit card required.
-              </p>
             </div>
           </div>
 
@@ -151,26 +145,18 @@ export default function ClientPortalPage() {
               finished screens was not showing. */}
           <BuilderHeroVisual />
           {/* Credibility right under the product shot, before the argument
-              starts. Section 2 of the handoff: the figures and the roster are
-              one claim, so the band and the logo row are one component.
+              starts. Section 2 of the handoff, reduced to its claim and its
+              proof: a line naming the number of firms, and the firms.
 
-              The four figures are the homepage stats band's, which is what
-              the handoff specifies. NOTE: /customers states "1M+ clients"
-              against this band's "250K+". The handoff flags the conflict for
-              Vivienne and is explicit that this page must not introduce a
-              third figure, so it carries the homepage's until that is
-              settled. */}
-          <PortalSocialProof
-            heading="Trusted by 1,250+ professional service firms"
-            body="Agencies, accountants, and consultants run their client relationships on Assembly."
-            stats={[
-              "1,250+ businesses powered",
-              "10,000+ apps created",
-              "250K+ clients managed",
-              "$100M+ payments processed",
-            ]}
-            link={{ label: "See customer stories", href: "/customers" }}
-          />
+              THE HANDOFF'S FOUR FIGURES ARE NOT HERE. They are the homepage's
+              stats band repeated in small type, and beside a grid of marks
+              they were a second list saying the same thing — "1,250+" is the
+              only one this page needs and the heading carries it. Worth
+              knowing if they come back: /customers states "1M+ clients"
+              against the homepage band's "250K+", a conflict the handoff
+              flags for Vivienne, and it is explicit that this page must not
+              introduce a third figure. */}
+          <PortalSocialProof heading="Trusted by 1,250+ professional service firms" />
         </div>
       </section>
 
@@ -178,22 +164,30 @@ export default function ClientPortalPage() {
         <GridRails />
         <GridDivider fullBleed />
 
-        {/* Section 3. The quote carries the problem now — the handoff
-            removed this section's bullets, so the two captions above the tray
-            are gone with them and the jump link points at section 5, which
-            is where the page answers it. */}
+        {/* Section 3. The handoff removed this section's bullets, so the two
+            captions above the tray are gone and the picture carries the
+            argument on its own.
+
+            NO QUOTE. The handoff sets the Heritage Law "bolted-on software"
+            line here, qualified at length so a reader knows it describes the
+            portal the firm left rather than this one. That qualification is
+            most of its weight, and the same firm already speaks in the quotes
+            row further down; the two screens say the thing more plainly.
+
+            The link is under the lead rather than at the foot: it points at
+            section 5, which is where the page answers this one, so it belongs
+            with the claim and not after the picture that illustrates it. */}
         <PortalProblem
           body="Stop bending your workflow to fit someone else's product."
-          quote={{
-            text: "It felt like bolted-on software, an afterthought.",
-            attribution:
-              "Eliana Emery, Managing Attorney, Heritage Law Partners, on the portals built into legal practice management software",
-            href: "/customers/heritage-law-partners",
-          }}
           link={{
-            label: "See how firms build their own",
+            // Short enough to read as a control rather than a sentence in a
+            // box. It was "See how firms build their own" — the "their own"
+            // is already carried by the heading above it, which is the thing
+            // other portals do not let you have.
+            label: "How firms build theirs",
             href: "#customizations",
           }}
+          linkFirst
         />
         <GridDivider />
 
@@ -204,33 +198,48 @@ export default function ClientPortalPage() {
         <PortalJourney />
         <GridDivider />
 
+        {/* The templates, as their own section rather than a line under the
+            journey rail. The handoff folds them into section 4 as a support
+            line plus a Browse link, which is a thin way to offer thirty
+            working apps — the rows show what they actually are, and this is
+            the same rail /ai-app-builder runs for the same job.
+
+            The body is the handoff's templates line verbatim; the heading is
+            this component's own, which the page already had before. */}
+        <PortalReadyMade body="30+ ready-made app templates. Every one is a working app: install it, use it as is, or tell the builder what to change." />
+        <GridDivider />
+
         {/* Section 5, and the target of the jump link above.
 
-            THREE SECTIONS CAME OFF THE PAGE HERE, all absorbed into this one
+            TWO SECTIONS CAME OFF THE PAGE HERE, both absorbed into this one
             and the one above, per the handoff's "argument, in order":
 
-            - PortalReadyMade (the template rail) — now section 4's second
-              support line and its Browse templates link.
             - PortalBuild (Describe / Plan / Build) — the handoff puts the
               build mechanics on /ai-app-builder and keeps one sentence of
-              them in this section's second card.
+              them in this section's second card. Its five card scenes are
+              reused by the journey rail above, which is the other reason it
+              cannot also run here.
             - PortalTailor (the segment grid) — its per-client point is this
               section's support line, and the handoff lists the segment
               example tiles as out of scope outright.
 
-            All three components are still used by the two /solutions/* pages
-            and were left alone. */}
+            Both components are still used by the two /solutions/* pages and
+            were left alone. */}
         <PortalCustomizations id="customizations" />
         <GridDivider />
 
         {/* Section 6. */}
         <PortalFrictionless />
-        <GridDivider />
 
-        {/* Section 7. The handoff sets "Every app connects to the same
-            client records" as a support line of its own; it reads as an
-            orphan under the three rows, so it stays in the lead paragraph
-            where this page already had it. */}
+        {/* Section 7. NO DIVIDER ABOVE IT: this section sits on its own
+            tinted band and draws `border-y` itself, so the page's rule landed
+            a hairline directly on top of the section's own and read as a
+            doubled line. The section's top border is the divider here.
+
+            The handoff sets "Every app connects to the same client records"
+            as a support line of its own; it reads as an orphan under the
+            three rows, so it stays in the lead paragraph where this page
+            already had it. */}
         <PortalStack />
 
         <PortalTrust />
@@ -279,7 +288,13 @@ export default function ClientPortalPage() {
               quote:
                 "Our portal really improves our client satisfaction with our firm and definitely saves time. Having everything in one spot is huge.",
               name: "Eliana Emery",
-              firm: "Heritage Law Partners",
+              // "Heritage Law", not the registered "Heritage Law Partners":
+              // it was the only one of the four that wrapped to two lines in
+              // a closed card, and "Partners" is the half a reader does not
+              // need to know who is speaking. Same cut the builder page's own
+              // row makes to "Collective CPA & Advisors"; the case study a
+              // click away carries the name in full.
+              firm: "Heritage Law",
               image: "/images/customers/heritage-law-partners.jpg",
               href: "/customers/heritage-law-partners",
             },
@@ -309,6 +324,7 @@ export default function ClientPortalPage() {
           items={PORTAL_FAQS}
           variant="divided"
           dottedRules
+          justifyAnswers
         />
       </div>
 

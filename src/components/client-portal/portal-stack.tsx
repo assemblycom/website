@@ -51,7 +51,7 @@ const WAYS: {
   },
   {
     label: "Automations",
-    body: "An action in one app fires a workflow, so your team stops doing the handoffs by hand.",
+    body: "An action in one app fires a workflow, with no handoffs by hand.",
     href: GUIDE_URL,
     icon: IconTemplateAutomations,
   },
@@ -65,7 +65,11 @@ const WAYS: {
  */
 export function PortalStack({
   heading = "Keep the tools you already use",
-  body = "Embed the tools your clients already use inside your portal, connect what you run through the API and MCP connector, Zapier, or Make, and automate the busywork with the automation builder. Every app connects to the same client records.",
+  // The handoff's wording names API, MCP connector, Zapier, Make and the
+  // automation builder in the lead — and every one of them is in the three
+  // rows directly beneath it, so the paragraph was the list read out before
+  // the list. It states the three ways in and leaves the naming to the rows.
+  body = "Embed the tools your clients already use, connect what you run, and automate the busywork. Every app connects to the same client records.",
   ways = WAYS,
   visualTitle = "Stack visual — an outside tool running as an app inside the portal: Assembly's sidebar with a scheduler open in the content area, marked Embedded, cropped right so the screen continues past the rail.",
 }: {
@@ -186,21 +190,26 @@ export function PortalStack({
                           At the row's far edge rather than beside the label,
                           so it marks where the row ends; muted at rest and
                           full strength under the pointer, so the row answers
-                          without moving. */}
-                      <svg
+                          without moving.
+
+                          THE FONT'S ARROW, not a drawn one. This was an SVG
+                          path unique to this file — the only place on the
+                          site that glyph existed — so its weight, its
+                          terminals and the angle of its head were one
+                          person's guess rather than anything the rest of the
+                          page is set in. PP Mori has the character, it
+                          inherits the row's own size and colour, and it is
+                          the same mark in both themes for free.
+
+                          aria-hidden: the row is already a link with its
+                          label, so a screen reader reading "right arrow"
+                          after it adds nothing. */}
+                      <span
                         aria-hidden
-                        viewBox="0 0 16 16"
-                        className="size-4 shrink-0 text-muted-foreground transition-colors group-hover:text-foreground"
+                        className="shrink-0 text-[15px] leading-none text-muted-foreground transition-colors group-hover:text-foreground"
                       >
-                        <path
-                          d="M3 8h10M9 4l4 4-4 4"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
+                        &rarr;
+                      </span>
                     </Link>
                   </li>
                 ))}

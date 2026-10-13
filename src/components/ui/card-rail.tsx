@@ -92,6 +92,37 @@ const ARROW =
 // than a permanently unwell front card.
 const FADE_AHEAD = 82;
 
+// Tailwind's `lg`, which is where RAIL_W below switches to
+// `calc((100%-2rem)/3)`: three cards and the two 1rem gaps between them come
+// to exactly 100%, so at a snap point the third card's right edge lands ON the
+// rail's edge and NOTHING IS CUT THERE.
+//
+// Which means the ahead fade has no cut to dissolve from lg up — it just dims
+// the last fifth of a card that is fully on screen, caption and all, so the
+// third card reads as blurred rather than as the row carrying on. Below lg the
+// cards are 78%, 62% and 50% of the rail and the next one genuinely peeks, so
+// the fade is doing its job there and stays.
+const WHOLE_TRACK_MIN = 1024;
+
+// The LEADING edge's ramp, and it runs only at the very end of the rail.
+//
+// `snap-start` parks the current card's own left edge ON the rail's edge, so
+// at every snap point there is nothing cut there and a ramp would only dim
+// the card the reader is looking at — which is why the leading fade was
+// removed from this component once already. The notes above FADE_AHEAD have
+// the history.
+//
+// The LAST scroll position is the exception, and the one case that reasoning
+// missed. The track does not divide evenly into the rail, so the end of the
+// scroll is not a snap point: the row stops with the final card flush right
+// and whatever precedes it guillotined mid-caption on the left. That is a cut
+// with no card behind it, which is exactly what a ramp is for.
+//
+// Short, because it has one card's overhang to dissolve rather than a whole
+// peeking card, and because it never coincides with a snap point — the
+// objection that retired the old leading fade cannot apply here.
+const FADE_BEHIND = 12;
+
 const RAIL_W =
   "w-[78%] shrink-0 snap-start sm:w-[62%] md:w-[calc((100%-1rem)/2)] lg:w-[calc((100%-2rem)/3)]";
 
@@ -112,12 +143,17 @@ export function CardRail({
   // on first paint and then drops them. sync() runs on mount and corrects it
   // within the frame for a rail that really does step.
   const [atEnd, setAtEnd] = useState(true);
+  // Whether the rail is running its three-column track (see RAIL_W). Starts
+  // false so the server render and first paint carry the fade, which is the
+  // right answer at every width below lg and is corrected within the frame.
+  const [wholeTrack, setWholeTrack] = useState(false);
 
   const sync = useCallback(() => {
     const el = ref.current;
     if (!el) return;
     setAtStart(el.scrollLeft <= END_SLACK);
     setAtEnd(el.scrollLeft >= el.scrollWidth - el.clientWidth - END_SLACK);
+    setWholeTrack(window.matchMedia(`(min-width: ${WHOLE_TRACK_MIN}px)`).matches);
   }, []);
 
   useEffect(() => {
@@ -149,7 +185,15 @@ export function CardRail({
   // ramp goes and the last card meets the column cleanly. A set that fits gets
   // no mask at all, which is what leaves the three-step row reading as a plain
   // row.
-  const edgeMasks = atEnd ? [] : [fadeMask("to right", FADE_AHEAD)];
+  const edgeMasks = wholeTrack
+    ? []
+    : atEnd
+      ? // At the end there is nothing ahead to suggest, but the leading edge
+        // is now mid-card. See FADE_BEHIND.
+        atStart
+        ? []
+        : [fadeMask("to left", 100 - FADE_BEHIND)]
+      : [fadeMask("to right", FADE_AHEAD)];
 
   // ── Drag to scroll ────────────────────────────────────────────────────
   // Touch and trackpad already drag this rail natively; a mouse did not, so on

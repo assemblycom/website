@@ -23,6 +23,7 @@ import {
   SectionLabel,
 } from "@/components/home/build-app-visual";
 import { IconArrowUp } from "@/components/home/build-step-visual";
+import { ViewToggle } from "@/components/ui/view-toggle";
 import {
   IconBookBlank,
   IconBook,
@@ -552,42 +553,6 @@ function WidthScaled({
 }
 
 /** A pill switch: flips the result screen's side, and on phones picks the card. */
-function ViewToggle({
-  options,
-  view,
-  onSelect,
-}: {
-  options: readonly string[];
-  view: number;
-  onSelect: (i: number) => void;
-}) {
-  return (
-    <div className="flex items-center gap-0.5 rounded-full border border-border p-1 [[data-theme=dark]_&]:border-white/15">
-      {options.map((label, i) => (
-        <button
-          key={label}
-          type="button"
-          onClick={() => onSelect(i)}
-          aria-pressed={i === view}
-          className={`whitespace-nowrap rounded-full border px-3.5 py-1 text-sm transition-colors duration-300 ${
-            i === view
-              ? // No border on the thumb in DARK: the track already carries one
-                // 4px outside it, so the pair read as two concentric rings
-                // around one small control. The fill is what marks the thumb
-                // there — lifted to 8% so it still reads once the ring is
-                // gone. Light keeps its border, because a white thumb on a
-                // near-white card has nothing else to separate it.
-                "border-border bg-background text-foreground [[data-theme=dark]_&]:border-transparent [[data-theme=dark]_&]:bg-white/[0.08]"
-              : "border-transparent text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          {label}
-        </button>
-      ))}
-    </div>
-  );
-}
-
 /**
  * The fade that ends the cropped screen on the card's bottom and right edges.
  *
