@@ -4429,9 +4429,12 @@ html:not([data-authed]) .auth-only {
    The plain ring cannot be used as-is there: it would draw a vertical line
    down the right edge, which is the one edge that is supposed to be a crop.
    So the ring is masked to dissolve rightward on THE SAME STOPS as the card's
-   own fill gradient (solid to 58%, gone by 100%), and the edge gives out
-   exactly where the surface it belongs to does. One idea in two places; if the
-   fill's stops move, this moves with them.
+   own fill gradient, and the edge gives out exactly where the surface it
+   belongs to does. One idea in two places; if the fill's stops move, this
+   moves with them — which they have: the ramp was solid to 58% and then
+   straight to transparent, two corners in an alpha curve that showed on a
+   dark page as the edges of a band. Both are the eased run now (see
+   stack-picker).
 
    OFF BELOW lg, where the card is closed and keeps its ordinary border all
    round. The ring there would be a second line on top of the first, and a
@@ -4444,11 +4447,33 @@ html:not([data-authed]) .auth-only {
     display: block;
     -webkit-mask:
       linear-gradient(#000 0 0) content-box,
-      linear-gradient(to right, #000 0%, #000 58%, transparent 100%);
+      linear-gradient(
+        to right,
+        #000 0%,
+        #000 42%,
+        rgba(0, 0, 0, 0.88) 54%,
+        rgba(0, 0, 0, 0.72) 64%,
+        rgba(0, 0, 0, 0.52) 73%,
+        rgba(0, 0, 0, 0.33) 81%,
+        rgba(0, 0, 0, 0.18) 88%,
+        rgba(0, 0, 0, 0.08) 94%,
+        transparent 100%
+      );
     -webkit-mask-composite: xor;
     mask:
       linear-gradient(#000 0 0) content-box,
-      linear-gradient(to right, #000 0%, #000 58%, transparent 100%);
+      linear-gradient(
+        to right,
+        #000 0%,
+        #000 42%,
+        rgba(0, 0, 0, 0.88) 54%,
+        rgba(0, 0, 0, 0.72) 64%,
+        rgba(0, 0, 0, 0.52) 73%,
+        rgba(0, 0, 0, 0.33) 81%,
+        rgba(0, 0, 0, 0.18) 88%,
+        rgba(0, 0, 0, 0.08) 94%,
+        transparent 100%
+      );
     mask-composite: exclude;
   }
 }

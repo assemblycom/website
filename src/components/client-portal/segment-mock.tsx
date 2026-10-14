@@ -459,8 +459,12 @@ export function ApprovalsMock() {
             <span className="-mb-px flex items-center gap-1.5 border-b border-transparent pb-2 text-[10.5px] leading-none text-[color:var(--mock-ink-soft)]">
               Previous rounds
               {/* The count is the whole reason the tab is there: a second round
-                  means there was a first one to compare against. */}
-              <span className="rounded-[3px] bg-[var(--mock-well-2)] px-1 py-[2px] text-[8.5px] leading-none">
+                  means there was a first one to compare against — which is
+                  also why it is the one mark in this window carrying colour.
+                  --mock-info-*, the same blue the rail's unread count and the
+                  support card's New badge wear, so the three counts on this
+                  page are one idea rather than three decorations. */}
+              <span className="rounded-[3px] bg-[var(--mock-info-bg)] px-1 py-[2px] text-[8.5px] leading-none text-[color:var(--mock-info-fg)]">
                 1
               </span>
             </span>

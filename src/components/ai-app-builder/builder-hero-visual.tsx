@@ -857,7 +857,18 @@ function Composer({ run, typing }: { run: number; typing: boolean }) {
         // paints the element's own border area as a fixed lit edge, this is a
         // separate ::before above it, so the box keeps its lift in both
         // themes and gains the ring.
-        className={`v63-gradient-border v63-ring-solid v63-spin-on-hover pointer-events-auto relative mock-edge [--mock-edge-h:150%] [--mock-edge-w:120%] overflow-hidden rounded-xl border bg-[var(--mock-window)] shadow-[0_0_0_3px_var(--surface),0_0_0_4px_var(--mock-line)] [[data-theme=dark]_&]:bg-[var(--mock-well-2)] [[data-theme=dark]_&]:[--mock-edge-1:#6e6e6e] [[data-theme=dark]_&]:[--mock-edge-2:#555555] [[data-theme=dark]_&]:[--mock-edge-3:#3e3e3e] [[data-theme=dark]_&]:[--mock-edge-fill:var(--mock-well-2)] ${LINE}`}
+        //
+        // NO OUTER RING IN DARK. The two box-shadows draw a 3px gap in the
+        // card's own ground and then a 1px --mock-line hairline outside it —
+        // a second outline around the gradient one, which earns its place on
+        // a white card where the composer's surface is near-white too and the
+        // ring is the only thing separating them. On the paper cards it does
+        // not: --mock-line in dark is #2e2e2e, so a near-black hairline lands
+        // on #FBFBF5 as the hardest line in the card, drawn around a box that
+        // is already a dark panel on cream and needs no help being found. The
+        // gradient ring is the edge there. Light keeps both shadows, which is
+        // where they were tuned.
+        className={`v63-gradient-border v63-ring-solid v63-spin-on-hover pointer-events-auto relative mock-edge [--mock-edge-h:150%] [--mock-edge-w:120%] overflow-hidden rounded-xl border bg-[var(--mock-window)] shadow-[0_0_0_3px_var(--surface),0_0_0_4px_var(--mock-line)] [[data-theme=dark]_&]:border-0 [[data-theme=dark]_&]:shadow-none [[data-theme=dark]_&]:bg-[var(--mock-well-2)] [[data-theme=dark]_&]:[--mock-edge-1:#6e6e6e] [[data-theme=dark]_&]:[--mock-edge-2:#555555] [[data-theme=dark]_&]:[--mock-edge-3:#3e3e3e] [[data-theme=dark]_&]:[--mock-edge-fill:var(--mock-well-2)] ${LINE}`}
       >
         {box}
       </div>
@@ -960,11 +971,20 @@ function TeamDashboard({ live }: { live: boolean }) {
         // already drawn with. --mock-nav-rest for the muted row is the token
         // named for that exact job (see globals.css).
         //
+        // --background IS ONE OF THE FOUR, and leaving it out broke the logo.
+        // The BrandMages tile is `bg-foreground text-background`, an inverted
+        // pair: fix one end and the glyph has to go with it. With --foreground
+        // re-pointed and --background still the ladder's #ffffff, the tile
+        // came out near-white in dark with a white mark on it — the firm's
+        // logo, invisible. --mock-window is the surface this family inverts
+        // against, so the pair resolves near-white-on-dark in dark and
+        // dark-on-white in light, which is what an inverted tile is for.
+        //
         // Scoped to this rail rather than fixed in NavItem: the component is
         // shared with the how-it-works mocks and /ai-app-builder's Add App
         // shot, which sit on ordinary cards where the page tokens resolve
         // correctly. Nothing outside this card moves.
-        className={`flex w-[164px] shrink-0 flex-col border-r bg-[var(--mock-well)] px-1.5 py-2 [--mock-nav-size:12px] [--mock-nav-row:26px] [--mock-section-size:10px] [--foreground:var(--mock-ink)] [--muted-foreground:var(--mock-nav-rest)] [--border:var(--mock-line)] ${LINE} [&>div:not(:first-child)]:h-[26px] [&>div:not(:first-child)]:transition-colors [&>div:not(:first-child):hover]:bg-border/50`}
+        className={`flex w-[164px] shrink-0 flex-col border-r bg-[var(--mock-well)] px-1.5 py-2 [--mock-nav-size:12px] [--mock-nav-row:26px] [--mock-section-size:10px] [--foreground:var(--mock-ink)] [--muted-foreground:var(--mock-nav-rest)] [--border:var(--mock-line)] [--background:var(--mock-window)] ${LINE} [&>div:not(:first-child)]:h-[26px] [&>div:not(:first-child)]:transition-colors [&>div:not(:first-child):hover]:bg-border/50`}
       >
         <div className="flex items-center gap-1.5 px-1.5 pb-4 pt-3">
           <span className="flex size-[16px] items-center justify-center rounded-[3px] bg-foreground text-background">

@@ -41,39 +41,18 @@ import { MOCK_MICRO, MOCK_PRIMARY } from "@/components/ui/mock-type";
 export type WorkspaceNavRow =
   "CRM" | "Team" | "Notifications" | "Home" | "Messages" | "Add App";
 
-/**
- * Written out rather than interpolated: Tailwind reads the source as text, so
- * a class built from a variable is a class it never sees and never emits.
- */
-const TINT_CLASS = {
-  lavender: "text-[color:var(--mock-tint-lavender)]",
-  blue: "text-[color:var(--mock-tint-blue)]",
-  mint: "text-[color:var(--mock-tint-mint)]",
-} as const;
-
 function NavItem({
   icon,
   label,
   active,
   badge,
   quiet = false,
-  tint,
 }: {
   icon: React.ReactNode;
   label: string;
   active?: boolean;
   /** A count riding at the row's right edge — unread notifications, so far. */
   badge?: string;
-  /**
-   * The row's glyph colour, as one of the mock family's tints.
-   *
-   * The LABEL never takes it — see the --mock-tint-* note in globals.css. A
-   * rail where the words are coloured stops being furniture and starts
-   * competing with the pane; a rail where the marks are coloured reads as a
-   * set of distinct apps, which is the whole claim on the one card that shows
-   * this rail as its subject.
-   */
-  tint?: "lavender" | "blue" | "mint";
   /**
    * Draws the row a rung under the resting ones.
    *
@@ -134,25 +113,34 @@ function NavItem({
             : "text-[color:var(--mock-nav-rest)] hover:bg-border/40 hover:text-foreground"
       }`}
     >
-      {/* The glyph takes the tint where it has one and the row's own ink
-          where it does not. Not on the open row: there the fill and the full
-          ink are already saying "you are here", and a coloured mark inside a
-          lit row is a third signal for one state. */}
-      <span
-        className={`[&>svg]:size-[13px] flex shrink-0 items-center justify-center ${
-          tint && !active ? TINT_CLASS[tint] : ""
-        }`}
-      >
+      {/* NO COLOUR ON THE GLYPHS. They carried the mock family's three tints
+          for a while, which worked on a rail of three app rows and did not on
+          this one: at six it is a different hue every row, and a nav where no
+          two neighbours agree reads as a palette rather than as a list. The
+          colour on this card lives in the two COUNTS instead — see the
+          Notifications badge below and the round counter in ApprovalsMock —
+          where one mark carries it and the rest of the rail stays furniture. */}
+      <span className="[&>svg]:size-[13px] flex shrink-0 items-center justify-center">
         {icon}
       </span>
       <span className={`min-w-0 flex-1 truncate ${MOCK_PRIMARY}`}>{label}</span>
       {badge ? (
-        // The count, on the row's own resting ink over a --muted pill. Not a
-        // coloured badge: an unread count is the product's own chrome, and a
-        // red dot in a mock whose subject is the list of apps would be the
-        // first thing read on the card.
+        // THE COUNT IS WHERE THE RAIL'S COLOUR GOES.
+        //
+        // It was the row's own resting ink over a --muted pill, on the
+        // reasoning that an unread count is chrome and a coloured badge in a
+        // mock about the list of apps would be the first thing read on the
+        // card. The first half still holds and the second one is now the
+        // point: this rail is grey on purpose, and ONE blue mark in it is
+        // exactly what gives the card somewhere to look. A badge is also the
+        // one element in a nav that is supposed to be noticed — that is what a
+        // count is for.
+        //
+        // --mock-info-*, the status family's blue pair, so this is the same
+        // blue the support card's New badge wears rather than a value invented
+        // here. Not red: this is a count of things waiting, not an alarm.
         <span
-          className={`shrink-0 rounded bg-border/70 px-1 py-[2px] text-[8.5px] leading-none ${MOCK_MICRO}`}
+          className={`shrink-0 rounded bg-[var(--mock-info-bg)] px-1 py-[2px] text-[8.5px] leading-none text-[color:var(--mock-info-fg)] ${MOCK_MICRO}`}
         >
           {badge}
         </span>
@@ -223,35 +211,25 @@ export function WorkspaceSidebar({
           icon={<IconBell />}
           label="Notifications"
           active={active === "Notifications"}
-          badge="99+"
+          // EIGHT, not "99+". A capped counter is what a rail shows when it
+          // has given up counting, which on a marketing shot reads as a
+          // workspace drowning rather than as one in use — and it is the only
+          // number on the card, so it is the one claim the picture makes about
+          // volume. A plain 8 is a firm with eight things waiting.
+          badge="8"
         />
       ) : null}
 
       <SectionLabel>Apps</SectionLabel>
-      {/* COLOUR ON THE APPS, AND ONLY IN SHOWCASE.
-          The rail is grey furniture on the four cards whose subject is the
-          pane beside it, and it should stay that way there — a coloured mark
-          on every row would pull the eye out of the screen the card is about.
-          On the one card that IS about the rail, the opposite holds: eight
-          rows of one grey is a picture of a sidebar with nothing distinct in
-          it, which is a strange illustration for "fill the sidebar with the
-          apps your firm needs".
-          The tints cycle lavender → blue → mint down the group, so no two
-          neighbours share one, and the stock rows above (CRM, Team,
-          Notifications) keep their grey: they are what the workspace comes
-          with, not apps, and colouring them would make the group label
-          meaningless. */}
       <NavItem
         icon={<IconGlobe />}
         label="Home"
         active={active === "Home"}
-        tint={showcase ? "blue" : undefined}
       />
       <NavItem
         icon={<IconChat />}
         label="Messages"
         active={active === "Messages"}
-        tint={showcase ? "mint" : undefined}
       />
       {/* ONE app the firm has built, and back to one on purpose. It was three
           — Year-end docs, Design approvals, Calendar — on the reasoning that a
@@ -267,7 +245,6 @@ export function WorkspaceSidebar({
       <NavItem
         icon={<IconBookBlank />}
         label="Year-end docs"
-        tint={showcase ? "lavender" : undefined}
       />
       {/* The rest of what a filled sidebar holds, on the one card that is
           about the sidebar being filled. Stock-sounding names rather than
@@ -277,9 +254,9 @@ export function WorkspaceSidebar({
           the firm added, not as five bespoke builds. */}
       {showcase ? (
         <>
-          <NavItem icon={<IconCard />} label="Billing" tint="blue" />
-          <NavItem icon={<IconFolder />} label="Files" tint="mint" />
-          <NavItem icon={<IconForm />} label="Intake forms" tint="lavender" />
+          <NavItem icon={<IconCard />} label="Billing" />
+          <NavItem icon={<IconFolder />} label="Files" />
+          <NavItem icon={<IconForm />} label="Intake forms" />
         </>
       ) : null}
       <NavItem

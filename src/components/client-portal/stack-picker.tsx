@@ -162,7 +162,9 @@ export function StackPicker({
       // same edge the cropped product shots wear. --bleed-right masks it to
       // dissolve rightward on the card's own fill stops so the one edge that is
       // a crop stays a crop, and switches the whole ring off below lg, where
-      // the border is still there doing the job. See globals.css.
+      // the border is still there doing the job. See globals.css — and when
+      // the fill's stops change, that mask changes with them, which is why
+      // easing the ramp below meant editing both.
       className="mock-lit-edge mock-lit-edge--bleed-right relative flex h-[300px] flex-col justify-center gap-1 rounded-2xl border border-border bg-[var(--surface)] p-4 md:h-[380px] md:p-5 lg:h-[440px] lg:rounded-r-none lg:border-r-0 lg:border-transparent lg:bg-transparent [[data-theme=dark]_&]:border-[#383838] [[data-theme=dark]_&]:lg:border-transparent"
       // THE SELECTION STAYS WHERE YOU LEFT IT.
       //
@@ -179,10 +181,28 @@ export function StackPicker({
     >
       {/* The ground. Only from lg, where the card bleeds; below that the
           element's own background is doing the job. The left corners stay
-          rounded and the right simply runs out. */}
+          rounded and the right simply runs out.
+
+          EASED, NOT TWO-STOP. It ran solid to 58% and then straight to
+          transparent, which is a linear alpha ramp with a corner in the curve
+          at each end — and a corner in an alpha curve is a visible line. On a
+          white page both corners fall between two near-white values and
+          nothing shows; on near-black the card is #191919 giving out onto
+          #0a0a0a, so the same two corners read as the edges of a band down the
+          right of the picture, with the rows' descriptions sitting inside it.
+
+          The stops below approximate an ease: the fill starts giving way
+          earlier (42%) and never changes rate sharply enough to draw a line,
+          so the panel dissolves over most of its width instead of ending in a
+          gradient. Same declaration for both themes, because --surface
+          resolves per theme and color-mix carries that through — this is the
+          shape of the ramp changing, not its colour.
+
+          The same stops as `edgeFade` on the hero, run the other way: that one
+          brings a card's ground IN over a screen, this one takes it OUT. */}
       <span
         aria-hidden
-        className="pointer-events-none absolute inset-0 hidden rounded-l-2xl bg-[linear-gradient(to_right,var(--surface)_0%,var(--surface)_58%,transparent_100%)] lg:block"
+        className="pointer-events-none absolute inset-0 hidden rounded-l-2xl bg-[linear-gradient(to_right,var(--surface)_0%,var(--surface)_42%,color-mix(in_srgb,var(--surface)_88%,transparent)_54%,color-mix(in_srgb,var(--surface)_72%,transparent)_64%,color-mix(in_srgb,var(--surface)_52%,transparent)_73%,color-mix(in_srgb,var(--surface)_33%,transparent)_81%,color-mix(in_srgb,var(--surface)_18%,transparent)_88%,color-mix(in_srgb,var(--surface)_8%,transparent)_94%,transparent_100%)] lg:block"
       />
       {TOOLS.map(({ initials, name, does, how, logo }, i) => {
         const on = i === active;
