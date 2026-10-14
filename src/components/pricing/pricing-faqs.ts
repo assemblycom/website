@@ -6,7 +6,7 @@ export const PRICING_FAQS: FAQEntry[] = [
   {
     question: "Is there really a free plan?",
     answer:
-      "Yes, there is a free plan. You get 5 active contacts, 1 internal user, 50 build credits a month, and 3 apps. The apps you publish are real, live apps your clients can use. Upgrade only when your firm outgrows the limits.",
+      "Yes, there is a free plan. You get 5 active contacts, 1 internal user, 75 build credits a month, and 3 apps. The apps you publish are real, live apps your clients can use. Upgrade only when your firm outgrows the limits.",
   },
   {
     question: "What are build credits?",
