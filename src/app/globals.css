@@ -4419,65 +4419,6 @@ html:not([data-authed]) .auth-only {
   pointer-events: none;
 }
 
-/* ── A lit edge for a frame that BLEEDS OFF THE RIGHT ─────────────────────
-   For the integrations card, which is a closed panel on a phone and runs off
-   the grid's right edge from lg. At that width it drops its own border (there
-   is no right side to draw) and was left with no edge at all — a list of rows
-   floating on the page rather than a screen, which is what "doesn't look like
-   UI" was.
-
-   The plain ring cannot be used as-is there: it would draw a vertical line
-   down the right edge, which is the one edge that is supposed to be a crop.
-   So the ring is masked to dissolve rightward on THE SAME STOPS as the card's
-   own fill gradient, and the edge gives out exactly where the surface it
-   belongs to does. One idea in two places; if the fill's stops move, this
-   moves with them — which they have: the ramp was solid to 58% and then
-   straight to transparent, two corners in an alpha curve that showed on a
-   dark page as the edges of a band. Both are the eased run now (see
-   stack-picker).
-
-   OFF BELOW lg, where the card is closed and keeps its ordinary border all
-   round. The ring there would be a second line on top of the first, and a
-   top-lit ramp would leave the card's foot with no edge at all. */
-.mock-lit-edge--bleed-right::after {
-  display: none;
-}
-@media (min-width: 64rem) {
-  .mock-lit-edge--bleed-right::after {
-    display: block;
-    -webkit-mask:
-      linear-gradient(#000 0 0) content-box,
-      linear-gradient(
-        to right,
-        #000 0%,
-        #000 42%,
-        rgba(0, 0, 0, 0.88) 54%,
-        rgba(0, 0, 0, 0.72) 64%,
-        rgba(0, 0, 0, 0.52) 73%,
-        rgba(0, 0, 0, 0.33) 81%,
-        rgba(0, 0, 0, 0.18) 88%,
-        rgba(0, 0, 0, 0.08) 94%,
-        transparent 100%
-      );
-    -webkit-mask-composite: xor;
-    mask:
-      linear-gradient(#000 0 0) content-box,
-      linear-gradient(
-        to right,
-        #000 0%,
-        #000 42%,
-        rgba(0, 0, 0, 0.88) 54%,
-        rgba(0, 0, 0, 0.72) 64%,
-        rgba(0, 0, 0, 0.52) 73%,
-        rgba(0, 0, 0, 0.33) 81%,
-        rgba(0, 0, 0, 0.18) 88%,
-        rgba(0, 0, 0, 0.08) 94%,
-        transparent 100%
-      );
-    mask-composite: exclude;
-  }
-}
-
 /* ── A PILLAR SHOT'S BRAND WASH ──────────────────────────────────────────
    The ground behind the sign-in pillar: the product's own signed-in backdrop —
    white at the head, the brand blue through the middle, lime at the foot, and

@@ -108,7 +108,7 @@ export function PortalStack({
             No right padding from lg up: the picture runs off the rail and past
             the viewport's edge, so it reads as a portal that continues rather
             than a screenshot centred in a band. */}
-        <div className="mx-auto flex max-w-[1200px] flex-col gap-10 px-6 py-16 md:px-10 md:py-24 lg:grid lg:grid-cols-2 lg:items-center lg:gap-16 lg:pr-0">
+        <div className="mx-auto flex max-w-[1200px] flex-col gap-10 px-6 py-16 md:px-10 md:py-24 lg:grid lg:grid-cols-2 lg:items-center lg:gap-16">
           {/* `contents` BELOW lg, a block from lg. The picture goes directly
               under the body copy on a phone — it is what the sentence is
               describing, and three rows of list in between meant a reader met

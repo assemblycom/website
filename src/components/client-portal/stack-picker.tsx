@@ -133,39 +133,30 @@ export function StackPicker({
       // became links. A hidden list of real destinations is a set of doors a
       // keyboard can tab into and a screen reader is never told about.
       title={title}
-      // THE GROUND FADES OUT TO THE RIGHT, from lg.
+      // A CLOSED PANEL AT EVERY WIDTH.
       //
-      // This card deliberately runs past the 1200px rail and off the viewport,
-      // and it was ending on a hard vertical: a border and a block of surface
-      // stopping dead against the page. That reads as a panel that has been
-      // cut, which is the opposite of what the bleed is for — the card is
-      // supposed to carry on.
+      // From lg this used to bleed: the card ran past the 1200px rail with no
+      // right border and its ground dissolved rightward, so it read as a
+      // screen carrying on off the page. The idea was right and the geometry
+      // never was. The card lives in a max-w-[1200px] container, so it only
+      // reaches the viewport edge on a viewport NARROWER than the rail — at
+      // 1024 it did, at 1440 it stopped 120px short. Past that width the ramp
+      // was not cropping anything; it was fading a panel out into open page,
+      // with the rows' own descriptions sitting inside the fade.
       //
-      // So the FILL dissolves instead of stopping. The gradient is its own
-      // layer behind the rows rather than the element's background, which is
-      // what keeps the text out of it: a mask on the card would have taken the
-      // right-hand descriptions with it, and those are the column that has to
-      // stay readable. One declaration for both themes, because --surface
-      // resolves per theme and `transparent` lets whatever is behind through.
+      // Two ways to fix a bleed that does not reach: make it reach (vw maths
+      // against the container, plus a clip on the section to keep a scrollbar
+      // off), or stop bleeding. This takes the second. The page is a column of
+      // closed cards and this is the only one that was not, so closing it is
+      // the reuse rule rather than a new decision — and it removes a gradient
+      // that had been tuned twice and was still the thing a reader noticed
+      // first about the picture.
       //
-      // Below lg the card does not bleed — the grid has padding on both sides
-      // there — so it keeps a plain closed panel with its border all round.
-      // AND FROM lg IT GETS AN EDGE BACK, as a lit ring rather than a border.
-      //
-      // Dropping the border at lg is right — there is no right side to draw on
-      // a card that runs off the grid — but it left the panel with no edge at
-      // ALL on the three sides that do exist, so in dark a near-black list sat
-      // on a near-black page as rows floating in space rather than as a screen.
-      //
-      // .mock-lit-edge is the site's own answer to exactly that: a 1px ring lit
-      // at the top, down to the plain hairline by 45%, gone by the foot — the
-      // same edge the cropped product shots wear. --bleed-right masks it to
-      // dissolve rightward on the card's own fill stops so the one edge that is
-      // a crop stays a crop, and switches the whole ring off below lg, where
-      // the border is still there doing the job. See globals.css — and when
-      // the fill's stops change, that mask changes with them, which is why
-      // easing the ramp below meant editing both.
-      className="mock-lit-edge mock-lit-edge--bleed-right relative flex h-[300px] flex-col justify-center gap-1 rounded-2xl border border-border bg-[var(--surface)] p-4 md:h-[380px] md:p-5 lg:h-[440px] lg:rounded-r-none lg:border-r-0 lg:border-transparent lg:bg-transparent [[data-theme=dark]_&]:border-[#383838] [[data-theme=dark]_&]:lg:border-transparent"
+      // .mock-lit-edge goes with it. That ring existed because dropping the
+      // right border at lg left the panel with no edge at all on the three
+      // sides that did exist; with the border back on all four there is
+      // nothing for it to stand in for.
+      className="relative flex h-[300px] flex-col justify-center gap-1 rounded-2xl border border-border bg-[var(--surface)] p-4 md:h-[380px] md:p-5 lg:h-[440px] [[data-theme=dark]_&]:border-[#383838]"
       // THE SELECTION STAYS WHERE YOU LEFT IT.
       //
       // Leaving the panel used to snap it back to the first row, on the
@@ -179,31 +170,6 @@ export function StackPicker({
       // The first row is still what it opens on, so the panel is never waiting
       // to be touched; it just stops arguing with you afterwards.
     >
-      {/* The ground. Only from lg, where the card bleeds; below that the
-          element's own background is doing the job. The left corners stay
-          rounded and the right simply runs out.
-
-          EASED, NOT TWO-STOP. It ran solid to 58% and then straight to
-          transparent, which is a linear alpha ramp with a corner in the curve
-          at each end — and a corner in an alpha curve is a visible line. On a
-          white page both corners fall between two near-white values and
-          nothing shows; on near-black the card is #191919 giving out onto
-          #0a0a0a, so the same two corners read as the edges of a band down the
-          right of the picture, with the rows' descriptions sitting inside it.
-
-          The stops below approximate an ease: the fill starts giving way
-          earlier (42%) and never changes rate sharply enough to draw a line,
-          so the panel dissolves over most of its width instead of ending in a
-          gradient. Same declaration for both themes, because --surface
-          resolves per theme and color-mix carries that through — this is the
-          shape of the ramp changing, not its colour.
-
-          The same stops as `edgeFade` on the hero, run the other way: that one
-          brings a card's ground IN over a screen, this one takes it OUT. */}
-      <span
-        aria-hidden
-        className="pointer-events-none absolute inset-0 hidden rounded-l-2xl bg-[linear-gradient(to_right,var(--surface)_0%,var(--surface)_42%,color-mix(in_srgb,var(--surface)_88%,transparent)_54%,color-mix(in_srgb,var(--surface)_72%,transparent)_64%,color-mix(in_srgb,var(--surface)_52%,transparent)_73%,color-mix(in_srgb,var(--surface)_33%,transparent)_81%,color-mix(in_srgb,var(--surface)_18%,transparent)_88%,color-mix(in_srgb,var(--surface)_8%,transparent)_94%,transparent_100%)] lg:block"
-      />
       {TOOLS.map(({ initials, name, does, how, logo }, i) => {
         const on = i === active;
         return (
