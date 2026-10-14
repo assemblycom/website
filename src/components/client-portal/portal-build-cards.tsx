@@ -2040,10 +2040,20 @@ export function BuildCard({ plain = false }: SceneProps = {}) {
           It flips with the theme, like the Plan card's ground beside it. The
           portal screen on top of it is a product screen and themes with the
           product — near-white in light, near-black in dark — so a fixed ground
-          can only serve one of them. #CFCFCF lifts the white screen in light;
-          Haze (#7DA4FF, the brand blue) does the same job for the dark screen,
-          and is the one card in the set where the brand colour gets to be the
-          whole surface rather than a bar or a tint.
+          can only serve one of them.
+
+          BOTH THEMES NOW GET THE RAMP, not a flat tone. Dark had Haze and
+          light had #CFCFCF, a neutral grey chosen only to lift a white screen
+          — which it did, and said nothing while doing it: the one card in the
+          rail that is a whole brand surface was brand-coloured in one theme
+          and plain grey in the other. The ramp is the same run the hero and
+          the frictionless thread card take, Haze down to lime, so a reader
+          moving down the page meets one surface rather than three ideas of
+          one.
+
+          It still lifts the screen in both: the screen sits in the ramp's top
+          half, where it is Haze against a near-white portal in light and
+          against a near-black one in dark.
 
           Describe is the exception: a photograph has its own light and
           nothing to lose to the panel in front of it, so it stays fixed. */}
@@ -2054,7 +2064,7 @@ export function BuildCard({ plain = false }: SceneProps = {}) {
           pixel removes it; the parent is overflow-hidden, so the extra is
           clipped and the radius is unaffected. */}
       {!plain && (
-        <div className="absolute -inset-px bg-[#CFCFCF] [[data-theme=dark]_&]:bg-[#7DA4FF]" />
+        <div className="absolute -inset-px bg-[linear-gradient(180deg,#7DA4FF_0%,#AFC2D9_52%,#D9ED92_100%)]" />
       )}
       {/* fadeFrom 100 — the right-edge fade is OFF for this card. That ramp
           exists to dissolve art that overruns the card, and nothing overruns it
