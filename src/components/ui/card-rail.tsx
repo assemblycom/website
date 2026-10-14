@@ -23,6 +23,77 @@ const GAP_PX = 16;
 // scrollLeft, so the ends are judged with a little slack rather than exactly.
 const END_SLACK = 2;
 
+// ── How a released drag is thrown ────────────────────────────────────────
+// How far back the release velocity is read. Short enough that the last
+// flick is what counts rather than the whole gesture, long enough to span
+// several pointer events on a slow mouse — two or three frames is noise, and
+// a velocity read off noise throws the rail somewhere nobody asked for.
+const VELOCITY_WINDOW_MS = 90;
+// How long the rail would coast at its release speed, in ms. This is the one
+// number that decides how far a flick carries: the projection is simply
+// velocity × this. 220 lands a brisk flick two or three cards on and an
+// ordinary push one, which is the range the gesture can actually aim at.
+const FLING_MS = 220;
+// Below this (px/ms) a release is a release and not a throw — the rail
+// settles onto the nearest card instead of being projected anywhere. Set by
+// what a hand does when it means to stop: letting go of a stationary pointer
+// still registers a pixel or two of travel.
+const FLING_MIN_V = 0.08;
+
+/**
+ * Pointer speed at the moment of release, px/ms, positive when moving right.
+ *
+ * Measured across the whole surviving trail rather than between the last two
+ * events: pointer events do not arrive evenly, so a single pair can be a
+ * 2ms gap that reports a speed the hand never reached.
+ */
+function releaseVelocity(trail: { t: number; x: number }[], endT: number) {
+  const first = trail[0];
+  const last = trail[trail.length - 1];
+  if (!first || !last) return 0;
+  // A pointer held still before release emits nothing, so the gap between the
+  // last move and the release is real evidence of having stopped — count it.
+  const dt = Math.max(endT, last.t) - first.t;
+  if (dt <= 0) return 0;
+  return (last.x - first.x) / dt;
+}
+
+/**
+ * Lands the rail on a card, carrying it on by whatever the release was worth.
+ *
+ * The stride is read off the DOM exactly as the arrow step reads it, so the
+ * throw and the arrows always agree about where the cards are — a projection
+ * computed from the breakpoint instead would drift the moment a card width
+ * changed in one place and not the other.
+ */
+function throwTo(el: HTMLElement, velocity: number) {
+  const card = el.firstElementChild as HTMLElement | null;
+  const stride = (card?.offsetWidth ?? el.clientWidth) + GAP_PX;
+  if (stride <= 0) return;
+  // The pointer and the scroll run opposite ways: dragging RIGHT (positive
+  // velocity) pulls earlier cards back into view, which is scrollLeft going
+  // DOWN. Same inversion as `scrollLeft = left - dx` in the move handler.
+  const coast = Math.abs(velocity) < FLING_MIN_V ? 0 : velocity * FLING_MS;
+  const projected = el.scrollLeft - coast;
+  // Clamped AFTER rounding: the last card's snap position is short of a whole
+  // stride whenever the track does not divide evenly, and the rail should
+  // rest against its end rather than at the multiple just before it.
+  const max = el.scrollWidth - el.clientWidth;
+  const landed = Math.min(
+    Math.max(Math.round(projected / stride) * stride, 0),
+    max,
+  );
+  el.scrollTo({
+    left: landed,
+    // The landing is still a landing under reduced motion — it just arrives
+    // rather than travels. Dropping it entirely would leave the rail resting
+    // mid-card, which is the thing this exists to prevent.
+    behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      ? "auto"
+      : "smooth",
+  });
+}
+
 function Chevron({ direction }: { direction: "prev" | "next" }) {
   return (
     <svg
@@ -92,6 +163,31 @@ const ARROW =
 // than a permanently unwell front card.
 const FADE_AHEAD = 82;
 
+// Below Tailwind's `sm`, where RAIL_W is 78% and the peeking card is a sliver.
+const PHONE_MAX = 640;
+
+// THE PHONE FROSTS THE CUT INSTEAD OF BLEACHING IT.
+//
+// An alpha ramp dissolves the peeking card towards the page, which on this
+// page means dissolving a near-black photograph towards white across ~56px of
+// visible sliver. However long the run and however eased the curve, the middle
+// of it is a grey wash laid over a picture — the fade announces itself as a
+// smear rather than reading as the row carrying on.
+//
+// A blur has no colour of its own. The card keeps its own ink and its own
+// tone and simply goes out of focus towards the edge, which is the same thing
+// a camera does and reads as depth rather than as damage. It also works in
+// both themes untouched, for the same reason the mask did: there is no second
+// value to tune, because nothing is being painted.
+//
+// The ramp is on the OVERLAY'S mask, so the blur strength eases in rather than
+// starting at full force on a hard line — an abrupt backdrop-filter boundary
+// is its own visible edge. A little alpha rides along at the very end so the
+// last few pixels still give out instead of stopping dead against the gutter.
+const BLUR_EDGE = "w-[84px]";
+const BLUR_RAMP =
+  "linear-gradient(to right, rgba(0,0,0,0) 0%, rgba(0,0,0,0.12) 28%, rgba(0,0,0,0.4) 55%, rgba(0,0,0,0.72) 76%, rgba(0,0,0,0.92) 90%, #000 100%)";
+
 // Tailwind's `lg`, which is where RAIL_W below switches to
 // `calc((100%-2rem)/3)`: three cards and the two 1rem gaps between them come
 // to exactly 100%, so at a snap point the third card's right edge lands ON the
@@ -147,13 +243,19 @@ export function CardRail({
   // false so the server render and first paint carry the fade, which is the
   // right answer at every width below lg and is corrected within the frame.
   const [wholeTrack, setWholeTrack] = useState(false);
+  // Same shape as wholeTrack: starts false so the server render carries the
+  // wide-screen ramp, and sync() corrects it within the frame.
+  const [phone, setPhone] = useState(false);
 
   const sync = useCallback(() => {
     const el = ref.current;
     if (!el) return;
     setAtStart(el.scrollLeft <= END_SLACK);
     setAtEnd(el.scrollLeft >= el.scrollWidth - el.clientWidth - END_SLACK);
-    setWholeTrack(window.matchMedia(`(min-width: ${WHOLE_TRACK_MIN}px)`).matches);
+    setWholeTrack(
+      window.matchMedia(`(min-width: ${WHOLE_TRACK_MIN}px)`).matches,
+    );
+    setPhone(window.matchMedia(`(max-width: ${PHONE_MAX - 0.02}px)`).matches);
   }, []);
 
   useEffect(() => {
@@ -193,7 +295,13 @@ export function CardRail({
         atStart
         ? []
         : [fadeMask("to left", 100 - FADE_BEHIND)]
-      : [fadeMask("to right", FADE_AHEAD)];
+      : phone
+        ? // The frosted edge replaces it below sm — see BLUR_RAMP. Running
+          // both would put the wash back over the blur.
+          []
+        : [fadeMask("to right", FADE_AHEAD)];
+  // Whether the frosted edge is the thing covering the trailing cut.
+  const blurAhead = phone && !wholeTrack && !atEnd;
 
   // ── Drag to scroll ────────────────────────────────────────────────────
   // Touch and trackpad already drag this rail natively; a mouse did not, so on
@@ -201,7 +309,35 @@ export function CardRail({
   // draggable without being so. This adds the mouse case only — pointerType
   // "touch" is left alone, because intercepting it would replace the browser's
   // own momentum and rubber-banding with a worse version of both.
-  const drag = useRef<{ x: number; left: number; moved: boolean } | null>(null);
+  //
+  // ── Releasing it THROWS the rail ──────────────────────────────────────
+  // The drag used to stop dead where the pointer let go, leaving the rail
+  // resting wherever that happened to be — usually mid-card, because a hand
+  // does not release on a boundary. snap-proximity would tidy it only if the
+  // rest point was already close to one. So a rail you dragged looked like a
+  // rail you had broken: two half cards and no column.
+  //
+  // It now carries on the way every touch surface does. The pointer's speed
+  // at the moment of release is projected forward, and the rail lands on the
+  // card nearest that projection — so a flick crosses several cards, a push
+  // crosses one, and a slow drag just settles onto whichever card it was
+  // already nearest. Every release ends on a card either way.
+  //
+  // WHY NOT snap-mandatory, which also always lands on a card: mandatory
+  // governs every scroll the element sees, including a vertical page scroll
+  // that merely passes over it, which it then grabs and pulls back. See the
+  // scroller's own comment. Doing the landing here keeps it bound to the one
+  // gesture that should cause it.
+  //
+  // Touch still never reaches any of this (see the pointerType check): the
+  // browser's own momentum is better than this, and the two would fight.
+  const drag = useRef<{
+    x: number;
+    left: number;
+    moved: boolean;
+    /** Recent pointer positions, newest last, for the release velocity. */
+    trail: { t: number; x: number }[];
+  } | null>(null);
   const [dragging, setDragging] = useState(false);
 
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -211,12 +347,30 @@ export function CardRail({
     // width where the rail has become a complete row, a grab that moves
     // nothing is worse than no grab at all. See `steppable`.
     if (!steppable) return;
-    drag.current = { x: e.clientX, left: el.scrollLeft, moved: false };
+    drag.current = {
+      x: e.clientX,
+      left: el.scrollLeft,
+      moved: false,
+      trail: [{ t: e.timeStamp, x: e.clientX }],
+    };
     // Imperatively, not through the className below: smooth scrolling animates
     // towards each scrollLeft we assign, so the rail would lag the pointer and
     // never catch up — and a React state flip only lands a frame later, which
     // is exactly the frames the drag starts on.
     el.style.scrollBehavior = "auto";
+    // AND SNAP COMES OFF FOR THE DURATION. This is what made the drag feel
+    // stuck: snapping is applied to any scroll the element comes to rest at,
+    // and every scrollLeft we assign mid-drag IS a rest. So while the pointer
+    // was still inside the current card's proximity the browser pulled each
+    // assignment straight back to the card it came from, and the rail did not
+    // move at all until the pointer crossed the halfway line, at which point
+    // it jumped a whole card. A 55px drag measured 0px of travel.
+    //
+    // With snap off the rail tracks the pointer exactly, and the landing is
+    // handled on release by throwTo, which aims at a card anyway. The
+    // reference rail does the same thing — mid-drag its style attribute reads
+    // `scroll-snap-type: none` with the real value stashed beside it.
+    el.style.scrollSnapType = "none";
     setDragging(true);
   };
 
@@ -238,21 +392,56 @@ export function CardRail({
       } catch {}
     }
     el.scrollLeft = d.left - dx;
+
+    // Only the last VELOCITY_WINDOW of travel decides the throw, so a drag
+    // that wandered around the rail and then stopped is read as stopped
+    // rather than as the average of everywhere it has been.
+    d.trail.push({ t: e.timeStamp, x: e.clientX });
+    const cutoff = e.timeStamp - VELOCITY_WINDOW_MS;
+    while (d.trail.length > 2 && d.trail[0].t < cutoff) d.trail.shift();
   };
 
   const endDrag = (e: React.PointerEvent<HTMLDivElement>) => {
     const el = ref.current;
-    // Back to the stylesheet's smooth, which the arrow buttons rely on.
-    if (el) el.style.scrollBehavior = "";
+    const d = drag.current;
+    // Back to the stylesheet's smooth, which the arrow buttons rely on — and
+    // which the throw below is animated by. Snap comes back at the same time:
+    // throwTo only ever aims at a snap position, so proximity has nothing left
+    // to correct and cannot pull the landing somewhere else.
+    if (el) {
+      el.style.scrollBehavior = "";
+      el.style.scrollSnapType = "";
+    }
     try {
       if (el?.hasPointerCapture(e.pointerId))
         el.releasePointerCapture(e.pointerId);
     } catch {}
+    if (el && d?.moved) throwTo(el, releaseVelocity(d.trail, e.timeStamp));
     // Kept until the click that follows this release has been swallowed below.
-    if (drag.current?.moved) requestAnimationFrame(() => (drag.current = null));
+    if (d?.moved) requestAnimationFrame(() => (drag.current = null));
     else drag.current = null;
     setDragging(false);
   };
+
+  // THE BROWSER'S OWN DRAG IS NOT THIS ONE, and it has to be called off.
+  //
+  // An <img> is natively draggable, so a mousedown that lands on a card's
+  // artwork and then moves starts an HTML5 drag — the picture lifts out under
+  // a translucent ghost and follows the cursor, and the rail stays put.
+  // Grabbing a photo to scroll the rail is the most natural place to grab it,
+  // so the one gesture this component exists to serve was the one that broke
+  // it, and only on the cards that happen to carry an image.
+  //
+  // select-none below does not cover this: it governs TEXT selection, and a
+  // native image drag is a separate mechanism that fires regardless. It is
+  // also applied off `dragging`, a state flip that lands a frame after the
+  // pointer went down — by which time dragstart has already fired.
+  //
+  // Suppressed unconditionally rather than behind `steppable`: dragging a
+  // marketing card's photograph out of the page is not a gesture worth
+  // preserving at any width, and leaving it live below the breakpoint would
+  // mean the same grab behaved differently either side of it.
+  const onDragStart = (e: React.DragEvent) => e.preventDefault();
 
   // A drag that ends on top of a card would otherwise fire that card's click.
   const onClickCapture = (e: React.MouseEvent) => {
@@ -283,44 +472,76 @@ export function CardRail({
           vertical padding cancelled by a negative margin, so the clip is
           horizontal only and shadows still breathe above and below. The arrow
           is what says there is more. */}
-      <div
-        className="-my-4 overflow-hidden py-4"
-        style={edgeMasks.length ? fadeMaskStyle(edgeMasks) : undefined}
-      >
+      {/* The positioning context is THIS box, not the whole rail: the arrows
+          sit below the viewport inside the same component, and anchored to
+          the rail the frosted edge reached down over the "next" button and
+          blurred the one control the reader needs. */}
+      {/* FULL-BLEED BELOW sm, so the frosted edge reaches the screen.
+          Clipped at the measure, the peeking card stopped 24px short of the
+          viewport and the page's gutter showed as a white strip beside it —
+          with an alpha fade that strip was the end of the fade and read as
+          nothing, but a blurred card simply stops there, and the gap reads as
+          a margin error. Bled to the edge, the picture runs off the screen
+          the way it runs off the tray in the section above.
+          The scroller below pads itself back to the measure so the cards
+          still line up with the heading. */}
+      <div className="relative max-sm:-mx-6">
+        {/* THE FROSTED EDGE, over the viewport rather than inside the
+          scroller: it has to stay put while the cards move under it, and
+          anything inside the scroller would scroll away with them.
+          pointer-events-none so it never eats a drag or a tap on the card
+          beneath it. */}
+        {blurAhead ? (
+          <div
+            aria-hidden
+            className={`pointer-events-none absolute inset-y-0 right-0 z-10 ${BLUR_EDGE} backdrop-blur-[5px]`}
+            style={{ WebkitMaskImage: BLUR_RAMP, maskImage: BLUR_RAMP }}
+          />
+        ) : null}
         <div
-          ref={ref}
-          onScroll={sync}
-          onPointerDown={onPointerDown}
-          onPointerMove={onPointerMove}
-          onPointerUp={endDrag}
-          onPointerCancel={endDrag}
-          onClickCapture={onClickCapture}
-          role="group"
-          aria-label={label}
-          // overflow-y-hidden is load-bearing, not tidying: `overflow-x: auto`
-          // against a visible y makes the browser compute y to auto too, so
-          // this was a vertical scroll container as well as a horizontal one,
-          // and a page scroll that landed on it could be swallowed by it.
-          //
-          // snap-proximity, not mandatory: mandatory means the browser must
-          // always come to rest on a snap point, so it re-snaps during a
-          // vertical scroll that merely passes over the rail — which is the
-          // scroll getting caught and pulled back. Proximity snaps when you
-          // are already near a card and leaves the scroll alone otherwise.
-          //
-          // While dragging, the cursor becomes the grabbing hand and text
-          // selection is off — a drag across two cards would otherwise select
-          // their captions. Smooth scrolling is turned off for the drag too,
-          // but imperatively in onPointerDown; see there for why.
-          className={`flex snap-x snap-proximity gap-4 overflow-x-auto overflow-y-hidden overscroll-x-contain scroll-smooth [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${
-            !steppable
-              ? ""
-              : dragging
-                ? "cursor-grabbing select-none"
-                : "cursor-grab"
-          }`}
+          className="-my-4 overflow-hidden py-4"
+          style={edgeMasks.length ? fadeMaskStyle(edgeMasks) : undefined}
         >
-          {children}
+          <div
+            ref={ref}
+            onScroll={sync}
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={endDrag}
+            onPointerCancel={endDrag}
+            onDragStart={onDragStart}
+            onClickCapture={onClickCapture}
+            role="group"
+            aria-label={label}
+            // overflow-y-hidden is load-bearing, not tidying: `overflow-x: auto`
+            // against a visible y makes the browser compute y to auto too, so
+            // this was a vertical scroll container as well as a horizontal one,
+            // and a page scroll that landed on it could be swallowed by it.
+            //
+            // snap-proximity, not mandatory: mandatory means the browser must
+            // always come to rest on a snap point, so it re-snaps during a
+            // vertical scroll that merely passes over the rail — which is the
+            // scroll getting caught and pulled back. Proximity snaps when you
+            // are already near a card and leaves the scroll alone otherwise.
+            //
+            // While dragging, the cursor becomes the grabbing hand and text
+            // selection is off — a drag across two cards would otherwise select
+            // their captions. Smooth scrolling is turned off for the drag too,
+            // but imperatively in onPointerDown; see there for why.
+            // max-sm:px-6 / scroll-px-6 pay back the bleed above: the track
+            // starts and ends on the section's measure, and snap-start parks
+            // a card there rather than against the screen edge, so only the
+            // cards either side of the current one run off.
+            className={`flex snap-x snap-proximity gap-4 overflow-x-auto overflow-y-hidden overscroll-x-contain scroll-smooth [-ms-overflow-style:none] [scrollbar-width:none] max-sm:scroll-px-6 max-sm:px-6 [&::-webkit-scrollbar]:hidden ${
+              !steppable
+                ? ""
+                : dragging
+                  ? "cursor-grabbing select-none"
+                  : "cursor-grab"
+            }`}
+          >
+            {children}
+          </div>
         </div>
       </div>
 
@@ -493,22 +714,31 @@ export function RailCard({
   if (copyInside) {
     return (
       <div className={`group/card ${RAIL_W}`}>
-        {/* SQUARE BELOW sm, three-quarters from there.
-  
+        {/* SQUARE UNTIL THE RAIL GOES THREE-UP, three-quarters from there.
+
                 The card is 78% of the rail below sm, so its width grows with the
                 viewport while the ratio holds — at 375px it is a reasonable
                 255x340, but by 600px it is 400x533, which is two thirds of a
                 phone screen for one card in a rail you are meant to swipe
                 through. The ratio was set for the desktop rail, where three
                 cards share the row and none of them can run away with it.
-  
+
                 Square takes a quarter off the height across that whole range
                 without touching the desktop proportion. The mocks inside are
                 absolutely positioned and the card clips, so they crop further
                 from the foot — which is what they already do, and what says the
-                screen continues. */}
+                screen continues.
 
-        <div className="relative flex aspect-square w-full select-none flex-col overflow-hidden rounded-3xl bg-[var(--surface)] sm:aspect-[3/4]">
+                THE BREAK IS AT lg, NOT sm, and the arithmetic is why. The card
+                is 62% of the rail at sm and half of it at md; at 820px that is
+                a 362px card, which at 3/4 is 483px tall — the exact height it
+                has on a 1280px desktop, on a viewport two thirds as tall. The
+                ratio is only earned once three cards share the row and the
+                page is wide enough to carry them, which is lg. Below that the
+                card is as wide as a desktop card with none of the height to
+                spend, so it stays square. */}
+
+        <div className="relative flex aspect-square w-full select-none flex-col overflow-hidden rounded-3xl bg-[var(--surface)] lg:aspect-[3/4]">
           <div className="relative z-10 shrink-0 px-6 pb-4 pt-6 md:px-7 md:pt-7">
             {copy}
           </div>
@@ -583,7 +813,12 @@ export function RailCard({
 
   return (
     <div className={`group/card ${RAIL_W}`}>
-      <div className="relative aspect-square w-full select-none overflow-hidden rounded-3xl bg-[var(--surface)] sm:aspect-[3/4]">
+      {/* Same ratio ladder as the copyInside card above, and for the same
+          reason — see the note there. This is the variant /client-portal's
+          journey rail runs, and it is where the tall card actually showed:
+          with the copy UNDER the card, a 483px picture on a tablet pushed its
+          own caption most of a screen down the page. */}
+      <div className="relative aspect-square w-full select-none overflow-hidden rounded-3xl bg-[var(--surface)] lg:aspect-[3/4]">
         {children}
       </div>
       <div className="mt-4 px-1">{copy}</div>

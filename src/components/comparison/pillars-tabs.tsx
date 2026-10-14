@@ -82,8 +82,14 @@ export function PillarsTabs({ pillars }: { pillars: Pillar[] }) {
               resize as you tab between pillars, which is why that page sets
               one height for all three of its steps. */}
           <div
-            className={`relative mx-auto mt-6 aspect-[6/5] w-full sm:aspect-auto sm:h-[360px] md:mt-8 md:h-[400px] ${
-              current.visual.wide ? "px-6 md:px-10" : "max-w-[620px]"
+            className={`relative mx-auto mt-6 aspect-[6/5] max-h-[320px] w-full sm:aspect-auto sm:h-[360px] sm:max-h-none md:mt-8 md:h-[400px] ${
+              current.visual.wide
+                ? "px-6 md:px-10"
+                : // Inset until the 620 cap leaves a margin of its own; below
+                  // md the box is the panel's full width and a screen in it
+                  // ran edge to edge. The floor keeps a 320px phone's 6:5 box
+                  // tall enough for the stacked credit cards.
+                  "min-h-[260px] max-w-[620px] px-6 md:px-0"
             }`}
           >
             {current.visual.art ?? (

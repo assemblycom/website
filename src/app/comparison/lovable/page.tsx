@@ -1,19 +1,19 @@
 import type { Metadata } from "next";
 import { VsComparisonPage, type VsPage } from "@/components/comparison/vs-page";
-import { PlanCard } from "@/components/client-portal/portal-build-cards";
 import {
   GitHandoffVisual,
   MaintenanceVisual,
   PrototypeVisual,
   PublicSiteVisual,
-} from "@/components/comparison/lovable-story-visuals";
+} from "@/components/comparison/story-visuals";
 import { TeamClientsHeroVisual } from "@/components/comparison/team-clients-hero-visual";
 import {
   ClientAppsPillarVisual,
   CrmPillarVisual,
   FullExperienceVisual,
   LoginsPillarVisual,
-} from "@/components/comparison/lovable-pillar-visuals";
+  PlanVisual,
+} from "@/components/comparison/product-visuals";
 import { PAGE_SEO, pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata(PAGE_SEO.vsLovable);
@@ -141,7 +141,7 @@ const PAGE: VsPage = {
       heading: "Describe it. Approve it. Clients use it",
       body: "Assembly shows you a plan and waits for your approval before anything builds.",
       visual: {
-        art: <PlanCard plain />,
+        art: <PlanVisual />,
         label: "Deep dive, the plan",
         description:
           "The Plan card UI, large enough to read the actual copy on it, with a visible Approve and Edit pair. Caption: You approve before anything builds.",

@@ -104,6 +104,8 @@ function NavRow({
 
 export function BrandedPortalVisual({
   brand = "Brandmages",
+  brandMark = <IconBrandMark className="size-[10px]" />,
+  brandColor,
   stock = STOCK,
   apps = ADDED,
   landOnHover = [],
@@ -113,6 +115,10 @@ export function BrandedPortalVisual({
   appHeader = true,
 }: {
   brand?: string;
+  /** The firm's mark, on the white tile beside its name. */
+  brandMark?: React.ReactNode;
+  /** The firm's nav colour, in place of --mock-brand's near-black slab. */
+  brandColor?: string;
   /** The portal's built-in rows. PORTAL_STOCK_CORE drops Billing. */
   stock?: PortalApp[];
   /** The firm's own apps, under the stock rows. The last one is open. */
@@ -172,10 +178,13 @@ export function BrandedPortalVisual({
       {/* The firm's colour, not ours. --mock-brand is the one token that holds
           its value across both themes, because it stands for the client's own
           brand slab rather than for our chrome. */}
-      <div className="flex w-[160px] shrink-0 flex-col gap-[2px] bg-[var(--mock-brand)] px-2.5 py-3">
+      <div
+        className="flex w-[160px] shrink-0 flex-col gap-[2px] bg-[var(--mock-brand)] px-2.5 py-3"
+        style={brandColor ? { backgroundColor: brandColor } : undefined}
+      >
         <span className="flex items-center gap-2 px-2 pb-3">
           <span className="flex size-[18px] items-center justify-center rounded-[4px] bg-white text-black">
-            <IconBrandMark className="size-[10px]" />
+            {brandMark}
           </span>
           <span className={`truncate text-white ${MOCK_PRIMARY}`}>{brand}</span>
           {/* No chevron. It is the workspace switcher's mark, and a switcher

@@ -44,11 +44,16 @@ export function DeepDiveCards({ dives }: { dives: DeepDive[] }) {
 // built around shots that exist and the art direction they carry — but the
 // same object, so a visitor crossing from /ai-app-builder to here meets one
 // card rather than two that nearly match.
-const CARD =
-  "flex flex-col overflow-hidden rounded-3xl bg-[var(--surface)]";
+const CARD = "flex flex-col overflow-hidden rounded-3xl bg-[var(--surface)]";
 const CARD_PAD = "px-5 pt-6 sm:px-6 sm:pt-7 md:px-8 md:pt-8";
 
-function DeepDiveCard({ dive, wide = false }: { dive: DeepDive; wide?: boolean }) {
+function DeepDiveCard({
+  dive,
+  wide = false,
+}: {
+  dive: DeepDive;
+  wide?: boolean;
+}) {
   return (
     <div className={`${CARD} ${wide ? "sm:col-span-2" : ""}`}>
       {/* A FLOOR UNDER THE COPY, ON A PHONE ONLY, so the three cards come out
@@ -114,7 +119,7 @@ function DeepDiveCard({ dive, wide = false }: { dive: DeepDive; wide?: boolean }
           // /ai-app-builder's panel draws them at. select-none: it is a
           // picture made of real text.
           <div className="absolute inset-x-5 top-0 bottom-0 sm:inset-x-6 md:inset-x-8">
-            <div className="relative mx-auto h-full w-full max-w-[620px] cursor-default select-none">
+            <div className="relative mx-auto h-full w-full max-w-[620px] cursor-default select-none [container-type:size]">
               {dive.visual.art}
             </div>
           </div>

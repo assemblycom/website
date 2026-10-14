@@ -35,12 +35,7 @@ import { MOCK_MICRO, MOCK_PRIMARY } from "@/components/ui/mock-type";
 
 /** Which row is lit. `Add App` lights the action at the foot of the list. */
 export type WorkspaceNavRow =
-  | "CRM"
-  | "Team"
-  | "Home"
-  | "Messages"
-  | "Add App"
-  | (string & {});
+  "CRM" | "Team" | "Home" | "Messages" | "Add App" | (string & {});
 
 export interface WorkspaceApp {
   icon: React.ReactNode;
@@ -124,6 +119,8 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 export function WorkspaceSidebar({
   active,
   apps = DEFAULT_APPS,
+  brand = "BrandMages",
+  brandMark = <IconBrandMark className="size-[9px]" />,
   /**
    * The column's width. The CRM card gives it the full 148/164 it was drawn
    * at; a shot whose subject is the PANE beside it can ask for less, since
@@ -134,6 +131,9 @@ export function WorkspaceSidebar({
   active: WorkspaceNavRow;
   /** The firm's built apps, for a shot whose claim is the range of them. */
   apps?: WorkspaceApp[];
+  /** The firm whose workspace this is, its name and its mark. */
+  brand?: string;
+  brandMark?: React.ReactNode;
   className?: string;
 }) {
   return (
@@ -149,9 +149,9 @@ export function WorkspaceSidebar({
     >
       <div className="flex items-center gap-1.5 px-1.5 pb-2.5 pt-0.5">
         <span className="flex size-[15px] items-center justify-center rounded bg-foreground text-background">
-          <IconBrandMark className="size-[9px]" />
+          {brandMark}
         </span>
-        <span className={`text-foreground ${MOCK_PRIMARY}`}>BrandMages</span>
+        <span className={`text-foreground ${MOCK_PRIMARY}`}>{brand}</span>
       </div>
 
       <NavItem icon={<IconBook />} label="CRM" active={active === "CRM"} />
@@ -183,7 +183,11 @@ export function WorkspaceSidebar({
           active={active === app.label}
         />
       ))}
-      <NavItem icon={<IconPlus />} label="Add App" active={active === "Add App"} />
+      <NavItem
+        icon={<IconPlus />}
+        label="Add App"
+        active={active === "Add App"}
+      />
     </div>
   );
 }

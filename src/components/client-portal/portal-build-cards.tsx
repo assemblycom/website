@@ -1406,7 +1406,7 @@ const calDayEdge = (i: number) =>
       ? `sm:border-r ${LINE}`
       : `border-r ${LINE}`;
 
-function CalendarPane() {
+export function CalendarPane() {
   const gridH = CAL_HOURS.length * CAL_ROW_H;
   const y = (clock: number) => (clock - CAL_START) * CAL_ROW_H;
 

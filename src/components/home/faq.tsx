@@ -190,6 +190,7 @@ function FAQItem({
                 // of its own row rather than as a trim — /client-portal's
                 // trust section is half a two-column grid, where the 52px is
                 // an eighth of the measure.
+
                 `space-y-4 pb-6 pl-3 pt-2 ${narrowAnswer ? "pr-3" : "pr-[52px]"}`
               : "space-y-4 px-5 pb-4 pt-2"
           }
@@ -220,7 +221,9 @@ function FAQItem({
                 // Not from sm: the measure is wide enough there that the rag
                 // is shallow and justifying would be solving nothing.
                 className={`type-body whitespace-pre-line text-muted-foreground ${
-                  justifyAnswers ? "max-sm:hyphens-auto max-sm:text-justify" : ""
+                  justifyAnswers
+                    ? "max-sm:hyphens-auto max-sm:text-justify"
+                    : ""
                 }`}
               >
                 {renderAnswer(para, links)}
@@ -473,7 +476,21 @@ export function Accordion({
           // pushed back to the column's own edge, so the first letter of every
           // question still lines up with the heading. Without this the whole
           // list would sit indented from everything around it.
-          "-mx-3",
+          //
+          // NOT ON A PHONE, where the page gutter is 24px and the bleed ate
+          // half of it: the rules and the hover plate ran 12px past the
+          // measure everything else on the page keeps, so they sat closer to
+          // the screen edge than the heading above them.
+          //
+          // ONLY THE BLEED GOES. The row keeps its px-3, so the padding is
+          // inside the plate rather than outside it — which is the trade the
+          // stack list on /client-portal already made, for the same reason:
+          // without it the question starts on the plate's own edge and the
+          // chevron ends on it, and the row reads as text pushed up against
+          // the walls. The cost is that the questions are inset from the
+          // heading above them, and the plate having room is worth more than
+          // that alignment, since the plate is the thing you see move.
+          "-mx-3 max-sm:mx-0",
           flushTop ? "[&>div:first-child>button]:pt-0" : "",
           // Opening rule, so the list reads as bounded rather than as a stack
           // that happens to start. Only with the dotted treatment: a solid one

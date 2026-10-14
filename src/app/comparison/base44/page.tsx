@@ -1,5 +1,18 @@
 import type { Metadata } from "next";
 import { VsComparisonPage, type VsPage } from "@/components/comparison/vs-page";
+import {
+  BrandPillarVisual,
+  ClientExperiencePillarVisual,
+  FullExperienceVisual,
+  PlanVisual,
+} from "@/components/comparison/product-visuals";
+import {
+  CreditsVisual,
+  GrowthToolingVisual,
+  HostedMvpVisual,
+  PlatformLayerVisual,
+  PublicStoreVisual,
+} from "@/components/comparison/story-visuals";
 import { BrandedLoginHeroVisual } from "@/components/comparison/branded-login-hero-visual";
 import { PAGE_SEO, pageMetadata } from "@/lib/seo";
 
@@ -89,6 +102,8 @@ const PAGE: VsPage = {
       // shipped platform-wide custom login pages in June 2026 and could close
       // the gap, so re-verify before every refresh of this page."
       visual: {
+        art: <BrandPillarVisual />,
+        wide: true,
         label: "Pillar 1 visual",
         description:
           "Split composition. Left: a login screen with a neutral platform-logo placeholder in the splash position. Right: the Assembly client sign-in carrying the customer's logo and colours, on a custom domain, no badge. Beneath, the 27% of sales calls figure as a pull stat.",
@@ -99,6 +114,8 @@ const PAGE: VsPage = {
       tabLabel: "Client experience",
       body: "Base44 builds the app; you assemble the experience. Assembly's comes branded, each client seeing only their own view.",
       visual: {
+        art: <ClientExperiencePillarVisual />,
+        wide: true,
         label: "Pillar 2 visual",
         description:
           "The branded client experience with a left sidebar listing the native apps (Messaging, Files, Contracts, Billing) alongside two custom-built ones, all under the customer's brand. A smaller second frame shows the same workspace from the team side. Labels: Your clients, Your team.",
@@ -114,6 +131,7 @@ const PAGE: VsPage = {
       // month, extra credits are $0.60 each, extra apps are $5 a month. The
       // rollover policy changed recently."
       visual: {
+        art: <CreditsVisual />,
         label: "Pillar 3 visual",
         description:
           "Two credit meters on the left labelled message credits and integration credits, both draining. One meter on the right labelled build credits, with a stable, full live apps bar beside it. Simple and diagrammatic.",
@@ -126,6 +144,7 @@ const PAGE: VsPage = {
       heading: "Built for clients, not just builders",
       body: "Team tools land in your dashboard, client apps in your branded experience.",
       visual: {
+        art: <PlanVisual />,
         label: "Deep dive, the plan",
         description:
           "The chat build panel with a readable Plan card covering what it builds, what data it uses and who sees it, with Approve and Edit. Then the same app shown on the team side and inside the branded client experience.",
@@ -135,6 +154,7 @@ const PAGE: VsPage = {
       heading: "The stack Base44 makes you build is already assembled",
       body: "A built-in CRM, a client login and ready-made business apps.",
       visual: {
+        art: <FullExperienceVisual orbit />,
         label: "Deep dive, the platform",
         description:
           "The Assembly workspace sidebar showing built apps alongside the native ones, with one branded client experience wrapping them. A thin strip beneath shows integration logos flowing into the workspace, generic placeholders unless brand use is cleared.",
@@ -146,6 +166,7 @@ const PAGE: VsPage = {
       // EDITORIAL, not rendered: "Confirm Base44's current certifications at its
       // Trust Center before any comparative security claim ships."
       visual: {
+        art: <PlatformLayerVisual />,
         label: "Deep dive, isolation",
         description:
           "A centre platform layer bar (logins, permissions, hosting, data scoping) with several app cards branching off it, each sandboxed with its own small database icon. Compliance marks as small badges beneath.",
@@ -159,14 +180,17 @@ const PAGE: VsPage = {
       {
         title: "The fastest hosted MVP",
         body: "No clients and no brand requirements yet, just an idea to validate.",
+        visual: <HostedMvpVisual />,
       },
       {
         title: "Post-launch growth tooling",
         body: "SEO and AI social tooling for a public, marketed product.",
+        visual: <GrowthToolingVisual />,
       },
       {
         title: "A public web app or store",
         body: "Anything anonymous visitors use, rather than clients who sign in.",
+        visual: <PublicStoreVisual />,
       },
     ],
   },
