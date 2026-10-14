@@ -228,10 +228,13 @@ export function VsComparisonPage({
             section's rule; the cards have no rules to run. */}
         <section className={`${RAIL} py-16 md:py-24`}>
           <Reveal>
-            <h2 className="type-h2 text-balance text-center">
+            {/* Ranged left on a phone, like every other section heading at
+                that width; centred from sm, where the three cards sit in a
+                row under it. */}
+            <h2 className="type-h2 text-balance sm:text-center">
               {page.betterFit.heading}
             </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-balance text-center text-muted-foreground">
+            <p className="mt-4 max-w-2xl text-balance text-muted-foreground sm:mx-auto sm:text-center">
               {page.betterFit.sub}
             </p>
             {/* The site's card rail, which is what /client-portal runs for
@@ -387,7 +390,7 @@ function SplitHero({
       {/* Inset on the page's own gutter and rounded, so the panel reads as a
           surface set on the page rather than half the page painted. */}
       <div className="flex px-6 pb-6 md:px-10 md:pb-10 lg:pl-0 lg:pt-6">
-        <div className="min-h-[560px] w-full overflow-hidden rounded-[28px]">
+        <div className="w-full overflow-hidden rounded-[28px] lg:min-h-[560px]">
           {visual}
         </div>
       </div>

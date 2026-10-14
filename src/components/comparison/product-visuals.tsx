@@ -176,18 +176,18 @@ export function BrandPillarVisual() {
         <BrandedLoginScreen quietFoot={false} centered orbit />
       </div>
       {/* The firm's picture as a card inset from the window's top and right
-          edges, running off the foot with the form. One of /client-portal's
-          approval covers, cropped the way that mock crops it: face in the
-          upper half, so the focus sits at 28%. */}
+          edges, running off the foot with the form. Focus sits left of centre
+          and in the upper third, where her face is, so the crop keeps it as
+          the panel narrows. */}
       <div className="hidden w-[46%] shrink-0 pr-3 pt-3 sm:block">
         <div className="relative h-full overflow-hidden rounded-t-lg bg-[var(--mock-well-2)]">
           <Image
-            src="/images/mocks/covers/cover-2.jpg"
+            src="/images/mocks/orbit-signin.jpg"
             alt=""
             fill
             sizes="420px"
             quality={90}
-            className="object-cover object-[50%_28%]"
+            className="object-cover object-[40%_30%]"
           />
         </div>
       </div>
@@ -210,7 +210,7 @@ export function ClientExperiencePillarVisual() {
       ]}
       title="Calendar"
     >
-      <CalendarPane />
+      <CalendarPane vivid />
     </BrandedPortalVisual>
   );
 }
@@ -225,8 +225,10 @@ export function PlanVisual() {
   return (
     // Sized by whichever runs out first, the slot's width or its height
     // (cqh: the slot is a size container), so the scene never scales past
-    // its window and blows its type up on a wide phone.
-    <div className="absolute bottom-0 left-1/2 aspect-[6/5] w-[min(100%,100cqh*1.2)] -translate-x-1/2 sm:aspect-[31/20] sm:w-[min(100%,620px,100cqh*1.55)]">
+    // its window and blows its type up on a wide phone. On a phone it is sized
+    // by height alone and runs past the card's inset to its edges: fitted to
+    // the inset it came out at 80% and its type was too small to read.
+    <div className="absolute bottom-0 left-1/2 aspect-[6/5] w-[calc(100cqh*1.2)] -translate-x-1/2 sm:aspect-[31/20] sm:w-[min(100%,620px,100cqh*1.55)]">
       <PlanCard plain />
     </div>
   );

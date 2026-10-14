@@ -192,7 +192,7 @@ export function SegmentedTabs({
           {options.map((o) => (
             <span
               key={o.value}
-              className="flex items-center justify-center whitespace-nowrap px-4 py-1.5"
+              className="flex items-center justify-center whitespace-nowrap px-3 py-1.5 sm:px-4"
             >
               {o.label}
             </span>
@@ -212,7 +212,7 @@ export function SegmentedTabs({
           aria-selected={o.value === value}
           tabIndex={o.value === value ? 0 : -1}
           onClick={() => onChange(o.value)}
-          className="relative whitespace-nowrap rounded-md px-4 py-1.5 text-center text-muted-foreground transition-colors hover:text-foreground"
+          className="relative whitespace-nowrap rounded-md px-3 py-1.5 text-center text-muted-foreground transition-colors hover:text-foreground sm:px-4"
         >
           {o.label}
         </button>

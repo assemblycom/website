@@ -107,7 +107,7 @@ function DeepDiveCard({
         // 370px each, so more than one is on screen at a time.
         className={`relative mt-6 overflow-hidden ${
           wide
-            ? "h-[240px] sm:h-[360px] md:h-[420px]"
+            ? "h-[272px] sm:h-[360px] md:h-[420px]"
             : "h-[240px] sm:h-[260px] md:h-[300px]"
         }`}
       >

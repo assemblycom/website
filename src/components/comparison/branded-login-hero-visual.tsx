@@ -86,8 +86,8 @@ function WiringSignInChat() {
         <p className={`max-w-[85%] self-end ${BUBBLE}`}>
           Add a login for my clients.
         </p>
-        {/* The work as a builder shows it: a step group with its running
-            time, one ruled row per thing it did, the last one the failure. */}
+        {/* The work as a builder shows it: a step group, one ruled row per
+            thing it did, the last one the failure. */}
         <div>
           <div className="flex items-center gap-2 text-[12px] leading-none text-muted-foreground">
             <span className="flex gap-[3px]">
@@ -107,7 +107,7 @@ function WiringSignInChat() {
               className="bg-clip-text text-transparent motion-reduce:![animation:none]"
               style={SHIMMER}
             >
-              Setting up sign-in&nbsp;&nbsp;4m 12s
+              Setting up sign-in
             </span>
             <IconChevronDown className="size-[10px]" />
           </div>

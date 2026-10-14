@@ -10,7 +10,7 @@ import { PANEL_BG } from "@/components/comparison/brand-panel";
 // Both views share one grid cell rather than being absolutely positioned, so
 // the stack is as tall as the taller of them and no taller. See the slot.
 const CARD =
-  "[grid-area:1/1] overflow-hidden rounded-[28px] bg-background transition-opacity duration-500 motion-reduce:transition-none";
+  "[grid-area:1/1] overflow-hidden rounded-[28px] max-lg:rounded-b-none bg-background transition-opacity duration-500 motion-reduce:transition-none";
 
 /**
  * The right half of a comparison page's split hero: a brand panel, a two-way
@@ -28,7 +28,7 @@ export function SplitHeroPanel({
 
   return (
     <div
-      className="flex h-full flex-col items-center justify-center gap-6 px-6 py-10 md:py-14"
+      className="flex h-full flex-col items-center justify-center gap-6 px-6 pt-8 max-lg:justify-start lg:py-14"
       style={{ background: PANEL_BG }}
     >
       {/* A track around the pair, so the control reads as a switch with two
@@ -78,9 +78,10 @@ export function SplitHeroPanel({
           From lg the aspect ratio governs again and the stack fills it, as
           before — there the panel is a column of the hero and its proportion
           is the design. */}
-      {/* Below lg the window crops its screen's foot, so the foot fades
-          out rather than stopping on a hard line mid-control. */}
-      <div className="relative h-[360px] w-full max-w-[400px] overflow-hidden rounded-[28px] max-lg:[mask-image:linear-gradient(to_bottom,#000_78%,transparent)] lg:h-auto lg:aspect-[4/5]">
+      {/* Below lg the window runs off the panel's foot: no bottom padding, no
+          rounded bottom, no fade. The panel's edge cuts the screen, which
+          reads as a screen carrying on past it and keeps the hero short. */}
+      <div className="relative h-[300px] w-full max-w-[400px] overflow-hidden rounded-[28px] max-lg:rounded-b-none lg:h-auto lg:aspect-[4/5]">
         <div className="absolute inset-x-0 top-0 grid lg:bottom-0">
           {views.map((v, i) => (
             <div

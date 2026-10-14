@@ -96,7 +96,7 @@ const PAGE: VsPage = {
     {
       heading: "Your brand, from the very first screen",
       tabLabel: "Your brand",
-      body: "Full white-labeling on the Professional plan — a top-three reason customers choose Assembly, raised in 27% of 2,926 sales calls.",
+      body: "Full white-labeling on Professional. Clients only ever see your brand.",
       // EDITORIAL, not rendered: "The Base44 login-splash claim is current as of
       // September 2026 and sourced to Base44's own feedback board. Base44
       // shipped platform-wide custom login pages in June 2026 and could close
@@ -111,8 +111,8 @@ const PAGE: VsPage = {
     },
     {
       heading: "A real client experience, included",
-      tabLabel: "Client experience",
-      body: "Base44 builds the app; you assemble the experience. Assembly's comes branded, each client seeing only their own view.",
+      tabLabel: "Client view",
+      body: "Base44 builds the app. Assembly ships it in a branded portal, one view per client.",
       visual: {
         art: <ClientExperiencePillarVisual />,
         wide: true,
@@ -124,7 +124,7 @@ const PAGE: VsPage = {
     {
       heading: "One credit meter, not two",
       tabLabel: "Credits",
-      body: "Base44 meters building and usage separately, neither rolling over. Assembly's roll over a month, and a live app is $5.",
+      body: "One credit balance that rolls over a month. A live app is $5.",
       // EDITORIAL, not rendered: "Confirm the exact figures against the live
       // pricing page before publish: paid plans include 200 build credits a
       // month and Free includes 50, unused credits roll over one additional
