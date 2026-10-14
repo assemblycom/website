@@ -311,7 +311,42 @@ const CONTACTS: Contact[] = [
   },
 ];
 
-export function TeamCrmVisual() {
+// For a frame tall enough to show more than five records before its crop:
+// the extra contacts slot in ahead of the empty last row.
+const MORE_CONTACTS: Contact[] = [
+  {
+    name: "Priya Nair",
+    email: "priya@godo.com",
+    company: "Godo",
+    phone: "(555) 010-5172",
+    tag: "Project",
+  },
+  {
+    name: "Leo Brandt",
+    email: "leo@symphony.co",
+    company: "Symphony",
+    phone: "(555) 010-9043",
+  },
+  {
+    name: "Nadia Osei",
+    email: "nadia@wave.co",
+    company: "Wave",
+    phone: "(555) 010-2617",
+    tag: "Retainer",
+  },
+];
+
+export function TeamCrmVisual({
+  /** Adds three records, for a frame taller than the /ai-app-builder card. */
+  moreRows = false,
+}: { moreRows?: boolean } = {}) {
+  const contacts = moreRows
+    ? [
+        ...CONTACTS.slice(0, -1),
+        ...MORE_CONTACTS,
+        CONTACTS[CONTACTS.length - 1],
+      ]
+    : CONTACTS;
   return (
     <div
       aria-hidden
@@ -465,7 +500,7 @@ export function TeamCrmVisual() {
               <span className="hidden w-[130px] shrink-0 sm:block">Tags</span>
               <span className="flex-1" />
             </div>
-            {CONTACTS.map((contact, i) => (
+            {contacts.map((contact, i) => (
               <div
                 key={contact.name}
                 // py-[9px], up from 6, and min-h 39 from 33 — the floor moves
@@ -498,7 +533,7 @@ export function TeamCrmVisual() {
                 // cursor there, and a blank strip that lights up is the mock
                 // claiming something is there.
                 className={`flex min-h-[39px] items-center gap-5 border-b border-[var(--mock-line)] py-[9px] pl-5 transition-colors duration-150 last:border-b-0 sm:gap-2 ${
-                  i === CONTACTS.length - 1
+                  i === contacts.length - 1
                     ? ""
                     : "hover:bg-[var(--mock-well-2)]"
                 }`}
@@ -515,7 +550,7 @@ export function TeamCrmVisual() {
                     there, the ground still reaches the edge, and nothing is
                     sliced. min-h-[39px] because the avatar was what set the
                     row's height, and the empty row has no avatar. */}
-                {i === CONTACTS.length - 1 ? null : (
+                {i === contacts.length - 1 ? null : (
                   <>
                     <span className="flex w-[124px] min-w-0 shrink-0 items-center gap-1.5 sm:w-[148px]">
                       {/* 20px, not 18: two letters at 9px need the extra two

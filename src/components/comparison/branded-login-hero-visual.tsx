@@ -70,8 +70,8 @@ const SHIMMER: React.CSSProperties = {
 };
 
 const BUBBLE =
-  "rounded-2xl bg-muted px-3.5 py-2 text-[13px] leading-[1.45] text-foreground [[data-theme=dark]_&]:bg-white/[0.08]";
-const RULE = "border-border [[data-theme=dark]_&]:border-white/15";
+  "rounded-2xl bg-muted px-3.5 py-2 text-[13px] leading-[1.45] text-foreground dark-ui:bg-white/[0.08]";
+const RULE = "border-border dark-ui:border-white/15";
 
 /**
  * The hosted side of the hero: what adding a client login costs on a builder
@@ -207,7 +207,7 @@ export function BrandedLoginScreen({
           // size-9, down from 11. With the browser bar gone the mark became the
           // first thing on the screen, and at 44px it was the largest object in
           // a shot whose subject is the form under it.
-          <span className="flex size-9 items-center justify-center rounded-[10px] bg-[var(--mock-brand)] text-white [[data-theme=dark]_&]:bg-[#f2f2f2] [[data-theme=dark]_&]:text-[#111111]">
+          <span className="flex size-9 items-center justify-center rounded-[10px] bg-[var(--mock-brand)] text-white dark-ui:bg-[#f2f2f2] dark-ui:text-[#111111]">
             <IconBrandMark className="size-4" />
           </span>
         )
@@ -286,7 +286,7 @@ function LoginScreen({
         // a tone the screen has rather than a new one. Dark only: light is
         // doing the right thing and the user asked for it not to move.
         labelInk:
-          "text-[color:var(--mock-ink)] [[data-theme=dark]_&]:text-[color:var(--mock-ink-soft)]",
+          "text-[color:var(--mock-ink)] dark-ui:text-[color:var(--mock-ink-soft)]",
         rule: "bg-[var(--mock-line)]",
         field:
           "border-[var(--mock-line)] bg-[var(--mock-well)] text-[color:var(--mock-ink-soft)]",
@@ -312,10 +312,10 @@ function LoginScreen({
         ink: "text-foreground",
         inkSoft: "text-muted-foreground",
         // See the framed palette: the label sits under its field in dark.
-        labelInk: "text-foreground [[data-theme=dark]_&]:text-muted-foreground",
-        rule: "bg-border [[data-theme=dark]_&]:bg-white/15",
+        labelInk: "text-foreground dark-ui:text-muted-foreground",
+        rule: "bg-border dark-ui:bg-white/15",
         field:
-          "border-border text-muted-foreground [[data-theme=dark]_&]:border-white/15",
+          "border-border text-muted-foreground dark-ui:border-white/15",
         primary: "bg-foreground text-background",
       };
 
@@ -357,17 +357,17 @@ function LoginScreen({
       {!chrome ? null : framed ? (
         <SafariChrome domain={domain} />
       ) : (
-        <div className="flex items-center gap-3 border-b border-border px-4 py-3 [[data-theme=dark]_&]:border-white/10">
+        <div className="flex items-center gap-3 border-b border-border px-4 py-3 dark-ui:border-white/10">
           <span className="flex gap-1.5">
             {[0, 1, 2].map((i) => (
               <span
                 key={i}
-                className="size-2 rounded-full bg-muted [[data-theme=dark]_&]:bg-white/15"
+                className="size-2 rounded-full bg-muted dark-ui:bg-white/15"
               />
             ))}
           </span>
           <span
-            className={`flex-1 truncate rounded-full bg-muted px-3 py-1 text-center text-muted-foreground [[data-theme=dark]_&]:bg-white/[0.08] ${MOCK_SECONDARY}`}
+            className={`flex-1 truncate rounded-full bg-muted px-3 py-1 text-center text-muted-foreground dark-ui:bg-white/[0.08] ${MOCK_SECONDARY}`}
           >
             {domain}
           </span>
@@ -489,7 +489,7 @@ function LoginScreen({
       {badge && (
         <div className="flex justify-center pb-5">
           <span
-            className={`flex items-center gap-1.5 rounded-full border border-border px-3 py-1 text-muted-foreground [[data-theme=dark]_&]:border-white/15 ${MOCK_SECONDARY}`}
+            className={`flex items-center gap-1.5 rounded-full border border-border px-3 py-1 text-muted-foreground dark-ui:border-white/15 ${MOCK_SECONDARY}`}
           >
             <span className="size-2.5 rounded-sm bg-muted-foreground/40" />
             Built with a hosted platform

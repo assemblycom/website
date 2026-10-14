@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Dark theme, except inside a .light-island (see that rule below). */
+@custom-variant dark-ui (&:where([data-theme="dark"] *):not(:where(.light-island, .light-island *)));
+
 @font-face {
   font-family: "PP Mori";
   src: url("/fonts/PPMori-Regular.otf") format("opentype");
@@ -877,6 +880,21 @@ textarea:-webkit-autofill:focus {
   --muted: #f5f5f5;
   --muted-foreground: #737373;
   --border: #e5e5e5;
+}
+
+/* A light island: a surface that stays light in both themes, for a screen
+   drawn on artwork that does not flip, like the comparison heroes' brand
+   gradient. Re-points the page tokens to their light values; pair it with
+   the dark-ui variant below for anything that hardcodes a dark override. */
+.light-island {
+  --background: #ffffff;
+  --foreground: #101114;
+  --muted: #f6f7f9;
+  --muted-foreground: #6b7079;
+  --border: #e8e9ec;
+  --card: #ffffff;
+  --card-foreground: #0a0a0a;
+  color-scheme: light;
 }
 
 /* Announcement bar follows the theme. Light is a clean white bar; dark is a

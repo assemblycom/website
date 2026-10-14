@@ -1,17 +1,6 @@
 import { TypedAddress } from "@/components/comparison/typed-address";
-import {
-  IconBolt,
-  IconBrandMark,
-  IconCheck,
-  IconClock,
-  IconGlobeSolid,
-} from "@/components/home/mock-icons";
-import {
-  MOCK_BODY,
-  MOCK_MICRO,
-  MOCK_PRIMARY,
-  MOCK_SECONDARY,
-} from "@/components/ui/mock-type";
+import { IconBolt, IconCheck, IconClock } from "@/components/home/mock-icons";
+import { MOCK_PRIMARY } from "@/components/ui/mock-type";
 import { PANEL_BG, PERIWINKLE } from "@/components/comparison/brand-panel";
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -33,8 +22,6 @@ const TILE =
 const PILL_SOLO = `flex items-center gap-2.5 whitespace-nowrap rounded-full border bg-[var(--mock-window)] py-2 pl-2 pr-5 text-[15px] leading-none text-[color:var(--mock-ink)] ${LINE}`;
 const TILE_SOLO =
   "flex size-8 shrink-0 items-center justify-center rounded-full bg-[var(--mock-well-2)] text-[color:var(--mock-ink)] [&_svg]:size-4";
-/** A placeholder line of text, for the parts of a screen nobody reads. */
-const BAR = "h-[6px] rounded-full bg-[var(--mock-well-2)]";
 
 function Story({
   card,
@@ -93,40 +80,6 @@ function Story({
   );
 }
 
-function BrandTile() {
-  return (
-    <span className="flex size-7 items-center justify-center rounded-[8px] bg-[var(--mock-ink)] text-[color:var(--mock-window)]">
-      <IconBrandMark className="size-3.5" />
-    </span>
-  );
-}
-
-/** Stop carrying the maintenance yourself: one fix, shipped once. */
-export function MaintenanceVisual() {
-  return (
-    <Story
-      card={
-        <>
-          <div className="flex items-center gap-2">
-            <BrandTile />
-            <span className={`text-[color:var(--mock-ink-soft)] ${MOCK_MICRO}`}>
-              Assembly
-            </span>
-          </div>
-          <p className={`mt-3 ${MOCK_BODY}`}>Sign-in security update</p>
-          <p
-            className={`mt-1 text-[color:var(--mock-ink-soft)] ${MOCK_SECONDARY}`}
-          >
-            Shipped once. Nothing to change in your apps.
-          </p>
-        </>
-      }
-      pillIcon={<IconCheck className="size-3" />}
-      pill="Inherited by all 4 apps"
-    />
-  );
-}
-
 /** A branch glyph. The mock set has none, and GitHub's own mark is theirs. */
 function IconBranch({ className }: { className?: string }) {
   return (
@@ -147,106 +100,91 @@ function IconBranch({ className }: { className?: string }) {
   );
 }
 
-const COMMITS = [
-  ["Add booking flow", "a3f9c1e"],
-  ["Fix date picker", "7b21d04"],
-  ["Initial commit", "e0c58aa"],
+/** Better fit 1: the code lives in a repo a developer takes over. */
+// Plain enough to read at a glance, real enough to read as code a developer
+// owns: a component, a fetch, a return.
+const SNIPPET: { text: string; soft?: boolean }[] = [
+  { text: "export function Booking() {" },
+  { text: "  const slots = useSlots();", soft: true },
+  { text: "  return (" },
+  { text: "    <Calendar slots={slots} />", soft: true },
+  { text: "  );" },
+  { text: "}" },
 ];
 
-/** Better fit 1: the code lives in a repo a developer takes over. */
 export function GitHandoffVisual() {
   return (
-    <Story
-      card={
-        <>
-          <div className="flex items-center justify-between gap-2">
-            <span className={MOCK_PRIMARY}>client-app</span>
+    <div
+      aria-hidden
+      className="absolute inset-0 flex select-none items-center justify-center px-6"
+      style={{ background: HOSTED_MVP_BG }}
+    >
+      {/* A code snippet, the thing a developer is handed: the repo is the
+          point of this card, so the picture is the code itself. */}
+      <div className={`${CARD_FRAME} overflow-hidden`}>
+        <div
+          className={`flex items-center gap-1.5 border-b bg-[var(--mock-well)] px-3.5 py-2 text-[color:var(--mock-ink-soft)] ${MOCK_PRIMARY} ${LINE}`}
+        >
+          <IconBranch className="size-3 shrink-0" />
+          booking.tsx
+        </div>
+        <pre className="px-3.5 py-3 font-mono text-[11.5px] leading-[1.7]">
+          {SNIPPET.map(({ text, soft }, i) => (
             <span
-              className={`flex items-center gap-1 rounded bg-[var(--mock-well-2)] px-1.5 py-[3px] text-[color:var(--mock-ink-soft)] ${MOCK_MICRO}`}
+              key={i}
+              className={`block ${soft ? "text-[color:var(--mock-ink-soft)]" : ""}`}
             >
-              <IconBranch className="size-[10px]" />
-              main
+              {text}
             </span>
-          </div>
-          <div className="mt-3 flex flex-col">
-            {COMMITS.map(([msg, hash]) => (
-              <div
-                key={hash}
-                className={`flex items-center gap-2 border-t py-2 ${LINE}`}
-              >
-                <span className="size-[6px] shrink-0 rounded-full bg-[var(--mock-ink-soft)]" />
-                <span className={`flex-1 truncate ${MOCK_SECONDARY}`}>
-                  {msg}
-                </span>
-                <span
-                  className={`font-mono text-[color:var(--mock-ink-soft)] ${MOCK_MICRO}`}
-                >
-                  {hash}
-                </span>
-              </div>
-            ))}
-          </div>
-        </>
-      }
-      pillIcon={<IconBranch className="size-3" />}
-      pill="Handed off to a developer"
-    />
+          ))}
+        </pre>
+      </div>
+    </div>
   );
 }
 
 /** Better fit 2: a page anyone can land on, no login in front of it. */
 export function PublicSiteVisual() {
   return (
-    <Story
-      card={
-        <>
-          <span
-            className={`mx-auto block w-fit rounded-full bg-[var(--mock-well)] px-3 py-[3px] text-[color:var(--mock-ink-soft)] ${MOCK_MICRO}`}
-          >
-            yourbrand.com
-          </span>
-          <div className="mt-4 flex flex-col items-center gap-2">
-            <p className={MOCK_BODY}>Book a table tonight</p>
-            <span className={`${BAR} w-3/4`} />
-            <span className={`${BAR} w-1/2`} />
-            <span
-              className={`mt-2 rounded-[6px] bg-[var(--mock-ink)] px-3 py-1.5 text-[color:var(--mock-window)] ${MOCK_SECONDARY}`}
-            >
-              Reserve
-            </span>
-          </div>
-        </>
-      }
-      pillIcon={<IconGlobeSolid className="size-3.5" />}
-      pill="Open to anyone, no login"
-    />
+    <div
+      aria-hidden
+      className="absolute inset-0 flex select-none items-center justify-center px-6"
+      style={{ background: PANEL_BG }}
+    >
+      <TypedAddress url="yourbrand.com" />
+    </div>
   );
 }
 
 /** Better fit 3: a one-off that ships and is left as it is. */
 export function PrototypeVisual() {
   return (
-    <Story
-      card={
-        <>
-          <div className="flex items-center justify-between gap-2">
-            <span className={MOCK_PRIMARY}>Event RSVP</span>
-            <span
-              className={`rounded bg-[var(--mock-well-2)] px-1.5 py-[3px] text-[color:var(--mock-ink-soft)] ${MOCK_MICRO}`}
-            >
-              v1
-            </span>
-          </div>
-          <div className="mt-3 flex flex-col gap-2">
-            <span className={`${BAR} w-full`} />
-            <span className={`${BAR} w-5/6`} />
-            <span className={`${BAR} w-2/3`} />
-          </div>
-        </>
-      }
-      pillIcon={<IconClock className="size-3.5" />}
-      pill="No changes planned"
-    />
+    <div
+      aria-hidden
+      className="absolute inset-0 flex select-none items-center justify-center px-6"
+      style={{ background: PUBLIC_STORE_BG }}
+    >
+      {/* One small app, finished and left alone: the case where a code-first
+          tool is the shorter path, because nothing about it is going to grow. */}
+      <div className={`${CARD} flex items-center gap-3`}>
+        <span className="flex size-8 shrink-0 items-center justify-center rounded-[8px] bg-[var(--mock-well-2)] text-[color:var(--mock-ink-soft)]">
+          <IconClock className="size-4" />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className={`block ${MOCK_PRIMARY}`}>Event RSVP</span>
+          <span
+            className={`mt-1 block text-[color:var(--mock-ink-soft)] ${MOCK_PRIMARY}`}
+          >
+            Last updated 8 months ago
+          </span>
+        </span>
+        <span
+          className={`shrink-0 rounded-[4px] bg-[var(--mock-well-2)] px-1.5 py-[3px] text-[color:var(--mock-ink-soft)] ${MOCK_PRIMARY}`}
+        >
+          v1
+        </span>
+      </div>
+    </div>
   );
 }
 

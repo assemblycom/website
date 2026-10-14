@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { VsComparisonPage, type VsPage } from "@/components/comparison/vs-page";
 import {
   GitHandoffVisual,
-  MaintenanceVisual,
+  PlatformLayerVisual,
   PrototypeVisual,
   PublicSiteVisual,
 } from "@/components/comparison/story-visuals";
@@ -107,6 +107,7 @@ const PAGE: VsPage = {
       visual: {
         label: "Pillar 1 visual",
         art: <ClientAppsPillarVisual />,
+        wide: true,
         description:
           "The team dashboard view and the branded client view of the same app, side by side, visibly originating from one chat panel. Left in neutral Assembly chrome, right in a distinct accent colour with a client logo placeholder. Labels: Your team, Your clients.",
       },
@@ -164,7 +165,7 @@ const PAGE: VsPage = {
       // by every app. Do not write that security fixes ship platform-wide, which
       // is not documented in those words."
       visual: {
-        art: <MaintenanceVisual />,
+        art: <PlatformLayerVisual />,
         label: "Deep dive, the platform layer",
         description:
           "A centre platform layer bar (auth, permissions, hosting, data scoping) with several app cards branching off it, each visibly sandboxed and carrying its own small database icon, to show isolation plus a shared foundation.",

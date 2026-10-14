@@ -12,8 +12,10 @@ import { FootBlur } from "@/components/ui/foot-blur";
 // the stack is as tall as the taller of them and no taller. See the slot.
 // A faint inset edge instead: where the panel's gradient runs pale at its
 // foot, a white card with no edge of its own melted into it.
+// In dark the card takes the mock family's window grey, not the page's
+// near-black: on the pale panel a #0a0a0a card read as a hole in it.
 const CARD =
-  "[grid-area:1/1] overflow-hidden rounded-[28px] max-lg:rounded-b-none bg-background shadow-[inset_0_0_0_1px_rgba(16,24,40,0.05),inset_0_1px_3px_rgba(16,24,40,0.05)] transition-opacity duration-500 motion-reduce:transition-none";
+  "[grid-area:1/1] overflow-hidden rounded-[28px] max-lg:rounded-b-none bg-background [[data-theme=dark]_&]:bg-[var(--mock-window)] shadow-[inset_0_0_0_1px_rgba(16,24,40,0.05),inset_0_1px_3px_rgba(16,24,40,0.05)] transition-opacity duration-500 motion-reduce:transition-none";
 
 /**
  * The right half of a comparison page's split hero: a brand panel, a two-way
@@ -47,7 +49,9 @@ export function SplitHeroPanel({
           ink for the same reason), so a token that flips would go dark on a
           surface that stayed light. */}
       <div
-        className="flex items-center gap-1 rounded-full border border-white/55 bg-white/15 p-1"
+        // A light island: the gradient does not flip with the theme, so the
+        // switch on it stays light too. Inverted, its picked pill went black.
+        className="light-island flex items-center gap-1 rounded-full border border-white/55 bg-white/15 p-1"
         role="tablist"
         aria-label={label}
       >
@@ -61,7 +65,7 @@ export function SplitHeroPanel({
             className={`rounded-full px-4 py-1.5 text-sm transition-colors duration-300 ${
               i === view
                 ? "bg-background text-foreground shadow-[0_1px_2px_rgba(16,24,40,0.08)]"
-                : "text-foreground/70 hover:bg-white/30 [[data-theme=dark]_&]:text-black/60"
+                : "text-foreground/70 hover:bg-white/30"
             }`}
           >
             {v.label}
