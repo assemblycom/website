@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { FootBlur } from "@/components/ui/foot-blur";
 import { BrandedLoginScreen } from "@/components/comparison/branded-login-hero-visual";
 import { ORBIT, OrbitMark } from "@/components/comparison/orbit-brand";
 import { BrandedPortalVisual } from "@/components/ai-app-builder/branded-portal-visual";
@@ -122,6 +123,11 @@ const WORKSPACE_APPS = [
   { icon: <IconFolder />, label: "Helpdesk" },
 ];
 const OPEN_APP = "Intake";
+// The Base44 page's firm runs a shorter list.
+const ORBIT_HIDDEN_APPS = ["Projects", "Helpdesk"];
+const ORBIT_APPS = WORKSPACE_APPS.filter(
+  ({ label }) => !ORBIT_HIDDEN_APPS.includes(label),
+);
 
 /** Deep dive 2: the team's workspace, already holding a set of apps, with
  *  one of them open. A phone drops the nav and keeps the form. */
@@ -137,16 +143,17 @@ export function FullExperienceVisual({
     // width; a fixed 640 hid the form entirely on a narrow card. Never under
     // 480 once the nav shows (sm), or the form squeezed beside it and cut its
     // own labels instead of being cut by the card.
-    <div className="-mr-5 flex h-full flex-col sm:-mr-6 md:-mr-8">
+    <div className="relative -mr-5 flex h-full flex-col sm:-mr-6 md:-mr-8">
       <div className={`${WINDOW} rounded-tr-none border-r-0`}>
         <div className="h-full w-[calc(100%+80px)] sm:w-[max(calc(100%+80px),480px)]">
           <IntakeAppMock
             title={OPEN_APP}
             action={false}
+            accent={orbit ? ORBIT.color : undefined}
             nav={
               <WorkspaceSidebar
                 active={OPEN_APP}
-                apps={WORKSPACE_APPS}
+                apps={orbit ? ORBIT_APPS : WORKSPACE_APPS}
                 {...(orbit
                   ? {
                       brand: ORBIT.name,
@@ -159,6 +166,8 @@ export function FullExperienceVisual({
           />
         </div>
       </div>
+      {/* Phone only, where the form is cut mid-row by the card's edge. */}
+      <FootBlur edge="right" className="sm:hidden" />
     </div>
   );
 }
@@ -169,28 +178,34 @@ export function FullExperienceVisual({
  *  foot with no fade. A phone drops the picture and keeps the form at its full width. */
 export function BrandPillarVisual() {
   return (
-    <div className={`${WINDOW} flex h-full`}>
-      {/* The sign-in draws a window of its own; here it sits inside this one,
+    // The blur sits beside the window, not in it: inside a rounded,
+    // overflow-clipped box Chrome drops the blur's mask and draws it at full
+    // strength from a hard edge.
+    <div className="relative flex h-full">
+      <div className={`${WINDOW} flex`}>
+        {/* The sign-in draws a window of its own; here it sits inside this one,
           so its frame comes off rather than drawing a frame in a frame. */}
-      <div className="flex min-w-0 flex-1 flex-col [&>div]:rounded-none [&>div]:border-0">
-        <BrandedLoginScreen quietFoot={false} centered orbit />
-      </div>
-      {/* The firm's picture as a card inset from the window's top and right
-          edges, running off the foot with the form. Focus sits left of centre
-          and in the upper third, where her face is, so the crop keeps it as
-          the panel narrows. */}
-      <div className="hidden w-[46%] shrink-0 pr-3 pt-3 sm:block">
-        <div className="relative h-full overflow-hidden rounded-t-lg bg-[var(--mock-well-2)]">
-          <Image
-            src="/images/mocks/orbit-signin.jpg"
-            alt=""
-            fill
-            sizes="420px"
-            quality={90}
-            className="object-cover object-[40%_30%]"
-          />
+        <div className="flex min-w-0 flex-1 flex-col [&>div]:rounded-none [&>div]:border-0">
+          <BrandedLoginScreen quietFoot={false} centered orbit />
+        </div>
+        {/* The firm's picture as a card inset from the window's top and right
+          edges, running off the foot with the form. An abstract lime
+          pattern, cropped from the centre. */}
+        <div className="hidden w-[46%] shrink-0 pr-3 pt-3 sm:block">
+          <div className="relative h-full overflow-hidden rounded-t-lg bg-[var(--mock-well-2)]">
+            <Image
+              src="/images/mocks/orbit-signin-art.png"
+              alt=""
+              fill
+              sizes="420px"
+              quality={90}
+              className="object-cover"
+            />
+          </div>
         </div>
       </div>
+      {/* Phone only, where the form runs the full width into the cut. */}
+      <FootBlur className="sm:hidden" />
     </div>
   );
 }
@@ -200,18 +215,23 @@ export function BrandPillarVisual() {
  *  is /client-portal's build-step calendar, reused. */
 export function ClientExperiencePillarVisual() {
   return (
-    <BrandedPortalVisual
-      brand={ORBIT.name}
-      brandMark={<OrbitMark className="size-[11px]" />}
-      brandColor={ORBIT.color}
-      apps={[
-        { icon: <IconList />, label: "Project tracker" },
-        { icon: <IconClock />, label: "Calendar" },
-      ]}
-      title="Calendar"
-    >
-      <CalendarPane vivid />
-    </BrandedPortalVisual>
+    // On a phone the portal runs off the card's right edge, past the slot's
+    // inset, so the nav and the calendar keep their width instead of both
+    // squeezing; the right corner and hairline go with the edge it lost.
+    <div className="h-full max-md:-mr-6 max-md:[&>div]:rounded-tr-none max-md:[&>div]:border-r-0">
+      <BrandedPortalVisual
+        brand={ORBIT.name}
+        brandMark={<OrbitMark className="size-[11px]" />}
+        brandColor={ORBIT.color}
+        apps={[
+          { icon: <IconList />, label: "Project tracker" },
+          { icon: <IconClock />, label: "Calendar" },
+        ]}
+        title="Calendar"
+      >
+        <CalendarPane vivid />
+      </BrandedPortalVisual>
+    </div>
   );
 }
 
@@ -228,7 +248,9 @@ export function PlanVisual() {
     // its window and blows its type up on a wide phone. On a phone it is sized
     // by height alone and runs past the card's inset to its edges: fitted to
     // the inset it came out at 80% and its type was too small to read.
-    <div className="absolute bottom-0 left-1/2 aspect-[6/5] w-[calc(100cqh*1.2)] -translate-x-1/2 sm:aspect-[31/20] sm:w-[min(100%,620px,100cqh*1.55)]">
+    // The extra 20px is the scene's own top padding, pushed past the slot's
+    // top edge so the plan sits as close under its copy as its siblings do.
+    <div className="absolute bottom-0 left-1/2 aspect-[6/5] w-[calc((100cqh+20px)*1.2)] -translate-x-1/2 sm:aspect-[31/20] sm:w-[min(100%,620px,100cqh*1.55)]">
       <PlanCard plain />
     </div>
   );

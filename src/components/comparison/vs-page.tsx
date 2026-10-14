@@ -206,12 +206,16 @@ export function VsComparisonPage({
 
         <GridDivider />
 
-        {/* Heading ranged left and in the same section as the cards, matching
+        {/* From sm, heading ranged left and in the same section as the cards, matching
             the pillars above: these two are the page's two argument sections
             and a centred title over one of them would make them a pair that
             does not match. */}
         <section className={`${RAIL} py-16 md:py-24`}>
-          <h2 className="type-h2 text-balance">{page.deepDivesHeading}</h2>
+          {/* Centred on a phone, held to two balanced lines: one long line
+              ran edge to edge on a wide phone and read as a run-on. */}
+          <h2 className="type-h2 text-balance max-sm:mx-auto max-sm:max-w-[16ch] max-sm:text-center">
+            {page.deepDivesHeading}
+          </h2>
           <Reveal>
             <div className="mt-10 md:mt-12">
               <DeepDiveCards dives={page.deepDives} />

@@ -954,11 +954,14 @@ export function IntakeAppMock({
   title = "Partner intake",
   /** Replaces the client's nav, for a shot of the same app from the team's side. */
   nav,
+  /** The firm's colour on the form's top rule, in place of ink. */
+  accent,
 }: {
   branded?: boolean;
   action?: boolean;
   title?: string;
   nav?: React.ReactNode;
+  accent?: string;
 } = {}) {
   return (
     <div
@@ -978,8 +981,10 @@ export function IntakeAppMock({
             the header row it read as a stray pill rather than as whose app
             this is. */}
         {/* Hidden below sm, as on the onboarding board: MobileAppBar is the
-            bar there, and this header under it named the app twice. */}
-        <div className="hidden sm:block">
+            bar there, and this header under it named the app twice. On the
+            body's recessed ground, so the bar reads as part of the form's
+            page rather than as a white strip across its top. */}
+        <div className="hidden bg-[var(--mock-well)] sm:block">
           <AppHeader title={title} />
         </div>
         {/* RECESSED, where every other screen's body is the window's own
@@ -1014,7 +1019,10 @@ export function IntakeAppMock({
             <div
               className={`overflow-hidden rounded-[5px] border bg-[var(--mock-window)] ${LINE}`}
             >
-              <div className="h-[4px] bg-[var(--mock-ink)]" />
+              <div
+                className="h-[4px] bg-[var(--mock-ink)]"
+                style={accent ? { backgroundColor: accent } : undefined}
+              />
               <div className="flex items-center justify-between gap-2 p-2.5">
                 <span className="truncate text-[10.5px] leading-none text-[color:var(--mock-ink)]">
                   {INTAKE_STEP.title}
@@ -1188,14 +1196,19 @@ function Panel({
 // screen that do nothing and say nothing — a plus promises a thing you can
 // add, which this picture never shows, and three dots stand for a menu nobody
 // can open. What the bar is here for is to prove there is an app around the
-// content; the hamburger and the app's name do that on their own, and on a
+// content; the sidebar toggle and the app's name do that on their own, and on a
 // ~300px bar the pair also crowded the one element that carries the point. sm:hidden, because from sm the two-column
 // layout already reads as a desktop screen and a phone bar on top of it would
 // be two different devices in one picture.
-function IconHamburger({ className }: { className?: string }) {
+// The sidebar toggle, not a hamburger: the button opens the app's nav panel,
+// and the approved glyph draws that panel.
+function IconSidebar({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 20 20" className={className} aria-hidden>
-      <path d="M4.5 6.5h11M4.5 10h11M4.5 13.5h11" {...STROKE} />
+      <path
+        d="M17.5 3H2.5C1.12 3 0 4.12 0 5.5V15.5C0 16.87 1.12 18 2.5 18H17.5C18.88 18 20 16.87 20 15.5V5.5C20 4.12 18.88 3 17.5 3ZM1.88 15.5V5.5C1.88 5.15 2.16 4.87 2.5 4.87H11.25V16.12H2.5C2.16 16.12 1.88 15.84 1.88 15.5ZM18.1 15.24C18.1 15.73 17.71 16.12 17.22 16.12H13.13V4.87H17.47C17.82 4.87 18.1 5.15 18.1 5.5V15.24Z"
+        fill="currentColor"
+      />
     </svg>
   );
 }
@@ -1228,7 +1241,7 @@ function MobileAppBar({
       className={`flex items-center gap-2 border-b px-2.5 py-2 sm:hidden ${LINE} ${className}`}
     >
       <span className={`${BAR_BUTTON} text-[color:var(--mock-ink)]`}>
-        <IconHamburger className="size-[13px]" />
+        <IconSidebar className="size-[13px]" />
       </span>
       {/* The app name sits flat, no fill: a filled chip on a still picture
           read as a hovered control rather than as the screen's title. */}

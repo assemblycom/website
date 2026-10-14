@@ -1,6 +1,5 @@
-import Image from "next/image";
+import { TypedAddress } from "@/components/comparison/typed-address";
 import {
-  IconAreaChart,
   IconBolt,
   IconBrandMark,
   IconCheck,
@@ -29,6 +28,11 @@ const CARD = `${CARD_FRAME} p-3.5`;
 const PILL = `flex items-center gap-2 whitespace-nowrap rounded-full border bg-[var(--mock-window)] py-1.5 pl-1.5 pr-3.5 text-[color:var(--mock-ink)] ${MOCK_PRIMARY} ${LINE}`;
 const TILE =
   "flex size-6 shrink-0 items-center justify-center rounded-full bg-[var(--mock-well-2)] text-[color:var(--mock-ink)]";
+// A pill with no card above it is the whole picture, so it is drawn a step
+// larger to hold the panel on its own.
+const PILL_SOLO = `flex items-center gap-2.5 whitespace-nowrap rounded-full border bg-[var(--mock-window)] py-2 pl-2 pr-5 text-[15px] leading-none text-[color:var(--mock-ink)] ${LINE}`;
+const TILE_SOLO =
+  "flex size-8 shrink-0 items-center justify-center rounded-full bg-[var(--mock-well-2)] text-[color:var(--mock-ink)] [&_svg]:size-4";
 /** A placeholder line of text, for the parts of a screen nobody reads. */
 const BAR = "h-[6px] rounded-full bg-[var(--mock-well-2)]";
 
@@ -49,7 +53,8 @@ function Story({
   bare?: boolean;
   /** Paints the panel behind the story, e.g. the hero's brand gradient. */
   background?: string;
-  card: React.ReactNode;
+  /** Left out for a story told by its background and pill alone. */
+  card?: React.ReactNode;
   pill: string;
   pillIcon: React.ReactNode;
   /** The line through the pieces, the panel's full height, or none. */
@@ -69,15 +74,17 @@ function Story({
       )}
       <div className="relative flex h-full flex-col items-center justify-center gap-4 px-6">
         <div className="relative flex w-full flex-col items-center gap-3 sm:gap-4">
+          {card ? (
+            <div
+              className={`relative ${bare ? `${CARD_FRAME} overflow-hidden` : CARD}`}
+            >
+              {card}
+            </div>
+          ) : null}
           <div
-            className={`relative ${bare ? `${CARD_FRAME} overflow-hidden` : CARD}`}
+            className={`relative ${card ? PILL : PILL_SOLO} ${pillOnPhone ? "" : "max-sm:hidden"}`}
           >
-            {card}
-          </div>
-          <div
-            className={`relative ${PILL} ${pillOnPhone ? "" : "max-sm:hidden"}`}
-          >
-            <span className={TILE}>{pillIcon}</span>
+            <span className={card ? TILE : TILE_SOLO}>{pillIcon}</span>
             {pill}
           </div>
         </div>
@@ -289,9 +296,12 @@ export function CreditsVisual() {
       className={`mock-edge flex h-full select-none flex-col gap-3 overflow-hidden rounded-t-xl border border-b-0 bg-[var(--mock-window)] px-4 pt-4 sm:px-6 sm:pt-6 ${LINE}`}
     >
       <div className="mb-1">
-        <p className={MOCK_BODY}>Plan &amp; usage</p>
+        {/* A step above the cards' own titles, the way a settings page heads
+            the cards under it; at the body size it read smaller than "Free
+            plan" below it. */}
+        <p className="text-[15px] leading-[1.3]">Plan &amp; usage</p>
         <p
-          className={`mt-1 text-[color:var(--mock-ink-soft)] ${MOCK_SECONDARY}`}
+          className={`mt-1.5 text-[color:var(--mock-ink-soft)] ${MOCK_PRIMARY}`}
         >
           Your plan, seats, and credit usage.
         </p>
@@ -365,231 +375,78 @@ export function PlatformLayerVisual() {
   );
 }
 
-/** A browser's toolbar at mock scale: the window buttons and the address. */
-function BrowserBar({ url, right }: { url: string; right?: React.ReactNode }) {
-  return (
-    <div
-      className={`flex items-center gap-2 border-b bg-[var(--mock-well)] px-3 py-2 ${LINE}`}
-    >
-      <span className="flex shrink-0 gap-[4px]">
-        <span className="size-[6px] rounded-full bg-[var(--mock-traffic-red)]" />
-        <span className="size-[6px] rounded-full bg-[var(--mock-traffic-amber)]" />
-        <span className="size-[6px] rounded-full bg-[var(--mock-traffic-green)]" />
-      </span>
-      <span
-        className={`flex-1 truncate rounded-[5px] border bg-[var(--mock-window)] px-2 py-[3px] text-center text-[color:var(--mock-ink-soft)] ${MOCK_MICRO} ${LINE}`}
-      >
-        {url}
-      </span>
-      {right ?? <span className="w-[26px] shrink-0" />}
-    </div>
-  );
-}
-
-/** A small round face, initials on a soft ground, the CRM's own avatar. */
-function Avatar({
-  initials,
-  ring = false,
-}: {
-  initials: string;
-  ring?: boolean;
-}) {
-  return (
-    <span
-      className={`flex size-[18px] items-center justify-center rounded-full bg-[var(--mock-well-2)] text-[8px] text-[color:var(--mock-ink-soft)] ${
-        ring ? "-ml-1.5 ring-2 ring-[var(--mock-window)]" : ""
-      }`}
-    >
-      {initials}
-    </span>
-  );
-}
-
 // Copy review: product names, copy, figures and handles in these three are
 // mine, invented to read as plausible public products.
 
 /** Base44 better fit 1: an idea put live to see if anyone wants it. */
+// Someone at work on a laptop behind the landing page: the founder shipping
+// it, which is who this card is for.
+const HOSTED_MVP_BG = "url(/images/mocks/hosted-mvp-bg.jpg) center 30% / cover";
+
+// A team at work behind the storefront, the people who run the store.
+const PUBLIC_STORE_BG =
+  "url(/images/mocks/public-store-bg.jpg) center 30% / cover";
+
 export function HostedMvpVisual() {
+  // The photo carries the founder at work. The pill names the reader's
+  // situation, not a product claim: this card is where Base44 is the better fit.
   return (
     <Story
-      bare
-      card={
-        <>
-          <BrowserBar url="fieldnote.app" />
-          <div className="px-4 pb-4 pt-3.5">
-            <div className="flex items-center justify-between">
-              <span className={`flex items-center gap-1.5 ${MOCK_PRIMARY}`}>
-                <span className="size-[10px] rounded-[3px] bg-[var(--mock-ink)]" />
-                Fieldnote
-              </span>
-              <span
-                className={`rounded-full bg-[var(--mock-well-2)] px-2 py-[3px] text-[color:var(--mock-ink-soft)] ${MOCK_MICRO}`}
-              >
-                Coming soon
-              </span>
-            </div>
-            <p className="mt-4 text-[15px] leading-[1.25] tracking-[-0.01em]">
-              Plan your garden in minutes
-            </p>
-            <p
-              className={`mt-1.5 text-[color:var(--mock-ink-soft)] ${MOCK_SECONDARY} leading-[1.4]`}
-            >
-              Tell it your space and your climate. Get a planting calendar back.
-            </p>
-            <div className="mt-3.5 flex items-center gap-1.5">
-              <span
-                className={`flex h-[28px] flex-1 items-center rounded-[6px] border bg-[var(--mock-window)] px-2.5 text-[color:var(--mock-ink-soft)] ${MOCK_SECONDARY} ${LINE}`}
-              >
-                you@email.com
-              </span>
-              <span
-                className={`flex h-[28px] items-center rounded-[6px] bg-[var(--mock-ink)] px-3 text-[color:var(--mock-window)] ${MOCK_SECONDARY}`}
-              >
-                Join
-              </span>
-            </div>
-            <div className="mt-3 flex items-center gap-2">
-              <span className="flex pl-1.5">
-                <Avatar initials="JL" ring />
-                <Avatar initials="MP" ring />
-                <Avatar initials="RS" ring />
-              </span>
-              <span
-                className={`text-[color:var(--mock-ink-soft)] ${MOCK_MICRO}`}
-              >
-                1,284 people on the waitlist
-              </span>
-            </div>
-          </div>
-        </>
-      }
       pillIcon={<IconBolt className="size-3.5" />}
-      pill="Live the same day"
-      pillOnPhone={false}
+      pill="Testing an idea"
       spine="none"
+      background={HOSTED_MVP_BG}
     />
   );
 }
 
 /** Base44 better fit 2: a public product being found and shared. */
+const GROWTH_STATS = [
+  { label: "Visits", value: "1,284" },
+  { label: "Page views", value: "3,920" },
+];
+
 export function GrowthToolingVisual() {
   return (
-    <div aria-hidden className="absolute inset-0 select-none">
-      <div className="relative flex h-full flex-col items-center justify-center gap-2.5 px-6">
-        {/* The search result, the way a results page sets one. */}
-        <div className={`${CARD} relative`}>
-          <div className="flex items-center gap-2">
-            <span className="flex size-[18px] items-center justify-center rounded-full bg-[var(--mock-well-2)]">
-              <span className="size-[8px] rounded-[2px] bg-[var(--mock-ink)]" />
-            </span>
-            <span className="min-w-0">
-              <span className={`block ${MOCK_MICRO}`}>Mealwise</span>
-              <span
-                className={`mt-0.5 block truncate text-[color:var(--mock-ink-soft)] ${MOCK_MICRO}`}
-              >
-                mealwise.com › weekly-plans
-              </span>
-            </span>
-          </div>
-          <p className="mt-2 text-[13px] leading-[1.3]">
-            Weekly meal plans in 5 minutes
-          </p>
-          <p
-            className={`mt-1 text-[color:var(--mock-ink-soft)] ${MOCK_SECONDARY} leading-[1.4]`}
+    <div
+      aria-hidden
+      className="absolute inset-0 flex select-none items-center justify-center px-6"
+      style={{ background: PANEL_BG }}
+    >
+      {/* The product's Analytics stat strip, Visits picked: the traffic a
+          marketed product brings, said in one block. */}
+      <div
+        className={`grid w-full max-w-[300px] grid-cols-2 gap-1 rounded-[12px] border bg-[var(--mock-well)] p-1 text-[color:var(--mock-ink)] ${LINE}`}
+      >
+        {GROWTH_STATS.map(({ label, value }, i) => (
+          <div
+            key={label}
+            className={`rounded-[9px] px-3.5 py-3 ${
+              i === 0
+                ? `border bg-[var(--mock-window)] ${LINE}`
+                : "text-[color:var(--mock-ink-soft)]"
+            }`}
           >
-            Pick your diet and budget. Mealwise writes the plan and the shopping
-            list.
-          </p>
-        </div>
-        {/* A post about it, scheduled from the same tool. */}
-        <div className={`${CARD} relative`}>
-          <div className="flex items-center gap-2">
-            <Avatar initials="MW" />
-            <span className={MOCK_SECONDARY}>Mealwise</span>
-            <span className={`text-[color:var(--mock-ink-soft)] ${MOCK_MICRO}`}>
-              @mealwise · 2h
-            </span>
+            <p className={MOCK_PRIMARY}>{label}</p>
+            <p className={`mt-2 ${STAT}`}>{value}</p>
           </div>
-          <p className={`mt-2 ${MOCK_SECONDARY} leading-[1.4]`}>
-            Sunday prep, sorted. This week&apos;s plan is live.
-          </p>
-          <div className="mt-2.5 flex gap-3 text-[color:var(--mock-ink-soft)]">
-            <span className={MOCK_MICRO}>214 likes</span>
-            <span className={MOCK_MICRO}>38 reposts</span>
-          </div>
-        </div>
-        <div className={`relative mt-1 ${PILL} max-sm:hidden`}>
-          <span className={TILE}>
-            <IconAreaChart className="size-3.5" />
-          </span>
-          Found in search, shared on social
-        </div>
+        ))}
       </div>
     </div>
   );
 }
 
-const STORE_ITEMS = [
-  {
-    name: "Merino crewneck",
-    price: "$120",
-    src: "/images/mocks/covers/cover-1.jpg",
-  },
-  {
-    name: "Wool cardigan",
-    price: "$145",
-    src: "/images/mocks/covers/cover-3.jpg",
-  },
-];
-
 /** Base44 better fit 3: a store anyone can browse without signing in. */
 export function PublicStoreVisual() {
   return (
-    <Story
-      bare
-      card={
-        <>
-          <BrowserBar
-            url="shop.yourbrand.com"
-            right={
-              <span
-                className={`flex shrink-0 items-center gap-1 rounded-full bg-[var(--mock-ink)] px-2 py-[3px] text-[color:var(--mock-window)] ${MOCK_MICRO}`}
-              >
-                Bag 2
-              </span>
-            }
-          />
-          <div className="grid grid-cols-2 gap-2.5 p-3">
-            {STORE_ITEMS.map((item) => (
-              <div key={item.name}>
-                {/* Two of /client-portal's approval covers, cropped the way
-                    that mock crops them: face in the upper half. */}
-                <span className="relative block aspect-[4/5] overflow-hidden rounded-[8px] bg-[var(--mock-well-2)]">
-                  <Image
-                    src={item.src}
-                    alt=""
-                    fill
-                    sizes="160px"
-                    quality={90}
-                    className="object-cover object-[50%_28%]"
-                  />
-                </span>
-                <p className={`mt-2 truncate ${MOCK_SECONDARY}`}>{item.name}</p>
-                <p
-                  className={`mt-1 tabular-nums text-[color:var(--mock-ink-soft)] ${MOCK_MICRO}`}
-                >
-                  {item.price}
-                </p>
-              </div>
-            ))}
-          </div>
-        </>
-      }
-      pillIcon={<IconGlobeSolid className="size-3.5" />}
-      pill="Anyone can browse, no sign-in"
-      pillOnPhone={false}
-      spine="none"
-      background={PANEL_BG}
-    />
+    <div
+      aria-hidden
+      className="absolute inset-0 flex select-none items-center justify-center px-6"
+      style={{ background: PUBLIC_STORE_BG }}
+    >
+      {/* Just the address, typed: a public domain anyone can head to is the
+          whole claim, and the photo behind it carries the rest. */}
+      <TypedAddress url="shop.yourbrand.com" />
+    </div>
   );
 }

@@ -179,7 +179,9 @@ const PAGE: VsPage = {
     items: [
       {
         title: "The fastest hosted MVP",
-        body: "No clients and no brand requirements yet, just an idea to validate.",
+        // Non-breaking space: "just" opens the second line rather than
+        // dangling at the end of the first.
+        body: "No clients and no brand requirements yet, just\u00a0an idea to validate.",
         visual: <HostedMvpVisual />,
       },
       {

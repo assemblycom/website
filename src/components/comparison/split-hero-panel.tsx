@@ -2,6 +2,7 @@
 
 import { useState, type ReactNode } from "react";
 import { PANEL_BG } from "@/components/comparison/brand-panel";
+import { FootBlur } from "@/components/ui/foot-blur";
 
 // No shadow. The card sits on a gradient panel that is already doing the
 // lifting — the white against the colour is the separation — and a 60px drop
@@ -9,8 +10,10 @@ import { PANEL_BG } from "@/components/comparison/brand-panel";
 // dirty mark on the artwork rather than as depth.
 // Both views share one grid cell rather than being absolutely positioned, so
 // the stack is as tall as the taller of them and no taller. See the slot.
+// A faint inset edge instead: where the panel's gradient runs pale at its
+// foot, a white card with no edge of its own melted into it.
 const CARD =
-  "[grid-area:1/1] overflow-hidden rounded-[28px] max-lg:rounded-b-none bg-background transition-opacity duration-500 motion-reduce:transition-none";
+  "[grid-area:1/1] overflow-hidden rounded-[28px] max-lg:rounded-b-none bg-background shadow-[inset_0_0_0_1px_rgba(16,24,40,0.05),inset_0_1px_3px_rgba(16,24,40,0.05)] transition-opacity duration-500 motion-reduce:transition-none";
 
 /**
  * The right half of a comparison page's split hero: a brand panel, a two-way
@@ -19,9 +22,12 @@ const CARD =
 export function SplitHeroPanel({
   label,
   views,
+  blurFoot = false,
 }: {
   /** What the switch chooses between, for screen readers. */
   label: string;
+  /** Blurs the foot of the cropped window below lg. */
+  blurFoot?: boolean;
   views: { label: string; content: ReactNode }[];
 }) {
   const [view, setView] = useState(0);
@@ -81,18 +87,24 @@ export function SplitHeroPanel({
       {/* Below lg the window runs off the panel's foot: no bottom padding, no
           rounded bottom, no fade. The panel's edge cuts the screen, which
           reads as a screen carrying on past it and keeps the hero short. */}
-      <div className="relative h-[300px] w-full max-w-[400px] overflow-hidden rounded-[28px] max-lg:rounded-b-none lg:h-auto lg:aspect-[4/5]">
-        <div className="absolute inset-x-0 top-0 grid lg:bottom-0">
-          {views.map((v, i) => (
-            <div
-              key={v.label}
-              aria-hidden={view !== i}
-              className={`${CARD} ${view === i ? "opacity-100" : "pointer-events-none opacity-0"}`}
-            >
-              {v.content}
-            </div>
-          ))}
+      {/* The blur sits beside the clipped window, not in it: inside a rounded,
+          overflow-clipped box Chrome drops the blur's mask and draws it at
+          full strength from a hard edge. */}
+      <div className="relative w-full max-w-[400px]">
+        <div className="relative h-[300px] w-full overflow-hidden rounded-[28px] max-lg:rounded-b-none lg:h-auto lg:aspect-[4/5]">
+          <div className="absolute inset-x-0 top-0 grid lg:bottom-0">
+            {views.map((v, i) => (
+              <div
+                key={v.label}
+                aria-hidden={view !== i}
+                className={`${CARD} ${view === i ? "opacity-100" : "pointer-events-none opacity-0"}`}
+              >
+                {v.content}
+              </div>
+            ))}
+          </div>
         </div>
+        {blurFoot && <FootBlur className="lg:hidden" />}
       </div>
     </div>
   );

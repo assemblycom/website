@@ -55,20 +55,15 @@ function DeepDiveCard({
   wide?: boolean;
 }) {
   return (
-    <div className={`${CARD} ${wide ? "sm:col-span-2" : ""}`}>
-      {/* A FLOOR UNDER THE COPY, ON A PHONE ONLY, so the three cards come out
-          the same height. Stacked in one column they sit directly above each
-          other, and one card 23px taller than its neighbours — the whole of
-          it a second heading line, since every body is now one line of copy
-          that wraps to two — reads as a card that got loose rather than as a
-          heading that is longer. 8rem clears a two-line heading over a
-          two-line body, which is the tallest any of the six is.
-
-          A floor and not a fixed height: copy that outgrows it should push
-          the card open rather than be clipped. From `sm` it goes entirely —
-          the pair are grid siblings there and stretch to match on their own,
-          and the lead card is the full width with nothing to match. */}
-      <div className={`${CARD_PAD} min-h-32 sm:min-h-0`}>
+    // A FLOOR ON THE CARD, ON A PHONE ONLY, so the stacked cards come out the
+    // same height whatever their copy. It sits on the card rather than under
+    // the copy, so a short heading hands its spare room to the shot instead of
+    // leaving a gap above it. Each floor is a two-line heading over a two-line
+    // body (8rem), the shot's gap and its window.
+    <div
+      className={`${CARD} ${wide ? "max-sm:min-h-[424px] sm:col-span-2" : "max-sm:min-h-[392px]"}`}
+    >
+      <div className={CARD_PAD}>
         <h3 className="type-h4 text-balance leading-[1.25]">{dive.heading}</h3>
         {/* max-w-xl on the lead card too, though it has the width for more.
             The card is wide so its SHOT can be; a paragraph run to 1100px is
@@ -107,8 +102,8 @@ function DeepDiveCard({
         // 370px each, so more than one is on screen at a time.
         className={`relative mt-6 overflow-hidden ${
           wide
-            ? "h-[272px] sm:h-[360px] md:h-[420px]"
-            : "h-[240px] sm:h-[260px] md:h-[300px]"
+            ? "min-h-[272px] flex-1 sm:h-[360px] sm:flex-none md:h-[420px]"
+            : "min-h-[240px] flex-1 sm:h-[260px] sm:flex-none md:h-[300px]"
         }`}
       >
         {/* The frame's bottom corners need no un-rounding: they are past the

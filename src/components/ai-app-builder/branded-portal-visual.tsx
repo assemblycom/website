@@ -88,10 +88,13 @@ function NavRow({
       // of the nav is open. 9% lands near #272727: a +21 step off the slab,
       // still plainly the picked row at a 24px rung, no longer the first thing
       // the eye goes to. Light is untouched.
-      className={`flex items-center gap-2 rounded-[4px] px-2 py-[6px] ${MOCK_PRIMARY} ${
+      // Rest rows answer the cursor the way the workspace sidebar's do: full
+      // ink and a fill a step under the picked row's, so hover never reads as
+      // a second selection.
+      className={`flex items-center gap-2 rounded-[4px] px-2 py-[6px] transition-colors ${MOCK_PRIMARY} ${
         active
           ? "bg-white/15 text-white [[data-theme=dark]_&]:bg-white/[0.09]"
-          : "text-white/70"
+          : "text-white/70 hover:bg-white/[0.08] hover:text-white [[data-theme=dark]_&]:hover:bg-white/[0.05]"
       }`}
     >
       <span className="flex shrink-0 items-center [&>svg]:size-[12px]">

@@ -605,7 +605,7 @@ export function StudioNav({
               aria-controls="mobile-menu"
               className={`flex size-9 items-center justify-center transition-[color,opacity] ${ease} active:opacity-60 ${lightContent ? "text-white" : "text-foreground"} ${mobileMenuOpen ? "invisible" : ""}`}
             >
-              <NavDots shape="grid" />
+              <IconMenu />
             </button>
           )}
         </div>
@@ -907,7 +907,9 @@ export function StudioNav({
                         // only one in it.
                         <ul className="flex flex-col gap-1 pb-1 pl-4">
                           {entry.items.map((link) => (
-                            <li key={link.href}>{renderMenuLink(link, true)}</li>
+                            <li key={link.href}>
+                              {renderMenuLink(link, true)}
+                            </li>
                           ))}
                         </ul>
                       )}
@@ -1029,5 +1031,17 @@ export function StudioNav({
           document.body,
         )}
     </>
+  );
+}
+
+/** The mobile menu trigger's glyph, from the design file. */
+function IconMenu() {
+  return (
+    <svg width="18" height="20" viewBox="0 0 18 20" fill="none" aria-hidden>
+      <path
+        d="M0 3.4375C0 2.91797 0.417969 2.5 0.9375 2.5H16.5625C17.082 2.5 17.5 2.91797 17.5 3.4375C17.5 3.95703 17.082 4.375 16.5625 4.375H0.9375C0.417969 4.375 0 3.95703 0 3.4375ZM0 10C0 9.48047 0.417969 9.0625 0.9375 9.0625H16.5625C17.082 9.0625 17.5 9.48047 17.5 10C17.5 10.5195 17.082 10.9375 16.5625 10.9375H0.9375C0.417969 10.9375 0 10.5195 0 10ZM17.5 16.5625C17.5 17.082 17.082 17.5 16.5625 17.5H0.9375C0.417969 17.5 0 17.082 0 16.5625C0 16.043 0.417969 15.625 0.9375 15.625H16.5625C17.082 15.625 17.5 16.043 17.5 16.5625Z"
+        fill="currentColor"
+      />
+    </svg>
   );
 }

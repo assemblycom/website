@@ -26,6 +26,7 @@ export function BrandedLoginHeroVisual() {
   return (
     <SplitHeroPanel
       label="Which sign-in"
+      blurFoot
       views={[
         {
           label: "Your portal",
@@ -81,8 +82,11 @@ const RULE = "border-border [[data-theme=dark]_&]:border-white/15";
  */
 function WiringSignInChat() {
   return (
+    // The composer stays on the foot, where a chat keeps it; the thread starts
+    // at the top, since pinned down beside the composer it left the top half
+    // of a tall card empty.
     <div aria-hidden className="flex h-full select-none flex-col p-5">
-      <div className="flex min-h-0 flex-1 flex-col justify-end gap-5 overflow-hidden">
+      <div className="flex min-h-0 flex-1 flex-col gap-5 overflow-hidden pt-2">
         <p className={`max-w-[85%] self-end ${BUBBLE}`}>
           Add a login for my clients.
         </p>
