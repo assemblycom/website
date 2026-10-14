@@ -34,7 +34,23 @@ import { MOCK_MICRO, MOCK_PRIMARY } from "@/components/ui/mock-type";
 // ─────────────────────────────────────────────────────────────────────────
 
 /** Which row is lit. `Add App` lights the action at the foot of the list. */
-export type WorkspaceNavRow = "CRM" | "Team" | "Home" | "Messages" | "Add App";
+export type WorkspaceNavRow =
+  | "CRM"
+  | "Team"
+  | "Home"
+  | "Messages"
+  | "Add App"
+  | (string & {});
+
+export interface WorkspaceApp {
+  icon: React.ReactNode;
+  label: string;
+}
+
+/** The one app the firm has built — see the note on the list below. */
+const DEFAULT_APPS: WorkspaceApp[] = [
+  { icon: <IconBookBlank />, label: "Year-end docs" },
+];
 
 function NavItem({
   icon,
@@ -107,6 +123,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 
 export function WorkspaceSidebar({
   active,
+  apps = DEFAULT_APPS,
   /**
    * The column's width. The CRM card gives it the full 148/164 it was drawn
    * at; a shot whose subject is the PANE beside it can ask for less, since
@@ -115,6 +132,8 @@ export function WorkspaceSidebar({
   className = "hidden w-[148px] sm:flex md:w-[164px]",
 }: {
   active: WorkspaceNavRow;
+  /** The firm's built apps, for a shot whose claim is the range of them. */
+  apps?: WorkspaceApp[];
   className?: string;
 }) {
   return (
@@ -156,7 +175,14 @@ export function WorkspaceSidebar({
           the same page, whose portal lists the stock rows and exactly one
           added app, also Year-end docs. Two shots of the same workspace in one
           section should not disagree about how many apps it has. */}
-      <NavItem icon={<IconBookBlank />} label="Year-end docs" />
+      {apps.map((app) => (
+        <NavItem
+          key={app.label}
+          icon={app.icon}
+          label={app.label}
+          active={active === app.label}
+        />
+      ))}
       <NavItem icon={<IconPlus />} label="Add App" active={active === "Add App"} />
     </div>
   );

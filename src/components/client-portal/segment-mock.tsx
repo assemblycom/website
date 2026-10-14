@@ -947,7 +947,16 @@ export function IntakeAppMock({
    * as a rendering fault rather than as a window onto something larger.
    */
   action = true,
-}: { branded?: boolean; action?: boolean } = {}) {
+  /** The app's name, on its nav row and its header. */
+  title = "Partner intake",
+  /** Replaces the client's nav, for a shot of the same app from the team's side. */
+  nav,
+}: {
+  branded?: boolean;
+  action?: boolean;
+  title?: string;
+  nav?: React.ReactNode;
+} = {}) {
   return (
     <div
       aria-hidden
@@ -957,15 +966,15 @@ export function IntakeAppMock({
           onboarding wizard makes — at that width a 150px nav column against a
           form is most of the screen spent on navigation nobody is using. */}
       <div className="hidden sm:flex">
-        <PortalSidebar app="Partner intake" branded={branded} />
+        {nav ?? <PortalSidebar app={title} branded={branded} />}
       </div>
       <div className="flex min-w-0 flex-1 flex-col">
-        <MobileAppBar app="Partner intake" />
+        <MobileAppBar app={title} />
         {/* No "Your app" chip. The nav row beside it is lit and says the same
             words, the caption above the picture says them again, and alone on
             the header row it read as a stray pill rather than as whose app
             this is. */}
-        <AppHeader title="Partner intake" />
+        <AppHeader title={title} />
         {/* RECESSED, where every other screen's body is the window's own
             ground. The cards have to sit on something to read as cards, and
             --mock-well is the step the scale already has for a recess inside a

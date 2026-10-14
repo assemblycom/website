@@ -3,7 +3,7 @@ import { VisualSlot } from "@/components/ui/visual-slot";
 interface DeepDive {
   heading: string;
   body: string;
-  visual: { label: string; description: string };
+  visual: { label: string; description: string; art?: React.ReactNode };
 }
 
 /**
@@ -108,11 +108,23 @@ function DeepDiveCard({ dive, wide = false }: { dive: DeepDive; wide?: boolean }
       >
         {/* The frame's bottom corners need no un-rounding: they are past the
             window's edge, so the crop has already taken them. */}
-        <VisualSlot
-          className="absolute inset-x-5 top-0 h-[140%] sm:inset-x-6 md:inset-x-8"
-          label={dive.visual.label}
-          description={dive.visual.description}
-        />
+        {dive.visual.art ? (
+          // The built scenes fit themselves to their box, so the box is the
+          // window, inside the card's own inset and capped at the 620
+          // /ai-app-builder's panel draws them at. select-none: it is a
+          // picture made of real text.
+          <div className="absolute inset-x-5 top-0 bottom-0 sm:inset-x-6 md:inset-x-8">
+            <div className="relative mx-auto h-full w-full max-w-[620px] cursor-default select-none">
+              {dive.visual.art}
+            </div>
+          </div>
+        ) : (
+          <VisualSlot
+            className="absolute inset-x-5 top-0 h-[140%] sm:inset-x-6 md:inset-x-8"
+            label={dive.visual.label}
+            description={dive.visual.description}
+          />
+        )}
       </div>
     </div>
   );

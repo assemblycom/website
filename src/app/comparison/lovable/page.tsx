@@ -1,6 +1,19 @@
 import type { Metadata } from "next";
 import { VsComparisonPage, type VsPage } from "@/components/comparison/vs-page";
+import { PlanCard } from "@/components/client-portal/portal-build-cards";
+import {
+  GitHandoffVisual,
+  MaintenanceVisual,
+  PrototypeVisual,
+  PublicSiteVisual,
+} from "@/components/comparison/lovable-story-visuals";
 import { TeamClientsHeroVisual } from "@/components/comparison/team-clients-hero-visual";
+import {
+  ClientAppsPillarVisual,
+  CrmPillarVisual,
+  FullExperienceVisual,
+  LoginsPillarVisual,
+} from "@/components/comparison/lovable-pillar-visuals";
 import { PAGE_SEO, pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata(PAGE_SEO.vsLovable);
@@ -93,6 +106,7 @@ const PAGE: VsPage = {
       body: "Lovable ships a prototype at its own address. Assembly builds into your branded experience, each client seeing only their own view.",
       visual: {
         label: "Pillar 1 visual",
+        art: <ClientAppsPillarVisual />,
         description:
           "The team dashboard view and the branded client view of the same app, side by side, visibly originating from one chat panel. Left in neutral Assembly chrome, right in a distinct accent colour with a client logo placeholder. Labels: Your team, Your clients.",
       },
@@ -103,6 +117,7 @@ const PAGE: VsPage = {
       body: "Lovable generates access rules per app. Assembly maintains the infrastructure, so the team-client boundary holds.",
       visual: {
         label: "Pillar 2 visual",
+        art: <LoginsPillarVisual />,
         description:
           "A client sign-in screen next to a Who can see this role control listing team roles and a client, each carrying a small Part of Assembly mark so the security layer reads as separate from the app content it protects. No MFA jargon in the art: the point is that someone already built this for you.",
       },
@@ -113,6 +128,8 @@ const PAGE: VsPage = {
       body: "Contacts, companies, custom fields. Every app connects automatically, and each client sees only their own.",
       visual: {
         label: "Pillar 3 visual",
+        art: <CrmPillarVisual />,
+        wide: true,
         description:
           "Assembly's CRM front and centre: a contact list with companies and a custom field visible. Then that same list feeding two different client experiences side by side, Company A seeing its own data and Company B seeing something else.",
       },
@@ -124,6 +141,7 @@ const PAGE: VsPage = {
       heading: "Describe it. Approve it. Clients use it",
       body: "Assembly shows you a plan and waits for your approval before anything builds.",
       visual: {
+        art: <PlanCard plain />,
         label: "Deep dive, the plan",
         description:
           "The Plan card UI, large enough to read the actual copy on it, with a visible Approve and Edit pair. Caption: You approve before anything builds.",
@@ -133,6 +151,7 @@ const PAGE: VsPage = {
       heading: "A full client experience, not just a builder",
       body: "Lovable gives a blank canvas. Assembly gives the CRM, portal and apps.",
       visual: {
+        art: <FullExperienceVisual />,
         label: "Deep dive, the platform",
         description:
           "The Assembly workspace sidebar showing built apps alongside the native ones (CRM, Messaging, Billing, Files, Contracts, Forms, Tasks), with one branded client experience wrapping them.",
@@ -145,6 +164,7 @@ const PAGE: VsPage = {
       // by every app. Do not write that security fixes ship platform-wide, which
       // is not documented in those words."
       visual: {
+        art: <MaintenanceVisual />,
         label: "Deep dive, the platform layer",
         description:
           "A centre platform layer bar (auth, permissions, hosting, data scoping) with several app cards branching off it, each visibly sandboxed and carrying its own small database icon, to show isolation plus a shared foundation.",
@@ -158,14 +178,17 @@ const PAGE: VsPage = {
       {
         title: "GitHub and a dev hand-off",
         body: "Lovable supports that better than Assembly at the moment.",
+        visual: <GitHandoffVisual />,
       },
       {
         title: "A public site or consumer app",
         body: "Assembly builds apps people log into, not anonymous web traffic.",
+        visual: <PublicSiteVisual />,
       },
       {
         title: "A prototype you will maintain",
         body: "If the app is not expected to grow, a code-first tool is the shorter path.",
+        visual: <PrototypeVisual />,
       },
     ],
   },

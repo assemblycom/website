@@ -15,6 +15,10 @@ import type { ComparisonRow } from "@/lib/comparisons";
 interface Visual {
   label: string;
   description: string;
+  /** The built artwork. Until a visual has one, its slot shows the brief. */
+  art?: React.ReactNode;
+  /** See PillarsTabs: the art runs to the panel's padding. */
+  wide?: boolean;
 }
 
 export interface VsPage {
@@ -56,7 +60,8 @@ export interface VsPage {
   betterFit: {
     heading: string;
     sub: string;
-    items: { title: string; body: string }[];
+    /** `visual` fills the card's panel; it stays empty without one. */
+    items: { title: string; body: string; visual?: React.ReactNode }[];
   };
   /** Only the Lovable page runs pricing as its own section. */
   pricing?: {
@@ -235,7 +240,7 @@ export function VsComparisonPage({
                 panels and a screen and a half of scrolling. RailCard's default
                 shape is already this one: a square --surface panel with the
                 copy under it, which is why there is no bespoke card here any
-                more. The panels are empty until the visuals land.
+                more. A panel is empty until its item has a visual.
 
                 From lg the rail fits all three and its arrows go quiet on
                 their own, so the desktop row is unchanged. */}
@@ -247,7 +252,7 @@ export function VsComparisonPage({
                     name={item.title}
                     caption={item.body}
                   >
-                    {null}
+                    {item.visual ?? null}
                   </RailCard>
                 ))}
               </CardRail>

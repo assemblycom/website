@@ -20,7 +20,7 @@ export function TeamClientsHeroVisual() {
 }
 
 /** The team side: a request, the builder's plan, and room to revise it. */
-function BuildChat() {
+export function BuildChat() {
   return (
     <div aria-hidden className="flex h-full select-none flex-col p-5">
       {/* Square, at the login screen's radius for a mark this size. It was a
@@ -70,7 +70,7 @@ function BuildChat() {
 }
 
 /** The client side: the same app, signed in, inside the firm's portal. */
-function ClientApp() {
+export function ClientApp() {
   return (
     <div aria-hidden className="flex h-full select-none flex-col">
       <div className="flex items-center gap-2 border-b border-border px-5 py-4 [[data-theme=dark]_&]:border-white/10">

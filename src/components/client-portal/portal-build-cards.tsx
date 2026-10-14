@@ -2227,38 +2227,45 @@ export function IterateCard() {
  * them changes, and the point here is that this part does not.
  */
 export function SecuredCard() {
+  return (
+    <Scene>
+      <AccessPanel />
+    </Scene>
+  );
+}
+
+/** SecuredCard's panel without its scene, for a frame that places it itself. */
+export function AccessPanel() {
   const ROWS: [string, string][] = [
     ["Your team", "Full access"],
     ["Your clients", "Their own data"],
   ];
   return (
-    <Scene>
-      <div className={`flex flex-col ${WINDOW}`}>
-        <div className={TABLE_HEAD}>
-          <span className="flex-1">Who can see this</span>
-        </div>
-        {ROWS.map(([who, access]) => (
-          <div
-            key={who}
-            className={`flex items-center gap-2 border-b px-3.5 py-[13px] ${ROW_HOVER} ${LINE}`}
-          >
-            <span className="flex size-[16px] shrink-0 items-center justify-center rounded-full bg-[var(--mock-ink)] text-[color:var(--mock-window)]">
-              <IconCheck className="size-[10px]" />
-            </span>
-            <span
-              className={`flex-1 truncate text-[color:var(--mock-ink)] ${UI_PRIMARY}`}
-            >
-              {who}
-            </span>
-            <span className={NEUTRAL}>{access}</span>
-          </div>
-        ))}
-        <div className="px-3.5 py-3">
-          <p className="text-[10.5px] leading-[1.5] text-[color:var(--mock-ink-soft)]">
-            Built and maintained by Assembly.
-          </p>
-        </div>
+    <div className={`flex flex-col ${WINDOW}`}>
+      <div className={TABLE_HEAD}>
+        <span className="flex-1">Who can see this</span>
       </div>
-    </Scene>
+      {ROWS.map(([who, access]) => (
+        <div
+          key={who}
+          className={`flex items-center gap-2 border-b px-3.5 py-[13px] ${ROW_HOVER} ${LINE}`}
+        >
+          <span className="flex size-[16px] shrink-0 items-center justify-center rounded-full bg-[var(--mock-ink)] text-[color:var(--mock-window)]">
+            <IconCheck className="size-[10px]" />
+          </span>
+          <span
+            className={`flex-1 truncate text-[color:var(--mock-ink)] ${UI_PRIMARY}`}
+          >
+            {who}
+          </span>
+          <span className={NEUTRAL}>{access}</span>
+        </div>
+      ))}
+      <div className="px-3.5 py-3">
+        <p className="text-[10.5px] leading-[1.5] text-[color:var(--mock-ink-soft)]">
+          Built and maintained by Assembly.
+        </p>
+      </div>
+    </div>
   );
 }

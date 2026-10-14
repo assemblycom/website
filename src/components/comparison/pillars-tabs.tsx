@@ -11,7 +11,14 @@ export interface Pillar {
    *  FAQ row. Falls back to the heading. */
   tabLabel?: string;
   body: string;
-  visual: { label: string; description: string };
+  visual: {
+    label: string;
+    description: string;
+    art?: React.ReactNode;
+    /** Runs the art to the panel's own padding rather than the 620 cap, for
+     *  a screen as wide as a table that the cap would crowd. */
+    wide?: boolean;
+  };
 }
 
 /**
@@ -74,12 +81,18 @@ export function PillarsTabs({ pillars }: { pillars: Pillar[] }) {
               meant to match. A fixed height also means the panel does not
               resize as you tab between pillars, which is why that page sets
               one height for all three of its steps. */}
-          <div className="relative mx-auto mt-6 aspect-[6/5] w-full max-w-[620px] sm:aspect-auto sm:h-[360px] md:mt-8 md:h-[400px]">
-            <VisualSlot
-              className="h-full w-full"
-              label={current.visual.label}
-              description={current.visual.description}
-            />
+          <div
+            className={`relative mx-auto mt-6 aspect-[6/5] w-full sm:aspect-auto sm:h-[360px] md:mt-8 md:h-[400px] ${
+              current.visual.wide ? "px-6 md:px-10" : "max-w-[620px]"
+            }`}
+          >
+            {current.visual.art ?? (
+              <VisualSlot
+                className="h-full w-full"
+                label={current.visual.label}
+                description={current.visual.description}
+              />
+            )}
           </div>
         </div>
       </div>
