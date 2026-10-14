@@ -109,7 +109,25 @@ const QUOTES: CustomerQuote[] = [
   },
 ];
 
-export function BuilderCustomerQuotes() {
+/**
+ * Heading, lead and the quote set are props so /client-portal can run the same
+ * row under its own argument. Defaults are /ai-app-builder's, so that page
+ * calls this with nothing and is unchanged.
+ *
+ * The row is built for three or four cards. Fewer than three and the
+ * grow-to-3 ratio has nothing to take width from; more than four and a closed
+ * card is too narrow for a name and a firm to set on two lines.
+ */
+export function BuilderCustomerQuotes({
+  heading = "Firms already building",
+  body,
+  quotes = QUOTES,
+}: {
+  heading?: string;
+  /** A lead under the heading, where a page's brief calls for one. */
+  body?: string;
+  quotes?: CustomerQuote[];
+} = {}) {
   // WHICH CARD THE ROW RESTS ON, as an index into QUOTES.
   //
   // It used to rest on the first card, always: `:not(:hover) > li:first-child`
@@ -133,7 +151,10 @@ export function BuilderCustomerQuotes() {
     // The measure and rhythm BuilderTemplates uses, so the two sections either
     // side of the divider between them sit on one column.
     <section className="mx-auto max-w-[1200px] px-6 py-14 md:px-10 md:py-20">
-      <h2 className="type-h3 text-balance">Firms already building</h2>
+      <h2 className="type-h3 text-balance">{heading}</h2>
+      {body ? (
+        <p className="mt-4 max-w-2xl text-muted-foreground">{body}</p>
+      ) : null}
 
       {/* BELOW `md`, THE SAME FOUR AS AN ACCORDION.
           Hover is not a thing a phone has, so the row's reveal cannot carry
@@ -144,7 +165,7 @@ export function BuilderCustomerQuotes() {
           phone has. It is a separate component because it needs state, and
           keeping it out of this file leaves the `md`-and-up row below
           server-rendered and pure CSS, which is what it was built to be. */}
-      <BuilderCustomerQuotesStack quotes={QUOTES} />
+      <BuilderCustomerQuotesStack quotes={quotes} />
 
       {/* THE ROW, `md` AND UP ONLY. `hidden md:flex` rather than the old
           `flex md:flex-row`: the stack above now owns every width below `md`,
@@ -164,7 +185,7 @@ export function BuilderCustomerQuotes() {
         // only thing growing.
         className="mt-10 hidden md:mt-12 md:flex md:h-[400px] md:flex-row md:gap-3 md:[&:not(:hover)>li[data-rest]]:grow-[3] md:[&:not(:hover)>li[data-rest]_blockquote]:mt-5 md:[&:not(:hover)>li[data-rest]_blockquote]:max-h-40 md:[&:not(:hover)>li[data-rest]_blockquote]:translate-y-0 md:[&:not(:hover)>li[data-rest]_blockquote]:opacity-100"
       >
-        {QUOTES.map((q, i) => (
+        {quotes.map((q, i) => (
           <li
             key={q.firm}
             // onMouseEnter, not onMouseOver: the latter fires again for every

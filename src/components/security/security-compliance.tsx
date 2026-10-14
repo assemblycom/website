@@ -117,7 +117,17 @@ function Seal({ label }: { label: string }) {
   );
 }
 
-export function SecurityCompliance() {
+export function SecurityCompliance({
+  omit,
+}: {
+  /** Seal titles to leave out — a page may make a claim one of these outruns. */
+  omit?: string[];
+} = {}) {
+  const standards = omit?.length
+    ? STANDARDS.filter((s) => !omit.includes(s.title))
+    : STANDARDS;
+  // Written out rather than interpolated so Tailwind sees the whole class name.
+  const columns = standards.length === 3 ? "sm:grid-cols-3" : "sm:grid-cols-4";
   return (
     // px-0 once the rails are present (≥1200px) so the grid fills the full rail
     // width and the outer cells meet the guide rails — smaller viewports keep a
@@ -128,8 +138,18 @@ export function SecurityCompliance() {
       {/* Bleeds past the section's padding on a phone so the hairline between
           the two rows runs the full width of the screen instead of stopping
           short of both edges. */}
-      <div className="-mx-6 grid grid-cols-2 gap-px bg-border sm:mx-0 sm:grid-cols-4 [[data-theme=dark]_&]:bg-[#383838]">
-        {STANDARDS.map((s) => (
+      <div
+        // The bed shows through gap-px, so only the rules BETWEEN cells get
+        // drawn — the outer edges get nothing. On a desktop that is right: the
+        // section's own full-bleed rules close it top and bottom. On a phone
+        // the grid runs two-up over two rows and the last row simply stopped,
+        // leaving the block open at the foot with the rule above it still
+        // there. A bottom border below sm closes it, bleeding to the screen
+        // edges like the -mx-6 it sits in and like every other phone-only rule
+        // on the site.
+        className={`-mx-6 grid grid-cols-2 gap-px bg-border max-sm:border-b max-sm:border-border sm:mx-0 ${columns} [[data-theme=dark]_&]:bg-[#383838] [[data-theme=dark]_&]:max-sm:border-[#383838]`}
+      >
+        {standards.map((s) => (
           <div
             key={s.title}
             // Cell padding scales with the seal — a fixed py-14 left the mobile

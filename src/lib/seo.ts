@@ -47,6 +47,12 @@ export const PAGE_SEO = {
       "Describe the app you need. Assembly builds a working app for your team or your clients, with secure logins, permissions, and your branding built in.",
     path: "/ai-app-builder",
   },
+  clientPortal: {
+    title: "Client Portal Software You Can Build On",
+    description:
+      "Assembly is the client portal with ready-made apps for messaging, billing, files, and contracts, plus an AI app builder to customize your own.",
+    path: "/client-portal",
+  },
   security: {
     title: "Security",
     description:

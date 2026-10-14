@@ -26,52 +26,57 @@
  * in front, which reads on the slot in either theme because the slot is a mid
  * grey in both (#e9e9e9 light, #242424 dark). */
 // ── Optical centring ─────────────────────────────────────────────────────
-// Every one of these is a dark card with a pale one laid across it, and the
-// pair is drawn to a box that tracks BOTH shapes. The eye does not: at 22px on
-// a light tile the translucent white reads as a highlight and the dark shape
-// reads as the icon, so each mark appeared pushed off centre in its slot even
-// though its bounding box sat dead centre — measured at 17px clear on each
-// side, which is why nothing looked wrong in the markup.
+// These are each a dark card with a pale one laid across it, drawn to a box
+// that tracks both shapes — so the question is which shape the eye centres on.
 //
-// Each icon is nudged by the gap between its DARK shape's centre and its
-// viewBox's, as a percentage of the box so it holds at any size. A CSS
-// transform on the element rather than a transform inside the SVG: the latter
-// would move the art against a fixed viewBox and clip it at the edge, where
-// this moves the whole rendered box inside a tile that has pixels to spare.
+// THE OLD ANSWER WAS THE DARK ONE, and it was wrong. The rule here used to
+// nudge every icon by the gap between its DARK shape's centre and its
+// viewBox's, on the reasoning that "the translucent white reads as a
+// highlight and the dark shape reads as the icon". Measured, that premise
+// does not hold: rendering each mark and counting painted pixels, the pale
+// shape is about TWO THIRDS of the ink in nearly all of them.
 //
-// Measured, not guessed — dark-shape centre against box centre, per icon:
-//   onboarding  +12,+11 of 158x159      documents     +16,-18 of 224x159
-//   library     see below               messages      +11,+19 of 159x161
-//   projects    +16,+13 of 145x184      payments      +12,-15 of 218x139
-//   embeds      +7.3%,+7.1%             integrations  +7.5%,+7.2%
-//   automations +7.3%,+7.2%      timeTracker   +11.9,+11.5 of 159x159
-//   proposals   +11.9,+11.5 of 159x159  (same card pair as timeTracker)
+//   dark share of painted ink — onboarding 36%, documents 32%, messages 33%,
+//   payments 34%, library 37%, proposals 43%, approvals 15%; only projects,
+//   at 78%, is actually dark-dominant.
 //
-// The last three are the stack rows' marks, measured the same way — their dark
-// mass is the offset back card plus whatever glyph sits on the front one, so
-// an icon whose glyph is drawn with a stroke counts that stroke's path too.
+// A shape that is two thirds of the drawing is not a highlight. These sit on
+// a MID-GREY plate (#e6e7ea light, #8c8d91 dark), where white has as much
+// contrast against the ground as the near-black does — which is why the pale
+// card reads as half the mark rather than as a sheen on it. So the dark-mass
+// rule was pushing all of them 5–12% up and to the left of centre, and the
+// nudge meant to fix an optical problem was the thing causing one.
 //
-// `approvals` is the one that does NOT take this measurement, because the rule
-// above assumes what every other mark here is: a dark card offset behind a pale
-// one, where the dark mass is half the drawing. That icon is a speech bubble —
-// a big translucent shape with a small dark TAIL off its bottom-left corner.
-// Measured the stated way its dark centre sits 26% left and 25% below the box,
-// which would throw the bubble a quarter of a tile to the upper right; the tail
-// is an accent, not the mass. So it takes the whole drawing's bbox instead,
-// which runs y 9→186 against a 186 box — 2.4% low, and nothing in x.
+// THE RULE IS NOW THE WHOLE DRAWING'S BOX, which is what `approvals` already
+// did (see below) and what the markup does by default. Measured the same way
+// — alpha > 0.6, bbox of everything painted — every one of these centres in
+// its own viewBox to within about 1%, well under what is visible at 26px. So
+// there is nothing left to correct and most entries are empty.
+//
+// The map stays rather than being deleted, because the mechanism is still the
+// right one for a mark that genuinely sits off-centre in its box, and
+// `approvals` is one: its ink runs y 9→186 of 186, so it is a touch low.
+//
+// A CSS transform on the element rather than a transform inside the SVG: the
+// latter would move the art against a fixed viewBox and clip it at the edge,
+// where this moves the whole rendered box inside a tile that has pixels to
+// spare.
 const NUDGE = {
-  onboarding: "-translate-x-[7.6%] -translate-y-[6.9%]",
-  documents: "-translate-x-[7.1%] translate-y-[11.3%]",
-  library: "-translate-x-[7%] -translate-y-[7%]",
-  messages: "-translate-x-[6.9%] -translate-y-[11.8%]",
-  projects: "-translate-x-[11%] -translate-y-[7.1%]",
-  payments: "-translate-x-[5.5%] translate-y-[10.8%]",
-  embeds: "-translate-x-[7.3%] -translate-y-[7.1%]",
-  integrations: "-translate-x-[7.5%] -translate-y-[7.2%]",
-  automations: "-translate-x-[7.3%] -translate-y-[7.2%]",
-  timeTracker: "-translate-x-[7.5%] -translate-y-[7.2%]",
-  approvals: "-translate-y-[2.4%]",
-  proposals: "-translate-x-[7.5%] -translate-y-[7.2%]",
+  onboarding: "",
+  documents: "",
+  library: "",
+  messages: "",
+  projects: "",
+  payments: "",
+  embeds: "",
+  integrations: "",
+  automations: "",
+  timeTracker: "",
+  // The one mark that is measurably off-centre in its own box: a speech
+  // bubble whose ink starts 9 units down a 186 box. -3.8% is the measured
+  // correction, up from the -2.4% that was eyeballed against its bbox.
+  approvals: "-translate-y-[3.8%]",
+  proposals: "",
 };
 
 export function IconTemplatePayments({ className }: { className?: string }) {
@@ -766,15 +771,32 @@ export function IconTemplateProposals({ className }: { className?: string }) {
           height="159"
         >
           <rect x="0" y="0" width="159" height="159" fill="#fff" />
-          <path d="M135.099 114C135.099 125.598 125.697 135 114.099 135L21 135C9.40212 135 0 125.598 0 114L0 21C0 9.40209 9.40211 0 21 0L114.099 0C125.697 0 135.099 9.40203 135.099 21L135.099 114Z" fill="#000" />
+          <path
+            d="M135.099 114C135.099 125.598 125.697 135 114.099 135L21 135C9.40212 135 0 125.598 0 114L0 21C0 9.40209 9.40211 0 21 0L114.099 0C125.697 0 135.099 9.40203 135.099 21L135.099 114Z"
+            fill="#000"
+          />
         </mask>
       </defs>
-      <path d="M158.876 137.497C158.876 149.095 149.474 158.497 137.876 158.497L44.876 158.497C33.2781 158.497 23.8762 149.095 23.876 137.497L23.876 44.4971C23.876 32.8991 33.278 23.4971 44.876 23.4971L137.876 23.4971C149.474 23.4971 158.876 32.8991 158.876 44.4971L158.876 137.497Z" fill="#15171c" mask="url(#proposals-out)" />
+      <path
+        d="M158.876 137.497C158.876 149.095 149.474 158.497 137.876 158.497L44.876 158.497C33.2781 158.497 23.8762 149.095 23.876 137.497L23.876 44.4971C23.876 32.8991 33.278 23.4971 44.876 23.4971L137.876 23.4971C149.474 23.4971 158.876 32.8991 158.876 44.4971L158.876 137.497Z"
+        fill="#15171c"
+        mask="url(#proposals-out)"
+      />
       <g clipPath="url(#proposals-in)" filter="url(#proposals-blur)">
-        <path d="M158.876 137.497C158.876 149.095 149.474 158.497 137.876 158.497L44.876 158.497C33.2781 158.497 23.8762 149.095 23.876 137.497L23.876 44.4971C23.876 32.8991 33.278 23.4971 44.876 23.4971L137.876 23.4971C149.474 23.4971 158.876 32.8991 158.876 44.4971L158.876 137.497Z" fill="#15171c" />
+        <path
+          d="M158.876 137.497C158.876 149.095 149.474 158.497 137.876 158.497L44.876 158.497C33.2781 158.497 23.8762 149.095 23.876 137.497L23.876 44.4971C23.876 32.8991 33.278 23.4971 44.876 23.4971L137.876 23.4971C149.474 23.4971 158.876 32.8991 158.876 44.4971L158.876 137.497Z"
+          fill="#15171c"
+        />
       </g>
-      <path d="M135.099 114C135.099 125.598 125.697 135 114.099 135L21 135C9.40212 135 0 125.598 0 114L0 21C0 9.40209 9.40211 0 21 0L114.099 0C125.697 0 135.099 9.40203 135.099 21L135.099 114Z" fill="#ffffff" fillOpacity={0.8} />
-      <path d="M75.5977 25.6729L82.6727 40.1927C83.273 41.4152 84.1596 42.4724 85.2563 43.2732C86.353 44.074 87.6267 44.5945 88.9677 44.7897L104.845 47.0882C106.389 47.3139 107.839 47.97 109.032 48.9824C110.224 49.9948 111.111 51.323 111.593 52.8166C112.074 54.3102 112.13 55.9096 111.754 57.4336C111.379 58.9576 110.587 60.3454 109.468 61.4399L97.9924 72.6521C96.9915 73.62 96.2477 74.8251 95.8292 76.157C95.4107 77.489 95.3309 78.9053 95.597 80.2764L98.271 96.1977C98.5282 97.7389 98.3536 99.3217 97.7668 100.769C97.18 102.215 96.2042 103.469 94.9488 104.389C93.6934 105.309 92.2082 105.858 90.6597 105.976C89.1112 106.094 87.5607 105.775 86.1823 105.055L71.9767 97.4311C70.7733 96.7975 69.4353 96.4665 68.0771 96.4665C66.719 96.4665 65.381 96.7975 64.1776 97.4311L49.972 104.943C48.5935 105.663 47.0431 105.982 45.4946 105.864C43.9461 105.746 42.4609 105.197 41.2055 104.277C39.9501 103.357 38.9742 102.103 38.3874 100.656C37.8006 99.2095 37.626 97.6267 37.8833 96.0856L40.5573 80.2764C40.7944 78.9312 40.6999 77.548 40.2823 76.2481C39.8647 74.9482 39.1366 73.7712 38.1619 72.8203L26.686 61.6081C25.5169 60.5212 24.6806 59.121 24.2754 57.5722C23.8702 56.0233 23.9129 54.3902 24.3986 52.8649C24.8843 51.3397 25.7928 49.9857 27.0171 48.9624C28.2414 47.939 29.7307 47.2888 31.3098 47.0882L47.1866 44.7897C48.5276 44.5945 49.8013 44.074 50.898 43.2732C51.9946 42.4724 52.8813 41.4152 53.4816 40.1927L60.5565 25.6729C61.2558 24.2685 62.3296 23.0876 63.6578 22.2623C64.986 21.4371 66.5162 21 68.0771 21C69.6381 21 71.1683 21.4371 72.4964 22.2623C73.8246 23.0876 74.8984 24.2685 75.5977 25.6729Z" fill="#15171c" />
+      <path
+        d="M135.099 114C135.099 125.598 125.697 135 114.099 135L21 135C9.40212 135 0 125.598 0 114L0 21C0 9.40209 9.40211 0 21 0L114.099 0C125.697 0 135.099 9.40203 135.099 21L135.099 114Z"
+        fill="#ffffff"
+        fillOpacity={0.8}
+      />
+      <path
+        d="M75.5977 25.6729L82.6727 40.1927C83.273 41.4152 84.1596 42.4724 85.2563 43.2732C86.353 44.074 87.6267 44.5945 88.9677 44.7897L104.845 47.0882C106.389 47.3139 107.839 47.97 109.032 48.9824C110.224 49.9948 111.111 51.323 111.593 52.8166C112.074 54.3102 112.13 55.9096 111.754 57.4336C111.379 58.9576 110.587 60.3454 109.468 61.4399L97.9924 72.6521C96.9915 73.62 96.2477 74.8251 95.8292 76.157C95.4107 77.489 95.3309 78.9053 95.597 80.2764L98.271 96.1977C98.5282 97.7389 98.3536 99.3217 97.7668 100.769C97.18 102.215 96.2042 103.469 94.9488 104.389C93.6934 105.309 92.2082 105.858 90.6597 105.976C89.1112 106.094 87.5607 105.775 86.1823 105.055L71.9767 97.4311C70.7733 96.7975 69.4353 96.4665 68.0771 96.4665C66.719 96.4665 65.381 96.7975 64.1776 97.4311L49.972 104.943C48.5935 105.663 47.0431 105.982 45.4946 105.864C43.9461 105.746 42.4609 105.197 41.2055 104.277C39.9501 103.357 38.9742 102.103 38.3874 100.656C37.8006 99.2095 37.626 97.6267 37.8833 96.0856L40.5573 80.2764C40.7944 78.9312 40.6999 77.548 40.2823 76.2481C39.8647 74.9482 39.1366 73.7712 38.1619 72.8203L26.686 61.6081C25.5169 60.5212 24.6806 59.121 24.2754 57.5722C23.8702 56.0233 23.9129 54.3902 24.3986 52.8649C24.8843 51.3397 25.7928 49.9857 27.0171 48.9624C28.2414 47.939 29.7307 47.2888 31.3098 47.0882L47.1866 44.7897C48.5276 44.5945 49.8013 44.074 50.898 43.2732C51.9946 42.4724 52.8813 41.4152 53.4816 40.1927L60.5565 25.6729C61.2558 24.2685 62.3296 23.0876 63.6578 22.2623C64.986 21.4371 66.5162 21 68.0771 21C69.6381 21 71.1683 21.4371 72.4964 22.2623C73.8246 23.0876 74.8984 24.2685 75.5977 25.6729Z"
+        fill="#15171c"
+      />
     </svg>
   );
 }

@@ -95,6 +95,62 @@
   --mock-warning-fg: #8f6a12;
   --mock-negative-bg: #fbeceb;
   --mock-negative-fg: #b8443a;
+  /* The fourth of the family, for a state that is neither good nor bad but
+     wants picking out — the "New" badge on the support card's request row.
+     Same wash-plus-ink shape as the three above, cut in the blue the mocks
+     already use for accent (--mock-accent-bg). */
+  --mock-info-bg: #e7edfd;
+  --mock-info-fg: #2f5bc4;
+
+  /* ── Identity tints for a default avatar ───────────────────────────────
+     The tile a client record wears before anyone uploads a logo, which is
+     most of them. Three pairs, because a column of identical grey tiles is
+     the one place in these mocks where colour is doing a job rather than
+     decorating: an avatar's colour is how you tell one record from the next
+     at a glance, which is why every product that draws initials picks a hue
+     per record.
+
+     IDENTITY, NOT STATUS, and that is why they are their own family rather
+     than the status pills reused. --mock-positive-* is green because green
+     means done; a green avatar on a project card would read as a finished
+     project rather than as a client called Cascade. These three carry no
+     meaning beyond "not the other two", so the hues are chosen to be
+     distinguishable at 14px and nothing else.
+
+     Same ground/ink shape as the status pills: a wash with its own ink on
+     top, light here, translucent-on-desaturated in dark. */
+  --mock-avatar-a-bg: #e7edfd;
+  --mock-avatar-a-fg: #2f5bc4;
+  --mock-avatar-b-bg: #f0e8fb;
+  --mock-avatar-b-fg: #5b3bbd;
+  --mock-avatar-c-bg: #e2f0e9;
+  --mock-avatar-c-fg: #1f6f4a;
+
+  /* The mask that ends the problem section's screen pair on the tray's right
+     edge. A variable rather than a constant in the component, because it has
+     to be able to say "nothing" per theme and an inline style cannot. See the
+     dark branch for why it does. */
+  --portal-screen-fade: linear-gradient(
+    to right,
+    #000 0 90%,
+    rgba(0, 0, 0, 0.72) 95%,
+    rgba(0, 0, 0, 0.3) 98%,
+    transparent 100%
+  );
+
+  /* THE SAMPLE FIRM'S OWN COLOUR — the periwinkle every mock means when it
+     shows "your brand": the logo tile on the branded sign-in, that screen's
+     primary button, and the same pair on the frictionless card's sign-in.
+     It agrees with whole-stack's brand-colour swatch (#5c78b9), which is
+     where it comes from.
+
+     A token rather than a constant in one component, because two screens on
+     one page now wear it and a firm whose colour differs between two shots of
+     its own portal is not a firm. --mock-firm-ink is what sits ON it, white
+     in both themes: the slab is the client's colour, and type that flipped
+     with our theme would be reading the wrong thing off it. */
+  --mock-firm: #5c78b9;
+  --mock-firm-ink: #ffffff;
 
   /* A quieter cut of the positive/warning pair, for the one mock that shows
      several status pills at once.
@@ -228,6 +284,10 @@
     transparent 100%
   );
   --mock-ink: #101114;
+  /* The one FILLED button inside a mock — the sign-in's "email me a link".
+     Light is --mock-ink's own value, so this theme is unchanged; dark is
+     where they part, and the dark block says why. */
+  --mock-cta: #101114;
   --mock-ink-soft: #6b7079;
   /* The resting rows of a mock nav rail — one rung below --mock-ink-soft.
      A rail is a list of places you are NOT, and in the Add App shot the open
@@ -244,6 +304,22 @@
      so it stays a dark slab in both themes; dark drops it below the window so
      it still reads as a separate object rather than merging with it. */
   --mock-brand: #171717;
+
+  /* The CLIENT-FACING slab only — the branded sidebar in the hero's client
+     view and in the journey rail's Track card.
+
+     IT CARRIES COLOUR IN BOTH THEMES NOW. It was --mock-brand's own #171717
+     here, so light showed a near-black rail where dark showed a periwinkle
+     one — the same firm's portal in two different colours depending on the
+     reader's theme, on the one element whose whole job is to say the portal
+     carries the firm's brand. A firm's colour does not change with our theme.
+
+     Same recipe as dark's, against light's own slab value: the site's Haze
+     mixed most of the way into near-black. Plainly a colour, nowhere near a
+     glare, no new hue in the palette, and white type still sits on it at
+     roughly 7:1. --mock-brand is untouched — that one is also a 15px glyph on
+     the invoice mark and the comparison nav, and a slab is not a glyph. */
+  --mock-brand-slab: color-mix(in oklab, var(--mock-accent-bg) 30%, #171717);
 
   /* macOS window buttons, for a mock that draws a browser window. Deliberately
      NOT redefined in the dark block: these are the operating system's own
@@ -429,6 +505,40 @@
   --mock-warning-fg: #cdb37a;
   --mock-negative-bg: rgba(224, 122, 113, 0.14);
   --mock-negative-fg: #d9928b;
+  /* See --mock-info-bg in :root. Translucent ground and a desaturated blue
+     ink, like the three pills above, so it sits on a dark panel without
+     glowing. */
+  --mock-info-bg: rgba(125, 164, 255, 0.16);
+  --mock-info-fg: #9ab6f5;
+
+  /* See --mock-avatar-a-bg in :root. Translucent grounds and desaturated ink,
+     like the status pills above, so three coloured tiles on a near-black card
+     read as tinted rather than as three lights. */
+  --mock-avatar-a-bg: rgba(125, 164, 255, 0.18);
+  --mock-avatar-a-fg: #9ab6f5;
+  --mock-avatar-b-bg: rgba(179, 164, 247, 0.18);
+  --mock-avatar-b-fg: #b7a9f3;
+  --mock-avatar-c-bg: rgba(141, 206, 170, 0.16);
+  --mock-avatar-c-fg: #8fc9a9;
+
+  /* NO FADE IN DARK. This is a mask, so it takes the screens to transparent
+     and whatever is behind them shows through — which used to be a dark tray
+     and is now #F5F5F0 paper. Fading a near-black screen out onto near-white
+     paper is not a crop, it is a pale smear across the right of the picture,
+     the same thing the hero's edge ramps were doing before they came off. A
+     hard crop against the tray's edge is the honest end: these are windows
+     onto screens that continue, and an edge says so. Light keeps the ramp,
+     where the screens and the tray are a step apart rather than opposites. */
+  --portal-screen-fade: none;
+
+  /* See --mock-firm in :root. A step and a half lighter than light's #5c78b9,
+     which is the same move --mock-gantt-* makes and for the same reason: a
+     mid-tone picked against a white screen sits heavy on --mock-window, and
+     the one object carrying the firm's branding was reading as a blue-grey
+     rather than as a colour. The hue does not move, so the mark is the same
+     periwinkle in either theme — only its value is. */
+  --mock-firm: #7389d6;
+  --mock-firm-ink: #ffffff;
 
   /* See --mock-positive-muted-bg in :root. Same job, dark's own values.
 
@@ -531,6 +641,14 @@
   );
   --mock-ink: #ededed;
   --mock-ink-soft: #9a9a9a;
+  /* A FILL IS NOT TYPE, and it cannot take type's value. --mock-ink is
+     #ededed because that is what body copy needs to read on near-black; the
+     same value spread across a 320x44 button is a panel of near-white on a
+     #212121 card — the brightest object on the whole screen, and brighter
+     than the mark and the heading it is meant to sit under. Stepped down far
+     enough to stop glaring, still plainly the primary action, and the dark
+     label on it (--mock-window) clears 9:1. */
+  --mock-cta: #d0d0d0;
   /* Dark's own value for the resting nav rows, measured on the #1c1c1c rail
      rather than converted from light's. Same job and the same ratio there —
      2.9:1 — which in dark is a bigger drop in number than it looks, because
@@ -541,6 +659,23 @@
      has to stay a distinct object, which it cannot do at #171717 against a
      #212121 panel. */
   --mock-brand: #121212;
+
+  /* THE CLIENT SLAB CARRIES COLOUR IN DARK. At --mock-brand #121212 on a
+     #191919 card the sidebar read as ABSENCE rather than as a brand — a hole
+     in the card — which is the one thing a screen captioned "your brand" must
+     not do. A firm's portal colour cannot be shown by drawing nothing.
+
+     Scoped to this token rather than moved into --mock-brand, which is also
+     the branded nav on /ai-app-builder, the comparison mocks and the invoice
+     mark; none of those were asked for and a slab is not a 15px glyph.
+
+     DEEP, AND DERIVED. A saturated blue was tried here before and taken out
+     for good reason: a slab is a large flat FIELD, and a value that is a
+     pleasant accent on a chip glares at 164x300 against near-black. So this
+     is the site's own Haze mixed most of the way into the near-black it
+     replaces — plainly a colour, nowhere near a glare, and not a new hue
+     entering the palette. White type sits on it at roughly 7:1. */
+  --mock-brand-slab: color-mix(in oklab, var(--mock-accent-bg) 30%, #121212);
 
   /* The masthead on the dark ground: the page's own black, with the ink at full
      white rather than the softened --foreground the body copy uses, because the
@@ -1503,22 +1638,33 @@ html:not([data-theme="dark"]) .v63-gradient-border:focus-within::before {
 }
 /* Describe-step mock ring: a continuous colour loop (no transparent arc) so the
    small mock's border always reads as coloured and never washes out to white.
-   Scoped like the light override above so it wins on specificity + order. */
+   Scoped like the light override above so it wins on specificity + order.
+
+   THE TWO STOPS ARE TOKENS, with each theme's own pair as the default. The
+   values are unchanged — deep blue/green on a light ground, pale blue/lime on
+   a dark one, which is the same hue at the value its ground can carry.
+
+   They are tokens because one box now breaks the rule that "dark theme" and
+   "dark ground" are the same thing: the hero's prompt card is #FBFBF5 paper in
+   dark (see PAPER_LADDER in builder-hero-visual), so the pale pair meant for
+   near-black was laying a near-white ring on near-white card and the outline
+   all but disappeared. That box sets the pair back to the light-ground values
+   for itself. Every other ring resolves the default and does not move. */
 html:not([data-theme="dark"]) .v63-ring-solid::before {
   background: conic-gradient(
       from var(--v63-angle),
-      #6f96f0 0deg,
-      #93c53a 180deg,
-      #6f96f0 360deg
+      var(--v63-ring-a, #6f96f0) 0deg,
+      var(--v63-ring-b, #93c53a) 180deg,
+      var(--v63-ring-a, #6f96f0) 360deg
     )
     border-box;
 }
 html[data-theme="dark"] .v63-ring-solid::before {
   background: conic-gradient(
       from var(--v63-angle),
-      #9fb0e4 0deg,
-      #cfe985 180deg,
-      #9fb0e4 360deg
+      var(--v63-ring-a, #9fb0e4) 0deg,
+      var(--v63-ring-b, #cfe985) 180deg,
+      var(--v63-ring-a, #9fb0e4) 360deg
     )
     border-box;
 }
@@ -4744,3 +4890,146 @@ html:not([data-authed]) .auth-only {
      white page, so it is load-bearing in a way it never was here. */
   display: none;
 }
+
+/* ── Custom-domain mock: the host being typed into its field ──────────────
+   The white-label card's whole subject is the domain, so the one thing moving
+   on it is the domain arriving.
+
+   ONE STEP PER CHARACTER, AND THE COUNT IS THE STRING'S LENGTH. The earlier
+   version ran steps(80) on the reasoning that steps(n) divides the whole
+   iteration, so 80 steps over 8s would put 21 of them inside a reveal that
+   finishes at 26.25%. That is not what steps() does: animation-timing-function
+   applies to EACH KEYFRAME SEGMENT separately, so all 80 landed inside the
+   2.1s reveal — one every 26ms, cutting the host into eighty slivers roughly a
+   quarter of a character wide. That is the jitter; the count was never a
+   typing speed at all.
+
+   Per segment, the count is simply the number of characters: 21 steps across
+   2.1s is one character every 100ms, which is a speed a hand actually types
+   at. --domain-steps carries it from the component beside the string it was
+   counted from.
+
+   `ch`, AND THE TEXT IS SET IN MONO SO THAT MEANS SOMETHING. The reveal was a
+   clip-path stepped in PERCENTAGES of the string's width, which is exact only
+   if every glyph is the same width — and in the site's proportional face none
+   of them are. The edge landed wherever 1/21 of the total happened to fall:
+   through the middle of an `m`, past a `.` and into the letter after it. The
+   host came in a sliver at a time instead of a character at a time, which is
+   what read as jitter.
+
+   In a monospace a `ch` is every glyph's advance, so stepping the width in
+   `ch` puts the edge on a character boundary every time. --domain-ch carries
+   the string's length from the component, so the keyframes never hold a count
+   that the copy can change out from under.
+
+   WIDTH, NOT clip-path, AND THE CARET IS THE SAME BOX'S BORDER. The earlier
+   version could not animate width because its box was sized BY the text — a
+   percentage width resolved against a width that depended on it, and the
+   reveal sat at zero forever. In `ch` there is no such circularity: the width
+   is an absolute length, definite whatever the parent does. That matters
+   beyond the reveal, because it lets the caret be this element's own
+   border-right rather than a second element flown alongside it on `left` — a
+   paint property and a layout property on separate elements, which the
+   browser is free to land on different frames, and which is why the caret used
+   to drift in and out of the last letter.
+
+   The animation is CSS only, and it has to be: per the repo's CLAUDE.md the
+   preview pane runs with visibilityState "hidden", where IntersectionObserver
+   never fires and rAF is paused. It also means the whole thing works before
+   hydration. */
+/* The typed box itself. Declared here rather than as utilities because the
+   step count has to come from the string's length, and a Tailwind arbitrary
+   value has to be a static string — the component passes --domain-ch and
+   --domain-steps and nothing here hardcodes the host.
+
+   content-box ON PURPOSE. The site sets border-box globally, which would make
+   `width: 21ch` include the 1.5px caret and clip a pixel and a half off the
+   last character — the one glyph a reader is most likely to be looking at
+   when the typing stops. Sized by its content, the caret sits outside the
+   text the way a real one does.
+
+   The resting state is the FINISHED host with a transparent caret, so that is
+   also what reduced motion gets, and what renders before the animation is
+   applied. */
+.domain-typing {
+  box-sizing: content-box;
+  width: var(--domain-ch);
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 1.5px solid transparent;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .domain-typing {
+    width: 0;
+    animation:
+      domain-type 8s steps(var(--domain-steps), end) infinite,
+      domain-caret 8s step-end infinite;
+  }
+}
+
+@keyframes domain-type {
+  0% {
+    width: 0ch;
+  }
+  26.25% {
+    width: var(--domain-ch);
+  }
+  100% {
+    width: var(--domain-ch);
+  }
+}
+/* The caret is the typed box's own right border, so it needs no position of
+   its own — only a colour that comes and goes. Solid for the whole of the
+   typing and the beat after it, then blinking across the hold, on the same 8s
+   timeline so the two can never disagree about when the hand stopped.
+
+   step-end, not linear: a caret that FADES is a caret being animated. Real
+   ones are on or off. */
+@keyframes domain-caret {
+  0%,
+  33% {
+    border-right-color: var(--mock-ink);
+  }
+  33.01%,
+  40% {
+    border-right-color: transparent;
+  }
+  40.01%,
+  47% {
+    border-right-color: var(--mock-ink);
+  }
+  47.01%,
+  54% {
+    border-right-color: transparent;
+  }
+  54.01%,
+  61% {
+    border-right-color: var(--mock-ink);
+  }
+  61.01%,
+  68% {
+    border-right-color: transparent;
+  }
+  68.01%,
+  75% {
+    border-right-color: var(--mock-ink);
+  }
+  75.01%,
+  82% {
+    border-right-color: transparent;
+  }
+  82.01%,
+  89% {
+    border-right-color: var(--mock-ink);
+  }
+  89.01%,
+  96% {
+    border-right-color: transparent;
+  }
+  96.01%,
+  100% {
+    border-right-color: var(--mock-ink);
+  }
+}
+
+

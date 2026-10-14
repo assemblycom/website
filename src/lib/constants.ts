@@ -101,11 +101,38 @@ export function isNavGroup(entry: NavEntry): entry is NavGroup {
   return "items" in entry;
 }
 
-// One grouped panel and four direct links. Templates, Customers and Security
-// are their own links rather than a Product panel: two items behind a trigger
-// is a panel that costs a hover to read what it could have just said. Resources
-// stays a group because most of what is in it lives off-site.
+// Two grouped panels and four direct links.
+//
+// Product leads, holding the two pages that describe what Assembly actually is:
+// the client portal it ships as, and the builder that reshapes it. Both are
+// long pages that sell the product, so neither belongs in Resources and neither
+// reads as a peer of Templates or Pricing in the bar. Templates, Customers and
+// Security stay their own links — they name themselves, and a panel costs a
+// hover to read what the bar could have just said. Resources stays a group
+// because most of what is in it lives off-site.
 export const NAV_ENTRIES: NavEntry[] = [
+  {
+    label: "Product",
+    // The column is headed "Features", not "Product" — repeating the trigger's
+    // own word over the only column in the panel says nothing the bar hasn't
+    // already said. Carried as a `section` on both items, which is how
+    // columnsOf in nav-dropdown.tsx labels a column.
+    items: [
+      {
+        label: "AI app builder",
+        href: "/ai-app-builder",
+        section: "Features",
+        description: "Describe the app you need and get a working one",
+      },
+      {
+        label: "Client portal",
+        href: "/client-portal",
+        section: "Features",
+        description:
+          "Messaging, billing, files and contracts, under your brand",
+      },
+    ],
+  },
   { label: "Templates", href: "/templates" },
   { label: "Customers", href: "/customers" },
   { label: "Security", href: "/security" },

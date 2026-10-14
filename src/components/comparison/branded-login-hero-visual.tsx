@@ -66,18 +66,58 @@ export function BrandedLoginHeroVisual() {
  * the same one branded-portal-visual draws — so this card reads as a window
  * onto a screen like the other three.
  */
-export function BrandedLoginScreen() {
+// ── The sample firm's own colour ─────────────────────────────────────────
+// The site has one, and it is this: the periwinkle accent that whole-stack
+// already calls "the sample firm's brand colour, wherever these mocks show
+// 'your brand'" — the logo tile, the tinted client sidebar and the brand-colour
+// swatch all carry it, and they have to agree to read as one firm's branding.
+//
+// It lives in globals.css now, as --mock-firm / --mock-firm-ink, and this
+// reads it. It was a scoped pair of hexes here, which was fine while this was
+// the only screen wearing it; /client-portal's frictionless section now draws
+// a SECOND sign-in for the same firm, and two components each naming their own
+// periwinkle is the drift the token exists to stop. Each theme still names its
+// own value and neither touches the other — that part has not changed, it has
+// just moved to where both screens can read it.
+const BRAND_FILL = "bg-[var(--mock-firm)] text-[color:var(--mock-firm-ink)]";
+
+export function BrandedLoginScreen({
+  brand = false,
+  quietFoot = true,
+  frame = true,
+}: {
+  brand?: boolean;
+  /**
+   * Whether this screen draws its own window, or only reads its palette.
+   *
+   * Off for a card that already supplies one — see `frame` on LoginScreen for
+   * what happens when both do.
+   */
+  frame?: boolean;
+  /**
+   * Whether the Magic-link button's label is dropped.
+   *
+   * True by default, for the security pillar this screen was built for: that
+   * card ramps the screen's foot and the button is what sits under the ramp,
+   * so a half-read word there reads as a failure to render rather than as the
+   * picture giving out. A frame that shows the whole button wants its label —
+   * without it the button is an unexplained slab, which on the branding card
+   * is the one element carrying the firm's colour.
+   */
+  quietFoot?: boolean;
+} = {}) {
   return (
     <LoginScreen
       framed
+      frame={frame}
       // No browser bar. The frame still gives the screen its own surface and
       // its edge; what goes is the band of grey with three dots in it, which
       // on a card this short was the first thing above the sign-in and said
       // nothing the card's heading does not.
       chrome={false}
       // The pillar card ramps this screen's foot in dark, and the Magic-link
-      // button is what sits under the ramp.
-      quietFoot
+      // button is what sits under the ramp. See the prop for when it does not.
+      quietFoot={quietFoot}
       domain="portal.brandmages.com"
       mark={
         // The firm's mark: --mock-brand's dark slab with a white glyph in
@@ -94,9 +134,33 @@ export function BrandedLoginScreen() {
         // size-9, down from 11. With the browser bar gone the mark became the
         // first thing on the screen, and at 44px it was the largest object in
         // a shot whose subject is the form under it.
-        <span className="flex size-9 items-center justify-center rounded-[10px] bg-[var(--mock-brand)] text-white [[data-theme=dark]_&]:bg-[#f2f2f2] [[data-theme=dark]_&]:text-[#111111]">
-          <IconBrandMark className="size-4" />
-        </span>
+        // With `brand` on, the tile carries the firm's COLOUR rather than the
+        // neutral slab — and it is now the ONLY thing that does; the primary
+        // button went back to the secondary surface, see the note on it.
+        // That card's claim is "your logo, images, colors…", and
+        // a mark that is black in light and white in dark demonstrates the
+        // logo half of it and none of the colour half — the screen could
+        // belong to any firm. Coloured, the mark and the button are the same
+        // one value, which is what a brand setting actually does.
+        // 6px, down from 10. At 10 on a 36px tile the radius was 28% of the
+        // side — past an app icon's own proportion and into a pill, so the
+        // firm's mark read as a rounded badge rather than as a logo someone
+        // uploaded. 6px is a sixth of the side, which is the shape a square
+        // logo tile actually wears, and it leaves the 16px glyph inside more
+        // room at the corners. Both branches move together: they are one tile
+        // drawn in two colours, and a radius that differed between them would
+        // be visible the moment the brand setting is toggled.
+        brand ? (
+          <span
+            className={`flex size-9 items-center justify-center rounded-[6px] ${BRAND_FILL}`}
+          >
+            <IconBrandMark className="size-4" />
+          </span>
+        ) : (
+          <span className="flex size-9 items-center justify-center rounded-[6px] bg-[var(--mock-brand)] text-white [[data-theme=dark]_&]:bg-[#f2f2f2] [[data-theme=dark]_&]:text-[#111111]">
+            <IconBrandMark className="size-4" />
+          </span>
+        )
       }
       title="Sign in to Brandmages"
     />
@@ -111,6 +175,7 @@ function LoginScreen({
   framed = false,
   chrome = true,
   quietFoot = false,
+  frame = true,
 }: {
   domain: string;
   mark: React.ReactNode;
@@ -143,6 +208,22 @@ function LoginScreen({
    * a short card go to chrome.
    */
   chrome?: boolean;
+  /**
+   * Whether `framed` also DRAWS the window, or only adopts its palette.
+   *
+   * The two were one flag, and that was the bug: a caller whose own card
+   * already paints a `--mock-window` box with a hairline and a `.mock-edge`
+   * ramp — which /client-portal's customization cards all do — got a second
+   * box a pixel inside the first. Two concentric hairlines, two rounded top
+   * corners and two lit edges, which reads as a rendering fault rather than
+   * as a screen in a frame.
+   *
+   * So the palette and the box are separate now. `framed` still means "this
+   * screen sits on a mock surface, read the --mock-* tokens"; `frame` is
+   * whether it supplies that surface itself. Default true, because the two
+   * callers that had it want both.
+   */
+  frame?: boolean;
 }) {
   // One palette, picked once. Every surface below reads from it, so the two
   // contexts this screen renders in differ in exactly one place rather than in
@@ -190,8 +271,7 @@ function LoginScreen({
         ink: "text-foreground",
         inkSoft: "text-muted-foreground",
         // See the framed palette: the label sits under its field in dark.
-        labelInk:
-          "text-foreground [[data-theme=dark]_&]:text-muted-foreground",
+        labelInk: "text-foreground [[data-theme=dark]_&]:text-muted-foreground",
         rule: "bg-border [[data-theme=dark]_&]:bg-white/15",
         field:
           "border-border text-muted-foreground [[data-theme=dark]_&]:border-white/15",
@@ -202,7 +282,7 @@ function LoginScreen({
     <div
       aria-hidden
       className={`flex h-full select-none flex-col ${
-        framed
+        framed && frame
           ? // Open at the foot, like the branded-portal shot beside it: the
             // screen runs off the bottom of its card, so there is no corner to
             // round and no edge to close down there — hence border-b-0.
@@ -321,6 +401,22 @@ function LoginScreen({
         <Field label="Password" placeholder="Optional" c={c} />
 
         <div
+          // SECONDARY IN BOTH ARMS, brand or not.
+          //
+          // With `brand` on, this took BRAND_FILL — the firm's periwinkle
+          // slab, matching the mark at the top of the screen. The argument was
+          // that a branding card should colour the two things a branded login
+          // colours. In the frame it came out the other way round: a 30px bar
+          // of solid periwinkle across the screen's full width is simply more
+          // colour than a 36px tile, so the LOUDEST brand object in a shot
+          // about the firm's logo was a button, and the logo was the quieter
+          // echo of it.
+          //
+          // One coloured object per screen, and it is the mark. The button
+          // falls back to c.primary, which is the Google row's own surface —
+          // the same pair of ways in, drawn the same, which is what the
+          // frictionless card's sign-in settled on too. `brand` now means
+          // exactly one thing: the firm's colour on the firm's logo.
           className={`mt-4 flex h-[30px] w-full items-center justify-center rounded-[4px] ${MOCK_PRIMARY} ${c.primary}`}
         >
           {/* THE LABEL GOES IN BOTH THEMES when the frame fades this screen's

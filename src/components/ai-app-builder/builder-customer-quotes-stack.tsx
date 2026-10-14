@@ -161,7 +161,7 @@ export function BuilderCustomerQuotesStack({
                     off the centre of the 32px hit area it sits in. */}
                 <span
                   aria-hidden
-                  className="text-[20px] leading-none transition-transform duration-200 group-hover/story:translate-x-0.5 motion-reduce:transition-none"
+                  className="text-[16px] leading-none transition-transform duration-200 group-hover/story:translate-x-0.5 motion-reduce:transition-none"
                 >
                   →
                 </span>

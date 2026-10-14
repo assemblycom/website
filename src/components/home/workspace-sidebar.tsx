@@ -1,8 +1,12 @@
 import {
+  IconBell,
   IconBook,
   IconBookBlank,
   IconBrandMark,
+  IconCard,
   IconChat,
+  IconFolder,
+  IconForm,
   IconGlobe,
   IconPlus,
   IconUsers,
@@ -34,16 +38,34 @@ import { MOCK_MICRO, MOCK_PRIMARY } from "@/components/ui/mock-type";
 // ─────────────────────────────────────────────────────────────────────────
 
 /** Which row is lit. `Add App` lights the action at the foot of the list. */
-export type WorkspaceNavRow = "CRM" | "Team" | "Home" | "Messages" | "Add App";
+export type WorkspaceNavRow =
+  "CRM" | "Team" | "Notifications" | "Home" | "Messages" | "Add App";
 
 function NavItem({
   icon,
   label,
   active,
+  badge,
+  quiet = false,
 }: {
   icon: React.ReactNode;
   label: string;
   active?: boolean;
+  /** A count riding at the row's right edge — unread notifications, so far. */
+  badge?: string;
+  /**
+   * Draws the row a rung under the resting ones.
+   *
+   * For `Add App` on the one card whose subject is the sidebar itself. There
+   * the list is long enough to read as a list, and the action that extends it
+   * should sit below the places it extends — otherwise the last row of the
+   * nav is as loud as the apps above it and reads as a sixth destination.
+   *
+   * Opt-in, because this was once the default for `Add App` and was removed
+   * on purpose: on the shorter navs, where the claim is about the pane and
+   * not the rail, a quieted action was a distinction nobody was reading.
+   */
+  quiet?: boolean;
 }) {
   return (
     <div
@@ -86,13 +108,67 @@ function NavItem({
       className={`flex h-[22px] items-center gap-2 rounded px-1.5 transition-colors duration-150 ${
         active
           ? "bg-border/70 text-foreground"
-          : "text-[color:var(--mock-nav-rest)] hover:bg-border/40 hover:text-foreground"
+          : quiet
+            ? "text-[color:var(--mock-nav-rest)] opacity-60 hover:bg-border/40 hover:text-foreground hover:opacity-100"
+            : "text-[color:var(--mock-nav-rest)] hover:bg-border/40 hover:text-foreground"
       }`}
     >
+      {/* NO COLOUR ON THE GLYPHS. They carried the mock family's three tints
+          for a while, which worked on a rail of three app rows and did not on
+          this one: at six it is a different hue every row, and a nav where no
+          two neighbours agree reads as a palette rather than as a list. The
+          colour on this card lives in the two COUNTS instead — see the
+          Notifications badge below and the round counter in ApprovalsMock —
+          where one mark carries it and the rest of the rail stays furniture. */}
       <span className="[&>svg]:size-[13px] flex shrink-0 items-center justify-center">
         {icon}
       </span>
       <span className={`min-w-0 flex-1 truncate ${MOCK_PRIMARY}`}>{label}</span>
+      {badge ? (
+        // THE COUNT IS WHERE THE RAIL'S COLOUR GOES.
+        //
+        // It was the row's own resting ink over a --muted pill, on the
+        // reasoning that an unread count is chrome and a coloured badge in a
+        // mock about the list of apps would be the first thing read on the
+        // card. The first half still holds and the second one is now the
+        // point: this rail is grey on purpose, and ONE blue mark in it is
+        // exactly what gives the card somewhere to look. A badge is also the
+        // one element in a nav that is supposed to be noticed — that is what a
+        // count is for.
+        //
+        // --mock-info-*, the status family's blue pair, so this is the same
+        // blue the support card's New badge wears rather than a value invented
+        // here. Not red: this is a count of things waiting, not an alarm.
+        <span
+          // NOT MOCK_MICRO. The badge carried it AND a text-[8.5px] of its
+          // own, which is two font sizes in one class list — Tailwind orders
+          // by its own sort rather than by source, so the 9.5px won and the
+          // count rendered a point LARGER than the row label beside it. A
+          // count is the smallest thing in a nav, not the biggest.
+          //
+          // 7.5px, set once, and rounded-[4px] written out rather than left to
+          // `rounded`: the two were the same value here, but the number is the
+          // point and a bare utility hides it.
+          //
+          // A SQUARE, drawn as one. It was px-1 py-[2px], which sizes the box
+          // off the glyph plus padding — for a single digit that came out
+          // 12.67 x 11.5, a pixel wider than tall, and a 4px radius on an
+          // 11.5px side is a third of it, so the corners read as pulled. A
+          // fixed 13px box with the figure centred in it is square by
+          // construction and the radius is the same proportion on both axes.
+          className="inline-flex size-[13px] shrink-0 items-center justify-center rounded-[4px] bg-[var(--mock-info-bg)] text-[7.5px] leading-none text-[color:var(--mock-info-fg)]"
+        >
+          {/* THE GLYPH IS NUDGED DOWN HALF A PIXEL, on an inner span so the
+              tile's own tint does not move with it.
+
+              items-center centres the LINE BOX, which is ascent plus descent.
+              Figures are like caps — they sit on the baseline and never use
+              the descent — so centring the box leaves the ink riding high by
+              about half the descent. The same correction the CRM mock's avatar
+              initials carry, scaled to this size. */}
+          <span className="block translate-y-[0.5px]">{badge}</span>
+        </span>
+      ) : null}
     </div>
   );
 }
@@ -113,9 +189,26 @@ export function WorkspaceSidebar({
    * every pixel here is a pixel the subject does not get.
    */
   className = "hidden w-[148px] sm:flex md:w-[164px]",
+  showcase = false,
 }: {
   active: WorkspaceNavRow;
   className?: string;
+  /**
+   * Draws the rail as the SUBJECT rather than as the furniture beside one.
+   *
+   * Everything above is tuned for a card whose claim is about the pane: the
+   * stock rows are cut to two, the apps to one, and nothing in the column is
+   * allowed to pull rank on the screen it introduces. /client-portal has one
+   * card where that is exactly backwards — "Fill the sidebar with the apps
+   * your firm needs" — and there a two-row nav under a one-app group is a
+   * picture of a sidebar with nothing in it.
+   *
+   * So this adds what the real rail has and the short one drops: the
+   * Notifications row with its count, a filled-out Apps group, and `Add App`
+   * set a rung under the rows it extends. The short list stays the default,
+   * so the four cards that were tuned against it do not move.
+   */
+  showcase?: boolean;
 }) {
   return (
     <div
@@ -129,7 +222,24 @@ export function WorkspaceSidebar({
       className={`shrink-0 flex-col overflow-hidden border-r border-[var(--mock-line)] bg-muted px-1.5 py-2 ${className}`}
     >
       <div className="flex items-center gap-1.5 px-1.5 pb-2.5 pt-0.5">
-        <span className="flex size-[15px] items-center justify-center rounded bg-foreground text-background">
+        {/* THE FIRM'S COLOUR ON THE SHOWCASE CARD, the page's ink everywhere
+            else.
+            
+            /client-portal puts this rail beside the branded sign-in, and the
+            two are the same firm's workspace — so a near-white tile here next
+            to a periwinkle one there read as two different companies a card
+            apart. --mock-firm is the token both now share.
+            
+            Gated on `showcase` because the other four callers sit on pages
+            that make no claim about branding; there the tile is the product's
+            own mark and `bg-foreground` is right. */}
+        <span
+          className={`flex size-[15px] items-center justify-center rounded ${
+            showcase
+              ? "bg-[var(--mock-firm)] text-[color:var(--mock-firm-ink)]"
+              : "bg-foreground text-background"
+          }`}
+        >
           <IconBrandMark className="size-[9px]" />
         </span>
         <span className={`text-foreground ${MOCK_PRIMARY}`}>BrandMages</span>
@@ -137,9 +247,26 @@ export function WorkspaceSidebar({
 
       <NavItem icon={<IconBook />} label="CRM" active={active === "CRM"} />
       <NavItem icon={<IconUsers />} label="Team" active={active === "Team"} />
+      {showcase ? (
+        <NavItem
+          icon={<IconBell />}
+          label="Notifications"
+          active={active === "Notifications"}
+          // EIGHT, not "99+". A capped counter is what a rail shows when it
+          // has given up counting, which on a marketing shot reads as a
+          // workspace drowning rather than as one in use — and it is the only
+          // number on the card, so it is the one claim the picture makes about
+          // volume. A plain 8 is a firm with eight things waiting.
+          badge="8"
+        />
+      ) : null}
 
       <SectionLabel>Apps</SectionLabel>
-      <NavItem icon={<IconGlobe />} label="Home" active={active === "Home"} />
+      <NavItem
+        icon={<IconGlobe />}
+        label="Home"
+        active={active === "Home"}
+      />
       <NavItem
         icon={<IconChat />}
         label="Messages"
@@ -156,8 +283,29 @@ export function WorkspaceSidebar({
           the same page, whose portal lists the stock rows and exactly one
           added app, also Year-end docs. Two shots of the same workspace in one
           section should not disagree about how many apps it has. */}
-      <NavItem icon={<IconBookBlank />} label="Year-end docs" />
-      <NavItem icon={<IconPlus />} label="Add App" active={active === "Add App"} />
+      <NavItem
+        icon={<IconBookBlank />}
+        label="Year-end docs"
+      />
+      {/* The rest of what a filled sidebar holds, on the one card that is
+          about the sidebar being filled. Stock-sounding names rather than
+          more invented apps: the claim beside this is "install or tailor apps
+          in one click, or build a completely custom app with AI", so the
+          group should read as a mix of what came with the workspace and what
+          the firm added, not as five bespoke builds. */}
+      {showcase ? (
+        <>
+          <NavItem icon={<IconCard />} label="Billing" />
+          <NavItem icon={<IconFolder />} label="Files" />
+          <NavItem icon={<IconForm />} label="Intake forms" />
+        </>
+      ) : null}
+      <NavItem
+        icon={<IconPlus />}
+        label="Add App"
+        active={active === "Add App"}
+        quiet={showcase && active !== "Add App"}
+      />
     </div>
   );
 }
