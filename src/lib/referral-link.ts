@@ -17,7 +17,15 @@ import { PORTAL_API_URL, PORTAL_ID } from "@/lib/portal-api";
  * - growth-loops on: `ref` and `firm` for the referring workspace, and the
  *   referrer's first name as `first` so signup can say who sent them.
  * - growth-loops off: `referred`, which the old program reads.
- * - unknown code, or the lookup fails: nothing more.
+ * - unknown code, or the lookup fails: `referred` all the same, if the code
+ *   could be one.
+ *
+ * The lookup finds a referrer by user id or workspace id, but old links name
+ * the user by their `ref`, which it doesn't know. Signup does: it finds the
+ * referrer by `ref` from `referred`. So a code the lookup can't place is still
+ * forwarded rather than dropped, or every old link would lose its credit. A
+ * code that names nobody pays no one: signup records the referral with no
+ * referrer on it.
  */
 
 /** The longest the visitor waits. Past it, the optional firm name is dropped. */
@@ -38,7 +46,12 @@ export async function referralLandingPath(
   };
 
   const referral = await lookupReferral(code);
-  if (!referral) return poweredByWith(utm);
+  if (!referral) {
+    return poweredByWith({
+      ...utm,
+      referred: PORTAL_ID.test(code) ? code : undefined,
+    });
+  }
 
   const ref = referral.referrerPortalId;
   if (!ref) return poweredByWith({ ...utm, referred: code });

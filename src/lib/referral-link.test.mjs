@@ -54,8 +54,14 @@ test('growth-loops off: signup gets referred', async () => {
   assert.deepEqual(signup, { referrer: 'studio-pricing', ...UTM, utm_content: 'link', referred: 'offCode1' });
 });
 
-test('unknown code: signup gets the UTMs only', async () => {
-  const { signup } = await visit('/referrals/Katelyn_hwe0ZPWvR');
+test('a code the lookup cannot place still reaches signup as referred', async () => {
+  // An old link names the user by their `ref`, which only signup can resolve.
+  const { signup } = await visit('/referrals/Usman_h6L_2vXvg');
+  assert.deepEqual(signup, { referrer: 'studio-pricing', ...UTM, utm_content: 'link', referred: 'h6L_2vXvg' });
+});
+
+test('a code that cannot be one: signup gets the UTMs only', async () => {
+  const { signup } = await visit('/referrals/Katelyn_not%20a%20code!');
   assert.deepEqual(signup, { referrer: 'studio-pricing', ...UTM, utm_content: 'link' });
 });
 
