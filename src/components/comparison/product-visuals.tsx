@@ -189,17 +189,18 @@ export function BrandPillarVisual() {
           <BrandedLoginScreen quietFoot={false} centered orbit />
         </div>
         {/* The firm's picture as a card inset from the window's top and right
-          edges, running off the foot with the form. An abstract lime
-          pattern, cropped from the centre. */}
+          edges, running off the foot with the form. Abstract artwork,
+          two brand-hued curves on black, cropped toward the curves on the
+          right so they survive the narrow panel. */}
         <div className="hidden w-[46%] shrink-0 pr-3 pt-3 sm:block">
           <div className="relative h-full overflow-hidden rounded-t-lg bg-[var(--mock-well-2)]">
             <Image
-              src="/images/mocks/orbit-signin-art.png"
+              src="/images/mocks/orbit-signin-curve.png"
               alt=""
               fill
               sizes="420px"
               quality={90}
-              className="object-cover"
+              className="object-cover object-[70%_50%]"
             />
           </div>
         </div>

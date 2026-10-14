@@ -288,7 +288,9 @@ export function VsComparisonPage({
 
         <GridDivider />
 
-        <section className={`${RAIL} py-16 md:py-24`}>
+        {/* Tinted, as /client-portal tints its stack section: the one band
+            on the page that is a claim from a customer rather than from us. */}
+        <section className={`${RAIL} bg-[var(--surface)]/50 py-16 md:py-24`}>
           <h2 className="type-h2 text-balance text-center">
             {page.proof.heading}
           </h2>
