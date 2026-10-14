@@ -54,7 +54,21 @@ export function ViewToggle({
       role="group"
       aria-label={label}
       className={`flex items-center gap-0.5 rounded-full border border-border p-1 ${
-        onPaper ? "" : "[[data-theme=dark]_&]:border-white/15"
+        onPaper
+          ? // A TINTED TRACK IN DARK, where "on paper" means the builder
+            // hero's cards — and those are Haze in dark. With no fill the
+            // card showed straight through, so the control was a thin ring
+            // with a pale pill floating inside it and nothing joining the
+            // two: the unselected label sat on the card rather than in a
+            // track. A white wash gives the ring something to contain.
+            //
+            // Translucent rather than a value, so it is the card's own colour
+            // lightened rather than a second colour introduced, and it
+            // follows if that ground is ever retuned. Dark only: in light
+            // these cards are near-white and a white wash on them is both
+            // invisible and unnecessary — the hairline is enough there.
+            "[[data-theme=dark]_&]:bg-white/25"
+          : "[[data-theme=dark]_&]:border-white/15"
       }`}
     >
       {options.map((option, i) => (
@@ -71,11 +85,18 @@ export function ViewToggle({
                 // there — lifted to 8% so it still reads once the ring is
                 // gone. Light keeps its border, because a white thumb on a
                 // near-white card has nothing else to separate it.
-                `border-border bg-background text-foreground ${
-                  onPaper
-                    ? ""
-                    : "[[data-theme=dark]_&]:border-transparent [[data-theme=dark]_&]:bg-white/[0.08]"
-                }`
+                //
+                // WRITTEN AS "TRANSPARENT, THEN LIT IN LIGHT", not the other
+                // way round. It was `border-border` with a dark variant
+                // overriding it to transparent, and the override was not
+                // landing — the thumb kept a near-white ring on a near-black
+                // ground, which is the one line this control must not draw.
+                // Both halves are explicit now: the base says transparent and
+                // a light-scoped variant puts the border back, so neither
+                // theme depends on one utility outranking another.
+                onPaper
+                  ? "border-border bg-background text-foreground"
+                  : "border-transparent bg-background text-foreground [[data-theme=light]_&]:border-border [[data-theme=dark]_&]:bg-white/[0.08]" 
               : "border-transparent text-muted-foreground hover:text-foreground"
           }`}
         >

@@ -49,6 +49,16 @@ const LIVE_W = 720;
  * So: change this line and the Live card beside it has to change with it.
  */
 const PROMPT = "Build a year-end document checklist my clients can upload to.";
+/**
+ * The same sentence for a phone, cut to its subject.
+ *
+ * The full line wraps to two at a phone's card width, and the box is sized for
+ * one — so the second line pushed the controls down and the composer grew as
+ * the demo typed, which is the one thing a box that types into itself must not
+ * do. What goes is the clause about who uploads; what stays is the app, which
+ * is the half the Live card beside it has to agree with.
+ */
+const PROMPT_SHORT = "Build a year-end document checklist.";
 
 // Brandmages' brand colour is black, so the client side runs on ink: fills take
 // the foreground, and the sidebar is the brand itself, near-black with white
@@ -179,10 +189,24 @@ const CARD =
   "flex flex-col overflow-hidden rounded-[28px] transition-[background-color,box-shadow] duration-300";
 // Both cards share one grey; the clicked card is marked by width, not colour,
 // and hover only firms up the outline.
-// PAPER IN BOTH THEMES, and the ladder that makes that survivable.
+// A LIGHT GROUND IN BOTH THEMES, and the ladder that makes that survivable.
 //
-// The cards take #FBFBF5 in dark — the same ground stage 2 of the journey rail
-// stands its cover plates on — so the hero and the rail show one material.
+// In dark the cards run the site's own ramp: Haze #7DA4FF at the head down to
+// lime #D9ED92 at the foot. Both are brand values — the pair the composer
+// ring, the OG card and the footer aurora are all cut from — and sRGB
+// interpolation carries them through the muted blue-green midpoint on its own,
+// so there is no third stop to tune and no risk of a hue entering the palette
+// that is not already in it.
+//
+// FLAT HAZE FIRST, AND BEFORE THAT #FBFBF5 PAPER. The paper matched the cover
+// plates stage 2 of the journey rail stands on; the blue was the same move
+// with the brand doing the work instead of the material. Flat, though, it was
+// a large even field — a 440px card of one saturated colour, which on a page
+// of near-black reads as a swatch rather than as a surface. A ramp gives it
+// somewhere to go.
+//
+// Every value on it stays light enough to carry near-black type: the darkest
+// point of the run is the head, and #101114 on #7DA4FF is about 8:1.
 //
 // A BACKGROUND ALONE WOULD NOT HAVE BEEN ENOUGH, and that is the whole reason
 // for the tokens below. Everything drawn inside these cards resolves page
@@ -199,15 +223,37 @@ const CARD =
 // did and nothing here can reach it.
 //
 // --surface is set to the card's own colour rather than light's #f5f5f5: it
-// is read as "the ground this sits on", and on these cards that ground is now
-// the paper itself. That one substitution is what makes the composer's 3px
-// band read as a gap again and both fades dissolve into the card.
+// is read as "the ground this sits on", and on these cards that ground is the
+// card's own fill. That one substitution is what makes the composer's 3px band
+// read as a gap again.
+//
+// TWO OF THE SIX ARE NOT LIGHT'S OWN VALUES, and Haze is why. A ladder that
+// copies light wholesale works when the ground is near-white; this ground is a
+// mid blue at about 0.38 relative luminance, so anything tuned against #ffffff
+// arrives with a third of the contrast it was given.
+//
+// --muted-foreground: light's #6b7079 lands at 3.4:1 on Haze and the two card
+// labels ("Describe it", "Live for your team and your clients") read as
+// half-erased. #223049 is the same desaturated-navy family at 5.4:1 — plainly
+// readable, and still a clear step under --foreground's 8.9:1, which is the
+// whole job the token does.
+//
+// --background: #ffffff is the toggle's thumb, and a pure-white pill on a
+// saturated blue is the loudest object on the card — louder than the screen it
+// sits above. #FBFBF5 is the site's own paper, a value off the same shelf as
+// the card grounds themselves, and it reads as a thumb rather than as a light.
+//
+// --border is the toggle's track, and it is the third. #e8e9ec is a hairline
+// on white and a near-white ellipse on Haze, so the control arrived as a
+// bright ring with a bright pill inside it. #a7c0f7 is Haze's own value
+// lightened a step — plainly a track, and quiet enough that the thumb is what
+// the eye lands on, which is the only thing the control has to say.
 //
 // The --mock-* tokens are deliberately NOT touched. The screens inside stay
 // dark-themed, which is the same relationship the rail's paper cards have
 // with the dark checklist and cover plates standing on them.
 const PAPER_LADDER =
-  "[[data-theme=dark]_&]:bg-[#FBFBF5] [[data-theme=dark]_&]:[--surface:#FBFBF5] [[data-theme=dark]_&]:[--foreground:#101114] [[data-theme=dark]_&]:[--muted-foreground:#6b7079] [[data-theme=dark]_&]:[--border:#e8e9ec] [[data-theme=dark]_&]:[--background:#ffffff]";
+  "[[data-theme=dark]_&]:bg-[linear-gradient(180deg,#7DA4FF_0%,#AFC2D9_52%,#D9ED92_100%)] [[data-theme=dark]_&]:[--surface:#7DA4FF] [[data-theme=dark]_&]:[--foreground:#101114] [[data-theme=dark]_&]:[--muted-foreground:#223049] [[data-theme=dark]_&]:[--border:#a7c0f7] [[data-theme=dark]_&]:[--background:#FBFBF5]";
 
 const cardTone = (active: boolean) =>
   `bg-[var(--surface)] ${PAPER_LADDER} ring-1 ${
@@ -356,11 +402,24 @@ export function BuilderHeroVisual() {
           onClick={() => setActive("live")}
         >
           <div
-            className={`${HEAD_ROW} relative z-20 flex-wrap justify-between gap-3 ${CARD_PAD} pb-0 md:pb-0`}
+            // NO HEAD ROW ON A PHONE. Below md the only thing in it is the
+            // toggle — the label beside it is lg-only — and the toggle goes
+            // there too (see below), so the row was 40px of card plus its
+            // padding holding nothing. The prompt card's own head row is
+            // already `hidden … lg:flex`, so the two cards now agree below md
+            // rather than one carrying a band the other does not.
+            className={`${HEAD_ROW} relative z-20 hidden flex-wrap justify-between gap-3 ${CARD_PAD} pb-0 md:flex md:pb-0`}
           >
             <p className="type-body hidden text-muted-foreground lg:block">
               Live for your team and your clients
             </p>
+            {/* THE TOGGLE IS DESKTOP-ONLY. On a phone the card shows about
+                260px of a 760px screen, so switching it swaps one crop for
+                another — the reader cannot see enough of either view for the
+                difference to be the point, and a control that changes
+                something you cannot quite see reads as chrome. The team view
+                is what stays, because it is the one the section's own copy
+                names first and the one `view` already opens on. */}
             <ViewToggle onPaper options={VIEWS} view={view} onSelect={setView} />
           </div>
           {/* One screen, running off the card's right and bottom edges, so it
@@ -414,43 +473,21 @@ export function BuilderHeroVisual() {
               </div>
             </div>
           </WidthScaled>
-          {/* The screen gives out into the card's own ground at the card's own
-              foot. Anchored to the CARD, not to the artwork inside it: the
-              card is what crops the picture, so the card is the only box whose
-              bottom edge the fade can be measured against. Clipped by the
-              card's 28px radius like everything else in it.
+          {/* NO BOTTOM RAMP, IN EITHER THEME.
 
-              TEAM VIEW ONLY. The client view leads with the firm's near-black
-              brand slab running the full height of the screen, and a fade to
-              the card's light ground across it does not read as the picture
-              giving out — it reads as the slab going grey and dying, which is
-              the highest-contrast thing this ramp can be asked to do. That
-              screen keeps its hard bottom edge. Faded out rather than
-              unmounted, on the same 500ms the two views cross on, so it leaves
-              with the screen it belongs to instead of popping.
+              There was one: a long eased fade to the card's ground, so the
+              cropped screen gave out instead of ending on a line. Dark lost it
+              first — cream over a near-black table is fog, not a dissolve —
+              and light has now gone the same way for a plainer reason. The
+              table ends on its last real row and the panel closes under it, so
+              there is no crop at the foot left to hide; the ramp was fading
+              out a row that finishes on its own, which reads as the picture
+              giving up rather than as a screen continuing.
 
-              A THIRD AS LONG IN DARK, and that is the same argument arriving
-              at the team view. 144px of cream laid over a near-black screen is
-              not a dissolve, it is fog: the last four rows of the table sat
-              under a pale smear with their ink still legible through it, so
-              the shot read as mis-rendered rather than as cropped. The gap in
-              value is what sets the length — in light the screen and the card
-              are both near-white and a long ramp is invisible, in dark they
-              are opposite ends of the scale and only a short one reads as an
-              edge. 56px is about where it stops looking like weather.
-
-              Two dark-only booster ramps used to sit over these, taking the
-              tails to solid because "4% of #ededed still reads on #191919".
-              That was true of a #191919 card; these cards are #FBFBF5 paper in
-              dark now (see PAPER_LADDER), so the boosters were stacking more
-              cream onto the smear they were meant to finish. Both are gone. */}
-          <div
-            aria-hidden
-            className={`pointer-events-none absolute inset-x-0 bottom-0 z-10 h-36 transition-opacity duration-500 motion-reduce:transition-none [[data-theme=dark]_&]:h-14 ${
-              view === 0 ? "opacity-100" : "opacity-0"
-            }`}
-            style={{ backgroundImage: edgeFade("to bottom") }}
-          />
+              The two padding rows that used to sit inside this ramp went with
+              it — see QUIET_ROWS. The RIGHT edge still has both treatments,
+              because that one is a real crop: the screen is laid out wider
+              than the card at every width. */}
           {/* The right edge, on the CARD for the same reason the bottom one is:
               the screen is laid out wider than the card and overflows it by
               about 40px, so a ramp anchored to the ARTWORK put its strongest
@@ -460,13 +497,51 @@ export function BuilderHeroVisual() {
               ends. Spans the card's full height; the head row above carries
               z-20 so the toggle stays clear of it.
 
-              Short in dark for the reason the bottom ramp is — see there. 48px
-              against 112px: enough to take the sliced Status column off a hard
-              line, not enough to lay cream over the rows beside it. */}
+              Off in dark for the reason the bottom ramp is — see there. The
+              Status column is sliced by the crop either way; a ramp over it
+              did not soften that, it just put haze on the four columns to its
+              left as well. */}
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-y-0 right-0 z-10 w-28 [[data-theme=dark]_&]:w-12"
+            className="pointer-events-none absolute inset-y-0 right-0 z-10 w-28 [[data-theme=dark]_&]:hidden"
             style={{ backgroundImage: edgeFade("to right") }}
+          />
+          {/* DARK'S RIGHT EDGE IS A BLUR, NOT A RAMP.
+
+              The ramp above is a wash of the card's own colour, which works in
+              light because the screen and the card are both near-white — the
+              table thins out into something the same value as itself. In dark
+              the card is the brand gradient and the screen is near-black, so
+              laying the card's colour over the screen read as haze on the
+              picture rather than as the picture ending, which is why that ramp
+              is off there.
+
+              A backdrop blur has no colour of its own. It takes the screen's
+              own pixels and defocuses them, so the Status column goes soft
+              towards the crop instead of being painted over — the shot reads
+              as continuing past a lens edge rather than as fading out.
+
+              The mask is what makes it a ramp: the layer's blur is uniform,
+              but masked from transparent at its left to solid at the card's
+              edge it comes on gradually, so there is no line where the blur
+              starts. Both -webkit- and standard spellings, as the rest of this
+              file's masks carry.
+
+              Dark only. In light the ramp above is already right, and two
+              treatments on one edge would be one too many.
+
+              IT STARTS WHERE THE SCREEN DOES, not at the card's top. At
+              inset-y-0 it ran the card's full height, so it also covered the
+              head row and the card's own top-right corner — the toggle's right
+              end went soft and the rounded corner picked up a seam, which is
+              the one part of this card that is not a picture and has nothing
+              to be cropped. The offsets are the head row plus the gap under
+              it: below md there is no head row at all, so it is the card's own
+              24 of padding plus the screen's 24 of margin; from md the row is
+              back and it is 32 + 40 + 24. */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute bottom-0 right-0 top-[48px] z-10 hidden w-28 md:top-[96px] [-webkit-mask-image:linear-gradient(to_right,transparent_0%,rgba(0,0,0,0.35)_45%,#000_100%)] [mask-image:linear-gradient(to_right,transparent_0%,rgba(0,0,0,0.35)_45%,#000_100%)] [-webkit-backdrop-filter:blur(7px)] [backdrop-filter:blur(7px)] [[data-theme=dark]_&]:block"
           />
         </div>
       </div>
@@ -582,7 +657,12 @@ function WidthScaled({
 
 /** A pill switch: flips the result screen's side, and on phones picks the card. */
 /**
- * The fade that ends the cropped screen on the card's bottom and right edges.
+ * The fade that ends the cropped screen on the card's RIGHT edge.
+ *
+ * It ran on the bottom edge too, until the table stopped being cropped there
+ * (see QUIET_ROWS) and the ramp had nothing left to hide. The parameter is
+ * narrowed to the one direction still in use rather than kept open for a
+ * caller that no longer exists.
  *
  * It was `from-transparent to-[var(--surface)]` over 80px (bottom) and 96px
  * (right) — a two-stop linear ramp, which has a corner in its alpha curve at
@@ -596,7 +676,7 @@ function WidthScaled({
  * from --surface through color-mix rather than a hardcoded value, so it stays
  * the card's own ground in both themes.
  */
-function edgeFade(direction: "to bottom" | "to right") {
+function edgeFade(direction: "to right") {
   const mix = (pct: number) =>
     `color-mix(in srgb, var(--surface) ${pct}%, transparent)`;
   return (
@@ -643,7 +723,19 @@ function Composer({ run, typing }: { run: number; typing: boolean }) {
 
   useEffect(() => {
     if (!typing) return;
-    const next = PROMPT;
+    // Picked at run time rather than rendered responsively, because the line
+    // is typed a character at a time from JS and there is no second element to
+    // hide. Read inside the effect, so it never runs on the server and cannot
+    // disagree with the first paint — the box starts empty either way.
+    //
+    // It is not re-read on resize. The demo is three seconds long and a reader
+    // crossing the breakpoint mid-type would see the line change under the
+    // caret, which is worse than a line that was right when it started.
+    const next =
+      typeof window !== "undefined" &&
+      window.matchMedia("(min-width: 640px)").matches
+        ? PROMPT
+        : PROMPT_SHORT;
     let timer: ReturnType<typeof setTimeout>;
     let i = shown.current.length;
     let erasing = i > 0;
@@ -858,6 +950,35 @@ function Composer({ run, typing }: { run: number; typing: boolean }) {
         // separate ::before above it, so the box keeps its lift in both
         // themes and gains the ring.
         //
+        // THE HOVER MOVES TO THE SURFACE IN DARK, because the ring it used to
+        // live in is switched off there (see below).
+        //
+        // .v63-spin-on-hover runs the sweep and the stylesheet's own dark rule
+        // pumps its brightness, both of which act on an element at zero
+        // opacity now — so the box was the one thing on the card that answered
+        // the pointer with nothing at all. The card's own ring still firms up
+        // around it, but that is the CARD reacting, not the box.
+        //
+        // A step up in surface instead: #303030 to #383838, the same eight
+        // points the mock wells use between rungs, on 200ms. --mock-edge-fill
+        // moves with it because .mock-edge paints the box's own fill from that
+        // token, and a surface that lifted while its fill stayed put would
+        // show as a seam. Light is untouched — there the ring is still the
+        // affordance and still the right one.
+        //
+        // NO GRADIENT RING IN DARK EITHER, through the knob the ring already
+        // has: --composer-ring-opacity, which /ai-app-builder's own composer
+        // uses to quieten the sweep over a lit ground. Here it goes to zero.
+        //
+        // The ring earns its place on a near-white card, where the box and the
+        // card are a step apart and a coloured edge is what says this one is
+        // live. On the Haze card the box is a near-black panel on a saturated
+        // blue — there is no question where it ends — so the ring was a second
+        // statement of an edge that is already unmistakable, and a conic
+        // blue-to-lime loop sitting on a blue ground reads as an artefact
+        // rather than as an accent. Light keeps it; nothing about that card
+        // changed.
+        //
         // NO OUTER RING IN DARK. The two box-shadows draw a 3px gap in the
         // card's own ground and then a 1px --mock-line hairline outside it —
         // a second outline around the gradient one, which earns its place on
@@ -868,7 +989,7 @@ function Composer({ run, typing }: { run: number; typing: boolean }) {
         // is already a dark panel on cream and needs no help being found. The
         // gradient ring is the edge there. Light keeps both shadows, which is
         // where they were tuned.
-        className={`v63-gradient-border v63-ring-solid v63-spin-on-hover pointer-events-auto relative mock-edge [--mock-edge-h:150%] [--mock-edge-w:120%] overflow-hidden rounded-xl border bg-[var(--mock-window)] shadow-[0_0_0_3px_var(--surface),0_0_0_4px_var(--mock-line)] [[data-theme=dark]_&]:border-0 [[data-theme=dark]_&]:shadow-none [[data-theme=dark]_&]:bg-[var(--mock-well-2)] [[data-theme=dark]_&]:[--mock-edge-1:#6e6e6e] [[data-theme=dark]_&]:[--mock-edge-2:#555555] [[data-theme=dark]_&]:[--mock-edge-3:#3e3e3e] [[data-theme=dark]_&]:[--mock-edge-fill:var(--mock-well-2)] ${LINE}`}
+        className={`v63-gradient-border v63-ring-solid v63-spin-on-hover pointer-events-auto relative mock-edge [--mock-edge-h:150%] [--mock-edge-w:120%] overflow-hidden rounded-xl border bg-[var(--mock-window)] shadow-[0_0_0_3px_var(--surface),0_0_0_4px_var(--mock-line)] [[data-theme=dark]_&]:border-0 [[data-theme=dark]_&]:shadow-none [[data-theme=dark]_&]:[--composer-ring-opacity:0] [[data-theme=dark]_&]:bg-[var(--mock-well-2)] [[data-theme=dark]_&]:[--mock-edge-1:#6e6e6e] [[data-theme=dark]_&]:[--mock-edge-2:#555555] [[data-theme=dark]_&]:[--mock-edge-3:#3e3e3e] [[data-theme=dark]_&]:[--mock-edge-fill:var(--mock-well-2)] [[data-theme=dark]_&]:transition-colors [[data-theme=dark]_&]:duration-200 [[data-theme=dark]_&]:hover:bg-[#383838] [[data-theme=dark]_&]:hover:[--mock-edge-fill:#383838] motion-reduce:transition-none ${LINE}`}
       >
         {box}
       </div>
@@ -895,8 +1016,24 @@ export function IconCheckCircleOutline({ className }: { className?: string }) {
   );
 }
 
-/** How many rows at the foot of the table fall inside the card's bottom fade. */
-const QUIET_ROWS = 2;
+/**
+ * How many rows at the foot of the table are drawn blank.
+ *
+ * NONE, AND THE FADE IS WHY. There were two, held empty so that what reached
+ * the card's bottom edge was a row border and nothing with a shape — which is
+ * what a long ramp needs, since anything with a shape survives a fade as a
+ * legible object floating in nothing.
+ *
+ * Dark has no ramp any more; it crops hard. Two blank rows under a hard crop
+ * are not a list continuing, they are two empty rows — the table looked like
+ * it had run out of data rather than out of card. So the table simply ends on
+ * its last real row and the panel closes under it.
+ *
+ * Kept as a named constant at 0 rather than deleted: the quiet-row branch is
+ * one line and this is the knob that turns it back on if the bottom ramp ever
+ * returns.
+ */
+const QUIET_ROWS = 0;
 
 /** The team's view, in Assembly's own neutral chrome. */
 function TeamDashboard({ live }: { live: boolean }) {
@@ -931,16 +1068,6 @@ function TeamDashboard({ live }: { live: boolean }) {
       name: "Nina Alvarez",
       done: 12,
       status: "Complete",
-    },
-    {
-      name: "Tomas Ferreira",
-      done: 5,
-      status: "Awaiting",
-    },
-    {
-      name: "Grace Mwangi",
-      done: 9,
-      status: "In progress",
     },
   ];
   return (
@@ -994,38 +1121,22 @@ function TeamDashboard({ live }: { live: boolean }) {
             BrandMages
           </span>
         </div>
-        {/* THE APPS CARRY COLOUR; THE WORKSPACE ROWS DO NOT.
+        {/* NO COLOUR ON THE GLYPHS, here or on the customization card's rail.
 
-            The rail was eight rows of one grey, which on a dark screen is the
-            flattest thing a product UI can be — nothing in it said that the
-            apps under the group label are separate things a firm installed
-            rather than more of the same furniture. The tints are the brand's
-            own mark pairings (see --mock-tint-* in globals.css), on the GLYPH
-            only: every label stays at the rail's resting ink, so the column
-            still reads as a nav and not as a list of coloured words.
-
-            CRM and Team keep their grey on purpose. They are what every
-            workspace opens with, not apps; colouring them would make the
-            group label underneath them meaningless. `Add App` stays grey for
-            the same reason in reverse — it is an action, not an app. */}
+            The apps group carried the mock family's three tints for a round,
+            to say that the rows under the group label are separate things a
+            firm installed rather than more furniture. It does not survive
+            contact with the rail: three marks in three hues down a short
+            column read as a palette, and the longer rail on the customization
+            card — six rows — read as a spectrum. Colour in these mocks lives
+            in the COUNTS instead (the unread badge, the approvals round
+            counter), where one mark carries it and the nav stays a nav. */}
         <NavItem icon={<IconBook />} label="CRM" />
         <NavItem icon={<IconUsers />} label="Team" />
         <SectionLabel>Apps</SectionLabel>
-        <NavItem
-          icon={<IconGlobe className="text-[color:var(--mock-tint-blue)]" />}
-          label="Home"
-        />
-        <NavItem
-          icon={<IconChat className="text-[color:var(--mock-tint-mint)]" />}
-          label="Messages"
-        />
-        <NavItem
-          icon={
-            <IconBookBlank className="text-[color:var(--mock-tint-lavender)]" />
-          }
-          label="Year-end docs"
-          active={live}
-        />
+        <NavItem icon={<IconGlobe />} label="Home" />
+        <NavItem icon={<IconChat />} label="Messages" />
+        <NavItem icon={<IconBookBlank />} label="Year-end docs" active={live} />
         <NavItem icon={<IconPlus />} label="Add App" muted />
       </div>
       <div className="@container flex min-w-0 flex-1 flex-col">
@@ -1081,12 +1192,21 @@ function TeamDashboard({ live }: { live: boolean }) {
               <span className="w-[78px]">Status</span>
             </div>
             {rows.map((row, i) => {
-              // The last rows sit in the card's bottom fade and are drawn
-              // EMPTY — no name, no count, no status, and no progress bar.
-              // Anything with its own shape survives the fade as a legible
-              // object floating in nothing, which reads as a rendering fault;
-              // the row's border alone reads as the list carrying on past the
-              // edge, which is what the crop is claiming.
+              // The last rows are drawn EMPTY — no name, no status, no
+              // progress bar — so that what reaches the card's bottom edge is
+              // the row's own border and nothing else. Under the light theme's
+              // fade that matters because anything with its own shape survives
+              // the ramp as a legible object floating in nothing; under dark's
+              // hard crop it matters because an empty bordered row is what
+              // "the list carries on past the edge" actually looks like.
+              //
+              // EMPTY MEANS NOTHING RENDERED, not an element with no text in
+              // it. The status chip used to take `""` and keep its ground and
+              // its padding, so each quiet row ended in a small grey pill
+              // sitting alone in the Status column — invisible while the fade
+              // covered it, and the one odd mark on the card once dark stopped
+              // fading. It returns null now, the way the progress bar beside
+              // it already did.
               const quiet = i >= rows.length - QUIET_ROWS;
               return (
               <div
@@ -1121,9 +1241,9 @@ function TeamDashboard({ live }: { live: boolean }) {
                       and the three colours implied a reading ("green is good,
                       amber is late") that this picture is not making. The chip
                       shape still says "this is a state"; the word says which. */}
-                  <span className={NEUTRAL}>
-                    {quiet ? "" : row.status}
-                  </span>
+                  {quiet ? null : (
+                    <span className={NEUTRAL}>{row.status}</span>
+                  )}
                 </span>
               </div>
               );

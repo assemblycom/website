@@ -459,12 +459,17 @@ export function ApprovalsMock() {
             <span className="-mb-px flex items-center gap-1.5 border-b border-transparent pb-2 text-[10.5px] leading-none text-[color:var(--mock-ink-soft)]">
               Previous rounds
               {/* The count is the whole reason the tab is there: a second round
-                  means there was a first one to compare against — which is
-                  also why it is the one mark in this window carrying colour.
-                  --mock-info-*, the same blue the rail's unread count and the
-                  support card's New badge wear, so the three counts on this
-                  page are one idea rather than three decorations. */}
-              <span className="rounded-[3px] bg-[var(--mock-info-bg)] px-1 py-[2px] text-[8.5px] leading-none text-[color:var(--mock-info-fg)]">
+                  means there was a first one to compare against.
+
+                  NO COLOUR. It wore --mock-info-* for a round, to match the
+                  rail's unread badge across the card. The two are not the same
+                  object: the badge sits in a nav, where a count is the one
+                  thing meant to pull the eye, and this sits on a tab strip the
+                  reader is already looking at — so the blue was not drawing
+                  attention to anything, it was just a second coloured mark in
+                  a window that only needed one. Back to the window's own
+                  well. */}
+              <span className="rounded-[3px] bg-[var(--mock-well-2)] px-1 py-[2px] text-[8.5px] leading-none">
                 1
               </span>
             </span>
@@ -801,7 +806,13 @@ const ORBIT_TOOLS = [
  * competitor's product does not share our labels, and a reader who knows the
  * product would have read the same nav twice.
  */
-const BOUGHT_TABS = ["Dashboard", "Inbox", "Documents", "Invoices"];
+// ONE TAB, NOT FOUR. It ran Dashboard / Inbox / Documents / Invoices, which
+// is what a bought portal's nav looks like — and on a screen that is cropped
+// to about half its width, three of the four were furniture the reader was
+// never going to use. The list under them is what this screen is for: things
+// the client needs that the portal does not hold. Dashboard is the one the
+// list belongs on, and one tab still reads as a tab strip.
+const BOUGHT_TABS = ["Dashboard"];
 
 /**
  * The portal a firm bought from somebody else.
@@ -835,28 +846,19 @@ export function GenericPortalMock() {
       aria-hidden
       className="pointer-events-none flex h-full select-none flex-col bg-[var(--mock-window)] text-[color:var(--mock-ink)]"
     >
-      {/* The product's own bar. A blank square where a logo would go, and the
-          product's name as plain type — it is nobody's portal, so it carries
-          nobody's mark. */}
-      <div
-        className={`flex items-center gap-2 border-b bg-[var(--mock-well)] px-4 py-2.5 ${LINE}`}
-      >
-        {/* The firm's initial on a plain square — the default avatar a
-            workspace gets in a product it did not design. Ink at 10%, so the
-            tile steps off whatever it sits on in either theme; on a well
-            colour it was the same grey twice and the avatar disappeared.
-            Square, not the rounded tile the Assembly screens use. */}
-        <span className="flex size-[13px] shrink-0 items-center justify-center rounded-[2px] bg-[var(--mock-ink)]/10 text-[7.5px] leading-none text-[color:var(--mock-ink-soft)]">
-          B
-        </span>
-        {/* Just "Portal". The product is nobody's and is not being sold here,
-            so the less it is named the better — and at this size a two-word
-            product name beside a one-letter avatar read as the firm's own
-            branding rather than as the software's. */}
-        <span className="truncate text-[10.5px] leading-none text-[color:var(--mock-ink-soft)]">
-          Portal
-        </span>
-      </div>
+      {/* NO PRODUCT BAR. There was one — a blank square where a logo would
+          go and the word "Portal" as plain type — on the reasoning that this
+          screen is nobody's portal and should carry nobody's mark. True, and
+          it still spent the first ~40px of the shot saying so.
+
+          What this screen is for is the list under the tabs: three things the
+          client needs that the portal does not hold. The pair it sits in
+          already makes the ownership point — the screen beside it carries the
+          firm's colour and its name, and this one carries neither — so a bar
+          naming the software was arguing a case the comparison wins on its
+          own, in the space the argument itself needed. The tab strip is the
+          screen's first row now, which is also where a reader's eye was
+          going. */}
 
       {/* The fixed set, as a tab strip. The open one is marked by an underline
           sitting on the strip's own rule rather than by a filled pill: the pill
@@ -898,6 +900,13 @@ export function GenericPortalMock() {
             the tabs the work actually lives in, parked beside it. Squarer than
             the Assembly screens' rows, like the rest of this product.
 
+            THE DASH IS DRAWN IN THE ROW'S OWN INK, at 25%, not in --mock-line.
+            The hairline token is tuned for a solid rule, and a DASHED border
+            at that value is perceptually much fainter than a solid one —
+            half of it is gaps — so the boxes read as almost-not-there. A
+            quarter of the ink is still plainly the quiet treatment and is
+            actually visible as a box.
+
             The mark on the right is an OUT arrow, not the house glyph that was
             here before (IconGlobe draws a house despite its name, so all three
             rows carried a home icon, which says nothing about any of them). An
@@ -907,9 +916,20 @@ export function GenericPortalMock() {
           {ORBIT_TOOLS.map((tool) => (
             <span
               key={tool}
-              className={`flex items-center justify-between gap-2 truncate rounded-[4px] border border-dashed px-2.5 py-[9px] text-[11px] leading-none text-[color:var(--mock-ink-soft)] ${LINE}`}
+              className="flex items-center justify-between gap-2 truncate rounded-[4px] border border-dashed border-[color:var(--mock-ink)]/25 px-2.5 py-[9px] text-[11px] leading-none text-[color:var(--mock-ink-soft)]"
             >
-              {tool}
+              {/* UNDERLINED, because these are links and nothing else in the
+                  row said so. The out arrow says "this opens somewhere else"
+                  once you have found it; an underline says "this is a link"
+                  before you read anything. Underneath the label rather than
+                  across the row, so it marks the thing you would click.
+
+                  Decoration at 40% of the row's own ink: a full-strength rule
+                  under 11px type reads as a strikethrough's cousin, and these
+                  rows are deliberately the quiet half of the pair. */}
+              <span className="truncate underline decoration-[color:var(--mock-ink-soft)]/40 underline-offset-[3px]">
+                {tool}
+              </span>
               <IconArrowUpRight className="size-[10px] shrink-0" />
             </span>
           ))}
@@ -1013,17 +1033,25 @@ export function IntakeAppMock({
                 thing far more quietly and put the page's accent colour on a
                 screen whose subject is a form, not a chart.
 
-                --mock-ink, not the accent. Black is this screen's own colour —
-                the sidebar, the submit button and the field labels are all
-                drawn in it — and a blue band here was the one thing on the
-                screen borrowed from somewhere else.
+                --mock-firm, the firm's own colour, and that is a reversal.
+                It was --mock-ink on the argument that black is this screen's
+                colour — the sidebar, the submit button and the field labels
+                are all drawn in it — and that a blue band would be borrowed
+                from somewhere else. True of the page's accent; not true of the
+                firm's periwinkle, which is exactly what this screen is for.
+                The band is the one shape on a form builder's card that carries
+                the brand, and this pair of screens IS the branded-versus-not
+                argument, so the branded one should show it.
+                In dark it also stops being a problem it was causing: --mock-ink
+                flips to near-white there, so the band was the brightest object
+                on the screen — a hard white bar across a near-black form.
 
                 overflow-hidden so the band takes the card's top corners rather
                 than squaring them off. */}
             <div
               className={`overflow-hidden rounded-[5px] border bg-[var(--mock-window)] ${LINE}`}
             >
-              <div className="h-[4px] bg-[var(--mock-ink)]" />
+              <div className="h-[4px] bg-[var(--mock-firm)]" />
               <div className="flex items-center justify-between gap-2 p-2.5">
                 <span className="truncate text-[10.5px] leading-none text-[color:var(--mock-ink)]">
                   {INTAKE_STEP.title}
@@ -1602,7 +1630,20 @@ export function CustomDomainMock() {
       //
       // pt matches the px either side, so the field keeps one inset all round
       // rather than being pushed flush to the top edge.
-      className="pointer-events-none flex h-full select-none flex-col justify-start bg-[var(--mock-window)] px-6 pt-6 text-[color:var(--mock-ink)] sm:px-10 sm:pt-10"
+      // A GREYER SCREEN IN LIGHT, scoped to this shot.
+      //
+      // --mock-window is #fcfcfd, which is the right ground for a screen that
+      // sits on a card you can tell it apart from. This card is #f5f5f5 and
+      // the screen fills it, so the two were a point apart and the whole shot
+      // read as one white rectangle with a field floating in it — the frame,
+      // the rule and the field all doing their work against nothing.
+      //
+      // The pair steps down together so the family's own relationship holds:
+      // in light the wells RECESS from the window, so greying the window
+      // without the well would have put the field lighter than the screen it
+      // sits in. Dark is untouched — there the window is #212121 on a #191919
+      // card and the step already reads.
+      className="pointer-events-none flex h-full select-none flex-col justify-start bg-[var(--mock-window)] px-6 pt-6 text-[color:var(--mock-ink)] sm:px-10 sm:pt-10 [[data-theme=light]_&]:[--mock-window:#f6f7f9] [[data-theme=light]_&]:[--mock-well:#eef0f3]"
     >
       {/* THE LABEL AND ITS TAG ARE GONE. "Portal domain / Connected" was a
           second thing to read on a card whose whole subject is the host
@@ -1613,7 +1654,21 @@ export function CustomDomainMock() {
       <div
         className={`flex items-center gap-2 overflow-hidden rounded-lg border bg-[var(--mock-well)] px-3.5 py-3 ${LINE}`}
       >
-        <IconGlobe className="size-[15px] shrink-0 text-[color:var(--mock-ink-soft)]" />
+        {/* THE FIRM'S FAVICON, not a generic globe.
+
+            The slot before a hostname is where a browser puts the site's own
+            mark, and on the one card whose claim is "your own custom domain"
+            a stock glyph was the platform's furniture sitting in the place the
+            firm's branding goes. The same mark and the same --mock-firm
+            periwinkle the two sign-ins wear, so all three screens on this page
+            belong to one firm.
+
+            Drawn as a tile rather than a bare glyph, because that is what a
+            favicon is: a square someone uploaded. 3px corner at 15px, a fifth
+            of the side, which is the proportion the larger logo tiles use. */}
+        <span className="flex size-[15px] shrink-0 items-center justify-center rounded-[3px] bg-[var(--mock-firm)] text-[color:var(--mock-firm-ink)]">
+          <IconBrandMark className="size-[9px]" />
+        </span>
         {/* ONE ELEMENT, ONE ANIMATION, AND THE CARET IS ITS OWN RIGHT BORDER.
 
             This was three animations on three elements — a clip-path on the
@@ -1638,9 +1693,21 @@ export function CustomDomainMock() {
             glyph's advance, so stepping in `ch` lands the edge exactly on a
             character boundary every time.
 
-            A hostname is also the right thing to set in mono: it is an
-            identifier, which is the same argument the filter chips and stat
-            chips on this site are already set that way for.
+            THE FACE IS THE SITE'S OWN NOW, not mono. A hostname is an
+            identifier and mono is the conventional dress for one, but on a
+            card whose subject is the firm's branding it was the only object on
+            the page set in a face the site does not otherwise use at this
+            size — it read as a code sample rather than as the address bar of
+            the firm's portal.
+
+            IT COSTS THE REVEAL ITS EXACTNESS. The clip steps in `ch`, and a
+            `ch` is every glyph's advance only in a monospace; in PP Mori the
+            edge now lands wherever 1/21 of the total width falls, which is
+            what the paragraph above describes as jitter. The step count is
+            unchanged, so the pace is right and the caret still tracks the clip
+            — what is lost is the guarantee that each step is one character.
+            Driving the string from JS, the way the hero's composer does,
+            is the fix if it ever reads badly.
 
             Under reduced motion the field shows the finished host with no
             border: the claim is the domain, and the typing is only how it is
@@ -1652,11 +1719,65 @@ export function CustomDomainMock() {
               "--domain-steps": DOMAIN_CH,
             } as React.CSSProperties
           }
-          className="domain-typing block shrink-0 font-mono text-[15px] leading-none text-[color:var(--mock-ink)] sm:text-[17px]"
+          className="domain-typing block shrink-0 text-[15px] leading-none text-[color:var(--mock-ink)] sm:text-[17px]"
         >
           {DOMAIN}
         </span>
       </div>
+
+      {/* A RULE UNDER THE FIELD, giving out to the right.
+
+          The field was the only object in the frame and the rest of the
+          screen was bare panel, so the shot read as one control floating on a
+          ground rather than as the top of a settings page. A single rule under
+          it is what a settings page actually has: it says there is more below,
+          without drawing anything there.
+
+          IT FADES RATHER THAN STOPPING, because this scene is cropped on its
+          right — a rule ending on a hard vertical a few pixels short of the
+          crop reads as a line that was cut, which is the one thing a divider
+          must not look like. Running out before it gets there, the edge of the
+          picture is where it has already gone.
+
+          EASED, for the reason the integrations card's ground is: a two-stop
+          ramp has a corner in its alpha curve at each end, and a corner is a
+          visible mark. The stops below approximate an ease, so the rule thins
+          out and never changes rate sharply enough to show a join. Built from
+          --mock-line through color-mix, so it is the window's own hairline at
+          full strength and carries its value per theme. */}
+      <div
+        // IT RUNS TO THE SCREEN'S LEFT EDGE, not to the content's.
+        //
+        // The scene pads its column (px-6, sm:px-10) so the field sits off the
+        // frame, and the rule inherited that inset — which made it a rule
+        // belonging to the field rather than to the page. A divider on a
+        // settings screen spans the surface; it is the thing the content sits
+        // on, not a line under one control. Negative margins cancel the
+        // padding on the left and the width is grown to match, so the rule
+        // starts at the frame and still fades out before the right crop.
+        className="-ml-6 mt-5 h-px w-[calc(100%+1.5rem)] shrink-0 sm:-ml-10 sm:mt-7 sm:w-[calc(100%+2.5rem)]"
+        style={{
+          backgroundImage:
+            "linear-gradient(to right," +
+            ["var(--mock-line) 0%", "var(--mock-line) 34%"]
+              .concat(
+                [
+                  [88, 50],
+                  [70, 62],
+                  [48, 72],
+                  [28, 81],
+                  [14, 89],
+                  [5, 95],
+                ].map(
+                  ([pct, at]) =>
+                    `color-mix(in srgb, var(--mock-line) ${pct}%, transparent) ${at}%`,
+                ),
+              )
+              .concat(["transparent 100%"])
+              .join(",") +
+            ")",
+        }}
+      />
     </div>
   );
 }

@@ -21,6 +21,13 @@ import { IconBrandMark } from "@/components/home/mock-icons";
 
 const LINE = "border-[var(--mock-line)]";
 
+/** Both ways in, drawn the same — see the note at the first one. */
+const SIGNIN_BUTTON =
+  "pointer-events-auto flex w-full cursor-default items-center justify-center " +
+  "rounded-lg border bg-[var(--mock-well-soft)] px-3 py-3 " +
+  "transition-colors duration-150 hover:bg-[var(--mock-well-2)] " +
+  "motion-reduce:transition-none";
+
 /**
  * The firm's mark.
  *
@@ -40,8 +47,14 @@ function Brandmark() {
     // that belongs to the client. --mock-firm is the periwinkle the branding
     // section's sign-in already wears, so the two screens show one firm
     // rather than two; see globals.css.
-    <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-[var(--mock-firm)] text-[color:var(--mock-firm-ink)]">
-      <IconBrandMark className="size-[15px]" />
+    //
+    // 36px, up from 32. The scene is drawn at the card's full width and the
+    // mark is the first thing on it — at 32 it sat a step under the heading it
+    // introduces, which on a sign-in is the wrong way round: the logo is the
+    // identification and the sentence under it says where you are. The glyph
+    // goes up with the tile so the inset stays the same proportion.
+    <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[var(--mock-firm)] text-[color:var(--mock-firm-ink)]">
+      <IconBrandMark className="size-[17px]" />
     </span>
   );
 }
@@ -134,8 +147,16 @@ export function SignInMock() {
           {/* The outlined option first, the filled one second: Google is the
               one a client recognises, and the email link is the fallback it
               falls back to. */}
+          {/* BOTH BUTTONS ANSWER THE POINTER. A sign-in drawn in a mock is
+              still a sign-in, and the one thing a still picture cannot say is
+              that these are things you can press — so they say it when the
+              pointer arrives. The scene is pointer-events-none as a whole, so
+              each button opts back in for itself; cursor-default because
+              nothing happens on the click, and a pointer cursor would promise
+              one. A step up in surface, the same move the table rows and the
+              composer use, on the same 150ms. */}
           <div
-            className={`mt-5 flex w-full items-center justify-center gap-2 rounded-lg border bg-[var(--mock-well-soft)] px-3 py-3 ${LINE}`}
+            className={`${SIGNIN_BUTTON} mt-5 gap-2 ${LINE}`}
           >
             <GoogleGlyph />
             <span className="whitespace-nowrap text-[14px] leading-none text-[color:var(--mock-ink)]">
@@ -159,9 +180,7 @@ export function SignInMock() {
 
               Same surface and border as the Google row above, with full ink
               on the label — a button, not a field. */}
-          <div
-            className={`mt-3 flex w-full items-center justify-center rounded-lg border bg-[var(--mock-well-soft)] px-3 py-3 ${LINE}`}
-          >
+          <div className={`${SIGNIN_BUTTON} mt-3 ${LINE}`}>
             <span className="whitespace-nowrap text-[14px] leading-none text-[color:var(--mock-ink)]">
               Email me a sign-in link
             </span>
@@ -248,8 +267,16 @@ export function EmailReplyMock() {
           >
             {m.text}
           </div>
+          {/* THE CARD'S INK, NOT THE MOCK'S. The label below is the only
+              thing in the scene that sits on the card itself rather than
+              inside a bubble — so it has to follow the card's ground, not the
+              mock family's. --mock-ink-soft is a dark-theme grey, which was
+              right while the card was near-black and wrong the moment it
+              became the brand ramp: a mid grey on a mid ground. The bubbles
+              keep their --mock-* tokens, because they carry their own surface
+              with them. */}
           {m.byEmail ? (
-            <span className="mt-2 text-[11.5px] leading-none text-[color:var(--mock-ink-soft)]">
+            <span className="mt-2 text-[11.5px] leading-none text-muted-foreground">
               Replied by email
             </span>
           ) : null}

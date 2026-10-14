@@ -102,25 +102,41 @@
   --mock-info-bg: #e7edfd;
   --mock-info-fg: #2f5bc4;
 
-  /* ── Glyph tints for the mock app rails ────────────────────────────────
-     The brand file's own mark pairings — the three MARK_TINTS in
-     app-marks.tsx that the hero's template tiles are set in — brought into
-     the mock family so a rail can carry colour without inventing a palette
-     for it.
+  /* ── Identity tints for a default avatar ───────────────────────────────
+     The tile a client record wears before anyone uploads a logo, which is
+     most of them. Three pairs, because a column of identical grey tiles is
+     the one place in these mocks where colour is doing a job rather than
+     decorating: an avatar's colour is how you tell one record from the next
+     at a glance, which is why every product that draws initials picks a hue
+     per record.
 
-     COLOUR SITS IN THE MARK, NEVER IN THE LABEL. That is the whole rule, and
-     it is the one Linear's dark rails run on: the glyph beside a row is
-     saturated, the word next to it stays at the rail's resting ink, so a
-     filled sidebar reads as a set of distinct apps rather than as a column of
-     coloured text. Tint every label and the rail stops being furniture.
+     IDENTITY, NOT STATUS, and that is why they are their own family rather
+     than the status pills reused. --mock-positive-* is green because green
+     means done; a green avatar on a project card would read as a finished
+     project rather than as a client called Cascade. These three carry no
+     meaning beyond "not the other two", so the hues are chosen to be
+     distinguishable at 14px and nothing else.
 
-     Dark takes the brand values as written — they were drawn for a dark tile.
-     Light takes a darker cut of each hue, because a tint tuned to glow on
-     near-black is a pastel on a near-white rail; the hue is the same in both,
-     so an app's mark is the same colour in either theme. */
-  --mock-tint-lavender: #6a53cc;
-  --mock-tint-blue: #3f55c9;
-  --mock-tint-mint: #237f5b;
+     Same ground/ink shape as the status pills: a wash with its own ink on
+     top, light here, translucent-on-desaturated in dark. */
+  --mock-avatar-a-bg: #e7edfd;
+  --mock-avatar-a-fg: #2f5bc4;
+  --mock-avatar-b-bg: #f0e8fb;
+  --mock-avatar-b-fg: #5b3bbd;
+  --mock-avatar-c-bg: #e2f0e9;
+  --mock-avatar-c-fg: #1f6f4a;
+
+  /* The mask that ends the problem section's screen pair on the tray's right
+     edge. A variable rather than a constant in the component, because it has
+     to be able to say "nothing" per theme and an inline style cannot. See the
+     dark branch for why it does. */
+  --portal-screen-fade: linear-gradient(
+    to right,
+    #000 0 90%,
+    rgba(0, 0, 0, 0.72) 95%,
+    rgba(0, 0, 0, 0.3) 98%,
+    transparent 100%
+  );
 
   /* THE SAMPLE FIRM'S OWN COLOUR — the periwinkle every mock means when it
      shows "your brand": the logo tile on the branded sign-in, that screen's
@@ -290,10 +306,20 @@
   --mock-brand: #171717;
 
   /* The CLIENT-FACING slab only — the branded sidebar in the hero's client
-     view. Light is --mock-brand's own value, so this theme is unchanged and
-     the two stay one colour here; dark is where they part. See the dark
-     block for why. */
-  --mock-brand-slab: #171717;
+     view and in the journey rail's Track card.
+
+     IT CARRIES COLOUR IN BOTH THEMES NOW. It was --mock-brand's own #171717
+     here, so light showed a near-black rail where dark showed a periwinkle
+     one — the same firm's portal in two different colours depending on the
+     reader's theme, on the one element whose whole job is to say the portal
+     carries the firm's brand. A firm's colour does not change with our theme.
+
+     Same recipe as dark's, against light's own slab value: the site's Haze
+     mixed most of the way into near-black. Plainly a colour, nowhere near a
+     glare, no new hue in the palette, and white type still sits on it at
+     roughly 7:1. --mock-brand is untouched — that one is also a 15px glyph on
+     the invoice mark and the comparison nav, and a slab is not a glyph. */
+  --mock-brand-slab: color-mix(in oklab, var(--mock-accent-bg) 30%, #171717);
 
   /* macOS window buttons, for a mock that draws a browser window. Deliberately
      NOT redefined in the dark block: these are the operating system's own
@@ -485,11 +511,25 @@
   --mock-info-bg: rgba(125, 164, 255, 0.16);
   --mock-info-fg: #9ab6f5;
 
-  /* See --mock-tint-lavender in :root. Dark is where these came from: the
-     three values are the brand file's MARK_TINTS verbatim. */
-  --mock-tint-lavender: #b3a4f7;
-  --mock-tint-blue: #6b84ef;
-  --mock-tint-mint: #9be3c0;
+  /* See --mock-avatar-a-bg in :root. Translucent grounds and desaturated ink,
+     like the status pills above, so three coloured tiles on a near-black card
+     read as tinted rather than as three lights. */
+  --mock-avatar-a-bg: rgba(125, 164, 255, 0.18);
+  --mock-avatar-a-fg: #9ab6f5;
+  --mock-avatar-b-bg: rgba(179, 164, 247, 0.18);
+  --mock-avatar-b-fg: #b7a9f3;
+  --mock-avatar-c-bg: rgba(141, 206, 170, 0.16);
+  --mock-avatar-c-fg: #8fc9a9;
+
+  /* NO FADE IN DARK. This is a mask, so it takes the screens to transparent
+     and whatever is behind them shows through — which used to be a dark tray
+     and is now #F5F5F0 paper. Fading a near-black screen out onto near-white
+     paper is not a crop, it is a pale smear across the right of the picture,
+     the same thing the hero's edge ramps were doing before they came off. A
+     hard crop against the tray's edge is the honest end: these are windows
+     onto screens that continue, and an edge says so. Light keeps the ramp,
+     where the screens and the tray are a step apart rather than opposites. */
+  --portal-screen-fade: none;
 
   /* See --mock-firm in :root. A step and a half lighter than light's #5c78b9,
      which is the same move --mock-gantt-* makes and for the same reason: a
@@ -1598,22 +1638,33 @@ html:not([data-theme="dark"]) .v63-gradient-border:focus-within::before {
 }
 /* Describe-step mock ring: a continuous colour loop (no transparent arc) so the
    small mock's border always reads as coloured and never washes out to white.
-   Scoped like the light override above so it wins on specificity + order. */
+   Scoped like the light override above so it wins on specificity + order.
+
+   THE TWO STOPS ARE TOKENS, with each theme's own pair as the default. The
+   values are unchanged — deep blue/green on a light ground, pale blue/lime on
+   a dark one, which is the same hue at the value its ground can carry.
+
+   They are tokens because one box now breaks the rule that "dark theme" and
+   "dark ground" are the same thing: the hero's prompt card is #FBFBF5 paper in
+   dark (see PAPER_LADDER in builder-hero-visual), so the pale pair meant for
+   near-black was laying a near-white ring on near-white card and the outline
+   all but disappeared. That box sets the pair back to the light-ground values
+   for itself. Every other ring resolves the default and does not move. */
 html:not([data-theme="dark"]) .v63-ring-solid::before {
   background: conic-gradient(
       from var(--v63-angle),
-      #6f96f0 0deg,
-      #93c53a 180deg,
-      #6f96f0 360deg
+      var(--v63-ring-a, #6f96f0) 0deg,
+      var(--v63-ring-b, #93c53a) 180deg,
+      var(--v63-ring-a, #6f96f0) 360deg
     )
     border-box;
 }
 html[data-theme="dark"] .v63-ring-solid::before {
   background: conic-gradient(
       from var(--v63-angle),
-      #9fb0e4 0deg,
-      #cfe985 180deg,
-      #9fb0e4 360deg
+      var(--v63-ring-a, #9fb0e4) 0deg,
+      var(--v63-ring-b, #cfe985) 180deg,
+      var(--v63-ring-a, #9fb0e4) 360deg
     )
     border-box;
 }

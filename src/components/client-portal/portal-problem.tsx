@@ -112,8 +112,19 @@ function Screen({
       onMouseEnter={onSelect}
       onFocus={onSelect}
       onClick={onSelect}
-      className={`group relative w-[62%] shrink-0 cursor-default transition-transform duration-200 motion-reduce:transition-none ${
-        overlaps ? "-ml-[24%]" : ""
+      // WIDER ON A PHONE, and the overlap widens with it.
+      //
+      // The pair is sized so the two always add up to the tray: 62 + 62 − 24
+      // on a desktop, where the tray is most of a 1200px rail and 62% of it is
+      // a screen you can read. Below md the same proportion is 62% of about
+      // 300px, which left each window under 190 — the intake form's labels and
+      // values stacked into two-word lines and the left screen showed about a
+      // tab and a half. 72 + 72 − 44 is the same sum with more of it spent on
+      // each screen: they overlap harder, which costs the back one some of its
+      // right edge, and that one is the generic portal — the screen the
+      // argument is pointing away from.
+      className={`group relative w-[72%] shrink-0 cursor-default transition-transform duration-200 motion-reduce:transition-none md:w-[62%] ${
+        overlaps ? "-ml-[44%] md:-ml-[24%]" : ""
       } ${selected ? "z-10" : "translate-y-2 md:translate-y-3"}`}
     >
       {/* Hovering lights the screen's OWN border rather than drawing a second
@@ -135,8 +146,33 @@ function Screen({
           came forward you could read the other one straight through it. It is
           on the layer inside now, over a ground that hides whatever is
           behind. */}
+      {/* THE FRAME'S GROUND IS THE MOCK'S OWN, not --background.
+          
+          It was `bg-background`, which is the page's ground and was right
+          while the tray was dark: the screen sat on near-black and the ground
+          behind its content was near-black too. The tray is #F5F5F0 paper in
+          dark now and scopes a ladder onto its subtree (see the tray above),
+          so --background resolves to #ffffff in here — and a white ground
+          under a near-black screen shows at every edge the content does not
+          cover, which is the white hairline around the picture.
+
+          --mock-window is what a screen in this family stands on and carries
+          its own value per theme, so the ground is behind the UI rather than
+          around it. The border takes the same treatment the toggle's thumb
+          needed: the dark value is the BASE and light is the scoped variant,
+          because `border-border` plus a dark override left the near-white
+          ladder value winning.
+
+          AND IT IS --mock-line, NOT #383838. That value is from when these
+          screens sat on a near-black tray and the frame had to separate them
+          from the page behind it. The tray is paper now and does that on its
+          own, so a +23 step off the window read as a lit edge drawn around a
+          dark screen — the brightest thing in a picture whose subject is the
+          two forms. --mock-line is the hairline every other surface in this
+          family is drawn with, a few points off the window rather than two
+          dozen, and the hover comes down with it: white/12, not /20. */}
       <div
-        className={`h-[300px] overflow-hidden rounded-t-xl border-l border-r border-t border-border bg-background transition-colors duration-200 group-hover:border-foreground/15 motion-reduce:transition-none md:h-[400px] [[data-theme=dark]_&]:border-[#383838] [[data-theme=dark]_&]:group-hover:border-white/20 ${
+        className={`h-[300px] overflow-hidden rounded-t-xl border-l border-r border-t border-[var(--mock-line)] bg-[var(--mock-window)] transition-colors duration-200 group-hover:border-white/12 motion-reduce:transition-none md:h-[400px] [[data-theme=light]_&]:border-border [[data-theme=light]_&]:group-hover:border-foreground/15 ${
           selected ? (overlaps ? LIFT_LEFT : LIFT_RIGHT) : ""
         }`}
       >
@@ -182,9 +218,10 @@ function Screen({
 // the long right ramp took the colour out of both screens on its way across.
 // The bottom is a straight crop against the tray's edge instead — these are
 // windows onto screens that continue below, and the edge says so.
-const SCREEN_FADE =
-  "linear-gradient(to right, #000 0 90%, rgba(0,0,0,0.72) 95%, " +
-  "rgba(0,0,0,0.3) 98%, transparent 100%)";
+// The stops live in globals.css, as --portal-screen-fade, because the mask has
+// to be able to say "nothing" in dark and an inline style has no theme to
+// branch on. See the token for why dark wants none.
+const SCREEN_FADE = "var(--portal-screen-fade)";
 
 function ScreenPair({
   selected,
@@ -345,7 +382,36 @@ export function PortalProblem({
             the two move as one block in the section's order, rather than the
             toggle needing a slot of its own between the tray and the columns. */}
         <div className="order-1 mt-10 md:order-2 md:mt-10">
-          <div className="overflow-hidden rounded-2xl bg-[var(--surface)] p-4 pb-0 md:rounded-3xl md:p-6 md:pb-0">
+          {/* THE TRAY IS PAPER IN DARK, like the hero's cards.
+
+              --surface was the ground here, which is right for a card you are
+              meant to see as a card. At #191919 on a #0a0a0a page it was not
+              reading as one — it was a slightly lighter slab behind two dark
+              screens, so the section came out as three dark rectangles and the
+              two that carry the argument had to compete with the one holding
+              them.
+
+              #F5F5F0 settles it the other way: the tray becomes a lit surface
+              and the two screens become objects standing on it, which is the
+              relationship the hero already uses and the one stage 2 of the
+              journey rail uses for its cover plates. The comparison is between
+              the two screens, and they are the only dark things in the frame
+              now.
+
+              ITS OWN LADDER, for the reason the hero's cards need one. Flipping
+              a fill to near-white in dark leaves everything inside still
+              resolving page tokens tuned for near-black — the toggle reads
+              --border/--background/--foreground, and on paper that is a white
+              ring with a white thumb on white. So the five tokens its subtree
+              reads are re-pointed to light values, declared ONLY in the dark
+              branch; light resolves exactly what it always did. The --mock-*
+              tokens are deliberately untouched, so the two screens stay
+              dark-themed — which is the whole point of standing them on this.
+
+              --muted-foreground is light's own #6b7079 here, not the navy the
+              hero needs: that card is a mid blue, this tray is near-white, so
+              the grey tuned against white is correct again. */}
+          <div className="relative overflow-hidden rounded-2xl bg-[var(--surface)] px-4 pb-0 pt-3 md:rounded-3xl md:px-6 md:pb-0 md:pt-4 [[data-theme=dark]_&]:bg-[#F5F5F0] [[data-theme=dark]_&]:[--surface:#F5F5F0] [[data-theme=dark]_&]:[--foreground:#101114] [[data-theme=dark]_&]:[--muted-foreground:#6b7079] [[data-theme=dark]_&]:[--border:#e8e9ec] [[data-theme=dark]_&]:[--background:#ffffff]">
             {/* THEIRS / OURS, inside the tray and above the screens — FROM md.
               On a phone it moves out from under the tray; see the copy below.
 
@@ -378,9 +444,20 @@ export function PortalProblem({
               section's own left-ranged copy and read as the next line of it.
               In the corner the screens have the tray to themselves and the
               switch is plainly furniture. */}
+            {/* THE GAP OVER THE SCREENS IS THE TOGGLE'S ROW, NOT A MARGIN.
+              The tray paid 24px of top padding and the toggle another 24
+              under itself, so above the picture sat a 48px band of bare tray
+              plus the control's own height — on a card whose subject is the
+              two screens, the first third of it was empty. The control still
+              has room to be a control; it just stops reserving a second one. */}
             {!screens ? (
-              <div className="hidden justify-end md:mb-6 md:flex">
+              <div className="hidden justify-end md:mb-3 md:flex">
                 <ViewToggle
+                  // The tray is paper in dark (see above), so the control's
+                  // dark variants — a white hairline and a white-wash thumb —
+                  // would paint white on white. onPaper drops them and lets
+                  // the base classes resolve the tray's own ladder.
+                  onPaper
                   options={["Theirs", "Ours"]}
                   view={selected}
                   onSelect={setSelected}
@@ -406,6 +483,31 @@ export function PortalProblem({
                 )}
               </div>
             </div>
+
+            {/* THE SCREENS GO SOFT AT THE TRAY'S FOOT, IN DARK.
+
+                They are cropped there — windows onto screens that carry on
+                below — and in light the tray is a near-white panel a step off
+                the screens, so the crop is simply an edge and needs nothing.
+                In dark the tray is #F5F5F0 paper and the screens are
+                near-black: a hard line between the two is the highest-contrast
+                edge on the card, and the colour ramp that used to soften it
+                was worse (see --portal-screen-fade).
+
+                A backdrop blur has no colour to lay on them. It defocuses the
+                screens' own pixels, so the last rows go soft into the crop the
+                way the hero's right edge does — the same treatment, the same
+                reason, turned ninety degrees.
+
+                The mask ramps it: the blur is uniform, masked from transparent
+                at its top to solid at the tray's edge, so there is no line
+                where it begins. Inside the tray and after the mask wrapper, so
+                it is clipped by the tray's radius and is not itself faded by
+                the screens' own right-edge mask. */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-x-0 bottom-0 z-10 hidden h-20 [-webkit-mask-image:linear-gradient(to_bottom,transparent_0%,rgba(0,0,0,0.4)_50%,#000_100%)] [mask-image:linear-gradient(to_bottom,transparent_0%,rgba(0,0,0,0.4)_50%,#000_100%)] [-webkit-backdrop-filter:blur(6px)] [backdrop-filter:blur(6px)] [[data-theme=dark]_&]:block"
+            />
           </div>
 
           {/* THE PHONE'S COPY: under the tray, on the page's own ground, centred

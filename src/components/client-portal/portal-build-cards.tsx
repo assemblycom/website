@@ -148,7 +148,21 @@ const R_PANEL = "rounded-[10px]";
 // the separating these need. The comment bubble in the Collaborate scene keeps
 // its shadow, because that one IS floating — it lies on top of a photograph.
 const WINDOW = `overflow-hidden ${R_WINDOW} border bg-[var(--mock-window)] text-[color:var(--mock-ink)] ${LINE}`;
-const BRAND_SIDEBAR = "bg-[var(--mock-brand)] text-white";
+// THE CLIENT'S BRANDED RAIL. --mock-brand-slab, not --mock-brand.
+//
+// The two are the same near-black in light and deliberately different in dark:
+// --mock-brand stays #121212 because it is also a 15px glyph on the invoice
+// mark and the branded nav elsewhere, while --mock-brand-slab is the site's
+// own Haze mixed most of the way into that near-black — a value drawn for a
+// large flat FIELD. This rail is one, 124–136px wide and the full height of
+// the window, and at --mock-brand it was near-black beside a near-black pane:
+// the one element in the shot that is supposed to say "this portal carries the
+// firm's colour" was showing no colour at all.
+//
+// The token already existed for exactly this (see globals.css, and the hero's
+// own BRAND_SIDEBAR which has used it all along) — this rail had simply never
+// been moved onto it. Light is untouched: there both tokens are #171717.
+const BRAND_SIDEBAR = "bg-[var(--mock-brand-slab)] text-white";
 const TABLE_HEAD = `flex items-center gap-3 border-b bg-[var(--mock-well)] px-3.5 py-2 text-[color:var(--mock-ink-soft)] ${UI_SECONDARY} ${LINE}`;
 const CHIP = `rounded px-1.5 py-[4px] ${UI_SECONDARY}`;
 const NEUTRAL = `${CHIP} bg-[var(--mock-well-2)] text-[color:var(--mock-ink-soft)]`;
@@ -439,9 +453,23 @@ type SceneProps = { plain?: boolean };
  * and should not take it — which is why it is opt-in per card rather than the
  * new default.
  */
+// A SMALLER DESIGN BOX ON A PHONE, which is how the UI inside gets BIGGER.
+//
+// These scenes are drawn at a fixed size and fitted to the card, so the scale
+// is card width over design width and every type size inside rides on it. At
+// 340 against a phone card of about 255 that is 0.75 — an 11.5px row label
+// renders at 8.6px, under every caption around it, on the one card a reader is
+// meant to recognise as product UI. 290 takes the same card to 0.88 and the
+// label to a little over 10px.
+//
+// The phone box stays SQUARE because the rail card is square below lg (see
+// card-rail.tsx); from sm the design size is what it always was, so nothing
+// above a phone moves.
 const RAIL_SCENE_PHONE = {
-  vars: "[--template-mock-w:340px] [--template-mock-h:340px] sm:[--template-mock-h:453px]",
-  size: "w-[340px] h-[340px] sm:h-[453px]",
+  vars:
+    "[--template-mock-w:290px] [--template-mock-h:290px] " +
+    "sm:[--template-mock-w:340px] sm:[--template-mock-h:453px]",
+  size: "w-[290px] h-[290px] sm:w-[340px] sm:h-[453px]",
 };
 /** Spread form, so a card opts in with one line and cannot pair the wrong two. */
 const RAIL_SCENE_PHONE_PROPS = {
@@ -1908,6 +1936,18 @@ const TEAM_NAV = [
  * between these two sizes being spent backwards. Name first and the same two
  * sizes read as a heading with its byline under it.
  */
+/**
+ * The default-avatar tints, one per record. Written out rather than built from
+ * the index, because Tailwind reads the source as text and never emits a class
+ * it cannot see. Three, cycled — the board shows three cards, and a fourth
+ * would start the set again rather than introduce a hue nobody chose.
+ */
+const AVATAR_TINT = [
+  "bg-[var(--mock-avatar-a-bg)] text-[color:var(--mock-avatar-a-fg)]",
+  "bg-[var(--mock-avatar-b-bg)] text-[color:var(--mock-avatar-b-fg)]",
+  "bg-[var(--mock-avatar-c-bg)] text-[color:var(--mock-avatar-c-fg)]",
+];
+
 function ProjectCard({
   who,
   initials,
@@ -1915,6 +1955,7 @@ function ProjectCard({
   done,
   of,
   lead = false,
+  tint = 0,
 }: {
   who: string;
   initials: string;
@@ -1923,6 +1964,8 @@ function ProjectCard({
   of: number;
   /** The one card whose bar advances on hover — see the card's hover move. */
   lead?: boolean;
+  /** Which identity tint this record's avatar wears. See AVATAR_TINT. */
+  tint?: number;
 }) {
   return (
     <div
@@ -1938,10 +1981,21 @@ function ProjectCard({
         {title}
       </p>
       <div className="mt-1.5 flex items-center gap-1.5">
-        {/* The client's initials on a plain tile — the default avatar a record
-            gets before anyone uploads a logo, which is most of them. */}
+        {/* The client's initials on a tile — the default avatar a record gets
+            before anyone uploads a logo, which is most of them.
+
+            A COLOUR PER RECORD, which is what a default avatar is for. It was
+            --mock-ink/10 on every card, so the column read as three identical
+            grey squares: the one element on the board whose job is to tell one
+            client from the next was the one element that made them look the
+            same. Every product that draws initials picks a hue per record for
+            exactly this reason.
+
+            The tints are their own family rather than the status pills reused
+            — a green avatar would read as a finished project. See
+            --mock-avatar-* in globals.css. */}
         <span
-          className={`flex size-[14px] shrink-0 items-center justify-center ${R_CHROME} bg-[var(--mock-ink)]/10 text-[7px] leading-none text-[color:var(--mock-ink-soft)]`}
+          className={`flex size-[14px] shrink-0 items-center justify-center ${R_CHROME} text-[7px] leading-none ${AVATAR_TINT[tint % AVATAR_TINT.length]}`}
         >
           {initials}
         </span>
@@ -2063,7 +2117,24 @@ export function BuildCard({ plain = false }: SceneProps = {}) {
           // steps at lg (see PANEL_SCENE_WIDE) and the window has to step with
           // it — 20px of scene padding on the left and top, nothing on the
           // right or bottom, which is where it bleeds off.
-          style={plain ? undefined : { width: 380, height: 412 }}
+          // WIDTH IN CLASSES BELOW sm, because the phone needs a different
+          // one. The fit rule centres the scene (left:50% + translate), so a
+          // window wider than its design box overflows BOTH sides equally —
+          // fine at 380 in a 340 box with the dark rail absorbing the left
+          // crop, and wrong once the rail is hidden on a phone and the box
+          // drops to 290: the board's own titles were being cut on the left.
+          //
+          // 340 in a 290 box overflows 50, so 25 a side; the translate puts
+          // all 50 on the right. The window then starts at the box's left edge
+          // and runs off the right, which is the crop the card wants and the
+          // only one it should have.
+          //
+          // The same correction applies from sm, where the box is 340 and the
+          // window 380: 40 of overflow, 20 a side, so a 20px shift puts all of
+          // it on the right. It was translate-x-0 there, which left the window
+          // cropped on BOTH sides — a left crop with no rail behind it to
+          // absorb it, and a right edge that stopped short of the card.
+          style={plain ? undefined : { height: 412 }}
           // The TOP-LEFT is the only corner this window has: it bleeds off the
           // right and the bottom, so three of its corners are crops. That one
           // visible corner carries the whole window's shape, and at the chrome
@@ -2116,7 +2187,7 @@ export function BuildCard({ plain = false }: SceneProps = {}) {
           // card's own ground shows through and there is no line at all. Dark
           // clips to the border box again, because there the border is painted
           // and wants the ground behind it.
-          className={`flex shrink-0 ${WINDOW} ${R_PANEL} rounded-b-none rounded-tr-none border-transparent [background-clip:padding-box] border-b-0 border-r-0 sm:rounded-tr-[10px] sm:border-r [[data-theme=dark]_&]:border-[var(--mock-line)] [[data-theme=dark]_&]:[background-clip:border-box] ${
+          className={`flex shrink-0 ${plain ? "" : "w-[340px] translate-x-[25px] sm:w-[380px] sm:translate-x-[20px]"} ${WINDOW} ${R_PANEL} rounded-b-none rounded-tr-none border-transparent [background-clip:padding-box] border-b-0 border-r-0 sm:rounded-tr-[10px] sm:border-r [[data-theme=dark]_&]:border-[var(--mock-line)] [[data-theme=dark]_&]:[background-clip:border-box] ${
             plain
               ? // 340x280 ON A PHONE, which is the 360x300 box exactly minus
                 // the scene's own 20px top and left padding — so the window
@@ -2159,7 +2230,21 @@ export function BuildCard({ plain = false }: SceneProps = {}) {
             // the workspace name itself truncated. A nav that cannot set its
             // own name is a worse trade than a slightly narrower week. 124
             // leaves 76 for a ~66px name and still puts the columns near 49.
-            className={`flex w-[124px] shrink-0 flex-col px-2 py-2.5 sm:w-[136px] ${BRAND_SIDEBAR}`}
+            // GONE BELOW lg, not just on a phone. The rail is fixed-width, so
+            // on a 290px design box it took 124 of them — nearly half the
+            // window — to show a nav whose rows are not what this card is
+            // about. The claim over it is that every client sees status and
+            // key dates without asking, and that is the BOARD: three projects,
+            // each with its client and how far along it is.
+            //
+            // The cut was at sm first, which was the wrong breakpoint: the
+            // rail card is one-up until md and two-up from there, so between
+            // sm and lg it is still only ~360px wide and the rail was taking a
+            // third of it. lg is where the row goes three-up on a full-width
+            // page, which is the first width the portal has room to read as a
+            // portal. Below it the board gets the whole window and runs off
+            // the right edge, which is what says the screen carries on.
+            className={`hidden w-[124px] shrink-0 flex-col px-2 py-2.5 lg:flex lg:w-[136px] ${BRAND_SIDEBAR}`}
           >
             <span className="flex items-center gap-1.5 px-1.5 pb-3 pt-0.5">
               <span
@@ -2227,7 +2312,12 @@ export function BuildCard({ plain = false }: SceneProps = {}) {
                       </span>
                     </div>
                     {BOARD.cards.map((card, i) => (
-                      <ProjectCard key={card.title} {...card} lead={i === 0} />
+                      <ProjectCard
+                        key={card.title}
+                        {...card}
+                        lead={i === 0}
+                        tint={i}
+                      />
                     ))}
                   </div>
                 </div>
@@ -2799,10 +2889,17 @@ export function ReviewCard({ plain = false }: SceneProps = {}) {
 // three ticked against one open row is the "saved as they go" half of the
 // sentence — a list someone is partway through rather than one they are
 // looking at for the first time.
+// THREE ROWS, DOWN FROM FOUR. The scene is drawn at a fixed design size and
+// scaled to the card, so on a phone a header plus four rows is five bands in a
+// 255px-wide panel — the list stopped being a list you read and became texture
+// on a photograph. Three still carries the whole sentence: two things the
+// client has done and one they have not, which is the "saved as they go" half,
+// and a list someone is partway through rather than one they are looking at
+// for the first time. The row that went is the engagement letter, because
+// signing is the Collaborate card's subject two stages along.
 const ONBOARD_ITEMS = [
   { label: "Intake form completed", done: true },
   { label: "ID and documents uploaded", done: true },
-  { label: "Engagement letter signed", done: true },
   { label: "Kickoff call booked", done: false },
 ];
 
@@ -2950,10 +3047,18 @@ export function InvoiceCard({ plain = false }: SceneProps = {}) {
           half; with paper, Haze belongs to the Build card alone, which is the
           one place it was chosen for.
 
-          Light stays #101010 — there the document is near-white and the black
-          ground is what lifts it, so only the dark branch ever moves. */}
+          LIGHT IS HAZE NOW. It was #101010 on the reasoning that a near-white
+          document needs a black ground to lift it. True, and a black card in a
+          rail of five was also the only pure-black object on a light page —
+          it read as a hole rather than as a surface. Haze lifts a near-white
+          document just as well (the document is #fcfcfd, Haze is a mid blue)
+          and it is a colour the page already owns.
+
+          The rhythm note above still holds, in reverse: dark keeps paper here
+          so Haze belongs to the Build card alone there. The two themes now
+          each have exactly one Haze card in the rail, just not the same one. */}
       {!plain && (
-        <div className="absolute -inset-px bg-[#101010] [[data-theme=dark]_&]:bg-[#FBFBF5]" />
+        <div className="absolute -inset-px bg-[#7DA4FF] [[data-theme=dark]_&]:bg-[#FBFBF5]" />
       )}
       {/* IT SITS WHOLE AND CENTRED. It used to start partway down and run off
           the foot under a ramp, on the argument that a document is tall and

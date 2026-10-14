@@ -140,9 +140,33 @@ function NavItem({
         // blue the support card's New badge wears rather than a value invented
         // here. Not red: this is a count of things waiting, not an alarm.
         <span
-          className={`shrink-0 rounded bg-[var(--mock-info-bg)] px-1 py-[2px] text-[8.5px] leading-none text-[color:var(--mock-info-fg)] ${MOCK_MICRO}`}
+          // NOT MOCK_MICRO. The badge carried it AND a text-[8.5px] of its
+          // own, which is two font sizes in one class list — Tailwind orders
+          // by its own sort rather than by source, so the 9.5px won and the
+          // count rendered a point LARGER than the row label beside it. A
+          // count is the smallest thing in a nav, not the biggest.
+          //
+          // 7.5px, set once, and rounded-[4px] written out rather than left to
+          // `rounded`: the two were the same value here, but the number is the
+          // point and a bare utility hides it.
+          //
+          // A SQUARE, drawn as one. It was px-1 py-[2px], which sizes the box
+          // off the glyph plus padding — for a single digit that came out
+          // 12.67 x 11.5, a pixel wider than tall, and a 4px radius on an
+          // 11.5px side is a third of it, so the corners read as pulled. A
+          // fixed 13px box with the figure centred in it is square by
+          // construction and the radius is the same proportion on both axes.
+          className="inline-flex size-[13px] shrink-0 items-center justify-center rounded-[4px] bg-[var(--mock-info-bg)] text-[7.5px] leading-none text-[color:var(--mock-info-fg)]"
         >
-          {badge}
+          {/* THE GLYPH IS NUDGED DOWN HALF A PIXEL, on an inner span so the
+              tile's own tint does not move with it.
+
+              items-center centres the LINE BOX, which is ascent plus descent.
+              Figures are like caps — they sit on the baseline and never use
+              the descent — so centring the box leaves the ink riding high by
+              about half the descent. The same correction the CRM mock's avatar
+              initials carry, scaled to this size. */}
+          <span className="block translate-y-[0.5px]">{badge}</span>
         </span>
       ) : null}
     </div>
@@ -198,7 +222,24 @@ export function WorkspaceSidebar({
       className={`shrink-0 flex-col overflow-hidden border-r border-[var(--mock-line)] bg-muted px-1.5 py-2 ${className}`}
     >
       <div className="flex items-center gap-1.5 px-1.5 pb-2.5 pt-0.5">
-        <span className="flex size-[15px] items-center justify-center rounded bg-foreground text-background">
+        {/* THE FIRM'S COLOUR ON THE SHOWCASE CARD, the page's ink everywhere
+            else.
+            
+            /client-portal puts this rail beside the branded sign-in, and the
+            two are the same firm's workspace — so a near-white tile here next
+            to a periwinkle one there read as two different companies a card
+            apart. --mock-firm is the token both now share.
+            
+            Gated on `showcase` because the other four callers sit on pages
+            that make no claim about branding; there the tile is the product's
+            own mark and `bg-foreground` is right. */}
+        <span
+          className={`flex size-[15px] items-center justify-center rounded ${
+            showcase
+              ? "bg-[var(--mock-firm)] text-[color:var(--mock-firm-ink)]"
+              : "bg-foreground text-background"
+          }`}
+        >
           <IconBrandMark className="size-[9px]" />
         </span>
         <span className={`text-foreground ${MOCK_PRIMARY}`}>BrandMages</span>
