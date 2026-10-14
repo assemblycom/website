@@ -65,9 +65,14 @@ export function SegmentedTabs({
    * works is the case: its panel is rounded-3xl and the control is 12px above
    * it. The thumb's radius follows, so the curves stay concentric.
    *
+   * "pill" — rounded-full, track and thumb both. For a control that sits on
+   * a picture rather than on the page: a soft rectangle reads as another
+   * panel among the panels, where a pill reads as a control laid on top of
+   * one. /client-portal's Theirs/Ours switch, inside the comparison tray.
+   *
    * "segmented" only — the underline skin has no track to round.
    */
-  round?: "default" | "panel";
+  round?: "default" | "panel" | "pill";
   /**
    * Extra classes for the track, for a page whose ground the control has to
    * do something about. /ai-app-builder passes a background and a rail halo:
@@ -151,7 +156,11 @@ export function SegmentedTabs({
       aria-label={label}
       onKeyDown={onKeyDown}
       className={`relative inline-grid border border-border p-1 text-sm ${
-        round === "panel" ? "rounded-3xl" : "rounded-lg"
+        round === "panel"
+          ? "rounded-3xl"
+          : round === "pill"
+            ? "rounded-full"
+            : "rounded-lg"
       } ${className}`}
       style={{ gridTemplateColumns: `repeat(${count}, minmax(0, 1fr))` }}
     >
@@ -161,7 +170,11 @@ export function SegmentedTabs({
         // 4px padding between them, so the two curves stay concentric: 8 → 6
         // by default, 24 → 20 on `panel`.
         className={`pointer-events-none absolute inset-y-1 left-1 z-10 overflow-hidden bg-foreground transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
-          round === "panel" ? "rounded-[20px]" : "rounded-md"
+          round === "panel"
+            ? "rounded-[20px]"
+            : round === "pill"
+              ? "rounded-full"
+              : "rounded-md"
         }`}
         style={{
           width: `calc((100% - 0.5rem) / ${count})`,
@@ -179,7 +192,7 @@ export function SegmentedTabs({
           {options.map((o) => (
             <span
               key={o.value}
-              className="flex items-center justify-center whitespace-nowrap px-4 py-1.5"
+              className="flex items-center justify-center whitespace-nowrap px-3 py-1.5 sm:px-4"
             >
               {o.label}
             </span>
@@ -199,7 +212,7 @@ export function SegmentedTabs({
           aria-selected={o.value === value}
           tabIndex={o.value === value ? 0 : -1}
           onClick={() => onChange(o.value)}
-          className="relative whitespace-nowrap rounded-md px-4 py-1.5 text-center text-muted-foreground transition-colors hover:text-foreground"
+          className="relative whitespace-nowrap rounded-md px-3 py-1.5 text-center text-muted-foreground transition-colors hover:text-foreground sm:px-4"
         >
           {o.label}
         </button>

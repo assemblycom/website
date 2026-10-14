@@ -99,19 +99,32 @@ function RollingDigit({
 // Rolls only the numeric characters; commas / + / K / M / $ render static. A
 // small left-to-right stagger makes the figure settle like an odometer.
 function RollingNumber({ text, play }: { text: string; play: boolean }) {
-  let digitIndex = 0;
+  const chars = text.split("");
+  // Each character's position among the DIGITS, or -1 for the static ones.
+  // Worked out up front rather than counted inside the map, so nothing is
+  // reassigned from a callback that outlives the render.
+  const digitOrder: number[] = [];
+  let seen = 0;
+  for (const ch of chars) {
+    const isDigit = /\d/.test(ch);
+    digitOrder.push(isDigit ? seen : -1);
+    if (isDigit) seen += 1;
+  }
+
   return (
     <span className="inline-flex items-baseline">
-      {text.split("").map((ch, i) => {
-        if (/\d/.test(ch)) {
-          const delayMs = digitIndex * 70;
-          digitIndex += 1;
-          return (
-            <RollingDigit key={i} digit={Number(ch)} play={play} delayMs={delayMs} />
-          );
-        }
-        return <span key={i}>{ch}</span>;
-      })}
+      {chars.map((ch, i) =>
+        digitOrder[i] >= 0 ? (
+          <RollingDigit
+            key={i}
+            digit={Number(ch)}
+            play={play}
+            delayMs={digitOrder[i] * 70}
+          />
+        ) : (
+          <span key={i}>{ch}</span>
+        ),
+      )}
     </span>
   );
 }

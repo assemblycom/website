@@ -88,10 +88,13 @@ function NavRow({
       // of the nav is open. 9% lands near #272727: a +21 step off the slab,
       // still plainly the picked row at a 24px rung, no longer the first thing
       // the eye goes to. Light is untouched.
-      className={`flex items-center gap-2 rounded-[4px] px-2 py-[6px] ${MOCK_PRIMARY} ${
+      // Rest rows answer the cursor the way the workspace sidebar's do: full
+      // ink and a fill a step under the picked row's, so hover never reads as
+      // a second selection.
+      className={`flex items-center gap-2 rounded-[4px] px-2 py-[6px] transition-colors ${MOCK_PRIMARY} ${
         active
           ? "bg-white/15 text-white [[data-theme=dark]_&]:bg-white/[0.09]"
-          : "text-white/70"
+          : "text-white/70 hover:bg-white/[0.08] hover:text-white [[data-theme=dark]_&]:hover:bg-white/[0.05]"
       }`}
     >
       <span className="flex shrink-0 items-center [&>svg]:size-[12px]">
@@ -104,6 +107,8 @@ function NavRow({
 
 export function BrandedPortalVisual({
   brand = "Brandmages",
+  brandMark = <IconBrandMark className="size-[10px]" />,
+  brandColor,
   stock = STOCK,
   apps = ADDED,
   landOnHover = [],
@@ -113,6 +118,10 @@ export function BrandedPortalVisual({
   appHeader = true,
 }: {
   brand?: string;
+  /** The firm's mark, on the white tile beside its name. */
+  brandMark?: React.ReactNode;
+  /** The firm's nav colour, in place of --mock-brand's near-black slab. */
+  brandColor?: string;
   /** The portal's built-in rows. PORTAL_STOCK_CORE drops Billing. */
   stock?: PortalApp[];
   /** The firm's own apps, under the stock rows. The last one is open. */
@@ -172,10 +181,13 @@ export function BrandedPortalVisual({
       {/* The firm's colour, not ours. --mock-brand is the one token that holds
           its value across both themes, because it stands for the client's own
           brand slab rather than for our chrome. */}
-      <div className="flex w-[160px] shrink-0 flex-col gap-[2px] bg-[var(--mock-brand)] px-2.5 py-3">
+      <div
+        className="flex w-[160px] shrink-0 flex-col gap-[2px] bg-[var(--mock-brand)] px-2.5 py-3"
+        style={brandColor ? { backgroundColor: brandColor } : undefined}
+      >
         <span className="flex items-center gap-2 px-2 pb-3">
           <span className="flex size-[18px] items-center justify-center rounded-[4px] bg-white text-black">
-            <IconBrandMark className="size-[10px]" />
+            {brandMark}
           </span>
           <span className={`truncate text-white ${MOCK_PRIMARY}`}>{brand}</span>
           {/* No chevron. It is the workspace switcher's mark, and a switcher

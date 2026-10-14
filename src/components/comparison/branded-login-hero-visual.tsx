@@ -1,4 +1,10 @@
-import { IconBrandMark, IconSearch } from "@/components/home/mock-icons";
+import {
+  IconBrandMark,
+  IconChevronDown,
+  IconChevronRight,
+  IconSearch,
+} from "@/components/home/mock-icons";
+import { IconArrowUp } from "@/components/home/build-step-visual";
 import {
   MOCK_MICRO,
   MOCK_PRIMARY,
@@ -6,12 +12,13 @@ import {
   MOCK_TITLE,
 } from "@/components/ui/mock-type";
 import { SplitHeroPanel } from "@/components/comparison/split-hero-panel";
+import { ORBIT, OrbitMark } from "@/components/comparison/orbit-brand";
 
 /**
  * Base44's hero, from its brief: the first screen a client sees. The firm's
  * own sign-in, on its own domain with its own mark and no platform badge,
- * against a generic hosted-app login. The generic side carries a neutral
- * placeholder mark, never Base44's.
+ * against the work of wiring a login into a hosted app. The hosted side names
+ * no builder, never Base44's.
  */
 // Copy review: both switch labels, both domains and the sign-in copy are
 // mine, not the brief's.
@@ -19,36 +26,126 @@ export function BrandedLoginHeroVisual() {
   return (
     <SplitHeroPanel
       label="Which sign-in"
+      blurFoot
       views={[
         {
           label: "Your portal",
           content: (
             <LoginScreen
-              domain="portal.brandmages.com"
-              mark={
-                <span className="flex size-11 items-center justify-center rounded-xl bg-foreground text-background">
-                  <IconBrandMark className="size-5" />
-                </span>
-              }
-              title="Sign in to Brandmages"
+              domain={ORBIT.domain}
+              chrome={false}
+              mark={<OrbitMark className="size-11 text-foreground" />}
+              title={`Sign in to ${ORBIT.name}`}
+              email={ORBIT.email}
             />
           ),
         },
         {
           label: "Hosted app",
-          content: (
-            <LoginScreen
-              domain="your-app.hosted-platform.app"
-              mark={
-                <span className="size-11 rounded-xl bg-muted [[data-theme=dark]_&]:bg-white/[0.08]" />
-              }
-              title="Sign in"
-              badge
-            />
-          ),
+          // Not a second sign-in screen. Side by side, two forms read as two
+          // looks of one thing; the real difference is that on a hosted app
+          // somebody has to wire that form up, so this side shows the wiring.
+          content: <WiringSignInChat />,
         },
       ]}
     />
+  );
+}
+
+// Copy review: every line in this thread is mine. It is generic on purpose,
+// no builder's or auth vendor's name, and should read as true of any
+// code-generating builder.
+
+const STEPS_RUN = [
+  "Installed auth SDK",
+  "Edited 4 files",
+  "Added redirect URLs",
+];
+
+const SHIMMER: React.CSSProperties = {
+  backgroundImage:
+    "linear-gradient(90deg, var(--muted-foreground) 35%, var(--foreground) 50%, var(--muted-foreground) 65%)",
+  backgroundSize: "200% 100%",
+  animation: "textShimmer 2.4s linear infinite",
+};
+
+const BUBBLE =
+  "rounded-2xl bg-muted px-3.5 py-2 text-[13px] leading-[1.45] text-foreground dark-ui:bg-white/[0.08]";
+const RULE = "border-border dark-ui:border-white/15";
+
+/**
+ * The hosted side of the hero: what adding a client login costs on a builder
+ * that generates the code. One ask, the work it set off, and a redirect that
+ * fails, then the composer waiting for the next fix. Kept to three beats so it
+ * scans at hero size. Drawn in the same chat as Lovable's hero so the two
+ * pages share one picture of a builder.
+ */
+function WiringSignInChat() {
+  return (
+    // The composer stays on the foot, where a chat keeps it; the thread starts
+    // at the top, since pinned down beside the composer it left the top half
+    // of a tall card empty.
+    <div aria-hidden className="flex h-full select-none flex-col p-5">
+      <div className="flex min-h-0 flex-1 flex-col gap-5 overflow-hidden pt-2">
+        <p className={`max-w-[85%] self-end ${BUBBLE}`}>
+          Add a login for my clients.
+        </p>
+        {/* The work as a builder shows it: a step group, one ruled row per
+            thing it did, the last one the failure. */}
+        <div>
+          <div className="flex items-center gap-2 text-[12px] leading-none text-muted-foreground">
+            <span className="flex gap-[3px]">
+              {[0, 1, 2].map((i) => (
+                // Staggered so the three pulse in turn, the way a builder says
+                // it is still working. Still under reduced motion.
+                <span
+                  key={i}
+                  className="size-[3px] animate-pulse rounded-full bg-muted-foreground motion-reduce:animate-none"
+                  style={{ animationDelay: `${i * 200}ms` }}
+                />
+              ))}
+            </span>
+            {/* The site's textShimmer: a band of full ink sweeping through
+                muted text, the way a builder shows it is still working. */}
+            <span
+              className="bg-clip-text text-transparent motion-reduce:![animation:none]"
+              style={SHIMMER}
+            >
+              Setting up sign-in
+            </span>
+            <IconChevronDown className="size-[10px]" />
+          </div>
+          <div className={`mt-2 overflow-hidden rounded-xl border ${RULE}`}>
+            {STEPS_RUN.map((step, i) => (
+              <div
+                key={step}
+                className={`flex items-center gap-1.5 px-3 py-2 text-[12px] leading-none text-muted-foreground ${
+                  i ? `border-t ${RULE}` : ""
+                }`}
+              >
+                {step}
+                <IconChevronRight className="size-[9px]" />
+              </div>
+            ))}
+            <div
+              className={`flex items-center gap-2 border-t px-3 py-2 text-[12px] leading-none text-foreground ${RULE}`}
+            >
+              Login redirect failed
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        className={`mt-4 flex shrink-0 items-center gap-2 rounded-full border py-1.5 pl-4 pr-1.5 ${RULE}`}
+      >
+        <span className="flex-1 text-[13px] text-muted-foreground">
+          Ask to fix the login
+        </span>
+        <span className="flex size-8 items-center justify-center rounded-full bg-foreground text-background">
+          <IconArrowUp className="size-4" />
+        </span>
+      </div>
+    </div>
   );
 }
 
@@ -85,6 +182,11 @@ export function BrandedLoginScreen({
   brand = false,
   quietFoot = true,
   frame = true,
+  /** Centres the form in its window and opens the gap under the title, for a
+   *  frame that shows the screen whole rather than cropping its foot. */
+  centered = false,
+  /** Draws the sign-in for the Base44 page's firm instead of Brandmages. */
+  orbit = false,
 }: {
   brand?: boolean;
   /**
@@ -105,6 +207,8 @@ export function BrandedLoginScreen({
    * is the one element carrying the firm's colour.
    */
   quietFoot?: boolean;
+  centered?: boolean;
+  orbit?: boolean;
 } = {}) {
   return (
     <LoginScreen
@@ -116,53 +220,29 @@ export function BrandedLoginScreen({
       // nothing the card's heading does not.
       chrome={false}
       // The pillar card ramps this screen's foot in dark, and the Magic-link
-      // button is what sits under the ramp. See the prop for when it does not.
+      // button is what sits under the ramp.
       quietFoot={quietFoot}
-      domain="portal.brandmages.com"
+      centered={centered}
+      domain={orbit ? ORBIT.domain : "portal.brandmages.com"}
+      email={orbit ? ORBIT.email : undefined}
       mark={
-        // The firm's mark: --mock-brand's dark slab with a white glyph in
-        // light, and the other way round in dark.
-        //
-        // It used to be the dark slab in BOTH themes, on the reasoning that it
-        // is the client's colour and not ours. That holds while the ground
-        // behind it is white; in dark the slab sits on a near-black card and
-        // the firm's mark — the branded half of the whole claim — was a dark
-        // square on a dark screen. A one-colour mark inverts on a dark ground,
-        // which is what every logo does and what the CRM's Symphony tile a
-        // card away already does.
-        //
-        // size-9, down from 11. With the browser bar gone the mark became the
-        // first thing on the screen, and at 44px it was the largest object in
-        // a shot whose subject is the form under it.
-        // With `brand` on, the tile carries the firm's COLOUR rather than the
-        // neutral slab — and it is now the ONLY thing that does; the primary
-        // button went back to the secondary surface, see the note on it.
-        // That card's claim is "your logo, images, colors…", and
-        // a mark that is black in light and white in dark demonstrates the
-        // logo half of it and none of the colour half — the screen could
-        // belong to any firm. Coloured, the mark and the button are the same
-        // one value, which is what a brand setting actually does.
-        // 6px, down from 10. At 10 on a 36px tile the radius was 28% of the
-        // side — past an app icon's own proportion and into a pill, so the
-        // firm's mark read as a rounded badge rather than as a logo someone
-        // uploaded. 6px is a sixth of the side, which is the shape a square
-        // logo tile actually wears, and it leaves the 16px glyph inside more
-        // room at the corners. Both branches move together: they are one tile
-        // drawn in two colours, and a radius that differed between them would
-        // be visible the moment the brand setting is toggled.
-        brand ? (
+        orbit ? (
+          // Orbit's mark is a shape of its own rather than a glyph on a tile,
+          // so it goes on bare, in ink, flipping with the theme.
+          <OrbitMark className="size-9 text-[color:var(--mock-ink)]" />
+        ) : brand ? (
           <span
             className={`flex size-9 items-center justify-center rounded-[6px] ${BRAND_FILL}`}
           >
             <IconBrandMark className="size-4" />
           </span>
         ) : (
-          <span className="flex size-9 items-center justify-center rounded-[6px] bg-[var(--mock-brand)] text-white [[data-theme=dark]_&]:bg-[#f2f2f2] [[data-theme=dark]_&]:text-[#111111]">
+          <span className="flex size-9 items-center justify-center rounded-[6px] bg-[var(--mock-brand)] text-white dark-ui:bg-[#f2f2f2] dark-ui:text-[#111111]">
             <IconBrandMark className="size-4" />
           </span>
         )
       }
-      title="Sign in to Brandmages"
+      title={`Sign in to ${orbit ? ORBIT.name : "Brandmages"}`}
     />
   );
 }
@@ -176,7 +256,13 @@ function LoginScreen({
   chrome = true,
   quietFoot = false,
   frame = true,
+  centered = false,
+  email = "margot@brandmages.com",
 }: {
+  /** The sample address in the Email field. */
+  email?: string;
+  /** See BrandedLoginScreen. */
+  centered?: boolean;
   domain: string;
   mark: React.ReactNode;
   title: string;
@@ -245,7 +331,7 @@ function LoginScreen({
         // a tone the screen has rather than a new one. Dark only: light is
         // doing the right thing and the user asked for it not to move.
         labelInk:
-          "text-[color:var(--mock-ink)] [[data-theme=dark]_&]:text-[color:var(--mock-ink-soft)]",
+          "text-[color:var(--mock-ink)] dark-ui:text-[color:var(--mock-ink-soft)]",
         rule: "bg-[var(--mock-line)]",
         field:
           "border-[var(--mock-line)] bg-[var(--mock-well)] text-[color:var(--mock-ink-soft)]",
@@ -271,10 +357,9 @@ function LoginScreen({
         ink: "text-foreground",
         inkSoft: "text-muted-foreground",
         // See the framed palette: the label sits under its field in dark.
-        labelInk: "text-foreground [[data-theme=dark]_&]:text-muted-foreground",
-        rule: "bg-border [[data-theme=dark]_&]:bg-white/15",
-        field:
-          "border-border text-muted-foreground [[data-theme=dark]_&]:border-white/15",
+        labelInk: "text-foreground dark-ui:text-muted-foreground",
+        rule: "bg-border dark-ui:bg-white/15",
+        field: "border-border text-muted-foreground dark-ui:border-white/15",
         primary: "bg-foreground text-background",
       };
 
@@ -316,17 +401,17 @@ function LoginScreen({
       {!chrome ? null : framed ? (
         <SafariChrome domain={domain} />
       ) : (
-        <div className="flex items-center gap-3 border-b border-border px-4 py-3 [[data-theme=dark]_&]:border-white/10">
+        <div className="flex items-center gap-3 border-b border-border px-4 py-3 dark-ui:border-white/10">
           <span className="flex gap-1.5">
             {[0, 1, 2].map((i) => (
               <span
                 key={i}
-                className="size-2 rounded-full bg-muted [[data-theme=dark]_&]:bg-white/15"
+                className="size-2 rounded-full bg-muted dark-ui:bg-white/15"
               />
             ))}
           </span>
           <span
-            className={`flex-1 truncate rounded-full bg-muted px-3 py-1 text-center text-muted-foreground [[data-theme=dark]_&]:bg-white/[0.08] ${MOCK_SECONDARY}`}
+            className={`flex-1 truncate rounded-full bg-muted px-3 py-1 text-center text-muted-foreground dark-ui:bg-white/[0.08] ${MOCK_SECONDARY}`}
           >
             {domain}
           </span>
@@ -345,14 +430,31 @@ function LoginScreen({
           button and the two fields gain ~36px between them. The cap still
           governs — a sign-in form has a width of its own and stops reading as
           one when it stretches to whatever frame it was dropped into. */}
-      <div className="mx-auto flex w-full max-w-[320px] flex-1 flex-col items-center px-5 pt-8">
+      {/* CENTRED IN THE HERO FROM lg, top-anchored otherwise. From lg the
+          hero card shows the whole screen, so a top-anchored form left its
+          bottom third empty. Below lg the card is a fixed 360 window that
+          crops its foot, and centring pushed the button into that edge; top
+          anchored, the crop takes the foot and the card fades it out. */}
+      <div
+        className={`mx-auto flex w-full max-w-[320px] flex-1 flex-col items-center px-5 ${
+          centered
+            ? "justify-center py-8"
+            : framed
+              ? "pt-8"
+              : "pt-8 lg:justify-center lg:py-8"
+        }`}
+      >
         {mark}
         {/* MOCK_TITLE, down from 17px. The 17 came from the ratio the real
             sign-in gives its heading; copied into a mock drawn at about half
             product scale it was the largest object on the card by a wide
             margin — a marketing headline that had wandered into a
             screenshot, and well clear of the heading in the shot beside it. */}
-        <p className={`mt-4 ${MOCK_TITLE} ${c.ink}`}>{title}</p>
+        {/* More air under the mark in the hero, where the screen is shown
+            whole and the mark and title read as two things, not one lockup. */}
+        <p className={`${framed ? "mt-4" : "mt-6"} ${MOCK_TITLE} ${c.ink}`}>
+          {title}
+        </p>
 
         {/* Google first, then the divider, then the email form: the real
             screen's order. The SSO row is what makes this read as a product
@@ -374,7 +476,7 @@ function LoginScreen({
             themes, darker in light and lighter in dark, so it is a tone the
             screen already owns rather than a new one. */}
         <div
-          className={`mt-5 flex h-[30px] w-full items-center justify-center gap-1.5 rounded-[4px] border transition-colors hover:bg-[var(--mock-well-2)] ${MOCK_PRIMARY} ${c.field}`}
+          className={`${centered ? "mt-7" : "mt-5"} flex h-[30px] w-full items-center justify-center gap-1.5 rounded-[4px] border transition-colors hover:bg-[var(--mock-well-2)] ${MOCK_PRIMARY} ${c.field}`}
         >
           <IconGoogleG />
           <span className={c.ink}>Continue with Google</span>
@@ -393,7 +495,7 @@ function LoginScreen({
             it read as the one control that failed to draw. A filled address
             also says who is signing in: a client of the firm, at their own
             address, which is the claim the card is making. */}
-        <Field label="Email" placeholder="margot@brandmages.com" c={c} />
+        <Field label="Email" placeholder={email} c={c} />
         {/* "Optional" because a password is: the real screen takes either a
             password or a magic link, and the optional field is the visible
             half of that. No reveal control — at 11px it was a grey smudge in
@@ -447,7 +549,7 @@ function LoginScreen({
       {badge && (
         <div className="flex justify-center pb-5">
           <span
-            className={`flex items-center gap-1.5 rounded-full border border-border px-3 py-1 text-muted-foreground [[data-theme=dark]_&]:border-white/15 ${MOCK_SECONDARY}`}
+            className={`flex items-center gap-1.5 rounded-full border border-border px-3 py-1 text-muted-foreground dark-ui:border-white/15 ${MOCK_SECONDARY}`}
           >
             <span className="size-2.5 rounded-sm bg-muted-foreground/40" />
             Built with a hosted platform

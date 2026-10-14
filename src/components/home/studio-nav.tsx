@@ -18,6 +18,7 @@ import {
 } from "@/lib/constants";
 import {
   NavBarFill,
+  NavBarBorder,
   NavDropdown,
   NavDropdownGroup,
   NavMegaPanel,
@@ -70,6 +71,7 @@ export function StudioNav({
   maxWidthClass,
   restPaddingClass,
   minimal = false,
+  bordered = false,
   themeToggle,
 }: {
   fullWidth?: boolean;
@@ -88,6 +90,10 @@ export function StudioNav({
   // and same sizes, but the marketing links and account actions collapse to a
   // single way back to the site. There's no menu to open, so no burger either.
   minimal?: boolean;
+  // Closes the bar with the same hairline the page grid draws, for pages that
+  // sit under it on a plain ground. Off for heroes, where the bar floats over
+  // artwork and a rule would cut across it.
+  bordered?: boolean;
   // Optional light/dark toggle rendered in the nav (used by themeable heroes).
   themeToggle?: { theme: "light" | "dark"; onToggle: () => void };
 }) {
@@ -318,8 +324,13 @@ export function StudioNav({
   const darkDisabled = softGlass
     ? "text-foreground/90"
     : "text-muted-foreground";
+  // rounded-lg, not rounded-full: these links draw no background, so the radius
+  // is only ever seen as the focus ring — and the global focus outline takes
+  // each element's own radius. At rounded-full, tabbing to Log in drew a pill
+  // beside the rounded-lg rings on Book a demo and Get started sitting right
+  // next to it. Same radius as those two now, so the row is one shape.
   const linkBase =
-    "whitespace-nowrap rounded-full px-2 py-1.5 text-sm transition-colors lg:px-3";
+    "whitespace-nowrap rounded-lg px-2 py-1.5 text-sm transition-colors lg:px-3";
   const linkRest = lightContent ? "text-white/70 hover:text-white" : darkLink;
   const linkCls = `${linkBase} ${linkRest}`;
   // The page you're on reads at full strength while the rest sit back — the
@@ -400,7 +411,8 @@ export function StudioNav({
     );
   };
 
-  const disabledCls = `cursor-default whitespace-nowrap rounded-full px-2 py-1.5 text-sm lg:px-3 ${lightContent ? "text-white/50" : darkDisabled}`;
+  // Matches linkBase above, for the same reason.
+  const disabledCls = `cursor-default whitespace-nowrap rounded-lg px-2 py-1.5 text-sm lg:px-3 ${lightContent ? "text-white/50" : darkDisabled}`;
   const ctaCls = `whitespace-nowrap rounded-lg px-4 py-1.5 text-sm transition-[background-color,color,opacity] hover:opacity-90 ${
     theme === "light"
       ? "bg-neutral-900 text-white"
@@ -423,6 +435,28 @@ export function StudioNav({
   // page behind it, not a lighter charcoal.
   // bg-background, not a hex a digit off it: the sheet was #0a0a0b against a
   // #0a0a0a page, which is a difference with no reason to exist.
+  // Same hairline as the page grid's rails and rules, so the bar closes on the
+  // line the content below it is framed by. Mobile only — the desktop bar draws
+  // it as an element instead (NavBarBorder) so it can fade with the sheet.
+  //
+  // Only once the bar is over content: at the top there is nothing above the
+  // page for the rule to close off, and a line under a transparent bar draws a
+  // box around nothing. The colour is what changes, never the width — a border
+  // that appears by growing from 0 shifts everything under it by a pixel.
+  // NO RULE UNDER THE MOBILE BAR. This is the phone bar's border only — the
+  // desktop bar draws its own as NavBarBorder, an element, so it can fade with
+  // the sheet (see line ~582) and is untouched by this.
+  //
+  // The rule's job on desktop is to close off a bar that floats over the page
+  // with a visible edge. On a phone the bar is the full width of the screen
+  // and shares the page's own ground, so the line was not closing a bar off
+  // from anything — it read as a stray rule across the top of every page.
+  //
+  // `border-b border-transparent` and not dropping the border: the box keeps
+  // its 1px, so nothing under the bar moves. The colour was always the thing
+  // that changed on scroll, and now it never changes.
+  const navBorder = `border-b border-transparent ${ease}`;
+
   const menuSurface = darkTop ? "bg-background text-white" : "bg-background";
   const menuBorder = darkTop ? "border-white/10" : "border-border";
   const menuMuted = darkTop ? "text-white/50" : "text-muted-foreground";
@@ -533,7 +567,7 @@ export function StudioNav({
           so the fill cannot lag the bar it is covering for either. */}
       <header
         ref={mobileHeaderRef}
-        className={`${position} transition-colors ${ease} lg:hidden [[data-toc-bar]_&]:bg-background [[data-toc-bar]_&]:transition-none ${mobileMenuOpen ? "pointer-events-none z-[70]" : "z-50"}`}
+        className={`${position} transition-colors ${ease} lg:hidden [[data-toc-bar]_&]:bg-background [[data-toc-bar]_&]:transition-none ${navBorder} ${mobileMenuOpen ? "pointer-events-none z-[70]" : "z-50"}`}
       >
         {/* The strip. Dropped on a post or a policy, where the contents bar is
             drawn directly under the nav: two stacked strips with two hairlines
@@ -571,7 +605,7 @@ export function StudioNav({
               aria-controls="mobile-menu"
               className={`flex size-9 items-center justify-center transition-[color,opacity] ${ease} active:opacity-60 ${lightContent ? "text-white" : "text-foreground"} ${mobileMenuOpen ? "invisible" : ""}`}
             >
-              <NavDots shape="grid" />
+              <IconMenu />
             </button>
           )}
         </div>
@@ -592,6 +626,10 @@ export function StudioNav({
             style={navStripStyle}
           />
           {!minimal && <NavBarFill />}
+          {/* Fades in with the strip behind it, on the same curve, so the bar
+              and its closing rule arrive as one surface rather than the
+              hairline landing first over a still-transparent bar. */}
+          <NavBarBorder visible={bordered || scrolled} easeClassName={ease} />
           <div
             className={`relative z-10 mx-auto flex items-center ${contentRail} ${scrolled ? "h-14" : "h-16"}`}
             style={{ transition: rowTransition }}
@@ -869,7 +907,9 @@ export function StudioNav({
                         // only one in it.
                         <ul className="flex flex-col gap-1 pb-1 pl-4">
                           {entry.items.map((link) => (
-                            <li key={link.href}>{renderMenuLink(link, true)}</li>
+                            <li key={link.href}>
+                              {renderMenuLink(link, true)}
+                            </li>
                           ))}
                         </ul>
                       )}
@@ -991,5 +1031,17 @@ export function StudioNav({
           document.body,
         )}
     </>
+  );
+}
+
+/** The mobile menu trigger's glyph, from the design file. */
+function IconMenu() {
+  return (
+    <svg width="18" height="20" viewBox="0 0 18 20" fill="none" aria-hidden>
+      <path
+        d="M0 3.4375C0 2.91797 0.417969 2.5 0.9375 2.5H16.5625C17.082 2.5 17.5 2.91797 17.5 3.4375C17.5 3.95703 17.082 4.375 16.5625 4.375H0.9375C0.417969 4.375 0 3.95703 0 3.4375ZM0 10C0 9.48047 0.417969 9.0625 0.9375 9.0625H16.5625C17.082 9.0625 17.5 9.48047 17.5 10C17.5 10.5195 17.082 10.9375 16.5625 10.9375H0.9375C0.417969 10.9375 0 10.5195 0 10ZM17.5 16.5625C17.5 17.082 17.082 17.5 16.5625 17.5H0.9375C0.417969 17.5 0 17.082 0 16.5625C0 16.043 0.417969 15.625 0.9375 15.625H16.5625C17.082 15.625 17.5 16.043 17.5 16.5625Z"
+        fill="currentColor"
+      />
+    </svg>
   );
 }

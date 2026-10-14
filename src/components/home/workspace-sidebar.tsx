@@ -39,7 +39,23 @@ import { MOCK_MICRO, MOCK_PRIMARY } from "@/components/ui/mock-type";
 
 /** Which row is lit. `Add App` lights the action at the foot of the list. */
 export type WorkspaceNavRow =
-  "CRM" | "Team" | "Notifications" | "Home" | "Messages" | "Add App";
+  | "CRM"
+  | "Team"
+  | "Notifications"
+  | "Home"
+  | "Messages"
+  | "Add App"
+  | (string & {});
+
+export interface WorkspaceApp {
+  icon: React.ReactNode;
+  label: string;
+}
+
+/** The one app the firm has built — see the note on the list below. */
+const DEFAULT_APPS: WorkspaceApp[] = [
+  { icon: <IconBookBlank />, label: "Year-end docs" },
+];
 
 function NavItem({
   icon,
@@ -183,6 +199,9 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 
 export function WorkspaceSidebar({
   active,
+  apps = DEFAULT_APPS,
+  brand = "BrandMages",
+  brandMark = <IconBrandMark className="size-[9px]" />,
   /**
    * The column's width. The CRM card gives it the full 148/164 it was drawn
    * at; a shot whose subject is the PANE beside it can ask for less, since
@@ -192,6 +211,11 @@ export function WorkspaceSidebar({
   showcase = false,
 }: {
   active: WorkspaceNavRow;
+  /** The firm's built apps, for a shot whose claim is the range of them. */
+  apps?: WorkspaceApp[];
+  /** The firm whose workspace this is, its name and its mark. */
+  brand?: string;
+  brandMark?: React.ReactNode;
   className?: string;
   /**
    * Draws the rail as the SUBJECT rather than as the furniture beside one.
@@ -240,9 +264,9 @@ export function WorkspaceSidebar({
               : "bg-foreground text-background"
           }`}
         >
-          <IconBrandMark className="size-[9px]" />
+          {brandMark}
         </span>
-        <span className={`text-foreground ${MOCK_PRIMARY}`}>BrandMages</span>
+        <span className={`text-foreground ${MOCK_PRIMARY}`}>{brand}</span>
       </div>
 
       <NavItem icon={<IconBook />} label="CRM" active={active === "CRM"} />
@@ -262,11 +286,7 @@ export function WorkspaceSidebar({
       ) : null}
 
       <SectionLabel>Apps</SectionLabel>
-      <NavItem
-        icon={<IconGlobe />}
-        label="Home"
-        active={active === "Home"}
-      />
+      <NavItem icon={<IconGlobe />} label="Home" active={active === "Home"} />
       <NavItem
         icon={<IconChat />}
         label="Messages"
@@ -283,10 +303,14 @@ export function WorkspaceSidebar({
           the same page, whose portal lists the stock rows and exactly one
           added app, also Year-end docs. Two shots of the same workspace in one
           section should not disagree about how many apps it has. */}
-      <NavItem
-        icon={<IconBookBlank />}
-        label="Year-end docs"
-      />
+      {apps.map((app) => (
+        <NavItem
+          key={app.label}
+          icon={app.icon}
+          label={app.label}
+          active={active === app.label}
+        />
+      ))}
       {/* The rest of what a filled sidebar holds, on the one card that is
           about the sidebar being filled. Stock-sounding names rather than
           more invented apps: the claim beside this is "install or tailor apps

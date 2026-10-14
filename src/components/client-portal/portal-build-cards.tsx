@@ -1517,6 +1517,18 @@ const CAL_HUES: Record<string, string> = {
   Brookline: "var(--mock-gantt-4)",
 };
 
+/**
+ * A brighter set for a calendar shown on its own, where the event colours are
+ * part of the picture rather than a quiet key on a busy card. Picked from the
+ * event-colour picker calendars ship: teal, tangerine, blue, one per client,
+ * far enough apart that no two read as one.
+ */
+const CAL_HUES_VIVID: Record<string, string> = {
+  Lumen: "#2F9E8F",
+  Cascade: "#E8763A",
+  Brookline: "#4A86E8",
+};
+
 const CAL_EVENTS = [
   { day: 1, at: 10.5, end: 11.5, title: "Kickoff", who: "Lumen" },
   { day: 2, at: 12, end: 13, title: "Catalog review", who: "Cascade" },
@@ -1570,7 +1582,10 @@ const calDayEdge = (i: number) =>
       ? `sm:border-r ${LINE}`
       : `border-r ${LINE}`;
 
-function CalendarPane() {
+export function CalendarPane({
+  /** CAL_HUES_VIVID on a white ground, for a calendar that is the subject. */
+  vivid = false,
+}: { vivid?: boolean } = {}) {
   const gridH = CAL_HOURS.length * CAL_ROW_H;
   const y = (clock: number) => (clock - CAL_START) * CAL_ROW_H;
 
@@ -1833,7 +1848,11 @@ function CalendarPane() {
                   // because both operands are theme-scoped — the mix lands on
                   // each theme's own ground with each theme's own hue, and no
                   // value is written down twice.
-                  className={`absolute inset-x-[2px] overflow-hidden ${R_CHROME} bg-[color-mix(in_srgb,var(--cal-hue)_18%,var(--mock-well-2))] pb-[3px] pl-1.5 pr-1 pt-[3px]`}
+                  className={`absolute inset-x-[2px] overflow-hidden ${R_CHROME} ${
+                    vivid
+                      ? "bg-[color-mix(in_srgb,var(--cal-hue)_16%,var(--mock-window))]"
+                      : "bg-[color-mix(in_srgb,var(--cal-hue)_18%,var(--mock-well-2))]"
+                  } pb-[3px] pl-1.5 pr-1 pt-[3px]`}
                   style={
                     {
                       top: y(e.at) + 1,
@@ -1854,7 +1873,9 @@ function CalendarPane() {
                       // shortest entry can be read is worth more than one
                       // whose grid is exact to the pixel.
                       minHeight: 32,
-                      "--cal-hue": CAL_HUES[e.who] ?? "var(--mock-ink)",
+                      "--cal-hue":
+                        (vivid ? CAL_HUES_VIVID : CAL_HUES)[e.who] ??
+                        "var(--mock-ink)",
                     } as React.CSSProperties
                   }
                 >
@@ -2513,39 +2534,46 @@ export function IterateCard() {
  * them changes, and the point here is that this part does not.
  */
 export function SecuredCard() {
+  return (
+    <Scene>
+      <AccessPanel />
+    </Scene>
+  );
+}
+
+/** SecuredCard's panel without its scene, for a frame that places it itself. */
+export function AccessPanel() {
   const ROWS: [string, string][] = [
     ["Your team", "Full access"],
     ["Your clients", "Their own data"],
   ];
   return (
-    <Scene>
-      <div className={`flex flex-col ${WINDOW}`}>
-        <div className={TABLE_HEAD}>
-          <span className="flex-1">Who can see this</span>
-        </div>
-        {ROWS.map(([who, access]) => (
-          <div
-            key={who}
-            className={`flex items-center gap-2 border-b px-3.5 py-[13px] ${ROW_HOVER} ${LINE}`}
-          >
-            <span className="flex size-[16px] shrink-0 items-center justify-center rounded-full bg-[var(--mock-ink)] text-[color:var(--mock-window)]">
-              <IconCheck className="size-[10px]" />
-            </span>
-            <span
-              className={`flex-1 truncate text-[color:var(--mock-ink)] ${UI_PRIMARY}`}
-            >
-              {who}
-            </span>
-            <span className={NEUTRAL}>{access}</span>
-          </div>
-        ))}
-        <div className="px-3.5 py-3">
-          <p className="text-[10.5px] leading-[1.5] text-[color:var(--mock-ink-soft)]">
-            Built and maintained by Assembly.
-          </p>
-        </div>
+    <div className={`flex flex-col ${WINDOW}`}>
+      <div className={TABLE_HEAD}>
+        <span className="flex-1">Who can see this</span>
       </div>
-    </Scene>
+      {ROWS.map(([who, access]) => (
+        <div
+          key={who}
+          className={`flex items-center gap-2 border-b px-3.5 py-[13px] ${ROW_HOVER} ${LINE}`}
+        >
+          <span className="flex size-[16px] shrink-0 items-center justify-center rounded-full bg-[var(--mock-ink)] text-[color:var(--mock-window)]">
+            <IconCheck className="size-[10px]" />
+          </span>
+          <span
+            className={`flex-1 truncate text-[color:var(--mock-ink)] ${UI_PRIMARY}`}
+          >
+            {who}
+          </span>
+          <span className={NEUTRAL}>{access}</span>
+        </div>
+      ))}
+      <div className="px-3.5 py-3">
+        <p className="text-[10.5px] leading-[1.5] text-[color:var(--mock-ink-soft)]">
+          Built and maintained by Assembly.
+        </p>
+      </div>
+    </div>
   );
 }
 

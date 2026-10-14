@@ -53,6 +53,18 @@ export const PAGE_SEO = {
       "Assembly is the client portal with ready-made apps for messaging, billing, files, and contracts, plus an AI app builder to customize your own.",
     path: "/client-portal",
   },
+  vsLovable: {
+    title: "Assembly vs Lovable: The Client-Facing AI App Builder",
+    description:
+      "Compare Assembly and Lovable. Assembly ships AI-built apps into a branded client experience with logins, a CRM, and permissions included, not a prototype.",
+    path: "/comparison/lovable",
+  },
+  vsBase44: {
+    title: "Assembly vs Base44: Client-Ready AI App Builder",
+    description:
+      "Compare Assembly and Base44. Assembly puts your brand on every app, includes a client experience and CRM, and lets clients use your apps at no credit cost.",
+    path: "/comparison/base44",
+  },
   security: {
     title: "Security",
     description:
@@ -154,7 +166,6 @@ export const PAGE_SEO = {
     path: "/proposal",
   },
 } as const satisfies Record<string, PageSeo>;
-
 
 /**
  * Next inherits a parent's `openGraph` object wholesale, so a page that sets
