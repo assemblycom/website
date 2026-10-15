@@ -69,7 +69,7 @@ const PLANS: Plan[] = [
       {
         label: "Everything in Free, plus",
         items: [
-          "API & MCP connector",
+          "MCP connector",
           "More included credits",
           "Add-on build credits",
         ],
