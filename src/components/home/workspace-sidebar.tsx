@@ -209,6 +209,7 @@ export function WorkspaceSidebar({
    */
   className = "hidden w-[148px] sm:flex md:w-[164px]",
   showcase = false,
+  appsOnly = false,
 }: {
   active: WorkspaceNavRow;
   /** The firm's built apps, for a shot whose claim is the range of them. */
@@ -233,6 +234,13 @@ export function WorkspaceSidebar({
    * so the four cards that were tuned against it do not move.
    */
   showcase?: boolean;
+  /**
+   * Drops the stock rows from the Apps group — Messages, and the Billing /
+   * Files / Approvals that `showcase` adds — leaving Home, the firm's own apps
+   * and Add App. For the hero's template slides, whose rail is there to show
+   * which app is open, not how full a workspace can get.
+   */
+  appsOnly?: boolean;
 }) {
   return (
     <div
@@ -287,11 +295,13 @@ export function WorkspaceSidebar({
 
       <SectionLabel>Apps</SectionLabel>
       <NavItem icon={<IconGlobe />} label="Home" active={active === "Home"} />
-      <NavItem
-        icon={<IconChat />}
-        label="Messages"
-        active={active === "Messages"}
-      />
+      {appsOnly ? null : (
+        <NavItem
+          icon={<IconChat />}
+          label="Messages"
+          active={active === "Messages"}
+        />
+      )}
       {/* ONE app the firm has built, and back to one on purpose. It was three
           — Year-end docs, Design approvals, Calendar — on the reasoning that a
           list of one cannot show a range. It cannot, but the range is not this
@@ -317,7 +327,7 @@ export function WorkspaceSidebar({
           in one click, or build a completely custom app with AI", so the
           group should read as a mix of what came with the workspace and what
           the firm added, not as five bespoke builds. */}
-      {showcase ? (
+      {showcase && !appsOnly ? (
         <>
           <NavItem icon={<IconCard />} label="Billing" />
           <NavItem icon={<IconFolder />} label="Files" />

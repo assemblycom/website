@@ -3,9 +3,10 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   ApprovalsMock,
+  DocumentRequestsMock,
   DocumentsMock,
   HelpdeskMock,
-  OnboardingMock,
+  OnboardingTrackerMock,
   PortalSidebar,
 } from "@/components/client-portal/segment-mock";
 import { ProgressMock } from "@/components/client-portal/progress-chart";
@@ -113,15 +114,11 @@ const ITEMS: Item[] = [
     frame: "fill" as const,
     mock: <HelpdeskMock />,
   },
-  templateItem(
-    "client-onboarding-wizard",
-    "fill",
-    <WithSidebar app="Onboarding">
-      <OnboardingMock />
-    </WithSidebar>,
-  ),
-  // Builds its own sidebar now, like the approvals screen, so no wrapper.
-  templateItem("document-collection", "fill", <DocumentsMock />),
+  // The template slides are one firm's workspace with a different app open:
+  // all three carry FirmSidebar, the team's rail, and show the app from the
+  // firm's side. See FirmSidebar in segment-mock.tsx.
+  templateItem("client-onboarding-wizard", "fill", <OnboardingTrackerMock />),
+  templateItem("document-collection", "fill", <DocumentRequestsMock />),
   // Four, not five. A fifth name pushed the row past the panel and the last one
   // was clipped at the edge; the set is illustrating that the portal comes with
   // ready-made apps, which four do as well as five. The project tracker goes

@@ -3,7 +3,9 @@
 import { useState } from "react";
 import { QUIET_BUTTON } from "@/components/ui/quiet-button";
 import { ViewToggle } from "@/components/ui/view-toggle";
+import Image from "next/image";
 import Link from "next/link";
+import { CustomerLogo } from "@/components/customers/customer-logos";
 import { Reveal } from "@/components/ui/reveal";
 import {
   DOTTED_RULE_AFTER_MOBILE,
@@ -270,6 +272,7 @@ export function PortalProblem({
   sides = [],
   screens,
   quote,
+  trayImage,
   link,
   linkFirst = false,
   split = false,
@@ -291,7 +294,15 @@ export function PortalProblem({
    */
   screens?: React.ReactNode;
   /** Quoted from case-studies.ts, so the page and the story cannot drift. */
-  quote?: { text: string; attribution: string; href: string };
+  /** A photograph filling the picture's tray, behind `screens`. */
+  trayImage?: string;
+  quote?: {
+    text: string;
+    attribution: string;
+    href: string;
+    /** The firm's logo, by case-study slug, in the card's thumbnail tile. */
+    logoSlug?: string;
+  };
   link?: { label: string; href: string };
   /**
    * Put the link directly under the lead instead of at the section's foot.
@@ -516,6 +527,15 @@ export function PortalProblem({
               plus the control's own height — on a card whose subject is the
               two screens, the first third of it was empty. The control still
               has room to be a control; it just stops reserving a second one. */}
+              {trayImage ? (
+                <Image
+                  src={trayImage}
+                  alt=""
+                  fill
+                  sizes="(min-width: 768px) 600px, 100vw"
+                  className="object-cover"
+                />
+              ) : null}
               {!screens ? (
                 <div className="hidden justify-end md:mb-3 md:flex">
                   <ViewToggle
@@ -537,19 +557,21 @@ export function PortalProblem({
               fade and the bottom fade would each hold the other's edge open
               instead of both applying. Only the right one is left — see the
               tray above for why the bottom needs none. */}
-              <div>
+              <div className="relative">
                 <div
-                  style={{
-                    WebkitMaskImage: SCREEN_FADE,
-                    maskImage: SCREEN_FADE,
-                  }}
+                  // No edge fade over a photograph: it would dissolve the
+                  // picture laid on it into the scene behind.
+                  style={
+                    trayImage
+                      ? undefined
+                      : { WebkitMaskImage: SCREEN_FADE, maskImage: SCREEN_FADE }
+                  }
                 >
                   {screens ?? (
                     <ScreenPair selected={selected} setSelected={setSelected} />
                   )}
                 </div>
               </div>
-
             </div>
 
             {/* THE PHONE'S COPY: under the tray, on the page's own ground, centred
@@ -595,21 +617,35 @@ export function PortalProblem({
               // dark values, so there is no hardcoded grey here.
               className={
                 split
-                  ? "flex h-full flex-col justify-center rounded-3xl bg-[var(--surface)] p-8 md:p-10"
+                  ? `flex h-full flex-col rounded-3xl bg-[var(--surface)] p-8 md:p-10 ${
+                      quote.logoSlug
+                        ? "justify-between gap-10"
+                        : "justify-center"
+                    }`
                   : "order-3 mt-12 max-w-2xl"
               }
             >
-              <blockquote className="text-pretty text-foreground">
-                &ldquo;{quote.text}&rdquo;
-              </blockquote>
-              <figcaption className="type-caption mt-3 text-muted-foreground">
-                <Link
-                  href={quote.href}
-                  className="transition-colors hover:text-foreground"
-                >
-                  {quote.attribution}
-                </Link>
-              </figcaption>
+              {/* The firm's logo, top left, on the white tile the customer
+                  quote cards use (BuilderCustomerQuotes) — the same treatment
+                  for a firm with no portrait. The quote drops to the foot. */}
+              {split && quote.logoSlug ? (
+                <div className="flex size-[72px] shrink-0 items-center justify-center rounded-lg bg-white p-3.5 text-[#1B1F24] ring-1 ring-inset ring-black/[0.06]">
+                  <CustomerLogo slug={quote.logoSlug} fit />
+                </div>
+              ) : null}
+              <div>
+                <blockquote className="text-pretty text-foreground">
+                  &ldquo;{quote.text}&rdquo;
+                </blockquote>
+                <figcaption className="type-caption mt-3 text-muted-foreground">
+                  <Link
+                    href={quote.href}
+                    className="transition-colors hover:text-foreground"
+                  >
+                    {quote.attribution}
+                  </Link>
+                </figcaption>
+              </div>
             </figure>
           ) : null}
         </div>

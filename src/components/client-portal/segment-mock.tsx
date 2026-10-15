@@ -17,7 +17,11 @@ import { ApprovalCovers } from "@/components/client-portal/approval-covers";
 import { fadeMask } from "@/components/ui/fade-mask";
 import { WorkspaceSidebar } from "@/components/home/workspace-sidebar";
 import { TypedText } from "@/components/comparison/typed-address";
-import { MOCK_MICRO, MOCK_SECONDARY } from "@/components/ui/mock-type";
+import {
+  MOCK_MICRO,
+  MOCK_PRIMARY,
+  MOCK_SECONDARY,
+} from "@/components/ui/mock-type";
 
 import {
   IconBrandMark,
@@ -29,9 +33,10 @@ import {
   IconFile,
   IconArrowUpRight,
   IconGlobe,
-  IconBookOpen,
   IconSearch,
+  IconLedgerline,
   IconPlus,
+  IconApp,
 } from "@/components/home/mock-icons";
 
 // Two glyphs the shared set does not carry, drawn to its light-stroke
@@ -704,13 +709,14 @@ export function DocumentsStatsMock() {
 // ─────────────────────────────────────────────────────────────────────────
 
 /** Topics an accounting practice would answer, with how much sits under each. */
-const HELPDESK_TOPICS = [
+const HELPDESK_TOPICS: { name: string; count: number; archived?: boolean }[] = [
   { name: "Onboarding & kickoff", count: 3 },
   { name: "Documents we need from you", count: 5 },
   { name: "Billing & payments", count: 4 },
   { name: "Year-end & filing dates", count: 4 },
   { name: "Payroll", count: 3 },
   { name: "Security & access", count: 3 },
+  { name: "Archive: 2024 tax season", count: 2, archived: true },
   // The last three exist to be CUT by the foot of the window. Six fitted
   // inside it, which made the shot a list that had run out rather than a
   // window onto one — the same reason the Gantt further down the page is nine
@@ -723,7 +729,12 @@ const HELPDESK_TOPICS = [
 /** The handle a row is dragged by: two columns of three dots, as the app draws it. */
 function IconDragHandle({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 10 16" className={className} fill="currentColor" aria-hidden>
+    <svg
+      viewBox="0 0 10 16"
+      className={className}
+      fill="currentColor"
+      aria-hidden
+    >
       <circle cx="3.5" cy="4" r="1" />
       <circle cx="6.5" cy="4" r="1" />
       <circle cx="3.5" cy="8" r="1" />
@@ -734,96 +745,833 @@ function IconDragHandle({ className }: { className?: string }) {
   );
 }
 
+// ── The hero's template slides, as the firm sees them ─────────────────────
+// Every template slide in the hero carousel is the same firm's workspace with a
+// different app open, so they share ONE rail rather than each drawing its own.
+// They used to mix two: the helpdesk on the team's workspace rail, the
+// onboarding and document screens on the client's portal nav — which read as
+// two products a click apart. The team's rail wins because the slides now show
+// the apps from the firm's side: the queue of requests, the board of clients
+// part-way through onboarding.
+
+/**
+ * A single document, padded to the set's 20-in-28 box. IconDocument is drawn
+ * edge to edge, so at the rail's one icon size it came out a third larger than
+ * the rows around it — the same fix IconDocuments carries for the open book.
+ */
+function IconDocumentPadded({ className }: { className?: string }) {
+  return (
+    <svg viewBox="-6.5 -4 28 28" className={className} fill="currentColor">
+      <path d="M6.875 1.875H2.5C2.15625 1.875 1.875 2.15625 1.875 2.5V17.5C1.875 17.8438 2.15625 18.125 2.5 18.125H12.5C12.8438 18.125 13.125 17.8438 13.125 17.5V8.125H9.6875C8.13281 8.125 6.875 6.86719 6.875 5.3125V1.875ZM12.3477 6.25L8.75 2.65234V5.3125C8.75 5.83203 9.16797 6.25 9.6875 6.25H12.3477ZM0 2.5C0 1.12109 1.12109 0 2.5 0H7.71484C8.37891 0 9.01563 0.261719 9.48438 0.730469L14.2695 5.51953C14.7383 5.98828 15 6.625 15 7.28906V17.5C15 18.8789 13.8789 20 12.5 20H2.5C1.12109 20 0 18.8789 0 17.5V2.5Z" />
+    </svg>
+  );
+}
+
+/**
+ * The firm's built apps, in the order the carousel visits them.
+ *
+ * ALL THREE ARE THE SET'S PADDED, FILLED GLYPHS, so they sit at the same
+ * optical size as Home and Add App above and below them. The helpdesk had
+ * IconBookOpen, which is edge to edge in its box and drew visibly larger;
+ * onboarding had IconForm, a thin stroked glyph in a 16-unit box, which drew
+ * smaller and lighter.
+ */
+const FIRM_APPS = [
+  { icon: <IconDocuments />, label: "Helpdesk" },
+  { icon: <IconApp />, label: "Onboarding" },
+  { icon: <IconDocumentPadded />, label: "Documents" },
+];
+
+/**
+ * The workspace rail every template slide shares. LEDGERLINE, not the rail's
+ * BrandMages default: this carousel is the hero of the accounting page, and the
+ * firm it names should be the firm the rest of the page names.
+ *
+ * 148 rather than the default 164, so the pane keeps its measure in the hero's
+ * window.
+ */
+export function FirmSidebar({ active }: { active: string }) {
+  return (
+    <WorkspaceSidebar
+      active={active}
+      apps={FIRM_APPS}
+      brand="Ledgerline"
+      brandMark={<IconLedgerline className="size-[10px]" />}
+      showcase
+      appsOnly
+      // The firm's tile in Ledgerline's own colours: its mark in soft black
+      // on sage, re-pointing the two tokens the rail reads for the tile.
+      className="hidden w-[148px] shrink-0 sm:flex [--mock-firm-ink:var(--ledgerline-ink)] [--mock-firm:var(--ledgerline-sage)]"
+    />
+  );
+}
+
+// ── The two template tables — drawn from the product's own screens ───────
+// Document collection and the onboarding wizard as the firm runs them: the
+// product's table, row for row, at the mock family's type sizes. The rows are
+// the product screenshots' own.
+
+/** The app's name as a switcher, with its one primary action at the right. */
+function AppSwitcherHeader({
+  title,
+  action,
+}: {
+  title: string;
+  action: string;
+}) {
+  return (
+    <div
+      className={`flex items-center justify-between gap-3 border-b px-4 py-3 ${LINE}`}
+    >
+      <span className="flex min-w-0 items-center gap-1.5">
+        <span className="truncate text-[10.5px] leading-none text-[color:var(--mock-ink)]">
+          {title}
+        </span>
+        <IconChevronDown className="size-[8px] shrink-0 text-[color:var(--mock-ink-soft)]" />
+      </span>
+      <span className="flex shrink-0 items-center gap-1.5">
+        <span className={PRIMARY_BUTTON}>
+          <IconPlus className="size-[9px]" />
+          {action}
+        </span>
+      </span>
+    </div>
+  );
+}
+
+const PRIMARY_BUTTON = `flex shrink-0 items-center gap-1 rounded-[4px] bg-[var(--mock-ink)] px-2 py-[5px] text-[color:var(--mock-window)] ${MOCK_MICRO}`;
+
+/** A bordered control on the toolbar — a select, a filter, a toggle's frame. */
+const CONTROL = `flex shrink-0 items-center gap-1.5 rounded-[4px] border px-2 py-[6px] text-[color:var(--mock-ink-soft)] ${MOCK_SECONDARY} ${LINE}`;
+
+/** The table's frame. Open at the foot: the list runs off the window. */
+const TABLE = `mt-3 flex min-h-0 flex-col overflow-hidden rounded-t-[4px] border border-b-0 ${LINE}`;
+const TABLE_HEAD = `grid shrink-0 items-center gap-2.5 border-b px-3 py-[8px] text-[color:var(--mock-ink)] ${MOCK_MICRO} ${LINE}`;
+const TABLE_ROW = `grid shrink-0 items-center gap-2.5 border-b px-3 ${LINE}`;
+const CELL = `truncate text-[color:var(--mock-ink)] ${MOCK_SECONDARY}`;
+const CELL_SOFT = `truncate text-[color:var(--mock-ink-soft)] ${MOCK_SECONDARY}`;
+
+// The glyphs these two screens carry and the shared set does not, drawn to the
+// set's light-stroke convention.
+function IconSort({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 16 16" className={className} {...STROKE}>
+      <path d="m5 6 3-3 3 3M5 10l3 3 3-3" />
+    </svg>
+  );
+}
+
+function IconKebab({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 16 16" className={className} {...STROKE}>
+      <path d="M8 3.5h.05M8 8h.05M8 12.5h.05" strokeWidth={2} />
+    </svg>
+  );
+}
+
+/** A column heading with the sort affordance every heading in these tables has. */
+function SortHead({
+  label,
+  className = "",
+}: {
+  label: string;
+  className?: string;
+}) {
+  return (
+    <span className={`flex min-w-0 items-center gap-1 ${className}`}>
+      <span className="truncate">{label}</span>
+      <IconSort className="size-[9px] shrink-0 text-[color:var(--mock-ink-soft)]" />
+    </span>
+  );
+}
+
+// Initials in the person's own tint. Three families, as the product assigns
+// them: --mock-negative for the warm one, the avatar pair for the other two.
+const AVATAR_TONES = {
+  red: "bg-[var(--mock-negative-bg)] text-[color:var(--mock-negative-fg)]",
+  purple: "bg-[var(--mock-avatar-b-bg)] text-[color:var(--mock-avatar-b-fg)]",
+  teal: "bg-[var(--mock-avatar-c-bg)] text-[color:var(--mock-avatar-c-fg)]",
+};
+type AvatarTone = keyof typeof AVATAR_TONES;
+
+/**
+ * A client's mark. People are round, companies are square — the product's
+ * own split. The product also pins the company's initial on a small badge at
+ * the corner; at this scale that badge set in 4.5px type nobody could read,
+ * so it is left out.
+ */
+function ClientAvatar({
+  initials,
+  tone,
+  company = false,
+}: {
+  initials: string;
+  tone: AvatarTone;
+  company?: boolean;
+}) {
+  return (
+    <span className="relative shrink-0">
+      <span
+        className={`flex size-[19px] items-center justify-center border border-[var(--mock-window)] text-[7.5px] leading-none ring-1 ring-[var(--mock-line)] ${
+          company ? "rounded-[4px]" : "rounded-full"
+        } ${AVATAR_TONES[tone]}`}
+      >
+        <span className="block translate-y-[0.5px]">{initials}</span>
+      </span>
+    </span>
+  );
+}
+
+// ── Document collection, the firm's queue of requests ────────────────────
+type Priority = "High" | "Medium" | "Low";
+
+const PRIORITY_DOT: Record<Priority, string> = {
+  High: "bg-[var(--mock-traffic-red)]",
+  Medium: "bg-[var(--mock-traffic-amber)]",
+  Low: "bg-[var(--mock-ink-soft)]",
+};
+
+type Person = {
+  name: string;
+  initials: string;
+  tone: AvatarTone;
+  company?: boolean;
+};
+
+const PRIYA: Person = {
+  name: "Priya Raman",
+  initials: "PR",
+  tone: "red",
+};
+
+const DOCUMENT_REQUESTS: {
+  document: string;
+  person: Person | null;
+  owner: string;
+  priority: Priority;
+  due: string;
+}[] = [
+  {
+    document: "Signed engagement letter — FY2026 audit",
+    person: { name: "Tunde Adeyemi", initials: "TA", tone: "red" },
+    owner: "—",
+    priority: "High",
+    due: "Jul 1",
+  },
+  {
+    document: "Prior-year audit management letter response",
+    person: {
+      name: "Beaumont Partners",
+      initials: "BP",
+      tone: "purple",
+      company: true,
+    },
+    owner: "—",
+    priority: "Medium",
+    due: "Jul 3",
+  },
+  {
+    document: "Annual compliance attestation — 2026",
+    person: PRIYA,
+    owner: "Owen Hale",
+    priority: "Low",
+    due: "Jul 8",
+  },
+  {
+    document: "W-9 for new vendor onboarding",
+    person: {
+      name: "Sofia Marchetti",
+      initials: "SM",
+      tone: "purple",
+    },
+    owner: "Maya Lindqvist",
+    priority: "Low",
+    due: "Jul 10",
+  },
+  {
+    document: "Inventory count worksheets — mid-year",
+    person: {
+      name: "Cascade Outdoor Co.",
+      initials: "CO",
+      tone: "purple",
+      company: true,
+    },
+    owner: "Jonah Reyes",
+    priority: "Medium",
+    due: "Jul 14",
+  },
+  {
+    document: "ADV Part 2B brochure supplement — new adviser",
+    person: PRIYA,
+    owner: "Maya Lindqvist",
+    priority: "High",
+    due: "Jul 17",
+  },
+  {
+    document: "Certificate of insurance — general liability",
+    person: { name: "David Okonkwo", initials: "DO", tone: "red" },
+    owner: "Clara Benoit",
+    priority: "High",
+    due: "Jul 22",
+  },
+  {
+    document: "Depreciation schedule for fixed assets",
+    person: {
+      name: "Elena Vasquez",
+      initials: "EV",
+      tone: "purple",
+    },
+    owner: "Owen Hale",
+    priority: "Medium",
+    due: "Aug 1",
+  },
+  {
+    document: "Payroll register — June 2026",
+    person: {
+      name: "Amelia Brooks",
+      initials: "AB",
+      tone: "purple",
+    },
+    owner: "Theo Marsh",
+    priority: "Medium",
+    due: "Aug 4",
+  },
+  {
+    document: "Q2 2026 bank statements — operating account",
+    person: null,
+    owner: "Iris Calloway",
+    priority: "Medium",
+    due: "Aug 6",
+  },
+  {
+    document: "Custodial account statements — Q2 2026",
+    person: PRIYA,
+    owner: "Jonah Reyes",
+    priority: "Medium",
+    due: "Aug 8",
+  },
+  {
+    document: "Commercial lease agreement — Portland warehouse",
+    person: {
+      name: "Northwind Logistics",
+      initials: "NL",
+      tone: "teal",
+      company: true,
+    },
+    owner: "Clara Benoit",
+    priority: "Medium",
+    due: "Aug 12",
+  },
+];
+
+// Owner goes first as the window narrows, then the due date: the document,
+// who owes it and how urgent it is are the screen's claim.
+const DOCUMENT_COLS =
+  "grid-cols-[minmax(0,1.6fr)_minmax(0,0.95fr)_minmax(0,0.75fr)_64px_42px] @max-[600px]:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)_64px_42px] @max-[460px]:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_64px]";
+
+export function DocumentRequestsMock() {
+  return (
+    <div
+      aria-hidden
+      className="pointer-events-none flex h-full select-none bg-[var(--mock-window)] text-[color:var(--mock-ink)]"
+    >
+      <FirmSidebar active="Documents" />
+      <div className="@container flex min-w-0 flex-1 flex-col">
+        <AppSwitcherHeader title="Document collection" action="New request" />
+        <div className="flex min-h-0 flex-1 flex-col px-4 pt-3">
+          <span className={`${CONTROL} min-w-0 py-[7px]`}>
+            <IconSearch className="size-[11px] shrink-0" />
+            <span className="truncate">Search requests...</span>
+          </span>
+          <div className="mt-2 flex items-center justify-between gap-2">
+            <span className={CONTROL}>
+              Filters
+              <IconChevronDown className="size-[7px]" />
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className={`${CONTROL} @max-[460px]:hidden`}>Archived</span>
+              {/* Table / Groups — the view switch, Table open. */}
+              <span
+                className={`flex overflow-hidden rounded-[4px] border ${LINE}`}
+              >
+                <span
+                  className={`flex items-center gap-1.5 bg-[var(--mock-well-2)] px-2 py-[6px] text-[color:var(--mock-ink)] ${MOCK_SECONDARY}`}
+                >
+                  Table
+                </span>
+                <span
+                  className={`flex items-center gap-1.5 px-2 py-[6px] text-[color:var(--mock-ink-soft)] ${MOCK_SECONDARY}`}
+                >
+                  Groups
+                </span>
+              </span>
+            </span>
+          </div>
+
+          <div className={TABLE}>
+            <span
+              className={`${TABLE_HEAD} bg-[var(--mock-well-soft)] ${DOCUMENT_COLS}`}
+            >
+              <SortHead label="Document" />
+              <SortHead label="Person" />
+              <SortHead label="Owner" className="@max-[600px]:hidden" />
+              <SortHead label="Priority" />
+              <SortHead label="Due" className="@max-[460px]:hidden" />
+            </span>
+            {DOCUMENT_REQUESTS.map((r) => (
+              <span
+                key={r.document}
+                className={`${TABLE_ROW} py-[9px] ${DOCUMENT_COLS}`}
+              >
+                <span className={CELL}>{r.document}</span>
+                <span className="flex min-w-0 items-center gap-1.5">
+                  {r.person ? (
+                    <>
+                      <ClientAvatar
+                        initials={r.person.initials}
+                        tone={r.person.tone}
+                        company={r.person.company}
+                      />
+                      <span className={CELL}>{r.person.name}</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="relative shrink-0">
+                        <span
+                          className={`flex size-[19px] items-center justify-center rounded-full bg-[var(--mock-well-2)] text-[7.5px] leading-none text-[color:var(--mock-ink-soft)] ring-1 ring-[var(--mock-line)]`}
+                        >
+                          —
+                        </span>
+                      </span>
+                      <span className={CELL}>—</span>
+                    </>
+                  )}
+                </span>
+                <span className={`${CELL} @max-[600px]:hidden`}>{r.owner}</span>
+                <span
+                  className={`flex w-fit items-center gap-1 rounded-full border px-1.5 py-[3.5px] text-[color:var(--mock-ink)] ${MOCK_MICRO} ${LINE}`}
+                >
+                  <span
+                    className={`size-[5px] shrink-0 rounded-full ${PRIORITY_DOT[r.priority]}`}
+                  />
+                  {r.priority}
+                </span>
+                <span className={`${CELL} @max-[460px]:hidden`}>{r.due}</span>
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Onboarding wizard, the board of clients part-way through it ─────────
+type OnboardingStatus = "Not started" | "In progress" | "Stalled" | "Completed";
+
+// The shared CHIP is 9px; these sit in a row beside 9.5px meta text and the
+// priority pills, so they take the meta size too.
+const STATUS_CHIP = `rounded px-1.5 py-[3px] ${MOCK_MICRO}`;
+
+const ONBOARDING_STATUS: Record<OnboardingStatus, string> = {
+  "Not started": `${STATUS_CHIP} bg-muted text-[color:var(--mock-ink-soft)] [[data-theme=dark]_&]:bg-white/[0.08]`,
+  "In progress": `${STATUS_CHIP} bg-[var(--mock-info-bg)] text-[color:var(--mock-info-fg)]`,
+  Stalled: `${STATUS_CHIP} bg-[var(--mock-warning-bg)] text-[color:var(--mock-warning-fg)]`,
+  Completed: `${STATUS_CHIP} bg-[var(--mock-positive-bg)] text-[color:var(--mock-positive-fg)]`,
+};
+
+const ONBOARDING_COUNTS: [OnboardingStatus, number][] = [
+  ["Not started", 6],
+  ["In progress", 0],
+  ["Stalled", 12],
+  ["Completed", 5],
+];
+
+const ONBOARDING_ROWS: {
+  person: Person;
+  /** The line under the name: their company, or "Company" for a company. */
+  sub?: string;
+  status: OnboardingStatus;
+  step: number;
+  activity: string;
+  assignee: string;
+}[] = [
+  {
+    person: { name: "Marcus Chen", initials: "MC", tone: "red" },
+    sub: "Northwind Logistics",
+    status: "Stalled",
+    step: 1,
+    activity: "7 days ago",
+    assignee: "Unassigned",
+  },
+  {
+    person: {
+      name: "Charles Musail",
+      initials: "CM",
+      tone: "purple",
+    },
+    sub: "BrandMages",
+    status: "Completed",
+    step: 5,
+    activity: "1 month ago",
+    assignee: "Unassigned",
+  },
+  {
+    person: {
+      name: "Marcus Webb",
+      initials: "MW",
+      tone: "purple",
+    },
+    sub: "Okonkwo Consulting",
+    status: "Stalled",
+    step: 1,
+    activity: "1 month ago",
+    assignee: "Unassigned",
+  },
+  {
+    person: {
+      name: "Edward Gonzalez",
+      initials: "EG",
+      tone: "teal",
+    },
+    sub: "Edward Gonzalez",
+    status: "Not started",
+    step: 0,
+    activity: "1 month ago",
+    assignee: "Unassigned",
+  },
+  {
+    person: { name: "Lauren Jackson", initials: "LJ", tone: "teal" },
+    status: "Not started",
+    step: 0,
+    activity: "1 month ago",
+    assignee: "Unassigned",
+  },
+  {
+    person: {
+      name: "Cascade Outdoor Co.",
+      initials: "CC",
+      tone: "red",
+      company: true,
+    },
+    sub: "Company",
+    status: "Stalled",
+    step: 4,
+    activity: "7 days ago",
+    assignee: "Unassigned",
+  },
+  {
+    person: {
+      name: "Magna Company",
+      initials: "MC",
+      tone: "teal",
+      company: true,
+    },
+    sub: "Company",
+    status: "Completed",
+    step: 5,
+    activity: "2 months ago",
+    assignee: "Maya Lindqvist",
+  },
+  {
+    person: {
+      name: "Larkspur Design",
+      initials: "LD",
+      tone: "teal",
+      company: true,
+    },
+    sub: "Company",
+    status: "Stalled",
+    step: 4,
+    activity: "2 months ago",
+    assignee: "Owen Hale",
+  },
+  {
+    person: {
+      name: "Triyama Software",
+      initials: "TS",
+      tone: "purple",
+      company: true,
+    },
+    sub: "Company",
+    status: "Stalled",
+    step: 1,
+    activity: "2 months ago",
+    assignee: "Sam Okafor",
+  },
+];
+
+// Form goes first as the window narrows (every row says the same thing), then
+// the assignee, then last activity.
+const ONBOARDING_COLS =
+  "grid-cols-[minmax(0,1.3fr)_minmax(0,0.85fr)_64px_minmax(0,1.05fr)_minmax(0,0.75fr)_minmax(0,0.8fr)_9px] @max-[640px]:grid-cols-[minmax(0,1.3fr)_64px_minmax(0,1.05fr)_minmax(0,0.75fr)_minmax(0,0.8fr)_9px] @max-[540px]:grid-cols-[minmax(0,1.3fr)_64px_minmax(0,1.05fr)_minmax(0,0.75fr)_9px] @max-[440px]:grid-cols-[minmax(0,1.3fr)_64px_minmax(0,1.05fr)]";
+
+export function OnboardingTrackerMock() {
+  return (
+    <div
+      aria-hidden
+      className="pointer-events-none flex h-full select-none bg-[var(--mock-window)] text-[color:var(--mock-ink)]"
+    >
+      <FirmSidebar active="Onboarding" />
+      <div className="@container flex min-w-0 flex-1 flex-col">
+        <AppSwitcherHeader
+          title="Onboarding Wizard"
+          action="Start onboarding"
+        />
+        <div className="flex min-h-0 flex-1 flex-col px-4 pt-3">
+          {/* The four counts, one per status the board below is sorted by.
+              Hidden on the narrowest windows, where they would push the table
+              — the screen's subject — out of the frame. */}
+          <div className="grid grid-cols-4 gap-2 @max-[460px]:hidden">
+            {ONBOARDING_COUNTS.map(([label, count]) => (
+              <span
+                key={label}
+                className={`flex min-w-0 flex-col gap-2.5 rounded-[4px] border px-3 py-2.5 ${LINE}`}
+              >
+                <span
+                  className={`truncate text-[color:var(--mock-ink-soft)] ${MOCK_MICRO}`}
+                >
+                  {label}
+                </span>
+                <span
+                  className={`text-[color:var(--mock-ink)] ${MOCK_PRIMARY}`}
+                >
+                  {count}
+                </span>
+              </span>
+            ))}
+          </div>
+
+          <div className="mt-2.5 flex items-center gap-2 @max-[460px]:mt-0">
+            <span
+              className={`${CONTROL} w-[22%] justify-between text-[color:var(--mock-ink)]`}
+            >
+              All scopes
+              <IconChevronDown className="size-[7px] text-[color:var(--mock-ink-soft)]" />
+            </span>
+            <span className={`${CONTROL} min-w-0 w-[42%] justify-between`}>
+              <span className="truncate">Filter by people or companies...</span>
+              <IconChevronDown className="size-[7px] shrink-0" />
+            </span>
+            {/* Show archived, off. */}
+            <span
+              className={`flex shrink-0 items-center gap-1.5 text-[color:var(--mock-ink)] @max-[460px]:hidden ${MOCK_SECONDARY}`}
+            >
+              <span className="flex h-[12px] w-[21px] items-center rounded-full bg-[var(--mock-well-3)] p-[1.5px]">
+                <span className="size-[9px] rounded-full bg-[var(--mock-window)] shadow-[0_0_0_0.5px_var(--mock-line)]" />
+              </span>
+              Show archived
+            </span>
+          </div>
+
+          <div className={TABLE}>
+            <span className={`${TABLE_HEAD} ${ONBOARDING_COLS}`}>
+              <SortHead label="Person" />
+              <SortHead label="Form" className="@max-[640px]:hidden" />
+              <SortHead label="Status" />
+              <SortHead label="Progress" />
+              <SortHead label="Last activity" className="@max-[440px]:hidden" />
+              <SortHead label="Assignee" className="@max-[540px]:hidden" />
+              <span className="@max-[440px]:hidden" />
+            </span>
+            {ONBOARDING_ROWS.map((r) => (
+              <span
+                key={r.person.name}
+                className={`${TABLE_ROW} py-[7px] ${ONBOARDING_COLS}`}
+              >
+                <span className="flex min-w-0 items-center gap-1.5">
+                  <ClientAvatar
+                    initials={r.person.initials}
+                    tone={r.person.tone}
+                    company={r.person.company}
+                  />
+                  <span className="flex min-w-0 flex-col gap-[3px]">
+                    <span className={CELL}>{r.person.name}</span>
+                    {r.sub ? (
+                      <span
+                        className={`truncate text-[color:var(--mock-ink-soft)] ${MOCK_MICRO}`}
+                      >
+                        {r.sub}
+                      </span>
+                    ) : null}
+                  </span>
+                </span>
+                <span className={`${CELL} @max-[640px]:hidden`}>
+                  Onboarding Form
+                </span>
+                <span className={`w-fit ${ONBOARDING_STATUS[r.status]}`}>
+                  {r.status}
+                </span>
+                <span className="flex min-w-0 items-center gap-1.5">
+                  <span className="h-[2.5px] w-full max-w-[52px] overflow-hidden rounded-full bg-[var(--mock-well-2)]">
+                    <span
+                      className="block h-full rounded-full bg-[var(--mock-ink)]"
+                      style={{ width: `${(r.step / 5) * 100}%` }}
+                    />
+                  </span>
+                  <span
+                    className={`shrink-0 text-[color:var(--mock-ink-soft)] ${MOCK_MICRO}`}
+                  >
+                    {r.step} of 5 steps
+                  </span>
+                </span>
+                <span className={`${CELL_SOFT} @max-[440px]:hidden`}>
+                  {r.activity}
+                </span>
+                <span
+                  className={`${
+                    r.assignee === "Unassigned" ? CELL_SOFT : CELL
+                  } @max-[540px]:hidden`}
+                >
+                  {r.assignee}
+                </span>
+                <IconKebab className="size-[10px] text-[color:var(--mock-ink)] @max-[440px]:hidden" />
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const HELPDESK_STATUS = [
+  { label: "Published", count: 16, dot: "bg-[var(--mock-positive-fg)]" },
+  { label: "Draft", count: 10, dot: "bg-[var(--mock-warning-fg)]" },
+  { label: "Archived", count: 3, dot: "bg-[var(--mock-ink-soft)]" },
+];
+
+const HELPDESK_TYPES = ["Guide", "Template", "Video", "Article", "Other"];
+
+/** A filter column's small-caps section label. */
+function FilterLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <span
+      className={`px-2 pb-1.5 pt-3.5 uppercase tracking-[0.04em] text-[color:var(--mock-ink-soft)] ${MOCK_MICRO}`}
+    >
+      {children}
+    </span>
+  );
+}
+
+function IconGrid4({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 16 16" className={className} {...STROKE}>
+      <rect x="2.75" y="2.75" width="4" height="4" rx="0.75" />
+      <rect x="9.25" y="2.75" width="4" height="4" rx="0.75" />
+      <rect x="2.75" y="9.25" width="4" height="4" rx="0.75" />
+      <rect x="9.25" y="9.25" width="4" height="4" rx="0.75" />
+    </svg>
+  );
+}
+
+/**
+ * The helpdesk as the firm edits it: the product's own screen — a filter
+ * column of statuses and types, then the topics in the order clients see
+ * them, each a drag handle, a name, a count and a way in.
+ */
 export function HelpdeskMock() {
   return (
     <div
       aria-hidden
       className="pointer-events-none flex h-full select-none bg-[var(--mock-window)] text-[color:var(--mock-ink)]"
     >
-      {/* THE FIRM'S OWN WORKSPACE RAIL, with Helpdesk lit.
-
-          `active` names the row the pane belongs to, and that is the whole fix
-          here: the approvals screen this replaces passed active="Home" while
-          showing an approvals round, so the rail said one thing and the pane
-          said another. The app the firm has built is Helpdesk, the pane is the
-          Helpdesk, so the Helpdesk row is the open one.
-
-          148 rather than the default 164, matching the screen it replaces, so
-          the pane keeps the same measure in the hero's window. */}
-      <WorkspaceSidebar
-        active="Helpdesk"
-        apps={[{ icon: <IconBookOpen />, label: "Helpdesk" }]}
-        // LEDGERLINE, not the rail's BrandMages default. This screen is the
-        // hero of the accounting page, and the firm it names should be the
-        // firm the rest of the page names — the same one down the nav of the
-        // "a different view for every client" picture further down.
-        brand="Ledgerline"
-        showcase
-        className="hidden w-[148px] shrink-0 sm:flex"
-      />
-      <div className="flex min-w-0 flex-1 flex-col">
-        <AppHeader
-          title="Topics"
-          meta={
-            // The one action on the screen, as the product puts it: top right,
-            // filled, with the plus. It is drawn rather than described because
-            // a topic list with no way to add one is a report, not an app.
+      <FirmSidebar active="Helpdesk" />
+      <div className="@container flex min-w-0 flex-1 flex-col">
+        <AppSwitcherHeader title="Helpdesk" action="New topic" />
+        <div className="flex min-h-0 flex-1">
+          {/* The filter column. Dropped on narrow windows, where the topics
+              are the subject and a second rail would take half the pane. */}
+          <div
+            className={`flex w-[132px] shrink-0 flex-col border-r px-2 pt-3 @max-[520px]:hidden ${LINE}`}
+          >
             <span
-              className={`flex shrink-0 items-center gap-1 rounded-[5px] bg-[var(--mock-ink)] px-2 py-[5px] text-[color:var(--mock-window)] ${MOCK_MICRO}`}
+              className={`flex items-center gap-1.5 rounded-[4px] bg-[var(--mock-well-2)] px-2 py-[6px] text-[color:var(--mock-ink)] ${MOCK_SECONDARY}`}
             >
-              <IconPlus className="size-[9px]" />
-              New topic
+              <IconGrid4 className="size-[11px] shrink-0" />
+              All resources
             </span>
-          }
-        />
-        <div className="flex min-h-0 flex-1 flex-col px-4 pt-3">
-          {/* Search and the audience facet. Two controls, not the product's
-              full filter rail: they are what says "this list is searchable and
-              scoped", which is the claim the app's own line makes. */}
-          <div className="flex items-center gap-2">
+            <FilterLabel>Status</FilterLabel>
+            {HELPDESK_STATUS.map(({ label, count, dot }) => (
+              <span
+                key={label}
+                className={`flex items-center gap-1.5 px-2 py-[5px] text-[color:var(--mock-ink-soft)] ${MOCK_SECONDARY}`}
+              >
+                <span className={`size-[5px] shrink-0 rounded-full ${dot}`} />
+                <span className="flex-1 truncate">{label}</span>
+                <span className={MOCK_MICRO}>{count}</span>
+              </span>
+            ))}
+            <span className="flex items-center justify-between pr-2">
+              <FilterLabel>Type</FilterLabel>
+              <IconPlus className="mt-2 size-[9px] text-[color:var(--mock-ink-soft)]" />
+            </span>
+            {HELPDESK_TYPES.map((t) => (
+              <span
+                key={t}
+                className={`px-2 py-[5px] text-[color:var(--mock-ink-soft)] ${MOCK_SECONDARY}`}
+              >
+                {t}
+              </span>
+            ))}
+          </div>
+
+          <div className="flex min-w-0 flex-1 flex-col px-5 pt-4">
             <span
-              className={`flex min-w-0 flex-1 items-center gap-1.5 rounded-[5px] border px-2 py-[6px] text-[color:var(--mock-ink-soft)] ${MOCK_SECONDARY} ${LINE}`}
+              className={`shrink-0 text-[color:var(--mock-ink)] ${MOCK_PRIMARY}`}
+            >
+              Topics
+            </span>
+            <span className="mt-1 shrink-0 truncate text-[9.5px] leading-[1.4] text-[color:var(--mock-ink-soft)]">
+              Drag to reorder. This is the order clients see topics in the
+              portal.
+            </span>
+            <span
+              className={`mt-3 flex w-[70%] min-w-0 shrink-0 items-center gap-1.5 rounded-[4px] border px-2 py-[6px] text-[color:var(--mock-ink-soft)] @max-[520px]:w-full ${MOCK_SECONDARY} ${LINE}`}
             >
               <IconSearch className="size-[11px] shrink-0" />
               <span className="truncate">Search resources by title</span>
             </span>
             <span
-              className={`flex shrink-0 items-center gap-1 rounded-[5px] bg-[var(--mock-well)] px-2 py-[6px] text-[color:var(--mock-ink)] ${MOCK_SECONDARY}`}
+              className={`mt-2 flex w-fit shrink-0 items-center gap-1 rounded-[4px] border px-2 py-[6px] text-[color:var(--mock-ink)] ${MOCK_SECONDARY} ${LINE}`}
             >
               Audience
-              <IconChevronDown className="size-[8px] text-[color:var(--mock-ink-soft)]" />
+              <IconChevronDown className="size-[7px] text-[color:var(--mock-ink-soft)]" />
             </span>
-          </div>
 
-          {/* The list itself. Six rows in a frame that shows about five, so it
-              runs off the foot of the window the way every screen in this set
-              does — a knowledge base that ended inside the frame would be a
-              short list rather than one you scroll. */}
-          {/* rounded-t only, and no bottom border: the list runs off the foot
-              of the window, so a closed corner down there would be the panel
-              ending inside a frame that carries on. */}
-          <div
-            className={`mt-3 flex min-h-0 flex-col overflow-hidden rounded-t-[6px] border border-b-0 ${LINE}`}
-          >
-            {HELPDESK_TOPICS.map(({ name, count }) => (
-              <span
-                key={name}
-                className={`flex shrink-0 items-center gap-2.5 border-b px-3 py-[9px] last:border-b-0 ${LINE}`}
-              >
-                <IconDragHandle className="h-[11px] w-[7px] shrink-0 text-[color:var(--mock-ink-soft)]" />
+            {/* The list runs off the foot of the window: open at the bottom,
+                so a closed corner down there does not end it inside a frame
+                that carries on. */}
+            <div
+              className={`mt-3 flex min-h-0 flex-col overflow-hidden rounded-t-[4px] border border-b-0 ${LINE}`}
+            >
+              {HELPDESK_TOPICS.map(({ name, count, archived }) => (
                 <span
-                  className={`min-w-0 flex-1 truncate text-[color:var(--mock-ink)] ${MOCK_SECONDARY}`}
+                  key={name}
+                  className={`flex shrink-0 items-center gap-2.5 border-b px-3 py-[9px] ${LINE}`}
                 >
-                  {name}
+                  <IconDragHandle className="h-[11px] w-[7px] shrink-0 text-[color:var(--mock-ink-soft)]" />
+                  <span
+                    className={`min-w-0 flex-1 truncate text-[color:var(--mock-ink)] ${MOCK_SECONDARY}`}
+                  >
+                    {name}
+                  </span>
+                  {archived ? (
+                    <span
+                      className={`shrink-0 rounded px-1.5 py-[3px] bg-[var(--mock-warning-bg)] text-[color:var(--mock-warning-fg)] ${MOCK_MICRO}`}
+                    >
+                      Archived
+                    </span>
+                  ) : null}
+                  <span
+                    className={`shrink-0 text-[color:var(--mock-ink-soft)] ${MOCK_MICRO}`}
+                  >
+                    {count} resources
+                  </span>
+                  <IconChevronRight className="size-[9px] shrink-0 text-[color:var(--mock-ink-soft)]" />
                 </span>
-                <span
-                  className={`shrink-0 text-[color:var(--mock-ink-soft)] ${MOCK_MICRO}`}
-                >
-                  {count} resources
-                </span>
-                <IconChevronRight className="size-[9px] shrink-0 text-[color:var(--mock-ink-soft)]" />
-              </span>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>

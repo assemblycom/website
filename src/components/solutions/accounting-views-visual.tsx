@@ -3,13 +3,15 @@
 import { useState } from "react";
 import { NavRow } from "@/components/client-portal/segment-mock";
 import {
-  IconBrandMark,
+  IconLedgerline,
   IconCard,
   IconChat,
   IconDocuments,
   IconFile,
   IconGlobe,
   IconLock,
+  IconChevronDown,
+  IconSearch,
 } from "@/components/home/mock-icons";
 import { ViewToggle } from "@/components/ui/view-toggle";
 import {
@@ -78,6 +80,10 @@ type ClientView = {
   /** The firm's apps this client gets, under the stock rows. Last is open. */
   apps: { icon: React.ReactNode; label: string; locked?: boolean }[];
   pane: { title: string; rows: PaneRow[] };
+  /** Draws the open app as the client's document collection instead of rows. */
+  requests?: boolean;
+  /** Draws the open app as the individual's tax return instead of rows. */
+  taxReturn?: boolean;
 };
 
 const CLIENTS: ClientView[] = [
@@ -85,55 +91,36 @@ const CLIENTS: ClientView[] = [
     entity: "A business client",
     apps: [
       { icon: <IconFile className="size-[13px]" />, label: "Payroll" },
-      { icon: <IconDocuments className="size-[13px]" />, label: "Year-end docs" },
+      {
+        icon: <IconDocuments className="size-[13px]" />,
+        label: "Document collection",
+      },
     ],
-    pane: {
-      title: "Year-end docs",
-      // TWELVE ROWS, more than the frame holds. The list runs off the foot
-      // of the window the way the window runs off the foot of the tray —
-      // a checklist that ended inside the frame would be a short list rather
-      // than a screen you are looking at part of.
-      rows: [
-        { name: "Q3 payroll reports", meta: "Uploaded Sep 2" },
-        { name: "Bank statements", meta: "Uploaded Sep 2" },
-        { name: "Fixed asset log", meta: "Needs upload" },
-        { name: "2026 engagement letter", meta: "Signed Jan 14" },
-        { name: "Prior-year return", meta: "Shared by Ledgerline" },
-        { name: "Depreciation schedule", meta: "Needs upload" },
-        { name: "Merchant statements", meta: "Uploaded Aug 28" },
-        { name: "Loan amortisation", meta: "Uploaded Aug 28" },
-        { name: "Owner draws summary", meta: "Needs upload" },
-        { name: "Equipment invoices", meta: "Uploaded Jul 9" },
-        { name: "Insurance schedule", meta: "Uploaded Jul 9" },
-        { name: "Year-end questionnaire", meta: "Needs upload" },
-      ],
-    },
+    // The product's client-side document collection: what the firm has asked
+    // for, grouped by where each request has got to. See RequestsPane.
+    pane: { title: "Document collection", rows: [] },
+    requests: true,
   },
   {
     entity: "An individual client",
     apps: [
-      { icon: <IconDocuments className="size-[13px]" />, label: "Estimated payments" },
-      { icon: <IconLock className="size-[13px]" />, label: "Workpapers", locked: true },
+      {
+        icon: <IconDocuments className="size-[13px]" />,
+        label: "2025 tax return",
+      },
+      {
+        icon: <IconLock className="size-[13px]" />,
+        label: "Workpapers",
+        locked: true,
+      },
     ],
-    pane: {
-      title: "Estimated payments",
-      // Twelve quarters, for the reason the list beside it has twelve rows.
-      // Three years of estimates is also simply what the app holds.
-      rows: [
-        { name: "Q3 2026 federal", meta: "$4,200 · scheduled Sep 15" },
-        { name: "Q3 2026 state", meta: "$960 · scheduled Sep 15" },
-        { name: "Q2 2026 federal", meta: "$4,200 · paid Jun 14" },
-        { name: "Q2 2026 state", meta: "$960 · paid Jun 14" },
-        { name: "Q1 2026 federal", meta: "$4,200 · paid Mar 15" },
-        { name: "Q1 2026 state", meta: "$960 · paid Mar 15" },
-        { name: "Q4 2025 federal", meta: "$3,850 · paid Jan 15" },
-        { name: "Q4 2025 state", meta: "$880 · paid Jan 15" },
-        { name: "Q3 2025 federal", meta: "$3,850 · paid Sep 15" },
-        { name: "Q3 2025 state", meta: "$880 · paid Sep 15" },
-        { name: "Q2 2025 federal", meta: "$3,850 · paid Jun 16" },
-        { name: "Q2 2025 state", meta: "$880 · paid Jun 16" },
-      ],
-    },
+    // The return itself, which is what an individual comes to an accounting
+    // portal for: where it has got to, the one thing they have to do, and
+    // what is still missing. It replaces a ledger of estimated payments —
+    // twelve near-identical rows of amounts, which read as a bank statement
+    // rather than as an app the firm built for this client.
+    pane: { title: "2025 tax return", rows: [] },
+    taxReturn: true,
   },
 ];
 
@@ -149,10 +136,11 @@ function ClientNav({ client }: { client: ClientView }) {
       // here is "Estimated payments", which truncated at 136 — and a nav
       // whose open row is cut short is the one thing this picture cannot
       // show, since what each client SEES is the whole argument.
-      className="relative flex w-[152px] shrink-0 flex-col gap-[2px] bg-[var(--mock-brand)] px-2 py-2.5">
+      className="relative flex w-[152px] shrink-0 flex-col gap-[2px] bg-[var(--ledgerline-clay)] px-2 py-2.5"
+    >
       <span className="flex items-center gap-1.5 px-1.5 pb-2">
-        <span className="flex size-[15px] items-center justify-center rounded-[3px] bg-white text-black">
-          <IconBrandMark className="size-[8px]" />
+        <span className="flex size-[15px] items-center justify-center rounded-[3px] bg-[var(--ledgerline-sage)] text-[color:var(--ledgerline-ink)]">
+          <IconLedgerline className="size-[10px]" />
         </span>
         <span className={`truncate text-white ${MOCK_SECONDARY}`}>
           Ledgerline
@@ -227,6 +215,314 @@ function AppPane({ title, rows }: { title: string; rows: PaneRow[] }) {
   );
 }
 
+// Two glyphs the shared set does not carry, drawn to its light-stroke
+// convention.
+const STROKE = {
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: 1.5,
+  strokeLinecap: "round" as const,
+  strokeLinejoin: "round" as const,
+};
+
+function IconEye({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 16 16" className={className} {...STROKE}>
+      <path d="M1.75 8S4 3.75 8 3.75 14.25 8 14.25 8 12 12.25 8 12.25 1.75 8 1.75 8Z" />
+      <circle cx="8" cy="8" r="1.9" />
+    </svg>
+  );
+}
+
+function IconDownload({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 16 16" className={className} {...STROKE}>
+      <path d="M8 2.75v7M5 7l3 3 3-3M3 11.5v1.25c0 .4.35.75.75.75h8.5c.4 0 .75-.35.75-.75V11.5" />
+    </svg>
+  );
+}
+
+/** A group's heading: its state, how many, and the fold. */
+function RequestGroup({
+  label,
+  count,
+  overdue = false,
+}: {
+  label: string;
+  count: number;
+  overdue?: boolean;
+}) {
+  return (
+    <span
+      className={`flex shrink-0 items-center gap-1.5 pb-2 pt-3.5 ${MOCK_SECONDARY}`}
+    >
+      <span
+        className={
+          overdue
+            ? "text-[color:var(--mock-negative-fg)]"
+            : "text-[color:var(--mock-ink)]"
+        }
+      >
+        {label}
+      </span>
+      <span className="text-[color:var(--mock-ink-soft)]">({count})</span>
+      <IconChevronDown className="ml-auto size-[8px] text-[color:var(--mock-ink-soft)]" />
+    </span>
+  );
+}
+
+/** One request: its name and state on top, what to do about it underneath. */
+function RequestCard({
+  title,
+  status,
+  children,
+}: {
+  title: string;
+  status: "Overdue" | "Accepted" | "Requested";
+  children?: React.ReactNode;
+}) {
+  const dot =
+    status === "Overdue"
+      ? "bg-[var(--mock-traffic-red)]"
+      : status === "Accepted"
+        ? "bg-[var(--mock-traffic-green)]"
+        : "bg-[var(--mock-ink-soft)]";
+  return (
+    <div
+      className={`flex shrink-0 flex-col overflow-hidden rounded-[6px] border ${LINE}`}
+    >
+      <span
+        className={`flex items-center justify-between gap-3 border-b px-3.5 py-2.5 ${LINE}`}
+      >
+        <span
+          className={`min-w-0 truncate text-[color:var(--mock-ink)] ${MOCK_SECONDARY}`}
+        >
+          {title}
+        </span>
+        <span
+          className={`flex shrink-0 items-center gap-1 rounded-full border px-2 py-[4px] text-[color:var(--mock-ink)] ${MOCK_MICRO} ${LINE}`}
+        >
+          <span className={`size-[5px] rounded-full ${dot}`} />
+          {status}
+        </span>
+      </span>
+      {children ? (
+        <div className="flex flex-col gap-2.5 px-3.5 py-3">{children}</div>
+      ) : null}
+    </div>
+  );
+}
+
+/**
+ * The client's document collection — the product's own screen, from the
+ * client's side: what the firm has asked for, grouped by where each request
+ * has got to. Overdue first and in red, then what was accepted with the file
+ * that settled it. It runs off the foot of the window into the next group.
+ */
+function RequestsPane({ title }: { title: string }) {
+  return (
+    <div className="flex min-w-0 flex-1 flex-col">
+      <div className={`border-b px-4 py-3 ${LINE}`}>
+        <span className={`text-[color:var(--mock-ink)] ${MOCK_PRIMARY}`}>
+          {title}
+        </span>
+      </div>
+      <div className="flex min-h-0 flex-1 flex-col px-4 pt-3">
+        <span
+          className={`flex shrink-0 items-center gap-1.5 rounded-[4px] border px-2.5 py-[7px] text-[color:var(--mock-ink-soft)] ${MOCK_SECONDARY} ${LINE}`}
+        >
+          <IconSearch className="size-[11px] shrink-0" />
+          Search documents...
+        </span>
+
+        <RequestGroup label="Overdue" count={1} overdue />
+        <RequestCard
+          title="Sales tax exemption certificates — multistate"
+          status="Overdue"
+        >
+          <span
+            className={`truncate text-[color:var(--mock-ink-soft)] ${MOCK_MICRO}`}
+          >
+            Valid resale or exemption certificates for each state where you hold
+            nexus ·{" "}
+            <span className="text-[color:var(--mock-negative-fg)]">
+              Due Aug 15, 2026
+            </span>
+          </span>
+          <span
+            className={`w-fit rounded-[4px] border px-2.5 py-[6px] text-[color:var(--mock-ink)] ${MOCK_MICRO} ${LINE}`}
+          >
+            Upload file
+          </span>
+        </RequestCard>
+
+        <RequestGroup label="Accepted" count={1} />
+        <RequestCard
+          title="Inventory count worksheets — mid-year"
+          status="Accepted"
+        >
+          <span
+            className={`truncate text-[color:var(--mock-ink-soft)] ${MOCK_MICRO}`}
+          >
+            Your submission was accepted. No further action needed.
+          </span>
+          <span
+            className={`uppercase tracking-[0.04em] text-[color:var(--mock-ink-soft)] ${MOCK_MICRO}`}
+          >
+            Submitted file
+          </span>
+          <span className="flex items-center gap-2.5 rounded-[4px] bg-[var(--mock-well)] px-2.5 py-2">
+            <span
+              className={`flex size-[22px] shrink-0 items-center justify-center rounded-[4px] border bg-[var(--mock-window)] text-[color:var(--mock-ink-soft)] ${LINE}`}
+            >
+              <IconFile className="size-[12px]" />
+            </span>
+            <span className="flex min-w-0 flex-1 flex-col gap-1">
+              <span
+                className={`truncate text-[color:var(--mock-ink)] ${MOCK_SECONDARY}`}
+              >
+                midyear-inventory-count-signed.pdf
+              </span>
+              <span
+                className={`truncate text-[color:var(--mock-ink-soft)] ${MOCK_MICRO}`}
+              >
+                Submitted July 3, 2026 at 9:00 AM
+              </span>
+            </span>
+            <IconEye className="size-[12px] shrink-0 text-[color:var(--mock-ink-soft)]" />
+            <IconDownload className="size-[12px] shrink-0 text-[color:var(--mock-ink-soft)]" />
+          </span>
+        </RequestCard>
+
+        <RequestGroup label="Requested" count={4} />
+        <RequestCard title="Q3 payroll reports" status="Requested" />
+      </div>
+    </div>
+  );
+}
+
+const RETURN_STEPS = ["Organizer", "Preparing", "Review", "Sign", "Filed"];
+/** Index of the step the return is on. */
+const RETURN_AT = 3;
+
+const RETURN_DOCS: { name: string; from: string; state: "in" | "needed" }[] = [
+  { name: "W-2", from: "Northwind Logistics", state: "in" },
+  { name: "1099-INT", from: "First Harbor Bank", state: "in" },
+  { name: "1098 mortgage interest", from: "Cedar Home Loans", state: "in" },
+  { name: "Charitable receipts", from: "Any over $250", state: "needed" },
+  { name: "1099-B brokerage", from: "Brightline Invest", state: "needed" },
+  { name: "Childcare expenses", from: "Provider and amount", state: "in" },
+];
+
+/**
+ * The individual's tax return: a stepper for where it has got to, the one
+ * action that is theirs right now, and the documents behind it.
+ */
+function TaxReturnPane({ title }: { title: string }) {
+  return (
+    <div className="flex min-w-0 flex-1 flex-col">
+      <div className={`border-b px-4 py-3 ${LINE}`}>
+        <span className={`text-[color:var(--mock-ink)] ${MOCK_PRIMARY}`}>
+          {title}
+        </span>
+      </div>
+      <div className="flex min-h-0 flex-1 flex-col px-4 pt-4">
+        {/* Where the return is. Segments rather than dots, so the track
+            reads as distance covered. */}
+        <div className="grid shrink-0 grid-cols-5 gap-1.5">
+          {RETURN_STEPS.map((step, i) => (
+            <span key={step} className="flex min-w-0 flex-col gap-1.5">
+              <span
+                className={`h-[3px] rounded-full ${
+                  i < RETURN_AT
+                    ? "bg-[var(--mock-ink)]"
+                    : i === RETURN_AT
+                      ? "bg-[var(--mock-ink-soft)]"
+                      : "bg-[var(--mock-well-3)]"
+                }`}
+              />
+              <span
+                className={`truncate ${MOCK_MICRO} ${
+                  i <= RETURN_AT
+                    ? "text-[color:var(--mock-ink)]"
+                    : "text-[color:var(--mock-ink-soft)]"
+                }`}
+              >
+                {step}
+              </span>
+            </span>
+          ))}
+        </div>
+
+        {/* The one thing that is the client's to do. */}
+        <div
+          className={`mt-4 flex shrink-0 items-center gap-3 rounded-[6px] border px-3.5 py-3 ${LINE}`}
+        >
+          <span className="flex min-w-0 flex-1 flex-col gap-1.5">
+            <span
+              className={`truncate text-[color:var(--mock-ink)] ${MOCK_SECONDARY}`}
+            >
+              Sign your e-file authorization (Form 8879)
+            </span>
+            <span
+              className={`truncate text-[color:var(--mock-ink-soft)] ${MOCK_MICRO}`}
+            >
+              Your return is ready. Refund of $2,318 once filed.
+            </span>
+          </span>
+          <span
+            className={`shrink-0 rounded-[4px] bg-[var(--mock-ink)] px-2.5 py-[6px] text-[color:var(--mock-window)] ${MOCK_MICRO}`}
+          >
+            Review and sign
+          </span>
+        </div>
+
+        <span
+          className={`mt-4 shrink-0 pb-2 uppercase tracking-[0.04em] text-[color:var(--mock-ink-soft)] ${MOCK_MICRO}`}
+        >
+          Your documents
+        </span>
+        <div
+          className={`flex min-h-0 flex-col overflow-hidden rounded-t-[6px] border border-b-0 ${LINE}`}
+        >
+          {RETURN_DOCS.map(({ name, from, state }) => (
+            <span
+              key={name}
+              className={`flex shrink-0 items-center gap-3 border-b px-3.5 py-[9px] ${LINE}`}
+            >
+              <span className="flex min-w-0 flex-1 flex-col gap-1">
+                <span
+                  className={`truncate text-[color:var(--mock-ink)] ${MOCK_SECONDARY}`}
+                >
+                  {name}
+                </span>
+                <span
+                  className={`truncate text-[color:var(--mock-ink-soft)] ${MOCK_MICRO}`}
+                >
+                  {from}
+                </span>
+              </span>
+              {state === "in" ? (
+                <span
+                  className={`shrink-0 rounded px-1.5 py-[3px] bg-[var(--mock-positive-bg)] text-[color:var(--mock-positive-fg)] ${MOCK_MICRO}`}
+                >
+                  Received
+                </span>
+              ) : (
+                <span
+                  className={`shrink-0 rounded-[4px] border px-2.5 py-[5px] text-[color:var(--mock-ink)] ${MOCK_MICRO} ${LINE}`}
+                >
+                  Upload
+                </span>
+              )}
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function AccountingViewsVisual() {
   const [selected, setSelected] = useState(0);
   const client = CLIENTS[selected];
@@ -252,7 +548,8 @@ export function AccountingViewsVisual() {
         // is a section and a half of scrolling for one screen. The window keeps
         // its own proportions and crops at the foot, which is what it does in
         // every other section on this page.
-        className="relative h-[420px] overflow-hidden rounded-2xl bg-[var(--surface)] px-4 pb-0 pt-3 md:h-[470px] md:rounded-3xl md:px-6 md:pb-0 md:pt-4 [[data-theme=dark]_&]:bg-[#F5F5F0] [[data-theme=dark]_&]:[--surface:#F5F5F0] [[data-theme=dark]_&]:[--foreground:#101114] [[data-theme=dark]_&]:[--muted-foreground:#6b7079] [[data-theme=dark]_&]:[--border:#e8e9ec] [[data-theme=dark]_&]:[--background:#ffffff]">
+        className="relative h-[420px] overflow-hidden rounded-2xl bg-[var(--surface)] px-4 pb-0 pt-3 md:h-[470px] md:rounded-3xl md:px-6 md:pb-0 md:pt-4 [[data-theme=dark]_&]:bg-[#F5F5F0] [[data-theme=dark]_&]:[--surface:#F5F5F0] [[data-theme=dark]_&]:[--foreground:#101114] [[data-theme=dark]_&]:[--muted-foreground:#6b7079] [[data-theme=dark]_&]:[--border:#e8e9ec] [[data-theme=dark]_&]:[--background:#ffffff]"
+      >
         {/* Top right, from md: a control on a picture rather than a heading for
             one. At the left it sits under the section's own copy and reads as
             the next line of it. The gap over the screen is this row, not a
@@ -280,7 +577,13 @@ export function AccountingViewsVisual() {
           className={`mock-edge flex h-full select-none overflow-hidden rounded-t-xl border border-b-0 bg-[var(--mock-window)] text-[color:var(--mock-ink)] ${LINE}`}
         >
           <ClientNav client={client} />
-          <AppPane title={client.pane.title} rows={client.pane.rows} />
+          {client.requests ? (
+            <RequestsPane title={client.pane.title} />
+          ) : client.taxReturn ? (
+            <TaxReturnPane title={client.pane.title} />
+          ) : (
+            <AppPane title={client.pane.title} rows={client.pane.rows} />
+          )}
         </div>
       </div>
 

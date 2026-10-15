@@ -23,6 +23,7 @@ import {
   IconApp,
   IconCheck,
   IconBrandMark,
+  IconLedgerline,
   IconChat,
   IconCreditCard,
   IconDocuments,
@@ -400,7 +401,17 @@ function Scene({
  * So this is a property of the SLOT, not of the scene, and only the panel
  * passes it. The rail keeps every ground exactly as drawn.
  */
-type SceneProps = { plain?: boolean };
+type SceneProps = {
+  plain?: boolean;
+  /**
+   * Whose firm the rail's three build steps belong to. The default is
+   * /client-portal's: Brandmages building a project tracker. The accounting
+   * page passes "accounting", which runs the same three scenes as Ledgerline
+   * building a month-end close tracker — the agency's vocabulary was the one
+   * thing on that page's build section in the wrong firm's words.
+   */
+  vertical?: "default" | "accounting";
+};
 
 /**
  * The design box a `plain` scene is drawn at: the panel slot's own landscape
@@ -527,7 +538,10 @@ const PANEL_SCENE_WIDE = {
   size: "w-[360px] h-[300px] sm:w-[620px] sm:h-[400px] lg:w-[900px] lgx:w-[1040px]",
 };
 
-export function DescribeCard({ plain = false }: SceneProps = {}) {
+export function DescribeCard({
+  plain = false,
+  vertical = "default",
+}: SceneProps = {}) {
   return (
     <>
       {/* A photograph behind this card only, scrimmed hard.
@@ -799,7 +813,9 @@ export function DescribeCard({ plain = false }: SceneProps = {}) {
                 would be wrong on one page whichever app it named. */}
                 {plain
                   ? "Add a shared calendar each client books their own time on."
-                  : "Add a project tracker each client sees for their own project."}
+                  : vertical === "accounting"
+                    ? "Add a month-end close tracker each client sees for their own books."
+                    : "Add a project tracker each client sees for their own project."}
                 {/* The site's own caret blink (--animate-caret, the one the
               hero typewriter uses). It BLINKS AT REST now rather than only
               while the card is hovered: a still caret parked after a finished
@@ -902,6 +918,14 @@ export function DescribeCard({ plain = false }: SceneProps = {}) {
 // that is what makes the two cards read as one sequence rather than as two
 // screenshots. Kept under ~35 characters: the row truncates, and the label has
 // about 240px of the 340px design width to work in.
+/** The accounting page's plan, answering its own prompt the same way. */
+const PLAN_ITEMS_ACCOUNTING = [
+  { label: "Each client sees only their own close", done: true },
+  { label: "Your team sees every client", done: true },
+  { label: "Track each close step and its status", done: true },
+  { label: "Due date on each step", done: false },
+];
+
 const PLAN_ITEMS = [
   { label: "Each client sees only their own", done: true },
   { label: "Your team sees every project", done: true },
@@ -1053,7 +1077,10 @@ function ChecklistWindow({
   );
 }
 
-export function PlanCard({ plain = false }: SceneProps = {}) {
+export function PlanCard({
+  plain = false,
+  vertical = "default",
+}: SceneProps = {}) {
   return (
     <>
       {/* The Plan card's ground — and the one ground in the set that DOES
@@ -1105,7 +1132,12 @@ export function PlanCard({ plain = false }: SceneProps = {}) {
         </Scene>
       ) : (
         <Scene>
-          <ChecklistWindow title="Plan" items={PLAN_ITEMS} />
+          <ChecklistWindow
+            title="Plan"
+            items={
+              vertical === "accounting" ? PLAN_ITEMS_ACCOUNTING : PLAN_ITEMS
+            }
+          />
         </Scene>
       )}
     </>
@@ -1162,6 +1194,35 @@ const BOARD = {
       who: "Brookline Media",
       initials: "BM",
       title: "Media Strategy",
+      done: 2,
+      of: 5,
+    },
+  ],
+};
+
+/** The accounting page's board: clients part-way through their close. */
+const BOARD_ACCOUNTING = {
+  name: "In progress",
+  count: 18,
+  cards: [
+    {
+      who: "Harbor Dental",
+      initials: "HD",
+      title: "September Close",
+      done: 3,
+      of: 5,
+    },
+    {
+      who: "Northwind Logistics",
+      initials: "NL",
+      title: "Q3 Payroll Filing",
+      done: 1,
+      of: 4,
+    },
+    {
+      who: "Cascade Outdoor",
+      initials: "CO",
+      title: "Year-end Adjustments",
       done: 2,
       of: 5,
     },
@@ -1942,6 +2003,15 @@ export function CalendarPane({
  * optical weight as Home/Messages/Files beside them — IconDocument was the
  * obvious pick for Proposals and is the SAME path as IconFile, which would
  * have put two identical marks in one rail. */
+/** Ledgerline's client nav: the stock rows plus what an accounting firm adds. */
+const TEAM_NAV_ACCOUNTING = [
+  { icon: <IconGlobe />, label: "Home" },
+  { icon: <IconChat />, label: "Messages" },
+  { icon: <IconFile />, label: "Files" },
+  { icon: <IconPenFilled />, label: "Engagements" },
+  { icon: <IconCreditCard />, label: "Invoices" },
+];
+
 const TEAM_NAV = [
   { icon: <IconGlobe />, label: "Home" },
   { icon: <IconChat />, label: "Messages" },
@@ -2055,7 +2125,14 @@ function ProjectCard({
   );
 }
 
-export function BuildCard({ plain = false }: SceneProps = {}) {
+export function BuildCard({
+  plain = false,
+  vertical = "default",
+}: SceneProps = {}) {
+  // Ledgerline only off the panel: the wide `plain` scene is the calendar,
+  // which no vertical changes.
+  const ledgerline = vertical === "accounting" && !plain;
+  const board = ledgerline ? BOARD_ACCOUNTING : BOARD;
   return (
     <>
       {/* The Build card's ground, the third of the set — the Describe card
@@ -2285,26 +2362,48 @@ export function BuildCard({ plain = false }: SceneProps = {}) {
             // page, which is the first width the portal has room to read as a
             // portal. Below it the board gets the whole window and runs off
             // the right edge, which is what says the screen carries on.
-            className={`hidden w-[124px] shrink-0 flex-col px-2 py-2.5 lg:flex lg:w-[136px] ${BRAND_SIDEBAR}`}
+            // Ledgerline's slab is its own clay in both themes — a firm's
+            // colour does not flip with ours. See --ledgerline-* in globals.
+            className={`hidden w-[124px] shrink-0 flex-col px-2 py-2.5 lg:flex lg:w-[136px] ${
+              ledgerline
+                ? "bg-[var(--ledgerline-clay)] text-white"
+                : BRAND_SIDEBAR
+            }`}
           >
             <span className="flex items-center gap-1.5 px-1.5 pb-3 pt-0.5">
-              <span
-                className={`flex size-[14px] items-center justify-center ${R_CHROME} bg-white text-black`}
-              >
-                <IconBrandMark className="size-[8px]" />
-              </span>
+              {ledgerline ? (
+                <span
+                  className={`flex size-[14px] items-center justify-center ${R_CHROME} bg-[var(--ledgerline-sage)] text-[color:var(--ledgerline-ink)]`}
+                >
+                  <IconLedgerline className="size-[9px]" />
+                </span>
+              ) : (
+                <span
+                  className={`flex size-[14px] items-center justify-center ${R_CHROME} bg-white text-black`}
+                >
+                  <IconBrandMark className="size-[8px]" />
+                </span>
+              )}
               <span className={`truncate text-white ${UI_PRIMARY}`}>
-                Brandmages
+                {ledgerline ? "Ledgerline" : "Brandmages"}
               </span>
             </span>
-            {TEAM_NAV.map(({ icon, label }) => (
-              <ClientNavRow key={label} icon={icon} label={label} />
-            ))}
+            {(ledgerline ? TEAM_NAV_ACCOUNTING : TEAM_NAV).map(
+              ({ icon, label }) => (
+                <ClientNavRow key={label} icon={icon} label={label} />
+              ),
+            )}
             {/* The lit row names the app the pane is showing, which is the
                 whole reason neither pane carries a title bar. */}
             <ClientNavRow
               icon={plain ? <IconClock /> : <IconApp />}
-              label={plain ? "Calendar" : "Project tracker"}
+              label={
+                plain
+                  ? "Calendar"
+                  : ledgerline
+                    ? "Close tracker"
+                    : "Project tracker"
+              }
               active
             />
           </div>
@@ -2344,15 +2443,15 @@ export function BuildCard({ plain = false }: SceneProps = {}) {
                       <span
                         className={`text-[color:var(--mock-ink)] ${UI_PRIMARY}`}
                       >
-                        {BOARD.name}
+                        {board.name}
                       </span>
                       <span
                         className={`text-[color:var(--mock-ink-soft)] ${UI_SECONDARY}`}
                       >
-                        {BOARD.count}
+                        {board.count}
                       </span>
                     </div>
-                    {BOARD.cards.map((card, i) => (
+                    {board.cards.map((card, i) => (
                       <ProjectCard
                         key={card.title}
                         {...card}

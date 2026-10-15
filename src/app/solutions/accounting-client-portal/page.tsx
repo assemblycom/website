@@ -425,8 +425,11 @@ export default function AccountingClientPortalPage() {
           // answering them. That half is not drawn, because this page runs the
           // section `split` and the answer would land at thumbnail size beside
           // them — see accounting-logins-visual.tsx.
+          // The desk drawer behind the tiles: the paper version of the same
+          // pile of places things are kept.
+          trayImage="/images/solutions/accounting-desk.webp"
           screens={
-            <div className="h-[300px] md:h-[400px]">
+            <div className="h-[340px] md:h-[480px]">
               <AccountingLoginsVisual />
             </div>
           }
@@ -436,6 +439,7 @@ export default function AccountingClientPortalPage() {
             text: "TaxDome and Canopy may do everything you want in one box, but on the client side it feels very corporate.",
             attribution: "Anthony Drozd, Operations Manager, Sargent CPAs",
             href: "/customers/sargent-cpa",
+            logoSlug: "sargent-cpa",
           }}
           link={{ label: "See how firms fix it", href: "#ready-made-apps" }}
         />
@@ -464,19 +468,15 @@ export default function AccountingClientPortalPage() {
           // photograph behind Describe, paper behind Plan, haze behind Build —
           // so the cards stop being three grey rectangles.
           //
-          // KNOWN: DescribeCard and BuildCard name Brandmages and build a
-          // project tracker, which is the marketing agency's vocabulary on an
-          // accounting page. That is why these were held open as empty slots
-          // to begin with. Real UI in the wrong firm's words beats a blank
-          // card for reviewing the page's shape, but the strings want fixing
-          // before this ships — they live in portal-build-cards.tsx and are
-          // hardcoded, so it is a change to that file, not a prop here.
+          // The three scenes run as Ledgerline building a month-end close
+          // tracker (`vertical="accounting"`), not /client-portal's agency
+          // project tracker.
           steps={BUILD_STEPS.map((step, i) => ({
             ...step,
             visual: [
-              <DescribeCard key="d" />,
-              <PlanCard key="p" />,
-              <BuildCard key="b" />,
+              <DescribeCard key="d" vertical="accounting" />,
+              <PlanCard key="p" vertical="accounting" />,
+              <BuildCard key="b" vertical="accounting" />,
             ][i],
           }))}
           railLabel="How building works"

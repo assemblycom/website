@@ -155,6 +155,17 @@
   --mock-firm: #5c78b9;
   --mock-firm-ink: #ffffff;
 
+  /* LEDGERLINE, the accounting page's fictional firm, in its own palette:
+     sage, butter, clay, cobalt and a soft black. Its own tokens rather than
+     --mock-firm / --mock-brand, which other pages' firms wear. A brand's
+     colours do not move with our theme, so dark repeats these values — they
+     are declared there too only so each theme's block stays complete. */
+  --ledgerline-sage: #94b8b0;
+  --ledgerline-butter: #ecdf8f;
+  --ledgerline-clay: #5b3626;
+  --ledgerline-cobalt: #2f6fc6;
+  --ledgerline-ink: #161616;
+
   /* A quieter cut of the positive/warning pair, for the one mock that shows
      several status pills at once.
 
@@ -542,6 +553,13 @@
      periwinkle in either theme — only its value is. */
   --mock-firm: #7389d6;
   --mock-firm-ink: #ffffff;
+
+  /* See --ledgerline-* in :root. Identical on purpose: the firm's colours. */
+  --ledgerline-sage: #94b8b0;
+  --ledgerline-butter: #ecdf8f;
+  --ledgerline-clay: #5b3626;
+  --ledgerline-cobalt: #2f6fc6;
+  --ledgerline-ink: #161616;
 
   /* See --mock-positive-muted-bg in :root. Same job, dark's own values.
 
