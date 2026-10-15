@@ -51,6 +51,42 @@ test('preserves explicit referral attribution and the hero experiment arm', () =
   assert.equal(result.searchParams.get('msclkid'), 'landing-click');
 });
 
+test('every signup link on /powered-by carries the referral credit, across navigation', () => {
+  browser('https://assembly.com/powered-by?utm_medium=referral&ref=portal_1&firm=Acme%20Co&first=Usman&referred=code_1');
+  const onPage = new URL(attribution.withSignupAttribution(buildSignupUrl()));
+  assert.equal(onPage.searchParams.get('ref'), 'portal_1');
+  assert.equal(onPage.searchParams.get('firm'), 'Acme Co');
+  assert.equal(onPage.searchParams.get('first'), 'Usman');
+  assert.equal(onPage.searchParams.get('referred'), 'code_1');
+  assert.equal(onPage.searchParams.get('utm_medium'), 'referral');
+  dom.reconfigure({ url: 'https://assembly.com/pricing' });
+  const later = new URL(attribution.withSignupAttribution(buildSignupUrl()));
+  assert.equal(later.searchParams.get('ref'), 'portal_1');
+  assert.equal(later.searchParams.get('referred'), 'code_1');
+});
+
+test('a link that names its own referrer takes none of a saved one', () => {
+  browser('https://assembly.com/powered-by?referred=code_A&firm=Firm%20A&first=Ann');
+  attribution.readSignupAttribution();
+  dom.reconfigure({ url: 'https://assembly.com/built-by/portal_B' });
+  const builtBy = new URL(attribution.withSignupAttribution(buildSignupUrl() + '&ref=portal_B&utm_content=share'));
+  assert.equal(builtBy.searchParams.get('ref'), 'portal_B');
+  for (const key of ['referred', 'firm', 'first']) assert.equal(builtBy.searchParams.has(key), false);
+  const plain = new URL(attribution.withSignupAttribution(buildSignupUrl()));
+  assert.equal(plain.searchParams.get('referred'), 'code_A');
+});
+
+test('ignores referral fields anywhere but /powered-by, and invalid ones there', () => {
+  browser('https://assembly.com/pricing?ref=producthunt&utm_source=producthunt');
+  const elsewhere = new URL(attribution.withSignupAttribution(buildSignupUrl()));
+  assert.equal(elsewhere.searchParams.get('utm_source'), 'producthunt');
+  assert.equal(elsewhere.searchParams.has('ref'), false);
+  browser('https://assembly.com/powered-by?referred=../admin&first=' + 'x'.repeat(51));
+  const invalid = new URL(attribution.withSignupAttribution(buildSignupUrl()));
+  assert.equal(invalid.searchParams.has('referred'), false);
+  assert.equal(invalid.searchParams.has('first'), false);
+});
+
 test('does not decorate other destinations or similar-looking signup paths', () => {
   browser('https://assembly.com/?msclkid=landing-click');
   for (const url of ['https://example.test/signup', 'https://dashboard.assembly.com/signup-evil', 'https://dashboard.assembly.com/login']) {

@@ -1,19 +1,35 @@
+import { attributionFromSearchParams } from "@/lib/powered-by-attribution";
+
 const ACQUISITION_PARAMS = [
   "msclkid", "gclid", "gbraid", "wbraid", "fbclid", "ttclid", "twclid", "li_fat_id",
   "utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content",
 ] as const;
+// Who gets credit for a badge or referral visit. Read only on the page that
+// takes them: elsewhere `?ref=` is a common tag other sites add, and forwarding
+// it would credit whatever workspace id it happens to name.
+const REFERRAL_PARAMS = ["ref", "firm", "first", "referred"] as const;
+const REFERRAL_LANDING = "/powered-by";
 const STORAGE_KEY = "assembly:signup-attribution";
 const SIGNUP_DESTINATION = "https://dashboard.assembly.com/signup";
 const MAX_URL_LENGTH = 2048;
 // Storage can be blocked; keep attribution for navigation in the loaded app.
 const inMemoryAttribution = new WeakMap<Window, string>();
 
-function acquisitionParams(search: string): URLSearchParams {
+function acquisitionParams(search: string, withReferral: boolean): URLSearchParams {
   const source = new URLSearchParams(search);
   const params = new URLSearchParams();
   for (const key of ACQUISITION_PARAMS) {
     const value = source.get(key);
     if (value) params.set(key, value);
+  }
+  if (withReferral) {
+    // The same checks /powered-by applies to its own CTA, so every signup link
+    // on the page carries the same credit.
+    const referral = attributionFromSearchParams(Object.fromEntries(source));
+    for (const key of REFERRAL_PARAMS) {
+      const value = referral[key];
+      if (value) params.set(key, value);
+    }
   }
   return params;
 }
@@ -21,7 +37,10 @@ function acquisitionParams(search: string): URLSearchParams {
 /** Keep the landing attribution across marketing navigation, scoped to this tab. */
 export function readSignupAttribution(): URLSearchParams {
   if (typeof window === "undefined") return new URLSearchParams();
-  const current = acquisitionParams(window.location.search);
+  const current = acquisitionParams(
+    window.location.search,
+    window.location.pathname === REFERRAL_LANDING,
+  );
   if (current.size) inMemoryAttribution.set(window, current.toString());
   try {
     if (current.size) {
@@ -34,7 +53,8 @@ export function readSignupAttribution(): URLSearchParams {
   } catch {
     // Storage restrictions must not stop signup or current-query forwarding.
   }
-  return acquisitionParams(inMemoryAttribution.get(window) || "");
+  // What was saved only holds referral fields if it was read on /powered-by.
+  return acquisitionParams(inMemoryAttribution.get(window) || "", true);
 }
 
 /** Apply at handoff or after hydration, never during server/client rendering. */
@@ -49,7 +69,11 @@ export function withSignupAttribution(href: string): string {
   const attribution = readSignupAttribution();
   if (!attribution.size) return href;
   const addedCampaignFields = new Set<string>();
+  // The referral fields describe one referrer, so they travel together: a link
+  // that names its own (a /built-by CTA) takes none from an earlier visit.
+  const linkHasReferral = REFERRAL_PARAMS.some((key) => url.searchParams.has(key));
   for (const [key, value] of attribution) {
+    if (linkHasReferral && (REFERRAL_PARAMS as readonly string[]).includes(key)) continue;
     // Referral and powered-by links can already define their own attribution.
     if (!url.searchParams.has(key)) {
       url.searchParams.set(key, value);
@@ -95,7 +119,7 @@ export function observeSignupLinks(document: Document): () => void {
       if (`${updated.origin}${updated.pathname}` === SIGNUP_DESTINATION) {
         const before = new URL(previous.original);
         const after = new URL(previous.decorated);
-        for (const key of ACQUISITION_PARAMS) {
+        for (const key of [...ACQUISITION_PARAMS, ...REFERRAL_PARAMS]) {
           if (!before.searchParams.has(key) &&
               updated.searchParams.get(key) === after.searchParams.get(key)) {
             updated.searchParams.delete(key);

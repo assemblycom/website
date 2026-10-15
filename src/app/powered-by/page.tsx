@@ -5,7 +5,8 @@ import { attributionFromSearchParams } from "@/lib/powered-by-attribution";
 import { PAGE_SEO, pageMetadata } from "@/lib/seo";
 
 /**
- * Where the "Powered by Assembly" badge sends a firm's client. The page is
+ * Where the "Powered by Assembly" badge sends a firm's client, and where a
+ * /referrals link lands before signup (see referral-link.ts). The page is
  * personalized from `ref` (the firm's workspace) and carries the PRD's UTMs
  * through to signup, so it is a different document per visitor and noindex:
  * only the generic fallback would be worth indexing, and it is not the page
