@@ -32,7 +32,7 @@ export const metadata: Metadata = pageMetadata(PAGE_SEO.vsBase44);
 const PAGE: VsPage = {
   competitor: "Base44",
   hero: {
-    h1: "The client-ready alternative to Base44",
+    h1: "The Base44 alternative where every app works together",
     sub: "Base44 ships a fast hosted app. Assembly ships apps into a client experience branded as yours, ready for team and clients.",
     visual: {
       label: "Hero shot",

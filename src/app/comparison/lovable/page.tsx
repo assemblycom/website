@@ -31,7 +31,7 @@ export const metadata: Metadata = pageMetadata(PAGE_SEO.vsLovable);
 const PAGE: VsPage = {
   competitor: "Lovable",
   hero: {
-    h1: "The client-facing alternative to Lovable",
+    h1: "The Lovable alternative that’s ready on day one",
     sub: "Ship your apps inside a branded client experience with logins, permissions, and a CRM already handled.",
     visual: {
       label: "Hero shot",
