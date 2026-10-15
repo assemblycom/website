@@ -483,31 +483,6 @@ export function PortalProblem({
                 )}
               </div>
             </div>
-
-            {/* THE SCREENS GO SOFT AT THE TRAY'S FOOT, IN DARK.
-
-                They are cropped there — windows onto screens that carry on
-                below — and in light the tray is a near-white panel a step off
-                the screens, so the crop is simply an edge and needs nothing.
-                In dark the tray is #F5F5F0 paper and the screens are
-                near-black: a hard line between the two is the highest-contrast
-                edge on the card, and the colour ramp that used to soften it
-                was worse (see --portal-screen-fade).
-
-                A backdrop blur has no colour to lay on them. It defocuses the
-                screens' own pixels, so the last rows go soft into the crop the
-                way the hero's right edge does — the same treatment, the same
-                reason, turned ninety degrees.
-
-                The mask ramps it: the blur is uniform, masked from transparent
-                at its top to solid at the tray's edge, so there is no line
-                where it begins. Inside the tray and after the mask wrapper, so
-                it is clipped by the tray's radius and is not itself faded by
-                the screens' own right-edge mask. */}
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-x-0 bottom-0 z-10 hidden h-20 [-webkit-mask-image:linear-gradient(to_bottom,transparent_0%,rgba(0,0,0,0.4)_50%,#000_100%)] [mask-image:linear-gradient(to_bottom,transparent_0%,rgba(0,0,0,0.4)_50%,#000_100%)] [-webkit-backdrop-filter:blur(6px)] [backdrop-filter:blur(6px)] [[data-theme=dark]_&]:block"
-            />
           </div>
 
           {/* THE PHONE'S COPY: under the tray, on the page's own ground, centred

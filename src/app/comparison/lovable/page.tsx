@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { VsComparisonPage, type VsPage } from "@/components/comparison/vs-page";
 import {
-  GitHandoffVisual,
+  ClientAppsCardVisual,
+  CrmCardVisual,
+  LoginsCardVisual,
   PlatformLayerVisual,
-  PrototypeVisual,
-  PublicSiteVisual,
 } from "@/components/comparison/story-visuals";
 import { TeamClientsHeroVisual } from "@/components/comparison/team-clients-hero-visual";
 import {
@@ -42,6 +42,34 @@ const PAGE: VsPage = {
   glance: {
     heading: "Same prompt. Very different destination.",
     sub: "Lovable ends with a prototype you finish. Assembly ends with an app your clients can sign into.",
+    // Drawn from the rows below, as yes-or-no. "Best for" and "Time to a
+    // working app" are not yes-or-no and stay in the matrix's data only.
+    checklist: [
+      {
+        label: "Ready for clients on day one",
+        assembly: true,
+        competitor: false,
+      },
+      {
+        label: "Managed logins and permissions",
+        assembly: true,
+        competitor: false,
+      },
+      { label: "Shared client CRM", assembly: true, competitor: false },
+      { label: "Branded client experience", assembly: true, competitor: false },
+      {
+        label: "White-label branding",
+        assembly: true,
+        competitor: { yes: true, note: "Enterprise" },
+      },
+      { label: "Full code export", assembly: true, competitor: true },
+      { label: "Live apps without credits", assembly: true, competitor: false },
+      {
+        label: "HIPAA options",
+        assembly: { yes: true, note: "Advanced" },
+        competitor: false,
+      },
+    ],
     rows: [
       {
         label: "Best for",
@@ -99,11 +127,13 @@ const PAGE: VsPage = {
     ],
   },
   pillarsHeading: "Why teams choose Assembly over Lovable",
+  pillarsStyle: "cards",
   pillars: [
     {
       heading: "Apps your clients can use",
       tabLabel: "Client apps",
-      body: "Lovable ships a prototype at its own address. Assembly builds into your branded experience, each client seeing only their own view.",
+      card: <ClientAppsCardVisual />,
+      body: "Lovable ships a prototype at its own address. Assembly builds it into your branded portal.",
       visual: {
         label: "Pillar 1 visual",
         art: <ClientAppsPillarVisual />,
@@ -115,7 +145,8 @@ const PAGE: VsPage = {
     {
       heading: "Logins and permissions built in",
       tabLabel: "Logins",
-      body: "Lovable generates access rules per app. Assembly maintains the infrastructure, so the team-client boundary holds.",
+      card: <LoginsCardVisual />,
+      body: "Lovable generates access rules per app. Assembly maintains them for you.",
       visual: {
         label: "Pillar 2 visual",
         art: <LoginsPillarVisual />,
@@ -126,7 +157,8 @@ const PAGE: VsPage = {
     {
       heading: "One CRM behind every app",
       tabLabel: "One CRM",
-      body: "Contacts, companies, custom fields. Every app connects automatically, and each client sees only their own.",
+      card: <CrmCardVisual />,
+      body: "Contacts, companies, and custom fields that every app connects to automatically.",
       visual: {
         label: "Pillar 3 visual",
         art: <CrmPillarVisual />,
@@ -175,31 +207,25 @@ const PAGE: VsPage = {
   betterFit: {
     heading: "When Lovable is the better fit",
     sub: "We would rather tell you than waste your time.",
+    style: "list",
     items: [
       {
         title: "GitHub and a dev hand-off",
-        body: "Lovable supports that better than Assembly at the moment.",
-        visual: <GitHandoffVisual />,
+        body: "Lovable syncs the full code to GitHub, so a developer can take it over and keep building in their own tools. Assembly runs your apps for you and does not export the code.",
       },
       {
         title: "A public site or consumer app",
-        body: "Assembly builds apps people log into, not anonymous web traffic.",
-        visual: <PublicSiteVisual />,
+        body: "Assembly builds apps that sit behind a client login, inside your portal. For a marketing site or an app anyone can open without signing in, Lovable is the better tool.",
       },
       {
         title: "A prototype you will maintain",
-        body: "If the app is not expected to grow, a code-first tool is the shorter path.",
-        visual: <PrototypeVisual />,
+        body: "If the app is a one-off that will not grow, a code-first tool is the shorter path. Assembly pays off when your apps share clients, logins, and data over time.",
       },
     ],
   },
   pricing: {
     heading: "Predictable pricing by design",
     body: "Lovable's credits also fund hosting and live AI. Assembly's are spent only on building, and a live app is $5 a month.",
-  },
-  proof: {
-    heading: "Built on Assembly, ready for clients in weeks",
-    sub: "An 11-person agency shipped apps to 200+ clients in five weeks.",
   },
   faqs: [
     {

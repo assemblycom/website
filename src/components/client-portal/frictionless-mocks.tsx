@@ -21,179 +21,33 @@ import { IconBrandMark } from "@/components/home/mock-icons";
 
 const LINE = "border-[var(--mock-line)]";
 
-/** Both ways in, drawn the same — see the note at the first one. */
 const SIGNIN_BUTTON =
-  "pointer-events-auto flex w-full cursor-default items-center justify-center " +
-  "rounded-lg border bg-[var(--mock-well-soft)] px-3 py-3 " +
-  "transition-colors duration-150 hover:bg-[var(--mock-well-2)] " +
-  "motion-reduce:transition-none";
+  "flex w-full items-center justify-center rounded-lg " +
+  "bg-[var(--mock-window)] px-3 py-3.5 shadow-sm";
 
 /**
- * The firm's mark.
- *
- * IconBrandMark, not a lettered tile. It was a "B" on a square, which is the
- * fallback a workspace gets before anyone uploads a logo — on the one screen
- * where the mark is the only identification there is, that said the firm had
- * not finished setting itself up. The glyph is the one every other mock in
- * this family draws for Brandmages (the portal sidebar, the invoice head, the
- * workspace rail), so this screen now shows the same firm as the rest of the
- * page rather than a placeholder for it.
+ * The Google button alone, set on the card's photo. The full screen covered
+ * most of the picture, and the one control is enough to say "no password".
+ * On the window's own ground rather than the well, so it stands off the photo.
  */
-function Brandmark() {
+export function SignInButtonMock() {
   return (
-    // THE FIRM'S COLOUR, not the screen's ink. It was --mock-ink, which makes
-    // the mark a near-black tile in light and a near-white one in dark — a
-    // logo that changes colour with OUR theme, on the one object in the shot
-    // that belongs to the client. --mock-firm is the periwinkle the branding
-    // section's sign-in already wears, so the two screens show one firm
-    // rather than two; see globals.css.
-    //
-    // 36px, up from 32. The scene is drawn at the card's full width and the
-    // mark is the first thing on it — at 32 it sat a step under the heading it
-    // introduces, which on a sign-in is the wrong way round: the logo is the
-    // identification and the sentence under it says where you are. The glyph
-    // goes up with the tile so the inset stays the same proportion.
-    <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[var(--mock-firm)] text-[color:var(--mock-firm-ink)]">
-      <IconBrandMark className="size-[17px]" />
-    </span>
-  );
-}
-
-/**
- * Card 1 — the client sign-in screen. Two ways in and no password field,
- * which is the whole claim, so the absence has to be legible: the two buttons
- * sit where a password field would be, and there is nothing under them.
- *
- * A footnote used to spell it out ("No password to remember"). It went
- * because the card's own caption, two lines below the picture, already says
- * the same thing in better words — and a screen that labels what it is
- * missing is captioning itself. The empty space under the second button is
- * the point: that is where the password field would be.
- *
- * DRAWN AS THE WHOLE PAGE, not as a dialog floating in the card.
- *
- * It used to be a 260px panel centred in a 4:3 box with a drop shadow, which
- * at the card's real width left well over half the picture empty and made the
- * one screen on the page a reader is meant to recognise the smallest object on
- * it. The type inside it was 9.5–12px to fit, so the claim — "no password to
- * remember" — was set smaller than any caption around it.
- *
- * So it fills its box, at the card's own width and the card's own type sizes.
- *
- * IT USED TO SPLIT, with a brand wash down 42% of the right-hand side, on the
- * argument that a sign-in page carries the firm's imagery beside its form.
- * True of a full-page sign-in; false of this card, which shows the screen at
- * about 360px wide. At that size the wash was not imagery, it was a coloured
- * rectangle taking two fifths of the picture away from the two buttons the
- * card is actually about — and because it bled off the card's right edge, the
- * form it left behind was centred in its own column but sat left of centre on
- * the card.
- *
- * So the wash is gone, the form takes the whole frame, and the frame closes
- * on its left and right rather than running off the edge: the one thing this
- * scene has to show is a sign-in with no password field in it, and that reads
- * best centred, whole, with nothing beside it.
- */
-export function SignInMock() {
-  return (
-    <div aria-hidden className="pointer-events-none h-full select-none">
-      {/* The scene carries its own window: this card sets its picture straight
-          on the card ground with no panel of its own (see portal-frictionless),
-          so the frame has to come from here or there is no screen edge at all. */}
-      {/* Closed on three sides, open at the foot. This scene no longer bleeds
-          right — see the note above, and `bleed` in portal-frictionless — so
-          the right edge is an edge like the left one. The foot is still masked
-          into the card, which is why there is nothing to draw down there.
-
-          .mock-lit-edge RATHER THAN A FLAT HAIRLINE. With the brand wash gone
-          the screen is one even surface inside one even line, which on a dark
-          card is a rectangle with no light on it anywhere. The family's own
-          ring puts the light where it would fall — brightest along the top,
-          the plain hairline by the middle, spent before the open foot — so
-          the frame reads as an object catching light instead of as a box that
-          was drawn. The same ring the branding card's screen and the hero's
-          carousel frames wear, reused rather than re-tuned.
-
-          No border utility with it: the ring IS the 1px outline (it paints a
-          padded box masked to its own edge), and a real border under it would
-          be a second line a pixel inside the first. Light is unaffected —
-          there --mock-edge-lit equals --mock-line, so the gradient is flat and
-          this is the hairline it has always been. */}
-      <div
-        className="mock-lit-edge flex h-full overflow-hidden rounded-t-xl bg-[var(--mock-window)]"
-      >
-        {/* ONE ALIGNMENT DOWN THE COLUMN, and it is centred — the way this
-            site's other sign-in draws it and the way most sign-ins do. It was
-            left-ranged with the footnote centred under it, which put two
-            alignments in a block four elements tall.
-
-            THE MARK STANDS ALONE. It carried the firm's name beside it, which
-            is a workspace header's lockup rather than a sign-in's: on the
-            screen a client actually lands on, the logo is the identification
-            and the sentence under it says where they are. Two of them is the
-            name twice, and it is the heading that should be read.
-
-            Everything is a step up in size too. The scene is drawn at the
-            card's full width, not at rail scale, and at 9.5–12px the claim
-            this card exists to make ("no password to remember") was set
-            smaller than the caption underneath the picture. */}
-        <div className="flex min-w-0 flex-1 flex-col items-center justify-center px-7 py-6 text-center sm:px-8">
-          <Brandmark />
-
-          <p className="mt-5 text-[18px] leading-snug text-[color:var(--mock-ink)]">
-            Sign in to your portal
-          </p>
-
-          {/* The outlined option first, the filled one second: Google is the
-              one a client recognises, and the email link is the fallback it
-              falls back to. */}
-          {/* BOTH BUTTONS ANSWER THE POINTER. A sign-in drawn in a mock is
-              still a sign-in, and the one thing a still picture cannot say is
-              that these are things you can press — so they say it when the
-              pointer arrives. The scene is pointer-events-none as a whole, so
-              each button opts back in for itself; cursor-default because
-              nothing happens on the click, and a pointer cursor would promise
-              one. A step up in surface, the same move the table rows and the
-              composer use, on the same 150ms. */}
-          <div
-            className={`${SIGNIN_BUTTON} mt-5 gap-2 ${LINE}`}
-          >
-            <GoogleGlyph />
-            <span className="whitespace-nowrap text-[14px] leading-none text-[color:var(--mock-ink)]">
-              Continue with Google
-            </span>
-          </div>
-
-          {/* THE TWO WAYS IN ARE DRAWN THE SAME, and that is the claim.
-
-              This was a filled slab — neutral first, then the firm's
-              periwinkle — and both were saying the same wrong thing: that one
-              of these is the way in and the other is the fallback. The card is
-              called "sign in without a password", and what it is showing is
-              that there are two doors and neither of them is a password. A
-              primary ranks them.
-
-              It also freed the screen's one colour. With a coloured button
-              under it the periwinkle mark was the second-loudest periwinkle
-              thing in the frame rather than the firm's logo; alone, it is the
-              only colour on the screen and reads as the branding it is.
-
-              Same surface and border as the Google row above, with full ink
-              on the label — a button, not a field. */}
-          <div className={`${SIGNIN_BUTTON} mt-3 ${LINE}`}>
-            <span className="whitespace-nowrap text-[14px] leading-none text-[color:var(--mock-ink)]">
-              Email me a sign-in link
-            </span>
-          </div>
-        </div>
-
+    <div
+      aria-hidden
+      className="pointer-events-none flex h-full select-none items-center justify-center px-8"
+    >
+      <div className={`${SIGNIN_BUTTON} max-w-[300px] gap-2`}>
+        <GoogleGlyph />
+        <span className="whitespace-nowrap text-[15px] leading-none text-[color:var(--mock-ink)]">
+          Continue with Google
+        </span>
       </div>
     </div>
   );
 }
 
 /** Google's mark, drawn rather than imported — four paths, no asset. */
-function GoogleGlyph() {
+export function GoogleGlyph() {
   return (
     <svg viewBox="0 0 18 18" className="size-[13px] shrink-0">
       <path
@@ -217,71 +71,81 @@ function GoogleGlyph() {
 }
 
 /**
- * Card 2 — a thread where the client's turn came in from their inbox.
+ * Card 2 — the portal message as it lands in the client's inbox.
  *
- * The badge is the point. Without it this is any message thread; with it the
- * middle bubble is a reply that never required the portal, which is what the
- * card claims. So the client's bubble is the only one that carries it, and it
- * sits under the bubble rather than inside it — inside, at this size, it
- * competed with the message itself.
+ * It was a chat thread with a "Replied by email" tag, which read as texting:
+ * the one card about email showed no email. Drawn as a mail client's reading
+ * view instead (subject, sender row, and a letter), so the
+ * picture says "email" before the caption does.
  *
- * WORDS ONLY. It led with an envelope glyph, which was the badge saying
- * "email" twice: the three words next to it already say it, and at 11px the
- * glyph was a grey tick that had to be squinted at to be identified as an
- * envelope at all. A mark that needs its own label is not earning its place.
+ * Closed and centred rather than running off the card's foot: the message is
+ * short, and a window stretched past it was mostly empty panel.
  */
-const THREAD: { from: "firm" | "client"; text: string; byEmail?: boolean }[] = [
-  { from: "firm", text: "Your Q3 report is ready for review." },
-  { from: "client", text: "Got it — looks good, approved.", byEmail: true },
-  { from: "firm", text: "Thanks. I'll send the invoice over." },
-];
+const MUTED = "text-[color:var(--mock-ink-soft)]";
 
 export function EmailReplyMock() {
   return (
     <div
       aria-hidden
-      // BIGGER, AND IT HAD TO BE. Three 10.5px bubbles centred in a box the
-      // card's full width were a thread drawn at a third of the size of the
-      // copy beneath it — the scene read as a thumbnail of a picture rather
-      // than as the picture. At 14px the bubbles are close to the product's
-      // own, which is what a close-up of a thread should be.
-      //
-      // The gutter is asymmetric now: the scene bleeds off the card's right
-      // edge (see portal-frictionless), so the padding that would have sat
-      // there is gone and the client's own bubble is the thing running off.
-      // That is the right bubble to crop — it is the one the badge belongs to,
-      // and the badge stays on the card.
-      className="pointer-events-none flex h-full select-none flex-col justify-center gap-4 py-6 pl-6 pr-10 sm:pl-8"
+      className="pointer-events-none flex h-full select-none flex-col justify-center px-4 sm:px-10"
     >
-      {THREAD.map((m, i) => (
-        <div
-          key={i}
-          className={`flex flex-col ${m.from === "client" ? "items-end" : "items-start"}`}
-        >
-          <div
-            className={`max-w-[82%] rounded-2xl px-4 py-2.5 text-[14px] leading-snug ${
-              m.from === "client"
-                ? "bg-[color:var(--mock-ink)] text-[color:var(--mock-window)]"
-                : `border bg-[var(--mock-window)] text-[color:var(--mock-ink)] ${LINE}`
-            }`}
+      <div
+        className={`flex min-w-0 flex-col overflow-hidden rounded-xl border bg-[var(--mock-window)] p-4 text-[color:var(--mock-ink)] sm:p-6 [font-family:var(--font-inter),system-ui,sans-serif] ${LINE}`}
+      >
+        <div className="flex min-w-0 items-center gap-2">
+          <p className="truncate text-[15px] leading-snug sm:text-[17px]">
+            Spring catalogue covers
+          </p>
+          <span
+            className={`shrink-0 rounded border bg-[var(--mock-well-2)] px-1.5 py-1 text-[11px] leading-none text-[color:var(--mock-ink)] ${LINE}`}
           >
-            {m.text}
-          </div>
-          {/* THE CARD'S INK, NOT THE MOCK'S. The label below is the only
-              thing in the scene that sits on the card itself rather than
-              inside a bubble — so it has to follow the card's ground, not the
-              mock family's. --mock-ink-soft is a dark-theme grey, which was
-              right while the card was near-black and wrong the moment it
-              became the brand ramp: a mid grey on a mid ground. The bubbles
-              keep their --mock-* tokens, because they carry their own surface
-              with them. */}
-          {m.byEmail ? (
-            <span className="mt-2 text-[11.5px] leading-none text-muted-foreground">
-              Replied by email
-            </span>
-          ) : null}
+            Inbox
+          </span>
         </div>
-      ))}
+
+        {/* Avatar and the two text lines are the same 36px, so they share
+            edges; the time sits on the name's line, as in Gmail. */}
+        <div className="mt-3 flex min-w-0 items-start gap-2.5 sm:mt-4">
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[var(--mock-ink)] text-[color:var(--mock-window)]">
+            <IconBrandMark className="size-[15px]" />
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-[13px] leading-[18px]">
+              Brandmages{" "}
+              <span className={`hidden sm:inline ${MUTED}`}>
+                &lt;portal@brandmages.com&gt;
+              </span>
+            </p>
+            <p className={`truncate text-[12px] leading-[18px] ${MUTED}`}>
+              to me
+            </p>
+          </div>
+          <span
+            className={`flex h-[18px] shrink-0 items-center text-[12px] ${MUTED}`}
+          >
+            9:41 AM
+          </span>
+        </div>
+
+        {/* Paragraph gaps a blank line wide, as a real letter sets them. With
+            two tight lines the window read as a notification, not an email. */}
+        <div className="mt-4 space-y-3.5 text-[13px] leading-relaxed sm:ml-[46px] sm:mt-5 sm:space-y-4">
+          <p>Hi Margot,</p>
+          <p>
+            Round 2 of the spring catalogue covers is ready. We used the warmer
+            palette from your notes and added two new layout options.
+          </p>
+          <p>
+            Reply with feedback, and we&rsquo;ll get the final files over by
+            Friday.
+          </p>
+          <p>
+            Best,
+            <br />
+            Sofia
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

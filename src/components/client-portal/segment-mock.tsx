@@ -16,6 +16,7 @@
 import { ApprovalCovers } from "@/components/client-portal/approval-covers";
 import { fadeMask } from "@/components/ui/fade-mask";
 import { WorkspaceSidebar } from "@/components/home/workspace-sidebar";
+import { TypedText } from "@/components/comparison/typed-address";
 
 import {
   IconBrandMark,
@@ -422,7 +423,7 @@ export function ApprovalsMock() {
           count, the apps group filled out, and Add App sitting a rung under
           the rows it extends. See WorkspaceSidebar. */}
       <WorkspaceSidebar
-        active="Home"
+        active="Approvals"
         showcase
         // 148, not the 136 the portal nav beside it used: "Notifications" is
         // the longest label in the product's rail and at 136 it truncated to
@@ -1621,26 +1622,13 @@ export function OnboardingMock() {
 // SO IT IS ZOOMED IN, which is the only way a single field fills a card, and
 // the host TYPES ITSELF. A still field with a finished domain in it is a
 // screenshot of a settings page; the same field with the host arriving is the
-// firm claiming it, which is the thing being sold. See the domain-type and
-// domain-caret keyframes in globals.css for why the cycle is shaped the way
-// it is.
-//
-// The animation is CSS only, and it has to be: per the repo's CLAUDE.md the
-// preview pane runs with visibilityState "hidden", where IntersectionObserver
-// never fires and rAF is paused — so anything driven from JS could not be
-// checked here and would look broken when it was fine. It also means the
-// whole thing works before hydration. Reduced motion gets the finished state,
-// not a frozen empty field: the claim is the domain, and the animation is how
-// it is introduced rather than what it says.
+// firm claiming it, which is the thing being sold. It types once when the
+// card scrolls into view; reduced motion shows the finished host.
 // This scene is drawn at the card's full width with one field in it, where
 // the rest of this file draws whole screens at mock scale. The rail's 10.5px
 // secondary would be a caption under a 19px host — the same relationship the
 // rail has, at four times the distance. One step up carries it.
-// The host, and its own length. The keyframes step in `ch`, so the character
-// count is the one number the animation is built from — see the domain-type
-// note in globals.css. Kept beside the string so the two cannot drift apart.
 const DOMAIN = "portal.brandmages.com";
-const DOMAIN_CH = DOMAIN.length;
 
 export function CustomDomainMock() {
   return (
@@ -1656,20 +1644,7 @@ export function CustomDomainMock() {
       //
       // pt matches the px either side, so the field keeps one inset all round
       // rather than being pushed flush to the top edge.
-      // A GREYER SCREEN IN LIGHT, scoped to this shot.
-      //
-      // --mock-window is #fcfcfd, which is the right ground for a screen that
-      // sits on a card you can tell it apart from. This card is #f5f5f5 and
-      // the screen fills it, so the two were a point apart and the whole shot
-      // read as one white rectangle with a field floating in it — the frame,
-      // the rule and the field all doing their work against nothing.
-      //
-      // The pair steps down together so the family's own relationship holds:
-      // in light the wells RECESS from the window, so greying the window
-      // without the well would have put the field lighter than the screen it
-      // sits in. Dark is untouched — there the window is #212121 on a #191919
-      // card and the step already reads.
-      className="pointer-events-none flex h-full select-none flex-col justify-start bg-[var(--mock-window)] px-6 pt-6 text-[color:var(--mock-ink)] sm:px-10 sm:pt-10 [[data-theme=light]_&]:[--mock-window:#f6f7f9] [[data-theme=light]_&]:[--mock-well:#eef0f3]"
+      className="pointer-events-none flex h-full select-none flex-col justify-start bg-[var(--mock-window)] px-6 pt-6 text-[color:var(--mock-ink)] sm:px-10 sm:pt-10"
     >
       {/* THE LABEL AND ITS TAG ARE GONE. "Portal domain / Connected" was a
           second thing to read on a card whose whole subject is the host
@@ -1695,60 +1670,14 @@ export function CustomDomainMock() {
         <span className="flex size-[15px] shrink-0 items-center justify-center rounded-[3px] bg-[var(--mock-firm)] text-[color:var(--mock-firm-ink)]">
           <IconBrandMark className="size-[9px]" />
         </span>
-        {/* ONE ELEMENT, ONE ANIMATION, AND THE CARET IS ITS OWN RIGHT BORDER.
-
-            This was three animations on three elements — a clip-path on the
-            text, a `left` on a caret wrapper, and a blink inside it — all
-            timed to the same 8s and relied upon to stay in step. They are
-            different kinds of property: a clip is paint, `left` is layout,
-            and the browser is free to land them on different frames, so the
-            caret drifted in and out of the last letter. That was half the
-            glitch.
-
-            Now the revealed box IS the caret's anchor: `width` grows, the
-            overflow clips the rest of the host, and `border-right` is drawn
-            on the edge of that same box. The caret cannot desync from the
-            text because it is not a separate thing being kept alongside it.
-
-            MONO, AND THAT IS WHAT FIXED THE REST OF IT. The reveal used to
-            step in equal PERCENTAGES of a proportional string, so its edge
-            fell wherever 1/21 of the total width happened to land — through
-            the middle of an `m`, past a `.` and into the letter after it. The
-            host appeared a sliver at a time rather than a character at a
-            time, which is what read as jitter. In a monospace a `ch` is every
-            glyph's advance, so stepping in `ch` lands the edge exactly on a
-            character boundary every time.
-
-            THE FACE IS THE SITE'S OWN NOW, not mono. A hostname is an
-            identifier and mono is the conventional dress for one, but on a
-            card whose subject is the firm's branding it was the only object on
-            the page set in a face the site does not otherwise use at this
-            size — it read as a code sample rather than as the address bar of
-            the firm's portal.
-
-            IT COSTS THE REVEAL ITS EXACTNESS. The clip steps in `ch`, and a
-            `ch` is every glyph's advance only in a monospace; in PP Mori the
-            edge now lands wherever 1/21 of the total width falls, which is
-            what the paragraph above describes as jitter. The step count is
-            unchanged, so the pace is right and the caret still tracks the clip
-            — what is lost is the guarantee that each step is one character.
-            Driving the string from JS, the way the hero's composer does,
-            is the fix if it ever reads badly.
-
-            Under reduced motion the field shows the finished host with no
-            border: the claim is the domain, and the typing is only how it is
-            introduced. */}
-        <span
-          style={
-            {
-              "--domain-ch": `${DOMAIN_CH}ch`,
-              "--domain-steps": DOMAIN_CH,
-            } as React.CSSProperties
-          }
-          className="domain-typing block shrink-0 text-[15px] leading-none text-[color:var(--mock-ink)] sm:text-[17px]"
-        >
-          {DOMAIN}
-        </span>
+        {/* Typed letter by letter from JS so the caret always sits on the
+            last letter. The CSS version stepped in `ch`, which in this
+            proportional face never landed on a letter edge and left the caret
+            blinking past the end of the host. */}
+        <TypedText
+          text={DOMAIN}
+          className="text-[15px] leading-none text-[color:var(--mock-ink)] sm:text-[17px]"
+        />
       </div>
 
       {/* A RULE UNDER THE FIELD, giving out to the right.

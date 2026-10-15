@@ -58,6 +58,18 @@ const CARDS: {
    * proportion, and stops the grid reading as a sheet of identical tiles.
    */
   span?: string;
+  /**
+   * Inset from the card's right edge instead of bleeding past it. The sign-in
+   * is a centred column, so cropping its right side cut into the form rather
+   * than suggesting more app beyond the frame. Capped and centred while the
+   * card is full width, so the form keeps a sign-in's proportions.
+   */
+  contained?: boolean;
+  /**
+   * Fades the window out where it is cropped, so it blends into the card
+   * rather than stopping on a cut edge.
+   */
+  fadeClass?: string;
 }[] = [
   {
     title: "Make it look like your firm",
@@ -79,6 +91,8 @@ const CARDS: {
     // itself puts a second one a pixel inside it.
     visual: <BrandedLoginScreen brand quietFoot={false} frame={false} />,
     span: "lg:col-span-2",
+    contained: true,
+    fadeClass: "[mask-image:linear-gradient(to_bottom,#000_78%,transparent)]",
   },
   {
     title: "Fill the sidebar with the apps your firm needs",
@@ -95,6 +109,7 @@ const CARDS: {
     // CustomDomainMock.
     visual: <CustomDomainMock />,
     pictureClass: "h-[200px] md:h-[240px]",
+    fadeClass: "[mask-image:linear-gradient(to_right,#000_70%,transparent)]",
     span: "lg:col-span-3",
   },
 ];
@@ -228,11 +243,15 @@ export function PortalCustomizations({
                   line), the extra falls between the copy and the picture, and
                   the picture stays flush with the card's foot where the bleed
                   needs it. */}
-              <div className="-mb-6 -mr-6 mt-6 flex min-h-0 flex-1 flex-col justify-end overflow-hidden md:-mb-8 md:-mr-8 md:mt-8">
+              <div
+                className={`-mb-6 mt-6 flex min-h-0 flex-1 flex-col justify-end overflow-hidden md:-mb-8 md:mt-8 ${card.contained ? "" : "-mr-6 md:-mr-8"}`}
+              >
                 <div
-                  className={`shrink-0 overflow-hidden ${card.pictureClass ?? "h-[300px] md:h-[380px]"}`}
+                  className={`shrink-0 overflow-hidden ${card.pictureClass ?? "h-[300px] md:h-[380px]"} ${card.contained ? "mx-auto w-full max-w-[440px] lg:max-w-none" : ""}`}
                 >
-                  <div className="mock-edge h-full overflow-hidden rounded-tl-xl border-l border-t border-[var(--mock-line)] bg-[var(--mock-window)]">
+                  <div
+                    className={`mock-edge h-full overflow-hidden border-l border-t border-[var(--mock-line)] bg-[var(--mock-window)] ${card.contained ? "rounded-t-xl border-r" : "rounded-tl-xl"} ${card.fadeClass ?? ""}`}
+                  >
                     {card.visual}
                   </div>
                 </div>

@@ -135,8 +135,10 @@ function WiringSignInChat() {
           </div>
         </div>
       </div>
+      {/* Hidden on a phone: the panel crops the screen's foot there, so the
+          composer only ever showed as a blurred strip. */}
       <div
-        className={`mt-4 flex shrink-0 items-center gap-2 rounded-full border py-1.5 pl-4 pr-1.5 ${RULE}`}
+        className={`mt-4 hidden shrink-0 items-center gap-2 rounded-full border py-1.5 pl-4 pr-1.5 sm:flex ${RULE}`}
       >
         <span className="flex-1 text-[13px] text-muted-foreground">
           Ask to fix the login

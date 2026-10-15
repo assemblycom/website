@@ -7,13 +7,13 @@ import {
   PlanVisual,
 } from "@/components/comparison/product-visuals";
 import {
+  BrandCardVisual,
+  CreditsCardVisual,
   CreditsVisual,
-  GrowthToolingVisual,
-  HostedMvpVisual,
   PlatformLayerVisual,
-  PublicStoreVisual,
 } from "@/components/comparison/story-visuals";
 import { BrandedLoginHeroVisual } from "@/components/comparison/branded-login-hero-visual";
+import { BuildCard } from "@/components/client-portal/portal-build-cards";
 import { PAGE_SEO, pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata(PAGE_SEO.vsBase44);
@@ -43,6 +43,34 @@ const PAGE: VsPage = {
   glance: {
     heading: "Two ways to ship an app. One is meant for clients.",
     sub: "Base44 is fast and all-in-one. Here is what changes when clients are involved.",
+    // Drawn from the rows below, as yes-or-no. "Best for" and "Your data" are
+    // not yes-or-no and stay in the matrix's data only.
+    checklist: [
+      { label: "Your brand on the sign-in", assembly: true, competitor: false },
+      { label: "Branded client experience", assembly: true, competitor: false },
+      { label: "Shared client CRM", assembly: true, competitor: false },
+      {
+        label: "Team and client permissions built in",
+        assembly: true,
+        competitor: false,
+      },
+      {
+        label: "One credit type that rolls over",
+        assembly: true,
+        competitor: false,
+      },
+      {
+        label: "Billing, messaging, and files included",
+        assembly: true,
+        competitor: false,
+      },
+      { label: "SOC 2 Type II", assembly: true, competitor: true },
+      {
+        label: "HIPAA options",
+        assembly: { yes: true, note: "Advanced" },
+        competitor: false,
+      },
+    ],
     rows: [
       {
         label: "Best for",
@@ -92,11 +120,13 @@ const PAGE: VsPage = {
     ],
   },
   pillarsHeading: "Why teams choose Assembly over Base44",
+  pillarsStyle: "cards",
   pillars: [
     {
-      heading: "Your brand, from the very first screen",
+      heading: "Your brand from the first screen",
       tabLabel: "Your brand",
-      body: "Full white-labeling on Professional. Clients only ever see your brand.",
+      card: <BrandCardVisual />,
+      body: "Full white-labeling on Professional. Clients only see your brand.",
       // EDITORIAL, not rendered: "The Base44 login-splash claim is current as of
       // September 2026 and sourced to Base44's own feedback board. Base44
       // shipped platform-wide custom login pages in June 2026 and could close
@@ -110,9 +140,10 @@ const PAGE: VsPage = {
       },
     },
     {
-      heading: "A real client experience, included",
+      heading: "A client experience, included",
       tabLabel: "Client view",
-      body: "Base44 builds the app. Assembly ships it in a branded portal, one view per client.",
+      card: <BuildCard />,
+      body: "Base44 builds the app. Assembly ships it in your branded portal.",
       visual: {
         art: <ClientExperiencePillarVisual />,
         wide: true,
@@ -124,6 +155,7 @@ const PAGE: VsPage = {
     {
       heading: "One credit meter, not two",
       tabLabel: "Credits",
+      card: <CreditsCardVisual />,
       body: "One credit balance that rolls over a month. A live app is $5.",
       // EDITORIAL, not rendered: "Confirm the exact figures against the live
       // pricing page before publish: paid plans include 200 build credits a
@@ -176,29 +208,21 @@ const PAGE: VsPage = {
   betterFit: {
     heading: "When Base44 is the better fit",
     sub: "We would rather tell you than waste your time.",
+    style: "list",
     items: [
       {
         title: "The fastest hosted MVP",
-        // Non-breaking space: "just" opens the second line rather than
-        // dangling at the end of the first.
-        body: "No clients and no brand requirements yet, just\u00a0an idea to validate.",
-        visual: <HostedMvpVisual />,
+        body: "No clients and no brand requirements yet, just an idea to validate. Base44 gets a hosted app in front of people faster.",
       },
       {
         title: "Post-launch growth tooling",
-        body: "SEO and AI social tooling for a public, marketed product.",
-        visual: <GrowthToolingVisual />,
+        body: "Base44 offers SEO and AI social tooling for a public, marketed product. Assembly is built for apps your clients sign into, not for growing an audience.",
       },
       {
         title: "A public web app or store",
-        body: "Anything anonymous visitors use, rather than clients who sign in.",
-        visual: <PublicStoreVisual />,
+        body: "Anything anonymous visitors use, rather than clients who sign in. Assembly apps sit behind a client login, inside your portal.",
       },
     ],
-  },
-  proof: {
-    heading: "Built on Assembly and ready for clients in weeks",
-    sub: "An 11-person agency shipped apps to 200+ clients in five weeks.",
   },
   faqs: [
     {

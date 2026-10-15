@@ -14,6 +14,7 @@
 
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import { MockFit } from "@/components/templates/mock-fit";
 import { fadeMask } from "@/components/ui/fade-mask";
@@ -71,26 +72,23 @@ const UI_PLAIN = "text-[12.5px] leading-none";
     scene that IS a document — it is read, not glanced at — and it is drawn at
     1:1 in a 560 box with nothing else competing for the width. At the in-mock
     10px it was legible but looked like fine print in a screenshot. */
-// BIGGER ON A PHONE, and the scale factor is the reason. This scene is drawn
-// at 360x300 and MockFit fits it into a ~327px slot, so everything in it comes
-// out at 0.91 — which took an 11px document down to 10px rendered, the
-// smallest type anywhere on the page. 14px design is ~12.7px on screen, which
-// reads as the small type inside a product screen rather than as fine print.
-// From `sm` the scene is drawn 1:1 at 620 and 11px is already correct there.
+// ON A PHONE the plan sits a step under the card's own 14px copy, at the mock
+// scale's body size, and its window is inset from the card's edges: at 14px
+// and edge to edge it read as more body copy rather than as a product screen.
 // The document is deliberately cropped (see the foot ramp and the chevron), so
-// larger type costs visible lines rather than breaking the box.
+// type size costs visible lines rather than breaking the box.
 /* 13px from `sm`, not 11. The plan is the one thing in these mocks a reader
    is expected to actually READ rather than recognise as a shape, and at 11px
    in a ~400px card it was the smallest type on the page by some way — legible
    in principle, ignored in practice. 13 is still clearly mock-scale against
    the 15px body around it. The document already overflows and fades at the
    foot, so the extra size costs a line of the last flow, not a flow. */
-const PLAN_HEAD = "text-[14px] leading-[1.3] sm:text-[13px]";
+const PLAN_HEAD = "text-[13px] leading-[1.3]";
 /* 1.6, not 1.45. This is the one block on the site that is set as a DOCUMENT
    — paragraphs and a list, read rather than scanned — and document leading is
    looser than a UI label's. It also makes the list's bullets land clear of the
    line above them rather than between two lines. */
-const PLAN_PROSE = "text-[14px] leading-[1.6] sm:text-[13px]";
+const PLAN_PROSE = "text-[12.5px] leading-[1.6] sm:text-[13px]";
 
 const LINE = "border-[var(--mock-line)]";
 
@@ -162,7 +160,10 @@ const WINDOW = `overflow-hidden ${R_WINDOW} border bg-[var(--mock-window)] text-
 // The token already existed for exactly this (see globals.css, and the hero's
 // own BRAND_SIDEBAR which has used it all along) — this rail had simply never
 // been moved onto it. Light is untouched: there both tokens are #171717.
-const BRAND_SIDEBAR = "bg-[var(--mock-brand-slab)] text-white";
+// Dark swaps the Haze-tinted slab for a neutral grey from the mock palette:
+// the blue cast read as a colour cast rather than the firm's brand.
+const BRAND_SIDEBAR =
+  "bg-[var(--mock-brand-slab)] text-white [[data-theme=dark]_&]:bg-[var(--mock-well-2)]";
 const TABLE_HEAD = `flex items-center gap-3 border-b bg-[var(--mock-well)] px-3.5 py-2 text-[color:var(--mock-ink-soft)] ${UI_SECONDARY} ${LINE}`;
 const CHIP = `rounded px-1.5 py-[4px] ${UI_SECONDARY}`;
 const NEUTRAL = `${CHIP} bg-[var(--mock-well-2)] text-[color:var(--mock-ink-soft)]`;
@@ -1295,7 +1296,7 @@ function RequirementsPane() {
           // --mock-line hairline already reads against the card. The missing
           // bottom border is unaffected: the ramp is painted on the border box
           // and simply has no band to paint there.
-          className={`mock-edge relative flex h-full flex-col overflow-hidden ${R_PANEL} rounded-b-none border border-b-0 bg-[var(--mock-window)] ${LINE}`}
+          className={`mock-edge relative flex h-full flex-col overflow-hidden ${R_PANEL} rounded-b-none border border-b-0 bg-[var(--mock-window)] max-sm:mx-6 ${LINE}`}
         >
           {/* The action, in the card's own top-right corner — the corner the
               product puts a document's controls in, and where the eye goes
@@ -2672,6 +2673,9 @@ const PIN_FACE = "bg-[#5c78b9]";
 const COMMENT_FACE = "bg-[#b34b5f]";
 
 export function ReviewCard({ plain = false }: SceneProps = {}) {
+  // The tick toggles, like the approvals card's covers: the one live control
+  // on a card about signing off.
+  const [approved, setApproved] = useState(true);
   return (
     <>
       {/* The same ground the Plan card used, and for the same reason: a cover
@@ -2767,21 +2771,24 @@ export function ReviewCard({ plain = false }: SceneProps = {}) {
                       sentence; on the plate it marks the artwork, parked
                       outside it would mark a row. */}
                   {picked ? (
-                    <span
-                      // NO CAST UNDER IT. The white tile had a drop shadow, on
-                      // the reasoning that a white mark on a photograph needs
-                      // separating from it. It does not: the tile is the
-                      // brightest thing on the plate and its own fill is the
-                      // separation. What the shadow actually did was make a
-                      // 14px square look like it was floating above the
-                      // artwork — a sticker on the picture rather than a mark
-                      // ON it — and it was the only lifted object on a card
-                      // whose other marks (the approval plates' tick, the
-                      // collapsed note's bubble) sit flat.
-                      className={`absolute left-1.5 top-1.5 flex size-[14px] items-center justify-center ${R_CHROME} bg-white text-black`}
+                    <button
+                      type="button"
+                      tabIndex={-1}
+                      aria-hidden
+                      onClick={() => setApproved((v) => !v)}
+                      // No shadow: the white tile is its own separation from
+                      // the photograph. Unchecked keeps the same square as an
+                      // outline so the control stays findable.
+                      className={`pointer-events-auto absolute left-1.5 top-1.5 flex size-[14px] cursor-pointer items-center justify-center border transition-colors ${R_CHROME} ${
+                        approved
+                          ? "border-white bg-white text-black"
+                          : "border-white/80 bg-black/25 hover:bg-black/40"
+                      }`}
                     >
-                      <IconCheck className="size-[8px]" />
-                    </span>
+                      <IconCheck
+                        className={`size-[8px] transition-opacity ${approved ? "opacity-100" : "opacity-0"}`}
+                      />
+                    </button>
                   ) : null}
                   {/* THE COLLAPSED NOTE. The same bubble as the open one —
                       round but for a squared bottom-left — shrunk to hold
@@ -2980,9 +2987,7 @@ export function OnboardCard({ plain = false }: SceneProps = {}) {
           />
         </div>
       )}
-      <Scene
-        {...(plain ? {} : RAIL_SCENE_PHONE_PROPS)}
-      >
+      <Scene {...(plain ? {} : RAIL_SCENE_PHONE_PROPS)}>
         {/* "Onboarding" — the window is titled with the stage it belongs to,
             so the card's label and the screen inside it name the same thing. */}
         <ChecklistWindow title="Onboarding" items={ONBOARD_ITEMS} />
@@ -3105,9 +3110,7 @@ export function InvoiceCard({ plain = false }: SceneProps = {}) {
           giving out rather than as paper continuing. Short enough to end, it
           is better as an object in the frame: Scene's default centring places
           it, and the air above and below is what makes it read as placed. */}
-      <Scene
-        {...(plain ? {} : RAIL_SCENE_PHONE_PROPS)}
-      >
+      <Scene {...(plain ? {} : RAIL_SCENE_PHONE_PROPS)}>
         {/* The page. WINDOW's own ground is the panel tone, which is what the
             cards INSIDE this one need, so the page itself steps down a rung
             to --mock-well and they lift off it. */}
@@ -3186,7 +3189,7 @@ export function InvoiceCard({ plain = false }: SceneProps = {}) {
             {INVOICE_LINES.map(({ what, qty, amount }) => (
               <div
                 key={what}
-                className={`flex items-center border-b px-[10px] py-[7px] ${LINE}`}
+                className={`flex items-center border-b px-[10px] py-[7px] ${ROW_HOVER} ${LINE}`}
               >
                 <span
                   className={`min-w-0 flex-1 truncate text-[color:var(--mock-ink)] ${UI_PRIMARY}`}
@@ -3206,13 +3209,12 @@ export function InvoiceCard({ plain = false }: SceneProps = {}) {
               </div>
             ))}
 
-
             {/* The total. Same two sizes as everything else in the rail — it
                 is separated by its ROW (a well behind it, no rule under it)
                 rather than by weight, because the site is 400/500 only and a
                 mock is not where that gets broken. */}
             <div
-              className={`flex items-center bg-[var(--mock-well)] px-[10px] py-[8px]`}
+              className={`flex items-center bg-[var(--mock-well)] px-[10px] py-[8px] ${ROW_HOVER}`}
             >
               <span
                 className={`min-w-0 flex-1 truncate text-[color:var(--mock-ink)] ${UI_PRIMARY}`}
@@ -3293,9 +3295,7 @@ export function SupportCard({ plain = false }: SceneProps = {}) {
           />
         </div>
       )}
-      <Scene
-        {...(plain ? {} : RAIL_SCENE_PHONE_PROPS)}
-      >
+      <Scene {...(plain ? {} : RAIL_SCENE_PHONE_PROPS)}>
         {/* PUSHED BELOW THE MIDDLE. Centred, the panel sat across the standing
             figure's face — the one part of a photograph of people that the
             picture is actually for, and the one place a UI panel must not

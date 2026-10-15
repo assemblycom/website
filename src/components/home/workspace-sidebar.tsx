@@ -6,7 +6,7 @@ import {
   IconCard,
   IconChat,
   IconFolder,
-  IconForm,
+  IconChecks,
   IconGlobe,
   IconPlus,
   IconUsers,
@@ -321,7 +321,11 @@ export function WorkspaceSidebar({
         <>
           <NavItem icon={<IconCard />} label="Billing" />
           <NavItem icon={<IconFolder />} label="Files" />
-          <NavItem icon={<IconForm />} label="Intake forms" />
+          <NavItem
+            icon={<IconChecks />}
+            label="Approvals"
+            active={active === "Approvals"}
+          />
         </>
       ) : null}
       <NavItem

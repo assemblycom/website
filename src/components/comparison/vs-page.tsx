@@ -1,9 +1,13 @@
 import { CardRail, RailCard } from "@/components/ui/card-rail";
 import { CTA } from "@/components/home/cta";
-import { FAQ, type FAQEntry } from "@/components/home/faq";
+import { Accordion, FAQ, type FAQEntry } from "@/components/home/faq";
 import { Testimonials } from "@/components/home/testimonials";
 import { DeepDiveCards } from "@/components/comparison/deep-dive-cards";
 import { FeatureMatrix } from "@/components/comparison/feature-matrix";
+import {
+  CompareChecklist,
+  type ChecklistRow,
+} from "@/components/comparison/compare-checklist";
 import { GridDivider, GridRails } from "@/components/ui/grid-lines";
 import { PillarsTabs } from "@/components/comparison/pillars-tabs";
 import { PortalPricing } from "@/components/client-portal/portal-pricing";
@@ -39,6 +43,11 @@ export interface VsPage {
     heading: string;
     sub: string;
     rows: ComparisonRow[];
+    /**
+     * Draws the comparison as a tick-and-cross checklist instead of the
+     * matrix of short answers. When set, `rows` is not rendered.
+     */
+    checklist?: ChecklistRow[];
   };
   pillarsHeading: string;
   pillars: {
@@ -49,7 +58,14 @@ export interface VsPage {
     tabLabel?: string;
     body: string;
     visual: Visual;
+    /** The pillar drawn as a rail card, for `pillarsStyle: "cards"`. */
+    card?: React.ReactNode;
   }[];
+  /**
+   * "tabs" (default) is one tabbed panel; "cards" is a rail of three cards with
+   * the copy under each, the shape the better-fit cards used to have.
+   */
+  pillarsStyle?: "tabs" | "cards";
   /** The deep dives' section heading. Same job `pillarsHeading` does above. */
   deepDivesHeading: string;
   deepDives: {
@@ -62,6 +78,12 @@ export interface VsPage {
     sub: string;
     /** `visual` fills the card's panel; it stays empty without one. */
     items: { title: string; body: string; visual?: React.ReactNode }[];
+    /**
+     * "cards" (default) is a rail of picture cards; "list" is the security
+     * section's shape, heading on the left and rows on the right, for a page
+     * that wants this aside to read as text rather than another pitch.
+     */
+    style?: "cards" | "list";
   };
   /** Only the Lovable page runs pricing as its own section. */
   pricing?: {
@@ -69,7 +91,8 @@ export interface VsPage {
     /** One paragraph. PortalPricing takes a single lead under its heading. */
     body: string;
   };
-  proof: {
+  /** Left out to go straight from the argument to the customer story. */
+  proof?: {
     heading: string;
     sub: string;
   };
@@ -173,12 +196,20 @@ export function VsComparisonPage({
                 of its own, so the rule was a second line a few pixels above
                 the first and a full stop between a heading and the thing it
                 introduces. */}
-            <FeatureMatrix
-              rows={page.glance.rows}
-              competitor={page.competitor}
-              caption={`Assembly compared with ${page.competitor}`}
-              framed
-            />
+            {page.glance.checklist ? (
+              <CompareChecklist
+                rows={page.glance.checklist}
+                competitor={page.competitor}
+                caption={`Assembly compared with ${page.competitor}`}
+              />
+            ) : (
+              <FeatureMatrix
+                rows={page.glance.rows}
+                competitor={page.competitor}
+                caption={`Assembly compared with ${page.competitor}`}
+                framed
+              />
+            )}
           </Reveal>
         </section>
 
@@ -196,10 +227,35 @@ export function VsComparisonPage({
             control, the panel and all of the panel's copy start on that line,
             and a centred heading over them was the one thing that did not. */}
         <section className={`${RAIL} py-16 md:py-24`}>
-          <h2 className="type-h2 text-balance">{page.pillarsHeading}</h2>
+          {/* Centred on a phone, like the deep dives below it: the page's two
+              argument sections should open the same way. */}
+          <h2
+            className={`type-h2 text-balance ${
+              page.pillarsStyle === "cards"
+                ? "max-sm:mx-auto max-sm:max-w-[16ch] max-sm:text-center"
+                : ""
+            }`}
+          >
+            {page.pillarsHeading}
+          </h2>
           <Reveal>
             <div className="mt-10 md:mt-12">
-              <PillarsTabs pillars={page.pillars} />
+              {page.pillarsStyle === "cards" ? (
+                <CardRail label={page.pillarsHeading}>
+                  {page.pillars.map((pillar) => (
+                    <RailCard
+                      key={pillar.heading}
+                      name={pillar.heading}
+                      caption={pillar.body}
+                      tallOnPhone
+                    >
+                      {pillar.card ?? null}
+                    </RailCard>
+                  ))}
+                </CardRail>
+              ) : (
+                <PillarsTabs pillars={page.pillars} />
+              )}
             </div>
           </Reveal>
         </section>
@@ -230,42 +286,75 @@ export function VsComparisonPage({
         {/* The section carries its own bottom padding again. It used to hand
             that to the columns so the rules between them could run down to the
             section's rule; the cards have no rules to run. */}
-        <section className={`${RAIL} py-16 md:py-24`}>
-          <Reveal>
-            {/* Ranged left on a phone, like every other section heading at
-                that width; centred from sm, where the three cards sit in a
-                row under it. */}
-            <h2 className="type-h2 text-balance sm:text-center">
-              {page.betterFit.heading}
-            </h2>
-            <p className="mt-4 max-w-2xl text-balance text-muted-foreground sm:mx-auto sm:text-center">
-              {page.betterFit.sub}
-            </p>
-            {/* The site's card rail, which is what /client-portal runs for
-                its build steps — so on a phone these three step sideways with
-                arrows under them instead of stacking into three full-width
-                panels and a screen and a half of scrolling. RailCard's default
-                shape is already this one: a square --surface panel with the
-                copy under it, which is why there is no bespoke card here any
-                more. A panel is empty until its item has a visual.
-
-                From lg the rail fits all three and its arrows go quiet on
-                their own, so the desktop row is unchanged. */}
-            <div className="mt-12">
-              <CardRail label={page.betterFit.heading}>
-                {page.betterFit.items.map((item) => (
-                  <RailCard
-                    key={item.title}
-                    name={item.title}
-                    caption={item.body}
-                  >
-                    {item.visual ?? null}
-                  </RailCard>
-                ))}
-              </CardRail>
-            </div>
-          </Reveal>
-        </section>
+        {page.betterFit.style === "list" ? (
+          // The client portal page's security section, heading and sub on
+          // the left and the rows that answer it on the right.
+          <section className={`${RAIL} py-16 md:py-24`}>
+            <Reveal>
+              <div className="grid gap-10 md:grid-cols-2 md:gap-16">
+                <div className="md:self-start">
+                  <h2 className="type-h2 text-balance">
+                    {page.betterFit.heading}
+                  </h2>
+                  <p className="mt-5 max-w-md text-pretty text-muted-foreground">
+                    {page.betterFit.sub}
+                  </p>
+                </div>
+                <div>
+                  <Accordion
+                    items={page.betterFit.items.map((item) => ({
+                      question: item.title,
+                      answer: item.body,
+                    }))}
+                    twoColumn={false}
+                    variant="divided"
+                    dottedRules
+                    flushTop={false}
+                    narrowAnswer
+                    justifyAnswers
+                  />
+                </div>
+              </div>
+            </Reveal>
+          </section>
+        ) : (
+          <section className={`${RAIL} py-16 md:py-24`}>
+            <Reveal>
+              {/* Ranged left on a phone, like every other section heading at
+                  that width; centred from sm, where the three cards sit in a
+                  row under it. */}
+              <h2 className="type-h2 text-balance sm:text-center">
+                {page.betterFit.heading}
+              </h2>
+              <p className="mt-4 max-w-2xl text-balance text-muted-foreground sm:mx-auto sm:text-center">
+                {page.betterFit.sub}
+              </p>
+              {/* The site's card rail, which is what /client-portal runs for
+                  its build steps — so on a phone these three step sideways with
+                  arrows under them instead of stacking into three full-width
+                  panels and a screen and a half of scrolling. RailCard's default
+                  shape is already this one: a square --surface panel with the
+                  copy under it, which is why there is no bespoke card here any
+                  more. A panel is empty until its item has a visual.
+  
+                  From lg the rail fits all three and its arrows go quiet on
+                  their own, so the desktop row is unchanged. */}
+              <div className="mt-12">
+                <CardRail label={page.betterFit.heading}>
+                  {page.betterFit.items.map((item) => (
+                    <RailCard
+                      key={item.title}
+                      name={item.title}
+                      caption={item.body}
+                    >
+                      {item.visual ?? null}
+                    </RailCard>
+                  ))}
+                </CardRail>
+              </div>
+            </Reveal>
+          </section>
+        )}
 
         {page.pricing && (
           <>
@@ -288,18 +377,25 @@ export function VsComparisonPage({
 
         <GridDivider />
 
-        {/* Tinted, as /client-portal tints its stack section: the one band
-            on the page that is a claim from a customer rather than from us. */}
-        <section className={`${RAIL} bg-[var(--surface)]/50 py-16 md:py-24`}>
-          <h2 className="type-h2 text-balance text-center">
-            {page.proof.heading}
-          </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-balance text-center text-muted-foreground">
-            {page.proof.sub}
-          </p>
-        </section>
+        {page.proof && (
+          <>
+            {/* Tinted, as /client-portal tints its stack section: the one
+                band on the page that is a claim from a customer rather than
+                from us. */}
+            <section
+              className={`${RAIL} bg-[var(--surface)]/50 py-16 md:py-24`}
+            >
+              <h2 className="type-h2 text-balance text-center">
+                {page.proof.heading}
+              </h2>
+              <p className="mx-auto mt-4 max-w-2xl text-balance text-center text-muted-foreground">
+                {page.proof.sub}
+              </p>
+            </section>
 
-        <GridDivider />
+            <GridDivider />
+          </>
+        )}
         {/* The site's featured-story component, carrying its default (AdvertAI):
             an agency shipping to 200+ clients is the outcome a visitor stalled
             in a code-generation tool is trying to picture, and the quote is

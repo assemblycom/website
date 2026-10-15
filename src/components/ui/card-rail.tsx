@@ -626,6 +626,7 @@ export function RailCard({
   index,
   name,
   copyInside = false,
+  tallOnPhone = false,
   picture = "fit",
   children,
 }: {
@@ -665,6 +666,11 @@ export function RailCard({
    * thing.
    */
   copyInside?: boolean;
+  /**
+   * 4:5 below sm instead of square, for a rail whose pictures are photos or
+   * a single small UI that reads short in a square on a phone.
+   */
+  tallOnPhone?: boolean;
   children: React.ReactNode;
 }) {
   const copy = (
@@ -704,7 +710,7 @@ export function RailCard({
           {/* No tabular-nums any more: the index is spelled out ("Step Two"),
               and lining figures do nothing for words. */}
           {index ? <span className="shrink-0">{index}:</span> : null}
-          <span className="truncate">{name}</span>
+          <span className="min-w-0 text-pretty">{name}</span>
         </p>
       ) : null}
       <p className="text-pretty text-muted-foreground">{caption}</p>
@@ -818,7 +824,11 @@ export function RailCard({
           journey rail runs, and it is where the tall card actually showed:
           with the copy UNDER the card, a 483px picture on a tablet pushed its
           own caption most of a screen down the page. */}
-      <div className="relative aspect-square w-full select-none overflow-hidden rounded-3xl bg-[var(--surface)] lg:aspect-[3/4]">
+      <div
+        className={`relative w-full select-none overflow-hidden rounded-3xl bg-[var(--surface)] lg:aspect-[3/4] ${
+          tallOnPhone ? "aspect-[4/5] sm:aspect-square" : "aspect-square"
+        }`}
+      >
         {children}
       </div>
       <div className="mt-4 px-1">{copy}</div>

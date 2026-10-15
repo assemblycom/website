@@ -1,188 +1,122 @@
 import { TypedAddress } from "@/components/comparison/typed-address";
-import { IconBolt, IconCheck, IconClock } from "@/components/home/mock-icons";
+import {
+  IconApp,
+  IconBrandMark,
+  IconCheck,
+  IconCreditCard,
+  IconPenFilled,
+} from "@/components/home/mock-icons";
+import { GoogleGlyph } from "@/components/client-portal/frictionless-mocks";
 import { MOCK_PRIMARY } from "@/components/ui/mock-type";
 import { PANEL_BG, PERIWINKLE } from "@/components/comparison/brand-panel";
 
-// ─────────────────────────────────────────────────────────────────────────
-// One small story per card, all in one shape: a card stating what happened,
-// a pill under it stating the consequence, and a hairline running through
-// both. The shape is shared so the maintenance deep dive and the three
-// better-fit cards read as one set of diagrams rather than four drawings, and
-// it stays monotone — the claim is in the words, not in a colour.
-// ─────────────────────────────────────────────────────────────────────────
+// The comparison pages' small card visuals: a photo or the brand gradient
+// behind one piece of product UI. Monotone on purpose, so the claim is in the
+// words rather than in a colour.
 
 const LINE = "border-[var(--mock-line)]";
-const CARD_FRAME = `w-full max-w-[300px] rounded-[14px] border bg-[var(--mock-window)] text-[color:var(--mock-ink)] ${LINE}`;
+const CARD_FRAME = `w-full max-w-[300px] rounded-[10px] border bg-[var(--mock-window)] text-[color:var(--mock-ink)] ${LINE}`;
 const CARD = `${CARD_FRAME} p-3.5`;
-const PILL = `flex items-center gap-2 whitespace-nowrap rounded-full border bg-[var(--mock-window)] py-1.5 pl-1.5 pr-3.5 text-[color:var(--mock-ink)] ${MOCK_PRIMARY} ${LINE}`;
-const TILE =
-  "flex size-6 shrink-0 items-center justify-center rounded-full bg-[var(--mock-well-2)] text-[color:var(--mock-ink)]";
-// A pill with no card above it is the whole picture, so it is drawn a step
-// larger to hold the panel on its own.
-const PILL_SOLO = `flex items-center gap-2.5 whitespace-nowrap rounded-full border bg-[var(--mock-window)] py-2 pl-2 pr-5 text-[15px] leading-none text-[color:var(--mock-ink)] ${LINE}`;
-const TILE_SOLO =
-  "flex size-8 shrink-0 items-center justify-center rounded-full bg-[var(--mock-well-2)] text-[color:var(--mock-ink)] [&_svg]:size-4";
 
-function Story({
-  card,
-  pill,
-  pillIcon,
-  spine = "full",
-  background,
-  bare = false,
-  pillOnPhone = true,
-}: {
-  /** Off for a card whose screen fills the rail's square phone panel: the
-   *  card's own caption carries the point there. */
-  pillOnPhone?: boolean;
-  /** Drops the card's padding and clips it, for a card that is a whole
-   *  screen with its own chrome rather than content set inside a frame. */
-  bare?: boolean;
-  /** Paints the panel behind the story, e.g. the hero's brand gradient. */
-  background?: string;
-  /** Left out for a story told by its background and pill alone. */
-  card?: React.ReactNode;
-  pill: string;
-  pillIcon: React.ReactNode;
-  /** The line through the pieces, the panel's full height, or none. */
-  spine?: "full" | "none";
-}) {
-  return (
-    <div
-      aria-hidden
-      className="absolute inset-0 select-none"
-      style={background ? { background } : undefined}
-    >
-      {/* The spine runs the panel's full height, behind the card and the
-          pill, so the two read as steps on one path rather than as two
-          objects that happen to be stacked. */}
-      {spine === "none" ? null : (
-        <span className="absolute inset-y-0 left-1/2 w-px bg-[var(--mock-line)]" />
-      )}
-      <div className="relative flex h-full flex-col items-center justify-center gap-4 px-6">
-        <div className="relative flex w-full flex-col items-center gap-3 sm:gap-4">
-          {card ? (
-            <div
-              className={`relative ${bare ? `${CARD_FRAME} overflow-hidden` : CARD}`}
-            >
-              {card}
-            </div>
-          ) : null}
-          <div
-            className={`relative ${card ? PILL : PILL_SOLO} ${pillOnPhone ? "" : "max-sm:hidden"}`}
-          >
-            <span className={card ? TILE : TILE_SOLO}>{pillIcon}</span>
-            {pill}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+/**
+ * The three "why Assembly" cards. Each keeps the ground its better-fit card had
+ * (laptop photo, brand gradient, office photo) and swaps in a small piece of
+ * the pillar's own UI, so the claim reads off the screen rather than a label.
+ */
+const ROW = `flex items-center gap-2.5 border-t px-3.5 py-2.5 ${LINE}`;
+const MUTED = "text-[color:var(--mock-ink-soft)]";
 
-/** A branch glyph. The mock set has none, and GitHub's own mark is theirs. */
-function IconBranch({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 16 16"
-      className={className}
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.4"
-      strokeLinecap="round"
-      aria-hidden
-    >
-      <circle cx="4.5" cy="3.5" r="1.5" />
-      <circle cx="4.5" cy="12.5" r="1.5" />
-      <circle cx="11.5" cy="5.5" r="1.5" />
-      <path d="M4.5 5v6M11.5 7c0 2.5-2 3-5.5 4" />
-    </svg>
-  );
-}
-
-/** Better fit 1: the code lives in a repo a developer takes over. */
-// Plain enough to read at a glance, real enough to read as code a developer
-// owns: a component, a fetch, a return.
-const SNIPPET: { text: string; soft?: boolean }[] = [
-  { text: "export function Booking() {" },
-  { text: "  const slots = useSlots();", soft: true },
-  { text: "  return (" },
-  { text: "    <Calendar slots={slots} />", soft: true },
-  { text: "  );" },
-  { text: "}" },
+// The product's own sidebar glyphs, the set the Track card's rail draws.
+// The three glyphs fill their boxes by different amounts, so each takes the
+// box size that draws it at the same ~20px on screen.
+const CLIENT_APPS = [
+  { label: "Project tracker", icon: <IconApp className="size-8" /> },
+  { label: "Contracts", icon: <IconPenFilled className="size-7" /> },
+  { label: "Invoices", icon: <IconCreditCard className="size-7" /> },
 ];
 
-export function GitHandoffVisual() {
+/** Pillar 1: the firm's apps, as three app tiles and nothing more. */
+export function ClientAppsCardVisual() {
   return (
     <div
       aria-hidden
-      className="absolute inset-0 flex select-none items-center justify-center px-6"
+      className="absolute inset-0 flex select-none items-center justify-center gap-3 px-6"
       style={{ background: HOSTED_MVP_BG }}
     >
-      {/* A code snippet, the thing a developer is handed: the repo is the
-          point of this card, so the picture is the code itself. */}
-      <div className={`${CARD_FRAME} overflow-hidden`}>
-        <div
-          className={`flex items-center gap-1.5 border-b bg-[var(--mock-well)] px-3.5 py-2 text-[color:var(--mock-ink-soft)] ${MOCK_PRIMARY} ${LINE}`}
+      {CLIENT_APPS.map(({ label, icon }) => (
+        <span
+          key={label}
+          className={`flex size-16 items-center justify-center rounded-[16px] border bg-[var(--mock-window)] text-[color:var(--mock-ink-soft)] ${LINE}`}
         >
-          <IconBranch className="size-3 shrink-0" />
-          booking.tsx
-        </div>
-        <pre className="px-3.5 py-3 font-mono text-[11.5px] leading-[1.7]">
-          {SNIPPET.map(({ text, soft }, i) => (
-            <span
-              key={i}
-              className={`block ${soft ? "text-[color:var(--mock-ink-soft)]" : ""}`}
-            >
-              {text}
-            </span>
-          ))}
-        </pre>
-      </div>
+          {icon}
+        </span>
+      ))}
     </div>
   );
 }
 
-/** Better fit 2: a page anyone can land on, no login in front of it. */
-export function PublicSiteVisual() {
+/** Pillar 2: the sign-in someone already built for you. */
+export function LoginsCardVisual() {
   return (
     <div
       aria-hidden
       className="absolute inset-0 flex select-none items-center justify-center px-6"
       style={{ background: PANEL_BG }}
     >
-      <TypedAddress url="yourbrand.com" />
+      <div className={`${CARD} flex flex-col items-center text-center`}>
+        <span className="flex size-8 items-center justify-center rounded-[8px] bg-[#101114] text-white">
+          <IconBrandMark className="size-[15px]" />
+        </span>
+        <span className="mt-3 text-[13.5px] leading-snug">
+          Sign in to Brandmages
+        </span>
+        <span
+          className={`mt-3.5 flex w-full items-center justify-center gap-2 rounded-[8px] border bg-[var(--mock-well)] py-2.5 ${MOCK_PRIMARY} ${LINE}`}
+        >
+          <GoogleGlyph />
+          Continue with Google
+        </span>
+        <span
+          className={`mt-2 flex w-full items-center justify-center rounded-[8px] border bg-[var(--mock-well)] py-2.5 ${MOCK_PRIMARY} ${LINE}`}
+        >
+          Email me a sign-in link
+        </span>
+      </div>
     </div>
   );
 }
 
-/** Better fit 3: a one-off that ships and is left as it is. */
-export function PrototypeVisual() {
+const CONTACTS = [
+  { initials: "MS", name: "Mary Sung", company: "Symphony" },
+  { initials: "TL", name: "Timothy Leclerc", company: "Wave" },
+  { initials: "KT", name: "Kenny Tse", company: "Godo" },
+];
+
+/** Pillar 3: one contact list behind every app. */
+export function CrmCardVisual() {
   return (
     <div
       aria-hidden
       className="absolute inset-0 flex select-none items-center justify-center px-6"
       style={{ background: PUBLIC_STORE_BG }}
     >
-      {/* One small app, finished and left alone: the case where a code-first
-          tool is the shorter path, because nothing about it is going to grow. */}
-      <div className={`${CARD} flex items-center gap-3`}>
-        <span className="flex size-8 shrink-0 items-center justify-center rounded-[8px] bg-[var(--mock-well-2)] text-[color:var(--mock-ink-soft)]">
-          <IconClock className="size-4" />
-        </span>
-        <span className="min-w-0 flex-1">
-          <span className={`block ${MOCK_PRIMARY}`}>Event RSVP</span>
-          <span
-            className={`mt-1 block text-[color:var(--mock-ink-soft)] ${MOCK_PRIMARY}`}
-          >
-            Last updated 8 months ago
-          </span>
-        </span>
-        <span
-          className={`shrink-0 rounded-[4px] bg-[var(--mock-well-2)] px-1.5 py-[3px] text-[color:var(--mock-ink-soft)] ${MOCK_PRIMARY}`}
-        >
-          v1
-        </span>
+      <div className={`${CARD_FRAME} overflow-hidden`}>
+        <div className={`px-3.5 py-3 ${MOCK_PRIMARY}`}>Contacts</div>
+        {CONTACTS.map(({ initials, name, company }) => (
+          <div key={name} className={ROW}>
+            <span
+              className={`flex size-6 shrink-0 items-center justify-center rounded-full bg-[var(--mock-well-2)] text-[9.5px] leading-none ${MUTED}`}
+            >
+              {initials}
+            </span>
+            <span className={`min-w-0 flex-1 truncate ${MOCK_PRIMARY}`}>
+              {name}
+            </span>
+            <span className={`shrink-0 ${MUTED} ${MOCK_PRIMARY}`}>
+              {company}
+            </span>
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -302,7 +236,9 @@ export function PlatformLayerVisual() {
             key={item}
             className={`flex items-center gap-2.5 px-3.5 py-2.5 ${i ? `border-t ${LINE}` : ""}`}
           >
-            <span className="flex size-[16px] shrink-0 items-center justify-center rounded-full bg-[var(--mock-ink)] text-[color:var(--mock-window)]">
+            {/* A quiet tick on the well, not a solid ink disc: four of them in a
+                column read as the loudest thing on the card. */}
+            <span className="flex size-[16px] shrink-0 items-center justify-center rounded-full bg-[var(--mock-well-2)] text-[color:var(--mock-ink-soft)]">
               <IconCheck className="size-[10px]" />
             </span>
             <span className={MOCK_PRIMARY}>{item}</span>
@@ -316,75 +252,65 @@ export function PlatformLayerVisual() {
 // Copy review: product names, copy, figures and handles in these three are
 // mine, invented to read as plausible public products.
 
-/** Base44 better fit 1: an idea put live to see if anyone wants it. */
-// Someone at work on a laptop behind the landing page: the founder shipping
-// it, which is who this card is for.
+// The two photo grounds the comparison cards share: someone at work on a
+// laptop, and a team at work in an office.
 const HOSTED_MVP_BG = "url(/images/mocks/hosted-mvp-bg.jpg) center 30% / cover";
-
-// A team at work behind the storefront, the people who run the store.
 const PUBLIC_STORE_BG =
   "url(/images/mocks/public-store-bg.jpg) center 30% / cover";
 
-export function HostedMvpVisual() {
-  // The photo carries the founder at work. The pill names the reader's
-  // situation, not a product claim: this card is where Base44 is the better fit.
-  return (
-    <Story
-      pillIcon={<IconBolt className="size-3.5" />}
-      pill="Testing an idea"
-      spine="none"
-      background={HOSTED_MVP_BG}
-    />
-  );
-}
-
-/** Base44 better fit 2: a public product being found and shared. */
-const GROWTH_STATS = [
-  { label: "Visits", value: "1,284" },
-  { label: "Page views", value: "3,920" },
-];
-
-export function GrowthToolingVisual() {
+/** Base44 pillar 1: the firm's own address, with no platform in it. */
+export function BrandCardVisual() {
   return (
     <div
       aria-hidden
-      className="absolute inset-0 flex select-none items-center justify-center px-6"
-      style={{ background: PANEL_BG }}
+      className="absolute inset-0 flex select-none items-center justify-center px-4 sm:px-6"
+      style={{ background: HOSTED_MVP_BG }}
     >
-      {/* The product's Analytics stat strip, Visits picked: the traffic a
-          marketed product brings, said in one block. */}
-      <div
-        className={`grid w-full max-w-[300px] grid-cols-2 gap-1 rounded-[12px] border bg-[var(--mock-well)] p-1 text-[color:var(--mock-ink)] ${LINE}`}
-      >
-        {GROWTH_STATS.map(({ label, value }, i) => (
-          <div
-            key={label}
-            className={`rounded-[9px] px-3.5 py-3 ${
-              i === 0
-                ? `border bg-[var(--mock-window)] ${LINE}`
-                : "text-[color:var(--mock-ink-soft)]"
-            }`}
-          >
-            <p className={MOCK_PRIMARY}>{label}</p>
-            <p className={`mt-2 ${STAT}`}>{value}</p>
-          </div>
-        ))}
-      </div>
+      <TypedAddress url="portal.brandmages.com" />
     </div>
   );
 }
 
-/** Base44 better fit 3: a store anyone can browse without signing in. */
-export function PublicStoreVisual() {
+const CREDITS_LEFT = 142;
+const CREDITS_TOTAL = 200;
+
+/**
+ * Base44 pillar 3: one credit meter, and a flat price for a live app. On
+ * hover the month turns over and the meter refills, which is the rollover the
+ * caption describes.
+ */
+export function CreditsCardVisual() {
   return (
     <div
       aria-hidden
       className="absolute inset-0 flex select-none items-center justify-center px-6"
       style={{ background: PUBLIC_STORE_BG }}
     >
-      {/* Just the address, typed: a public domain anyone can head to is the
-          whole claim, and the photo behind it carries the rest. */}
-      <TypedAddress url="shop.yourbrand.com" />
+      <div className={`${CARD_FRAME} overflow-hidden`}>
+        <div className="px-3.5 py-3">
+          <div className="flex items-center justify-between gap-3">
+            <span className={MOCK_PRIMARY}>Build credits</span>
+            <span className={`relative ${MUTED} ${MOCK_PRIMARY} tabular-nums`}>
+              <span className="transition-opacity duration-300 group-hover/card:opacity-0 motion-reduce:transition-none">
+                {CREDITS_LEFT} of {CREDITS_TOTAL}
+              </span>
+              <span className="absolute inset-y-0 right-0 whitespace-nowrap opacity-0 transition-opacity duration-300 group-hover/card:opacity-100 motion-reduce:transition-none">
+                {CREDITS_TOTAL} of {CREDITS_TOTAL}
+              </span>
+            </span>
+          </div>
+          <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-[var(--mock-well-2)]">
+            <div
+              className="h-full w-full origin-left rounded-full bg-[var(--mock-ink)] transition-[width] duration-700 ease-out group-hover/card:!w-full motion-reduce:transition-none"
+              style={{ width: `${(CREDITS_LEFT / CREDITS_TOTAL) * 100}%` }}
+            />
+          </div>
+        </div>
+        <div className={ROW}>
+          <span className={`min-w-0 flex-1 ${MOCK_PRIMARY}`}>Live app</span>
+          <span className={`shrink-0 ${MUTED} ${MOCK_PRIMARY}`}>$5 / mo</span>
+        </div>
+      </div>
     </div>
   );
 }
