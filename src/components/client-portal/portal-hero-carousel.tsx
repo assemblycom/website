@@ -4,13 +4,14 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   ApprovalsMock,
   DocumentsMock,
+  HelpdeskMock,
   OnboardingMock,
   PortalSidebar,
 } from "@/components/client-portal/segment-mock";
 import { ProgressMock } from "@/components/client-portal/progress-chart";
 import { IconArrowUp } from "@/components/home/build-step-visual";
 import { IconPlus } from "@/components/home/mock-icons";
-import { getTemplateBySlug } from "@/lib/templates";
+import { CORE_APP_SUBTITLE, getTemplateBySlug } from "@/lib/templates";
 
 // ─────────────────────────────────────────────────────────────────────────
 // The hero's product shot: one grey panel holding the app the reader picked,
@@ -92,7 +93,26 @@ const ITEMS: Item[] = [
     // vocabulary, on a page about an accounting practice.
     "Build a project tracker each client can check their own project in.",
   ),
-  templateItem("content-approval-flow", "fill", <ApprovalsMock />),
+  // THE HELPDESK, where the approvals round used to be.
+  //
+  // That screen is a marketing agency's work going out for sign-off —
+  // photographed catalogue covers — on the hero of a page selling to
+  // accountants, and it is the first app the reader is shown. The helpdesk is
+  // something a practice actually runs: the answers clients ask for every
+  // January, written once. See HelpdeskMock.
+  //
+  // NOT templateItem. The helpdesk is one of the product's CORE apps rather
+  // than a committed template, so getTemplateBySlug has nothing for it and the
+  // slot would silently vanish on a build without Contentful. Its line is the
+  // one already committed for that app in CORE_APP_SUBTITLE, so this is still
+  // the repo's own copy rather than a sentence written here.
+  {
+    key: "helpdesk-app",
+    title: "Helpdesk",
+    description: CORE_APP_SUBTITLE["helpdesk-app"],
+    frame: "fill" as const,
+    mock: <HelpdeskMock />,
+  },
   templateItem(
     "client-onboarding-wizard",
     "fill",
@@ -285,7 +305,26 @@ export function PortalHeroCarousel({
    * the marketing-agency page's own lead. See AGENCY_ITEMS.
    */
   set = "default",
-}: { set?: "default" | "agency" } = {}) {
+  footDissolve = true,
+}: {
+  set?: "default" | "agency";
+  /**
+   * The ramp that takes the foot of the shot into the panel's ground.
+   *
+   * On by default, and the accounting page turns it off: on a page whose every
+   * other screen ends on a straight crop against its card's edge, the hero was
+   * the one picture that went soft on the way out, which read as the shot
+   * losing focus rather than as the frame ending. A hard edge says "this
+   * continues" — which is the same thing the ramp was saying, more quietly.
+   *
+   * IT STILL DRAWS BEHIND THE PHONE'S STEPPER, whatever this is set to. That
+   * control sits INSIDE the panel, on the shot, and the ramp is what gives it
+   * ground to sit on — without it the arrows and the counter land on the app's
+   * own rows and read through them. So this switches off the ramp where it is
+   * decoration and keeps it where it is load-bearing.
+   */
+  footDissolve?: boolean;
+} = {}) {
   const items = set === "agency" ? AGENCY_ITEMS : ITEMS;
   const [active, setActive] = useState(0);
   // Which template the "Select a template" pill returns you to. The panel
@@ -450,15 +489,21 @@ export function PortalHeroCarousel({
             rather than on a hard edge, and gives the control something to sit
             on. Ends on the ground colour exactly — see the token on the panel —
             and reaches it above the control, or the app's rows read through the
-            arrows. */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-x-0 bottom-0"
-            style={{
-              height: dissolveFor(F.h * F.scale).height,
-              backgroundImage: `linear-gradient(to bottom, transparent 0%, var(--portal-ground) ${dissolveFor(F.h * F.scale).stop}%)`,
-            }}
-          />
+            arrows.
+
+            A caller can turn it off (see `footDissolve`), EXCEPT where the
+            phone's stepper is showing: that control is inside the panel and
+            this is the ground it stands on. */}
+          {footDissolve || (!F.wide && active !== 0) ? (
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-x-0 bottom-0"
+              style={{
+                height: dissolveFor(F.h * F.scale).height,
+                backgroundImage: `linear-gradient(to bottom, transparent 0%, var(--portal-ground) ${dissolveFor(F.h * F.scale).stop}%)`,
+              }}
+            />
+          ) : null}
 
           {/* Moving between templates, in the grey either side of the shot.
 

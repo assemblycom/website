@@ -48,7 +48,13 @@ export function PortalTailor({
           </p>
         </div>
 
-        {visual ?? (
+        {/* A page's own picture takes the SAME gap under the lead that the
+            four cards take. It had none — the grid carried its margin on
+            itself, so a caller passing `visual` got a picture butted against
+            the sentence above it. */}
+        {visual ? (
+          <div className="mt-12 md:mt-14">{visual}</div>
+        ) : (
           <>
             {/* Four cards of four different shapes. Same-size cards each holding
             the same screenshot argue the opposite of what the heading says, so

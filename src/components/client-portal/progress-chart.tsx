@@ -128,6 +128,14 @@ export function ProgressMock() {
                 // so matching the old number would have matched it only on
                 // paper.
                 //
+                // IT HAS TO BE A repeating-linear-gradient. A plain
+                // linear-gradient does not tile: the stops describe the whole
+                // element once, so `transparent 2px 5px` holds transparent for
+                // the rest of the span's height. That drew ONE 2px dash at the
+                // very top of each rule and nothing below it, which is why the
+                // rules read as missing however far the alpha was pushed — the
+                // alpha was never the problem.
+                //
                 // THE PERIOD IS 5px, AND THAT IS THE LOAD-BEARING NUMBER. The
                 // rules are drawn BEHIND the bars, so the only parts of them
                 // anyone sees are the gaps between rows. At an 8px period a
@@ -135,7 +143,7 @@ export function ProgressMock() {
                 // and show nothing at all, which is what made these look
                 // missing rather than faint. Keep the period under the row
                 // gap and every gap catches a dash.
-                className="absolute inset-y-0 w-px bg-[linear-gradient(to_bottom,color-mix(in_srgb,var(--mock-ink)_26%,transparent)_0_2px,transparent_2px_5px)]"
+                className="absolute inset-y-0 w-px bg-[repeating-linear-gradient(to_bottom,color-mix(in_srgb,var(--mock-ink)_26%,transparent)_0_2px,transparent_2px_5px)]"
                 style={{ left: `${g}%` }}
               />
             ))}

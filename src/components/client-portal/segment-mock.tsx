@@ -16,6 +16,7 @@
 import { ApprovalCovers } from "@/components/client-portal/approval-covers";
 import { fadeMask } from "@/components/ui/fade-mask";
 import { WorkspaceSidebar } from "@/components/home/workspace-sidebar";
+import { MOCK_MICRO, MOCK_SECONDARY } from "@/components/ui/mock-type";
 
 import {
   IconBrandMark,
@@ -27,6 +28,9 @@ import {
   IconFile,
   IconArrowUpRight,
   IconGlobe,
+  IconBookOpen,
+  IconSearch,
+  IconPlus,
 } from "@/components/home/mock-icons";
 
 // Two glyphs the shared set does not carry, drawn to its light-stroke
@@ -155,16 +159,30 @@ const PANEL = `bg-[var(--mock-well-soft)] text-[color:var(--mock-ink)] ${LINE}`;
 // the ring never meets a neighbour or the frame.
 const PANEL_TINT = `mock-edge [--mock-edge-fill:var(--mock-well-2)] [--mock-edge-w:120%] [--mock-edge-h:150%] bg-[var(--mock-well-soft)] [[data-theme=dark]_&]:bg-[var(--mock-well-2)] text-[color:var(--mock-ink)] [[data-theme=dark]_&]:shadow-[0_0_0_3px_var(--mock-window),0_0_0_4px_var(--mock-line)] ${LINE}`;
 
-function NavRow({
+/**
+ * One row of the client's nav.
+ *
+ * Exported because the accounting page's "a different view for every client"
+ * picture draws TWO of these navs side by side, and a row that is only nearly
+ * the same as this one is the thing that section is arguing against.
+ */
+export function NavRow({
   icon,
   label,
   active = false,
   branded = false,
+  muted = false,
 }: {
   icon: React.ReactNode;
   label: string;
   active?: boolean;
   branded?: boolean;
+  /**
+   * A row the client cannot open — the firm's own folder, left in the list with
+   * a lock rather than taken out of it. Half strength, so it reads as a row
+   * that is there and shut rather than as a row drawn wrong.
+   */
+  muted?: boolean;
 }) {
   return (
     <span
@@ -180,7 +198,9 @@ function NavRow({
             // nav does — you are never on more than one.
             active
             ? "bg-white/[0.12] text-white/90"
-            : "text-white/90"
+            : muted
+              ? "text-white/45"
+              : "text-white/90"
           : active
             ? // Ink, not a pill. A filled row on a --muted sidebar drew a hard
               // edge that read as a border around it rather than as the row
@@ -189,7 +209,9 @@ function NavRow({
               // against muted siblings is the whole signal: it is the only
               // black row in the column.
               "text-[color:var(--mock-ink)]"
-            : "text-[color:var(--mock-ink-soft)]"
+            : muted
+              ? "text-[color:var(--mock-ink-soft)] opacity-60"
+              : "text-[color:var(--mock-ink-soft)]"
       }`}
     >
       <span className="flex size-[11px] shrink-0 items-center justify-center">
@@ -664,6 +686,150 @@ export function DocumentsStatsMock() {
 // — most visible on a phone, where the sidebar is hidden and nothing explained
 // the inner edge. What makes it a different app is its CONTENT — a completion
 // bar, received tags and an upload action — not a second frame around it.
+// ─────────────────────────────────────────────────────────────────────────
+// THE HELPDESK — the firm's knowledge base, open on the topics that order it.
+//
+// It replaces ApprovalsMock in the accounting page's hero. That screen is a
+// round of catalogue covers going out for sign-off: a marketing agency's work,
+// photographed models and all, on the hero of a page selling to accountants.
+// The helpdesk is an app an accounting practice actually runs — the answers
+// clients ask for every January, written once.
+//
+// Drawn from the product's own screen: the topic list, each row with its drag
+// handle and its count, over the search and audience filter that sit above it.
+// The left filter column (Status, Type) is not here — at this size it is a
+// third column of 10px labels, and what makes the screen recognisable is the
+// ordered list of topics, not the facets beside it.
+// ─────────────────────────────────────────────────────────────────────────
+
+/** Topics an accounting practice would answer, with how much sits under each. */
+const HELPDESK_TOPICS = [
+  { name: "Onboarding & kickoff", count: 3 },
+  { name: "Documents we need from you", count: 5 },
+  { name: "Billing & payments", count: 4 },
+  { name: "Year-end & filing dates", count: 4 },
+  { name: "Payroll", count: 3 },
+  { name: "Security & access", count: 3 },
+  // The last three exist to be CUT by the foot of the window. Six fitted
+  // inside it, which made the shot a list that had run out rather than a
+  // window onto one — the same reason the Gantt further down the page is nine
+  // bars deep in a frame that shows six.
+  { name: "Sales tax", count: 2 },
+  { name: "Quarterly estimates", count: 4 },
+  { name: "Working with your bookkeeper", count: 2 },
+];
+
+/** The handle a row is dragged by: two columns of three dots, as the app draws it. */
+function IconDragHandle({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 10 16" className={className} fill="currentColor" aria-hidden>
+      <circle cx="3.5" cy="4" r="1" />
+      <circle cx="6.5" cy="4" r="1" />
+      <circle cx="3.5" cy="8" r="1" />
+      <circle cx="6.5" cy="8" r="1" />
+      <circle cx="3.5" cy="12" r="1" />
+      <circle cx="6.5" cy="12" r="1" />
+    </svg>
+  );
+}
+
+export function HelpdeskMock() {
+  return (
+    <div
+      aria-hidden
+      className="pointer-events-none flex h-full select-none bg-[var(--mock-window)] text-[color:var(--mock-ink)]"
+    >
+      {/* THE FIRM'S OWN WORKSPACE RAIL, with Helpdesk lit.
+
+          `active` names the row the pane belongs to, and that is the whole fix
+          here: the approvals screen this replaces passed active="Home" while
+          showing an approvals round, so the rail said one thing and the pane
+          said another. The app the firm has built is Helpdesk, the pane is the
+          Helpdesk, so the Helpdesk row is the open one.
+
+          148 rather than the default 164, matching the screen it replaces, so
+          the pane keeps the same measure in the hero's window. */}
+      <WorkspaceSidebar
+        active="Helpdesk"
+        apps={[{ icon: <IconBookOpen />, label: "Helpdesk" }]}
+        // LEDGERLINE, not the rail's BrandMages default. This screen is the
+        // hero of the accounting page, and the firm it names should be the
+        // firm the rest of the page names — the same one down the nav of the
+        // "a different view for every client" picture further down.
+        brand="Ledgerline"
+        showcase
+        className="hidden w-[148px] shrink-0 sm:flex"
+      />
+      <div className="flex min-w-0 flex-1 flex-col">
+        <AppHeader
+          title="Topics"
+          meta={
+            // The one action on the screen, as the product puts it: top right,
+            // filled, with the plus. It is drawn rather than described because
+            // a topic list with no way to add one is a report, not an app.
+            <span
+              className={`flex shrink-0 items-center gap-1 rounded-[5px] bg-[var(--mock-ink)] px-2 py-[5px] text-[color:var(--mock-window)] ${MOCK_MICRO}`}
+            >
+              <IconPlus className="size-[9px]" />
+              New topic
+            </span>
+          }
+        />
+        <div className="flex min-h-0 flex-1 flex-col px-4 pt-3">
+          {/* Search and the audience facet. Two controls, not the product's
+              full filter rail: they are what says "this list is searchable and
+              scoped", which is the claim the app's own line makes. */}
+          <div className="flex items-center gap-2">
+            <span
+              className={`flex min-w-0 flex-1 items-center gap-1.5 rounded-[5px] border px-2 py-[6px] text-[color:var(--mock-ink-soft)] ${MOCK_SECONDARY} ${LINE}`}
+            >
+              <IconSearch className="size-[11px] shrink-0" />
+              <span className="truncate">Search resources by title</span>
+            </span>
+            <span
+              className={`flex shrink-0 items-center gap-1 rounded-[5px] bg-[var(--mock-well)] px-2 py-[6px] text-[color:var(--mock-ink)] ${MOCK_SECONDARY}`}
+            >
+              Audience
+              <IconChevronDown className="size-[8px] text-[color:var(--mock-ink-soft)]" />
+            </span>
+          </div>
+
+          {/* The list itself. Six rows in a frame that shows about five, so it
+              runs off the foot of the window the way every screen in this set
+              does — a knowledge base that ended inside the frame would be a
+              short list rather than one you scroll. */}
+          {/* rounded-t only, and no bottom border: the list runs off the foot
+              of the window, so a closed corner down there would be the panel
+              ending inside a frame that carries on. */}
+          <div
+            className={`mt-3 flex min-h-0 flex-col overflow-hidden rounded-t-[6px] border border-b-0 ${LINE}`}
+          >
+            {HELPDESK_TOPICS.map(({ name, count }) => (
+              <span
+                key={name}
+                className={`flex shrink-0 items-center gap-2.5 border-b px-3 py-[9px] last:border-b-0 ${LINE}`}
+              >
+                <IconDragHandle className="h-[11px] w-[7px] shrink-0 text-[color:var(--mock-ink-soft)]" />
+                <span
+                  className={`min-w-0 flex-1 truncate text-[color:var(--mock-ink)] ${MOCK_SECONDARY}`}
+                >
+                  {name}
+                </span>
+                <span
+                  className={`shrink-0 text-[color:var(--mock-ink-soft)] ${MOCK_MICRO}`}
+                >
+                  {count} resources
+                </span>
+                <IconChevronRight className="size-[9px] shrink-0 text-[color:var(--mock-ink-soft)]" />
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function DocumentsMock() {
   return (
     <div

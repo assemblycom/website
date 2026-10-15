@@ -24,6 +24,10 @@ import { DEMO_URL, SIGNUP_URL } from "@/lib/constants";
 import { PAGE_SEO, pageMetadata } from "@/lib/seo";
 import { unbreakable } from "@/components/ui/unbreakable";
 
+/** Both hero leads, so the phone's and the desktop's cannot drift apart. */
+const HERO_LEAD =
+  "type-lead max-w-[34rem] text-pretty text-muted-foreground lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:pt-2";
+
 export const metadata: Metadata = pageMetadata(
   PAGE_SEO.marketingAgencyClientPortal,
 );
@@ -180,7 +184,21 @@ export default function MarketingAgencyClientPortalPage() {
                 "Turn your agency\u2019s know-how into AI-built apps",
               )}
             </h1>
-            <p className="type-lead max-w-[34rem] text-pretty text-muted-foreground lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:pt-2">
+            {/* Two leads, one measure — the pair the accounting page already
+                runs, for the same reason. The desktop sentence takes five
+                lines on a 390px screen and pushes both buttons below the fold
+                on this page's most important screen; the phone gets the same
+                argument, portal plus AI for what sets the agency apart,
+                without the two enumerations the sections below make anyway.
+
+                Two paragraphs rather than one clamped, because a clamp cuts
+                mid-sentence and cannot be read for sense. The classes are
+                shared so the two cannot drift apart. */}
+            <p className={`${HERO_LEAD} md:hidden`}>
+              A branded client portal for your agency&rsquo;s work &mdash; and
+              AI to build what sets you apart.
+            </p>
+            <p className={`hidden ${HERO_LEAD} md:block`}>
               Assembly gives your agency a branded client portal for reports,
               approvals, invoices, and files. Use AI to build what sets your
               agency apart, from analytics dashboards to design review apps.
@@ -291,7 +309,7 @@ export default function MarketingAgencyClientPortalPage() {
             paragraph, actions and the picture. */}
         <PortalBuild
           heading="Retire a subscription. Build the app instead."
-          body="Describe what you want. The builder asks a few questions, shows a one-page plan, and builds after you approve. Every app connects to your built-in CRM, so it already knows each client."
+          body="Describe what you want. The builder asks a few questions, shows a one-page plan, and builds after you approve. Every app knows your clients from the built-in CRM."
           steps={[]}
           cta={{ label: "Get started free", href: SIGNUP_URL }}
           // OPEN: the handoff leaves this target to the web lead — /ai-app-builder
@@ -315,12 +333,14 @@ export default function MarketingAgencyClientPortalPage() {
             four cards, which are that page's own apps and its own argument. */}
         <PortalTailor
           heading="Every client gets their own branded view"
-          body="Custom fields decide which apps each client sees, so your top tier can book strategy sessions while everyone gets the monthly report. Every app you build carries your logo and colors."
+          body="Custom fields decide which apps each client sees — your top tier books strategy sessions, everyone gets the monthly report. Every app carries your logo and colors."
           visual={
             <div
               aria-hidden
               title="V5 — the agency tailor shot. Art direction pending."
-              className="mt-12 h-[400px] rounded-3xl bg-[var(--surface)] md:mt-14 md:h-[500px]"
+              // No margin of its own: PortalTailor gives whatever it is passed
+              // the same gap the four cards take, so one here stacks on it.
+              className="h-[400px] rounded-3xl bg-[var(--surface)] md:h-[500px]"
             />
           }
         />

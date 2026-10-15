@@ -20,6 +20,8 @@ import {
   PlanCard,
 } from "@/components/client-portal/portal-build-cards";
 import { PortalTailor } from "@/components/client-portal/portal-tailor";
+import { AccountingLoginsVisual } from "@/components/solutions/accounting-logins-visual";
+import { AccountingViewsVisual } from "@/components/solutions/accounting-views-visual";
 import { PortalStack } from "@/components/client-portal/portal-stack";
 import { PortalTrust } from "@/components/client-portal/portal-trust";
 import { PortalPricing } from "@/components/client-portal/portal-pricing";
@@ -154,6 +156,13 @@ const TRUST_CLAIMS: FAQEntry[] = [
  * Enterprise is not here: it carries no price and two perks, and as a fifth
  * card it cost the other four a fifth of their width each. It runs as the row
  * under the grid instead.
+ *
+ * THE BILLING TERM IS IN THE SECTION'S LEAD, not on each card. "per month,
+ * billed annually" is one fact stated three times in a row of four cards, and
+ * at the cadence's size it was the longest line in each of them — on Advanced
+ * it wrapped, which put that card's price and its strapline on a different
+ * rhythm from the three beside it. Said once above the grid it is the same
+ * promise and reads as a condition on all the prices, which is what it is.
  */
 const ACCOUNTING_TIERS = [
   {
@@ -168,7 +177,7 @@ const ACCOUNTING_TIERS = [
   {
     name: "Starter",
     price: "$29",
-    cadence: "per month, billed annually",
+    cadence: "per month",
     perksLabel: "Everything in Free, plus:",
     perks: ["50 active contacts", "API and MCP connector"],
     cta: "Get started",
@@ -177,7 +186,7 @@ const ACCOUNTING_TIERS = [
   {
     name: "Professional",
     price: "$99",
-    cadence: "per month, billed annually",
+    cadence: "per month",
     perksLabel: "Everything in Starter, plus:",
     perks: [
       "Custom domain",
@@ -192,7 +201,7 @@ const ACCOUNTING_TIERS = [
   {
     name: "Advanced",
     price: "$499",
-    cadence: "per month, billed annually",
+    cadence: "per month",
     perksLabel: "Everything in Professional, plus:",
     perks: [
       "HIPAA BAA",
@@ -370,7 +379,11 @@ export default function AccountingClientPortalPage() {
 
               The V1 art direction is kept below so it is not lost with the
               placeholder that carried it. */}
-          <PortalHeroCarousel />
+          {/* No ramp at the foot of the shot. Every other screen on this page
+              ends on a straight crop against its card's edge; the hero was the
+              one that faded out, which read as the picture going soft rather
+              than as the frame ending. See footDissolve. */}
+          <PortalHeroCarousel footDissolve={false} />
           {/* V1 — left 40%: the Assembly build panel headed "Build with AI",
               with the message "Build an estimated tax payment tracker. Clients
               see scheduled and paid amounts; send a reminder 7 days before each
@@ -403,15 +416,19 @@ export default function AccountingClientPortalPage() {
           // this handoff has none — the section is heading, body, picture,
           // quote, link. They were inherited by leaving the default in place.
           sides={[]}
-          // V2's slot: the tray at the height it has on /client-portal, with
-          // nothing drawn in it. The default screens run that page's firm, so
-          // on this page they showed a marketing portal and a Lisbon hotel.
+          // V2 — the pile of sign-ins the heading is about. It replaces a
+          // titled empty div: the slot was held open while the handoff's
+          // visuals were unbuilt, so the section rendered as a heading, a
+          // sentence, a quote and a grey rectangle.
+          //
+          // The handoff pairs those sign-ins with one Ledgerline portal
+          // answering them. That half is not drawn, because this page runs the
+          // section `split` and the answer would land at thumbnail size beside
+          // them — see accounting-logins-visual.tsx.
           screens={
-            <div
-              aria-hidden
-              title="V2 — left: four desaturated, angled browser windows labelled Proposal, Drive, Invoice and Email, each with a different sign-in screen. Right: one full-colour portal.ledgerline.com window showing Harbor Dental PLLC's task list — 'Upload Q3 payroll reports', 'Sign 2026 engagement letter', 'Pay invoice #1042, $450.00'. Static."
-              className="h-[300px] md:h-[400px]"
-            />
+            <div className="h-[300px] md:h-[400px]">
+              <AccountingLoginsVisual />
+            </div>
           }
           quote={{
             // Quoted from the published Sargent CPAs study, first sentence only,
@@ -478,13 +495,12 @@ export default function AccountingClientPortalPage() {
         <PortalTailor
           heading="One firm, a different view for every client"
           body="Clients can belong to several entities and switch between them with one login. Custom fields decide which apps each client sees."
-          // The component's own four cards, rather than a slot held open.
-          // They vary in shape on purpose — four same-size cards would argue
-          // against the heading — and they are the only UI the site has for
-          // this point.
-          //
-          // KNOWN, as with section 4: the set names /client-portal's firm, not
-          // an accounting practice. See portal-tailor.tsx.
+          // V5 — two client sidebars, the entity switcher open on one of them,
+          // and a locked folder on the other. It replaces the component's own
+          // four cards, which were /client-portal's agency: four different apps
+          // under a heading about one portal seen two ways, with Brandmages
+          // down every nav. See accounting-views-visual.tsx.
+          visual={<AccountingViewsVisual />}
         />
 
         {/* 6. Keep your stack.
@@ -567,7 +583,7 @@ export default function AccountingClientPortalPage() {
         {/* 9. Pricing. */}
         <PortalPricing
           heading="Plans that match the scale of your firm"
-          body="Start free with real apps. Upgrade for your own domain, automations, and client access permissions."
+          body="Start free with real apps. Upgrade for your own domain, automations, and client access permissions. Monthly prices shown are billed annually."
           tiers={ACCOUNTING_TIERS}
           aside={{
             name: "Enterprise",
