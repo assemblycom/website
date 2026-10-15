@@ -231,6 +231,15 @@ export function IconFolder({ className }: IconProps) {
   );
 }
 
+export function IconLock({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 16 16" className={className} {...STROKE}>
+      <rect x="3.5" y="7" width="9" height="6" rx="1" />
+      <path d="M5.75 7V5.25a2.25 2.25 0 0 1 4.5 0V7" />
+    </svg>
+  );
+}
+
 export function IconSearch({ className }: IconProps) {
   return (
     <svg viewBox="0 0 16 16" className={className} {...STROKE}>

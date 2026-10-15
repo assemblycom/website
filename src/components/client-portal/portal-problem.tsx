@@ -272,6 +272,7 @@ export function PortalProblem({
   quote,
   link,
   linkFirst = false,
+  split = false,
 }: {
   heading?: string;
   /** A lead under the heading. /client-portal deliberately has none. */
@@ -300,6 +301,11 @@ export function PortalProblem({
    * own link and where this section has always put it.
    */
   linkFirst?: boolean;
+  /**
+   * Lays the picture and the quote out as one row from md, instead of the
+   * quote sitting under the picture. See the wrapper in the markup.
+   */
+  split?: boolean;
 } = {}) {
   // 1, the built app, because that is the half the section argues for; the
   // generic portal is the before. Only the default pair reads this — a page
@@ -313,10 +319,40 @@ export function PortalProblem({
             it pointed at a section this one is the set-up for — so the reader
             met two sentences and a button before the picture that is the
             actual argument. */}
-        <h2 className="type-h2 max-w-2xl text-balance">{heading}</h2>
-        {body ? (
-          <p className="mt-5 max-w-xl text-muted-foreground">{body}</p>
-        ) : null}
+        {/* Split pages run heading and lead as two columns, with the jump
+            link under the heading rather than at the foot of the section.
+
+            The stacked layout is untouched: heading, lead beneath it, link
+            last. `contents` again, so the wrapper is invisible there and the
+            three stay direct children of the section's flex column — which is
+            what their order-N classes are addressing. */}
+        <div
+          className={
+            split
+              ? "order-1 grid gap-6 md:grid-cols-2 md:items-start md:gap-12"
+              : "contents"
+          }
+        >
+          <div className={split ? "flex flex-col items-start" : "contents"}>
+            <h2 className="type-h2 max-w-2xl text-balance">{heading}</h2>
+            {split && link ? (
+              <Link href={link.href} className={`mt-6 ${QUIET_BUTTON}`}>
+                {link.label}
+              </Link>
+            ) : null}
+          </div>
+          {body ? (
+            <p
+              className={
+                split
+                  ? "max-w-xl text-muted-foreground md:mt-2"
+                  : "mt-5 max-w-xl text-muted-foreground"
+              }
+            >
+              {body}
+            </p>
+          ) : null}
+        </div>
 
         {/* Above the tray in two columns, in the pair's reading order. They
             stopped being captions aligned under their own screen once the
@@ -381,8 +417,38 @@ export function PortalProblem({
         {/* The tray, plus the phone's copy of the toggle under it. Wrapped so
             the two move as one block in the section's order, rather than the
             toggle needing a slot of its own between the tray and the columns. */}
-        <div className="order-1 mt-10 md:order-2 md:mt-10">
-          {/* THE TRAY IS PAPER IN DARK, like the hero's cards.
+        {/* Picture and quote, as one row or as two stacked blocks.
+
+            `contents` is the default, so the wrapper vanishes from layout
+            entirely and /client-portal and the agency page lay out exactly as
+            they did — tray, then quote beneath it, both on the section's full
+            measure.
+
+            `split` puts them side by side from md: the picture left, the quote
+            reading beside it rather than under it. Only the accounting page
+            asks for this. Still stacked on a phone, where two columns would
+            give the picture half a 375px screen. */}
+        <div
+          className={
+            split
+              ? // mt-10 replaces the margin the picture used to carry itself —
+                // taking it off the tray for the split layout left this row
+                // sitting directly under the header with nothing between the
+                // jump link and the cards.
+                "order-2 mt-10 grid gap-8 md:grid-cols-2 md:items-stretch md:gap-8"
+              : "contents"
+          }
+        >
+          <div
+            // The order and the top margin belong to the stacked layout,
+            // where this has to sit between the captions and the quote and
+            // clear the lead above it. Inside the split grid both are wrong:
+            // md:order-2 was putting the PICTURE second, which read as the
+            // quote taking the left column, and the margin dropped it out of
+            // line with the card beside it.
+            className={split ? "" : "order-1 mt-10 md:order-2 md:mt-10"}
+          >
+            {/* THE TRAY IS PAPER IN DARK, like the hero's cards.
 
               --surface was the ground here, which is right for a card you are
               meant to see as a card. At #191919 on a #0a0a0a page it was not
@@ -411,8 +477,8 @@ export function PortalProblem({
               --muted-foreground is light's own #6b7079 here, not the navy the
               hero needs: that card is a mid blue, this tray is near-white, so
               the grey tuned against white is correct again. */}
-          <div className="relative overflow-hidden rounded-2xl bg-[var(--surface)] px-4 pb-0 pt-3 md:rounded-3xl md:px-6 md:pb-0 md:pt-4 [[data-theme=dark]_&]:bg-[#F5F5F0] [[data-theme=dark]_&]:[--surface:#F5F5F0] [[data-theme=dark]_&]:[--foreground:#101114] [[data-theme=dark]_&]:[--muted-foreground:#6b7079] [[data-theme=dark]_&]:[--border:#e8e9ec] [[data-theme=dark]_&]:[--background:#ffffff]">
-            {/* THEIRS / OURS, inside the tray and above the screens — FROM md.
+            <div className="relative overflow-hidden rounded-2xl bg-[var(--surface)] px-4 pb-0 pt-3 md:rounded-3xl md:px-6 md:pb-0 md:pt-4 [[data-theme=dark]_&]:bg-[#F5F5F0] [[data-theme=dark]_&]:[--surface:#F5F5F0] [[data-theme=dark]_&]:[--foreground:#101114] [[data-theme=dark]_&]:[--muted-foreground:#6b7079] [[data-theme=dark]_&]:[--border:#e8e9ec] [[data-theme=dark]_&]:[--background:#ffffff]">
+              {/* THEIRS / OURS, inside the tray and above the screens — FROM md.
               On a phone it moves out from under the tray; see the copy below.
 
               The handoff labels the two screens underneath them, which names
@@ -444,48 +510,49 @@ export function PortalProblem({
               section's own left-ranged copy and read as the next line of it.
               In the corner the screens have the tray to themselves and the
               switch is plainly furniture. */}
-            {/* THE GAP OVER THE SCREENS IS THE TOGGLE'S ROW, NOT A MARGIN.
+              {/* THE GAP OVER THE SCREENS IS THE TOGGLE'S ROW, NOT A MARGIN.
               The tray paid 24px of top padding and the toggle another 24
               under itself, so above the picture sat a 48px band of bare tray
               plus the control's own height — on a card whose subject is the
               two screens, the first third of it was empty. The control still
               has room to be a control; it just stops reserving a second one. */}
-            {!screens ? (
-              <div className="hidden justify-end md:mb-3 md:flex">
-                <ViewToggle
-                  // The tray is paper in dark (see above), so the control's
-                  // dark variants — a white hairline and a white-wash thumb —
-                  // would paint white on white. onPaper drops them and lets
-                  // the base classes resolve the tray's own ladder.
-                  onPaper
-                  options={["Theirs", "Ours"]}
-                  view={selected}
-                  onSelect={setSelected}
-                  label="Which portal to show"
-                />
-              </div>
-            ) : null}
+              {!screens ? (
+                <div className="hidden justify-end md:mb-3 md:flex">
+                  <ViewToggle
+                    // The tray is paper in dark (see above), so the control's
+                    // dark variants — a white hairline and a white-wash thumb —
+                    // would paint white on white. onPaper drops them and lets
+                    // the base classes resolve the tray's own ladder.
+                    onPaper
+                    options={["Theirs", "Ours"]}
+                    view={selected}
+                    onSelect={setSelected}
+                    label="Which portal to show"
+                  />
+                </div>
+              ) : null}
 
-            {/* Two masks, nested rather than two layers on one element: CSS
+              {/* Two masks, nested rather than two layers on one element: CSS
               composites mask layers by union, so declared together the right
               fade and the bottom fade would each hold the other's edge open
               instead of both applying. Only the right one is left — see the
               tray above for why the bottom needs none. */}
-            <div>
-              <div
-                style={{
-                  WebkitMaskImage: SCREEN_FADE,
-                  maskImage: SCREEN_FADE,
-                }}
-              >
-                {screens ?? (
-                  <ScreenPair selected={selected} setSelected={setSelected} />
-                )}
+              <div>
+                <div
+                  style={{
+                    WebkitMaskImage: SCREEN_FADE,
+                    maskImage: SCREEN_FADE,
+                  }}
+                >
+                  {screens ?? (
+                    <ScreenPair selected={selected} setSelected={setSelected} />
+                  )}
+                </div>
               </div>
-            </div>
-          </div>
 
-          {/* THE PHONE'S COPY: under the tray, on the page's own ground, centred
+            </div>
+
+            {/* THE PHONE'S COPY: under the tray, on the page's own ground, centred
             — the same move the builder hero makes with its two cards.
 
             In the tray's top-right corner it works on a wide screen, where the
@@ -500,37 +567,56 @@ export function PortalProblem({
             on the page at all, and the two are in different stacking parents.
             Both drive the same `selected` state, so there is nothing to keep
             in sync. */}
-          {!screens ? (
-            <div className="mt-4 flex justify-center md:hidden">
-              <ViewToggle
-                options={["Theirs", "Ours"]}
-                view={selected}
-                onSelect={setSelected}
-                label="Which portal to show"
-              />
-            </div>
+            {!screens ? (
+              <div className="mt-4 flex justify-center md:hidden">
+                <ViewToggle
+                  options={["Theirs", "Ours"]}
+                  view={selected}
+                  onSelect={setSelected}
+                  label="Which portal to show"
+                />
+              </div>
+            ) : null}
+          </div>
+          {/* Quote and jump link close the section, under the picture that is its
+            argument rather than above it. On /client-portal both are absent and
+            the section ends on the tray, which is why they are optional. */}
+          {quote ? (
+            <figure
+              // A card of its own when it sits BESIDE the picture, plain text
+              // when it sits under it. Beside, it is one of two objects on the
+              // row and needs a ground to be an object at all — set bare it
+              // read as a caption that had drifted into the margin. Under, the
+              // section's own measure already frames it, and a panel would end
+              // the section on two stacked boxes.
+              //
+              // Same tray colour as the picture beside it, so the pair reads
+              // as two halves of one row. --surface carries its own light and
+              // dark values, so there is no hardcoded grey here.
+              className={
+                split
+                  ? "flex h-full flex-col justify-center rounded-3xl bg-[var(--surface)] p-8 md:p-10"
+                  : "order-3 mt-12 max-w-2xl"
+              }
+            >
+              <blockquote className="text-pretty text-foreground">
+                &ldquo;{quote.text}&rdquo;
+              </blockquote>
+              <figcaption className="type-caption mt-3 text-muted-foreground">
+                <Link
+                  href={quote.href}
+                  className="transition-colors hover:text-foreground"
+                >
+                  {quote.attribution}
+                </Link>
+              </figcaption>
+            </figure>
           ) : null}
         </div>
 
-        {/* Quote and jump link close the section, under the picture that is its
-            argument rather than above it. On /client-portal both are absent and
-            the section ends on the tray, which is why they are optional. */}
-        {quote ? (
-          <figure className="order-3 mt-12 max-w-2xl">
-            <blockquote className="text-pretty text-foreground">
-              &ldquo;{quote.text}&rdquo;
-            </blockquote>
-            <figcaption className="type-caption mt-3 text-muted-foreground">
-              <Link
-                href={quote.href}
-                className="transition-colors hover:text-foreground"
-              >
-                {quote.attribution}
-              </Link>
-            </figcaption>
-          </figure>
-        ) : null}
-        {link ? (
+        {/* Split pages render this under the heading instead — see the
+            header block above — so it is not repeated here. */}
+        {link && !split ? (
           <Link
             href={link.href}
             className={`${linkFirst ? "order-0 mt-6" : "order-4 mt-8"} sm:self-start ${QUIET_BUTTON}`}

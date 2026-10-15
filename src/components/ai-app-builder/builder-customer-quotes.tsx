@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { CustomerLogo } from "@/components/customers/customer-logos";
 import { BUILDER_RAIL_HALO_WIDE } from "./builder-grid-rails";
 import { BuilderCustomerQuotesStack } from "./builder-customer-quotes-stack";
 import Link from "next/link";
@@ -52,6 +53,16 @@ export type CustomerQuote = {
   firm: string;
   /** Portrait or firm shot in /public/images/customers. */
   image: string;
+  /**
+   * Render the firm's logo in the thumbnail instead of `image`, by case-study
+   * slug. For a firm whose case study has no usable portrait — a mask logo in
+   * an object-cover square crops to a corner of the wordmark, so it needs the
+   * contained treatment CustomerLogo gives it, not the photo one.
+   *
+   * `image` is still required and still the fallback, so a slug with no logo
+   * spec degrades to the photo rather than to an empty box.
+   */
+  logoSlug?: string;
   href: string;
 };
 
@@ -226,18 +237,48 @@ export function BuilderCustomerQuotes({
                   (capital-one, advertai) with a trim off each side, which a
                   centred studio portrait survives. Nothing here is ever asked
                   to show a head-and-shoulders photograph in a wide band. */}
-              <div className="relative size-[72px] shrink-0 overflow-hidden rounded-lg bg-muted [[data-theme=dark]_&]:bg-white/[0.06]">
-                <Image
-                  src={q.image}
-                  alt=""
-                  fill
-                  // Declared well above the 72px box: object-cover scales by
-                  // the short side, and a retina screen doubles it again. The
-                  // shared Testimonials portrait documents the same trap.
-                  sizes="160px"
-                  quality={90}
-                  className="object-cover object-top"
-                />
+              <div
+                className={`relative size-[72px] shrink-0 overflow-hidden rounded-lg ${
+                  q.logoSlug
+                    ? // A LOGO GETS A WHITE TILE IN BOTH THEMES, and a fixed
+                      // dark ink to sit on it. This is the one place on the
+                      // card that deliberately does not flip.
+                      //
+                      // bg-muted is the card's own family, so a dark wordmark
+                      // on it had no edge — the tile stopped reading as an
+                      // object and the mark looked like it had been printed on
+                      // the card. A photograph never has this problem because
+                      // it fills its own box.
+                      //
+                      // Fixed rather than themed because the pair has to hold
+                      // together: themed ink on a fixed tile inverts to white
+                      // wordmark on white in dark, which is the same bug the
+                      // other way round. The hairline keeps the tile's edge on
+                      // a light card, where white on near-white would float.
+                      "bg-white text-[#1B1F24] ring-1 ring-inset ring-black/[0.06]"
+                    : "bg-muted [[data-theme=dark]_&]:bg-white/[0.06]"
+                }`}
+              >
+                {q.logoSlug ? (
+                  // Padded, because a wordmark run to the edges of a 72px tile
+                  // reads as cropped rather than as a logo. `fit` is the
+                  // contained mode CustomerLogo builds for exactly this.
+                  <div className="flex h-full w-full items-center justify-center p-3.5">
+                    <CustomerLogo slug={q.logoSlug} fit />
+                  </div>
+                ) : (
+                  <Image
+                    src={q.image}
+                    alt=""
+                    fill
+                    // Declared well above the 72px box: object-cover scales by
+                    // the short side, and a retina screen doubles it again. The
+                    // shared Testimonials portrait documents the same trap.
+                    sizes="160px"
+                    quality={90}
+                    className="object-cover object-top"
+                  />
+                )}
               </div>
 
               {/* ONLY OPACITY AND TRANSFORM ARE TRANSITIONED. The max-height

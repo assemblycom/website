@@ -104,7 +104,46 @@ export function ProgressMock() {
             {RULES.map((g) => (
               <span
                 key={g}
-                className="absolute inset-y-0 w-px bg-[var(--mock-ink)]/[0.08]"
+                // Dashed, and fainter than the solid hairline it replaces.
+                // A continuous rule behind a row of coloured bands read as
+                // part of the chart; a dash is plainly a guide and sits
+                // behind them. Drawn as a repeating gradient on the same 1px
+                // span rather than as a border, because border-dashed has no
+                // control over dash length.
+                //
+                // The colour stays --mock-ink, so it still flips with the
+                // theme; only the alpha moved, and it moved on the element
+                // rather than in the gradient so there is one number to tune.
+                //
+                // THE ALPHA IS IN THE GRADIENT, not on the element. Dimming
+                // the whole span with `opacity` looked equivalent and was not:
+                // a 1px line of short dashes is already being antialiased, and
+                // a second multiply on top of that took what was left below
+                // what a screen renders. Two passes at 0.055 and 0.13 both
+                // came out invisible for this reason.
+                //
+                // 26% against the 8% of the solid rule it replaces. A dash
+                // shows less of itself, and each dash has to survive the
+                // antialiasing of a 1px column on a fractional-scaled display,
+                // so matching the old number would have matched it only on
+                // paper.
+                //
+                // IT HAS TO BE A repeating-linear-gradient. A plain
+                // linear-gradient does not tile: the stops describe the whole
+                // element once, so `transparent 2px 5px` holds transparent for
+                // the rest of the span's height. That drew ONE 2px dash at the
+                // very top of each rule and nothing below it, which is why the
+                // rules read as missing however far the alpha was pushed — the
+                // alpha was never the problem.
+                //
+                // THE PERIOD IS 5px, AND THAT IS THE LOAD-BEARING NUMBER. The
+                // rules are drawn BEHIND the bars, so the only parts of them
+                // anyone sees are the gaps between rows. At an 8px period a
+                // gap that size could fall entirely in the transparent half
+                // and show nothing at all, which is what made these look
+                // missing rather than faint. Keep the period under the row
+                // gap and every gap catches a dash.
+                className="absolute inset-y-0 w-px bg-[repeating-linear-gradient(to_bottom,color-mix(in_srgb,var(--mock-ink)_26%,transparent)_0_2px,transparent_2px_5px)]"
                 style={{ left: `${g}%` }}
               />
             ))}

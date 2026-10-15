@@ -1059,10 +1059,19 @@ export function PlanCard({ plain = false }: SceneProps = {}) {
       {/* The Plan card's ground — and the one ground in the set that DOES
           flip with the theme.
 
-          #101010 in light: the plan window is white there, so a near-black
-          card is what lifts it. In dark that same ground put a #212121 panel
-          on a #101010 card, eight points apart, and the one object the card is
-          about became the hardest thing on it to find.
+          #3A3A3A in light: the plan window is white there, so a dark card is
+          what lifts it. It was #101010, which read as flat black beside the
+          photograph on Describe and the haze on Build — three grounds, and the
+          middle one was the only true black in the set. Grey keeps the lift
+          the white panel needs (still ~14 points of separation) without the
+          card itself becoming the darkest object on the page.
+
+          Going lighter than this does not work: the panel is white, so a pale
+          grey ground would need the panel restyled to stay visible at all.
+
+          In dark the old ground put a #212121 panel on a #101010 card, eight
+          points apart, and the one object the card is about became the hardest
+          thing on it to find.
 
           #FBFBF5 in dark rather than repainting the panel. The panel is a
           product screen and themes with the product; the card behind it is
@@ -1079,7 +1088,7 @@ export function PlanCard({ plain = false }: SceneProps = {}) {
           pixel removes it; the parent is overflow-hidden, so the extra is
           clipped and the radius is unaffected. */}
       {!plain && (
-        <div className="absolute -inset-px bg-[#101010] [[data-theme=dark]_&]:bg-[#FBFBF5]" />
+        <div className="absolute -inset-px bg-[#3A3A3A] [[data-theme=dark]_&]:bg-[#FBFBF5]" />
       )}
       {plain ? (
         // The standard box, not the wide one: with the nav and the window gone

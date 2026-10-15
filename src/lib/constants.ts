@@ -113,10 +113,15 @@ export function isNavGroup(entry: NavEntry): entry is NavGroup {
 export const NAV_ENTRIES: NavEntry[] = [
   {
     label: "Product",
-    // The column is headed "Features", not "Product" — repeating the trigger's
-    // own word over the only column in the panel says nothing the bar hasn't
-    // already said. Carried as a `section` on both items, which is how
+    // Two columns: the feature pages, and the vertical pages the site already
+    // has. The first is headed "Features", not "Product" — repeating the
+    // trigger's own word over a column in its own panel says nothing the bar
+    // hasn't already said. Carried as a `section` on each item, which is how
     // columnsOf in nav-dropdown.tsx labels a column.
+    //
+    // The use-case links point at the canonical solutions slugs rather than the
+    // shorter /solutions/accounting-firms and /solutions/marketing-agencies
+    // forms, which are redirects — a nav link spends that hop on every page.
     items: [
       {
         label: "AI app builder",
@@ -130,6 +135,18 @@ export const NAV_ENTRIES: NavEntry[] = [
         section: "Features",
         description:
           "Messaging, billing, files and contracts, under your brand",
+      },
+      {
+        label: "For accounting firms",
+        href: "/solutions/accounting-client-portal",
+        section: "Use cases",
+        description: "Onboarding, document collection and year-end work",
+      },
+      {
+        label: "For marketing agencies",
+        href: "/solutions/marketing-agency-client-portal",
+        section: "Use cases",
+        description: "Approvals, reporting and client sign-off",
       },
     ],
   },
