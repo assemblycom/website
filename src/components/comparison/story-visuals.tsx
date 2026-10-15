@@ -275,9 +275,8 @@ const CREDITS_LEFT = 142;
 const CREDITS_TOTAL = 200;
 
 /**
- * Base44 pillar 3: one credit meter, and a flat price for a live app. On
- * hover the month turns over and the meter refills, which is the rollover the
- * caption describes.
+ * Base44 pillar 3: one credit meter. On hover the month turns over and the
+ * meter refills, which is the rollover the caption describes.
  */
 export function CreditsCardVisual() {
   return (
@@ -305,10 +304,6 @@ export function CreditsCardVisual() {
               style={{ width: `${(CREDITS_LEFT / CREDITS_TOTAL) * 100}%` }}
             />
           </div>
-        </div>
-        <div className={ROW}>
-          <span className={`min-w-0 flex-1 ${MOCK_PRIMARY}`}>Live app</span>
-          <span className={`shrink-0 ${MUTED} ${MOCK_PRIMARY}`}>$5 / mo</span>
         </div>
       </div>
     </div>
