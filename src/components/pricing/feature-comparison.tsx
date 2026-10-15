@@ -85,7 +85,7 @@ const GROUPS: FeatureGroup[] = [
     rows: [
       { label: "CRM", values: [true, true, true, true, true] },
       { label: "Client experience", values: [true, true, true, true, true] },
-      { label: "API & MCP connector", values: [true, true, true, true, true] },
+      { label: "MCP connector", values: [true, true, true, true, true] },
       {
         label: "Install apps from app library",
         values: [true, true, true, true, true],
@@ -107,7 +107,7 @@ const GROUPS: FeatureGroup[] = [
         label: "File-sharing, intake forms, and tasks",
         values: [true, true, true, true, true],
       },
-      { label: "API, Zapier & Make", values: [false, true, true, true, true] },
+      { label: "API, Zapier & Make", values: [false, false, true, true, true] },
       {
         label: "Custom domain for client experience",
         tooltip: "Serve the client experience from your own domain.",
