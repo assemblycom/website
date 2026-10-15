@@ -4,14 +4,26 @@ import { FAQ, type FAQEntry } from "@/components/home/faq";
 import { GridDivider, GridRails } from "@/components/ui/grid-lines";
 import { PortalSocialProof } from "@/components/client-portal/portal-social-proof";
 import { PortalHeroCarousel } from "@/components/client-portal/portal-hero-carousel";
+import {
+  IconTemplateApprovals,
+  IconTemplateDocuments,
+  IconTemplateOnboarding,
+  IconTemplateProposals,
+  IconTemplateTimeTracker,
+} from "@/components/templates/template-icons";
 import { PortalProblem } from "@/components/client-portal/portal-problem";
 import { PortalReadyMade } from "@/components/client-portal/portal-ready-made";
 import { PortalBuild } from "@/components/client-portal/portal-build";
+import {
+  BuildCard,
+  DescribeCard,
+  PlanCard,
+} from "@/components/client-portal/portal-build-cards";
 import { PortalTailor } from "@/components/client-portal/portal-tailor";
 import { PortalStack } from "@/components/client-portal/portal-stack";
 import { PortalTrust } from "@/components/client-portal/portal-trust";
 import { PortalPricing } from "@/components/client-portal/portal-pricing";
-import { PortalProof } from "@/components/client-portal/portal-proof";
+import { BuilderCustomerQuotes } from "@/components/ai-app-builder/builder-customer-quotes";
 import { APP_URL, DEMO_URL, SIGNUP_URL } from "@/lib/constants";
 import { PAGE_SEO, pageMetadata } from "@/lib/seo";
 import { serializeJsonLd } from "@/lib/json-ld";
@@ -37,35 +49,47 @@ export const metadata: Metadata = pageMetadata(PAGE_SEO.accountingClientPortal);
 
 /** Section 3. Four resolve from the committed templates; contracts-app is served
  *  from Contentful, which is why it is absent from src/lib/templates.ts. */
+/**
+ * The hero lead's classes, shared by the phone sentence and the desktop one so
+ * swapping breakpoints cannot leave the two set differently.
+ */
+const HERO_LEAD =
+  "type-lead max-w-[34rem] text-pretty text-muted-foreground lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:pt-2";
+
 const ACCOUNTING_APPS = [
   {
     slug: "document-collection",
     title: "Document collector",
     description: "Requested documents with an upload checklist.",
     foundation: "Documents",
+    icon: <IconTemplateDocuments className="w-[32px]" />,
   },
   {
     slug: "conditional-forms",
     title: "Conditional forms",
     description: "Smart intake forms that adapt to each answer.",
     foundation: "Intake",
+    icon: <IconTemplateOnboarding className="w-[26px]" />,
   },
   {
     slug: "proposal-builder",
     title: "Proposals",
     description: "Branded proposals clients can e-sign and pay.",
     foundation: "Proposals",
+    icon: <IconTemplateProposals className="w-[26px]" />,
   },
   {
     slug: "contracts-app",
     title: "Contracts",
     description: "Engagement letters signed with e-signature requests.",
     foundation: "Contracts",
+    icon: <IconTemplateApprovals className="w-[30px]" />,
   },
   {
     slug: "time-tracker",
     title: "Time tracker",
     description: "Log billable hours by client and export timesheets.",
+    icon: <IconTemplateTimeTracker className="w-[26px]" />,
     // The handoff marks this one "(Internal)". Carried as the site's own mono
     // chip, the object the filters and tags already are, rather than as words
     // inside the title.
@@ -100,13 +124,6 @@ const BUILD_STEPS = [
   },
 ];
 
-/** V4's three beats, as art direction for the cards that hold their slots. */
-const V4_BEATS = [
-  "V4 beat 1 — the build panel with the message 'Build a month-end close tracker. Each client sees which documents are still missing and when their books will close.'",
-  "V4 beat 2 — a question chip from the builder, 'Should clients see your team's internal close steps?', with the answer 'No, only what they owe' selected.",
-  "V4 beat 3 — the plan card (fields: month, missing documents, target close date, status; who sees it: each client sees only their own; team view: all clients) with 'Approve plan', then a 'Month-end close' item appearing in Harbor Dental PLLC's sidebar on portal.ledgerline.com, showing 'September close · 2 documents missing · Target Oct 10'.",
-];
-
 /** Section 7. Four rows, in the handoff's order. */
 const TRUST_CLAIMS: FAQEntry[] = [
   {
@@ -125,40 +142,6 @@ const TRUST_CLAIMS: FAQEntry[] = [
     question: "AI and client data",
     answer:
       "Apps built with AI use the same logins and permissions as every other app in the portal.",
-  },
-];
-
-/**
- * Section 8. Three accounting firms, all published on /customers. Every quote
- * and figure below is quoted from src/lib/case-studies.ts rather than retyped,
- * so the page and the story cannot drift apart.
- */
-const ACCOUNTING_STORIES = [
-  {
-    slug: "collective-cpa",
-    specialty: "Collective CPA & Advisors · Accounting and advisory",
-    quote:
-      "We had more tax returns in the door, ready to start being prepped, earlier than ever this year than in our entire history.",
-    name: "Kyle Pearson",
-    role: "Founder @ Collective CPA",
-    href: "/customers/collective-cpa",
-  },
-  {
-    slug: "sargent-cpa",
-    specialty: "Sargent CPAs · Bookkeeping, tax, and advisory",
-    quote:
-      "You can build it any way you want and make it perfect for your clients and your business.",
-    name: "Anthony Drozd",
-    role: "Operations Manager @ Sargent CPAs",
-    href: "/customers/sargent-cpa",
-  },
-  {
-    slug: "orca-accounting",
-    specialty: "Orca Accounting · Bookkeeping and CFO services",
-    quote: "Every client said this was such an easy onboarding experience.",
-    name: "Leah McCool",
-    role: "Founder @ Orca Accounting",
-    href: "/customers/orca-accounting",
   },
 ];
 
@@ -336,7 +319,23 @@ export default function AccountingClientPortalPage() {
             <h1 className="type-display max-w-[30ch] text-balance lg:col-start-1">
               Your AI-native accounting firm starts here
             </h1>
-            <p className="type-lead max-w-[34rem] text-pretty text-muted-foreground lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:pt-2">
+            {/* Two leads, one measure. The desktop sentence runs to three
+                lines on a 390px screen, which puts the buttons below the fold
+                on the page's most important screen; the phone gets the same
+                argument — ready-made apps, and AI for the next one — without
+                the enumeration, which the sections below make anyway.
+
+                Rendered as two paragraphs rather than one clamped, because a
+                clamp cuts mid-sentence and cannot be read for sense. The
+                classes are shared so the two cannot drift apart. */}
+            <p
+              className={`${HERO_LEAD} md:hidden`}
+              // Phone only: see the pair above.
+            >
+              A branded client portal with ready-made apps — and AI to build
+              whatever your practice needs next.
+            </p>
+            <p className={`hidden ${HERO_LEAD} md:block`}>
               Assembly gives your firm a branded client portal with ready-made
               apps for files, e-signatures, invoices, and messages. Describe the
               next app your practice needs, and AI builds it.
@@ -394,6 +393,10 @@ export default function AccountingClientPortalPage() {
 
         {/* 2. Problem. */}
         <PortalProblem
+          // Picture and quote as one row rather than the quote under the
+          // picture — this page's slot is a single screen, not the two-screen
+          // comparison the stacked layout was shaped for.
+          split
           heading="Every tool you add is one more login"
           body="Contracts in one place, files in another, invoices in a third. Your clients feel every seam, usually right before a deadline."
           // The two captions ("Almost fits" / "Fits") are /client-portal's, and
@@ -440,15 +443,24 @@ export default function AccountingClientPortalPage() {
           // but they run that page's firm building a project tracker, which is
           // neither this vertical nor these three steps. The rail's own panel
           // supplies the grey; each step's art direction rides in `title`.
+          // The rail's own three scenes, which carry their own grounds — the
+          // photograph behind Describe, paper behind Plan, haze behind Build —
+          // so the cards stop being three grey rectangles.
+          //
+          // KNOWN: DescribeCard and BuildCard name Brandmages and build a
+          // project tracker, which is the marketing agency's vocabulary on an
+          // accounting page. That is why these were held open as empty slots
+          // to begin with. Real UI in the wrong firm's words beats a blank
+          // card for reviewing the page's shape, but the strings want fixing
+          // before this ships — they live in portal-build-cards.tsx and are
+          // hardcoded, so it is a change to that file, not a prop here.
           steps={BUILD_STEPS.map((step, i) => ({
             ...step,
-            visual: (
-              <div
-                aria-hidden
-                className="h-full w-full"
-                title={V4_BEATS[i]}
-              />
-            ),
+            visual: [
+              <DescribeCard key="d" />,
+              <PlanCard key="p" />,
+              <BuildCard key="b" />,
+            ][i],
           }))}
           railLabel="How building works"
           cta={{ label: "Start free", href: SIGNUP_URL }}
@@ -466,17 +478,13 @@ export default function AccountingClientPortalPage() {
         <PortalTailor
           heading="One firm, a different view for every client"
           body="Clients can belong to several entities and switch between them with one login. Custom fields decide which apps each client sees."
-          // V5's slot. The four cards that stand here on /client-portal are that
-          // page's own firm and its own argument; this handoff asks for one
-          // picture. Sized like the hero's slot rather than the grid's 866px,
-          // because one picture is not four cards' worth of height.
-          visual={
-            <div
-              aria-hidden
-              title="V5 — two portal.ledgerline.com sidebars in identical Ledgerline chrome. Left, Delgado Household: Home, Files, Estimated payments, Messages. Right, Harbor Dental PLLC: Home, Files, Payroll documents, Payments, Messages. Above the right sidebar, an entity switcher open to show Harbor Dental PLLC and Oakwood Ventures LLC under one signed-in contact, Dana Reyes. A locked-folder icon beside '2025 Returns (view only)'. Static."
-              className="mt-12 h-[400px] rounded-3xl bg-[var(--surface)] md:mt-14 md:h-[500px]"
-            />
-          }
+          // The component's own four cards, rather than a slot held open.
+          // They vary in shape on purpose — four same-size cards would argue
+          // against the heading — and they are the only UI the site has for
+          // this point.
+          //
+          // KNOWN, as with section 4: the set names /client-portal's firm, not
+          // an accounting practice. See portal-tailor.tsx.
         />
 
         {/* 6. Keep your stack.
@@ -491,7 +499,6 @@ export default function AccountingClientPortalPage() {
           ways={[]}
           visualTitle="V6 — the portal showing an embedded Google Sheet (Harbor Dental PLLC, 2026 payroll summary), with thin connectors out to Google Sheets, Google Drive, OneDrive, Calendly, Jotform, Typeform, and one-way arrows to QuickBooks and Xero. Behind a dotted line at the far right, a neutral tile reading 'Your tax and accounting software'."
         />
-
 
         {/* 7. Trust. The seal band drops the HIPAA mark, per the handoff's V8:
             this page states the HIPAA boundary in the FAQ rather than claiming
@@ -509,11 +516,51 @@ export default function AccountingClientPortalPage() {
       <div className="relative">
         <GridRails />
 
-        {/* 8. Proof. */}
-        <PortalProof
+        {/* 8. Proof. The builder page's row, not PortalProof's columns — the
+            same component /ai-app-builder and /client-portal both run, so the
+            three pages present testimony one way rather than three.
+
+            Sargent CPAs is not in the set. Its quote was here, but this row
+            draws a 72px portrait per card and Sargent has only a logo mask in
+            /public/images/customers; a transparent logo in an object-cover
+            square sits visibly apart from two photographs. /client-portal left
+            it out of its own row for exactly this reason. ValueNode takes the
+            third slot — an accounting firm, photographed, and its quote is the
+            consolidation argument this page opens on. */}
+        <BuilderCustomerQuotes
           heading="Firms that built the practice they wanted"
           body="Advisory, tax, and bookkeeping firms run their client experience on Assembly."
-          stories={ACCOUNTING_STORIES}
+          quotes={[
+            {
+              quote:
+                "We had more tax returns in the door, ready to start being prepped, earlier than ever this year than in our entire history.",
+              name: "Kyle Pearson",
+              firm: "Collective CPA",
+              image: "/images/customers/collective-cpa.jpg",
+              href: "/customers/collective-cpa",
+            },
+            {
+              quote:
+                "Every client said this was such an easy onboarding experience.",
+              name: "Leah McCool",
+              firm: "Orca Accounting",
+              image: "/images/customers/orca-accounting.jpg",
+              href: "/customers/orca-accounting",
+            },
+            {
+              // Verbatim, cut at the full stop — the same convention the other
+              // two follow. See src/lib/case-studies.ts.
+              quote:
+                "It saves me so much time — just knowing exactly where to find things, and having everything streamlined in one secure place.",
+              name: "Dr. Najlaa Kallousa",
+              firm: "ValueNode Accounting",
+              // The logo, not the photo: the file at this path is not a
+              // portrait of the person being quoted.
+              logoSlug: "valuenode-accounting",
+              image: "/images/customers/valuenode-accounting.jpg",
+              href: "/customers/valuenode-accounting",
+            },
+          ]}
         />
         <GridDivider />
 
@@ -558,7 +605,6 @@ export default function AccountingClientPortalPage() {
         primaryCta={{ label: "Book a demo", href: DEMO_URL }}
         secondaryCta={{ label: "Start free", href: SIGNUP_URL }}
       />
-
     </>
   );
 }

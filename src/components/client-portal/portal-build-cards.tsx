@@ -1058,10 +1058,19 @@ export function PlanCard({ plain = false }: SceneProps = {}) {
       {/* The Plan card's ground — and the one ground in the set that DOES
           flip with the theme.
 
-          #101010 in light: the plan window is white there, so a near-black
-          card is what lifts it. In dark that same ground put a #212121 panel
-          on a #101010 card, eight points apart, and the one object the card is
-          about became the hardest thing on it to find.
+          #3A3A3A in light: the plan window is white there, so a dark card is
+          what lifts it. It was #101010, which read as flat black beside the
+          photograph on Describe and the haze on Build — three grounds, and the
+          middle one was the only true black in the set. Grey keeps the lift
+          the white panel needs (still ~14 points of separation) without the
+          card itself becoming the darkest object on the page.
+
+          Going lighter than this does not work: the panel is white, so a pale
+          grey ground would need the panel restyled to stay visible at all.
+
+          In dark the old ground put a #212121 panel on a #101010 card, eight
+          points apart, and the one object the card is about became the hardest
+          thing on it to find.
 
           #FBFBF5 in dark rather than repainting the panel. The panel is a
           product screen and themes with the product; the card behind it is
@@ -1078,7 +1087,7 @@ export function PlanCard({ plain = false }: SceneProps = {}) {
           pixel removes it; the parent is overflow-hidden, so the extra is
           clipped and the radius is unaffected. */}
       {!plain && (
-        <div className="absolute -inset-px bg-[#101010] [[data-theme=dark]_&]:bg-[#FBFBF5]" />
+        <div className="absolute -inset-px bg-[#3A3A3A] [[data-theme=dark]_&]:bg-[#FBFBF5]" />
       )}
       {plain ? (
         // The standard box, not the wide one: with the nav and the window gone
@@ -2980,9 +2989,7 @@ export function OnboardCard({ plain = false }: SceneProps = {}) {
           />
         </div>
       )}
-      <Scene
-        {...(plain ? {} : RAIL_SCENE_PHONE_PROPS)}
-      >
+      <Scene {...(plain ? {} : RAIL_SCENE_PHONE_PROPS)}>
         {/* "Onboarding" — the window is titled with the stage it belongs to,
             so the card's label and the screen inside it name the same thing. */}
         <ChecklistWindow title="Onboarding" items={ONBOARD_ITEMS} />
@@ -3105,9 +3112,7 @@ export function InvoiceCard({ plain = false }: SceneProps = {}) {
           giving out rather than as paper continuing. Short enough to end, it
           is better as an object in the frame: Scene's default centring places
           it, and the air above and below is what makes it read as placed. */}
-      <Scene
-        {...(plain ? {} : RAIL_SCENE_PHONE_PROPS)}
-      >
+      <Scene {...(plain ? {} : RAIL_SCENE_PHONE_PROPS)}>
         {/* The page. WINDOW's own ground is the panel tone, which is what the
             cards INSIDE this one need, so the page itself steps down a rung
             to --mock-well and they lift off it. */}
@@ -3206,7 +3211,6 @@ export function InvoiceCard({ plain = false }: SceneProps = {}) {
               </div>
             ))}
 
-
             {/* The total. Same two sizes as everything else in the rail — it
                 is separated by its ROW (a well behind it, no rule under it)
                 rather than by weight, because the site is 400/500 only and a
@@ -3293,9 +3297,7 @@ export function SupportCard({ plain = false }: SceneProps = {}) {
           />
         </div>
       )}
-      <Scene
-        {...(plain ? {} : RAIL_SCENE_PHONE_PROPS)}
-      >
+      <Scene {...(plain ? {} : RAIL_SCENE_PHONE_PROPS)}>
         {/* PUSHED BELOW THE MIDDLE. Centred, the panel sat across the standing
             figure's face — the one part of a photograph of people that the
             picture is actually for, and the one place a UI panel must not

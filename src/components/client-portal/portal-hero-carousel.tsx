@@ -248,6 +248,8 @@ type Fit = {
   h: number;
   scale: number;
   padY: number;
+  /** The panel's own width, which the side arrows need to find their gutter. */
+  panelW: number;
   /**
    * Wide enough for the names row, and so for the shot to bleed off the foot.
    */
@@ -267,6 +269,7 @@ function fitFor(panelW: number, viewportH: number): Fit {
   return {
     w,
     h,
+    panelW,
     scale: Math.min(1, avail / w),
     // Tied to the shot rather than fixed, so a shot the viewport shortened does
     // not keep a desktop-sized band of grey above and below it.
@@ -285,13 +288,10 @@ export function PortalHeroCarousel({
 }: { set?: "default" | "agency" } = {}) {
   const items = set === "agency" ? AGENCY_ITEMS : ITEMS;
   const [active, setActive] = useState(0);
-  // The row opens on the choice the page is actually making — your own app, or
-  // one that already exists — rather than on four app names a cold reader has
-  // no reason to tell apart yet. "Select a template" opens the names out in
-  // place; going back to "Your own app" folds them away, so the control always
-  // shows the fork you are currently on rather than growing once and staying
-  // grown.
-  const [expanded, setExpanded] = useState(false);
+  // Which template the "Select a template" pill returns you to. The panel
+  // opens on "Your own app", so this is only ever read after something has
+  // moved off it; 1 is the first template either way.
+  const [lastTemplate, setLastTemplate] = useState(1);
   // The mock behind the header already crossfades; the title and its line
   // swapped on the same click with no transition at all, which is the jump.
   // Held one step behind the selection and swapped at the midpoint, so the
@@ -311,6 +311,7 @@ export function PortalHeroCarousel({
   );
   const selectTab = (i: number) => {
     setActive(i);
+    if (i > 0) setLastTemplate(i);
     if (i === shownTitle) return;
     if (titleTimer.current) clearTimeout(titleTimer.current);
     if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
@@ -358,6 +359,10 @@ export function PortalHeroCarousel({
   // invisible box.
   const F = fit ?? fitFor(1320, 900);
   const current = items[active];
+  // The grey either side of the shot. The shot caps at MAX_W while the panel
+  // keeps growing, so this opens up rather than closing: ~79px at
+  // WIDE_FROM_PX, 220px on a 1320 panel. The arrows live in it.
+  const gutter = (F.panelW - F.w * F.scale) / 2;
 
   /**
    * What the bare composer keeps clear at the foot of the shot.
@@ -372,259 +377,329 @@ export function PortalHeroCarousel({
   const bareFoot = Math.max(FOOT_PX, headerH + F.padY);
 
   return (
-    <div
-      ref={panelRef}
-      // Flat ground, deliberately: the gradient belongs to the product shot
-      // sitting on it, and two graded surfaces one inside the other cancel each
-      // other out — the shot stops reading as a separate thing.
-      //
-      // Held as a token because the dissolve at the foot of the stage has to
-      // END on exactly this colour; as two separate declarations they drift the
-      // moment one is touched and the fade stops at a visible edge. Same two
-      // values as before — dark is what white/6 over the page ground composited
-      // to — each in its own theme block.
-      // --portal-ground is the shared --surface now. It held its own #f5f5f5 /
-      // #191919 pair, which happened to match in light and drifted in dark; the
-      // dissolve gradient below still reads the name, so it is re-pointed
-      // rather than removed.
-      className="relative mt-12 overflow-hidden rounded-[28px] bg-[var(--surface)] [--portal-ground:var(--surface)] md:mt-16"
-      style={{ opacity: fit ? 1 : 0 }}
-    >
+    <div className="mt-12 md:mt-16">
       <div
-        ref={headerRef}
-        className="px-6 pt-6 md:px-10 md:pt-8"
-        aria-live="polite"
+        ref={panelRef}
+        // Flat ground, deliberately: the gradient belongs to the product shot
+        // sitting on it, and two graded surfaces one inside the other cancel each
+        // other out — the shot stops reading as a separate thing.
+        //
+        // Held as a token because the dissolve at the foot of the stage has to
+        // END on exactly this colour; as two separate declarations they drift the
+        // moment one is touched and the fade stops at a visible edge. Same two
+        // values as before — dark is what white/6 over the page ground composited
+        // to — each in its own theme block.
+        // --portal-ground is the shared --surface now. It held its own #f5f5f5 /
+        // #191919 pair, which happened to match in light and drifted in dark; the
+        // dissolve gradient below still reads the name, so it is re-pointed
+        // rather than removed.
+        className="relative overflow-hidden rounded-[28px] bg-[var(--surface)] [--portal-ground:var(--surface)]"
+        style={{ opacity: fit ? 1 : 0 }}
       >
         <div
-          className={`transition-opacity duration-150 ease-out motion-reduce:transition-none ${
-            titleOut ? "opacity-0" : "opacity-100"
-          }`}
+          ref={headerRef}
+          className="px-6 pt-6 md:px-10 md:pt-8"
+          aria-live="polite"
         >
-          <p className="text-base text-foreground">{shown.title}</p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {shown.description}
-          </p>
-        </div>
-      </div>
-
-      <div
-        role="tabpanel"
-        id="portal-hero-panel"
-        aria-label={current.title}
-        // Padded at the top only. The shot runs OFF the bottom of the panel
-        // rather than floating clear of it with a band of grey underneath: it
-        // reads as a window onto an app that carries on past the frame, which
-        // is what the cards further down the page already do.
-        className="relative"
-        style={{ height: F.h * F.scale + F.padY }}
-      >
-        {items.map((item, i) => (
           <div
-            key={item.key}
-            aria-hidden={i !== active}
-            className={`absolute bottom-0 left-1/2 transition-opacity duration-500 motion-reduce:transition-none ${
-              i === active ? "opacity-100" : "pointer-events-none opacity-0"
+            className={`transition-opacity duration-150 ease-out motion-reduce:transition-none ${
+              titleOut ? "opacity-0" : "opacity-100"
             }`}
-            style={{
-              width: F.w,
-              height: F.h,
-              marginLeft: -F.w / 2,
-              bottom: 0,
-              // Scaled from the bottom edge, so a scaled-down shot stays welded
-              // to the foot of the panel instead of lifting off it.
-              transformOrigin: "bottom center",
-              scale: String(F.scale),
-            }}
           >
-            <Window item={item} foot={bareFoot} />
+            <p className="text-base text-foreground">{shown.title}</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {shown.description}
+            </p>
           </div>
-        ))}
+        </div>
 
-        {/* Dissolves the foot of the shot into the panel so it ends by fading
+        <div
+          role="tabpanel"
+          id="portal-hero-panel"
+          aria-label={current.title}
+          // Padded at the top only. The shot runs OFF the bottom of the panel
+          // rather than floating clear of it with a band of grey underneath: it
+          // reads as a window onto an app that carries on past the frame, which
+          // is what the cards further down the page already do.
+          className="relative"
+          style={{ height: F.h * F.scale + F.padY }}
+        >
+          {items.map((item, i) => (
+            <div
+              key={item.key}
+              aria-hidden={i !== active}
+              className={`absolute bottom-0 left-1/2 transition-opacity duration-500 motion-reduce:transition-none ${
+                i === active ? "opacity-100" : "pointer-events-none opacity-0"
+              }`}
+              style={{
+                width: F.w,
+                height: F.h,
+                marginLeft: -F.w / 2,
+                bottom: 0,
+                // Scaled from the bottom edge, so a scaled-down shot stays welded
+                // to the foot of the panel instead of lifting off it.
+                transformOrigin: "bottom center",
+                scale: String(F.scale),
+              }}
+            >
+              <Window item={item} foot={bareFoot} />
+            </div>
+          ))}
+
+          {/* Dissolves the foot of the shot into the panel so it ends by fading
             rather than on a hard edge, and gives the control something to sit
             on. Ends on the ground colour exactly — see the token on the panel —
             and reaches it above the control, or the app's rows read through the
             arrows. */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 bottom-0"
-          style={{
-            height: dissolveFor(F.h * F.scale).height,
-            backgroundImage: `linear-gradient(to bottom, transparent 0%, var(--portal-ground) ${dissolveFor(F.h * F.scale).stop}%)`,
-          }}
-        />
-      </div>
-
-      {/* Names alone — no arrows beside them. Every name is already a one-tap
-          way to any screen, so a pair of arrows next to them is a second
-          control for a job the first one does better.
-
-          The names only appear where the row lays out whole (see
-          WIDE_FROM_PX); scrolled sideways it showed one whole pill between two
-          cut words, with no edge to say it scrolled, so the labels read as
-          broken rather than as more. Narrower than that the arrows are the
-          whole control, because there the names cannot be shown at all.
-
-          Sitting on the dissolve rather than under the shot, so the shot can
-          reach the foot. */}
-      {F.wide ? (
-        <div className="absolute inset-x-0 bottom-0 flex items-center justify-center px-10 pb-7">
-          {/* The same switch the AI app builder's hero uses (ViewToggle in
-              builder-hero-visual.tsx): the pills sit INSIDE a bordered track
-              rather than floating on the panel, so the set reads as one control
-              with a selected segment. Loose pills on the ground were a second
-              style for something the site had already settled. */}
           <div
-            role="tablist"
-            aria-label="Apps in the portal"
-            className="flex items-center gap-0.5 rounded-full border border-border p-1 [[data-theme=dark]_&]:border-white/15"
-          >
-            {/* Every pill stays mounted and the hidden ones collapse to no
-                width, so opening and closing the row is one width transition
-                rather than two pills vanishing and three appearing in the same
-                frame. The track's own width follows the sum, so it grows and
-                shrinks with them. */}
-            {[
-              {
-                key: items[0].key,
-                title: items[0].title,
-                index: 0 as number | null,
-              },
-              {
-                key: "select-template",
-                title: "Select a template",
-                index: null as number | null,
-              },
-              ...items.slice(1).map((item, i) => ({
-                key: item.key,
-                title: item.title,
-                index: (i + 1) as number | null,
-              })),
-            ].map(({ key, title, index }, i, all) => {
-              const isOpener = index === null;
-              const shownPill = isOpener ? !expanded : expanded || index === 0;
-              // Arrow keys walk only what is on screen.
-              const row = all.filter((t) =>
-                t.index === null ? !expanded : expanded || t.index === 0,
-              );
-              const selected = index !== null && index === active;
-              // The closed row's second pill is not a tab, it is the control
-              // that reveals them, so it carries no selected state.
-              const open = () => {
-                if (index === null) {
-                  setExpanded(true);
-                  selectTab(1);
-                  return;
-                }
-                // Back to your own app, and the template names fold away.
-                if (index === 0) setExpanded(false);
-                selectTab(index);
-              };
-              return (
-                <button
-                  key={key}
-                  type="button"
-                  role="tab"
-                  aria-selected={selected}
-                  aria-controls="portal-hero-panel"
-                  aria-expanded={index === null ? false : undefined}
-                  onClick={(e) => {
-                    open();
-                    revealTab(e.currentTarget);
-                  }}
-                  onKeyDown={(e) => {
-                    const dir =
-                      e.key === "ArrowRight"
-                        ? 1
-                        : e.key === "ArrowLeft"
-                          ? -1
-                          : 0;
-                    if (!dir) return;
-                    const here = row.findIndex((t) => t.key === key);
-                    const nextI = (here + dir + row.length) % row.length;
-                    const target = row[nextI];
-                    if (target.index === null) {
-                      setExpanded(true);
-                      selectTab(1);
-                    } else {
-                      if (target.index === 0) setExpanded(false);
-                      selectTab(target.index);
-                    }
-                    const el =
-                      e.currentTarget.parentElement?.querySelector<HTMLElement>(
-                        `[data-pill="${target.key}"]`,
-                      );
-                    el?.focus();
-                    if (el) revealTab(el);
-                  }}
-                  data-pill={key}
-                  aria-hidden={!shownPill}
-                  tabIndex={
-                    shownPill && (selected || (isOpener && active !== 0))
-                      ? 0
-                      : -1
-                  }
-                  // Width comes off a 0fr→1fr grid column, not max-width. A
-                  // max-width has to be guessed high (18rem) while a pill is
-                  // really ~140px wide, so with this curve every pill hit its
-                  // own natural width in the first quarter of the duration and
-                  // then sat still — and short pills got there well before long
-                  // ones, which is what made the row pop open unevenly. A
-                  // fractional column resolves to exactly the content width, so
-                  // the easing maps 1:1 to the motion and every pill lands
-                  // together. Same technique the FAQ accordion uses on rows.
-                  //
-                  // box-shadow is in the transition list too: left out, the
-                  // selected pill's shadow snapped on while everything around
-                  // it was still easing.
-                  className={`grid overflow-hidden rounded-full border text-sm transition-[grid-template-columns,opacity,padding,color,background-color,border-color,box-shadow] duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
-                    shownPill
-                      ? "grid-cols-[1fr] px-3.5 py-1 opacity-100"
-                      : "pointer-events-none grid-cols-[0fr] border-transparent px-0 py-1 opacity-0"
-                  } ${
-                    selected
-                      ? "border-border bg-background text-foreground shadow-[0_1px_2px_rgba(16,24,40,0.06)] [[data-theme=dark]_&]:border-white/15 [[data-theme=dark]_&]:bg-white/[0.06]"
-                      : "border-transparent text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  {/* min-w-0 + overflow-hidden is what lets the 0fr column
-                      actually collapse: without it the grid item keeps its
-                      automatic minimum size and the pill never closes. */}
-                  <span className="min-w-0 overflow-hidden whitespace-nowrap">
-                    {title}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      ) : null}
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 bottom-0"
+            style={{
+              height: dissolveFor(F.h * F.scale).height,
+              backgroundImage: `linear-gradient(to bottom, transparent 0%, var(--portal-ground) ${dissolveFor(F.h * F.scale).stop}%)`,
+            }}
+          />
 
-      {/* The phone control. Steps rather than tabs: the app's name is already
+          {/* Moving between templates, in the grey either side of the shot.
+
+            Not ON the shot: there is a dissolve at its foot precisely so the
+            control at the bottom has solid ground to sit on, and there is no
+            equivalent at the sides — an arrow there would sit on the app's own
+            screen. The gutter is never tighter than ~79px (see `gutter`), so a
+            32px button always has room with air around it.
+
+            Hidden on "Your own app", which is not one of a set to step
+            through. Cycling stays inside the templates: stepping back from the
+            first goes to the last, not out to the composer. */}
+          {F.wide && active > 0 ? (
+            <>
+              <TemplateArrow
+                direction="prev"
+                gutter={gutter}
+                centerY={F.padY + (F.h * F.scale) / 2}
+                onClick={() =>
+                  selectTab(active - 1 < 1 ? items.length - 1 : active - 1)
+                }
+              />
+              <TemplateArrow
+                direction="next"
+                gutter={gutter}
+                centerY={F.padY + (F.h * F.scale) / 2}
+                onClick={() =>
+                  selectTab(active + 1 >= items.length ? 1 : active + 1)
+                }
+              />
+            </>
+          ) : null}
+        </div>
+
+        {/* Two pills, and only ever two.
+
+          The fork they name — build your own, or start from one that already
+          exists — is the argument this panel is making. The row used to
+          dissolve that fork into four app names the moment you engaged with
+          it, so the choice disappeared exactly when it had been taken. The
+          control now stays on the fork permanently, and moving between
+          templates is the arrows' job instead (see TemplateArrow).
+
+          It also takes the length problem out at the root: the track used to
+          grow with the names inside it, so a longer template title made the
+          whole control wider. Two fixed labels cannot.
+
+          This is not a reversal of the note it replaces, which argued against
+          arrows sitting BESIDE the names as a second control for a job the
+          names already did. There are no names here for them to duplicate.
+
+          Top right rather than at the foot: on the panel's own padding
+          (px-10 pt-8, the header's), so the title block on the left and the
+          control on the right read as one row — what this is, and which one
+          you are looking at. At the foot it was the last thing in the frame
+          and the shot had to leave a band of ground for it; up here the shot
+          gets its whole foot back. The phone keeps its own copy below the
+          panel, because at 375px this corner belongs to the header. */}
+        {F.wide ? (
+          <div className="absolute right-10 top-8 z-10">
+            <ForkToggle
+              items={items}
+              active={active}
+              lastTemplate={lastTemplate}
+              selectTab={selectTab}
+            />
+          </div>
+        ) : null}
+
+        {/* The phone control. Steps rather than tabs: the app's name is already
           the line above the shot, so the control's job is only to move, and two
           chevrons either side of the position do that in a row that cannot be
           cut off however long the names get. The square chevron button is the
           shape the changelog's pager already collapses to on a phone, for the
           same reason — a label that will not fit becomes an arrow. */}
-      {F.wide ? null : (
-        <div className="absolute inset-x-0 bottom-0 flex items-center justify-center gap-4 px-6 pb-6">
-          <StepButton
-            direction="prev"
-            onClick={() =>
-              setActive((i) => (i - 1 + items.length) % items.length)
-            }
-          />
-          {/* Tabular figures so the row does not shift width as the number
+        {/* The phone's STEPPER, inside the panel on the dissolve. The fork
+          toggle that goes with it is below the panel entirely — see the end of
+          this component — so only this sits on the shot.
+
+          Shows up once you are on a template: "Your own app" is not one of a
+          numbered set to step through. */}
+        {F.wide || active === 0 ? null : (
+          <div className="absolute inset-x-0 bottom-0 flex items-center justify-center gap-4 px-6 pb-6">
+            <StepButton
+              direction="prev"
+              onClick={() =>
+                selectTab(active - 1 < 1 ? items.length - 1 : active - 1)
+              }
+            />
+            {/* Counts the TEMPLATES, not the panels: "Your own app" is not one of
+            a numbered set, and including it made the first template read as 2
+            of 4. Tabular figures so the row does not shift width as the number
             changes under the thumb. */}
-          <p className="text-sm tabular-nums text-muted-foreground" aria-hidden>
-            {active + 1} / {items.length}
-          </p>
-          <StepButton
-            direction="next"
-            onClick={() => setActive((i) => (i + 1) % items.length)}
+            <p
+              className="text-sm tabular-nums text-muted-foreground"
+              aria-hidden
+            >
+              {active} / {items.length - 1}
+            </p>
+            <StepButton
+              direction="next"
+              onClick={() =>
+                selectTab(active + 1 >= items.length ? 1 : active + 1)
+              }
+            />
+          </div>
+        )}
+      </div>
+
+      {/* THE PHONE'S FORK TOGGLE: under the panel, on the page's own ground.
+
+          Not inside it. On a 375px screen the panel is the full measure, so a
+          control sitting on the shot takes a row out of the picture it
+          switches and starts reading as part of the app in it — the same
+          reason PortalProblem renders its phone toggle under the tray rather
+          than in its corner. Outside, it is plainly a control FOR the thing
+          above it, and the shot gets the whole panel back.
+
+          The stepper stays inside, on the dissolve: it is a position within
+          the picture, so it belongs to the picture. */}
+      {F.wide ? null : (
+        <div className="mt-4 flex justify-center">
+          <ForkToggle
+            items={items}
+            active={active}
+            lastTemplate={lastTemplate}
+            selectTab={selectTab}
           />
         </div>
       )}
+    </div>
+  );
+}
+
+/**
+ * The fork the panel is arguing: build your own, or start from one that
+ * exists. Two pills and only ever two — see the note at its call site in the
+ * wide layout for why the template names no longer live in here.
+ *
+ * Shared by both layouts rather than written twice. The phone used to get a
+ * bare position stepper instead, so the choice this panel is making was
+ * invisible on the screen where most people meet the page.
+ */
+function ForkToggle({
+  items,
+  active,
+  lastTemplate,
+  selectTab,
+}: {
+  items: Item[];
+  active: number;
+  lastTemplate: number;
+  selectTab: (i: number) => void;
+}) {
+  return (
+    <div
+      role="tablist"
+      aria-label="Apps in the portal"
+      className="flex items-center gap-0.5 rounded-full border border-border p-1 [[data-theme=dark]_&]:border-white/15"
+    >
+      {[
+        { key: "your-own", title: items[0].title, templates: false },
+        {
+          key: "select-template",
+          title: "Select a template",
+          templates: true,
+        },
+      ].map(({ key, title, templates }) => {
+        // "Select a template" holds the selected state for ANY template,
+        // not for one of them — which is the whole point of collapsing
+        // the names away.
+        const selected = templates ? active > 0 : active === 0;
+        return (
+          <button
+            key={key}
+            type="button"
+            role="tab"
+            aria-selected={selected}
+            aria-controls="portal-hero-panel"
+            tabIndex={selected ? 0 : -1}
+            // Returning to the templates returns to the one you were
+            // last on, rather than snapping back to the first.
+            onClick={() => selectTab(templates ? lastTemplate : 0)}
+            onKeyDown={(e) => {
+              if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+              const toTemplates = !templates;
+              selectTab(toTemplates ? lastTemplate : 0);
+              e.currentTarget.parentElement
+                ?.querySelector<HTMLElement>(
+                  `[data-pill="${toTemplates ? "select-template" : "your-own"}"]`,
+                )
+                ?.focus();
+            }}
+            data-pill={key}
+            className={`rounded-full border px-3.5 py-1 text-sm whitespace-nowrap transition-[color,background-color,border-color,box-shadow] duration-200 ease-out motion-reduce:transition-none ${
+              selected
+                ? "border-border bg-background text-foreground shadow-[0_1px_2px_rgba(16,24,40,0.06)] [[data-theme=dark]_&]:border-white/15 [[data-theme=dark]_&]:bg-white/[0.06]"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {title}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+/**
+ * A step button parked in one of the panel's side gutters, vertically centred
+ * on the shot.
+ *
+ * `centerY` is measured from the top of the tab panel, which carries `padY` of
+ * ground above the shot — so it is that padding plus half the shot, not half
+ * the panel. The button is nudged to the middle of the gutter rather than
+ * pinned to the panel edge, with an 8px floor so a tight gutter still leaves it
+ * clear of the rim.
+ */
+function TemplateArrow({
+  direction,
+  gutter,
+  centerY,
+  onClick,
+}: {
+  direction: "prev" | "next";
+  gutter: number;
+  centerY: number;
+  onClick: () => void;
+}) {
+  const inset = Math.max(8, (gutter - 32) / 2);
+  return (
+    <div
+      className="absolute z-10"
+      style={{
+        top: centerY,
+        transform: "translateY(-50%)",
+        left: direction === "prev" ? inset : undefined,
+        right: direction === "next" ? inset : undefined,
+      }}
+    >
+      <StepButton direction={direction} onClick={onClick} />
     </div>
   );
 }
@@ -666,26 +741,6 @@ function StepButton({
       </svg>
     </button>
   );
-}
-
-/**
- * Keeps the tab you just picked inside the scroller. The row scrolls sideways
- * on a phone rather than wrapping, so arrowing or tapping towards either end
- * used to select a tab sitting off the edge, with nothing to show which one was
- * active. Scrolls the row itself rather than calling scrollIntoView, which
- * would also scroll the page to the hero.
- */
-const TAB_REVEAL_PAD = 16;
-
-function revealTab(el: HTMLElement) {
-  const row = el.parentElement;
-  if (!row) return;
-  const left = el.offsetLeft - TAB_REVEAL_PAD;
-  const right =
-    el.offsetLeft + el.offsetWidth - row.clientWidth + TAB_REVEAL_PAD;
-  if (left < row.scrollLeft) row.scrollTo({ left, behavior: "smooth" });
-  else if (right > row.scrollLeft)
-    row.scrollTo({ left: right, behavior: "smooth" });
 }
 
 /**

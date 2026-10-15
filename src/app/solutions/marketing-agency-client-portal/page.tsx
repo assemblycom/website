@@ -8,8 +8,15 @@ import { PortalBuild } from "@/components/client-portal/portal-build";
 import { PortalTailor } from "@/components/client-portal/portal-tailor";
 import { PortalStack } from "@/components/client-portal/portal-stack";
 import { PortalTrust } from "@/components/client-portal/portal-trust";
-import { PortalProof } from "@/components/client-portal/portal-proof";
 import { PortalPricing } from "@/components/client-portal/portal-pricing";
+import {
+  IconTemplateApprovals,
+  IconTemplateMessages,
+  IconTemplateProjects,
+  IconTemplateProposals,
+  IconTemplateTimeTracker,
+} from "@/components/templates/template-icons";
+import { Testimonials } from "@/components/home/testimonials";
 import { CTA } from "@/components/home/cta";
 import { FAQ, type FAQEntry } from "@/components/home/faq";
 import { serializeJsonLd } from "@/lib/json-ld";
@@ -34,35 +41,60 @@ export const metadata: Metadata = pageMetadata(
  */
 
 /** Section 3. All five resolve from the committed templates. */
+const AGENCY_TRUST_CLAIMS: FAQEntry[] = [
+  {
+    question: "Sign-in",
+    answer: "Clients use Google or a secure one-click email link.",
+  },
+  {
+    question: "MFA",
+    answer: "Available on every plan, and enforced on Advanced.",
+  },
+  {
+    question: "Audit log",
+    answer: "Sign-ins, files, billing, and signatures, on Advanced.",
+  },
+  {
+    question: "AI and client data",
+    answer:
+      "Apps built with AI use the same logins and permissions as every other app in the portal.",
+  },
+];
+
 const AGENCY_APPS = [
   {
     slug: "design-approvals",
     title: "Design approvals",
     description: "Creative sign-off, round by round.",
     foundation: "Approvals",
+    icon: <IconTemplateApprovals className="w-[30px]" />,
   },
   {
     slug: "content-approval-flow",
     title: "Content approval flow",
     description: "Posts and campaigns with status history.",
     foundation: "Content",
+    icon: <IconTemplateMessages className="w-[26px]" />,
   },
   {
     slug: "proposal-builder",
     title: "Proposals",
     description: "Branded proposals clients can e-sign.",
     foundation: "Proposals",
+    icon: <IconTemplateProposals className="w-[26px]" />,
   },
   {
     slug: "client-project-tracker",
     title: "Client project tracker",
     description: "Milestones and live progress for every engagement.",
     foundation: "Projects",
+    icon: <IconTemplateProjects className="w-[22px]" />,
   },
   {
     slug: "time-tracker",
     title: "Time tracker",
     description: "Log billable hours by client and export timesheets.",
+    icon: <IconTemplateTimeTracker className="w-[26px]" />,
     // Marked "(Internal)" in the handoff; carried as the site's mono chip
     // rather than as words inside the title, same as the accounting page.
     foundation: "Internal",
@@ -144,7 +176,9 @@ export default function MarketingAgencyClientPortalPage() {
                 "know-", which reads as a typo in a headline. The helper the
                 post titles and the comparison headings already use. */}
             <h1 className="type-display max-w-[30ch] text-balance lg:col-start-1">
-              {unbreakable("Turn your agency\u2019s know-how into AI-built apps")}
+              {unbreakable(
+                "Turn your agency\u2019s know-how into AI-built apps",
+              )}
             </h1>
             <p className="type-lead max-w-[34rem] text-pretty text-muted-foreground lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:pt-2">
               Assembly gives your agency a branded client portal for reports,
@@ -221,6 +255,8 @@ export default function MarketingAgencyClientPortalPage() {
 
         {/* 2. Problem. */}
         <PortalProblem
+          // Picture and quote as one row, same as the accounting page.
+          split
           heading="Stop scattering your deliverables across tools"
           body="Feedback in one app, files in another, reports in a third, invoices by email. Clients ask where things stand because they can't see it."
           sides={[]}
@@ -299,7 +335,6 @@ export default function MarketingAgencyClientPortalPage() {
           visualTitle="V6 — the agency stack shot. Art direction pending."
         />
 
-
         {/* 7. Trust. No rows here: this handoff makes the security case in its
             paragraph rather than in drawers a reader opens, so the right column
             carries the picture instead. The seal band keeps all four marks —
@@ -307,15 +342,13 @@ export default function MarketingAgencyClientPortalPage() {
         <PortalTrust
           heading="Every app you build ships with guardrails"
           body="Logins, permissions, and who sees what come from the platform, so each client sees only their own data. SOC 2 Type II, with a HIPAA BAA on the Advanced plan."
-          claims={[]}
+          // The same four rows the accounting page opens, in this page's
+          // words: the right column is where this section makes its case, and
+          // a held-open picture made the heading's claim the only thing on it.
+          // HIPAA is a BAA on Advanced here rather than a mark in the seal
+          // band, which is what the body above already says.
+          claims={AGENCY_TRUST_CLAIMS}
           link={{ label: "Read about security", href: "/security" }}
-          visual={
-            <div
-              aria-hidden
-              title="V7 — the agency trust shot. Art direction pending."
-              className="h-[300px] rounded-3xl bg-[var(--surface)] md:h-[400px]"
-            />
-          }
         />
         <GridDivider />
       </div>
@@ -323,27 +356,40 @@ export default function MarketingAgencyClientPortalPage() {
       <div className="relative">
         <GridRails />
 
-        {/* 8. Proof. One firm, not three: this handoff tells a single story at
-            length, so the band runs as one block rather than three columns.
+        {/* 8. Proof. The site's featured-story component, which is how the
+            comparison pages present this — heading and lead in their own
+            centred block, then the story itself. PortalProof's single-story
+            column was a fourth way of showing a customer quote on a site that
+            had already settled on this one.
 
-            No picture slot here. The section closes on the quote — the logo,
-            the claim and the words are the proof, and an empty panel under
-            them only pushed the one thing this section has to say further up
-            the page. V8 can take the slot back when it exists. */}
-        <PortalProof
-          heading="Five tools replaced. Five apps built."
-          body="Advertai Marketing, an 11-person agency, built its own message center, design feedback app, and SEO dashboard on Assembly, and is retiring Markup.io, Bright Local, and Keyword.com."
-          stories={[
-            {
-              slug: "advertai-marketing",
-              // Quoted from the published Advertai study. See case-studies.ts.
-              quote:
-                "We've heard how professional everything feels, and how it's really unique compared to any other experience they've had.",
-              name: "Garrett Leonard",
-              role: "Founder @ Advertai Marketing",
-              href: "/customers/advertai-marketing",
-            },
-          ]}
+            The story is Advertai either way; this keeps the page's own quote
+            and picks up the portrait, the stats and the link that the handoff
+            had no slot for. */}
+        <section className="mx-auto max-w-[1200px] px-6 pt-16 md:px-10 md:pt-24">
+          <h2 className="type-h2 text-balance text-center">
+            Five tools replaced. Five apps built.
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl text-balance text-center text-muted-foreground">
+            Advertai Marketing, an 11-person agency, built its own message
+            center, design feedback app, and SEO dashboard on Assembly, and is
+            retiring Markup.io, Bright Local, and Keyword.com.
+          </p>
+        </section>
+        <Testimonials
+          story={{
+            // Quoted from the published Advertai study. See case-studies.ts.
+            quote:
+              "We've heard how professional everything feels, and how it's really unique compared to any other experience they've had.",
+            name: "Garrett Leonard",
+            firm: "Advertai Marketing",
+            image: "/images/customers/advertai-marketing.jpg",
+            stats: [
+              { value: "5 weeks", label: "Development to launch" },
+              { value: "200+ clients", label: "Using applications" },
+              { value: "5+ tools", label: "Consolidated and saved" },
+            ],
+            href: "/customers/advertai-marketing",
+          }}
         />
         <GridDivider />
 
