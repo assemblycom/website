@@ -59,7 +59,7 @@ const GROUPS: FeatureGroup[] = [
       {
         label: "Build credits / month",
         tooltip: "Credits used when the builder creates or edits an app. Using your live apps never consumes credits.",
-        values: ["50", "200", "200", "200", "Custom"],
+        values: ["75", "200", "200", "200", "Custom"],
       },
       {
         label: "Apps included",

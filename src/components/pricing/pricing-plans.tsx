@@ -30,7 +30,7 @@ const PLANS: Plan[] = [
         items: [
           "5 active contacts",
           "1 internal user",
-          "50 build credits / month",
+          "75 build credits / month",
         ],
       },
       {
