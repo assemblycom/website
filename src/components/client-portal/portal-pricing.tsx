@@ -2,7 +2,7 @@ import Link from "next/link";
 import { QUIET_BUTTON } from "@/components/ui/quiet-button";
 import { CheckIcon } from "@/components/ui/check-icon";
 import { Reveal } from "@/components/ui/reveal";
-import { APP_URL, DEMO_URL, DEMO_CTA_LABEL } from "@/lib/constants";
+import { SIGNUP_URL, DEMO_URL, DEMO_CTA_LABEL } from "@/lib/constants";
 
 /**
  * A teaser, not a matrix: the full plan comparison is /pricing, and this
@@ -38,7 +38,7 @@ const TIERS: Tier[] = [
     perksLabel: "Includes:",
     perks: ["5 active contacts", "3 apps"],
     cta: "Get started",
-    href: APP_URL,
+    href: SIGNUP_URL,
   },
   {
     name: "Starter",
@@ -47,7 +47,7 @@ const TIERS: Tier[] = [
     perksLabel: "Everything in Free, plus:",
     perks: ["50 active contacts", "API and MCP connector"],
     cta: "Get started",
-    href: APP_URL,
+    href: SIGNUP_URL,
   },
   {
     name: "Professional",
@@ -56,7 +56,7 @@ const TIERS: Tier[] = [
     perksLabel: "Everything in Starter, plus:",
     perks: ["Custom domain", "Assembly badge removed", "Automation builder"],
     cta: "Get started",
-    href: APP_URL,
+    href: SIGNUP_URL,
     recommended: true,
   },
   {
@@ -81,7 +81,7 @@ const TIERS: Tier[] = [
  */
 export function PortalPricing({
   heading = "Start free. Build as you grow.",
-  body = "The free plan never expires and includes real, publishable apps. Paid plans add your own domain, more clients, and more apps.",
+  body = "The free plan never expires and includes real, publishable apps. Paid plans add your own domain, more clients, and more apps. Monthly prices shown are billed annually.",
   link = { label: "See full pricing", href: "/pricing" },
   tiers = TIERS,
   aside,

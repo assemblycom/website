@@ -62,7 +62,7 @@ const PAGE: VsPage = {
         assembly: true,
         competitor: { yes: true, note: "Enterprise" },
       },
-      { label: "Full code export", assembly: true, competitor: true },
+      { label: "Full code export", assembly: false, competitor: true },
       { label: "Live apps without credits", assembly: true, competitor: false },
       {
         label: "HIPAA options",

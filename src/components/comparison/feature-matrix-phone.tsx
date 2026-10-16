@@ -1,12 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import { GRID_LINE } from "@/components/ui/grid-lines";
 import { Mark } from "@/components/comparison/mark";
 import { SegmentedTabs } from "@/components/ui/segmented-tabs";
 import type { ComparisonRow } from "@/lib/comparisons";
 
-const TABS_ID = "matrix-phone";
 
 /**
  * The capability matrix on a phone: one product at a time, chosen by the
@@ -34,6 +33,9 @@ export function FeatureMatrixPhone({
   // page is for and the one a reader arrives wanting.
   const [option, setOption] = useState(0);
   const own = option === 0;
+  // Unique per matrix: a comparison page renders one per feature section, and
+  // a shared id sent each tab's aria-controls to the first section's panel.
+  const TABS_ID = `matrix-phone-${useId().replace(/:/g, "")}`;
 
   return (
     <div

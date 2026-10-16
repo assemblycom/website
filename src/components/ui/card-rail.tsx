@@ -378,6 +378,14 @@ export function CardRail({
     const el = ref.current;
     const d = drag.current;
     if (!el || !d) return;
+    // NO BUTTON HELD, NO DRAG. A press that wanders off the rail vertically
+    // and is released outside it, before the 4px threshold has started
+    // capture, never sends this element its pointerup — so the drag stayed
+    // live and the rail scrolled under a hovering mouse when it came back.
+    if (e.buttons === 0) {
+      endDrag(e);
+      return;
+    }
     const dx = e.clientX - d.x;
     // Capture only once the pointer has travelled far enough to be a drag
     // rather than a click, so a plain click on a card still reaches the card.
