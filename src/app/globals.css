@@ -554,10 +554,15 @@
   --mock-firm: #7389d6;
   --mock-firm-ink: #ffffff;
 
-  /* See --ledgerline-* in :root. Identical on purpose: the firm's colours. */
+  /* See --ledgerline-* in :root. Identical on purpose — the firm's colours —
+     EXCEPT CLAY, which is the portal sidebar's ground and is NOT BROWN IN
+     DARK. Any brown, at light's value or lifted, read as mud against the
+     #212121 pane and the near-black page. Dark takes a deep cut of the
+     firm's own sage instead, so the sidebar is still Ledgerline's colour —
+     its mark is sage — and white nav type clears 9:1 on it. */
   --ledgerline-sage: #94b8b0;
   --ledgerline-butter: #ecdf8f;
-  --ledgerline-clay: #5b3626;
+  --ledgerline-clay: #2c4f49;
   --ledgerline-cobalt: #2f6fc6;
   --ledgerline-ink: #161616;
 

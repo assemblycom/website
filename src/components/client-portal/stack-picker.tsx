@@ -132,7 +132,10 @@ export function StackPicker({
       // was nothing to act on — which stopped being true the moment the rows
       // became links. A hidden list of real destinations is a set of doors a
       // keyboard can tab into and a screen reader is never told about.
-      title={title}
+      // The slot's art direction, kept in the markup but NOT as `title`: as a
+      // title it surfaced as a hover tooltip reading "Art direction pending"
+      // over a live section of the page.
+      data-art-direction={title}
       // A CLOSED PANEL AT EVERY WIDTH.
       //
       // From lg this used to bleed: the card ran past the 1200px rail with no

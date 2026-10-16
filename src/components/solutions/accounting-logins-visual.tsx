@@ -1,7 +1,6 @@
 import {
   IconCard,
   IconDocuments,
-  IconApp,
   IconFolder,
 } from "@/components/home/mock-icons";
 
@@ -29,14 +28,11 @@ import {
 // ─────────────────────────────────────────────────────────────────────────
 
 /**
- * The four tools the body copy names, in its order, as Ledgerline's clients
- * meet them.
- *
- * Contracts, files, invoices — the sentence over the picture — plus the tax
- * organizer every accounting client fills in once a year. Each one is the
- * same firm on a different vendor's address: Ledgerline's name in four
- * places, none of them Ledgerline's own front door. That is the seam the body
- * copy says clients feel.
+ * The three tools the body copy names, in its order, as Ledgerline's clients
+ * meet them: contracts, files, invoices — the sentence over the picture. Each
+ * one is the same firm on a different vendor's address, none of them
+ * Ledgerline's own front door. That is the seam the body copy says clients
+ * feel. (A fourth, the tax organizer, made the stack fill the photograph.)
  */
 const TOOLS = [
   {
@@ -54,11 +50,6 @@ const TOOLS = [
     host: "pay.ledgerline-billing.com",
     icon: <IconCard className="size-[16px]" />,
   },
-  {
-    name: "Tax organizer",
-    host: "ledgerline.taxdesk.net",
-    icon: <IconApp className="size-[16px]" />,
-  },
 ];
 
 /**
@@ -67,25 +58,33 @@ const TOOLS = [
  *
  * The tiles this replaces were grey slabs with a lock in the middle — over a
  * photograph they read as blank panels rather than as anything a client
- * would meet. A prompt is the thing itself: four of them stacked is four
+ * would meet. A prompt is the thing itself: three of them stacked is three
  * front doors, which is the heading's complaint.
  */
-function SignInPrompt({ name, host, icon }: (typeof TOOLS)[number]) {
+/** One tool a client has to sign in to: its name, its address, its mark. */
+export type LoginTool = { name: string; host: string; icon: React.ReactNode };
+
+function SignInPrompt({
+  name,
+  host,
+  icon,
+  className = "",
+}: LoginTool & { className?: string }) {
   return (
-    <div className="flex items-center gap-3 rounded-2xl bg-[var(--mock-window)] p-2 pr-3 shadow-[0_1px_2px_rgba(16,24,40,0.06),0_12px_28px_-14px_rgba(16,24,40,0.35)]">
+    <div className={`flex items-center gap-2.5 md:gap-3 rounded-2xl bg-[var(--mock-window)] p-2 pr-3 shadow-[0_1px_2px_rgba(16,24,40,0.06),0_12px_28px_-14px_rgba(16,24,40,0.35)] ${className}`}>
       <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-[var(--mock-well-2)] text-[color:var(--mock-ink)] md:size-10">
         {icon}
       </span>
       <span className="flex min-w-0 flex-1 flex-col gap-1.5">
-        <span className="truncate text-[13px] leading-none text-[color:var(--mock-ink)]">
+        <span className="truncate text-[12.5px] leading-none md:text-[13.5px] text-[color:var(--mock-ink)]">
           Sign in to {name}
         </span>
-        <span className="truncate text-[12px] leading-none text-[color:var(--mock-ink-soft)]">
+        <span className="truncate text-[11.5px] leading-none text-[color:var(--mock-ink-soft)] md:text-[12.5px]">
           {host}
         </span>
       </span>
       <span
-        className={`shrink-0 rounded-[4px] border border-[var(--mock-line)] px-2.5 py-1.5 text-[11.5px] leading-none text-[color:var(--mock-ink)]`}
+        className={`shrink-0 rounded-[4px] border border-[var(--mock-line)] bg-[var(--mock-well-2)] px-2.5 py-1.5 text-[11.5px] leading-none text-[color:var(--mock-ink)]`}
       >
         Sign in
       </span>
@@ -94,15 +93,36 @@ function SignInPrompt({ name, host, icon }: (typeof TOOLS)[number]) {
 }
 
 export function AccountingLoginsVisual() {
+  return <LoginsVisual tools={TOOLS} />;
+}
+
+/**
+ * The stack itself, for any page's set of tools — the marketing-agency page
+ * runs the same picture with its own three (see agency-logins-visual.tsx).
+ * One component so the two pages cannot drift into two versions of it.
+ */
+export function LoginsVisual({ tools }: { tools: LoginTool[] }) {
   return (
     <div
       aria-hidden
       // Centred on the tray's photograph, which carries the scene; the stack
       // is the one thing laid over it.
-      className="flex h-full select-none flex-col justify-center gap-2.5 px-2 md:px-8"
+      //
+      // Inset further on a phone (px-3, and a tighter gap inside each pill so
+      // the longest host still sets whole). At px-2 the pills ran edge to edge,
+      // so they read as bars across the photograph rather than prompts laid
+      // on it; the wider inset keeps the scene showing either side.
+      className="flex h-full select-none flex-col justify-center gap-2.5 px-3 md:px-8"
     >
-      {TOOLS.map((tool) => (
-        <SignInPrompt key={tool.name} {...tool} />
+      {/* THREE ON DESKTOP, TWO ON A PHONE. At phone width three prompts fill the whole
+          photograph and it stops reading as a pile laid over a scene. Two
+          still say "one more login", and the photograph gets room again. */}
+      {tools.map((tool, i) => (
+        <SignInPrompt
+          key={tool.name}
+          {...tool}
+          className={i >= 2 ? "max-md:hidden" : ""}
+        />
       ))}
     </div>
   );

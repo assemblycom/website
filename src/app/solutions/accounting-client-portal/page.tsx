@@ -511,7 +511,7 @@ export default function AccountingClientPortalPage() {
             set is what turns the section into claim-and-picture. */}
         <PortalStack
           heading="Keep your accounting software. Upgrade what clients see."
-          body="Embed Google Sheets, Google Drive, OneDrive, Calendly, Jotform, and Typeform, and sync invoices one way to QuickBooks or Xero. Connect the rest with Zapier, Make, the API, or MCP."
+          body="Embed Google Sheets, Drive, OneDrive, Calendly, Jotform, and Typeform. Push invoices to QuickBooks or Xero, and connect the rest with Zapier, Make, the API, or MCP."
           ways={[]}
           visualTitle="V6 — the portal showing an embedded Google Sheet (Harbor Dental PLLC, 2026 payroll summary), with thin connectors out to Google Sheets, Google Drive, OneDrive, Calendly, Jotform, Typeform, and one-way arrows to QuickBooks and Xero. Behind a dotted line at the far right, a neutral tile reading 'Your tax and accounting software'."
         />
@@ -543,6 +543,10 @@ export default function AccountingClientPortalPage() {
             it out of its own row for exactly this reason. ValueNode takes the
             third slot — an accounting firm, photographed, and its quote is the
             consolidation argument this page opens on. */}
+        {/* Logos, not portraits, for all three: this page sells to firms, so
+            the firm is the name to recognise. Same white tile and fixed ink as
+            the Sargent quote above, so each mark holds its contrast in both
+            themes. `image` stays as the fallback. */}
         <BuilderCustomerQuotes
           heading="Firms that built the practice they wanted"
           body="Advisory, tax, and bookkeeping firms run their client experience on Assembly."
@@ -552,6 +556,7 @@ export default function AccountingClientPortalPage() {
                 "We had more tax returns in the door, ready to start being prepped, earlier than ever this year than in our entire history.",
               name: "Kyle Pearson",
               firm: "Collective CPA",
+              logoSlug: "collective-cpa",
               image: "/images/customers/collective-cpa.jpg",
               href: "/customers/collective-cpa",
             },
@@ -560,6 +565,7 @@ export default function AccountingClientPortalPage() {
                 "Every client said this was such an easy onboarding experience.",
               name: "Leah McCool",
               firm: "Orca Accounting",
+              logoSlug: "orca-accounting",
               image: "/images/customers/orca-accounting.jpg",
               href: "/customers/orca-accounting",
             },
@@ -570,8 +576,6 @@ export default function AccountingClientPortalPage() {
                 "It saves me so much time — just knowing exactly where to find things, and having everything streamlined in one secure place.",
               name: "Dr. Najlaa Kallousa",
               firm: "ValueNode Accounting",
-              // The logo, not the photo: the file at this path is not a
-              // portrait of the person being quoted.
               logoSlug: "valuenode-accounting",
               image: "/images/customers/valuenode-accounting.jpg",
               href: "/customers/valuenode-accounting",

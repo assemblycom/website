@@ -181,10 +181,17 @@ const AGENCY_ITEMS: Item[] = [
 // occupy, it reflows at full size and `scale` stays 1 everywhere except the
 // narrowest phones.
 
-/** Floor: below this the mock's own layout (sidebar beside content) crowds, so
- *  the last few pixels come out of scale instead of width. Only the narrowest
- *  phones reach it. */
+/** Where the phone→desktop curves (gutter, shape) start. */
 const MIN_W = 320;
+/** Floor: below this the mock's own layout crowds, so the last few pixels come
+ *  out of scale instead of width. Only the narrowest phones reach it.
+ *
+ *  Lower than MIN_W on purpose. A 375px phone leaves the shot 295px, and when
+ *  the floor was MIN_W the most common phone width drew every label at 92% —
+ *  9.5px type at 8.7, avatar initials under 7 — which is the fine print the
+ *  fluid width was meant to end. The mocks drop their sidebar on a phone, so
+ *  288 does not crowd. Kept apart from MIN_W so desktop is untouched. */
+const FLOOR_W = 288;
 /** Ceiling: the shot is framed BY the panel, so past this it stops growing and
  *  the grey around it opens up instead. Without a cap a 1320px panel held a
  *  near-edge-to-edge window and there was no panel left to sit in. */
@@ -273,9 +280,31 @@ type Fit = {
   wide: boolean;
 };
 
+/**
+ * PHONES ZOOM WITH THE PHONE, like the step rail further down the page.
+ *
+ * Everywhere else the shot reflows at 1:1, so a wider panel buys more layout
+ * rather than bigger type. On a phone that left the hero one step behind the
+ * rail: the rail's cards are fitted to the card width and grow with it, so on
+ * a 430px phone its rows read at 11.8px while the hero's sat at 10.5, and the
+ * two pictures of the same product read as two different UIs.
+ *
+ * So below `sm` the shot is laid out at the 375px phone's width and scaled up
+ * to whatever the panel has, capped at ZOOM_MAX — which lands within a few
+ * tenths of the rail at every phone size. From `sm` the panel is a tablet's
+ * and it reflows at 1:1 as before.
+ */
+const PHONE_BASE_W = 295;
+const PHONE_PANEL_MAX = 592;
+const ZOOM_MAX = 1.15;
+
 function fitFor(panelW: number, viewportH: number): Fit {
   const avail = Math.max(1, panelW - 2 * padXFor(panelW));
-  const w = Math.min(MAX_W, Math.max(MIN_W, avail));
+  const zoom =
+    panelW < PHONE_PANEL_MAX
+      ? Math.min(ZOOM_MAX, Math.max(1, avail / PHONE_BASE_W))
+      : 1;
+  const w = Math.min(MAX_W, Math.max(FLOOR_W, avail / zoom));
   // How far along the phone→desktop range this width sits. Drives the shape and
   // the vertical padding together, so both ease instead of stepping.
   const t = Math.min(1, Math.max(0, (w - MIN_W) / (MAX_W - MIN_W)));
@@ -287,7 +316,7 @@ function fitFor(panelW: number, viewportH: number): Fit {
     w,
     h,
     panelW,
-    scale: Math.min(1, avail / w),
+    scale: zoom > 1 ? zoom : Math.min(1, avail / w),
     // Tied to the shot rather than fixed, so a shot the viewport shortened does
     // not keep a desktop-sized band of grey above and below it.
     padY: Math.round(Math.min(56, Math.max(20, h * 0.11))),
@@ -697,7 +726,13 @@ function ForkToggle({
             data-pill={key}
             className={`rounded-full border px-3.5 py-1 text-sm whitespace-nowrap transition-[color,background-color,border-color,box-shadow] duration-200 ease-out motion-reduce:transition-none ${
               selected
-                ? "border-border bg-background text-foreground shadow-[0_1px_2px_rgba(16,24,40,0.06)] [[data-theme=dark]_&]:border-white/15 [[data-theme=dark]_&]:bg-white/[0.06]"
+                ? // ViewToggle's thumb exactly (ui/view-toggle.tsx), which is
+                  // the switch every other page lays on a picture: no border
+                  // in dark, since the track's own ring sits 4px outside it,
+                  // and the fill lifted to 8% to mark it instead. This
+                  // carries tablist semantics ViewToggle doesn't, so it keeps
+                  // its own markup, but it must not draw the thumb its own way.
+                  "border-transparent bg-background text-foreground [[data-theme=light]_&]:border-border [[data-theme=dark]_&]:bg-white/[0.08]"
                 : "border-transparent text-muted-foreground hover:text-foreground"
             }`}
           >
@@ -821,7 +856,10 @@ function Window({ item, foot }: { item: Item; foot: number }) {
       // sit under an opaque layer; clearing the mock's root fill here (and only
       // here) lets it through. Scoped to this component, so the same mocks keep
       // their solid ground on the cards further down the page.
-      className={`h-full w-full overflow-hidden rounded-t-2xl bg-[linear-gradient(180deg,#ffffff_0%,#fdfefe_55%,#fafbfd_100%)] shadow-[0_1px_2px_rgba(16,24,40,0.04),0_18px_40px_-28px_rgba(16,24,40,0.28)] [[data-theme=dark]_&]:bg-[linear-gradient(180deg,#242424_0%,#222222_55%,#1f1f1f_100%)] [[data-theme=dark]_&]:shadow-[0_24px_60px_-24px_rgba(0,0,0,0.6)] ${
+      //
+      // No drop shadow, in either theme. The screen sits flat on the panel;
+      // a cast under it read as a grey haze around the shot.
+      className={`h-full w-full overflow-hidden rounded-t-2xl bg-[linear-gradient(180deg,#ffffff_0%,#fdfefe_55%,#fafbfd_100%)] [[data-theme=dark]_&]:bg-[linear-gradient(180deg,#242424_0%,#222222_55%,#1f1f1f_100%)] ${
         item.frame === "inset" ? "p-6" : "[&>*]:bg-transparent"
       }`}
     >
@@ -841,11 +879,22 @@ function PromptMock({ prompt }: { prompt: string }) {
           and a composer stretched across all of it stopped reading as a box you
           type a sentence into — one line of text left most of it empty. This is
           about the measure the real composer sits at. */}
+      {/* On a phone the sentence is 11.5 and the model label 10.5 — one rung
+          over the template screens' rows (10.5) the same toggle switches to,
+          so flipping between the two does not change the size of the UI. The
+          shot zooms with the phone, so 15 there read as display type. */}
       {/* Shorter on a phone: the empty run under the sentence is there to say
           "there is room to type more", and at phone width it was most of the
           shot rather than a hint. */}
-      <div className="mx-auto w-full max-w-[560px] rounded-2xl bg-background p-4 shadow-[0_1px_2px_rgba(16,24,40,0.04)] sm:p-5 [[data-theme=dark]_&]:bg-white/[0.06]">
-        <p className="min-h-[44px] text-[15px] leading-[1.6] text-foreground sm:min-h-[72px]">
+      {/* DOUBLE OUTLINE, the builder hero composer's own (builder-hero-
+          visual.tsx): its hairline, a 3px band of the panel's ground, then a
+          second hairline, as two spread shadows so all three read tokens. The
+          band is --surface because that is the panel this sits on, in both
+          themes, so it reads as a gap rather than a fat border. It replaces
+          the drop shadow: a cast and a ring are two ways of saying the same
+          thing. */}
+      <div className="mx-auto w-full max-w-[560px] rounded-2xl border border-[var(--mock-line)] bg-background p-4 shadow-[0_0_0_3px_var(--surface),0_0_0_4px_var(--mock-line)] sm:p-5 [[data-theme=dark]_&]:bg-white/[0.06]">
+        <p className="min-h-[44px] text-[11.5px] leading-[1.6] text-foreground sm:min-h-[72px] sm:text-[15px]">
           {prompt}
         </p>
         {/* The composer's own controls, split across the foot as the product
@@ -854,15 +903,17 @@ function PromptMock({ prompt }: { prompt: string }) {
             here — this is a still of a composer, not a menu waiting to be
             opened, and the caret invited a click the mock cannot answer. */}
         <div className="mt-4 flex items-center justify-between gap-2.5">
-          <span className="flex size-8 items-center justify-center rounded-lg text-muted-foreground [&>svg]:size-4">
+          <span className="flex size-6 items-center justify-center rounded-md text-muted-foreground sm:size-8 sm:rounded-lg [&>svg]:size-3.5 sm:[&>svg]:size-4">
             <IconPlus />
           </span>
           <span className="flex items-center gap-2.5">
-            <span className="text-[13px] leading-none text-muted-foreground">
+            <span className="text-[10.5px] leading-none text-muted-foreground sm:text-[13px]">
               Sonnet 5.5
             </span>
-            <span className="flex size-8 items-center justify-center rounded-lg bg-foreground text-background">
-              <IconArrowUp className="size-4" />
+            {/* 24px on a phone, 32 from sm: at the phone's 11.5px text a 32px
+                square was the heaviest thing in the box. */}
+            <span className="flex size-6 items-center justify-center rounded-md bg-foreground text-background sm:size-8 sm:rounded-lg">
+              <IconArrowUp className="size-3 sm:size-4" />
             </span>
           </span>
         </div>

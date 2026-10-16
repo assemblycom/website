@@ -18,6 +18,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { MockFit } from "@/components/templates/mock-fit";
 import { fadeMask } from "@/components/ui/fade-mask";
+import { FootBlur } from "@/components/ui/foot-blur";
 import { IconArrowUp } from "@/components/home/build-step-visual";
 import {
   IconApp,
@@ -597,13 +598,17 @@ export function DescribeCard({
           />
         </div>
       )}
+      {/* The rail takes the PHONE box too, like Build beside it. Without it
+          this scene fitted its 340x453 box into the square phone card at
+          0.56 while Build ran at 0.88, so the sentence being typed came out
+          at 7px next to a board at 10 — three cards, two sizes of UI. */}
       <Scene
         {...(plain
           ? {
               boxClass: PANEL_SCENE_PHONE.vars,
               boxSizeClass: PANEL_SCENE_PHONE.size,
             }
-          : {})}
+          : RAIL_SCENE_PHONE_PROPS)}
       >
         {/* Not WINDOW. This box is the same object as the hero's composer, so it
           wears the hero's treatment: the element's own hairline, a 3px band of
@@ -1131,7 +1136,9 @@ export function PlanCard({
           <RequirementsPane />
         </Scene>
       ) : (
-        <Scene>
+        // The PHONE box, as Describe and Build take — see the note on
+        // Describe's Scene. One scale across the rail's three cards.
+        <Scene {...RAIL_SCENE_PHONE_PROPS}>
           <ChecklistWindow
             title="Plan"
             items={
@@ -2289,11 +2296,10 @@ export function BuildCard({
           // outline drawn around the shot: a mount, not an edge. The window's
           // own white already separates it from the grey it sits on.
           // Transparent rather than border-0, so the 1px stays in the box and
-          // nothing inside shifts; dark keeps the line, where the ground is
-          // dark enough to need it. The dark variant is spelled out rather
-          // than interpolated from LINE: Tailwind generates CSS by scanning
-          // source text, so a class only assembled at runtime never gets a
-          // rule written for it.
+          // nothing inside shifts. DARK GOES WITHOUT IT TOO: the card's ground
+          // is the light Haze-to-lime ramp in both themes now, so dark's
+          // --mock-line hairline drew a black outline round the shot there,
+          // the same mount light had and lost.
           //
           // background-clip IS THE OTHER HALF OF IT, and without it the fix
           // made things worse. A transparent border is not a gap: by default
@@ -2302,10 +2308,8 @@ export function BuildCard({
           // hairline became a WHITE one, which is brighter against this card's
           // grey ground than the rule it replaced. Clipping the background to
           // the padding box leaves the border area genuinely empty, so the
-          // card's own ground shows through and there is no line at all. Dark
-          // clips to the border box again, because there the border is painted
-          // and wants the ground behind it.
-          className={`flex shrink-0 ${plain ? "" : "w-[340px] translate-x-[25px] sm:w-[380px] sm:translate-x-[20px]"} ${WINDOW} ${R_PANEL} rounded-b-none rounded-tr-none border-transparent [background-clip:padding-box] border-b-0 border-r-0 sm:rounded-tr-[10px] sm:border-r [[data-theme=dark]_&]:border-[var(--mock-line)] [[data-theme=dark]_&]:[background-clip:border-box] ${
+          // card's own ground shows through and there is no line at all.
+          className={`flex shrink-0 ${plain ? "" : "w-[340px] translate-x-[25px] sm:w-[380px] sm:translate-x-[20px]"} ${WINDOW} ${R_PANEL} rounded-b-none rounded-tr-none border-transparent [background-clip:padding-box] border-b-0 border-r-0 sm:rounded-tr-[10px] sm:border-r ${
             plain
               ? // 340x280 ON A PHONE, which is the 360x300 box exactly minus
                 // the scene's own 20px top and left padding — so the window
@@ -2466,6 +2470,11 @@ export function BuildCard({
           </div>
         </div>
       </Scene>
+      {/* Phone only, in the rail: the board's rows run off the square card's
+          foot, and a hard cut there read as the screen stopping. The shared
+          progressive blur softens it into the edge, as the comparison pages'
+          phone windows do. */}
+      {!plain && <FootBlur className="sm:hidden" />}
     </>
   );
 }

@@ -162,6 +162,14 @@ export function SecurityCompliance({
             </span>
           </div>
         ))}
+        {/* An odd count leaves the phone's two-up grid one cell short, and
+            the empty slot showed the hairline bed through it — a grey block
+            where a seal should be. This repaints it as page ground, so the
+            gap reads as empty rather than filled. Phone only: from sm the
+            columns match the count. */}
+        {standards.length % 2 ? (
+          <div aria-hidden className="bg-background sm:hidden" />
+        ) : null}
       </div>
     </section>
   );

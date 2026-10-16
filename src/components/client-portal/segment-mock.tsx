@@ -78,7 +78,7 @@ export function IconUpload({ className }: { className?: string }) {
 // board's subs to 9px, and the result was a grid where some screens looked
 // zoomed in and others out — which reads as the screens being different sizes
 // rather than as different screens.
-const CHIP = "rounded px-1.5 py-[3px] text-[9px] leading-none";
+const CHIP = "whitespace-nowrap rounded px-1.5 py-[3px] text-[9.5px] leading-none";
 const POSITIVE = `${CHIP} bg-[var(--mock-positive-bg)] text-[color:var(--mock-positive-fg)]`;
 const WARNING = `${CHIP} bg-[var(--mock-warning-bg)] text-[color:var(--mock-warning-fg)]`;
 
@@ -195,7 +195,7 @@ export function NavRow({
       // 4px, matching the portal nav row wherever it is drawn — see the same
       // row in branded-portal-visual. rounded-md is 6px, which at this scale
       // read as a lozenge rather than as a row with its corners taken off.
-      className={`flex items-center gap-1.5 rounded-[4px] px-1.5 py-[5px] text-[10px] leading-none ${
+      className={`flex items-center gap-1.5 rounded-[4px] px-1.5 py-[5px] text-[10.5px] leading-none ${
         branded
           ? // One colour for every row on the slab, picked or not. Two tones of
             // white plus a fill was the state said twice, and at five rows the
@@ -497,7 +497,7 @@ export function ApprovalsMock() {
                   attention to anything, it was just a second coloured mark in
                   a window that only needed one. Back to the window's own
                   well. */}
-              <span className="rounded-[3px] bg-[var(--mock-well-2)] px-1 py-[2px] text-[8.5px] leading-none">
+              <span className="rounded-[3px] bg-[var(--mock-well-2)] px-1 py-[2px] text-[9.5px] leading-none">
                 1
               </span>
             </span>
@@ -513,7 +513,7 @@ export function ApprovalsMock() {
             <div
               className={`flex shrink-0 items-center justify-between gap-2 border-b bg-[var(--mock-well)] px-2.5 py-2 ${LINE}`}
             >
-              <span className="text-[10px] leading-none text-[color:var(--mock-ink)]">
+              <span className="text-[10.5px] leading-none text-[color:var(--mock-ink)]">
                 Round 2
               </span>
               <span className="text-[9.5px] leading-none text-[color:var(--mock-ink-soft)]">
@@ -673,7 +673,7 @@ export function DocumentsStatsMock() {
             <IconFilePdf className="h-[16px] w-[17px]" />
           </span>
           <span className="flex min-w-0 flex-col gap-[5px]">
-            <span className="truncate text-[11px] leading-none text-[color:var(--mock-ink)]">
+            <span className="truncate text-[11.5px] leading-none text-[color:var(--mock-ink)]">
               {file}
             </span>
             <span className="truncate text-[9.5px] leading-none text-[color:var(--mock-ink-soft)]">
@@ -711,7 +711,7 @@ export function DocumentsStatsMock() {
 /** Topics an accounting practice would answer, with how much sits under each. */
 const HELPDESK_TOPICS: { name: string; count: number; archived?: boolean }[] = [
   { name: "Onboarding & kickoff", count: 3 },
-  { name: "Documents we need from you", count: 5 },
+  { name: "Documents we need", count: 5 },
   { name: "Billing & payments", count: 4 },
   { name: "Year-end & filing dates", count: 4 },
   { name: "Payroll", count: 3 },
@@ -830,19 +830,18 @@ function AppSwitcherHeader({
         <IconChevronDown className="size-[8px] shrink-0 text-[color:var(--mock-ink-soft)]" />
       </span>
       <span className="flex shrink-0 items-center gap-1.5">
-        <span className={PRIMARY_BUTTON}>
-          <IconPlus className="size-[9px]" />
-          {action}
-        </span>
+        {/* Label only, no plus. The verb already says it makes something,
+            and a glyph in front of it was the one mark on the button. */}
+        <span className={PRIMARY_BUTTON}>{action}</span>
       </span>
     </div>
   );
 }
 
-const PRIMARY_BUTTON = `flex shrink-0 items-center gap-1 rounded-[4px] bg-[var(--mock-ink)] px-2 py-[5px] text-[color:var(--mock-window)] ${MOCK_MICRO}`;
+const PRIMARY_BUTTON = `flex shrink-0 items-center gap-1 whitespace-nowrap rounded-[4px] bg-[var(--mock-ink)] px-2 py-[5px] text-[color:var(--mock-window)] ${MOCK_MICRO}`;
 
 /** A bordered control on the toolbar — a select, a filter, a toggle's frame. */
-const CONTROL = `flex shrink-0 items-center gap-1.5 rounded-[4px] border px-2 py-[6px] text-[color:var(--mock-ink-soft)] ${MOCK_SECONDARY} ${LINE}`;
+const CONTROL = `flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-[4px] border px-2 py-[6px] text-[color:var(--mock-ink-soft)] ${MOCK_SECONDARY} ${LINE}`;
 
 /** The table's frame. Open at the foot: the list runs off the window. */
 const TABLE = `mt-3 flex min-h-0 flex-col overflow-hidden rounded-t-[4px] border border-b-0 ${LINE}`;
@@ -851,16 +850,8 @@ const TABLE_ROW = `grid shrink-0 items-center gap-2.5 border-b px-3 ${LINE}`;
 const CELL = `truncate text-[color:var(--mock-ink)] ${MOCK_SECONDARY}`;
 const CELL_SOFT = `truncate text-[color:var(--mock-ink-soft)] ${MOCK_SECONDARY}`;
 
-// The glyphs these two screens carry and the shared set does not, drawn to the
+// The glyph these screens carry and the shared set does not, drawn to the
 // set's light-stroke convention.
-function IconSort({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 16 16" className={className} {...STROKE}>
-      <path d="m5 6 3-3 3 3M5 10l3 3 3-3" />
-    </svg>
-  );
-}
-
 function IconKebab({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 16 16" className={className} {...STROKE}>
@@ -869,7 +860,11 @@ function IconKebab({ className }: { className?: string }) {
   );
 }
 
-/** A column heading with the sort affordance every heading in these tables has. */
+/**
+ * A column heading. It carried a sort caret on every column; on a still
+ * picture that was a row of controls nobody can use, so the heading is its
+ * label alone.
+ */
 function SortHead({
   label,
   className = "",
@@ -880,7 +875,6 @@ function SortHead({
   return (
     <span className={`flex min-w-0 items-center gap-1 ${className}`}>
       <span className="truncate">{label}</span>
-      <IconSort className="size-[9px] shrink-0 text-[color:var(--mock-ink-soft)]" />
     </span>
   );
 }
@@ -911,8 +905,11 @@ function ClientAvatar({
 }) {
   return (
     <span className="relative shrink-0">
+      {/* Initials at 7.5, not the scale's 9.5 MICRO: two letters at 9.5 crowd
+          a 19px disc. The shot no longer scales down on a phone, so 7.5 stays
+          legible there. No outline — the tinted fill is the avatar's edge. */}
       <span
-        className={`flex size-[19px] items-center justify-center border border-[var(--mock-window)] text-[7.5px] leading-none ring-1 ring-[var(--mock-line)] ${
+        className={`flex size-[19px] items-center justify-center text-[7.5px] leading-none ${
           company ? "rounded-[4px]" : "rounded-full"
         } ${AVATAR_TONES[tone]}`}
       >
@@ -952,14 +949,14 @@ const DOCUMENT_REQUESTS: {
   due: string;
 }[] = [
   {
-    document: "Signed engagement letter — FY2026 audit",
+    document: "Engagement letter",
     person: { name: "Tunde Adeyemi", initials: "TA", tone: "red" },
     owner: "—",
     priority: "High",
     due: "Jul 1",
   },
   {
-    document: "Prior-year audit management letter response",
+    document: "Management letter",
     person: {
       name: "Beaumont Partners",
       initials: "BP",
@@ -971,14 +968,14 @@ const DOCUMENT_REQUESTS: {
     due: "Jul 3",
   },
   {
-    document: "Annual compliance attestation — 2026",
+    document: "Annual attestation",
     person: PRIYA,
     owner: "Owen Hale",
     priority: "Low",
     due: "Jul 8",
   },
   {
-    document: "W-9 for new vendor onboarding",
+    document: "Vendor W-9",
     person: {
       name: "Sofia Marchetti",
       initials: "SM",
@@ -989,7 +986,7 @@ const DOCUMENT_REQUESTS: {
     due: "Jul 10",
   },
   {
-    document: "Inventory count worksheets — mid-year",
+    document: "Inventory counts",
     person: {
       name: "Cascade Outdoor Co.",
       initials: "CO",
@@ -1001,21 +998,21 @@ const DOCUMENT_REQUESTS: {
     due: "Jul 14",
   },
   {
-    document: "ADV Part 2B brochure supplement — new adviser",
+    document: "ADV Part 2B",
     person: PRIYA,
     owner: "Maya Lindqvist",
     priority: "High",
     due: "Jul 17",
   },
   {
-    document: "Certificate of insurance — general liability",
+    document: "Insurance certificate",
     person: { name: "David Okonkwo", initials: "DO", tone: "red" },
     owner: "Clara Benoit",
     priority: "High",
     due: "Jul 22",
   },
   {
-    document: "Depreciation schedule for fixed assets",
+    document: "Depreciation schedule",
     person: {
       name: "Elena Vasquez",
       initials: "EV",
@@ -1026,7 +1023,7 @@ const DOCUMENT_REQUESTS: {
     due: "Aug 1",
   },
   {
-    document: "Payroll register — June 2026",
+    document: "June payroll register",
     person: {
       name: "Amelia Brooks",
       initials: "AB",
@@ -1037,21 +1034,21 @@ const DOCUMENT_REQUESTS: {
     due: "Aug 4",
   },
   {
-    document: "Q2 2026 bank statements — operating account",
+    document: "Q2 bank statements",
     person: null,
     owner: "Iris Calloway",
     priority: "Medium",
     due: "Aug 6",
   },
   {
-    document: "Custodial account statements — Q2 2026",
+    document: "Custodial statements",
     person: PRIYA,
     owner: "Jonah Reyes",
     priority: "Medium",
     due: "Aug 8",
   },
   {
-    document: "Commercial lease agreement — Portland warehouse",
+    document: "Warehouse lease",
     person: {
       name: "Northwind Logistics",
       initials: "NL",
@@ -1065,9 +1062,11 @@ const DOCUMENT_REQUESTS: {
 ];
 
 // Owner goes first as the window narrows, then the due date: the document,
-// who owes it and how urgent it is are the screen's claim.
+// who owes it and how urgent it is are the screen's claim. On a phone the
+// person is their avatar alone — a 42px name column truncated every name to a
+// couple of letters, and the face still says who owes it.
 const DOCUMENT_COLS =
-  "grid-cols-[minmax(0,1.6fr)_minmax(0,0.95fr)_minmax(0,0.75fr)_64px_42px] @max-[600px]:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)_64px_42px] @max-[460px]:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_64px]";
+  "grid-cols-[minmax(0,1.6fr)_minmax(0,0.95fr)_minmax(0,0.75fr)_64px_42px] @max-[600px]:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)_64px_42px] @max-[460px]:grid-cols-[minmax(0,1fr)_19px_64px]";
 
 export function DocumentRequestsMock() {
   return (
@@ -1113,7 +1112,7 @@ export function DocumentRequestsMock() {
               className={`${TABLE_HEAD} bg-[var(--mock-well-soft)] ${DOCUMENT_COLS}`}
             >
               <SortHead label="Document" />
-              <SortHead label="Person" />
+              <SortHead label="Person" className="@max-[460px]:invisible" />
               <SortHead label="Owner" className="@max-[600px]:hidden" />
               <SortHead label="Priority" />
               <SortHead label="Due" className="@max-[460px]:hidden" />
@@ -1132,24 +1131,26 @@ export function DocumentRequestsMock() {
                         tone={r.person.tone}
                         company={r.person.company}
                       />
-                      <span className={CELL}>{r.person.name}</span>
+                      <span className={`${CELL} @max-[460px]:hidden`}>
+                        {r.person.name}
+                      </span>
                     </>
                   ) : (
                     <>
                       <span className="relative shrink-0">
                         <span
-                          className={`flex size-[19px] items-center justify-center rounded-full bg-[var(--mock-well-2)] text-[7.5px] leading-none text-[color:var(--mock-ink-soft)] ring-1 ring-[var(--mock-line)]`}
+                          className={`flex size-[19px] items-center justify-center rounded-full bg-[var(--mock-well-2)] text-[7.5px] leading-none text-[color:var(--mock-ink-soft)]`}
                         >
                           —
                         </span>
                       </span>
-                      <span className={CELL}>—</span>
+                      <span className={`${CELL} @max-[460px]:hidden`}>—</span>
                     </>
                   )}
                 </span>
                 <span className={`${CELL} @max-[600px]:hidden`}>{r.owner}</span>
                 <span
-                  className={`flex w-fit items-center gap-1 rounded-full border px-1.5 py-[3.5px] text-[color:var(--mock-ink)] ${MOCK_MICRO} ${LINE}`}
+                  className={`flex w-fit items-center gap-1 whitespace-nowrap rounded-full border px-1.5 py-[3.5px] text-[color:var(--mock-ink)] ${MOCK_MICRO} ${LINE}`}
                 >
                   <span
                     className={`size-[5px] shrink-0 rounded-full ${PRIORITY_DOT[r.priority]}`}
@@ -1171,7 +1172,7 @@ type OnboardingStatus = "Not started" | "In progress" | "Stalled" | "Completed";
 
 // The shared CHIP is 9px; these sit in a row beside 9.5px meta text and the
 // priority pills, so they take the meta size too.
-const STATUS_CHIP = `rounded px-1.5 py-[3px] ${MOCK_MICRO}`;
+const STATUS_CHIP = `whitespace-nowrap rounded px-1.5 py-[3px] ${MOCK_MICRO}`;
 
 const ONBOARDING_STATUS: Record<OnboardingStatus, string> = {
   "Not started": `${STATUS_CHIP} bg-muted text-[color:var(--mock-ink-soft)] [[data-theme=dark]_&]:bg-white/[0.08]`,
@@ -1304,7 +1305,7 @@ const ONBOARDING_ROWS: {
 // Form goes first as the window narrows (every row says the same thing), then
 // the assignee, then last activity.
 const ONBOARDING_COLS =
-  "grid-cols-[minmax(0,1.3fr)_minmax(0,0.85fr)_64px_minmax(0,1.05fr)_minmax(0,0.75fr)_minmax(0,0.8fr)_9px] @max-[640px]:grid-cols-[minmax(0,1.3fr)_64px_minmax(0,1.05fr)_minmax(0,0.75fr)_minmax(0,0.8fr)_9px] @max-[540px]:grid-cols-[minmax(0,1.3fr)_64px_minmax(0,1.05fr)_minmax(0,0.75fr)_9px] @max-[440px]:grid-cols-[minmax(0,1.3fr)_64px_minmax(0,1.05fr)]";
+  "grid-cols-[minmax(0,1.3fr)_minmax(0,0.85fr)_64px_minmax(0,1.05fr)_minmax(0,0.75fr)_minmax(0,0.8fr)_9px] @max-[640px]:grid-cols-[minmax(0,1.3fr)_64px_minmax(0,1.05fr)_minmax(0,0.75fr)_minmax(0,0.8fr)_9px] @max-[540px]:grid-cols-[minmax(0,1.3fr)_64px_minmax(0,1.05fr)_minmax(0,0.75fr)_9px] @max-[440px]:grid-cols-[minmax(0,1fr)_64px_44px]";
 
 export function OnboardingTrackerMock() {
   return (
@@ -1343,14 +1344,18 @@ export function OnboardingTrackerMock() {
           </div>
 
           <div className="mt-2.5 flex items-center gap-2 @max-[460px]:mt-0">
+            {/* A MINIMUM, not a width. At a fixed 22% a phone's narrow
+                window gave "All scopes" less than its label and it broke onto
+                two lines inside the control; a control is one line, always.
+                The filter beside it truncates, so it gives up the room. */}
             <span
-              className={`${CONTROL} w-[22%] justify-between text-[color:var(--mock-ink)]`}
+              className={`${CONTROL} min-w-[22%] justify-between text-[color:var(--mock-ink)]`}
             >
               All scopes
               <IconChevronDown className="size-[7px] text-[color:var(--mock-ink-soft)]" />
             </span>
             <span className={`${CONTROL} min-w-0 w-[42%] justify-between`}>
-              <span className="truncate">Filter by people or companies...</span>
+              <span className="truncate">Filter people...</span>
               <IconChevronDown className="size-[7px] shrink-0" />
             </span>
             {/* Show archived, off. */}
@@ -1387,9 +1392,11 @@ export function OnboardingTrackerMock() {
                   />
                   <span className="flex min-w-0 flex-col gap-[3px]">
                     <span className={CELL}>{r.person.name}</span>
+                    {/* Not on a phone: the name column is too narrow for a
+                        second line, and the name is the row's claim. */}
                     {r.sub ? (
                       <span
-                        className={`truncate text-[color:var(--mock-ink-soft)] ${MOCK_MICRO}`}
+                        className={`truncate text-[color:var(--mock-ink-soft)] @max-[440px]:hidden ${MOCK_MICRO}`}
                       >
                         {r.sub}
                       </span>
@@ -1409,8 +1416,9 @@ export function OnboardingTrackerMock() {
                       style={{ width: `${(r.step / 5) * 100}%` }}
                     />
                   </span>
+                  {/* The bar alone on a phone, so the name beside it sets whole. */}
                   <span
-                    className={`shrink-0 text-[color:var(--mock-ink-soft)] ${MOCK_MICRO}`}
+                    className={`shrink-0 text-[color:var(--mock-ink-soft)] @max-[440px]:hidden ${MOCK_MICRO}`}
                   >
                     {r.step} of 5 steps
                   </span>
@@ -1523,8 +1531,7 @@ export function HelpdeskMock() {
               Topics
             </span>
             <span className="mt-1 shrink-0 truncate text-[9.5px] leading-[1.4] text-[color:var(--mock-ink-soft)]">
-              Drag to reorder. This is the order clients see topics in the
-              portal.
+              Drag to set the order clients see.
             </span>
             <span
               className={`mt-3 flex w-[70%] min-w-0 shrink-0 items-center gap-1.5 rounded-[4px] border px-2 py-[6px] text-[color:var(--mock-ink-soft)] @max-[520px]:w-full ${MOCK_SECONDARY} ${LINE}`}
@@ -1601,7 +1608,7 @@ export function DocumentsMock() {
               <span className="h-1 w-10 overflow-hidden rounded-full bg-muted [[data-theme=dark]_&]:bg-white/[0.08]">
                 <span className="block h-full w-2/3 rounded-full bg-foreground" />
               </span>
-              <span className="text-[10px] leading-none text-[color:var(--mock-ink-soft)]">
+              <span className="text-[10.5px] leading-none text-[color:var(--mock-ink-soft)]">
                 8 of 12
               </span>
             </span>
@@ -1621,7 +1628,7 @@ export function DocumentsMock() {
               label="Bank statements, Q4"
               trailing={
                 <span
-                  className={`flex items-center gap-1 rounded-[4px] border px-2 py-[5px] text-[9px] leading-none text-[color:var(--mock-ink)] ${LINE}`}
+                  className={`flex items-center gap-1 rounded-[4px] border px-2 py-[5px] text-[9.5px] leading-none text-[color:var(--mock-ink)] ${LINE}`}
                 >
                   <IconUpload className="size-[9px]" />
                   Upload
@@ -1667,7 +1674,7 @@ export function EmbedMock() {
             {SLOT_DAYS.map((day) => (
               <span
                 key={day}
-                className={`flex items-center justify-center rounded-[4px] border py-[7px] text-[10px] leading-none text-[color:var(--mock-ink)] ${LINE}`}
+                className={`flex items-center justify-center rounded-[4px] border py-[7px] text-[10.5px] leading-none text-[color:var(--mock-ink)] ${LINE}`}
               >
                 {day}
               </span>
@@ -1679,7 +1686,7 @@ export function EmbedMock() {
                 key={time}
                 // The first slot reads as the one being taken, so the panel
                 // has a subject rather than four identical rows.
-                className={`flex items-center justify-center rounded-[4px] py-[7px] text-[10px] leading-none ${
+                className={`flex items-center justify-center rounded-[4px] py-[7px] text-[10.5px] leading-none ${
                   i === 0
                     ? "bg-foreground text-background"
                     : `border text-[color:var(--mock-ink)] ${LINE}`
@@ -1808,7 +1815,7 @@ export function GenericPortalMock() {
             rows were — three dashed boxes under a vague heading, each marked
             with the same icon. This names the one thing they have in common,
             which is the caption's point: the portal does not hold them. */}
-        <span className="block text-[10px] leading-none text-[color:var(--mock-ink-soft)]">
+        <span className="block text-[10.5px] leading-none text-[color:var(--mock-ink-soft)]">
           Not in your portal
         </span>
         {/* Dashed, because none of these is an app the portal holds — they are
@@ -1831,7 +1838,7 @@ export function GenericPortalMock() {
           {ORBIT_TOOLS.map((tool) => (
             <span
               key={tool}
-              className="flex items-center justify-between gap-2 truncate rounded-[4px] border border-dashed border-[color:var(--mock-ink)]/25 px-2.5 py-[9px] text-[11px] leading-none text-[color:var(--mock-ink-soft)]"
+              className="flex items-center justify-between gap-2 truncate rounded-[4px] border border-dashed border-[color:var(--mock-ink)]/25 px-2.5 py-[9px] text-[11.5px] leading-none text-[color:var(--mock-ink-soft)]"
             >
               {/* UNDERLINED, because these are links and nothing else in the
                   row said so. The out arrow says "this opens somewhere else"
@@ -2010,7 +2017,7 @@ export function IntakeAppMock({
                     "this is where you write", and a bordered field inside a
                     bordered card was two frames around one value. */}
                 <span
-                  className={`mt-2 block truncate border-b pb-1.5 text-[10px] leading-none text-[color:var(--mock-ink-soft)] ${LINE}`}
+                  className={`mt-2 block truncate border-b pb-1.5 text-[10.5px] leading-none text-[color:var(--mock-ink-soft)] ${LINE}`}
                 >
                   {q.value}
                 </span>
@@ -2020,7 +2027,7 @@ export function IntakeAppMock({
                 off to one side — a form you work down ends in the button that
                 sends it. */}
             {action ? (
-              <span className="mt-1 w-fit rounded-[4px] bg-[var(--mock-ink)] px-2.5 py-[6px] text-[10px] leading-none text-[color:var(--mock-window)]">
+              <span className="mt-1 w-fit rounded-[4px] bg-[var(--mock-ink)] px-2.5 py-[6px] text-[10.5px] leading-none text-[color:var(--mock-window)]">
                 Submit
               </span>
             ) : null}
@@ -2136,7 +2143,7 @@ function Panel({
       } ${className}`}
     >
       <p
-        className={`truncate text-[10px] leading-none text-[color:var(--mock-ink-soft)] ${
+        className={`truncate text-[10.5px] leading-none text-[color:var(--mock-ink-soft)] ${
           hideTitleOnPhone ? "hidden sm:block" : ""
         }`}
       >
@@ -2211,9 +2218,9 @@ function MobileAppBar({
       {/* The app name sits flat, no fill: a filled chip on a still picture
           read as a hovered control rather than as the screen's title. */}
       <span className="flex min-w-0 items-center gap-1 px-1 py-[5px]">
-        {/* 13px, the size this file sets a panel title at — the bar names
+        {/* MOCK_TITLE (13.5px), the scale's title step — the bar names
             the screen, so it belongs on that step and not a smaller one. */}
-        <span className="truncate text-[13px] leading-none text-[color:var(--mock-ink)]">
+        <span className="truncate text-[13.5px] leading-none text-[color:var(--mock-ink)]">
           {app}
         </span>
         <IconChevronDown className="size-[11px] shrink-0 text-[color:var(--mock-ink-soft)]" />
@@ -2305,7 +2312,7 @@ export function OnboardingMock() {
               these mocks uses, and the initials nudged down half a cap height
               for the same reason the Gantt's are — flex centring lines up the
               text's box, which puts two capitals in its top half. */}
-            <span className="flex size-[22px] shrink-0 items-center justify-center rounded-[5px] bg-[var(--mock-ink)]/10 text-[9px] leading-none text-[color:var(--mock-ink-soft)]">
+            <span className="flex size-[22px] shrink-0 items-center justify-center rounded-[5px] bg-[var(--mock-ink)]/10 text-[9.5px] leading-none text-[color:var(--mock-ink-soft)]">
               <span className="block translate-y-[0.1em]">RC</span>
             </span>
             {/* THE CLIENT, and nothing under it.
@@ -2318,7 +2325,7 @@ export function OnboardingMock() {
               record is one person's response: the name that belongs at the top
               of it is whoever filled it in, which is the name the details
               panel answers with. */}
-            <span className="min-w-0 truncate text-[11px] leading-none text-[color:var(--mock-ink)]">
+            <span className="min-w-0 truncate text-[11.5px] leading-none text-[color:var(--mock-ink)]">
               Renee Castillo
             </span>
             {/* The action, held to the right the way the product holds it.
@@ -2434,7 +2441,7 @@ export function OnboardingMock() {
               {STEPS.map((s, i) => (
                 <span
                   key={s}
-                  className={`truncate text-[8.5px] leading-none ${
+                  className={`truncate text-[9.5px] leading-none ${
                     i <= 1
                       ? "text-[color:var(--mock-ink)]"
                       : "text-[color:var(--mock-ink-soft)]"

@@ -255,7 +255,11 @@ export function BuilderCustomerQuotes({
                       // wordmark on white in dark, which is the same bug the
                       // other way round. The hairline keeps the tile's edge on
                       // a light card, where white on near-white would float.
-                      "bg-white text-[#1B1F24] ring-1 ring-inset ring-black/[0.06]"
+                      //
+                      // Dark softens the white to #d4d4d0: pure white was the
+                      // brightest thing on a near-black page, glaring rather
+                      // than reading as a tile. The ink still clears 12:1.
+                      "bg-white text-[#1B1F24] ring-1 ring-inset ring-black/[0.06] [[data-theme=dark]_&]:bg-[#d4d4d0]"
                     : "bg-muted [[data-theme=dark]_&]:bg-white/[0.06]"
                 }`}
               >

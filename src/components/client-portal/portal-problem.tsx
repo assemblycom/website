@@ -344,10 +344,22 @@ export function PortalProblem({
               : "contents"
           }
         >
-          <div className={split ? "flex flex-col items-start" : "contents"}>
+          {/* On a PHONE the split grid is one column, so a link kept under
+              the heading landed between the heading and the lead it is the
+              answer to. Below md this wrapper dissolves, leaving heading,
+              lead and link as the grid's own items, and the link is ordered
+              last: heading, lead, button, as every other section reads. */}
+          <div
+            className={
+              split ? "flex flex-col items-start max-md:contents" : "contents"
+            }
+          >
             <h2 className="type-h2 max-w-2xl text-balance">{heading}</h2>
             {split && link ? (
-              <Link href={link.href} className={`mt-6 ${QUIET_BUTTON}`}>
+              <Link
+                href={link.href}
+                className={`max-md:order-last md:mt-6 ${QUIET_BUTTON}`}
+              >
                 {link.label}
               </Link>
             ) : null}
@@ -629,7 +641,7 @@ export function PortalProblem({
                   quote cards use (BuilderCustomerQuotes) — the same treatment
                   for a firm with no portrait. The quote drops to the foot. */}
               {split && quote.logoSlug ? (
-                <div className="flex size-[72px] shrink-0 items-center justify-center rounded-lg bg-white p-3.5 text-[#1B1F24] ring-1 ring-inset ring-black/[0.06]">
+                <div className="flex size-[72px] shrink-0 items-center justify-center rounded-lg bg-white p-3.5 text-[#1B1F24] [[data-theme=dark]_&]:bg-[#d4d4d0] ring-1 ring-inset ring-black/[0.06]">
                   <CustomerLogo slug={quote.logoSlug} fit />
                 </div>
               ) : null}

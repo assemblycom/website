@@ -1,6 +1,13 @@
 import type { Metadata } from "next";
 import { GridDivider, GridRails } from "@/components/ui/grid-lines";
 import { AgencyHeroVisual } from "@/components/solutions/agency-hero-visual";
+import { AgencyLoginsVisual } from "@/components/solutions/agency-logins-visual";
+import { AgencyViewsVisual } from "@/components/solutions/agency-views-visual";
+import {
+  BuildCard,
+  DescribeCard,
+  PlanCard,
+} from "@/components/client-portal/portal-build-cards";
 import { PortalSocialProof } from "@/components/client-portal/portal-social-proof";
 import { PortalProblem } from "@/components/client-portal/portal-problem";
 import { PortalReadyMade } from "@/components/client-portal/portal-ready-made";
@@ -27,6 +34,22 @@ import { unbreakable } from "@/components/ui/unbreakable";
 /** Both hero leads, so the phone's and the desktop's cannot drift apart. */
 const HERO_LEAD =
   "type-lead max-w-[34rem] text-pretty text-muted-foreground lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:pt-2";
+
+/** Section 4's rail. Two-line captions, like the accounting page's. */
+const BUILD_STEPS = [
+  {
+    name: "Describe it",
+    body: "Tell the AI what you need, like a project tracker or a campaign report.",
+  },
+  {
+    name: "Answer a few questions",
+    body: "It asks one to three questions so the app fits how your agency works.",
+  },
+  {
+    name: "Approve and it appears",
+    body: "The app shows up in your client experience with logins, permissions, and your branding in place.",
+  },
+];
 
 export const metadata: Metadata = pageMetadata(
   PAGE_SEO.marketingAgencyClientPortal,
@@ -283,13 +306,17 @@ export default function MarketingAgencyClientPortalPage() {
             text: "We were dealing with scattered emails and no good way to share information with clients.",
             attribution: "Garrett Leonard, Founder, Advertai Marketing",
             href: "/customers/advertai-marketing",
+            logoSlug: "advertai-marketing",
           }}
+          // The accounting page's picture, with the agency's own tools: a
+          // stack of sign-ins over a photograph, same component and the same
+          // heights. The photograph is a creative at work, in the same warm
+          // light as the accounting desk.
+          trayImage="/images/mocks/sign-in-bg.jpg"
           screens={
-            <div
-              aria-hidden
-              title="V2 — the agency problem shot. Art direction pending."
-              className="h-[300px] md:h-[400px]"
-            />
+            <div className="h-[340px] md:h-[480px]">
+              <AgencyLoginsVisual />
+            </div>
           }
         />
         <GridDivider />
@@ -310,7 +337,19 @@ export default function MarketingAgencyClientPortalPage() {
         <PortalBuild
           heading="Retire a subscription. Build the app instead."
           body="Describe what you want. The builder asks a few questions, shows a one-page plan, and builds after you approve. Every app knows your clients from the built-in CRM."
-          steps={[]}
+          // The accounting page's three-step rail, and the three steps this
+          // body names in order: describe, answer and see the plan, approve.
+          // The rail's default scenes are an agency's — Brandmages building a
+          // client project tracker — so they need no vertical of their own.
+          steps={BUILD_STEPS.map((step, i) => ({
+            ...step,
+            visual: [
+              <DescribeCard key="d" />,
+              <PlanCard key="p" />,
+              <BuildCard key="b" />,
+            ][i],
+          }))}
+          railLabel="How building works"
           cta={{ label: "Get started free", href: SIGNUP_URL }}
           // OPEN: the handoff leaves this target to the web lead — /ai-app-builder
           // if it is live, otherwise /blog/assembly-studio. /ai-app-builder is
@@ -319,13 +358,6 @@ export default function MarketingAgencyClientPortalPage() {
             label: "See how the app builder works",
             href: "/ai-app-builder",
           }}
-          visual={
-            <div
-              aria-hidden
-              title="V4 — the agency build shot. Art direction pending."
-              className="mt-12 h-[400px] rounded-3xl bg-[var(--surface)] md:h-[500px]"
-            />
-          }
         />
         <GridDivider />
 
@@ -334,15 +366,10 @@ export default function MarketingAgencyClientPortalPage() {
         <PortalTailor
           heading="Every client gets their own branded view"
           body="Custom fields decide which apps each client sees — your top tier books strategy sessions, everyone gets the monthly report. Every app carries your logo and colors."
-          visual={
-            <div
-              aria-hidden
-              title="V5 — the agency tailor shot. Art direction pending."
-              // No margin of its own: PortalTailor gives whatever it is passed
-              // the same gap the four cards take, so one here stacks on it.
-              className="h-[400px] rounded-3xl bg-[var(--surface)] md:h-[500px]"
-            />
-          }
+          // Heading left, lead right, the picture below: the two tiers the
+          // lead names, in the agency's own portal. See agency-views-visual.
+          split
+          visual={<AgencyViewsVisual />}
         />
 
         {/* 6. Keep your stack. The three links drop out here the same way they

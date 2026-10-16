@@ -9,11 +9,11 @@ import {
   IconDocuments,
   IconFile,
   IconGlobe,
-  IconLock,
   IconChevronDown,
   IconSearch,
 } from "@/components/home/mock-icons";
 import { ViewToggle } from "@/components/ui/view-toggle";
+import { FootBlur } from "@/components/ui/foot-blur";
 import {
   MOCK_MICRO,
   MOCK_PRIMARY,
@@ -108,11 +108,6 @@ const CLIENTS: ClientView[] = [
         icon: <IconDocuments className="size-[13px]" />,
         label: "2025 tax return",
       },
-      {
-        icon: <IconLock className="size-[13px]" />,
-        label: "Workpapers",
-        locked: true,
-      },
     ],
     // The return itself, which is what an individual comes to an accounting
     // portal for: where it has got to, the one thing they have to do, and
@@ -136,7 +131,7 @@ function ClientNav({ client }: { client: ClientView }) {
       // here is "Estimated payments", which truncated at 136 — and a nav
       // whose open row is cut short is the one thing this picture cannot
       // show, since what each client SEES is the whole argument.
-      className="relative flex w-[152px] shrink-0 flex-col gap-[2px] bg-[var(--ledgerline-clay)] px-2 py-2.5"
+      className="relative flex w-[152px] shrink-0 flex-col gap-[2px] bg-[var(--ledgerline-clay)] px-2 py-2.5 max-md:hidden"
     >
       <span className="flex items-center gap-1.5 px-1.5 pb-2">
         <span className="flex size-[15px] items-center justify-center rounded-[3px] bg-[var(--ledgerline-sage)] text-[color:var(--ledgerline-ink)]">
@@ -151,9 +146,9 @@ function ClientNav({ client }: { client: ClientView }) {
         {STOCK.map(({ icon, label }) => (
           <NavRow key={label} icon={icon} label={label} branded />
         ))}
-        {/* The firm's own apps, clear of the stock rows. The break says they
-            are not stock without spending a row of type on saying so. */}
-        <div className="mt-2 flex flex-col gap-[2px]">
+        {/* The firm's own apps, straight after the stock rows on the same
+            rhythm. A break here read as uneven spacing, not as a grouping. */}
+        <div className="flex flex-col gap-[2px]">
           {client.apps.map(({ icon, label, locked }, i) => (
             <NavRow
               key={label}
@@ -246,25 +241,17 @@ function IconDownload({ className }: { className?: string }) {
 function RequestGroup({
   label,
   count,
-  overdue = false,
 }: {
   label: string;
   count: number;
-  overdue?: boolean;
 }) {
   return (
     <span
       className={`flex shrink-0 items-center gap-1.5 pb-2 pt-3.5 ${MOCK_SECONDARY}`}
     >
-      <span
-        className={
-          overdue
-            ? "text-[color:var(--mock-negative-fg)]"
-            : "text-[color:var(--mock-ink)]"
-        }
-      >
-        {label}
-      </span>
+      {/* Plain ink for every group, Overdue included: the status chip's dot
+          already says it is late, and a red heading was a second alarm. */}
+      <span className="text-[color:var(--mock-ink)]">{label}</span>
       <span className="text-[color:var(--mock-ink-soft)]">({count})</span>
       <IconChevronDown className="ml-auto size-[8px] text-[color:var(--mock-ink-soft)]" />
     </span>
@@ -300,7 +287,7 @@ function RequestCard({
           {title}
         </span>
         <span
-          className={`flex shrink-0 items-center gap-1 rounded-full border px-2 py-[4px] text-[color:var(--mock-ink)] ${MOCK_MICRO} ${LINE}`}
+          className={`flex shrink-0 items-center gap-1 rounded-full border bg-[var(--mock-well-2)] px-2 py-[4px] text-[color:var(--mock-ink)] ${MOCK_MICRO} ${LINE}`}
         >
           <span className={`size-[5px] rounded-full ${dot}`} />
           {status}
@@ -316,8 +303,9 @@ function RequestCard({
 /**
  * The client's document collection — the product's own screen, from the
  * client's side: what the firm has asked for, grouped by where each request
- * has got to. Overdue first and in red, then what was accepted with the file
- * that settled it. It runs off the foot of the window into the next group.
+ * has got to. Overdue first, then what was accepted with the file that
+ * settled it. Every line is short enough to set whole in the narrowest pane,
+ * a phone's, so nothing on this screen ends in an ellipsis. It runs off the foot of the window into the next group.
  */
 function RequestsPane({ title }: { title: string }) {
   return (
@@ -335,19 +323,15 @@ function RequestsPane({ title }: { title: string }) {
           Search documents...
         </span>
 
-        <RequestGroup label="Overdue" count={1} overdue />
+        <RequestGroup label="Overdue" count={1} />
         <RequestCard
-          title="Sales tax exemption certificates — multistate"
+          title="Sales tax forms"
           status="Overdue"
         >
           <span
             className={`truncate text-[color:var(--mock-ink-soft)] ${MOCK_MICRO}`}
           >
-            Valid resale or exemption certificates for each state where you hold
-            nexus ·{" "}
-            <span className="text-[color:var(--mock-negative-fg)]">
-              Due Aug 15, 2026
-            </span>
+            One per state · Due Aug 15
           </span>
           <span
             className={`w-fit rounded-[4px] border px-2.5 py-[6px] text-[color:var(--mock-ink)] ${MOCK_MICRO} ${LINE}`}
@@ -358,16 +342,11 @@ function RequestsPane({ title }: { title: string }) {
 
         <RequestGroup label="Accepted" count={1} />
         <RequestCard
-          title="Inventory count worksheets — mid-year"
+          title="Inventory counts"
           status="Accepted"
         >
           <span
-            className={`truncate text-[color:var(--mock-ink-soft)] ${MOCK_MICRO}`}
-          >
-            Your submission was accepted. No further action needed.
-          </span>
-          <span
-            className={`uppercase tracking-[0.04em] text-[color:var(--mock-ink-soft)] ${MOCK_MICRO}`}
+            className={`text-[color:var(--mock-ink-soft)] ${MOCK_MICRO}`}
           >
             Submitted file
           </span>
@@ -381,12 +360,12 @@ function RequestsPane({ title }: { title: string }) {
               <span
                 className={`truncate text-[color:var(--mock-ink)] ${MOCK_SECONDARY}`}
               >
-                midyear-inventory-count-signed.pdf
+                inventory.pdf
               </span>
               <span
                 className={`truncate text-[color:var(--mock-ink-soft)] ${MOCK_MICRO}`}
               >
-                Submitted July 3, 2026 at 9:00 AM
+                Submitted Jul 3
               </span>
             </span>
             <IconEye className="size-[12px] shrink-0 text-[color:var(--mock-ink-soft)]" />
@@ -401,14 +380,10 @@ function RequestsPane({ title }: { title: string }) {
   );
 }
 
-const RETURN_STEPS = ["Organizer", "Preparing", "Review", "Sign", "Filed"];
-/** Index of the step the return is on. */
-const RETURN_AT = 3;
-
 const RETURN_DOCS: { name: string; from: string; state: "in" | "needed" }[] = [
   { name: "W-2", from: "Northwind Logistics", state: "in" },
   { name: "1099-INT", from: "First Harbor Bank", state: "in" },
-  { name: "1098 mortgage interest", from: "Cedar Home Loans", state: "in" },
+  { name: "1098 mortgage", from: "Cedar Home Loans", state: "in" },
   { name: "Charitable receipts", from: "Any over $250", state: "needed" },
   { name: "1099-B brokerage", from: "Brightline Invest", state: "needed" },
   { name: "Childcare expenses", from: "Provider and amount", state: "in" },
@@ -427,58 +402,33 @@ function TaxReturnPane({ title }: { title: string }) {
         </span>
       </div>
       <div className="flex min-h-0 flex-1 flex-col px-4 pt-4">
-        {/* Where the return is. Segments rather than dots, so the track
-            reads as distance covered. */}
-        <div className="grid shrink-0 grid-cols-5 gap-1.5">
-          {RETURN_STEPS.map((step, i) => (
-            <span key={step} className="flex min-w-0 flex-col gap-1.5">
-              <span
-                className={`h-[3px] rounded-full ${
-                  i < RETURN_AT
-                    ? "bg-[var(--mock-ink)]"
-                    : i === RETURN_AT
-                      ? "bg-[var(--mock-ink-soft)]"
-                      : "bg-[var(--mock-well-3)]"
-                }`}
-              />
-              <span
-                className={`truncate ${MOCK_MICRO} ${
-                  i <= RETURN_AT
-                    ? "text-[color:var(--mock-ink)]"
-                    : "text-[color:var(--mock-ink-soft)]"
-                }`}
-              >
-                {step}
-              </span>
-            </span>
-          ))}
-        </div>
-
-        {/* The one thing that is the client's to do. */}
+        {/* The one thing that is the client's to do, first on the screen.
+            A five-step progress track sat above it and read as a chart with
+            no labels that fit; the card says where the return is on its own. */}
         <div
-          className={`mt-4 flex shrink-0 items-center gap-3 rounded-[6px] border px-3.5 py-3 ${LINE}`}
+          className={`flex shrink-0 items-center gap-3 rounded-[6px] border px-3.5 py-3 ${LINE}`}
         >
           <span className="flex min-w-0 flex-1 flex-col gap-1.5">
             <span
               className={`truncate text-[color:var(--mock-ink)] ${MOCK_SECONDARY}`}
             >
-              Sign your e-file authorization (Form 8879)
+              Sign Form 8879
             </span>
             <span
               className={`truncate text-[color:var(--mock-ink-soft)] ${MOCK_MICRO}`}
             >
-              Your return is ready. Refund of $2,318 once filed.
+              $2,318 refund
             </span>
           </span>
           <span
             className={`shrink-0 rounded-[4px] bg-[var(--mock-ink)] px-2.5 py-[6px] text-[color:var(--mock-window)] ${MOCK_MICRO}`}
           >
-            Review and sign
+            Review
           </span>
         </div>
 
         <span
-          className={`mt-4 shrink-0 pb-2 uppercase tracking-[0.04em] text-[color:var(--mock-ink-soft)] ${MOCK_MICRO}`}
+          className={`mt-4 shrink-0 pb-2 text-[color:var(--mock-ink-soft)] ${MOCK_MICRO}`}
         >
           Your documents
         </span>
@@ -536,6 +486,21 @@ export function AccountingViewsVisual() {
 
   return (
     <div>
+      {/* THE PHONE'S COPY, above the tray on the page's own ground. In the
+          corner the control works on a wide screen; on a 375px phone the tray
+          is the full measure and the switch sat on top of the picture it
+          switches, reading as part of the app in it. Above rather than under:
+          it is the choice the picture answers, so it is read first. Rendered
+          twice rather than moved, because it has to leave the tray's overflow
+          box to sit on the page at all; both drive the same state. */}
+      <div className="mb-4 flex justify-center md:hidden">
+        <ViewToggle
+          options={names}
+          view={selected}
+          onSelect={setSelected}
+          label="Which client's portal to show"
+        />
+      </div>
       {/* THE PROBLEM SECTION'S TRAY, class for class — including its dark
           branch, where the tray turns paper and re-points the five page tokens
           its subtree reads so the toggle is not white on white. The --mock-*
@@ -548,7 +513,7 @@ export function AccountingViewsVisual() {
         // is a section and a half of scrolling for one screen. The window keeps
         // its own proportions and crops at the foot, which is what it does in
         // every other section on this page.
-        className="relative h-[420px] overflow-hidden rounded-2xl bg-[var(--surface)] px-4 pb-0 pt-3 md:h-[470px] md:rounded-3xl md:px-6 md:pb-0 md:pt-4 [[data-theme=dark]_&]:bg-[#F5F5F0] [[data-theme=dark]_&]:[--surface:#F5F5F0] [[data-theme=dark]_&]:[--foreground:#101114] [[data-theme=dark]_&]:[--muted-foreground:#6b7079] [[data-theme=dark]_&]:[--border:#e8e9ec] [[data-theme=dark]_&]:[--background:#ffffff]"
+        className="relative h-[420px] overflow-hidden rounded-2xl bg-[var(--surface)] px-4 pb-0 pt-6 md:h-[470px] md:rounded-3xl md:px-6 md:pb-0 md:pt-4 [[data-theme=dark]_&]:bg-[#F5F5F0] [[data-theme=dark]_&]:[--surface:#F5F5F0] [[data-theme=dark]_&]:[--foreground:#101114] [[data-theme=dark]_&]:[--muted-foreground:#6b7079] [[data-theme=dark]_&]:[--border:#e8e9ec] [[data-theme=dark]_&]:[--background:#ffffff]"
       >
         {/* Top right, from md: a control on a picture rather than a heading for
             one. At the left it sits under the section's own copy and reads as
@@ -574,7 +539,13 @@ export function AccountingViewsVisual() {
           // the picture rather than as a window catching light. Open at the
           // foot, so `border-b-0` — and .mock-edge paints into the border box,
           // so an edge that is not there is simply not painted.
-          className={`mock-edge flex h-full select-none overflow-hidden rounded-t-xl border border-b-0 bg-[var(--mock-window)] text-[color:var(--mock-ink)] ${LINE}`}
+          //
+          // ON A PHONE IT IS A PHONE: a 260px window centred in the tray,
+          // both edges kept and the top corners rounded like a device, with
+          // the sidebar gone (see ClientNav). The client meets this screen on
+          // their phone, so a phone-shaped window says so; bleeding a desktop
+          // window off the right edge said "a crop of something wider".
+          className={`mock-edge flex h-full select-none overflow-hidden rounded-t-xl border border-b-0 bg-[var(--mock-window)] text-[color:var(--mock-ink)] max-md:mx-auto max-md:w-[260px] max-md:rounded-t-[22px] ${LINE}`}
         >
           <ClientNav client={client} />
           {client.requests ? (
@@ -585,21 +556,10 @@ export function AccountingViewsVisual() {
             <AppPane title={client.pane.title} rows={client.pane.rows} />
           )}
         </div>
-      </div>
-
-      {/* THE PHONE'S COPY, under the tray on the page's own ground. In the
-          corner the control works on a wide screen; on a 375px phone the tray
-          is the full measure and the switch sat on top of the picture it
-          switches, reading as part of the app in it. Rendered twice rather than
-          moved, because it has to leave the tray's overflow box to sit on the
-          page at all; both drive the same state. */}
-      <div className="mt-4 flex justify-center md:hidden">
-        <ViewToggle
-          options={names}
-          view={selected}
-          onSelect={setSelected}
-          label="Which client's portal to show"
-        />
+        {/* Phone only: the screen runs off the tray's foot, and the shared
+            progressive blur softens that cut into the edge, as the step rail's
+            Build card and the comparison pages' phone windows do. */}
+        <FootBlur className="md:hidden" />
       </div>
     </div>
   );

@@ -116,6 +116,7 @@ export function BrandedPortalVisual({
   children,
   quietPane = false,
   appHeader = true,
+  navOnPhone = true,
 }: {
   brand?: string;
   /** The firm's mark, on the white tile beside its name. */
@@ -155,6 +156,13 @@ export function BrandedPortalVisual({
    * the eye should have been travelling to the nav.
    */
   appHeader?: boolean;
+  /**
+   * Keeps the branded nav below `md`. Off where the shot is a page's hero and
+   * the pane is the subject: at a phone's ~300px window the 160px nav took
+   * half of it and left the open app a column too narrow to set a line in.
+   * On by default, so every other caller is unchanged.
+   */
+  navOnPhone?: boolean;
 } = {}) {
   return (
     <div
@@ -182,7 +190,7 @@ export function BrandedPortalVisual({
           its value across both themes, because it stands for the client's own
           brand slab rather than for our chrome. */}
       <div
-        className="flex w-[160px] shrink-0 flex-col gap-[2px] bg-[var(--mock-brand)] px-2.5 py-3"
+        className={`flex w-[160px] shrink-0 flex-col gap-[2px] bg-[var(--mock-brand)] px-2.5 py-3 ${navOnPhone ? "" : "max-md:hidden"}`}
         style={brandColor ? { backgroundColor: brandColor } : undefined}
       >
         <span className="flex items-center gap-2 px-2 pb-3">

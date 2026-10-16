@@ -27,9 +27,16 @@ export function PortalTailor({
   heading = "One portal. A different experience for every client.",
   body = "Control which apps each client and company sees, brand it on your own domain, and give each segment the workflow it actually needs.",
   visual,
+  split = false,
 }: {
   heading?: string;
   body?: string;
+  /**
+   * Heading on the left, lead on the right, picture full width below — the
+   * problem section's split header (portal-problem.tsx), grid for grid.
+   * Stacked on a phone. Off by default, so every other caller is centred.
+   */
+  split?: boolean;
   /**
    * One picture in place of the four cards. The grid is /client-portal's
    * argument — four apps of four different shapes, to prove they do not look
@@ -41,12 +48,19 @@ export function PortalTailor({
   return (
     <section className="mx-auto max-w-[1200px] px-6 py-16 md:px-10 md:py-24">
       <Reveal>
-        <div className="text-center">
-          <h2 className="type-h2 mx-auto max-w-3xl text-balance">{heading}</h2>
-          <p className="mx-auto mt-4 max-w-2xl text-balance text-muted-foreground">
-            {body}
-          </p>
-        </div>
+        {split ? (
+          <div className="grid gap-6 md:grid-cols-2 md:items-start md:gap-12">
+            <h2 className="type-h2 max-w-2xl text-balance">{heading}</h2>
+            <p className="max-w-xl text-muted-foreground md:mt-2">{body}</p>
+          </div>
+        ) : (
+          <div className="text-center">
+            <h2 className="type-h2 mx-auto max-w-3xl text-balance">{heading}</h2>
+            <p className="mx-auto mt-4 max-w-2xl text-balance text-muted-foreground">
+              {body}
+            </p>
+          </div>
+        )}
 
         {/* A page's own picture takes the SAME gap under the lead that the
             four cards take. It had none — the grid carried its margin on
