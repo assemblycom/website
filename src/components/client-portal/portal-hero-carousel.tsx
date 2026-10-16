@@ -859,7 +859,13 @@ function Window({ item, foot }: { item: Item; foot: number }) {
       //
       // No drop shadow, in either theme. The screen sits flat on the panel;
       // a cast under it read as a grey haze around the shot.
-      className={`h-full w-full overflow-hidden rounded-t-2xl bg-[linear-gradient(180deg,#ffffff_0%,#fdfefe_55%,#fafbfd_100%)] [[data-theme=dark]_&]:bg-[linear-gradient(180deg,#242424_0%,#222222_55%,#1f1f1f_100%)] ${
+      //
+      // A HAIRLINE instead, open at the foot like the window it frames. The
+      // firm's rail paints --muted, which is within two levels of the tray's
+      // --surface, so with no edge the sidebar had no boundary at all and
+      // the screen read as a white pane floating beside a menu printed on
+      // the panel. --mock-line is the line every other mock window wears.
+      className={`h-full w-full overflow-hidden rounded-t-2xl border border-b-0 border-[var(--mock-line)] bg-[linear-gradient(180deg,#ffffff_0%,#fdfefe_55%,#fafbfd_100%)] [[data-theme=dark]_&]:bg-[linear-gradient(180deg,#242424_0%,#222222_55%,#1f1f1f_100%)] ${
         item.frame === "inset" ? "p-6" : "[&>*]:bg-transparent"
       }`}
     >

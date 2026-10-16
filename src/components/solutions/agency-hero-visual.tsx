@@ -72,11 +72,19 @@ const AGENCY_APPS: PortalApp[] = [
 
 /** One week column, in px. The scale is fixed and clips at the window's edge. */
 const WEEK = 46;
+/** Weeks the phone shot is scrolled on — see the timeline's own note. */
+const PHONE_SCROLL = 8;
 
 const MONTHS = [
-  { label: "May 2026", weeks: ["May 1", "May 8", "May 15", "May 22", "May 29"] },
+  {
+    label: "May 2026",
+    weeks: ["May 1", "May 8", "May 15", "May 22", "May 29"],
+  },
   { label: "June 2026", weeks: ["Jun 5", "Jun 12", "Jun 19", "Jun 26"] },
-  { label: "July 2026", weeks: ["Jul 3", "Jul 10", "Jul 17", "Jul 24", "Jul 31"] },
+  {
+    label: "July 2026",
+    weeks: ["Jul 3", "Jul 10", "Jul 17", "Jul 24", "Jul 31"],
+  },
   { label: "August 2026", weeks: ["Aug 7", "Aug 14", "Aug 21", "Aug 28"] },
   { label: "September 2026", weeks: ["Sep 4", "Sep 11", "Sep 18", "Sep 25"] },
 ];
@@ -91,7 +99,13 @@ const TONE = [
 
 /** Start and length in weeks from May 1; tone indexes TONE. */
 const PROJECTS = [
-  { name: "Spring Campaign Launch", owner: "DW", from: 4.4, weeks: 13.5, tone: 0 },
+  {
+    name: "Spring Campaign Launch",
+    owner: "DW",
+    from: 4.4,
+    weeks: 13.5,
+    tone: 0,
+  },
   { name: "Northwind Rebrand", owner: "PR", from: 6.3, weeks: 12.6, tone: 1 },
   { name: "Q3 Paid Social", owner: "JM", from: 8.1, weeks: 9.6, tone: 2 },
   { name: "Website Relaunch", owner: "AK", from: 8.8, weeks: 9.6, tone: 0 },
@@ -100,8 +114,20 @@ const PROJECTS = [
   { name: "SEO Content Sprint", owner: "TS", from: 9.7, weeks: 9.5, tone: 3 },
   { name: "Influencer Program", owner: "EV", from: 10.1, weeks: 6.3, tone: 3 },
   { name: "Trade Show Booth", owner: "MB", from: 10.8, weeks: 5.3, tone: 0 },
-  { name: "Brand Guidelines Refresh", owner: "NL", from: 11.2, weeks: 8.3, tone: 1 },
-  { name: "Media Buying Strategy", owner: "AB", from: 12.1, weeks: 5.2, tone: 2 },
+  {
+    name: "Brand Guidelines Refresh",
+    owner: "NL",
+    from: 11.2,
+    weeks: 8.3,
+    tone: 1,
+  },
+  {
+    name: "Media Buying Strategy",
+    owner: "AB",
+    from: 12.1,
+    weeks: 5.2,
+    tone: 2,
+  },
 ];
 
 /** A bordered control in the toolbar: Search, Filters, the view group. */
@@ -114,20 +140,29 @@ function TrackerScreen() {
           squeezing Search to nothing. */}
       <div className="flex items-center gap-2">
         <span
-          className={`${CONTROL} w-[180px] min-w-0 gap-1.5 px-2 text-[color:var(--mock-ink-soft)] ${MOCK_SECONDARY}`}
+          className={`${CONTROL} w-[180px] min-w-0 gap-1.5 px-2 max-sm:w-auto max-sm:flex-1 text-[color:var(--mock-ink-soft)] ${MOCK_SECONDARY}`}
         >
           <IconSearch className="size-[12px] shrink-0" />
           Search
         </span>
         <span
-          className={`${CONTROL} shrink-0 gap-1.5 px-2 text-[color:var(--mock-ink)] ${MOCK_SECONDARY}`}
+          // Icon-only on a phone, as the product collapses it, so Search
+          // can take the row.
+          className={`${CONTROL} shrink-0 gap-1.5 px-2 text-[color:var(--mock-ink)] max-sm:w-[26px] max-sm:justify-center max-sm:px-0 ${MOCK_SECONDARY}`}
         >
           <IconFilter className="size-[12px]" />
-          Filters
+          <span className="max-sm:hidden">Filters</span>
         </span>
         <span className="ml-auto flex items-center gap-2 max-sm:hidden">
-          <span className={`${CONTROL} overflow-hidden text-[color:var(--mock-ink-soft)]`}>
-            {[IconTrackerList, IconTrackerBoard, IconTrackerGantt, IconTrackerTable].map((Icon, i) => (
+          <span
+            className={`${CONTROL} overflow-hidden text-[color:var(--mock-ink-soft)]`}
+          >
+            {[
+              IconTrackerList,
+              IconTrackerBoard,
+              IconTrackerGantt,
+              IconTrackerTable,
+            ].map((Icon, i) => (
               <span
                 key={i}
                 className={`flex h-full w-[26px] items-center justify-center ${
@@ -146,7 +181,6 @@ function TrackerScreen() {
         </span>
       </div>
 
-
       {/* The timeline, as a closed table. The bars and the week scale run on
           past its right edge and clip there, the way a horizontally scrolling
           table does, so the box says there is more of it rather than the shot
@@ -158,13 +192,20 @@ function TrackerScreen() {
             cue that the table carries on. A blur rather than a fade to the
             ground, so the bars keep their colour and only soften; masked so it
             eases in rather than starting at a hard line. */}
-        <span className="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 backdrop-blur-[2px] [mask-image:linear-gradient(to_right,transparent,black)]" />
-        {/* On a phone the window is ~280px, which shows May and none of the
-            work: the bars start in June. So the scale is scrolled four weeks
-            on, as the product would be, and the first bars open the shot. */}
+        <span className="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 backdrop-blur-[2px] [mask-image:linear-gradient(to_right,transparent,black)] max-sm:hidden" />
+        {/* On a phone the table is ~240px, five weeks. Scrolled to start at
+            the end of June (eight weeks on), every bar's start falls inside
+            it — the early ones run in from the left, the late ones begin in
+            view — so the stack reads as a schedule down the whole shot rather
+            than three bars and then empty rows. */}
         <div
-          className="absolute left-0 top-0 max-sm:-translate-x-[184px]"
-          style={{ width: WEEKS.length * WEEK }}
+          className="absolute left-0 top-0 max-sm:-translate-x-[var(--phone-scroll)]"
+          style={
+            {
+              width: WEEKS.length * WEEK,
+              "--phone-scroll": `${PHONE_SCROLL * WEEK}px`,
+            } as React.CSSProperties
+          }
         >
           <div className={`flex border-b bg-[var(--mock-well)] ${LINE}`}>
             {MONTHS.map(({ label, weeks }, i) => (
@@ -205,17 +246,29 @@ function TrackerScreen() {
 
             <div className="relative pt-4 flex flex-col gap-[7px]">
               {PROJECTS.map(({ name, owner, from, weeks, tone }) => (
+                // On a phone the scale is scrolled PHONE_SCROLL weeks on, so a
+                // bar that began earlier would carry its name off the left
+                // edge. --clip pads it back into view, the way a Gantt keeps
+                // a scrolled bar's label pinned to the visible start.
                 <span
                   key={name}
-                  className={`flex h-[22px] items-center gap-1.5 rounded-[4px] pl-1 pr-2 ${TONE[tone]}`}
-                  style={{ marginLeft: from * WEEK, width: weeks * WEEK }}
+                  className={`flex h-[22px] items-center gap-1.5 rounded-[4px] pl-1 pr-2 max-sm:pl-[var(--clip)] ${TONE[tone]}`}
+                  style={
+                    {
+                      marginLeft: from * WEEK,
+                      width: weeks * WEEK,
+                      "--clip": `${Math.max(0, (PHONE_SCROLL - from) * WEEK) + 4}px`,
+                    } as React.CSSProperties
+                  }
                 >
                   {/* Optically centred, as in ProgressMock: two capitals sit
                       high in a box-centred disc. */}
                   <span className="flex size-[15px] shrink-0 items-center justify-center rounded-full bg-white text-[6.5px] font-medium leading-none text-[color:#101114]">
                     <span className="block translate-y-[0.1em]">{owner}</span>
                   </span>
-                  <span className={`truncate font-medium text-white ${MOCK_SECONDARY}`}>
+                  <span
+                    className={`truncate font-medium text-white ${MOCK_SECONDARY}`}
+                  >
                     {name}
                   </span>
                 </span>
@@ -238,7 +291,9 @@ export function AgencyHeroVisual() {
         // The nav row's name, so the two agree, and a step under the shared
         // title size: beside a toolbar and a dated scale, 13.5px read as a
         // page heading rather than an app's title bar.
-        <span className={`flex items-center gap-1.5 whitespace-nowrap ${MOCK_BODY}`}>
+        <span
+          className={`flex items-center gap-1.5 whitespace-nowrap ${MOCK_BODY}`}
+        >
           Project tracker
           <IconChevronDown className="size-[9px] text-[color:var(--mock-ink-soft)]" />
         </span>

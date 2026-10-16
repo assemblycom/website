@@ -1,3 +1,4 @@
+import { PANEL_BG } from "@/components/comparison/brand-panel";
 import { Reveal } from "@/components/ui/reveal";
 import {
   EmailReplyMock,
@@ -52,7 +53,9 @@ const CARD_GROUND =
   // straight on this card with no frame, and on a flat grey they were two
   // greys on a third. The ramp is brand colour either way, and in light the
   // page's own ink is already dark-on-light, so nothing below it has to move.
-  "bg-[linear-gradient(180deg,#7DA4FF_0%,#AFC2D9_52%,#D9ED92_100%)] " +
+  //
+  // The ramp itself is PANEL_BG, the grained brand panel the comparison pages
+  // use, set as a style below — it is a stack of backgrounds, not one class.
   "[[data-theme=dark]_&]:[--surface:#7DA4FF] " +
   "[[data-theme=dark]_&]:[--foreground:#101114] " +
   "[[data-theme=dark]_&]:[--muted-foreground:#223049]";
@@ -129,12 +132,12 @@ export function PortalFrictionless({
                   instead of sitting inset on a grey card. */}
               <div
                 className={`overflow-hidden rounded-3xl lg:aspect-[10/9] ${
-                  card.fitOnPhone
-                    ? "py-14 lg:py-0"
-                    : "aspect-[4/3]"
+                  card.fitOnPhone ? "py-14 lg:py-0" : "aspect-[4/3]"
                 } ${card.background ? "" : CARD_GROUND}`}
                 style={
-                  card.background ? { background: card.background } : undefined
+                  card.background
+                    ? { background: card.background }
+                    : { backgroundImage: PANEL_BG }
                 }
               >
                 {card.visual}

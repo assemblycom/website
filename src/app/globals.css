@@ -4932,3 +4932,15 @@ html:not([data-authed]) .auth-only {
   display: none;
 }
 
+/* The Assembly mark's bars lighting in turn — the Plan card's build loader on
+   the agency page. Opacity only, so it is the same in both themes. */
+@keyframes asm-build {
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+  35%,
+  65% {
+    opacity: 1;
+  }
+}

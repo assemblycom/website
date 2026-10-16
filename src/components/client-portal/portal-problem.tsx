@@ -273,6 +273,7 @@ export function PortalProblem({
   screens,
   quote,
   trayImage,
+  trayBackground,
   link,
   linkFirst = false,
   split = false,
@@ -296,6 +297,8 @@ export function PortalProblem({
   /** Quoted from case-studies.ts, so the page and the story cannot drift. */
   /** A photograph filling the picture's tray, behind `screens`. */
   trayImage?: string;
+  /** A CSS background (e.g. a gradient stack) filling the tray instead. */
+  trayBackground?: string;
   quote?: {
     text: string;
     attribution: string;
@@ -539,6 +542,12 @@ export function PortalProblem({
               plus the control's own height — on a card whose subject is the
               two screens, the first third of it was empty. The control still
               has room to be a control; it just stops reserving a second one. */}
+              {trayBackground ? (
+                <div
+                  className="absolute inset-0"
+                  style={{ backgroundImage: trayBackground }}
+                />
+              ) : null}
               {trayImage ? (
                 <Image
                   src={trayImage}
@@ -574,7 +583,7 @@ export function PortalProblem({
                   // No edge fade over a photograph: it would dissolve the
                   // picture laid on it into the scene behind.
                   style={
-                    trayImage
+                    trayImage || trayBackground
                       ? undefined
                       : { WebkitMaskImage: SCREEN_FADE, maskImage: SCREEN_FADE }
                   }

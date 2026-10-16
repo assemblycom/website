@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { FootBlur } from "@/components/ui/foot-blur";
 import { GridDivider, GridRails } from "@/components/ui/grid-lines";
 import { AgencyHeroVisual } from "@/components/solutions/agency-hero-visual";
 import { AgencyLoginsVisual } from "@/components/solutions/agency-logins-visual";
@@ -26,6 +27,7 @@ import {
 import { Testimonials } from "@/components/home/testimonials";
 import { CTA } from "@/components/home/cta";
 import { FAQ, type FAQEntry } from "@/components/home/faq";
+import { PANEL_BG } from "@/components/comparison/brand-panel";
 import { serializeJsonLd } from "@/lib/json-ld";
 import { DEMO_URL, SIGNUP_URL } from "@/lib/constants";
 import { PAGE_SEO, pageMetadata } from "@/lib/seo";
@@ -283,6 +285,9 @@ export default function MarketingAgencyClientPortalPage() {
               <div className="absolute inset-x-0 top-0 h-[860px]">
                 <AgencyHeroVisual />
               </div>
+              {/* On a phone the crop is the window's foot, so it softens there
+                  rather than at the timeline's right edge. */}
+              <FootBlur className="sm:hidden" />
             </div>
           </div>
 
@@ -309,10 +314,11 @@ export default function MarketingAgencyClientPortalPage() {
             logoSlug: "advertai-marketing",
           }}
           // The accounting page's picture, with the agency's own tools: a
-          // stack of sign-ins over a photograph, same component and the same
-          // heights. The photograph is a creative at work, in the same warm
-          // light as the accounting desk.
-          trayImage="/images/mocks/sign-in-bg.jpg"
+          // stack of sign-ins, same component and the same heights. On the
+          // build rail's own ramp rather than a photograph — the photograph
+          // moved to the Plan card. PANEL_BG is the comparison pages' grained
+          // brand panel.
+          trayBackground={PANEL_BG}
           screens={
             <div className="h-[340px] md:h-[480px]">
               <AgencyLoginsVisual />
@@ -403,41 +409,10 @@ export default function MarketingAgencyClientPortalPage() {
       <div className="relative">
         <GridRails />
 
-        {/* 8. Proof. The site's featured-story component, which is how the
-            comparison pages present this — heading and lead in their own
-            centred block, then the story itself. PortalProof's single-story
-            column was a fourth way of showing a customer quote on a site that
-            had already settled on this one.
-
-            The story is Advertai either way; this keeps the page's own quote
-            and picks up the portrait, the stats and the link that the handoff
-            had no slot for. */}
-        <section className="mx-auto max-w-[1200px] px-6 pt-16 md:px-10 md:pt-24">
-          <h2 className="type-h2 text-balance text-center">
-            Five tools replaced. Five apps built.
-          </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-balance text-center text-muted-foreground">
-            Advertai Marketing, an 11-person agency, built its own message
-            center, design feedback app, and SEO dashboard on Assembly, and is
-            retiring Markup.io, Bright Local, and Keyword.com.
-          </p>
-        </section>
-        <Testimonials
-          story={{
-            // Quoted from the published Advertai study. See case-studies.ts.
-            quote:
-              "We've heard how professional everything feels, and how it's really unique compared to any other experience they've had.",
-            name: "Garrett Leonard",
-            firm: "Advertai Marketing",
-            image: "/images/customers/advertai-marketing.jpg",
-            stats: [
-              { value: "5 weeks", label: "Development to launch" },
-              { value: "200+ clients", label: "Using applications" },
-              { value: "5+ tools", label: "Consolidated and saved" },
-            ],
-            href: "/customers/advertai-marketing",
-          }}
-        />
+        {/* 8. Proof. The site's featured-story component on its own, exactly
+            as the homepage runs it — the quote leads the section, with no
+            heading or lead over it. */}
+        <Testimonials />
         <GridDivider />
 
         {/* 9. Pricing. The site's priced cards, unchanged — this handoff names

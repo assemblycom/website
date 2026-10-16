@@ -19,6 +19,7 @@ import Image from "next/image";
 import { MockFit } from "@/components/templates/mock-fit";
 import { fadeMask } from "@/components/ui/fade-mask";
 import { FootBlur } from "@/components/ui/foot-blur";
+import { PANEL_BG } from "@/components/comparison/brand-panel";
 import { IconArrowUp } from "@/components/home/build-step-visual";
 import {
   IconApp,
@@ -599,18 +600,28 @@ export function DescribeCard({
       {!plain && (
         <div className="absolute -inset-px">
           <Image
-            // The agency page's own still — a sunlit chair with a linen
-            // portfolio box — in place of the phone-on-sofa shot the other
-            // pages share.
+            // The agency page's own still — someone at a laptop in warm late
+            // light — in place of the phone-on-sofa shot the other pages
+            // share. Landscape into a portrait card, so it is anchored right
+            // of centre, where she sits, rather than cropped to the wall.
             src={
               vertical === "agency"
-                ? "/images/mocks/describe-chair.webp"
+                ? "/images/mocks/describe-laptop.webp"
                 : "/images/mocks/describe-phone.webp"
             }
             alt=""
             fill
-            sizes="(min-width: 1024px) 420px, 90vw"
-            className="object-cover"
+            // A landscape photo in a portrait card is sized by the card's
+            // HEIGHT, so it is drawn ~1.8x the card's width — at the card's
+            // own width the optimiser served half the pixels and it came out
+            // soft. The phone shot is near-square and fits its old size.
+            sizes={
+              vertical === "agency"
+                ? "(min-width: 1024px) 760px, 165vw"
+                : "(min-width: 1024px) 420px, 90vw"
+            }
+            quality={vertical === "agency" ? 90 : undefined}
+            className={`object-cover ${vertical === "agency" ? "object-[68%_50%]" : ""}`}
           />
         </div>
       )}
@@ -1018,12 +1029,50 @@ function Ring({ value }: { value: number }) {
  * The caller supplies the title and the rows; everything else — the ring, the
  * two mark states, the hover — is fixed here.
  */
+/**
+ * The Assembly mark as a loading state: its three stepped bars, which light in
+ * turn while the card is hovered — the builder at work — and sit as the plain
+ * mark at rest. Keyed off `group/card`, the rail card's own hover, like the
+ * other flourishes on these cards.
+ */
+const ASSEMBLY_BARS = [
+  "M138.879 4.1366V17.6205C138.879 25.9122 132.143 32.638 123.829 32.638H100.325L131.815 1.21717C134.421 -1.38353 138.879 0.459594 138.879 4.1366Z",
+  "M138.879 47.1379V70.5811C138.879 78.8728 132.143 85.5986 123.829 85.5986H47.2427L82.3575 50.5654C84.5565 48.3712 87.5379 47.1379 90.6489 47.1379H138.884H138.879Z",
+  "M138.878 100.104V123.552C138.878 131.844 132.142 138.57 123.832 138.57H4.14569C0.460605 138.57 -1.38657 134.121 1.21984 131.521L29.2747 103.532C31.4737 101.338 34.4597 100.104 37.5707 100.104H138.888H138.878Z",
+];
+
+function AssemblyLoader() {
+  return (
+    // A 16px slot like the ring it replaces, so "Building…" keeps the rows'
+    // label line; the mark is drawn smaller inside it.
+    <svg
+      viewBox="-30 -30 199 199"
+      className="size-[16px] shrink-0 text-[color:var(--mock-ink)]"
+      fill="currentColor"
+      aria-hidden
+    >
+      {/* Bottom bar first: the mark builds up from its base. */}
+      {[...ASSEMBLY_BARS].reverse().map((d, i) => (
+        <path
+          key={d}
+          d={d}
+          className="group-hover/card:animate-[asm-build_1.2s_ease-in-out_infinite] motion-reduce:!animate-none"
+          style={{ animationDelay: `${i * 0.18}s` }}
+        />
+      ))}
+    </svg>
+  );
+}
+
 function ChecklistWindow({
   title,
   items,
+  loader = false,
 }: {
   title: string;
   items: { label: string; done: boolean }[];
+  /** The Assembly mark in place of the progress ring. */
+  loader?: boolean;
 }) {
   const done = items.filter((i) => i.done).length;
   return (
@@ -1048,7 +1097,7 @@ function ChecklistWindow({
       <div
         className={`flex items-center gap-2.5 border-b bg-[var(--mock-well)] px-4 py-3 [[data-theme=dark]_&]:bg-[var(--mock-well-2)] ${LINE}`}
       >
-        <Ring value={done / items.length} />
+        {loader ? <AssemblyLoader /> : <Ring value={done / items.length} />}
         <span
           className={`flex-1 truncate text-[color:var(--mock-ink)] ${UI_PRIMARY}`}
         >
@@ -1112,6 +1161,8 @@ export function PlanCard({
   plain = false,
   vertical = "default",
 }: SceneProps = {}) {
+  // The agency and accounting pages run the build-in-progress version.
+  const building = vertical === "agency" || vertical === "accounting";
   return (
     <>
       {/* The Plan card's ground — and the one ground in the set that DOES
@@ -1145,9 +1196,32 @@ export function PlanCard({
           and reads as a pale hairline drawn under the card. Over-covering by a
           pixel removes it; the parent is overflow-hidden, so the extra is
           clipped and the radius is unaffected. */}
-      {!plain && (
-        <div className="absolute -inset-px bg-[#3A3A3A] [[data-theme=dark]_&]:bg-[#FBFBF5]" />
-      )}
+      {/* The vertical pages' Plan sits on a pale lime, in both themes, and
+          shows the build in progress: a light ground the white panel reads on
+          without restyling, and the Assembly mark as its loader. */}
+      {!plain &&
+        (vertical === "agency" ? (
+          // The agency page's Plan sits on a photograph — a creative at work
+          // — like Describe beside it.
+          <div className="absolute -inset-px">
+            <Image
+              src="/images/mocks/sign-in-bg.jpg"
+              alt=""
+              fill
+              sizes="(min-width: 1024px) 420px, 90vw"
+              quality={90}
+              className="object-cover"
+            />
+          </div>
+        ) : (
+          <div
+            className={`absolute -inset-px ${
+              building
+                ? "bg-[#D1E59A]"
+                : "bg-[#3A3A3A] [[data-theme=dark]_&]:bg-[#FBFBF5]"
+            }`}
+          />
+        ))}
       {plain ? (
         // The standard box, not the wide one: with the nav and the window gone
         // there is no screen left to need a screen's width — two cards and a
@@ -1166,7 +1240,8 @@ export function PlanCard({
         // Describe's Scene. One scale across the rail's three cards.
         <Scene {...RAIL_SCENE_PHONE_PROPS}>
           <ChecklistWindow
-            title="Plan"
+            title={building ? "Building…" : "Plan"}
+            loader={building}
             items={
               vertical === "accounting"
                 ? PLAN_ITEMS_ACCOUNTING
@@ -2257,7 +2332,12 @@ export function BuildCard({
           pixel removes it; the parent is overflow-hidden, so the extra is
           clipped and the radius is unaffected. */}
       {!plain && (
-        <div className="absolute -inset-px bg-[linear-gradient(180deg,#7DA4FF_0%,#AFC2D9_52%,#D9ED92_100%)]" />
+        // The comparison pages' grained brand panel, so the rail's picture
+        // grounds match theirs.
+        <div
+          className="absolute -inset-px"
+          style={{ backgroundImage: PANEL_BG }}
+        />
       )}
       {/* fadeFrom 100 — the right-edge fade is OFF for this card. That ramp
           exists to dissolve art that overruns the card, and nothing overruns it
@@ -2897,7 +2977,9 @@ export function ReviewCard({ plain = false }: SceneProps = {}) {
           Flipped in dark, where a near-black card under a photograph loses the
           plate's own edge — see the Plan card's note on this pair. */}
       {!plain && (
-        <div className="absolute -inset-px bg-[#101010] [[data-theme=dark]_&]:bg-[#FBFBF5]" />
+        // Pale lime in light, the agency page's Plan ground; dark keeps its
+        // paper.
+        <div className="absolute -inset-px bg-[#D1E59A] [[data-theme=dark]_&]:bg-[#FBFBF5]" />
       )}
       <Scene
         boxClass={plain ? PANEL_SCENE_PHONE.vars : RAIL_SCENE_PHONE.vars}

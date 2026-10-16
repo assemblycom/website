@@ -126,7 +126,7 @@ function SessionsPane() {
                   day === PICKED
                     ? "bg-[var(--mock-ink)] text-[color:var(--mock-window)]"
                     : OPEN_DAYS.has(day)
-                      ? "bg-[var(--mock-well-2)] text-[color:var(--mock-ink)]"
+                      ? "cursor-pointer bg-[var(--mock-well-2)] text-[color:var(--mock-ink)] transition-colors hover:bg-[var(--mock-well-3)]"
                       : "text-[color:var(--mock-ink-soft)]"
                 }`}
               >
@@ -148,7 +148,7 @@ function SessionsPane() {
         {TIMES.map((t) => (
           <span
             key={t}
-            className={`rounded-[4px] border py-2 text-center text-[color:var(--mock-ink)] ${MOCK_PRIMARY} ${LINE}`}
+            className={`cursor-pointer rounded-[4px] border py-2 text-center transition-colors hover:border-[var(--mock-ink)] text-[color:var(--mock-ink)] ${MOCK_PRIMARY} ${LINE}`}
           >
             {t}
           </span>
@@ -176,11 +176,32 @@ const STATS = [
 const CURVE = [22, 28, 25, 34, 31, 40, 37, 46, 44, 52, 49, 58, 63, 60, 68];
 const WEEKS_AXIS = ["Sep 1", "Sep 8", "Sep 15", "Sep 22", "Sep 29"];
 
+/**
+ * One hue, four steps of ink. The four Gantt colours beside a teal curve made
+ * the report a palette; a ramp of the ink reads as one breakdown and flips
+ * with the theme on its own, since every step is mixed from --mock-ink.
+ */
 const CHANNELS = [
-  { name: "Paid social", share: 46, tone: "bg-[var(--mock-gantt-1)]" },
-  { name: "Search", share: 28, tone: "bg-[var(--mock-gantt-4)]" },
-  { name: "Email", share: 16, tone: "bg-[var(--mock-gantt-2)]" },
-  { name: "Organic", share: 10, tone: "bg-[var(--mock-gantt-3)]" },
+  {
+    name: "Paid social",
+    share: 46,
+    tone: "color-mix(in srgb, var(--mock-ink) 85%, transparent)",
+  },
+  {
+    name: "Search",
+    share: 28,
+    tone: "color-mix(in srgb, var(--mock-ink) 55%, transparent)",
+  },
+  {
+    name: "Email",
+    share: 16,
+    tone: "color-mix(in srgb, var(--mock-ink) 32%, transparent)",
+  },
+  {
+    name: "Organic",
+    share: 10,
+    tone: "color-mix(in srgb, var(--mock-ink) 16%, transparent)",
+  },
 ];
 
 const CAMPAIGNS = [
@@ -202,6 +223,100 @@ function curvePath(points: number[], close: boolean) {
   return close ? `${line} L100,100 L0,100 Z` : line;
 }
 
+/**
+ * The leads curve, answering the cursor: a guide line, a dot on the curve and
+ * the value at the nearest point, the way the real report's chart reads out.
+ */
+function LeadsChart() {
+  const [hover, setHover] = useState<number | null>(null);
+  const max = Math.max(...CURVE) * 1.15;
+  const step = 100 / (CURVE.length - 1);
+  const at = hover ?? null;
+  return (
+    <div
+      className="relative mt-3 h-[92px] w-full cursor-crosshair"
+      onMouseMove={(e) => {
+        const r = e.currentTarget.getBoundingClientRect();
+        const i = Math.round(
+          ((e.clientX - r.left) / r.width) * (CURVE.length - 1),
+        );
+        setHover(Math.max(0, Math.min(CURVE.length - 1, i)));
+      }}
+      onMouseLeave={() => setHover(null)}
+    >
+      <svg
+        viewBox="0 0 100 100"
+        preserveAspectRatio="none"
+        className="absolute inset-0 h-full w-full overflow-visible"
+      >
+        <defs>
+          <linearGradient id="agency-report-fill" x1="0" x2="0" y1="0" y2="1">
+            <stop
+              offset="0"
+              stopColor="var(--mock-gantt-1)"
+              stopOpacity="0.28"
+            />
+            <stop offset="1" stopColor="var(--mock-gantt-1)" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        {[25, 50, 75].map((y) => (
+          <line
+            key={y}
+            x1="0"
+            x2="100"
+            y1={y}
+            y2={y}
+            stroke="var(--mock-line)"
+            vectorEffect="non-scaling-stroke"
+          />
+        ))}
+        <path d={curvePath(CURVE, true)} fill="url(#agency-report-fill)" />
+        <path
+          d={curvePath(CURVE, false)}
+          fill="none"
+          stroke="var(--mock-gantt-1)"
+          strokeWidth="1.5"
+          strokeLinejoin="round"
+          vectorEffect="non-scaling-stroke"
+        />
+        {at !== null && (
+          <line
+            x1={at * step}
+            x2={at * step}
+            y1="0"
+            y2="100"
+            stroke="var(--mock-ink-soft)"
+            strokeDasharray="2 2"
+            vectorEffect="non-scaling-stroke"
+          />
+        )}
+      </svg>
+      {/* The dot and the read-out are HTML over the SVG, because the SVG is
+          stretched non-uniformly and would squash a circle into an ellipse. */}
+      {at !== null && (
+        <>
+          <span
+            className="pointer-events-none absolute size-[8px] -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-[var(--mock-window)] bg-[var(--mock-gantt-1)]"
+            style={{
+              left: `${at * step}%`,
+              top: `${100 - (CURVE[at] / max) * 100}%`,
+            }}
+          />
+          <span
+            className={`pointer-events-none absolute -translate-x-1/2 -translate-y-[calc(100%+10px)] whitespace-nowrap rounded-[4px] bg-[var(--mock-ink)] px-1.5 py-[3px] text-[color:var(--mock-window)] ${MOCK_MICRO}`}
+            style={{
+              left: `${Math.min(92, Math.max(8, at * step))}%`,
+              top: `${100 - (CURVE[at] / max) * 100}%`,
+            }}
+          >
+            {CURVE[at]} leads
+          </span>
+        </>
+      )}
+    </div>
+  );
+}
+
 function ReportPane() {
   return (
     <div className="flex flex-col gap-3">
@@ -209,7 +324,7 @@ function ReportPane() {
         {STATS.map(({ label, value, delta, up }) => (
           <span
             key={label}
-            className={`flex min-w-0 flex-col gap-2 rounded-[6px] border px-3 py-2.5 ${LINE}`}
+            className={`flex min-w-0 flex-col gap-2 rounded-[6px] border px-3 py-2.5 transition-colors hover:bg-[var(--mock-well)] ${LINE}`}
           >
             <span
               className={`truncate text-[color:var(--mock-ink-soft)] ${MOCK_SECONDARY}`}
@@ -244,52 +359,7 @@ function ReportPane() {
               vs August
             </span>
           </span>
-          <svg
-            viewBox="0 0 100 100"
-            preserveAspectRatio="none"
-            className="mt-3 h-[92px] w-full overflow-visible"
-          >
-            <defs>
-              <linearGradient
-                id="agency-report-fill"
-                x1="0"
-                x2="0"
-                y1="0"
-                y2="1"
-              >
-                <stop
-                  offset="0"
-                  stopColor="var(--mock-gantt-1)"
-                  stopOpacity="0.28"
-                />
-                <stop
-                  offset="1"
-                  stopColor="var(--mock-gantt-1)"
-                  stopOpacity="0"
-                />
-              </linearGradient>
-            </defs>
-            {[25, 50, 75].map((y) => (
-              <line
-                key={y}
-                x1="0"
-                x2="100"
-                y1={y}
-                y2={y}
-                stroke="var(--mock-line)"
-                vectorEffect="non-scaling-stroke"
-              />
-            ))}
-            <path d={curvePath(CURVE, true)} fill="url(#agency-report-fill)" />
-            <path
-              d={curvePath(CURVE, false)}
-              fill="none"
-              stroke="var(--mock-gantt-1)"
-              strokeWidth="1.5"
-              strokeLinejoin="round"
-              vectorEffect="non-scaling-stroke"
-            />
-          </svg>
+          <LeadsChart />
           <span
             className={`mt-2 flex justify-between text-[color:var(--mock-ink-soft)] ${MOCK_MICRO}`}
           >
@@ -299,28 +369,43 @@ function ReportPane() {
           </span>
         </div>
 
+        {/* The split as ONE bar with a legend under it, rather than four
+            stacked bars: a share is a part of a whole, and four separate
+            tracks each read as its own scale. */}
         <div
-          className={`flex flex-col gap-2.5 rounded-[6px] border p-3 max-md:hidden ${LINE}`}
+          className={`flex flex-col rounded-[6px] border p-3 max-md:hidden ${LINE}`}
         >
           <span className={`text-[color:var(--mock-ink)] ${MOCK_PRIMARY}`}>
             By channel
           </span>
-          {CHANNELS.map(({ name, share, tone }) => (
-            <span key={name} className="flex flex-col gap-1.5">
+          <span className="mt-3.5 flex h-[8px] gap-[2px] overflow-hidden rounded-full">
+            {CHANNELS.map(({ name, share, tone }) => (
               <span
-                className={`flex justify-between text-[color:var(--mock-ink-soft)] ${MOCK_SECONDARY}`}
+                key={name}
+                className="h-full"
+                style={{ width: `${share}%`, backgroundColor: tone }}
+              />
+            ))}
+          </span>
+          <span className="mt-4 flex flex-col gap-3">
+            {CHANNELS.map(({ name, share, tone }) => (
+              <span
+                key={name}
+                className={`-mx-1.5 flex items-center gap-2 rounded-[4px] px-1.5 py-1 transition-colors hover:bg-[var(--mock-well)] ${MOCK_SECONDARY}`}
               >
-                <span>{name}</span>
-                <span className="text-[color:var(--mock-ink)]">{share}%</span>
-              </span>
-              <span className="h-[5px] rounded-full bg-[var(--mock-well-2)]">
                 <span
-                  className={`block h-full rounded-full ${tone}`}
-                  style={{ width: `${share * 2}%` }}
+                  className="size-[8px] shrink-0 rounded-[2px]"
+                  style={{ backgroundColor: tone }}
                 />
+                <span className="flex-1 text-[color:var(--mock-ink-soft)]">
+                  {name}
+                </span>
+                <span className="tabular-nums text-[color:var(--mock-ink)]">
+                  {share}%
+                </span>
               </span>
-            </span>
-          ))}
+            ))}
+          </span>
         </div>
       </div>
 
@@ -338,7 +423,7 @@ function ReportPane() {
         {CAMPAIGNS.map(({ name, leads, cpl, status }) => (
           <span
             key={name}
-            className={`grid grid-cols-[1fr_56px_56px] items-center gap-3 border-b px-3 py-2.5 last:border-b-0 md:grid-cols-[1fr_80px_80px_80px] ${MOCK_SECONDARY} ${LINE}`}
+            className={`grid grid-cols-[1fr_56px_56px] items-center gap-3 border-b px-3 py-2.5 transition-colors last:border-b-0 hover:bg-[var(--mock-well)] md:grid-cols-[1fr_80px_80px_80px] ${MOCK_SECONDARY} ${LINE}`}
           >
             <span className="truncate text-[color:var(--mock-ink)]">
               {name}
@@ -416,7 +501,7 @@ export function AgencyViewsVisual() {
             headerAction={
               tier.open === "report" ? (
                 <span
-                  className={`whitespace-nowrap rounded-[4px] border px-2.5 py-[6px] text-[color:var(--mock-ink)] max-md:hidden ${MOCK_SECONDARY} ${LINE}`}
+                  className={`cursor-pointer whitespace-nowrap rounded-[4px] border px-2.5 py-[6px] text-[color:var(--mock-ink)] transition-colors hover:bg-[var(--mock-well-2)] max-md:hidden ${MOCK_SECONDARY} ${LINE}`}
                 >
                   Download PDF
                 </span>

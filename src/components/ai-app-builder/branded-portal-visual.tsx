@@ -349,7 +349,10 @@ export function BrandedPortalVisual({
       >
         {appHeader ? (
           <div
-            className={`flex items-center justify-between gap-3 border-b px-5 py-3.5 ${LINE}`}
+            // Slimmer on a phone where the menu button leads it: the product's
+            // mobile bar is a single tight row, and at desktop padding plus
+            // a 24px button it took a sixth of a 420px shot.
+            className={`flex items-center justify-between gap-3 border-b px-5 py-3.5 ${navOnPhone ? "" : "max-md:px-4 max-md:py-2"} ${LINE}`}
           >
             <span className="flex min-w-0 items-center gap-2.5">
               {/* Where the nav goes on a phone. A window that steps its nav
@@ -358,9 +361,9 @@ export function BrandedPortalVisual({
                   without it the phone shot is an app with no portal around it. */}
               {navOnPhone ? null : (
                 <span
-                  className={`flex size-[24px] shrink-0 items-center justify-center rounded-[4px] border text-[color:var(--mock-ink)] md:hidden ${LINE}`}
+                  className={`flex size-[22px] shrink-0 items-center justify-center rounded-[4px] border text-[color:var(--mock-ink)] md:hidden ${LINE}`}
                 >
-                  <IconMenu className="size-[12px]" />
+                  <IconMenu className="size-[11px]" />
                 </span>
               )}
               <span
