@@ -362,16 +362,16 @@ function Scene({
             ? // WHICH END THE CROP FALLS ON, and it changes with the slot.
               //
               // A bleed scene is taller than its card, so one end is always
-              // lost. From `sm` the card is 3:4 and the scene is pinned to the
+              // lost. From `lg` the card is 3:4 and the scene is pinned to the
               // FOOT: the board's rows run off the bottom, where a cut row
               // still reads as a list carrying on.
               //
-              // On a phone the card is square and the box loses 113px, which
+              // Below lg the card is square and the box loses 113px, which
               // at the foot took the sidebar's own header — the firm's mark
               // and name — off the top of a card whose subject is the firm's
               // portal. Pinned to the top instead, the same 113px comes off
               // the bottom, which is the end that was always meant to be cut.
-              "flex flex-col justify-start overflow-hidden pl-5 pt-5 sm:justify-end"
+              "flex flex-col justify-start overflow-hidden pl-5 pt-5 lg:justify-end"
             : `flex flex-col gap-4 p-5 ${
                 // justify-center centres a short scene in the box; with the
                 // foot open the child is meant to FILL it and be cut, so it
@@ -467,8 +467,8 @@ type SceneProps = {
  * Squaring the box on a phone fixes both at once: width and height constrain
  * equally, so the scene fills the card instead of being letterboxed, the scale
  * goes to 255/340 — about a third larger — and the right-hand bleed lands on
- * the card's own edge. From `sm` the box goes back to 453 and nothing changes,
- * because from `sm` the card is 3:4 again and the default was always right.
+ * the card's own edge. From `lg` the box goes back to 453 and nothing changes,
+ * because from `lg` the card is 3:4 again and the default was always right.
  *
  * Content is centred in the box, so the 113px a phone loses off the design
  * height comes off the empty air above and below the artwork rather than the
@@ -485,14 +485,15 @@ type SceneProps = {
 // meant to recognise as product UI. 290 takes the same card to 0.88 and the
 // label to a little over 10px.
 //
-// The phone box stays SQUARE because the rail card is square below lg (see
-// card-rail.tsx); from sm the design size is what it always was, so nothing
-// above a phone moves.
+// The box stays SQUARE until lg because the rail card does (see
+// card-rail.tsx). Going 3:4 at sm instead letterboxed every scene into a
+// square card between sm and lg, leaving bare ground down both sides.
 const RAIL_SCENE_PHONE = {
   vars:
     "[--template-mock-w:290px] [--template-mock-h:290px] " +
-    "sm:[--template-mock-w:340px] sm:[--template-mock-h:453px]",
-  size: "w-[290px] h-[290px] sm:w-[340px] sm:h-[453px]",
+    "sm:[--template-mock-w:340px] sm:[--template-mock-h:340px] " +
+    "lg:[--template-mock-h:453px]",
+  size: "w-[290px] h-[290px] sm:w-[340px] sm:h-[340px] lg:h-[453px]",
 };
 /** Spread form, so a card opts in with one line and cannot pair the wrong two. */
 const RAIL_SCENE_PHONE_PROPS = {
