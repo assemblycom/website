@@ -26,7 +26,7 @@ import { PortalStack } from "@/components/client-portal/portal-stack";
 import { PortalTrust } from "@/components/client-portal/portal-trust";
 import { PortalPricing } from "@/components/client-portal/portal-pricing";
 import { BuilderCustomerQuotes } from "@/components/ai-app-builder/builder-customer-quotes";
-import { APP_URL, DEMO_URL, SIGNUP_URL } from "@/lib/constants";
+import { DEMO_URL, SIGNUP_URL } from "@/lib/constants";
 import { PANEL_BG } from "@/components/comparison/brand-panel";
 import { PAGE_SEO, pageMetadata } from "@/lib/seo";
 import { serializeJsonLd } from "@/lib/json-ld";
@@ -173,7 +173,7 @@ const ACCOUNTING_TIERS = [
     perksLabel: "Includes:",
     perks: ["5 active contacts", "3 apps"],
     cta: "Get started",
-    href: APP_URL,
+    href: SIGNUP_URL,
   },
   {
     name: "Starter",
@@ -182,7 +182,7 @@ const ACCOUNTING_TIERS = [
     perksLabel: "Everything in Free, plus:",
     perks: ["50 active contacts", "API and MCP connector"],
     cta: "Get started",
-    href: APP_URL,
+    href: SIGNUP_URL,
   },
   {
     name: "Professional",
@@ -196,7 +196,7 @@ const ACCOUNTING_TIERS = [
       "Automation builder",
     ],
     cta: "Get started",
-    href: APP_URL,
+    href: SIGNUP_URL,
     recommended: true,
   },
   {
