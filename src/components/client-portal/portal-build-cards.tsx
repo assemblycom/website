@@ -2434,7 +2434,10 @@ export function BuildCard({
           // it on the right. It was translate-x-0 there, which left the window
           // cropped on BOTH sides — a left crop with no rail behind it to
           // absorb it, and a right edge that stopped short of the card.
-          style={plain ? undefined : { height: 412 }}
+          // A floor, not a fixed height: below lg a taller box (the 4:5 card
+          // on a wide phone) would otherwise leave bare ground under the
+          // window, so it grows to fill it there (max-lg:flex-1).
+          style={plain ? undefined : { minHeight: 412 }}
           // The TOP-LEFT is the only corner this window has: it bleeds off the
           // right and the bottom, so three of its corners are crops. That one
           // visible corner carries the whole window's shape, and at the chrome
@@ -2488,7 +2491,7 @@ export function BuildCard({
           // grey ground than the rule it replaced. Clipping the background to
           // the padding box leaves the border area genuinely empty, so the
           // card's own ground shows through and there is no line at all.
-          className={`flex shrink-0 ${plain ? "mock-edge" : "w-[340px] translate-x-[25px] sm:w-[380px] sm:translate-x-[20px]"} ${WINDOW} ${R_PANEL} rounded-b-none rounded-tr-none border-transparent [background-clip:padding-box] border-b-0 border-r-0 sm:rounded-tr-[10px] sm:border-r ${
+          className={`flex shrink-0 ${plain ? "mock-edge" : "w-[340px] translate-x-[25px] max-lg:flex-1 min-[480px]:w-[380px] min-[480px]:translate-x-[20px]"} ${WINDOW} ${R_PANEL} rounded-b-none rounded-tr-none border-transparent [background-clip:padding-box] border-b-0 border-r-0 sm:rounded-tr-[10px] sm:border-r ${
             plain
               ? // 340x280 ON A PHONE, which is the 360x300 box exactly minus
                 // the scene's own 20px top and left padding — so the window
