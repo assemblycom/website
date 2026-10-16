@@ -73,7 +73,12 @@ export function BuildChat() {
         </div>
       </div>
       <div className="mt-4 flex shrink-0 items-center gap-2 rounded-full border border-border py-1.5 pl-4 pr-1.5 dark-ui:border-white/15">
-        <span className={`flex-1 ${HERO_BODY} text-muted-foreground`}>
+        {/* A focused, empty field: the caret blinks ahead of the placeholder,
+            the site's own caret (see the hero composer). */}
+        <span
+          className={`flex flex-1 items-center ${HERO_BODY} text-muted-foreground`}
+        >
+          <span className="mr-[3px] inline-block h-[14px] w-[1.5px] bg-foreground motion-safe:animate-caret" />
           Type to revise plan
         </span>
         <span className="flex size-8 items-center justify-center rounded-full bg-foreground text-background">

@@ -48,10 +48,10 @@ export function ClientAppsCardVisual() {
           key={label}
           // 56px on a phone: three 64px tiles needed 264px of a 255px card and
           // were squeezed into ovals.
-          // Ink pinned near-black in dark too. The mark is ink under a white
-          // frosted sheet; dark mode flips the ink to near-white, and the two
-          // whites merged into a blob with no shape left in it.
-          className="flex size-14 shrink-0 items-center justify-center rounded-[14px] bg-[var(--mock-well-3)] sm:size-16 sm:rounded-[16px] shadow-[0_1px_2px_rgba(0,0,0,0.08),0_6px_16px_rgba(0,0,0,0.12)] [[data-theme=dark]_&]:[--mock-ink:#101114]"
+          // The tile keeps its light-mode ground and ink in dark too. The mark
+          // is ink under a white frosted sheet; on a dark tile the dark ink
+          // sank into the ground, and with flipped ink the two whites merged.
+          className="flex size-14 shrink-0 items-center justify-center rounded-[14px] bg-[var(--mock-well-3)] sm:size-16 sm:rounded-[16px] shadow-[0_1px_2px_rgba(0,0,0,0.08),0_6px_16px_rgba(0,0,0,0.12)] [[data-theme=dark]_&]:bg-[#eceef2] [[data-theme=dark]_&]:[--mock-ink:#101114]"
         >
           <span style={{ transform: `translate(${x}px, ${y}px)` }}>
             <AppMarkGlyph mark={mark} tint="ink" className="block size-7 sm:size-8" />
