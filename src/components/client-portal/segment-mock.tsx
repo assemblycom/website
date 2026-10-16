@@ -908,11 +908,10 @@ function ClientAvatar({
 }) {
   return (
     <span className="relative shrink-0">
-      {/* Initials at 7.5, not the scale's 9.5 MICRO: two letters at 9.5 crowd
-          a 19px disc. The shot no longer scales down on a phone, so 7.5 stays
-          legible there. No outline — the tinted fill is the avatar's edge. */}
+      {/* Initials at the scale's 9.5 MICRO, like every other mock. No
+          outline — the tinted fill is the avatar's edge. */}
       <span
-        className={`flex size-[19px] items-center justify-center text-[7.5px] leading-none ${
+        className={`flex size-[19px] items-center justify-center text-[9.5px] leading-none ${
           company ? "rounded-[4px]" : "rounded-full"
         } ${AVATAR_TONES[tone]}`}
       >
@@ -1142,7 +1141,7 @@ export function DocumentRequestsMock() {
                     <>
                       <span className="relative shrink-0">
                         <span
-                          className={`flex size-[19px] items-center justify-center rounded-full bg-[var(--mock-well-2)] text-[7.5px] leading-none text-[color:var(--mock-ink-soft)]`}
+                          className={`flex size-[19px] items-center justify-center rounded-full bg-[var(--mock-well-2)] text-[9.5px] leading-none text-[color:var(--mock-ink-soft)]`}
                         >
                           —
                         </span>
@@ -1911,12 +1910,6 @@ const INTAKE_STEP = { title: "Partner details", step: 1, of: 4 };
 export function IntakeAppMock({
   /** Draws the client's nav in the firm's colour. See PortalSidebar. */
   branded = false,
-  /**
-   * The submit control at the foot of the form. Off where the screen is
-   * cropped by a tray — a button half-cut by the edge of its own picture reads
-   * as a rendering fault rather than as a window onto something larger.
-   */
-  action = true,
   /** The app's name, on its nav row and its header. */
   title = "Partner intake",
   /** Replaces the client's nav, for a shot of the same app from the team's side. */
@@ -1925,7 +1918,6 @@ export function IntakeAppMock({
   accent,
 }: {
   branded?: boolean;
-  action?: boolean;
   title?: string;
   nav?: React.ReactNode;
   accent?: string;
@@ -2026,14 +2018,8 @@ export function IntakeAppMock({
                 </span>
               </div>
             ))}
-            {/* The form's own action, at the foot of the column rather than
-                off to one side — a form you work down ends in the button that
-                sends it. */}
-            {action ? (
-              <span className="mt-1 w-fit rounded-[4px] bg-[var(--mock-ink)] px-2.5 py-[6px] text-[10.5px] leading-none text-[color:var(--mock-window)]">
-                Submit
-              </span>
-            ) : null}
+            {/* No submit button: a solid ink button was the brightest, heaviest
+                thing in the shot, and the fields already say "a form". */}
           </div>
         </div>
       </div>

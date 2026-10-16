@@ -834,7 +834,12 @@ export function RailCard({
           own caption most of a screen down the page. */}
       <div
         className={`relative w-full select-none overflow-hidden rounded-3xl bg-[var(--surface)] lg:aspect-[3/4] ${
-          tallOnPhone ? "aspect-[4/5] sm:aspect-square" : "aspect-square"
+          // The 4:5 card also tells the scenes inside it how tall to draw
+          // (RAIL_SCENE_PHONE in portal-build-cards): a square phone box in a
+          // 4:5 card left a bare band under the picture.
+          tallOnPhone
+            ? "aspect-[4/5] max-sm:[--rail-phone-h:362px] max-sm:[--rail-phone-h-wide:500px] sm:aspect-square"
+            : "aspect-square"
         }`}
       >
         {children}

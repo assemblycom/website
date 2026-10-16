@@ -40,16 +40,21 @@ export function ClientAppsCardVisual() {
   return (
     <div
       aria-hidden
-      className="absolute inset-0 flex select-none items-center justify-center gap-3 px-6"
+      className="absolute inset-0 flex select-none items-center justify-center gap-2 px-4 sm:gap-3 sm:px-6"
       style={{ background: HOSTED_MVP_BG }}
     >
       {CLIENT_APPS.map(({ label, mark, nudge: [x, y] }) => (
         <span
           key={label}
-          className="flex size-16 items-center justify-center rounded-[16px] bg-[var(--mock-well-3)] shadow-[0_1px_2px_rgba(0,0,0,0.08),0_6px_16px_rgba(0,0,0,0.12)]"
+          // 56px on a phone: three 64px tiles needed 264px of a 255px card and
+          // were squeezed into ovals.
+          // Ink pinned near-black in dark too. The mark is ink under a white
+          // frosted sheet; dark mode flips the ink to near-white, and the two
+          // whites merged into a blob with no shape left in it.
+          className="flex size-14 shrink-0 items-center justify-center rounded-[14px] bg-[var(--mock-well-3)] sm:size-16 sm:rounded-[16px] shadow-[0_1px_2px_rgba(0,0,0,0.08),0_6px_16px_rgba(0,0,0,0.12)] [[data-theme=dark]_&]:[--mock-ink:#101114]"
         >
           <span style={{ transform: `translate(${x}px, ${y}px)` }}>
-            <AppMarkGlyph mark={mark} tint="ink" className="block size-8" />
+            <AppMarkGlyph mark={mark} tint="ink" className="block size-7 sm:size-8" />
           </span>
         </span>
       ))}
@@ -133,7 +138,7 @@ export function CrmCardVisual() {
             </span>
             <span className={`whitespace-nowrap ${MOCK_PRIMARY}`}>{name}</span>
             <span
-              className={`rounded-md bg-[var(--mock-well-2)] px-1.5 py-1 font-mono text-[10px] uppercase leading-none tracking-wide ${MUTED}`}
+              className={`rounded-md bg-[var(--mock-well-2)] px-1.5 py-1 font-mono text-[10.5px] uppercase leading-none tracking-wide ${MUTED}`}
             >
               {company}
             </span>
@@ -193,7 +198,7 @@ export function CreditsVisual() {
         {/* A step above the cards' own titles, the way a settings page heads
             the cards under it; at the body size it read smaller than "Free
             plan" below it. */}
-        <p className="text-[15px] leading-[1.3]">Plan &amp; usage</p>
+        <p className="text-[13.5px] leading-[1.3]">Plan &amp; usage</p>
         <p
           className={`mt-1.5 text-[color:var(--mock-ink-soft)] ${MOCK_PRIMARY}`}
         >
@@ -205,7 +210,7 @@ export function CreditsVisual() {
         className={`${PANEL} hidden items-center justify-between gap-3 p-5 sm:flex`}
       >
         <div>
-          <p className="text-[13px] leading-[1.3]">Free plan</p>
+          <p className="text-[12.5px] leading-[1.3]">Free plan</p>
           <p
             className={`mt-1.5 text-[color:var(--mock-ink-soft)] ${MOCK_PRIMARY}`}
           >

@@ -298,13 +298,12 @@ const PHONE_BASE_W = 295;
 const PHONE_PANEL_MAX = 592;
 const ZOOM_MAX = 1.15;
 /**
- * The shot's height on a phone. Uncapped it came out 280px, which made the
- * panel 383px against /client-portal's 304px hero: the same template, three
- * heights. At 209 the header, the shot and its padding total 304, so the
- * solutions pages and /client-portal open on one hero height on a phone. The
- * shot still runs off the foot; it just shows less of the app.
+ * The shot's height on a phone. Uncapped it came out 280px. It was capped at
+ * 209 to match /client-portal's 304px hero, but that left the template screens
+ * a sliver and the composer crowding the header, so it sits at 300: tall
+ * enough to show the app on any phone.
  */
-const PHONE_SHOT_H = 209;
+const PHONE_SHOT_H = 300;
 
 function fitFor(panelW: number, viewportH: number): Fit {
   const avail = Math.max(1, panelW - 2 * padXFor(panelW));
@@ -321,10 +320,14 @@ function fitFor(panelW: number, viewportH: number): Fit {
     Math.max(w * MIN_SHAPE, Math.min(shaped, viewportH * VIEWPORT_BUDGET)),
   );
   // Capped in on-screen pixels, so the zoom a wider phone gets does not grow
-  // the panel back past the cap.
+  // the panel back past the cap. A phone skips the viewport budget: it
+  // scrolls anyway, and in a short window the budget cut the shot to a strip.
   const h =
     panelW < PHONE_PANEL_MAX
-      ? Math.min(fitted, Math.round(PHONE_SHOT_H / zoom))
+      ? Math.min(
+          Math.round(Math.max(w * MIN_SHAPE, shaped)),
+          Math.round(PHONE_SHOT_H / zoom),
+        )
       : fitted;
   return {
     w,
@@ -894,7 +897,10 @@ function Window({ item, foot }: { item: Item; foot: number }) {
  */
 function PromptMock({ prompt }: { prompt: string }) {
   return (
-    <div aria-hidden className="flex h-full select-none items-center">
+    // Pinned below the header on a phone rather than centred: the shot's
+    // height follows the viewport's, so on a short screen a centred composer
+    // rode up under the subtitle. Top-aligned, the gap is fixed.
+    <div aria-hidden className="flex h-full select-none items-center max-lg:items-start max-lg:pt-5">
       {/* Capped and centred rather than full width. The window grew to 880px,
           and a composer stretched across all of it stopped reading as a box you
           type a sentence into — one line of text left most of it empty. This is
@@ -914,7 +920,7 @@ function PromptMock({ prompt }: { prompt: string }) {
           the drop shadow: a cast and a ring are two ways of saying the same
           thing. */}
       <div className="mx-auto w-full max-w-[560px] rounded-2xl border border-[var(--mock-line)] bg-background p-4 shadow-[0_0_0_3px_var(--surface),0_0_0_4px_var(--mock-line)] sm:p-5 [[data-theme=dark]_&]:bg-white/[0.06]">
-        <p className="min-h-[44px] text-[11.5px] leading-[1.6] text-foreground sm:min-h-[72px] sm:text-[15px]">
+        <p className="text-[12.5px] leading-[1.6] text-foreground sm:min-h-[60px]">
           {prompt}
         </p>
         {/* The composer's own controls, split across the foot as the product
@@ -923,17 +929,17 @@ function PromptMock({ prompt }: { prompt: string }) {
             here — this is a still of a composer, not a menu waiting to be
             opened, and the caret invited a click the mock cannot answer. */}
         <div className="mt-4 flex items-center justify-between gap-2.5">
-          <span className="flex size-6 items-center justify-center rounded-md text-muted-foreground sm:size-8 sm:rounded-lg [&>svg]:size-3.5 sm:[&>svg]:size-4">
+          <span className="flex size-6 items-center justify-center rounded-md text-muted-foreground [&>svg]:size-3.5">
             <IconPlus />
           </span>
           <span className="flex items-center gap-2.5">
-            <span className="text-[10.5px] leading-none text-muted-foreground sm:text-[13px]">
+            <span className="text-[10.5px] leading-none text-muted-foreground">
               Sonnet 5.5
             </span>
-            {/* 24px on a phone, 32 from sm: at the phone's 11.5px text a 32px
-                square was the heaviest thing in the box. */}
-            <span className="flex size-6 items-center justify-center rounded-md bg-foreground text-background sm:size-8 sm:rounded-lg">
-              <IconArrowUp className="size-3 sm:size-4" />
+            {/* 24px at every width, like the rest of the mock type: the
+                composer is drawn on the shared scale, not enlarged on desktop. */}
+            <span className="flex size-6 items-center justify-center rounded-md bg-foreground text-background">
+              <IconArrowUp className="size-3" />
             </span>
           </span>
         </div>

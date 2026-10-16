@@ -6,6 +6,7 @@ import {
 } from "@/components/home/mock-icons";
 import { IconArrowUp } from "@/components/home/build-step-visual";
 import {
+  MOCK_BODY,
   MOCK_MICRO,
   MOCK_PRIMARY,
   MOCK_SECONDARY,
@@ -70,7 +71,7 @@ const SHIMMER: React.CSSProperties = {
 };
 
 const BUBBLE =
-  "rounded-2xl bg-muted px-3.5 py-2 text-[13px] leading-[1.45] text-foreground dark-ui:bg-white/[0.08]";
+  "rounded-2xl bg-muted px-3.5 py-2 text-[12.5px] leading-[1.45] text-foreground dark-ui:bg-white/[0.08]";
 const RULE = "border-border dark-ui:border-white/15";
 
 /**
@@ -93,7 +94,7 @@ function WiringSignInChat() {
         {/* The work as a builder shows it: a step group, one ruled row per
             thing it did, the last one the failure. */}
         <div>
-          <div className="flex items-center gap-2 text-[12px] leading-none text-muted-foreground">
+          <div className={`flex items-center gap-2 ${MOCK_SECONDARY} text-muted-foreground`}>
             <span className="flex gap-[3px]">
               {[0, 1, 2].map((i) => (
                 // Staggered so the three pulse in turn, the way a builder says
@@ -119,7 +120,7 @@ function WiringSignInChat() {
             {STEPS_RUN.map((step, i) => (
               <div
                 key={step}
-                className={`flex items-center gap-1.5 px-3 py-2 text-[12px] leading-none text-muted-foreground ${
+                className={`flex items-center gap-1.5 px-3 py-2 ${MOCK_SECONDARY} text-muted-foreground ${
                   i ? `border-t ${RULE}` : ""
                 }`}
               >
@@ -128,7 +129,7 @@ function WiringSignInChat() {
               </div>
             ))}
             <div
-              className={`flex items-center gap-2 border-t px-3 py-2 text-[12px] leading-none text-foreground ${RULE}`}
+              className={`flex items-center gap-2 border-t px-3 py-2 ${MOCK_PRIMARY} text-foreground ${RULE}`}
             >
               Login redirect failed
             </div>
@@ -140,7 +141,7 @@ function WiringSignInChat() {
       <div
         className={`mt-4 hidden shrink-0 items-center gap-2 rounded-full border py-1.5 pl-4 pr-1.5 sm:flex ${RULE}`}
       >
-        <span className="flex-1 text-[13px] text-muted-foreground">
+        <span className={`flex-1 ${MOCK_BODY} text-muted-foreground`}>
           Ask to fix the login
         </span>
         <span className="flex size-8 items-center justify-center rounded-full bg-foreground text-background">

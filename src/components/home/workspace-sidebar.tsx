@@ -172,7 +172,7 @@ function NavItem({
           // 11.5px side is a third of it, so the corners read as pulled. A
           // fixed 13px box with the figure centred in it is square by
           // construction and the radius is the same proportion on both axes.
-          className="inline-flex size-[13px] shrink-0 items-center justify-center rounded-[4px] bg-[var(--mock-info-bg)] text-[7.5px] leading-none text-[color:var(--mock-info-fg)]"
+          className="inline-flex size-[13px] shrink-0 items-center justify-center rounded-[4px] bg-[var(--mock-info-bg)] text-[9.5px] leading-none text-[color:var(--mock-info-fg)]"
         >
           {/* THE GLYPH IS NUDGED DOWN HALF A PIXEL, on an inner span so the
               tile's own tint does not move with it.

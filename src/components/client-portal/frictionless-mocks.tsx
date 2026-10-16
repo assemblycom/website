@@ -18,6 +18,11 @@
  */
 
 import { IconBrandMark } from "@/components/home/mock-icons";
+import {
+  MOCK_PRIMARY,
+  MOCK_SECONDARY,
+  MOCK_TITLE,
+} from "@/components/ui/mock-type";
 
 const LINE = "border-[var(--mock-line)]";
 
@@ -38,7 +43,7 @@ export function SignInButtonMock() {
     >
       <div className={`${SIGNIN_BUTTON} max-w-[300px] gap-2`}>
         <GoogleGlyph />
-        <span className="whitespace-nowrap text-[15px] leading-none text-[color:var(--mock-ink)]">
+        <span className={`whitespace-nowrap ${MOCK_PRIMARY} text-[color:var(--mock-ink)]`}>
           Continue with Google
         </span>
       </div>
@@ -90,14 +95,16 @@ export function EmailReplyMock() {
       className="pointer-events-none flex h-full select-none flex-col justify-center px-4 sm:px-10"
     >
       <div
-        className={`flex min-w-0 flex-col overflow-hidden rounded-xl border bg-[var(--mock-window)] p-4 text-[color:var(--mock-ink)] sm:p-6 [font-family:var(--font-inter),system-ui,sans-serif] ${LINE}`}
+        // Capped on a phone, where the tray runs the full width of the screen
+        // and the letter otherwise stretched into a banner.
+        className={`mx-auto flex w-full min-w-0 max-w-[400px] flex-col overflow-hidden rounded-xl border bg-[var(--mock-window)] p-4 text-[color:var(--mock-ink)] sm:max-w-none sm:p-6 [font-family:var(--font-inter),system-ui,sans-serif] ${LINE}`}
       >
         <div className="flex min-w-0 items-center gap-2">
-          <p className="truncate text-[15px] leading-snug sm:text-[17px]">
+          <p className={`truncate ${MOCK_TITLE}`}>
             Spring catalogue covers
           </p>
           <span
-            className={`shrink-0 rounded border bg-[var(--mock-well-2)] px-1.5 py-1 text-[11px] leading-none text-[color:var(--mock-ink)] ${LINE}`}
+            className={`shrink-0 rounded border bg-[var(--mock-well-2)] px-1.5 py-1 ${MOCK_SECONDARY} text-[color:var(--mock-ink)] ${LINE}`}
           >
             Inbox
           </span>
@@ -110,18 +117,18 @@ export function EmailReplyMock() {
             <IconBrandMark className="size-[15px]" />
           </span>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-[13px] leading-[18px]">
+            <p className="truncate text-[11.5px] leading-[18px]">
               Brandmages{" "}
               <span className={`hidden sm:inline ${MUTED}`}>
                 &lt;portal@brandmages.com&gt;
               </span>
             </p>
-            <p className={`truncate text-[12px] leading-[18px] ${MUTED}`}>
+            <p className={`truncate text-[10.5px] leading-[18px] ${MUTED}`}>
               to me
             </p>
           </div>
           <span
-            className={`flex h-[18px] shrink-0 items-center text-[12px] ${MUTED}`}
+            className={`flex h-[18px] shrink-0 items-center text-[10.5px] ${MUTED}`}
           >
             9:41 AM
           </span>
@@ -129,17 +136,24 @@ export function EmailReplyMock() {
 
         {/* Paragraph gaps a blank line wide, as a real letter sets them. With
             two tight lines the window read as a notification, not an email. */}
-        <div className="mt-4 space-y-3.5 text-[13px] leading-relaxed sm:ml-[46px] sm:mt-5 sm:space-y-4">
+        <div className="mt-3.5 space-y-2 text-[12.5px] leading-normal sm:ml-[46px] sm:mt-5 sm:space-y-4 sm:leading-relaxed">
           <p>Hi Margot,</p>
+          {/* Shorter on a phone, where the full letter filled the card and
+              read as a wall of text rather than an email at a glance. */}
           <p>
-            Round 2 of the spring catalogue covers is ready. We used the warmer
-            palette from your notes and added two new layout options.
+            Round 2 of the spring catalogue covers is ready.
+            <span className="max-sm:hidden">
+              {" "}
+              We used the warmer palette from your notes and added two new
+              layout options.
+            </span>
           </p>
           <p>
             Reply with feedback, and we&rsquo;ll get the final files over by
             Friday.
           </p>
-          <p>
+          {/* No sign-off on a phone: the letter is short enough without it. */}
+          <p className="max-sm:hidden">
             Best,
             <br />
             Sofia
