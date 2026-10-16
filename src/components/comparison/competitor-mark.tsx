@@ -26,7 +26,7 @@ export function CompetitorMark({
   page,
   size = "sm",
 }: {
-  page: ComparisonPage;
+  page: Pick<ComparisonPage, "logo" | "smallLogo">;
   /** `sm` for the index cards, `lg` for a page's own hero. */
   size?: "sm" | "lg";
 }) {

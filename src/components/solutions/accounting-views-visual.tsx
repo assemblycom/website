@@ -1,0 +1,576 @@
+"use client";
+
+import { useState } from "react";
+import { NavRow } from "@/components/client-portal/segment-mock";
+import {
+  IconLedgerline,
+  IconCard,
+  IconChat,
+  IconDocuments,
+  IconFile,
+  IconGlobe,
+  IconChevronDown,
+  IconSearch,
+  IconMenu,
+} from "@/components/home/mock-icons";
+import { ViewToggle } from "@/components/ui/view-toggle";
+import { FootBlur } from "@/components/ui/foot-blur";
+import {
+  MOCK_BODY,
+  MOCK_PRIMARY,
+  MOCK_SECONDARY,
+} from "@/components/ui/mock-type";
+
+// ─────────────────────────────────────────────────────────────────────────
+// V5 — "One firm, a different view for every client", the accounting page's
+// own picture.
+//
+// The section used to fall through to PortalTailor's four cards, which are
+// /client-portal's: a campaign approval round, a Gantt of agency engagements,
+// Brandmages down the nav. Four pictures of a marketing agency under a heading
+// about an accounting firm, and — worse for the argument — four DIFFERENT apps,
+// which proves a portal can hold four things rather than that one portal looks
+// different to two clients.
+//
+// THE TRAY AND THE TOGGLE ARE THE PROBLEM SECTION'S, two screens up this same
+// page. One portal, switched between two clients, rather than two windows set
+// side by side: side by side each one got half of half a rail, which is 260px
+// for a nav and a screen, and every label in both of them truncated — the nav
+// read "Estimated pa…" and the file rows read "Bank sta…". A picture whose
+// subject is what the client SEES cannot be drawn at a size where the client
+// cannot read it.
+//
+// It also states the claim better. Two frames side by side are two portals
+// until the reader works out they are not; one frame with the client's name on
+// a switch above it is the same portal by construction, which is the sentence
+// the heading makes.
+//
+// The three things the handoff asks for are what differs between the two:
+//
+//  - TWO CLIENT VIEWS. A business with payroll and year-end work, and a person
+//    with quarterly estimates. Neither nav is a subset of the other, because
+//    "fewer apps for the smaller client" is a permissions story and this is a
+//    fit story. They are named by KIND rather than by name — see `names`.
+//  - THE CLIENT'S NAME, on the switch above the tray rather than inside the
+//    nav. The handoff asks for an entity switcher in the sidebar and THE
+//    PRODUCT HAS NO SUCH CONTROL — it was drawn here as a pill under the firm's
+//    mark, which is a picture of UI that does not exist. The switch above the
+//    tray does the same job honestly: it names whose portal this is and it
+//    really does change it.
+//  - THE LOCKED FOLDER, in the individual's nav. It stays IN the list rather
+//    than being dropped from it: a row that is absent says nothing, and a row
+//    that is present and shut is the only way a picture can show that the firm
+//    decides what each client reaches.
+// ─────────────────────────────────────────────────────────────────────────
+
+const LINE = "border-[var(--mock-line)]";
+
+/** The rows both clients get, so what sits under them reads as a choice. */
+const STOCK = [
+  { icon: <IconGlobe className="size-[13px]" />, label: "Home" },
+  { icon: <IconChat className="size-[13px]" />, label: "Messages" },
+  { icon: <IconFile className="size-[13px]" />, label: "Files" },
+  { icon: <IconCard className="size-[13px]" />, label: "Billing" },
+];
+
+type PaneRow = { name: string; meta: string };
+
+type ClientView = {
+  /** What this client IS, on the switch above the tray. */
+  entity: string;
+  /** The firm's apps this client gets, under the stock rows. Last is open. */
+  apps: { icon: React.ReactNode; label: string; locked?: boolean }[];
+  pane: { title: string; rows: PaneRow[] };
+  /** Draws the open app as the client's document collection instead of rows. */
+  requests?: boolean;
+  /** Draws the open app as the individual's tax return instead of rows. */
+  taxReturn?: boolean;
+};
+
+const CLIENTS: ClientView[] = [
+  {
+    entity: "A business client",
+    apps: [
+      { icon: <IconFile className="size-[13px]" />, label: "Payroll" },
+      {
+        icon: <IconDocuments className="size-[13px]" />,
+        label: "Document collection",
+      },
+    ],
+    // The product's client-side document collection: what the firm has asked
+    // for, grouped by where each request has got to. See RequestsPane.
+    pane: { title: "Document collection", rows: [] },
+    requests: true,
+  },
+  {
+    entity: "An individual client",
+    apps: [
+      {
+        icon: <IconDocuments className="size-[13px]" />,
+        label: "2025 tax return",
+      },
+    ],
+    // The return itself, which is what an individual comes to an accounting
+    // portal for: where it has got to, the one thing they have to do, and
+    // what is still missing. It replaces a ledger of estimated payments —
+    // twelve near-identical rows of amounts, which read as a bank statement
+    // rather than as an app the firm built for this client.
+    pane: { title: "2025 tax return", rows: [] },
+    taxReturn: true,
+  },
+];
+
+/**
+ * The client's nav, under the firm's mark.
+ *
+ * The firm's name and nothing else above the rows: it is the firm's portal, and
+ * the client it is being shown to is named on the switch above the tray.
+ */
+function ClientNav({ client }: { client: ClientView }) {
+  return (
+    <div // 152px, not the 136 the portal nav takes elsewhere. The longest row
+      // here is "Estimated payments", which truncated at 136 — and a nav
+      // whose open row is cut short is the one thing this picture cannot
+      // show, since what each client SEES is the whole argument.
+      className="relative flex w-[152px] shrink-0 flex-col gap-[2px] bg-[var(--ledgerline-clay)] px-2 py-2.5 max-md:hidden"
+    >
+      <span className="flex items-center gap-1.5 px-1.5 pb-2">
+        <span className="flex size-[15px] items-center justify-center rounded-[3px] bg-[var(--ledgerline-sage)] text-[color:var(--ledgerline-ink)]">
+          <IconLedgerline className="size-[10px]" />
+        </span>
+        <span className={`truncate text-white ${MOCK_PRIMARY}`}>
+          Ledgerline
+        </span>
+      </span>
+
+      <div className="mt-1 flex flex-col gap-[2px]">
+        {STOCK.map(({ icon, label }) => (
+          <NavRow key={label} icon={icon} label={label} branded />
+        ))}
+        {/* The firm's own apps, straight after the stock rows on the same
+            rhythm. A break here read as uneven spacing, not as a grouping. */}
+        <div className="flex flex-col gap-[2px]">
+          {client.apps.map(({ icon, label, locked }, i) => (
+            <NavRow
+              key={label}
+              icon={icon}
+              label={label}
+              branded
+              muted={locked}
+              active={!locked && i === client.apps.length - 1}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * The pane's title row. On a phone the sidebar steps aside (see ClientNav), so
+ * the row leads with the bordered menu button the product puts there, in the
+ * product's tighter mobile bar — the marketing page's phone window, drawn by
+ * BrandedPortalVisual, does the same. Without it the phone shot is an app with
+ * no portal around it.
+ */
+function PaneTitleBar({ title }: { title: string }) {
+  return (
+    <div
+      className={`flex items-center gap-2.5 border-b px-4 py-3 max-md:py-2 ${LINE}`}
+    >
+      <span
+        className={`flex size-[22px] shrink-0 items-center justify-center rounded-[4px] border text-[color:var(--mock-ink)] md:hidden ${LINE}`}
+      >
+        <IconMenu className="size-[11px]" />
+      </span>
+      <span
+        className={`min-w-0 truncate text-[color:var(--mock-ink)] ${MOCK_BODY}`}
+      >
+        {title}
+      </span>
+    </div>
+  );
+}
+
+/**
+ * The open app, beside the nav.
+ *
+ * Two lines a row and no thumbnail tile. The tile is the shape the file rows
+ * take elsewhere in this set and it is not worth its measure here: what the
+ * row has to carry is a name and where it has got to, and six of those reach
+ * the foot of the frame, which is what makes this a window onto a screen that
+ * carries on rather than a list that ran out.
+ */
+function AppPane({ title, rows }: { title: string; rows: PaneRow[] }) {
+  return (
+    <div className="flex min-w-0 flex-1 flex-col">
+      <PaneTitleBar title={title} />
+      <div className="flex min-h-0 flex-1 flex-col">
+        {/* NAME LEFT, STATE RIGHT — one line, not two. Stacked rows were for
+            a pane 150px wide, where a name and its state could not share a
+            line. Across the full measure the stack leaves a column of empty
+            pane to the right of every row, and a file list that sets its state
+            in a right-hand column is what the product actually draws. */}
+        {rows.map(({ name, meta }) => (
+          <span
+            key={name}
+            className={`flex items-center gap-4 border-b px-4 py-[11px] transition-colors hover:bg-[var(--mock-well)] ${LINE}`}
+          >
+            <span
+              className={`min-w-0 flex-1 truncate text-[color:var(--mock-ink)] ${MOCK_PRIMARY}`}
+            >
+              {name}
+            </span>
+            <span
+              className={`shrink-0 text-[color:var(--mock-ink-soft)] ${MOCK_SECONDARY}`}
+            >
+              {meta}
+            </span>
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Two glyphs the shared set does not carry, drawn to its light-stroke
+// convention.
+const STROKE = {
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: 1.5,
+  strokeLinecap: "round" as const,
+  strokeLinejoin: "round" as const,
+};
+
+function IconEye({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 16 16" className={className} {...STROKE}>
+      <path d="M1.75 8S4 3.75 8 3.75 14.25 8 14.25 8 12 12.25 8 12.25 1.75 8 1.75 8Z" />
+      <circle cx="8" cy="8" r="1.9" />
+    </svg>
+  );
+}
+
+function IconDownload({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 16 16" className={className} {...STROKE}>
+      <path d="M8 2.75v7M5 7l3 3 3-3M3 11.5v1.25c0 .4.35.75.75.75h8.5c.4 0 .75-.35.75-.75V11.5" />
+    </svg>
+  );
+}
+
+/** A group's heading: its state, how many, and the fold. */
+function RequestGroup({ label, count }: { label: string; count: number }) {
+  return (
+    <span
+      className={`flex shrink-0 items-center gap-1.5 pb-2 pt-3.5 ${MOCK_PRIMARY}`}
+    >
+      {/* Plain ink for every group, Overdue included: the status chip's dot
+          already says it is late, and a red heading was a second alarm. */}
+      <span className="text-[color:var(--mock-ink)]">{label}</span>
+      <span className="text-[color:var(--mock-ink-soft)]">({count})</span>
+      <IconChevronDown className="ml-auto size-[8px] text-[color:var(--mock-ink-soft)]" />
+    </span>
+  );
+}
+
+/** One request: its name and state on top, what to do about it underneath. */
+function RequestCard({
+  title,
+  status,
+  children,
+}: {
+  title: string;
+  status: "Overdue" | "Accepted" | "Requested";
+  children?: React.ReactNode;
+}) {
+  const dot =
+    status === "Overdue"
+      ? "bg-[var(--mock-traffic-red)]"
+      : status === "Accepted"
+        ? "bg-[var(--mock-traffic-green)]"
+        : "bg-[var(--mock-ink-soft)]";
+  return (
+    <div
+      className={`flex shrink-0 flex-col overflow-hidden rounded-[6px] border transition-colors hover:bg-[var(--mock-well)] ${LINE}`}
+    >
+      <span
+        className={`flex items-center justify-between gap-3 border-b px-3.5 py-2.5 ${LINE}`}
+      >
+        <span
+          className={`min-w-0 truncate text-[color:var(--mock-ink)] ${MOCK_PRIMARY}`}
+        >
+          {title}
+        </span>
+        <span
+          className={`flex shrink-0 items-center gap-1 rounded-full border bg-[var(--mock-well-2)] px-2 py-[4px] text-[color:var(--mock-ink)] ${MOCK_SECONDARY} ${LINE}`}
+        >
+          <span className={`size-[5px] rounded-full ${dot}`} />
+          {status}
+        </span>
+      </span>
+      {children ? (
+        <div className="flex flex-col gap-2.5 px-3.5 py-3">{children}</div>
+      ) : null}
+    </div>
+  );
+}
+
+/**
+ * The client's document collection — the product's own screen, from the
+ * client's side: what the firm has asked for, grouped by where each request
+ * has got to. Overdue first, then what was accepted with the file that
+ * settled it. Every line is short enough to set whole in the narrowest pane,
+ * a phone's, so nothing on this screen ends in an ellipsis. It runs off the foot of the window into the next group.
+ */
+function RequestsPane({ title }: { title: string }) {
+  return (
+    <div className="flex min-w-0 flex-1 flex-col">
+      <PaneTitleBar title={title} />
+      <div className="flex min-h-0 flex-1 flex-col px-4 pt-3">
+        <span
+          className={`flex shrink-0 cursor-text items-center gap-1.5 rounded-[4px] border px-2.5 py-[7px] text-[color:var(--mock-ink-soft)] transition-colors hover:border-[var(--mock-ink-soft)] ${MOCK_PRIMARY} ${LINE}`}
+        >
+          <IconSearch className="size-[11px] shrink-0" />
+          Search documents...
+        </span>
+
+        <RequestGroup label="Overdue" count={1} />
+        <RequestCard title="Sales tax forms" status="Overdue">
+          <span
+            className={`truncate text-[color:var(--mock-ink-soft)] ${MOCK_SECONDARY}`}
+          >
+            One per state · Due Aug 15
+          </span>
+          <span
+            className={`w-fit cursor-pointer rounded-[4px] border bg-[var(--mock-window)] px-2.5 py-[6px] text-[color:var(--mock-ink)] transition-colors hover:bg-[var(--mock-well-2)] ${MOCK_SECONDARY} ${LINE}`}
+          >
+            Upload file
+          </span>
+        </RequestCard>
+
+        <RequestGroup label="Accepted" count={1} />
+        <RequestCard title="Inventory counts" status="Accepted">
+          <span
+            className={`text-[color:var(--mock-ink-soft)] ${MOCK_SECONDARY}`}
+          >
+            Submitted file
+          </span>
+          <span className="flex cursor-pointer items-center gap-2.5 rounded-[4px] bg-[var(--mock-well)] px-2.5 py-2 transition-colors hover:bg-[var(--mock-well-2)]">
+            <span
+              className={`flex size-[22px] shrink-0 items-center justify-center rounded-[4px] border bg-[var(--mock-window)] text-[color:var(--mock-ink-soft)] ${LINE}`}
+            >
+              <IconFile className="size-[12px]" />
+            </span>
+            <span className="flex min-w-0 flex-1 flex-col gap-1">
+              <span
+                className={`truncate text-[color:var(--mock-ink)] ${MOCK_PRIMARY}`}
+              >
+                inventory.pdf
+              </span>
+              <span
+                className={`truncate text-[color:var(--mock-ink-soft)] ${MOCK_SECONDARY}`}
+              >
+                Submitted Jul 3
+              </span>
+            </span>
+            <IconEye className="size-[12px] shrink-0 text-[color:var(--mock-ink-soft)] transition-colors hover:text-[color:var(--mock-ink)]" />
+            <IconDownload className="size-[12px] shrink-0 text-[color:var(--mock-ink-soft)] transition-colors hover:text-[color:var(--mock-ink)]" />
+          </span>
+        </RequestCard>
+
+        <RequestGroup label="Requested" count={4} />
+        <RequestCard title="Q3 payroll reports" status="Requested" />
+      </div>
+    </div>
+  );
+}
+
+const RETURN_DOCS: { name: string; from: string; state: "in" | "needed" }[] = [
+  { name: "W-2", from: "Northwind Logistics", state: "in" },
+  { name: "1099-INT", from: "First Harbor Bank", state: "in" },
+  { name: "1098 mortgage", from: "Cedar Home Loans", state: "in" },
+  { name: "Charitable receipts", from: "Any over $250", state: "needed" },
+  { name: "1099-B brokerage", from: "Brightline Invest", state: "needed" },
+  { name: "Childcare expenses", from: "Provider and amount", state: "in" },
+];
+
+/**
+ * The individual's tax return: a stepper for where it has got to, the one
+ * action that is theirs right now, and the documents behind it.
+ */
+function TaxReturnPane({ title }: { title: string }) {
+  return (
+    <div className="flex min-w-0 flex-1 flex-col">
+      <PaneTitleBar title={title} />
+      <div className="flex min-h-0 flex-1 flex-col px-4 pt-4">
+        {/* The one thing that is the client's to do, first on the screen.
+            A five-step progress track sat above it and read as a chart with
+            no labels that fit; the card says where the return is on its own. */}
+        <div
+          className={`flex shrink-0 items-center gap-3 rounded-[6px] border px-3.5 py-3 transition-colors hover:bg-[var(--mock-well)] ${LINE}`}
+        >
+          <span className="flex min-w-0 flex-1 flex-col gap-1.5">
+            <span
+              className={`truncate text-[color:var(--mock-ink)] ${MOCK_PRIMARY}`}
+            >
+              Sign Form 8879
+            </span>
+            <span
+              className={`truncate text-[color:var(--mock-ink-soft)] ${MOCK_SECONDARY}`}
+            >
+              $2,318 refund
+            </span>
+          </span>
+          <span
+            className={`shrink-0 cursor-pointer rounded-[4px] bg-[var(--mock-ink)] px-2.5 py-[6px] text-[color:var(--mock-window)] transition-opacity hover:opacity-90 ${MOCK_SECONDARY}`}
+          >
+            Review
+          </span>
+        </div>
+
+        <span
+          className={`mt-4 shrink-0 pb-2 text-[color:var(--mock-ink-soft)] ${MOCK_SECONDARY}`}
+        >
+          Your documents
+        </span>
+        <div
+          className={`flex min-h-0 flex-col overflow-hidden rounded-t-[6px] border border-b-0 ${LINE}`}
+        >
+          {RETURN_DOCS.map(({ name, from, state }) => (
+            <span
+              key={name}
+              className={`flex shrink-0 items-center gap-3 border-b px-3.5 py-[9px] transition-colors hover:bg-[var(--mock-well)] ${LINE}`}
+            >
+              <span className="flex min-w-0 flex-1 flex-col gap-1">
+                <span
+                  className={`truncate text-[color:var(--mock-ink)] ${MOCK_PRIMARY}`}
+                >
+                  {name}
+                </span>
+                <span
+                  className={`truncate text-[color:var(--mock-ink-soft)] ${MOCK_SECONDARY}`}
+                >
+                  {from}
+                </span>
+              </span>
+              {state === "in" ? (
+                <span
+                  className={`shrink-0 rounded px-1.5 py-[3px] bg-[var(--mock-positive-bg)] text-[color:var(--mock-positive-fg)] ${MOCK_SECONDARY}`}
+                >
+                  Received
+                </span>
+              ) : (
+                <span
+                  className={`shrink-0 cursor-pointer rounded-[4px] border bg-[var(--mock-window)] px-2.5 py-[5px] text-[color:var(--mock-ink)] transition-colors hover:bg-[var(--mock-well-2)] ${MOCK_SECONDARY} ${LINE}`}
+                >
+                  Upload
+                </span>
+              )}
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function AccountingViewsVisual() {
+  const [selected, setSelected] = useState(0);
+  const client = CLIENTS[selected];
+  // WHAT EACH CLIENT IS, not who. The switch read "Harbor Dental PLLC" and
+  // "Delgado Household", which made the control look like a customer list and
+  // asked the reader to work out what a dental practice and a household have
+  // to do with the heading. The point is the KIND of client — a business with
+  // payroll and year-end work, a person with quarterly estimates — so the
+  // switch says that and the screens carry the detail.
+  const names = CLIENTS.map((c) => c.entity);
+
+  return (
+    <div>
+      {/* THE PHONE'S COPY, above the tray on the page's own ground. In the
+          corner the control works on a wide screen; on a 375px phone the tray
+          is the full measure and the switch sat on top of the picture it
+          switches, reading as part of the app in it. Above rather than under:
+          it is the choice the picture answers, so it is read first. Rendered
+          twice rather than moved, because it has to leave the tray's overflow
+          box to sit on the page at all; both drive the same state. */}
+      <div className="mb-4 flex justify-center md:hidden">
+        <ViewToggle
+          options={names}
+          view={selected}
+          onSelect={setSelected}
+          label="Which client's portal to show"
+        />
+      </div>
+      {/* THE PROBLEM SECTION'S TRAY, class for class — including its dark
+          branch, where the tray turns paper and re-points the five page tokens
+          its subtree reads so the toggle is not white on white. The --mock-*
+          tokens are deliberately untouched, so the screen standing on it stays
+          dark-themed. See portal-problem.tsx for the reasoning; this is a
+          second caller of that treatment, not a second version of it. */}
+      <div
+        // A HEIGHT, not the handoff's 4:3. The ratio was written for a picture
+        // in half a rail; across the whole measure 4:3 is 840px of tray, which
+        // is a section and a half of scrolling for one screen. The window keeps
+        // its own proportions and crops at the foot, which is what it does in
+        // every other section on this page.
+        className="relative h-[420px] overflow-hidden rounded-2xl bg-[var(--surface)] px-4 pb-0 pt-6 md:h-[470px] md:rounded-3xl md:px-6 md:pb-0 md:pt-4 [[data-theme=dark]_&]:bg-[#F5F5F0] [[data-theme=dark]_&]:[--surface:#F5F5F0] [[data-theme=dark]_&]:[--foreground:#101114] [[data-theme=dark]_&]:[--muted-foreground:#6b7079] [[data-theme=dark]_&]:[--border:#e8e9ec] [[data-theme=dark]_&]:[--background:#ffffff]"
+      >
+        {/* Top right, from md: a control on a picture rather than a heading for
+            one. At the left it sits under the section's own copy and reads as
+            the next line of it. The gap over the screen is this row, not a
+            margin — see the same note in portal-problem. */}
+        <div className="hidden justify-end md:mx-auto md:mb-3 md:flex md:max-w-[1040px]">
+          <ViewToggle
+            onPaper
+            options={names}
+            view={selected}
+            onSelect={setSelected}
+            label="Which client's portal to show"
+          />
+        </div>
+
+        {/* The screen runs off the tray's foot. It is a window onto a portal
+            that carries on, which is what every screen in this family does, and
+            it is what lets the pane hold a dozen rows at a readable size. */}
+        <div
+          aria-hidden
+          // .mock-edge on the set's own shape: a lit hairline in dark, where a
+          // flat --mock-line the whole way round reads as an outline drawn on
+          // the picture rather than as a window catching light. Open at the
+          // foot, so `border-b-0` — and .mock-edge paints into the border box,
+          // so an edge that is not there is simply not painted.
+          //
+          // ON A PHONE IT IS A PHONE: a 260px window centred in the tray,
+          // both edges kept and the top corners rounded like a device, with
+          // the sidebar gone (see ClientNav). The client meets this screen on
+          // their phone, so a phone-shaped window says so; bleeding a desktop
+          // window off the right edge said "a crop of something wider".
+          //
+          // CAPPED AT 1040 FROM md, the marketing hero's window measure, with
+          // the toggle above on the same measure. Run to the full 1320 the
+          // rows were a long reach from name to state and the type sat small
+          // in a lot of window. Dark lifts --mock-ink-soft a step for this
+          // window only: the secondary lines were the hardest thing to read
+          // on the dark screen against the paper tray.
+          className={`mock-edge flex h-full select-none overflow-hidden rounded-t-xl border border-b-0 bg-[var(--mock-window)] text-[color:var(--mock-ink)] max-md:mx-auto max-md:w-[260px] max-md:rounded-t-[22px] md:mx-auto md:max-w-[1040px] [[data-theme=dark]_&]:[--mock-ink-soft:#b4b4b4] ${LINE}`}
+        >
+          <ClientNav client={client} />
+          {client.requests ? (
+            <RequestsPane title={client.pane.title} />
+          ) : client.taxReturn ? (
+            <TaxReturnPane title={client.pane.title} />
+          ) : (
+            <AppPane title={client.pane.title} rows={client.pane.rows} />
+          )}
+        </div>
+        {/* Phone only: the screen runs off the tray's foot, and the shared
+            progressive blur softens that cut into the edge, as the step rail's
+            Build card and the comparison pages' phone windows do. */}
+        <FootBlur className="md:hidden" />
+      </div>
+    </div>
+  );
+}

@@ -163,6 +163,10 @@ export const MARK_TINTS = {
   lavender: "#B3A4F7",
   blue: "#6B84EF",
   mint: "#9BE3C0",
+  // The monotone pairing: ink under the glass, on the mock ink token so it
+  // flips with the theme. Applied as a style rather than a fill attribute,
+  // since a presentation attribute cannot read a CSS variable.
+  ink: "var(--mock-ink)",
 } as const;
 
 export type MarkTint = keyof typeof MARK_TINTS;
@@ -238,7 +242,7 @@ export function AppMarkGlyph({
       <g transform={fit}>
         {glyph.layers.map((layer, i) => {
           if (layer.role === "solid") {
-            return <path key={i} d={layer.d} fill={color} />;
+            return <path key={i} d={layer.d} style={{ fill: color }} />;
           }
           // What the sheet frosts is whatever was painted under it.
           const behind = glyph.layers
@@ -250,7 +254,7 @@ export function AppMarkGlyph({
                 <g clipPath={`url(#${uid}-clip-${i})`}>
                   <g filter={`url(#${uid}-blur-${i})`}>
                     {behind.map((l, j) => (
-                      <path key={j} d={l.d} fill={color} />
+                      <path key={j} d={l.d} style={{ fill: color }} />
                     ))}
                   </g>
                 </g>

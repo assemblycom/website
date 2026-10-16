@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
+import { QuoteThumb } from "./quote-thumb";
 import { BUILDER_RAIL_HALO_WIDE } from "./builder-grid-rails";
 import { BuilderCustomerQuotesStack } from "./builder-customer-quotes-stack";
 import Link from "next/link";
@@ -52,6 +52,16 @@ export type CustomerQuote = {
   firm: string;
   /** Portrait or firm shot in /public/images/customers. */
   image: string;
+  /**
+   * Render the firm's logo in the thumbnail instead of `image`, by case-study
+   * slug. For a firm whose case study has no usable portrait — a mask logo in
+   * an object-cover square crops to a corner of the wordmark, so it needs the
+   * contained treatment CustomerLogo gives it, not the photo one.
+   *
+   * `image` is still required and still the fallback, so a slug with no logo
+   * spec degrades to the photo rather than to an empty box.
+   */
+  logoSlug?: string;
   href: string;
 };
 
@@ -109,7 +119,25 @@ const QUOTES: CustomerQuote[] = [
   },
 ];
 
-export function BuilderCustomerQuotes() {
+/**
+ * Heading, lead and the quote set are props so /client-portal can run the same
+ * row under its own argument. Defaults are /ai-app-builder's, so that page
+ * calls this with nothing and is unchanged.
+ *
+ * The row is built for three or four cards. Fewer than three and the
+ * grow-to-3 ratio has nothing to take width from; more than four and a closed
+ * card is too narrow for a name and a firm to set on two lines.
+ */
+export function BuilderCustomerQuotes({
+  heading = "Firms already building",
+  body,
+  quotes = QUOTES,
+}: {
+  heading?: string;
+  /** A lead under the heading, where a page's brief calls for one. */
+  body?: string;
+  quotes?: CustomerQuote[];
+} = {}) {
   // WHICH CARD THE ROW RESTS ON, as an index into QUOTES.
   //
   // It used to rest on the first card, always: `:not(:hover) > li:first-child`
@@ -133,7 +161,10 @@ export function BuilderCustomerQuotes() {
     // The measure and rhythm BuilderTemplates uses, so the two sections either
     // side of the divider between them sit on one column.
     <section className="mx-auto max-w-[1200px] px-6 py-14 md:px-10 md:py-20">
-      <h2 className="type-h3 text-balance">Firms already building</h2>
+      <h2 className="type-h3 text-balance">{heading}</h2>
+      {body ? (
+        <p className="mt-4 max-w-2xl text-muted-foreground">{body}</p>
+      ) : null}
 
       {/* BELOW `md`, THE SAME FOUR AS AN ACCORDION.
           Hover is not a thing a phone has, so the row's reveal cannot carry
@@ -144,7 +175,7 @@ export function BuilderCustomerQuotes() {
           phone has. It is a separate component because it needs state, and
           keeping it out of this file leaves the `md`-and-up row below
           server-rendered and pure CSS, which is what it was built to be. */}
-      <BuilderCustomerQuotesStack quotes={QUOTES} />
+      <BuilderCustomerQuotesStack quotes={quotes} />
 
       {/* THE ROW, `md` AND UP ONLY. `hidden md:flex` rather than the old
           `flex md:flex-row`: the stack above now owns every width below `md`,
@@ -164,7 +195,7 @@ export function BuilderCustomerQuotes() {
         // only thing growing.
         className="mt-10 hidden md:mt-12 md:flex md:h-[400px] md:flex-row md:gap-3 md:[&:not(:hover)>li[data-rest]]:grow-[3] md:[&:not(:hover)>li[data-rest]_blockquote]:mt-5 md:[&:not(:hover)>li[data-rest]_blockquote]:max-h-40 md:[&:not(:hover)>li[data-rest]_blockquote]:translate-y-0 md:[&:not(:hover)>li[data-rest]_blockquote]:opacity-100"
       >
-        {QUOTES.map((q, i) => (
+        {quotes.map((q, i) => (
           <li
             key={q.firm}
             // onMouseEnter, not onMouseOver: the latter fires again for every
@@ -205,19 +236,16 @@ export function BuilderCustomerQuotes() {
                   (capital-one, advertai) with a trim off each side, which a
                   centred studio portrait survives. Nothing here is ever asked
                   to show a head-and-shoulders photograph in a wide band. */}
-              <div className="relative size-[72px] shrink-0 overflow-hidden rounded-lg bg-muted [[data-theme=dark]_&]:bg-white/[0.06]">
-                <Image
-                  src={q.image}
-                  alt=""
-                  fill
-                  // Declared well above the 72px box: object-cover scales by
-                  // the short side, and a retina screen doubles it again. The
-                  // shared Testimonials portrait documents the same trap.
-                  sizes="160px"
-                  quality={90}
-                  className="object-cover object-top"
-                />
-              </div>
+              {/* The logo tile and the portrait both live in QuoteThumb,
+                  shared with the phone accordion. Padded so a wordmark does
+                  not run to the tile's edges. */}
+              <QuoteThumb
+                logoSlug={q.logoSlug}
+                image={q.image}
+                className="size-[72px] rounded-lg"
+                logoPadding="p-3.5"
+                sizes="160px"
+              />
 
               {/* ONLY OPACITY AND TRANSFORM ARE TRANSITIONED. The max-height
                   and the margin still change — they are what keeps a closed

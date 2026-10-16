@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Dark theme, except inside a .light-island (see that rule below). */
+@custom-variant dark-ui (&:where([data-theme="dark"] *):not(:where(.light-island, .light-island *)));
+
 @font-face {
   font-family: "PP Mori";
   src: url("/fonts/PPMori-Regular.otf") format("opentype");
@@ -95,6 +98,73 @@
   --mock-warning-fg: #8f6a12;
   --mock-negative-bg: #fbeceb;
   --mock-negative-fg: #b8443a;
+  /* The fourth of the family, for a state that is neither good nor bad but
+     wants picking out — the "New" badge on the support card's request row.
+     Same wash-plus-ink shape as the three above, cut in the blue the mocks
+     already use for accent (--mock-accent-bg). */
+  --mock-info-bg: #e7edfd;
+  --mock-info-fg: #2f5bc4;
+
+  /* ── Identity tints for a default avatar ───────────────────────────────
+     The tile a client record wears before anyone uploads a logo, which is
+     most of them. Three pairs, because a column of identical grey tiles is
+     the one place in these mocks where colour is doing a job rather than
+     decorating: an avatar's colour is how you tell one record from the next
+     at a glance, which is why every product that draws initials picks a hue
+     per record.
+
+     IDENTITY, NOT STATUS, and that is why they are their own family rather
+     than the status pills reused. --mock-positive-* is green because green
+     means done; a green avatar on a project card would read as a finished
+     project rather than as a client called Cascade. These three carry no
+     meaning beyond "not the other two", so the hues are chosen to be
+     distinguishable at 14px and nothing else.
+
+     Same ground/ink shape as the status pills: a wash with its own ink on
+     top, light here, translucent-on-desaturated in dark. */
+  --mock-avatar-a-bg: #e7edfd;
+  --mock-avatar-a-fg: #2f5bc4;
+  --mock-avatar-b-bg: #f0e8fb;
+  --mock-avatar-b-fg: #5b3bbd;
+  --mock-avatar-c-bg: #e2f0e9;
+  --mock-avatar-c-fg: #1f6f4a;
+
+  /* The mask that ends the problem section's screen pair on the tray's right
+     edge. A variable rather than a constant in the component, because it has
+     to be able to say "nothing" per theme and an inline style cannot. See the
+     dark branch for why it does. */
+  --portal-screen-fade: linear-gradient(
+    to right,
+    #000 0 90%,
+    rgba(0, 0, 0, 0.72) 95%,
+    rgba(0, 0, 0, 0.3) 98%,
+    transparent 100%
+  );
+
+  /* THE SAMPLE FIRM'S OWN COLOUR — the periwinkle every mock means when it
+     shows "your brand": the logo tile on the branded sign-in, that screen's
+     primary button, and the same pair on the frictionless card's sign-in.
+     It agrees with whole-stack's brand-colour swatch (#5c78b9), which is
+     where it comes from.
+
+     A token rather than a constant in one component, because two screens on
+     one page now wear it and a firm whose colour differs between two shots of
+     its own portal is not a firm. --mock-firm-ink is what sits ON it, white
+     in both themes: the slab is the client's colour, and type that flipped
+     with our theme would be reading the wrong thing off it. */
+  --mock-firm: #5c78b9;
+  --mock-firm-ink: #ffffff;
+
+  /* LEDGERLINE, the accounting page's fictional firm, in its own palette:
+     sage, butter, clay, cobalt and a soft black. Its own tokens rather than
+     --mock-firm / --mock-brand, which other pages' firms wear. A brand's
+     colours do not move with our theme, so dark repeats these values — they
+     are declared there too only so each theme's block stays complete. */
+  --ledgerline-sage: #94b8b0;
+  --ledgerline-butter: #ecdf8f;
+  --ledgerline-clay: #5b3626;
+  --ledgerline-cobalt: #2f6fc6;
+  --ledgerline-ink: #161616;
 
   /* A quieter cut of the positive/warning pair, for the one mock that shows
      several status pills at once.
@@ -228,6 +298,10 @@
     transparent 100%
   );
   --mock-ink: #101114;
+  /* The one FILLED button inside a mock — the sign-in's "email me a link".
+     Light is --mock-ink's own value, so this theme is unchanged; dark is
+     where they part, and the dark block says why. */
+  --mock-cta: #101114;
   --mock-ink-soft: #6b7079;
   /* The resting rows of a mock nav rail — one rung below --mock-ink-soft.
      A rail is a list of places you are NOT, and in the Add App shot the open
@@ -244,6 +318,22 @@
      so it stays a dark slab in both themes; dark drops it below the window so
      it still reads as a separate object rather than merging with it. */
   --mock-brand: #171717;
+
+  /* The CLIENT-FACING slab only — the branded sidebar in the hero's client
+     view and in the journey rail's Track card.
+
+     IT CARRIES COLOUR IN BOTH THEMES NOW. It was --mock-brand's own #171717
+     here, so light showed a near-black rail where dark showed a periwinkle
+     one — the same firm's portal in two different colours depending on the
+     reader's theme, on the one element whose whole job is to say the portal
+     carries the firm's brand. A firm's colour does not change with our theme.
+
+     Same recipe as dark's, against light's own slab value: the site's Haze
+     mixed most of the way into near-black. Plainly a colour, nowhere near a
+     glare, no new hue in the palette, and white type still sits on it at
+     roughly 7:1. --mock-brand is untouched — that one is also a 15px glyph on
+     the invoice mark and the comparison nav, and a slab is not a glyph. */
+  --mock-brand-slab: color-mix(in oklab, var(--mock-accent-bg) 30%, #171717);
 
   /* macOS window buttons, for a mock that draws a browser window. Deliberately
      NOT redefined in the dark block: these are the operating system's own
@@ -429,6 +519,52 @@
   --mock-warning-fg: #cdb37a;
   --mock-negative-bg: rgba(224, 122, 113, 0.14);
   --mock-negative-fg: #d9928b;
+  /* See --mock-info-bg in :root. Translucent ground and a desaturated blue
+     ink, like the three pills above, so it sits on a dark panel without
+     glowing. */
+  --mock-info-bg: rgba(125, 164, 255, 0.16);
+  --mock-info-fg: #9ab6f5;
+
+  /* See --mock-avatar-a-bg in :root. Translucent grounds and desaturated ink,
+     like the status pills above, so three coloured tiles on a near-black card
+     read as tinted rather than as three lights. */
+  --mock-avatar-a-bg: rgba(125, 164, 255, 0.18);
+  --mock-avatar-a-fg: #9ab6f5;
+  --mock-avatar-b-bg: rgba(179, 164, 247, 0.18);
+  --mock-avatar-b-fg: #b7a9f3;
+  --mock-avatar-c-bg: rgba(141, 206, 170, 0.16);
+  --mock-avatar-c-fg: #8fc9a9;
+
+  /* NO FADE IN DARK. This is a mask, so it takes the screens to transparent
+     and whatever is behind them shows through — which used to be a dark tray
+     and is now #F5F5F0 paper. Fading a near-black screen out onto near-white
+     paper is not a crop, it is a pale smear across the right of the picture,
+     the same thing the hero's edge ramps were doing before they came off. A
+     hard crop against the tray's edge is the honest end: these are windows
+     onto screens that continue, and an edge says so. Light keeps the ramp,
+     where the screens and the tray are a step apart rather than opposites. */
+  --portal-screen-fade: none;
+
+  /* See --mock-firm in :root. A step and a half lighter than light's #5c78b9,
+     which is the same move --mock-gantt-* makes and for the same reason: a
+     mid-tone picked against a white screen sits heavy on --mock-window, and
+     the one object carrying the firm's branding was reading as a blue-grey
+     rather than as a colour. The hue does not move, so the mark is the same
+     periwinkle in either theme — only its value is. */
+  --mock-firm: #7389d6;
+  --mock-firm-ink: #ffffff;
+
+  /* See --ledgerline-* in :root. Identical on purpose — the firm's colours —
+     EXCEPT CLAY, which is the portal sidebar's ground and is NOT BROWN IN
+     DARK. Any brown, at light's value or lifted, read as mud against the
+     #212121 pane and the near-black page. Dark takes a deep cut of the
+     firm's own sage instead, so the sidebar is still Ledgerline's colour —
+     its mark is sage — and white nav type clears 9:1 on it. */
+  --ledgerline-sage: #94b8b0;
+  --ledgerline-butter: #ecdf8f;
+  --ledgerline-clay: #2c4f49;
+  --ledgerline-cobalt: #2f6fc6;
+  --ledgerline-ink: #161616;
 
   /* See --mock-positive-muted-bg in :root. Same job, dark's own values.
 
@@ -531,6 +667,14 @@
   );
   --mock-ink: #ededed;
   --mock-ink-soft: #9a9a9a;
+  /* A FILL IS NOT TYPE, and it cannot take type's value. --mock-ink is
+     #ededed because that is what body copy needs to read on near-black; the
+     same value spread across a 320x44 button is a panel of near-white on a
+     #212121 card — the brightest object on the whole screen, and brighter
+     than the mark and the heading it is meant to sit under. Stepped down far
+     enough to stop glaring, still plainly the primary action, and the dark
+     label on it (--mock-window) clears 9:1. */
+  --mock-cta: #d0d0d0;
   /* Dark's own value for the resting nav rows, measured on the #1c1c1c rail
      rather than converted from light's. Same job and the same ratio there —
      2.9:1 — which in dark is a bigger drop in number than it looks, because
@@ -541,6 +685,23 @@
      has to stay a distinct object, which it cannot do at #171717 against a
      #212121 panel. */
   --mock-brand: #121212;
+
+  /* THE CLIENT SLAB CARRIES COLOUR IN DARK. At --mock-brand #121212 on a
+     #191919 card the sidebar read as ABSENCE rather than as a brand — a hole
+     in the card — which is the one thing a screen captioned "your brand" must
+     not do. A firm's portal colour cannot be shown by drawing nothing.
+
+     Scoped to this token rather than moved into --mock-brand, which is also
+     the branded nav on /ai-app-builder, the comparison mocks and the invoice
+     mark; none of those were asked for and a slab is not a 15px glyph.
+
+     DEEP, AND DERIVED. A saturated blue was tried here before and taken out
+     for good reason: a slab is a large flat FIELD, and a value that is a
+     pleasant accent on a chip glares at 164x300 against near-black. So this
+     is the site's own Haze mixed most of the way into the near-black it
+     replaces — plainly a colour, nowhere near a glare, and not a new hue
+     entering the palette. White type sits on it at roughly 7:1. */
+  --mock-brand-slab: color-mix(in oklab, var(--mock-accent-bg) 30%, #121212);
 
   /* The masthead on the dark ground: the page's own black, with the ink at full
      white rather than the softened --foreground the body copy uses, because the
@@ -877,6 +1038,21 @@ textarea:-webkit-autofill:focus {
   --muted: #f5f5f5;
   --muted-foreground: #737373;
   --border: #e5e5e5;
+}
+
+/* A light island: a surface that stays light in both themes, for a screen
+   drawn on artwork that does not flip, like the comparison heroes' brand
+   gradient. Re-points the page tokens to their light values; pair it with
+   the dark-ui variant below for anything that hardcodes a dark override. */
+.light-island {
+  --background: #ffffff;
+  --foreground: #101114;
+  --muted: #f6f7f9;
+  --muted-foreground: #6b7079;
+  --border: #e8e9ec;
+  --card: #ffffff;
+  --card-foreground: #0a0a0a;
+  color-scheme: light;
 }
 
 /* Announcement bar follows the theme. Light is a clean white bar; dark is a
@@ -1503,22 +1679,33 @@ html:not([data-theme="dark"]) .v63-gradient-border:focus-within::before {
 }
 /* Describe-step mock ring: a continuous colour loop (no transparent arc) so the
    small mock's border always reads as coloured and never washes out to white.
-   Scoped like the light override above so it wins on specificity + order. */
+   Scoped like the light override above so it wins on specificity + order.
+
+   THE TWO STOPS ARE TOKENS, with each theme's own pair as the default. The
+   values are unchanged — deep blue/green on a light ground, pale blue/lime on
+   a dark one, which is the same hue at the value its ground can carry.
+
+   They are tokens because one box now breaks the rule that "dark theme" and
+   "dark ground" are the same thing: the hero's prompt card is #FBFBF5 paper in
+   dark (see PAPER_LADDER in builder-hero-visual), so the pale pair meant for
+   near-black was laying a near-white ring on near-white card and the outline
+   all but disappeared. That box sets the pair back to the light-ground values
+   for itself. Every other ring resolves the default and does not move. */
 html:not([data-theme="dark"]) .v63-ring-solid::before {
   background: conic-gradient(
       from var(--v63-angle),
-      #6f96f0 0deg,
-      #93c53a 180deg,
-      #6f96f0 360deg
+      var(--v63-ring-a, #6f96f0) 0deg,
+      var(--v63-ring-b, #93c53a) 180deg,
+      var(--v63-ring-a, #6f96f0) 360deg
     )
     border-box;
 }
 html[data-theme="dark"] .v63-ring-solid::before {
   background: conic-gradient(
       from var(--v63-angle),
-      #9fb0e4 0deg,
-      #cfe985 180deg,
-      #9fb0e4 360deg
+      var(--v63-ring-a, #9fb0e4) 0deg,
+      var(--v63-ring-b, #cfe985) 180deg,
+      var(--v63-ring-a, #9fb0e4) 360deg
     )
     border-box;
 }
@@ -4743,4 +4930,17 @@ html:not([data-authed]) .auth-only {
      above. There the ring is the only thing separating a white field from a
      white page, so it is load-bearing in a way it never was here. */
   display: none;
+}
+
+/* The Assembly mark's bars lighting in turn — the Plan card's build loader on
+   the agency page. Opacity only, so it is the same in both themes. */
+@keyframes asm-build {
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+  35%,
+  65% {
+    opacity: 1;
+  }
 }

@@ -143,12 +143,16 @@ function FAQItem({
   variant = "cards",
   compactQuestions = false,
   dottedRules = false,
+  narrowAnswer = false,
+  justifyAnswers = false,
 }: FAQEntry & {
   open: boolean;
   onToggle: () => void;
   variant?: FAQVariant;
   compactQuestions?: boolean;
   dottedRules?: boolean;
+  narrowAnswer?: boolean;
+  justifyAnswers?: boolean;
 }) {
   // Controlled by the parent so only one answer is open at a time (opening one
   // closes the others). Toggles on click only — hover-to-open made rows pop open
@@ -178,8 +182,16 @@ function FAQItem({
               ? // pl-3 matches the question's own inset (see the button's
                 // px-3) so the answer starts on the same vertical as the
                 // question above it. The right inset is the question's 12px
-                // plus the 40px of measure the prose already kept.
-                "space-y-4 pb-6 pl-3 pr-[52px] pt-2"
+                // plus 40px more, holding the prose to a comfortable measure
+                // in a list that runs the width of the page.
+                //
+                // `narrowAnswer` drops those 40px, for a list in a column
+                // narrow enough that they read as the answer stopping short
+                // of its own row rather than as a trim — /client-portal's
+                // trust section is half a two-column grid, where the 52px is
+                // an eighth of the measure.
+
+                `space-y-4 pb-6 pl-3 pt-2 ${narrowAnswer ? "pr-3" : "pr-[52px]"}`
               : "space-y-4 px-5 pb-4 pt-2"
           }
         >
@@ -194,7 +206,25 @@ function FAQItem({
             answer.split("\n\n").map((para, i) => (
               <p
                 key={i}
-                className="type-body whitespace-pre-line text-muted-foreground"
+                // JUSTIFIED BELOW sm ONLY, and hyphenated with it.
+                //
+                // A phone column is narrow enough that the rag on a paragraph
+                // this long is deep — several lines ending well short of the
+                // edge, against a row whose own rules run the full width.
+                //
+                // `hyphens-auto` is not optional alongside it: justification
+                // has nowhere to put the slack but the word spaces, and at
+                // this measure that opens rivers. Hyphenated, the breaks fall
+                // inside words and the spacing stays even. It needs the
+                // document's `lang`, which the root layout sets.
+                //
+                // Not from sm: the measure is wide enough there that the rag
+                // is shallow and justifying would be solving nothing.
+                className={`type-body whitespace-pre-line text-muted-foreground ${
+                  justifyAnswers
+                    ? "max-sm:hyphens-auto max-sm:text-justify"
+                    : ""
+                }`}
               >
                 {renderAnswer(para, links)}
               </p>
@@ -381,6 +411,8 @@ export function Accordion({
   compactQuestions = false,
   dottedRules = false,
   flushTop = true,
+  narrowAnswer = false,
+  justifyAnswers = false,
 }: {
   items: FAQEntry[];
   twoColumn: boolean;
@@ -398,6 +430,13 @@ export function Accordion({
    * above it keeps the padding, or the first question crowds whatever precedes.
    */
   flushTop?: boolean;
+  /**
+   * Drop the answer's extra right inset, for a list in a narrow column. See
+   * the inset itself in FAQItem.
+   */
+  narrowAnswer?: boolean;
+  /** Justify and hyphenate the answers below sm. See the class in FAQItem. */
+  justifyAnswers?: boolean;
 }) {
   const [openId, setOpenId] = useState<string | null>(null);
   const renderItem = (faq: FAQEntry) => (
@@ -407,6 +446,8 @@ export function Accordion({
       variant={variant}
       compactQuestions={compactQuestions}
       dottedRules={dottedRules}
+      narrowAnswer={narrowAnswer}
+      justifyAnswers={justifyAnswers}
       open={openId === faq.question}
       onToggle={() =>
         setOpenId((cur) => (cur === faq.question ? null : faq.question))
@@ -435,7 +476,21 @@ export function Accordion({
           // pushed back to the column's own edge, so the first letter of every
           // question still lines up with the heading. Without this the whole
           // list would sit indented from everything around it.
-          "-mx-3",
+          //
+          // NOT ON A PHONE, where the page gutter is 24px and the bleed ate
+          // half of it: the rules and the hover plate ran 12px past the
+          // measure everything else on the page keeps, so they sat closer to
+          // the screen edge than the heading above them.
+          //
+          // ONLY THE BLEED GOES. The row keeps its px-3, so the padding is
+          // inside the plate rather than outside it — which is the trade the
+          // stack list on /client-portal already made, for the same reason:
+          // without it the question starts on the plate's own edge and the
+          // chevron ends on it, and the row reads as text pushed up against
+          // the walls. The cost is that the questions are inset from the
+          // heading above them, and the plate having room is worth more than
+          // that alignment, since the plate is the thing you see move.
+          "-mx-3 max-sm:mx-0",
           flushTop ? "[&>div:first-child>button]:pt-0" : "",
           // Opening rule, so the list reads as bounded rather than as a stack
           // that happens to start. Only with the dotted treatment: a solid one
@@ -489,6 +544,7 @@ export function FAQ({
   variant = "divided",
   compactQuestions = false,
   dottedRules = true,
+  justifyAnswers = false,
 }: {
   heading?: string;
   items?: FAQEntry[];
@@ -502,6 +558,8 @@ export function FAQ({
    * while the full wording is still what the answer is filed under.
    */
   compactQuestions?: boolean;
+  /** Justify and hyphenate the answers below sm. See the class in FAQItem. */
+  justifyAnswers?: boolean;
 } = {}) {
   // Vercel-style: heading sits in a left column, the divided question list runs
   // down the right. The heading sticks so it stays with the list on long scrolls.
@@ -517,6 +575,7 @@ export function FAQ({
               twoColumn
               variant={variant}
               compactQuestions={compactQuestions}
+              justifyAnswers={justifyAnswers}
             />
           </div>
         </Section>
@@ -538,6 +597,7 @@ export function FAQ({
             compactQuestions={compactQuestions}
             dottedRules={dottedRules}
             flushTop={!dottedRules}
+            justifyAnswers={justifyAnswers}
           />
         </div>
       </Section>
@@ -559,6 +619,7 @@ export function FAQ({
           twoColumn={twoColumn}
           variant={variant}
           compactQuestions={compactQuestions}
+          justifyAnswers={justifyAnswers}
         />
       </div>
     </Section>

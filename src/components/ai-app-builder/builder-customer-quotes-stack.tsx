@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
+import { QuoteThumb } from "./quote-thumb";
 import Link from "next/link";
 import type { CustomerQuote } from "./builder-customer-quotes";
 
@@ -91,19 +91,15 @@ export function BuilderCustomerQuotesStack({
               {/* 48px, not the row's 72px. Closed, this is a list of four
                   rows that should fit a screen together; the portrait is
                   identifying the speaker here rather than being the card's
-                  own image. Same square crop, so the same sources are safe. */}
-              <div className="relative size-12 shrink-0 overflow-hidden rounded-lg bg-muted [[data-theme=dark]_&]:bg-white/[0.06]">
-                <Image
-                  src={q.image}
-                  alt=""
-                  fill
-                  // Declared above the box: object-cover scales by the short
-                  // side and a retina screen doubles it again.
-                  sizes="120px"
-                  quality={90}
-                  className="object-cover object-top"
-                />
-              </div>
+                  own image. Same square crop, so the same sources are safe, and the
+                  same logo tile when the page asks for logos. */}
+              <QuoteThumb
+                logoSlug={q.logoSlug}
+                image={q.image}
+                className="size-12 rounded-lg"
+                logoPadding="p-2"
+                sizes="120px"
+              />
 
               <span className="min-w-0 flex-1">
                 <span className="block text-[15px] leading-snug text-foreground">
@@ -161,7 +157,7 @@ export function BuilderCustomerQuotesStack({
                     off the centre of the 32px hit area it sits in. */}
                 <span
                   aria-hidden
-                  className="text-[20px] leading-none transition-transform duration-200 group-hover/story:translate-x-0.5 motion-reduce:transition-none"
+                  className="text-[16px] leading-none transition-transform duration-200 group-hover/story:translate-x-0.5 motion-reduce:transition-none"
                 >
                   →
                 </span>

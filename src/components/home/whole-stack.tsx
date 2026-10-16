@@ -2695,7 +2695,14 @@ export function WholeStack() {
               // is, and it's the same tone the site's other hover rows use
               // (foreground at ~4% in light, white at ~5% over the near-black
               // ground, where a foreground tint would be invisible).
-              className="group flex w-full items-baseline gap-5 rounded-lg px-3 py-4 text-left transition-colors hover:bg-foreground/[0.04] [[data-theme=dark]_&]:hover:bg-white/[0.05]"
+              // A dotted rule under every row but the last, the same treatment
+              // the client portal's collapsible uses. Drawn as a pseudo-element
+              // rather than a border: `border-dotted` at 1px sets its dots one
+              // pixel apart and reads as a broken hairline, where 1.5px marks
+              // on a 6px pitch read as dots. Inset to the row's own padding, so
+              // the rule starts where the label does and the hover fill still
+              // breathes past it.
+              className="group relative flex w-full items-baseline gap-5 rounded-lg px-3 py-4 text-left transition-colors after:absolute after:inset-x-3 after:bottom-0 after:h-px after:bg-[repeating-linear-gradient(to_right,var(--border)_0_1.5px,transparent_1.5px_6px)] after:content-[''] last:after:hidden hover:bg-foreground/[0.04] [[data-theme=dark]_&]:hover:bg-white/[0.05]"
             >
               <span className="type-body flex-1 text-foreground">
                 {p.short}

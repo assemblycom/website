@@ -5,6 +5,7 @@ import {
   IconDocuments,
   IconFile,
   IconHouse,
+  IconMenu,
 } from "@/components/home/mock-icons";
 import {
   MOCK_PRIMARY,
@@ -88,10 +89,13 @@ function NavRow({
       // of the nav is open. 9% lands near #272727: a +21 step off the slab,
       // still plainly the picked row at a 24px rung, no longer the first thing
       // the eye goes to. Light is untouched.
-      className={`flex items-center gap-2 rounded-[4px] px-2 py-[6px] ${MOCK_PRIMARY} ${
+      // Rest rows answer the cursor the way the workspace sidebar's do: full
+      // ink and a fill a step under the picked row's, so hover never reads as
+      // a second selection.
+      className={`flex items-center gap-2 rounded-[4px] px-2 py-[6px] transition-colors ${MOCK_PRIMARY} ${
         active
           ? "bg-white/15 text-white [[data-theme=dark]_&]:bg-white/[0.09]"
-          : "text-white/70"
+          : "text-white/70 hover:bg-white/[0.08] hover:text-white [[data-theme=dark]_&]:hover:bg-white/[0.05]"
       }`}
     >
       <span className="flex shrink-0 items-center [&>svg]:size-[12px]">
@@ -104,6 +108,8 @@ function NavRow({
 
 export function BrandedPortalVisual({
   brand = "Brandmages",
+  brandMark = <IconBrandMark className="size-[10px]" />,
+  brandColor,
   stock = STOCK,
   apps = ADDED,
   landOnHover = [],
@@ -111,8 +117,15 @@ export function BrandedPortalVisual({
   children,
   quietPane = false,
   appHeader = true,
+  navOnPhone = true,
+  appsBreak = true,
+  headerAction,
 }: {
   brand?: string;
+  /** The firm's mark, on the white tile beside its name. */
+  brandMark?: React.ReactNode;
+  /** The firm's nav colour, in place of --mock-brand's near-black slab. */
+  brandColor?: string;
   /** The portal's built-in rows. PORTAL_STOCK_CORE drops Billing. */
   stock?: PortalApp[];
   /** The firm's own apps, under the stock rows. The last one is open. */
@@ -125,7 +138,7 @@ export function BrandedPortalVisual({
    */
   landOnHover?: PortalApp[];
   /** The open app's name, in its header. */
-  title?: string;
+  title?: React.ReactNode;
   /** The open app's screen. Defaults to the document checklist below. */
   children?: React.ReactNode;
   /**
@@ -146,6 +159,22 @@ export function BrandedPortalVisual({
    * the eye should have been travelling to the nav.
    */
   appHeader?: boolean;
+  /**
+   * Keeps the branded nav below `md`. Off where the shot is a page's hero and
+   * the pane is the subject: at a phone's ~300px window the 160px nav took
+   * half of it and left the open app a column too narrow to set a line in.
+   * On by default, so every other caller is unchanged.
+   */
+  navOnPhone?: boolean;
+  /**
+   * Sets the firm's apps a step clear of the stock rows. Off where the nav is
+   * one list rather than a story about an app joining it — the agency hero,
+   * whose apps are simply what that portal has, and where the break read as
+   * stray spacing.
+   */
+  appsBreak?: boolean;
+  /** The open app's own control, at the right of its title bar. */
+  headerAction?: React.ReactNode;
 } = {}) {
   return (
     <div
@@ -172,10 +201,13 @@ export function BrandedPortalVisual({
       {/* The firm's colour, not ours. --mock-brand is the one token that holds
           its value across both themes, because it stands for the client's own
           brand slab rather than for our chrome. */}
-      <div className="flex w-[160px] shrink-0 flex-col gap-[2px] bg-[var(--mock-brand)] px-2.5 py-3">
+      <div
+        className={`flex w-[160px] shrink-0 flex-col gap-[2px] bg-[var(--mock-brand)] px-2.5 py-3 ${navOnPhone ? "" : "max-md:hidden"}`}
+        style={brandColor ? { backgroundColor: brandColor } : undefined}
+      >
         <span className="flex items-center gap-2 px-2 pb-3">
           <span className="flex size-[18px] items-center justify-center rounded-[4px] bg-white text-black">
-            <IconBrandMark className="size-[10px]" />
+            {brandMark}
           </span>
           <span className={`truncate text-white ${MOCK_PRIMARY}`}>{brand}</span>
           {/* No chevron. It is the workspace switcher's mark, and a switcher
@@ -199,7 +231,7 @@ export function BrandedPortalVisual({
             ones already there, so it should sit just clear of Files rather
             than across a gap from it. Still a break, because a row with no
             break at all is just a fifth stock row. */}
-        <div className="mt-2 flex flex-col gap-[2px]">
+        <div className={`${appsBreak ? "mt-2" : ""} flex flex-col gap-[2px]`}>
           {apps.map(({ icon, label }, i) => (
             <NavRow
               key={label}
@@ -316,10 +348,31 @@ export function BrandedPortalVisual({
         }`}
       >
         {appHeader ? (
-          <div className={`border-b px-5 py-3.5 ${LINE}`}>
-            <span className={`text-[color:var(--mock-ink)] ${MOCK_TITLE}`}>
-              {title}
+          <div
+            // Slimmer on a phone where the menu button leads it: the product's
+            // mobile bar is a single tight row, and at desktop padding plus
+            // a 24px button it took a sixth of a 420px shot.
+            className={`flex items-center justify-between gap-3 border-b px-5 py-3.5 ${navOnPhone ? "" : "max-md:px-4 max-md:py-2"} ${LINE}`}
+          >
+            <span className="flex min-w-0 items-center gap-2.5">
+              {/* Where the nav goes on a phone. A window that steps its nav
+                  aside below md still needs a way back to it, and the product
+                  puts a bordered menu button at the head of the title bar —
+                  without it the phone shot is an app with no portal around it. */}
+              {navOnPhone ? null : (
+                <span
+                  className={`flex size-[22px] shrink-0 items-center justify-center rounded-[4px] border text-[color:var(--mock-ink)] md:hidden ${LINE}`}
+                >
+                  <IconMenu className="size-[11px]" />
+                </span>
+              )}
+              <span
+                className={`min-w-0 truncate text-[color:var(--mock-ink)] ${MOCK_TITLE}`}
+              >
+                {title}
+              </span>
             </span>
+            {headerAction}
           </div>
         ) : null}
         {/* The default is three fields and nothing else. The app's content is
