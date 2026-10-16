@@ -691,3 +691,12 @@ export function IconBloomhouseMark({ className }: IconProps) {
     </svg>
   );
 }
+
+// The portal's phone menu button: the nav, folded away below md.
+export function IconMenu({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 16 16" className={className} {...STROKE}>
+      <path d="M2.75 4.5h10.5M2.75 8h10.5M2.75 11.5h10.5" />
+    </svg>
+  );
+}

@@ -599,7 +599,14 @@ export function DescribeCard({
       {!plain && (
         <div className="absolute -inset-px">
           <Image
-            src="/images/mocks/describe-phone.webp"
+            // The agency page's own still — a sunlit chair with a linen
+            // portfolio box — in place of the phone-on-sofa shot the other
+            // pages share.
+            src={
+              vertical === "agency"
+                ? "/images/mocks/describe-chair.webp"
+                : "/images/mocks/describe-phone.webp"
+            }
             alt=""
             fill
             sizes="(min-width: 1024px) 420px, 90vw"

@@ -5,6 +5,7 @@ import {
   IconDocuments,
   IconFile,
   IconHouse,
+  IconMenu,
 } from "@/components/home/mock-icons";
 import {
   MOCK_PRIMARY,
@@ -350,8 +351,23 @@ export function BrandedPortalVisual({
           <div
             className={`flex items-center justify-between gap-3 border-b px-5 py-3.5 ${LINE}`}
           >
-            <span className={`text-[color:var(--mock-ink)] ${MOCK_TITLE}`}>
-              {title}
+            <span className="flex min-w-0 items-center gap-2.5">
+              {/* Where the nav goes on a phone. A window that steps its nav
+                  aside below md still needs a way back to it, and the product
+                  puts a bordered menu button at the head of the title bar —
+                  without it the phone shot is an app with no portal around it. */}
+              {navOnPhone ? null : (
+                <span
+                  className={`flex size-[24px] shrink-0 items-center justify-center rounded-[4px] border text-[color:var(--mock-ink)] md:hidden ${LINE}`}
+                >
+                  <IconMenu className="size-[12px]" />
+                </span>
+              )}
+              <span
+                className={`min-w-0 truncate text-[color:var(--mock-ink)] ${MOCK_TITLE}`}
+              >
+                {title}
+              </span>
             </span>
             {headerAction}
           </div>
