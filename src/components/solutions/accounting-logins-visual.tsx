@@ -71,8 +71,8 @@ function SignInPrompt({
   className = "",
 }: LoginTool & { className?: string }) {
   return (
-    <div className={`flex items-center gap-2.5 md:gap-3 rounded-2xl bg-[var(--mock-window)] p-2 pr-3 shadow-[0_1px_2px_rgba(16,24,40,0.06),0_12px_28px_-14px_rgba(16,24,40,0.35)] ${className}`}>
-      <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-[var(--mock-well-2)] text-[color:var(--mock-ink)] md:size-10">
+    <div className={`flex items-center gap-2.5 md:gap-3 rounded-[10px] bg-[var(--mock-window)] p-2 pr-3 ${className}`}>
+      <span className="flex size-9 shrink-0 items-center justify-center rounded-[6px] bg-[var(--mock-well-2)] text-[color:var(--mock-ink)] md:size-10">
         {icon}
       </span>
       <span className="flex min-w-0 flex-1 flex-col gap-1.5">

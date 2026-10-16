@@ -1,13 +1,8 @@
 import { TypedAddress } from "@/components/comparison/typed-address";
-import {
-  IconApp,
-  IconBrandMark,
-  IconCheck,
-  IconCreditCard,
-  IconPenFilled,
-} from "@/components/home/mock-icons";
+import { IconBrandMark, IconCheck } from "@/components/home/mock-icons";
 import { GoogleGlyph } from "@/components/client-portal/frictionless-mocks";
 import { MOCK_PRIMARY } from "@/components/ui/mock-type";
+import { AppMarkGlyph, type AppMark } from "@/components/home/app-marks";
 import { PANEL_BG, PERIWINKLE } from "@/components/comparison/brand-panel";
 
 // The comparison pages' small card visuals: a photo or the brand gradient
@@ -16,24 +11,29 @@ import { PANEL_BG, PERIWINKLE } from "@/components/comparison/brand-panel";
 
 const LINE = "border-[var(--mock-line)]";
 const CARD_FRAME = `w-full max-w-[300px] rounded-[10px] border bg-[var(--mock-window)] text-[color:var(--mock-ink)] ${LINE}`;
-const CARD = `${CARD_FRAME} p-3.5`;
 
 /**
  * The three "why Assembly" cards. Each keeps the ground its better-fit card had
  * (laptop photo, brand gradient, office photo) and swaps in a small piece of
  * the pillar's own UI, so the claim reads off the screen rather than a label.
  */
-const ROW = `flex items-center gap-2.5 border-t px-3.5 py-2.5 ${LINE}`;
 const MUTED = "text-[color:var(--mock-ink-soft)]";
 
-// The product's own sidebar glyphs, the set the Track card's rail draws.
-// The three glyphs fill their boxes by different amounts, so each takes the
-// box size that draws it at the same ~20px on screen.
-const CLIENT_APPS = [
-  { label: "Project tracker", icon: <IconApp className="size-8" /> },
-  { label: "Contracts", icon: <IconPenFilled className="size-7" /> },
-  { label: "Invoices", icon: <IconCreditCard className="size-7" /> },
-];
+// The brand's app marks, ink under a glass sheet, on a well-grey tile rather
+// than a white card: the marks carry their own white, and a white tile under
+// them flattened the sheet into the ground.
+//
+// `nudge` is optical centring, in px. On a light tile the white sheet all but
+// vanishes, so the eye centres the ink solid alone, and each mark's solid sits
+// 2-3px off its box's centre (measured at size-8). The nudge pulls the solid
+// back to the tile's middle; invoicing's sheet frosts the ink grey and still
+// reads, so it only takes the horizontal half.
+const CLIENT_APPS: { label: string; mark: AppMark; nudge: [number, number] }[] =
+  [
+    { label: "Project tracker", mark: "tasks", nudge: [-2, -2] },
+    { label: "Contracts", mark: "forms", nudge: [-2.5, -2] },
+    { label: "Invoices", mark: "invoicing", nudge: [-1.5, 0] },
+  ];
 
 /** Pillar 1: the firm's apps, as three app tiles and nothing more. */
 export function ClientAppsCardVisual() {
@@ -43,12 +43,14 @@ export function ClientAppsCardVisual() {
       className="absolute inset-0 flex select-none items-center justify-center gap-3 px-6"
       style={{ background: HOSTED_MVP_BG }}
     >
-      {CLIENT_APPS.map(({ label, icon }) => (
+      {CLIENT_APPS.map(({ label, mark, nudge: [x, y] }) => (
         <span
           key={label}
-          className={`flex size-16 items-center justify-center rounded-[16px] border bg-[var(--mock-window)] text-[color:var(--mock-ink-soft)] ${LINE}`}
+          className="flex size-16 items-center justify-center rounded-[16px] bg-[var(--mock-well-3)] shadow-[0_1px_2px_rgba(0,0,0,0.08),0_6px_16px_rgba(0,0,0,0.12)]"
         >
-          {icon}
+          <span style={{ transform: `translate(${x}px, ${y}px)` }}>
+            <AppMarkGlyph mark={mark} tint="ink" className="block size-8" />
+          </span>
         </span>
       ))}
     </div>
@@ -63,7 +65,9 @@ export function LoginsCardVisual() {
       className="absolute inset-0 flex select-none items-center justify-center px-6"
       style={{ background: PANEL_BG }}
     >
-      <div className={`${CARD} flex flex-col items-center text-center`}>
+      {/* No hairline: on the gradient the card's own white edge is enough,
+          and the line drew a second frame round it. */}
+      <div className="flex w-full max-w-[300px] flex-col items-center rounded-[10px] bg-[var(--mock-window)] p-3.5 text-center text-[color:var(--mock-ink)]">
         <span className="flex size-8 items-center justify-center rounded-[8px] bg-[#101114] text-white">
           <IconBrandMark className="size-[15px]" />
         </span>
@@ -86,11 +90,24 @@ export function LoginsCardVisual() {
   );
 }
 
+// Initials in the product's avatar tints, one per person, on the themed
+// --mock-avatar-* pairs so they flip with the theme.
 const CONTACTS = [
-  { initials: "MS", name: "Mary Sung", company: "Symphony" },
-  { initials: "TL", name: "Timothy Leclerc", company: "Wave" },
-  { initials: "KT", name: "Kenny Tse", company: "Godo" },
+  { initials: "MS", name: "Mary Sung", company: "Aria", tone: "a" },
+  { initials: "TL", name: "Tom Lewis", company: "Wave", tone: "b" },
+  { initials: "KT", name: "Kenny Tse", company: "Godo", tone: "c" },
 ];
+
+const AVATAR_TONES: Record<string, string> = {
+  a: "bg-[var(--mock-avatar-a-bg)] text-[color:var(--mock-avatar-a-fg)]",
+  b: "bg-[var(--mock-avatar-b-bg)] text-[color:var(--mock-avatar-b-fg)]",
+  c: "bg-[var(--mock-avatar-c-bg)] text-[color:var(--mock-avatar-c-fg)]",
+};
+
+// Someone at a laptop in a booth, cropped on the hands and keyboard: the
+// landscape photo is cut to the portrait card, so it is positioned left of
+// centre to keep the laptop in frame.
+const CRM_BG = "url(/images/mocks/crm-bg.webp) 68% center / cover";
 
 /** Pillar 3: one contact list behind every app. */
 export function CrmCardVisual() {
@@ -98,21 +115,26 @@ export function CrmCardVisual() {
     <div
       aria-hidden
       className="absolute inset-0 flex select-none items-center justify-center px-6"
-      style={{ background: PUBLIC_STORE_BG }}
+      style={{ background: CRM_BG }}
     >
-      <div className={`${CARD_FRAME} overflow-hidden`}>
-        <div className={`px-3.5 py-3 ${MOCK_PRIMARY}`}>Contacts</div>
-        {CONTACTS.map(({ initials, name, company }) => (
-          <div key={name} className={ROW}>
+      {/* Three contacts as three pills, each name with its company as a
+          tag beside it (the site's tag: mono, uppercase, rounded-md, well
+          ground), rather than one table with the company pushed right. */}
+      <div className="grid gap-2">
+        {CONTACTS.map(({ initials, name, company, tone }) => (
+          <div
+            key={name}
+            className="flex items-center gap-2.5 rounded-full bg-[var(--mock-window)] py-1.5 pl-1.5 pr-2.5 text-[color:var(--mock-ink)]"
+          >
             <span
-              className={`flex size-6 shrink-0 items-center justify-center rounded-full bg-[var(--mock-well-2)] text-[9.5px] leading-none ${MUTED}`}
+              className={`flex size-6 shrink-0 items-center justify-center rounded-full text-[9.5px] leading-none ${AVATAR_TONES[tone]}`}
             >
               {initials}
             </span>
-            <span className={`min-w-0 flex-1 truncate ${MOCK_PRIMARY}`}>
-              {name}
-            </span>
-            <span className={`shrink-0 ${MUTED} ${MOCK_PRIMARY}`}>
+            <span className={`whitespace-nowrap ${MOCK_PRIMARY}`}>{name}</span>
+            <span
+              className={`rounded-md bg-[var(--mock-well-2)] px-1.5 py-1 font-mono text-[10px] uppercase leading-none tracking-wide ${MUTED}`}
+            >
               {company}
             </span>
           </div>
@@ -298,10 +320,15 @@ export function CreditsCardVisual() {
               </span>
             </span>
           </div>
+          {/* Periwinkle, the fill the pillar's own credit meter carries, so
+              the card and the panel it opens onto draw the same bar. */}
           <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-[var(--mock-well-2)]">
             <div
-              className="h-full w-full origin-left rounded-full bg-[var(--mock-ink)] transition-[width] duration-700 ease-out group-hover/card:!w-full motion-reduce:transition-none"
-              style={{ width: `${(CREDITS_LEFT / CREDITS_TOTAL) * 100}%` }}
+              className="h-full w-full origin-left rounded-full transition-[width] duration-700 ease-out group-hover/card:!w-full motion-reduce:transition-none"
+              style={{
+                width: `${(CREDITS_LEFT / CREDITS_TOTAL) * 100}%`,
+                backgroundColor: PERIWINKLE,
+              }}
             />
           </div>
         </div>

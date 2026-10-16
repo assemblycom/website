@@ -663,7 +663,7 @@ export function PortalProblem({
                     href={quote.href}
                     className="transition-colors hover:text-foreground"
                   >
-                    {quote.attribution}
+                    <Attribution text={quote.attribution} />
                   </Link>
                 </figcaption>
               </div>
@@ -683,5 +683,23 @@ export function PortalProblem({
         ) : null}
       </Reveal>
     </section>
+  );
+}
+
+/**
+ * "Name, Role, Firm", with the role dropped on a phone: at that width the line
+ * wrapped onto a second row for a job title, when the name and the firm are
+ * what identify the speaker. Anything shorter than three parts is left whole.
+ */
+function Attribution({ text }: { text: string }) {
+  const parts = text.split(", ");
+  if (parts.length < 3) return <>{text}</>;
+  const [name, ...rest] = parts;
+  const firm = rest.pop();
+  return (
+    <>
+      {name}, <span className="max-md:hidden">{rest.join(", ")}, </span>
+      {firm}
+    </>
   );
 }

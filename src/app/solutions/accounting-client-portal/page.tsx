@@ -27,6 +27,7 @@ import { PortalTrust } from "@/components/client-portal/portal-trust";
 import { PortalPricing } from "@/components/client-portal/portal-pricing";
 import { BuilderCustomerQuotes } from "@/components/ai-app-builder/builder-customer-quotes";
 import { APP_URL, DEMO_URL, SIGNUP_URL } from "@/lib/constants";
+import { PANEL_BG } from "@/components/comparison/brand-panel";
 import { PAGE_SEO, pageMetadata } from "@/lib/seo";
 import { serializeJsonLd } from "@/lib/json-ld";
 
@@ -425,9 +426,9 @@ export default function AccountingClientPortalPage() {
           // answering them. That half is not drawn, because this page runs the
           // section `split` and the answer would land at thumbnail size beside
           // them — see accounting-logins-visual.tsx.
-          // The desk drawer behind the tiles: the paper version of the same
-          // pile of places things are kept.
-          trayImage="/images/solutions/accounting-desk.webp"
+          // The grained brand gradient behind the tiles, as the marketing
+          // agency page runs this section. It was a desk-drawer photograph.
+          trayBackground={PANEL_BG}
           screens={
             <div className="h-[340px] md:h-[480px]">
               <AccountingLoginsVisual />
@@ -562,7 +563,7 @@ export default function AccountingClientPortalPage() {
             },
             {
               quote:
-                "Every client said this was such an easy onboarding experience.",
+                "The client feedback has been overwhelmingly positive. My clients love the platform, and I love using it. The Tasks app and the entire process have been fantastic for our practice.",
               name: "Leah McCool",
               firm: "Orca Accounting",
               logoSlug: "orca-accounting",

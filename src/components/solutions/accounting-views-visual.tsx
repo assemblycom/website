@@ -11,11 +11,12 @@ import {
   IconGlobe,
   IconChevronDown,
   IconSearch,
+  IconMenu,
 } from "@/components/home/mock-icons";
 import { ViewToggle } from "@/components/ui/view-toggle";
 import { FootBlur } from "@/components/ui/foot-blur";
 import {
-  MOCK_MICRO,
+  MOCK_BODY,
   MOCK_PRIMARY,
   MOCK_SECONDARY,
 } from "@/components/ui/mock-type";
@@ -137,7 +138,7 @@ function ClientNav({ client }: { client: ClientView }) {
         <span className="flex size-[15px] items-center justify-center rounded-[3px] bg-[var(--ledgerline-sage)] text-[color:var(--ledgerline-ink)]">
           <IconLedgerline className="size-[10px]" />
         </span>
-        <span className={`truncate text-white ${MOCK_SECONDARY}`}>
+        <span className={`truncate text-white ${MOCK_PRIMARY}`}>
           Ledgerline
         </span>
       </span>
@@ -166,6 +167,32 @@ function ClientNav({ client }: { client: ClientView }) {
 }
 
 /**
+ * The pane's title row. On a phone the sidebar steps aside (see ClientNav), so
+ * the row leads with the bordered menu button the product puts there, in the
+ * product's tighter mobile bar — the marketing page's phone window, drawn by
+ * BrandedPortalVisual, does the same. Without it the phone shot is an app with
+ * no portal around it.
+ */
+function PaneTitleBar({ title }: { title: string }) {
+  return (
+    <div
+      className={`flex items-center gap-2.5 border-b px-4 py-3 max-md:py-2 ${LINE}`}
+    >
+      <span
+        className={`flex size-[22px] shrink-0 items-center justify-center rounded-[4px] border text-[color:var(--mock-ink)] md:hidden ${LINE}`}
+      >
+        <IconMenu className="size-[11px]" />
+      </span>
+      <span
+        className={`min-w-0 truncate text-[color:var(--mock-ink)] ${MOCK_BODY}`}
+      >
+        {title}
+      </span>
+    </div>
+  );
+}
+
+/**
  * The open app, beside the nav.
  *
  * Two lines a row and no thumbnail tile. The tile is the shape the file rows
@@ -177,11 +204,7 @@ function ClientNav({ client }: { client: ClientView }) {
 function AppPane({ title, rows }: { title: string; rows: PaneRow[] }) {
   return (
     <div className="flex min-w-0 flex-1 flex-col">
-      <div className={`border-b px-4 py-3 ${LINE}`}>
-        <span className={`text-[color:var(--mock-ink)] ${MOCK_PRIMARY}`}>
-          {title}
-        </span>
-      </div>
+      <PaneTitleBar title={title} />
       <div className="flex min-h-0 flex-1 flex-col">
         {/* NAME LEFT, STATE RIGHT — one line, not two. Stacked rows were for
             a pane 150px wide, where a name and its state could not share a
@@ -191,15 +214,15 @@ function AppPane({ title, rows }: { title: string; rows: PaneRow[] }) {
         {rows.map(({ name, meta }) => (
           <span
             key={name}
-            className={`flex items-center gap-4 border-b px-4 py-[11px] ${LINE}`}
+            className={`flex items-center gap-4 border-b px-4 py-[11px] transition-colors hover:bg-[var(--mock-well)] ${LINE}`}
           >
             <span
-              className={`min-w-0 flex-1 truncate text-[color:var(--mock-ink)] ${MOCK_SECONDARY}`}
+              className={`min-w-0 flex-1 truncate text-[color:var(--mock-ink)] ${MOCK_PRIMARY}`}
             >
               {name}
             </span>
             <span
-              className={`shrink-0 text-[color:var(--mock-ink-soft)] ${MOCK_MICRO}`}
+              className={`shrink-0 text-[color:var(--mock-ink-soft)] ${MOCK_SECONDARY}`}
             >
               {meta}
             </span>
@@ -238,16 +261,10 @@ function IconDownload({ className }: { className?: string }) {
 }
 
 /** A group's heading: its state, how many, and the fold. */
-function RequestGroup({
-  label,
-  count,
-}: {
-  label: string;
-  count: number;
-}) {
+function RequestGroup({ label, count }: { label: string; count: number }) {
   return (
     <span
-      className={`flex shrink-0 items-center gap-1.5 pb-2 pt-3.5 ${MOCK_SECONDARY}`}
+      className={`flex shrink-0 items-center gap-1.5 pb-2 pt-3.5 ${MOCK_PRIMARY}`}
     >
       {/* Plain ink for every group, Overdue included: the status chip's dot
           already says it is late, and a red heading was a second alarm. */}
@@ -276,18 +293,18 @@ function RequestCard({
         : "bg-[var(--mock-ink-soft)]";
   return (
     <div
-      className={`flex shrink-0 flex-col overflow-hidden rounded-[6px] border ${LINE}`}
+      className={`flex shrink-0 flex-col overflow-hidden rounded-[6px] border transition-colors hover:bg-[var(--mock-well)] ${LINE}`}
     >
       <span
         className={`flex items-center justify-between gap-3 border-b px-3.5 py-2.5 ${LINE}`}
       >
         <span
-          className={`min-w-0 truncate text-[color:var(--mock-ink)] ${MOCK_SECONDARY}`}
+          className={`min-w-0 truncate text-[color:var(--mock-ink)] ${MOCK_PRIMARY}`}
         >
           {title}
         </span>
         <span
-          className={`flex shrink-0 items-center gap-1 rounded-full border bg-[var(--mock-well-2)] px-2 py-[4px] text-[color:var(--mock-ink)] ${MOCK_MICRO} ${LINE}`}
+          className={`flex shrink-0 items-center gap-1 rounded-full border bg-[var(--mock-well-2)] px-2 py-[4px] text-[color:var(--mock-ink)] ${MOCK_SECONDARY} ${LINE}`}
         >
           <span className={`size-[5px] rounded-full ${dot}`} />
           {status}
@@ -310,47 +327,37 @@ function RequestCard({
 function RequestsPane({ title }: { title: string }) {
   return (
     <div className="flex min-w-0 flex-1 flex-col">
-      <div className={`border-b px-4 py-3 ${LINE}`}>
-        <span className={`text-[color:var(--mock-ink)] ${MOCK_PRIMARY}`}>
-          {title}
-        </span>
-      </div>
+      <PaneTitleBar title={title} />
       <div className="flex min-h-0 flex-1 flex-col px-4 pt-3">
         <span
-          className={`flex shrink-0 items-center gap-1.5 rounded-[4px] border px-2.5 py-[7px] text-[color:var(--mock-ink-soft)] ${MOCK_SECONDARY} ${LINE}`}
+          className={`flex shrink-0 cursor-text items-center gap-1.5 rounded-[4px] border px-2.5 py-[7px] text-[color:var(--mock-ink-soft)] transition-colors hover:border-[var(--mock-ink-soft)] ${MOCK_PRIMARY} ${LINE}`}
         >
           <IconSearch className="size-[11px] shrink-0" />
           Search documents...
         </span>
 
         <RequestGroup label="Overdue" count={1} />
-        <RequestCard
-          title="Sales tax forms"
-          status="Overdue"
-        >
+        <RequestCard title="Sales tax forms" status="Overdue">
           <span
-            className={`truncate text-[color:var(--mock-ink-soft)] ${MOCK_MICRO}`}
+            className={`truncate text-[color:var(--mock-ink-soft)] ${MOCK_SECONDARY}`}
           >
             One per state · Due Aug 15
           </span>
           <span
-            className={`w-fit rounded-[4px] border px-2.5 py-[6px] text-[color:var(--mock-ink)] ${MOCK_MICRO} ${LINE}`}
+            className={`w-fit cursor-pointer rounded-[4px] border bg-[var(--mock-window)] px-2.5 py-[6px] text-[color:var(--mock-ink)] transition-colors hover:bg-[var(--mock-well-2)] ${MOCK_SECONDARY} ${LINE}`}
           >
             Upload file
           </span>
         </RequestCard>
 
         <RequestGroup label="Accepted" count={1} />
-        <RequestCard
-          title="Inventory counts"
-          status="Accepted"
-        >
+        <RequestCard title="Inventory counts" status="Accepted">
           <span
-            className={`text-[color:var(--mock-ink-soft)] ${MOCK_MICRO}`}
+            className={`text-[color:var(--mock-ink-soft)] ${MOCK_SECONDARY}`}
           >
             Submitted file
           </span>
-          <span className="flex items-center gap-2.5 rounded-[4px] bg-[var(--mock-well)] px-2.5 py-2">
+          <span className="flex cursor-pointer items-center gap-2.5 rounded-[4px] bg-[var(--mock-well)] px-2.5 py-2 transition-colors hover:bg-[var(--mock-well-2)]">
             <span
               className={`flex size-[22px] shrink-0 items-center justify-center rounded-[4px] border bg-[var(--mock-window)] text-[color:var(--mock-ink-soft)] ${LINE}`}
             >
@@ -358,18 +365,18 @@ function RequestsPane({ title }: { title: string }) {
             </span>
             <span className="flex min-w-0 flex-1 flex-col gap-1">
               <span
-                className={`truncate text-[color:var(--mock-ink)] ${MOCK_SECONDARY}`}
+                className={`truncate text-[color:var(--mock-ink)] ${MOCK_PRIMARY}`}
               >
                 inventory.pdf
               </span>
               <span
-                className={`truncate text-[color:var(--mock-ink-soft)] ${MOCK_MICRO}`}
+                className={`truncate text-[color:var(--mock-ink-soft)] ${MOCK_SECONDARY}`}
               >
                 Submitted Jul 3
               </span>
             </span>
-            <IconEye className="size-[12px] shrink-0 text-[color:var(--mock-ink-soft)]" />
-            <IconDownload className="size-[12px] shrink-0 text-[color:var(--mock-ink-soft)]" />
+            <IconEye className="size-[12px] shrink-0 text-[color:var(--mock-ink-soft)] transition-colors hover:text-[color:var(--mock-ink)]" />
+            <IconDownload className="size-[12px] shrink-0 text-[color:var(--mock-ink-soft)] transition-colors hover:text-[color:var(--mock-ink)]" />
           </span>
         </RequestCard>
 
@@ -396,39 +403,35 @@ const RETURN_DOCS: { name: string; from: string; state: "in" | "needed" }[] = [
 function TaxReturnPane({ title }: { title: string }) {
   return (
     <div className="flex min-w-0 flex-1 flex-col">
-      <div className={`border-b px-4 py-3 ${LINE}`}>
-        <span className={`text-[color:var(--mock-ink)] ${MOCK_PRIMARY}`}>
-          {title}
-        </span>
-      </div>
+      <PaneTitleBar title={title} />
       <div className="flex min-h-0 flex-1 flex-col px-4 pt-4">
         {/* The one thing that is the client's to do, first on the screen.
             A five-step progress track sat above it and read as a chart with
             no labels that fit; the card says where the return is on its own. */}
         <div
-          className={`flex shrink-0 items-center gap-3 rounded-[6px] border px-3.5 py-3 ${LINE}`}
+          className={`flex shrink-0 items-center gap-3 rounded-[6px] border px-3.5 py-3 transition-colors hover:bg-[var(--mock-well)] ${LINE}`}
         >
           <span className="flex min-w-0 flex-1 flex-col gap-1.5">
             <span
-              className={`truncate text-[color:var(--mock-ink)] ${MOCK_SECONDARY}`}
+              className={`truncate text-[color:var(--mock-ink)] ${MOCK_PRIMARY}`}
             >
               Sign Form 8879
             </span>
             <span
-              className={`truncate text-[color:var(--mock-ink-soft)] ${MOCK_MICRO}`}
+              className={`truncate text-[color:var(--mock-ink-soft)] ${MOCK_SECONDARY}`}
             >
               $2,318 refund
             </span>
           </span>
           <span
-            className={`shrink-0 rounded-[4px] bg-[var(--mock-ink)] px-2.5 py-[6px] text-[color:var(--mock-window)] ${MOCK_MICRO}`}
+            className={`shrink-0 cursor-pointer rounded-[4px] bg-[var(--mock-ink)] px-2.5 py-[6px] text-[color:var(--mock-window)] transition-opacity hover:opacity-90 ${MOCK_SECONDARY}`}
           >
             Review
           </span>
         </div>
 
         <span
-          className={`mt-4 shrink-0 pb-2 text-[color:var(--mock-ink-soft)] ${MOCK_MICRO}`}
+          className={`mt-4 shrink-0 pb-2 text-[color:var(--mock-ink-soft)] ${MOCK_SECONDARY}`}
         >
           Your documents
         </span>
@@ -438,29 +441,29 @@ function TaxReturnPane({ title }: { title: string }) {
           {RETURN_DOCS.map(({ name, from, state }) => (
             <span
               key={name}
-              className={`flex shrink-0 items-center gap-3 border-b px-3.5 py-[9px] ${LINE}`}
+              className={`flex shrink-0 items-center gap-3 border-b px-3.5 py-[9px] transition-colors hover:bg-[var(--mock-well)] ${LINE}`}
             >
               <span className="flex min-w-0 flex-1 flex-col gap-1">
                 <span
-                  className={`truncate text-[color:var(--mock-ink)] ${MOCK_SECONDARY}`}
+                  className={`truncate text-[color:var(--mock-ink)] ${MOCK_PRIMARY}`}
                 >
                   {name}
                 </span>
                 <span
-                  className={`truncate text-[color:var(--mock-ink-soft)] ${MOCK_MICRO}`}
+                  className={`truncate text-[color:var(--mock-ink-soft)] ${MOCK_SECONDARY}`}
                 >
                   {from}
                 </span>
               </span>
               {state === "in" ? (
                 <span
-                  className={`shrink-0 rounded px-1.5 py-[3px] bg-[var(--mock-positive-bg)] text-[color:var(--mock-positive-fg)] ${MOCK_MICRO}`}
+                  className={`shrink-0 rounded px-1.5 py-[3px] bg-[var(--mock-positive-bg)] text-[color:var(--mock-positive-fg)] ${MOCK_SECONDARY}`}
                 >
                   Received
                 </span>
               ) : (
                 <span
-                  className={`shrink-0 rounded-[4px] border px-2.5 py-[5px] text-[color:var(--mock-ink)] ${MOCK_MICRO} ${LINE}`}
+                  className={`shrink-0 cursor-pointer rounded-[4px] border bg-[var(--mock-window)] px-2.5 py-[5px] text-[color:var(--mock-ink)] transition-colors hover:bg-[var(--mock-well-2)] ${MOCK_SECONDARY} ${LINE}`}
                 >
                   Upload
                 </span>
@@ -519,7 +522,7 @@ export function AccountingViewsVisual() {
             one. At the left it sits under the section's own copy and reads as
             the next line of it. The gap over the screen is this row, not a
             margin — see the same note in portal-problem. */}
-        <div className="hidden justify-end md:mb-3 md:flex">
+        <div className="hidden justify-end md:mx-auto md:mb-3 md:flex md:max-w-[1040px]">
           <ViewToggle
             onPaper
             options={names}
@@ -545,7 +548,14 @@ export function AccountingViewsVisual() {
           // the sidebar gone (see ClientNav). The client meets this screen on
           // their phone, so a phone-shaped window says so; bleeding a desktop
           // window off the right edge said "a crop of something wider".
-          className={`mock-edge flex h-full select-none overflow-hidden rounded-t-xl border border-b-0 bg-[var(--mock-window)] text-[color:var(--mock-ink)] max-md:mx-auto max-md:w-[260px] max-md:rounded-t-[22px] ${LINE}`}
+          //
+          // CAPPED AT 1040 FROM md, the marketing hero's window measure, with
+          // the toggle above on the same measure. Run to the full 1320 the
+          // rows were a long reach from name to state and the type sat small
+          // in a lot of window. Dark lifts --mock-ink-soft a step for this
+          // window only: the secondary lines were the hardest thing to read
+          // on the dark screen against the paper tray.
+          className={`mock-edge flex h-full select-none overflow-hidden rounded-t-xl border border-b-0 bg-[var(--mock-window)] text-[color:var(--mock-ink)] max-md:mx-auto max-md:w-[260px] max-md:rounded-t-[22px] md:mx-auto md:max-w-[1040px] [[data-theme=dark]_&]:[--mock-ink-soft:#b4b4b4] ${LINE}`}
         >
           <ClientNav client={client} />
           {client.requests ? (

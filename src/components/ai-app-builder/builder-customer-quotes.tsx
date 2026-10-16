@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
-import { CustomerLogo } from "@/components/customers/customer-logos";
+import { QuoteThumb } from "./quote-thumb";
 import { BUILDER_RAIL_HALO_WIDE } from "./builder-grid-rails";
 import { BuilderCustomerQuotesStack } from "./builder-customer-quotes-stack";
 import Link from "next/link";
@@ -237,53 +236,16 @@ export function BuilderCustomerQuotes({
                   (capital-one, advertai) with a trim off each side, which a
                   centred studio portrait survives. Nothing here is ever asked
                   to show a head-and-shoulders photograph in a wide band. */}
-              <div
-                className={`relative size-[72px] shrink-0 overflow-hidden rounded-lg ${
-                  q.logoSlug
-                    ? // A LOGO GETS A WHITE TILE IN BOTH THEMES, and a fixed
-                      // dark ink to sit on it. This is the one place on the
-                      // card that deliberately does not flip.
-                      //
-                      // bg-muted is the card's own family, so a dark wordmark
-                      // on it had no edge — the tile stopped reading as an
-                      // object and the mark looked like it had been printed on
-                      // the card. A photograph never has this problem because
-                      // it fills its own box.
-                      //
-                      // Fixed rather than themed because the pair has to hold
-                      // together: themed ink on a fixed tile inverts to white
-                      // wordmark on white in dark, which is the same bug the
-                      // other way round. The hairline keeps the tile's edge on
-                      // a light card, where white on near-white would float.
-                      //
-                      // Dark softens the white to #d4d4d0: pure white was the
-                      // brightest thing on a near-black page, glaring rather
-                      // than reading as a tile. The ink still clears 12:1.
-                      "bg-white text-[#1B1F24] ring-1 ring-inset ring-black/[0.06] [[data-theme=dark]_&]:bg-[#d4d4d0]"
-                    : "bg-muted [[data-theme=dark]_&]:bg-white/[0.06]"
-                }`}
-              >
-                {q.logoSlug ? (
-                  // Padded, because a wordmark run to the edges of a 72px tile
-                  // reads as cropped rather than as a logo. `fit` is the
-                  // contained mode CustomerLogo builds for exactly this.
-                  <div className="flex h-full w-full items-center justify-center p-3.5">
-                    <CustomerLogo slug={q.logoSlug} fit />
-                  </div>
-                ) : (
-                  <Image
-                    src={q.image}
-                    alt=""
-                    fill
-                    // Declared well above the 72px box: object-cover scales by
-                    // the short side, and a retina screen doubles it again. The
-                    // shared Testimonials portrait documents the same trap.
-                    sizes="160px"
-                    quality={90}
-                    className="object-cover object-top"
-                  />
-                )}
-              </div>
+              {/* The logo tile and the portrait both live in QuoteThumb,
+                  shared with the phone accordion. Padded so a wordmark does
+                  not run to the tile's edges. */}
+              <QuoteThumb
+                logoSlug={q.logoSlug}
+                image={q.image}
+                className="size-[72px] rounded-lg"
+                logoPadding="p-3.5"
+                sizes="160px"
+              />
 
               {/* ONLY OPACITY AND TRANSFORM ARE TRANSITIONED. The max-height
                   and the margin still change — they are what keeps a closed

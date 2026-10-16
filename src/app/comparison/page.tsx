@@ -4,7 +4,11 @@ import { ComparisonClosing } from "@/components/comparison/comparison-body";
 import { CompetitorMark } from "@/components/comparison/competitor-mark";
 import { GridRails, GRID_LINE } from "@/components/ui/grid-lines";
 import { cmsPageMetadata } from "@/lib/cms-page-metadata";
-import { getComparisonIndex, getComparisons } from "@/lib/comparisons";
+import {
+  getComparisonIndex,
+  getComparisons,
+  type ComparisonPage,
+} from "@/lib/comparisons";
 
 /**
  * The comparison index, on the same /comparison URL assembly.com serves it from
@@ -35,11 +39,45 @@ export async function generateMetadata(): Promise<Metadata> {
 const CARD =
   "rounded-lg border border-border bg-card transition-colors hover:bg-muted";
 
+/**
+ * The two comparisons built as pages of their own (/comparison/lovable and
+ * /comparison/base44) rather than from the frozen CMS set. They are listed
+ * here and not added to FROZEN_COMPARISONS, because that list also feeds the
+ * [slug] route's static params, which would then try to build the same two
+ * URLs a second time. Only the fields a card reads.
+ */
+const BUILT_COMPARISONS: Pick<
+  ComparisonPage,
+  "slug" | "name" | "summary" | "logo" | "smallLogo"
+>[] = [
+  {
+    slug: "lovable",
+    name: "Assembly vs. Lovable",
+    summary: "Learn how Assembly compares to Lovable",
+    smallLogo: {
+      url: "/images/comparison/lovable-mark.webp",
+      alt: "Lovable logo",
+    },
+  },
+  {
+    slug: "base44",
+    name: "Assembly vs. Base44",
+    summary: "Learn how Assembly compares to Base44",
+    smallLogo: {
+      url: "/images/comparison/base44-mark.png",
+      alt: "Base44 logo",
+    },
+  },
+];
+
 export default async function ComparisonIndexPage() {
-  const [index, comparisons] = await Promise.all([
+  const [index, frozen] = await Promise.all([
     getComparisonIndex(),
     getComparisons(),
   ]);
+  // The two AI-app-builder comparisons lead: they are the newest, and the ones
+  // the site's own nav and footer point at.
+  const comparisons = [...BUILT_COMPARISONS, ...frozen];
 
   const title = index?.title ?? FALLBACK_TITLE;
 

@@ -272,7 +272,7 @@ export default function MarketingAgencyClientPortalPage() {
                 size it was.
 
                 The heights are set so this tray finishes the same height as
-                the accounting page's hero tray — 385px on a phone, 439px from
+                the accounting page's hero tray — 304px on a phone, 439px from
                 md — since the two solutions pages are the same page with a
                 different vertical and a hero that is 130px taller on one of
                 them reads as a different template. They are the window only,
@@ -281,7 +281,7 @@ export default function MarketingAgencyClientPortalPage() {
                 tray is content-sized and so drifts a little between these two
                 widths, where this one is fixed — they are matched at the two
                 breakpoints the page actually declares, not at every width. */}
-            <div className="relative mx-auto h-[361px] max-w-[1040px] overflow-hidden rounded-t-xl md:h-[391px]">
+            <div className="relative mx-auto h-[280px] max-w-[1040px] overflow-hidden rounded-t-xl md:h-[391px]">
               <div className="absolute inset-x-0 top-0 h-[860px]">
                 <AgencyHeroVisual />
               </div>

@@ -111,7 +111,7 @@ function WiringSignInChat() {
               className="bg-clip-text text-transparent motion-reduce:![animation:none]"
               style={SHIMMER}
             >
-              Setting up sign-in
+              Setting up the login
             </span>
             <IconChevronDown className="size-[10px]" />
           </div>

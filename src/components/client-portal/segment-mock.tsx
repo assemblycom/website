@@ -838,7 +838,10 @@ function AppSwitcherHeader({
   );
 }
 
-const PRIMARY_BUTTON = `flex shrink-0 items-center gap-1 whitespace-nowrap rounded-[4px] bg-[var(--mock-ink)] px-2 py-[5px] text-[color:var(--mock-window)] ${MOCK_MICRO}`;
+// Dark drops the solid ink fill for a translucent light one with light type:
+// a solid #ededed (and then #c4c4c4) slab was the brightest thing on the dark
+// screen, brighter than the type it heads. Light keeps the ink button as it was.
+const PRIMARY_BUTTON = `flex shrink-0 items-center gap-1 whitespace-nowrap rounded-[4px] bg-[var(--mock-ink)] px-2 py-[5px] text-[color:var(--mock-window)] [[data-theme=dark]_&]:bg-white/[0.14] [[data-theme=dark]_&]:text-[color:var(--mock-ink)] ${MOCK_MICRO}`;
 
 /** A bordered control on the toolbar — a select, a filter, a toggle's frame. */
 const CONTROL = `flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-[4px] border px-2 py-[6px] text-[color:var(--mock-ink-soft)] ${MOCK_SECONDARY} ${LINE}`;

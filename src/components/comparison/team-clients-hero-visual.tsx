@@ -43,19 +43,19 @@ export function BuildChat() {
           /ai-app-builder. */}
       <div className="mt-5 flex min-h-0 flex-1 flex-col gap-3 overflow-hidden">
         <p
-          className={`max-w-[85%] self-end rounded-2xl bg-muted px-4 py-2.5 ${HERO_BODY} text-foreground dark-ui:bg-white/[0.08]`}
+          className={`max-w-[85%] self-end rounded-[10px] bg-muted px-4 py-2.5 ${HERO_BODY} text-foreground dark-ui:bg-white/[0.08]`}
         >
           Build a client onboarding wizard my clients can save progress in.
         </p>
         <p
-          className={`max-w-[85%] rounded-2xl bg-muted px-4 py-2.5 ${HERO_BODY} text-foreground dark-ui:bg-white/[0.08]`}
+          className={`max-w-[85%] rounded-[10px] bg-muted px-4 py-2.5 ${HERO_BODY} text-foreground dark-ui:bg-white/[0.08]`}
         >
           Here is the plan. Approve it and I will start building.
         </p>
-        {/* 12px, the mock family's window radius (the builder hero's WINDOW
-            draws the same card at the same step). At 16 it was rounder than
-            the window it sits in. */}
-        <div className="rounded-xl border border-border px-4 py-3 dark-ui:border-white/15">
+        {/* 10px, the comparison cards' mock radius, shared with the bubbles
+            above. At 12 and 16 the three read softer than the window they sit
+            in. */}
+        <div className="rounded-[10px] border border-border px-4 py-3 dark-ui:border-white/15">
           <p className={`${HERO_BODY} text-foreground`}>
             Client onboarding wizard
           </p>
@@ -83,12 +83,15 @@ export function BuildChat() {
   );
 }
 
+// A questionnaire part-filled: two answers in, and the next one empty with the
+// caret in it, so the card shows the client mid-way rather than a meter saying so.
 const CLIENT_FIELDS = [
   { label: "Full name", value: "Renee Castillo" },
   { label: "Email", value: "renee@magnaco.com" },
+  { label: "What should we help with first?", placeholder: "Type your answer" },
 ];
 const ONBOARDING_STEPS = 3;
-const ONBOARDING_DONE = 2;
+const ONBOARDING_STEP = 2;
 
 /**
  * The client side: the wizard the team just approved, as the client meets it.
@@ -113,43 +116,39 @@ export function ClientApp() {
         <p className={`mt-1 ${HERO_LABEL} text-muted-foreground`}>
           Pick up where you left off.
         </p>
-        <div className="mt-4 rounded-xl border border-border px-4 py-4 dark-ui:border-white/15">
+        {/* The inner card sits on a well tint so it reads as a panel inside
+            the window, and the fields go back to the window colour so they
+            read as inputs lifted off it. */}
+        <div className="mt-4 flex flex-1 flex-col rounded-xl border border-[var(--mock-line)] bg-[var(--mock-well)] px-4 py-4">
           <div className="flex items-baseline justify-between gap-3">
             <p className={`${HERO_BODY} text-foreground`}>Client onboarding</p>
-            <p className={`shrink-0 ${HERO_LABEL} text-muted-foreground`}>
-              Step {ONBOARDING_DONE} of {ONBOARDING_STEPS}
+            <p
+              className={`shrink-0 ${HERO_LABEL} tabular-nums text-muted-foreground`}
+            >
+              Step {ONBOARDING_STEP} of {ONBOARDING_STEPS}
             </p>
           </div>
-          <div className="mt-3 flex gap-1">
-            {Array.from({ length: ONBOARDING_STEPS }, (_, i) => (
-              <span
-                key={i}
-                className={`h-1 flex-1 rounded-full ${
-                  i < ONBOARDING_DONE
-                    ? "bg-foreground"
-                    : "bg-muted dark-ui:bg-white/[0.08]"
-                }`}
-              />
-            ))}
-          </div>
-          {CLIENT_FIELDS.map(({ label, value }) => (
-            <div key={label} className="mt-4">
+          {CLIENT_FIELDS.map(({ label, value, placeholder }) => (
+            <div key={label} className="mt-3">
               <p className={`${HERO_LABEL} text-muted-foreground`}>{label}</p>
               <p
-                className={`mt-1.5 rounded-[6px] border border-border px-3 py-2.5 ${HERO_BODY} text-foreground dark-ui:border-white/15`}
+                className={`mt-1.5 flex items-center rounded-[6px] border border-[var(--mock-line)] bg-[var(--mock-window)] px-3 py-2.5 ${HERO_BODY} text-foreground`}
               >
-                {value}
+                {value ?? (
+                  <>
+                    {/* The caret sits before the placeholder, where typing
+                        would start, on the site's note-caret blink. */}
+                    <span
+                      className="mr-px inline-block h-[1.1em] w-px bg-foreground"
+                      style={{ animation: "note-caret 1.06s infinite" }}
+                    />
+                    <span className="text-muted-foreground">{placeholder}</span>
+                  </>
+                )}
               </p>
             </div>
           ))}
-          {/* Save for later beside Continue: the card's claim is that
-              progress keeps, so the quiet way out says it too. */}
-          <div className="mt-5 flex items-center justify-end gap-2">
-            <span
-              className={`rounded-[4px] px-3 py-2 ${HERO_BUTTON} text-muted-foreground`}
-            >
-              Save for later
-            </span>
+          <div className="mt-auto flex items-center justify-end pt-4">
             <span
               className={`rounded-[4px] bg-foreground px-3 py-2 ${HERO_BUTTON} text-background`}
             >

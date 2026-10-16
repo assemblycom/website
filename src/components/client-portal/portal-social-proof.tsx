@@ -147,7 +147,13 @@ function LogoRow() {
     // that reads as a broken asset rather than as a row continuing. From sm
     // there is nothing to scroll, the scroller reports both ends at once, and
     // no mask is applied at all.
-    <EdgeFadeScroller className="flex gap-x-6 overflow-x-auto overflow-y-hidden overscroll-x-contain px-6 pt-10 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:grid sm:grid-cols-6 sm:overflow-visible md:px-10 md:pt-14 lg:grid-cols-5">
+    //
+    // ON A PHONE THE ROW STARTS ON THE HERO'S EDGE. Its own px-6 sat inside a
+    // container that already pads, and each mark was centred in its 38% cell,
+    // so the first logo began ~60px in from the hero card above it. No padding
+    // below sm and marks set left in their cells puts the first one on the
+    // card's edge; from sm the grid is centred cells as before.
+    <EdgeFadeScroller className="flex gap-x-6 overflow-x-auto overflow-y-hidden overscroll-x-contain pt-10 sm:px-6 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:grid sm:grid-cols-6 sm:overflow-visible md:px-10 md:pt-14 lg:grid-cols-5">
       {LOGO_SLUGS.map((slug, i) => (
         // Every mark has a story behind it, so the mark is the link to it. A
         // wordmark alone says nothing to a screen reader, hence the name.
@@ -155,11 +161,11 @@ function LogoRow() {
           key={slug}
           href={`/customers/${slug}`}
           aria-label={`Read the ${getCaseStudyBySlug(slug)?.company ?? ""} case study`}
-          className={`flex h-8 w-[38%] shrink-0 items-center justify-center text-foreground/45 sm:w-auto transition-colors duration-200 hover:text-foreground ${
+          className={`flex h-8 w-[38%] shrink-0 items-center justify-start text-foreground/45 sm:w-auto sm:justify-center transition-colors duration-200 hover:text-foreground ${
             i >= DESKTOP_COUNT ? "lg:hidden" : ""
           }`}
         >
-          <div className="flex h-full w-full max-w-[140px] items-center justify-center">
+          <div className="flex h-full w-full max-w-[140px] items-center justify-start sm:justify-center">
             <CustomerLogo slug={slug} fit />
           </div>
         </Link>

@@ -172,7 +172,7 @@ const PAGE: VsPage = {
   deepDives: [
     {
       heading: "Describe it. Approve it. Clients use it",
-      body: "Assembly shows you a plan and waits for your approval before anything builds.",
+      body: "Assembly builds nothing until you approve its plan.",
       visual: {
         art: <PlanVisual />,
         label: "Deep dive, the plan",

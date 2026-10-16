@@ -297,6 +297,14 @@ type Fit = {
 const PHONE_BASE_W = 295;
 const PHONE_PANEL_MAX = 592;
 const ZOOM_MAX = 1.15;
+/**
+ * The shot's height on a phone. Uncapped it came out 280px, which made the
+ * panel 383px against /client-portal's 304px hero: the same template, three
+ * heights. At 209 the header, the shot and its padding total 304, so the
+ * solutions pages and /client-portal open on one hero height on a phone. The
+ * shot still runs off the foot; it just shows less of the app.
+ */
+const PHONE_SHOT_H = 209;
 
 function fitFor(panelW: number, viewportH: number): Fit {
   const avail = Math.max(1, panelW - 2 * padXFor(panelW));
@@ -309,9 +317,15 @@ function fitFor(panelW: number, viewportH: number): Fit {
   // the vertical padding together, so both ease instead of stepping.
   const t = Math.min(1, Math.max(0, (w - MIN_W) / (MAX_W - MIN_W)));
   const shaped = w * (MIN_RATIO + (MAX_RATIO - MIN_RATIO) * t);
-  const h = Math.round(
+  const fitted = Math.round(
     Math.max(w * MIN_SHAPE, Math.min(shaped, viewportH * VIEWPORT_BUDGET)),
   );
+  // Capped in on-screen pixels, so the zoom a wider phone gets does not grow
+  // the panel back past the cap.
+  const h =
+    panelW < PHONE_PANEL_MAX
+      ? Math.min(fitted, Math.round(PHONE_SHOT_H / zoom))
+      : fitted;
   return {
     w,
     h,
