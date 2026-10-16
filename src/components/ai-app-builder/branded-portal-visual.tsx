@@ -117,6 +117,8 @@ export function BrandedPortalVisual({
   quietPane = false,
   appHeader = true,
   navOnPhone = true,
+  appsBreak = true,
+  headerAction,
 }: {
   brand?: string;
   /** The firm's mark, on the white tile beside its name. */
@@ -135,7 +137,7 @@ export function BrandedPortalVisual({
    */
   landOnHover?: PortalApp[];
   /** The open app's name, in its header. */
-  title?: string;
+  title?: React.ReactNode;
   /** The open app's screen. Defaults to the document checklist below. */
   children?: React.ReactNode;
   /**
@@ -163,6 +165,15 @@ export function BrandedPortalVisual({
    * On by default, so every other caller is unchanged.
    */
   navOnPhone?: boolean;
+  /**
+   * Sets the firm's apps a step clear of the stock rows. Off where the nav is
+   * one list rather than a story about an app joining it — the agency hero,
+   * whose apps are simply what that portal has, and where the break read as
+   * stray spacing.
+   */
+  appsBreak?: boolean;
+  /** The open app's own control, at the right of its title bar. */
+  headerAction?: React.ReactNode;
 } = {}) {
   return (
     <div
@@ -219,7 +230,7 @@ export function BrandedPortalVisual({
             ones already there, so it should sit just clear of Files rather
             than across a gap from it. Still a break, because a row with no
             break at all is just a fifth stock row. */}
-        <div className="mt-2 flex flex-col gap-[2px]">
+        <div className={`${appsBreak ? "mt-2" : ""} flex flex-col gap-[2px]`}>
           {apps.map(({ icon, label }, i) => (
             <NavRow
               key={label}
@@ -336,10 +347,13 @@ export function BrandedPortalVisual({
         }`}
       >
         {appHeader ? (
-          <div className={`border-b px-5 py-3.5 ${LINE}`}>
+          <div
+            className={`flex items-center justify-between gap-3 border-b px-5 py-3.5 ${LINE}`}
+          >
             <span className={`text-[color:var(--mock-ink)] ${MOCK_TITLE}`}>
               {title}
             </span>
+            {headerAction}
           </div>
         ) : null}
         {/* The default is three fields and nothing else. The app's content is

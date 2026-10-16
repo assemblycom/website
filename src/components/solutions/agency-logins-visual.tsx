@@ -12,7 +12,7 @@ import {
 // "Stop scattering your deliverables across tools" — the marketing-agency
 // page's problem picture. The accounting page's sign-in stack, with the three
 // places its body copy names: feedback in one app, files in another, reports
-// in a third. Each is Brandmages on somebody else's address, none of them its
+// in a third. Each is Bloomhouse on somebody else's address, none of them its
 // own front door.
 //
 // Same component as the accounting page rather than a lookalike: the slot
@@ -23,12 +23,12 @@ import {
 const TOOLS: LoginTool[] = [
   {
     name: "Feedback",
-    host: "brandmages.proofly.io",
+    host: "bloomhouse.proofly.io",
     icon: <IconChecks className="size-[16px]" />,
   },
   {
     name: "Files",
-    host: "brandmages.filevault.io",
+    host: "bloomhouse.filevault.io",
     icon: <IconFolder className="size-[16px]" />,
   },
   {

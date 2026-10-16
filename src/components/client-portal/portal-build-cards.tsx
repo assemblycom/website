@@ -22,7 +22,9 @@ import { FootBlur } from "@/components/ui/foot-blur";
 import { IconArrowUp } from "@/components/home/build-step-visual";
 import {
   IconApp,
+  IconCalendarDays,
   IconCheck,
+  IconBloomhouseMark,
   IconBrandMark,
   IconLedgerline,
   IconChat,
@@ -34,6 +36,8 @@ import {
   IconPlus,
   IconClock,
   IconSearch,
+  IconMegaphone,
+  IconPenNib,
 } from "@/components/home/mock-icons";
 
 // 3:4, the rail's card shape.
@@ -410,8 +414,13 @@ type SceneProps = {
    * page passes "accounting", which runs the same three scenes as Ledgerline
    * building a month-end close tracker — the agency's vocabulary was the one
    * thing on that page's build section in the wrong firm's words.
+   *
+   * "agency" is the marketing-agency page's: Bloomhouse building the same
+   * project tracker, in an agency's words — campaigns and creative rather than
+   * the generic set's data rooms — with the hero's own apps in its nav, so the
+   * page shows one firm from hero to build rail.
    */
-  vertical?: "default" | "accounting";
+  vertical?: "default" | "accounting" | "agency";
 };
 
 /**
@@ -820,7 +829,9 @@ export function DescribeCard({
                   ? "Add a shared calendar each client books their own time on."
                   : vertical === "accounting"
                     ? "Add a month-end close tracker each client sees for their own books."
-                    : "Add a project tracker each client sees for their own project."}
+                    : vertical === "agency"
+                      ? "Add a project tracker each client sees for their own campaigns."
+                      : "Add a project tracker each client sees for their own project."}
                 {/* The site's own caret blink (--animate-caret, the one the
               hero typewriter uses). It BLINKS AT REST now rather than only
               while the card is hovered: a still caret parked after a finished
@@ -929,6 +940,14 @@ const PLAN_ITEMS_ACCOUNTING = [
   { label: "Your team sees every client", done: true },
   { label: "Track each close step and its status", done: true },
   { label: "Due date on each step", done: false },
+];
+
+/** The agency page's plan: campaigns, creative and launch dates. */
+const PLAN_ITEMS_AGENCY = [
+  { label: "Each client sees only their campaigns", done: true },
+  { label: "Your team sees every client", done: true },
+  { label: "Track deliverables and approvals", done: true },
+  { label: "Launch date on each campaign", done: false },
 ];
 
 const PLAN_ITEMS = [
@@ -1142,7 +1161,11 @@ export function PlanCard({
           <ChecklistWindow
             title="Plan"
             items={
-              vertical === "accounting" ? PLAN_ITEMS_ACCOUNTING : PLAN_ITEMS
+              vertical === "accounting"
+                ? PLAN_ITEMS_ACCOUNTING
+                : vertical === "agency"
+                  ? PLAN_ITEMS_AGENCY
+                  : PLAN_ITEMS
             }
           />
         </Scene>
@@ -1202,6 +1225,35 @@ const BOARD = {
       initials: "BM",
       title: "Media Strategy",
       done: 2,
+      of: 5,
+    },
+  ],
+};
+
+/** The agency page's board: client campaigns, the hero's book of work. */
+const BOARD_AGENCY = {
+  name: "Active",
+  count: 21,
+  cards: [
+    {
+      who: "Cascade Outdoor",
+      initials: "CO",
+      title: "Spring Campaign",
+      done: 2,
+      of: 5,
+    },
+    {
+      who: "Northwind Coffee",
+      initials: "NC",
+      title: "Brand Refresh",
+      done: 1,
+      of: 4,
+    },
+    {
+      who: "Lumen Skincare",
+      initials: "LS",
+      title: "Q3 Paid Social",
+      done: 3,
       of: 5,
     },
   ],
@@ -2019,6 +2071,20 @@ const TEAM_NAV_ACCOUNTING = [
   { icon: <IconCreditCard />, label: "Invoices" },
 ];
 
+/**
+ * Bloomhouse's client nav: the stock rows, then the apps the hero shows. Their
+ * short names here — "Creative approvals" truncated in this 136px rail — on
+ * the hero's glyphs, so the two still read as the same apps.
+ */
+const TEAM_NAV_AGENCY = [
+  { icon: <IconGlobe />, label: "Home" },
+  { icon: <IconChat />, label: "Messages" },
+  { icon: <IconFile />, label: "Files" },
+  { icon: <IconCreditCard />, label: "Invoices" },
+  { icon: <IconPenNib />, label: "Briefs" },
+  { icon: <IconMegaphone />, label: "Approvals" },
+];
+
 const TEAM_NAV = [
   { icon: <IconGlobe />, label: "Home" },
   { icon: <IconChat />, label: "Messages" },
@@ -2139,7 +2205,12 @@ export function BuildCard({
   // Ledgerline only off the panel: the wide `plain` scene is the calendar,
   // which no vertical changes.
   const ledgerline = vertical === "accounting" && !plain;
-  const board = ledgerline ? BOARD_ACCOUNTING : BOARD;
+  const bloomhouse = vertical === "agency" && !plain;
+  const board = ledgerline
+    ? BOARD_ACCOUNTING
+    : bloomhouse
+      ? BOARD_AGENCY
+      : BOARD;
   return (
     <>
       {/* The Build card's ground, the third of the set — the Describe card
@@ -2385,22 +2456,41 @@ export function BuildCard({
                 <span
                   className={`flex size-[14px] items-center justify-center ${R_CHROME} bg-white text-black`}
                 >
-                  <IconBrandMark className="size-[8px]" />
+                  {bloomhouse ? (
+                    <IconBloomhouseMark className="size-[10px]" />
+                  ) : (
+                    <IconBrandMark className="size-[8px]" />
+                  )}
                 </span>
               )}
               <span className={`truncate text-white ${UI_PRIMARY}`}>
-                {ledgerline ? "Ledgerline" : "Brandmages"}
+                {ledgerline
+                  ? "Ledgerline"
+                  : bloomhouse
+                    ? "Bloomhouse"
+                    : "Brandmages"}
               </span>
             </span>
-            {(ledgerline ? TEAM_NAV_ACCOUNTING : TEAM_NAV).map(
-              ({ icon, label }) => (
-                <ClientNavRow key={label} icon={icon} label={label} />
-              ),
-            )}
+            {(ledgerline
+              ? TEAM_NAV_ACCOUNTING
+              : bloomhouse
+                ? TEAM_NAV_AGENCY
+                : TEAM_NAV
+            ).map(({ icon, label }) => (
+              <ClientNavRow key={label} icon={icon} label={label} />
+            ))}
             {/* The lit row names the app the pane is showing, which is the
                 whole reason neither pane carries a title bar. */}
             <ClientNavRow
-              icon={plain ? <IconClock /> : <IconApp />}
+              icon={
+                plain ? (
+                  <IconClock />
+                ) : bloomhouse ? (
+                  <IconCalendarDays />
+                ) : (
+                  <IconApp />
+                )
+              }
               label={
                 plain
                   ? "Calendar"

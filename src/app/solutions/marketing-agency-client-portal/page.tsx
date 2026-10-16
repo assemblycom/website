@@ -339,14 +339,14 @@ export default function MarketingAgencyClientPortalPage() {
           body="Describe what you want. The builder asks a few questions, shows a one-page plan, and builds after you approve. Every app knows your clients from the built-in CRM."
           // The accounting page's three-step rail, and the three steps this
           // body names in order: describe, answer and see the plan, approve.
-          // The rail's default scenes are an agency's — Brandmages building a
-          // client project tracker — so they need no vertical of their own.
+          // "agency" runs the rail's three scenes in an agency's words, with
+          // this page's firm, Bloomhouse, on the build step's slab.
           steps={BUILD_STEPS.map((step, i) => ({
             ...step,
             visual: [
-              <DescribeCard key="d" />,
-              <PlanCard key="p" />,
-              <BuildCard key="b" />,
+              <DescribeCard key="d" vertical="agency" />,
+              <PlanCard key="p" vertical="agency" />,
+              <BuildCard key="b" vertical="agency" />,
             ][i],
           }))}
           railLabel="How building works"
