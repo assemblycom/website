@@ -263,7 +263,7 @@ function TrackerScreen() {
                 >
                   {/* Optically centred, as in ProgressMock: two capitals sit
                       high in a box-centred disc. */}
-                  <span className="flex size-[15px] shrink-0 items-center justify-center rounded-full bg-white text-[6.5px] font-medium leading-none text-[color:#101114]">
+                  <span className="flex size-[20px] shrink-0 items-center justify-center rounded-full bg-white text-[9.5px] font-medium leading-none text-[color:#101114]">
                     <span className="block translate-y-[0.1em]">{owner}</span>
                   </span>
                   <span

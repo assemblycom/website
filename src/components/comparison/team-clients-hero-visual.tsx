@@ -1,14 +1,15 @@
 import { IconBrandMark } from "@/components/home/mock-icons";
 import { IconArrowUp } from "@/components/home/build-step-visual";
 import { SplitHeroPanel } from "@/components/comparison/split-hero-panel";
+import { MOCK_BODY, MOCK_PRIMARY, MOCK_PRIMARY_STACKED, MOCK_TITLE } from "@/components/ui/mock-type";
 
 // One ramp for both sides, so the switch never changes the type under the
-// reader. Reading sizes rather than the mock scale, because on a phone this
-// card is the only screen in the hero.
-const HERO_TITLE = "text-[16px] leading-[1.3]";
-const HERO_BODY = "text-[14px] leading-[1.45]";
-const HERO_LABEL = "text-[13px] leading-[1.4]";
-const HERO_BUTTON = "text-[13px] leading-none";
+// reader. The shared mock scale, so this hero reads at the same size as the
+// AI builder's and every other product shot on the site.
+const HERO_TITLE = MOCK_TITLE;
+const HERO_BODY = MOCK_BODY;
+const HERO_LABEL = MOCK_PRIMARY_STACKED;
+const HERO_BUTTON = MOCK_PRIMARY;
 
 /**
  * Lovable's hero: the two sides of one app, labelled as the brief labels
@@ -72,7 +73,12 @@ export function BuildChat() {
         </div>
       </div>
       <div className="mt-4 flex shrink-0 items-center gap-2 rounded-full border border-border py-1.5 pl-4 pr-1.5 dark-ui:border-white/15">
-        <span className={`flex-1 ${HERO_BODY} text-muted-foreground`}>
+        {/* A focused, empty field: the caret blinks ahead of the placeholder,
+            the site's own caret (see the hero composer). */}
+        <span
+          className={`flex flex-1 items-center ${HERO_BODY} text-muted-foreground`}
+        >
+          <span className="mr-[3px] inline-block h-[14px] w-[1.5px] bg-foreground motion-safe:animate-caret" />
           Type to revise plan
         </span>
         <span className="flex size-8 items-center justify-center rounded-full bg-foreground text-background">

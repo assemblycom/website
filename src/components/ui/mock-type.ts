@@ -59,3 +59,10 @@ export const MOCK_SECONDARY_STACKED = "text-[10.5px] leading-[1.35]";
  * a chip that is really a mark.
  */
 export const MOCK_MICRO = "text-[9.5px] leading-none";
+
+/**
+ * A headline number on a screen — a stat tile's count, an invoice's total.
+ * The one size above MOCK_TITLE, because a figure is read at a glance from
+ * across the screen rather than as a line of a list.
+ */
+export const MOCK_FIGURE = "text-[18px] leading-none";

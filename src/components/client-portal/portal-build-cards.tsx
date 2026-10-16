@@ -55,9 +55,12 @@ const CARD_BODY = "text-[12.5px] leading-[1.4]";
 // the same scene at 560px, 1:1 with no MockFit scaling left to do, which puts
 // that 12.5px directly beside the panel's own 14px caption a few lines above
 // it — close enough to compare, small enough to read as a mistake rather than
-// as a smaller thing further away. At 14px the sentence the visitor is meant
-// to read matches the copy introducing it.
-const CARD_BODY_PLAIN = "text-[14px] leading-[1.45]";
+// as a smaller thing further away.
+//
+// Back on the shared mock scale now: every visual on the site draws its type
+// from mock-type.ts, and the 14px prompt read as oversized next to the hero's
+// composer at 12.5. The panel's caption is page copy, not part of the mock.
+const CARD_BODY_PLAIN = "text-[12.5px] leading-[1.45]";
 /**
  * The composer's CONTROL row on a `plain` scene.
  *
@@ -72,7 +75,7 @@ const CARD_BODY_PLAIN = "text-[14px] leading-[1.45]";
  * rail already has between its own body and its send button, applied to the
  * bigger body rather than left behind at the smaller one.
  */
-const UI_PLAIN = "text-[12.5px] leading-none";
+const UI_PLAIN = "text-[10.5px] leading-none";
 /** The plan document's own scale.
     
     A step up from the UI labels around the mocks, because this is the one
@@ -84,18 +87,16 @@ const UI_PLAIN = "text-[12.5px] leading-none";
 // and edge to edge it read as more body copy rather than as a product screen.
 // The document is deliberately cropped (see the foot ramp and the chevron), so
 // type size costs visible lines rather than breaking the box.
-/* 13px from `sm`, not 11. The plan is the one thing in these mocks a reader
-   is expected to actually READ rather than recognise as a shape, and at 11px
-   in a ~400px card it was the smallest type on the page by some way — legible
-   in principle, ignored in practice. 13 is still clearly mock-scale against
-   the 15px body around it. The document already overflows and fades at the
-   foot, so the extra size costs a line of the last flow, not a flow. */
-const PLAN_HEAD = "text-[13px] leading-[1.3]";
+/* The mock scale's title and body steps (13.5 / 12.5) at every width, so the
+   plan reads as part of the same system as the other two steps. The document
+   already overflows and fades at the foot, so type size costs lines, not the
+   box. */
+const PLAN_HEAD = "text-[13.5px] leading-[1.3]";
 /* 1.6, not 1.45. This is the one block on the site that is set as a DOCUMENT
    — paragraphs and a list, read rather than scanned — and document leading is
    looser than a UI label's. It also makes the list's bullets land clear of the
    line above them rather than between two lines. */
-const PLAN_PROSE = "text-[12.5px] leading-[1.6] sm:text-[13px]";
+const PLAN_PROSE = "text-[12.5px] leading-[1.6]";
 
 const LINE = "border-[var(--mock-line)]";
 
@@ -362,16 +363,16 @@ function Scene({
             ? // WHICH END THE CROP FALLS ON, and it changes with the slot.
               //
               // A bleed scene is taller than its card, so one end is always
-              // lost. From `sm` the card is 3:4 and the scene is pinned to the
+              // lost. From `lg` the card is 3:4 and the scene is pinned to the
               // FOOT: the board's rows run off the bottom, where a cut row
               // still reads as a list carrying on.
               //
-              // On a phone the card is square and the box loses 113px, which
+              // Below lg the card is square and the box loses 113px, which
               // at the foot took the sidebar's own header — the firm's mark
               // and name — off the top of a card whose subject is the firm's
               // portal. Pinned to the top instead, the same 113px comes off
               // the bottom, which is the end that was always meant to be cut.
-              "flex flex-col justify-start overflow-hidden pl-5 pt-5 sm:justify-end"
+              "flex flex-col justify-start overflow-hidden pl-5 pt-5 lg:justify-end"
             : `flex flex-col gap-4 p-5 ${
                 // justify-center centres a short scene in the box; with the
                 // foot open the child is meant to FILL it and be cut, so it
@@ -467,8 +468,8 @@ type SceneProps = {
  * Squaring the box on a phone fixes both at once: width and height constrain
  * equally, so the scene fills the card instead of being letterboxed, the scale
  * goes to 255/340 — about a third larger — and the right-hand bleed lands on
- * the card's own edge. From `sm` the box goes back to 453 and nothing changes,
- * because from `sm` the card is 3:4 again and the default was always right.
+ * the card's own edge. From `lg` the box goes back to 453 and nothing changes,
+ * because from `lg` the card is 3:4 again and the default was always right.
  *
  * Content is centred in the box, so the 113px a phone loses off the design
  * height comes off the empty air above and below the artwork rather than the
@@ -485,14 +486,26 @@ type SceneProps = {
 // meant to recognise as product UI. 290 takes the same card to 0.88 and the
 // label to a little over 10px.
 //
-// The phone box stays SQUARE because the rail card is square below lg (see
-// card-rail.tsx); from sm the design size is what it always was, so nothing
-// above a phone moves.
+// The box stays SQUARE until lg because the rail card does (see
+// card-rail.tsx). Going 3:4 at sm instead letterboxed every scene into a
+// square card between sm and lg, leaving bare ground down both sides.
+//
+// 400 rather than 340 in that range, because the card there runs 340 to 460
+// wide: at 340 the scale reached 1.36 and the mock type came out oversized.
+// --rail-phone-h / --rail-phone-h-wide are the 4:5 heights a tallOnPhone card
+// sets (362 at 290 wide, 500 at 400 wide).
+//
+// The 400 box starts at 480, not sm: a phone card is 78% of the screen, so on
+// a wide phone it reached 460px and drew the 290 box at 1.59x.
 const RAIL_SCENE_PHONE = {
   vars:
-    "[--template-mock-w:290px] [--template-mock-h:290px] " +
-    "sm:[--template-mock-w:340px] sm:[--template-mock-h:453px]",
-  size: "w-[290px] h-[290px] sm:w-[340px] sm:h-[453px]",
+    "[--template-mock-w:290px] [--template-mock-h:var(--rail-phone-h,290px)] " +
+    "min-[480px]:[--template-mock-w:400px] min-[480px]:[--template-mock-h:var(--rail-phone-h-wide,400px)] " +
+    "sm:[--template-mock-w:400px] sm:[--template-mock-h:400px] " +
+    "lg:[--template-mock-w:340px] lg:[--template-mock-h:453px]",
+  size:
+    "w-[290px] h-[var(--rail-phone-h,290px)] min-[480px]:w-[400px] min-[480px]:h-[var(--rail-phone-h-wide,400px)] " +
+    "sm:w-[400px] sm:h-[400px] lg:w-[340px] lg:h-[453px]",
 };
 /** Spread form, so a card opts in with one line and cannot pair the wrong two. */
 const RAIL_SCENE_PHONE_PROPS = {
@@ -689,7 +702,9 @@ export function DescribeCard({
         <div
           className={
             plain
-              ? "rounded-[14px] bg-[linear-gradient(to_bottom,#d9ed92_0%,#9fd6c4_45%,#8ea2f4_100%)] bg-[length:100%_200%] bg-[position:0%_0%] p-px transition-[background-position] duration-700 ease-out group-hover/card:bg-[position:0%_100%] motion-reduce:transition-none sm:mb-auto sm:mt-[66px]"
+              ? // Lifted 13px on a phone, where the panel's caption sits right
+                // above the slot and a centred composer read as sitting low.
+                "max-sm:-translate-y-[13px] rounded-[14px] bg-[linear-gradient(to_bottom,#d9ed92_0%,#9fd6c4_45%,#8ea2f4_100%)] bg-[length:100%_200%] bg-[position:0%_0%] p-px transition-[background-position] duration-700 ease-out group-hover/card:bg-[position:0%_100%] motion-reduce:transition-none sm:mb-auto sm:mt-[66px]"
               : "contents"
           }
         >
@@ -886,8 +901,8 @@ export function DescribeCard({
                 it; at --mock-ink-soft beside a near-black send button it read
                 as disabled rather than quiet. */}
                 {plain ? (
-                  <span className="flex size-[26px] shrink-0 items-center justify-center text-[color:var(--mock-ink)]">
-                    <IconPlus className="size-[16px]" />
+                  <span className="flex size-[22px] shrink-0 items-center justify-center text-[color:var(--mock-ink)]">
+                    <IconPlus className="size-[13px]" />
                   </span>
                 ) : null}
                 <span className="flex items-center gap-2">
@@ -905,11 +920,11 @@ export function DescribeCard({
                   ) : null}
                   <span
                     className={`${MOVE} flex shrink-0 items-center justify-center ${R_CHROME} bg-[var(--mock-ink)] text-[color:var(--mock-window)] group-hover/card:scale-110 ${
-                      plain ? "size-[26px]" : "size-[20px]"
+                      plain ? "size-[22px]" : "size-[20px]"
                     }`}
                   >
                     <IconArrowUp
-                      className={plain ? "size-[13px]" : "size-[10px]"}
+                      className={plain ? "size-[11px]" : "size-[10px]"}
                     />
                   </span>
                 </span>
@@ -1068,15 +1083,17 @@ function ChecklistWindow({
   title,
   items,
   loader = false,
+  className = "",
 }: {
   title: string;
   items: { label: string; done: boolean }[];
   /** The Assembly mark in place of the progress ring. */
   loader?: boolean;
+  className?: string;
 }) {
   const done = items.filter((i) => i.done).length;
   return (
-    <div className={`flex flex-col ${WINDOW}`}>
+    <div className={`flex flex-col ${WINDOW} ${className}`}>
       {/* The header takes the well's tint. On --mock-window it was the same
             white as the rows under it, so the card opened on five identical
             bands and the one naming the thing had nothing marking it as the
@@ -1554,7 +1571,7 @@ function RequirementsPane() {
                 --mock-well is one step off --mock-window in both themes, so
                 this is a tone the screen already has. */}
             <span
-              className={`flex shrink-0 items-center ${R_CHROME} border bg-[var(--mock-window)] px-3 py-1.5 text-[color:var(--mock-ink)] transition-colors hover:bg-[var(--mock-well)] ${PLAN_HEAD} ${LINE}`}
+              className={`flex shrink-0 items-center ${R_CHROME} border bg-[var(--mock-window)] px-3 py-1.5 text-[color:var(--mock-ink)] transition-colors hover:bg-[var(--mock-well)] ${UI_PRIMARY} ${LINE}`}
             >
               Approve
             </span>
@@ -2251,7 +2268,7 @@ function ProjectCard({
             — a green avatar would read as a finished project. See
             --mock-avatar-* in globals.css. */}
         <span
-          className={`flex size-[14px] shrink-0 items-center justify-center ${R_CHROME} text-[7px] leading-none ${AVATAR_TINT[tint % AVATAR_TINT.length]}`}
+          className={`flex size-[18px] shrink-0 items-center justify-center ${R_CHROME} text-[9.5px] leading-none ${AVATAR_TINT[tint % AVATAR_TINT.length]}`}
         >
           {initials}
         </span>
@@ -2417,7 +2434,10 @@ export function BuildCard({
           // it on the right. It was translate-x-0 there, which left the window
           // cropped on BOTH sides — a left crop with no rail behind it to
           // absorb it, and a right edge that stopped short of the card.
-          style={plain ? undefined : { height: 412 }}
+          // A floor, not a fixed height: below lg a taller box (the 4:5 card
+          // on a wide phone) would otherwise leave bare ground under the
+          // window, so it grows to fill it there (max-lg:flex-1).
+          style={plain ? undefined : { minHeight: 412 }}
           // The TOP-LEFT is the only corner this window has: it bleeds off the
           // right and the bottom, so three of its corners are crops. That one
           // visible corner carries the whole window's shape, and at the chrome
@@ -2447,6 +2467,10 @@ export function BuildCard({
           // corner with no border on a screen whose other three corners are
           // finished reads as the shot having been cut, not as it continuing.
           // Below `sm` it still bleeds and still ramps out, so the crop stays.
+          // THE PANEL'S WINDOW WEARS .mock-edge, the lit border the Describe
+          // composer and the Plan document carry beside it, so all three steps
+          // catch light the same way in dark. Dark-only and unlayered, so it
+          // takes over the transparent border below without touching light.
           // NO HAIRLINE IN LIGHT. WINDOW carries one so a white screen can be
           // told from a white page, which is right for every scene whose card
           // is near-black — there the line never shows. This card is the one
@@ -2467,7 +2491,7 @@ export function BuildCard({
           // grey ground than the rule it replaced. Clipping the background to
           // the padding box leaves the border area genuinely empty, so the
           // card's own ground shows through and there is no line at all.
-          className={`flex shrink-0 ${plain ? "" : "w-[340px] translate-x-[25px] sm:w-[380px] sm:translate-x-[20px]"} ${WINDOW} ${R_PANEL} rounded-b-none rounded-tr-none border-transparent [background-clip:padding-box] border-b-0 border-r-0 sm:rounded-tr-[10px] sm:border-r ${
+          className={`flex shrink-0 ${plain ? "mock-edge" : "w-[340px] translate-x-[25px] max-lg:flex-1 min-[480px]:w-[380px] min-[480px]:translate-x-[20px]"} ${WINDOW} ${R_PANEL} rounded-b-none rounded-tr-none border-transparent [background-clip:padding-box] border-b-0 border-r-0 sm:rounded-tr-[10px] sm:border-r ${
             plain
               ? // 340x280 ON A PHONE, which is the 360x300 box exactly minus
                 // the scene's own 20px top and left padding — so the window
@@ -2911,6 +2935,10 @@ const REVIEW_COMMENT = {
   // live thread; a complete, tidy sentence reads as a caption written for the
   // mock. The reply count under it says the thread continued.
   text: "Clearer crop on this round — the shoulder is doing a lot of…",
+  // The phone's line, one line long. The long one ran three lines on a small
+  // card, and a cut-down version of it read as jargon; a sign-off is the
+  // stage's point anyway.
+  textShort: "Approved for print.",
   replies: "1 reply",
 };
 
@@ -3096,7 +3124,7 @@ export function ReviewCard({ plain = false }: SceneProps = {}) {
                   {picked ? (
                     <span className="absolute right-2.5 top-[30%] flex rounded-full rounded-bl-none bg-white p-[3px] shadow-[0_2px_8px_-1px_rgba(16,24,40,0.45)]">
                       <span
-                        className={`flex size-[18px] items-center justify-center rounded-full ${PIN_FACE} text-[8px] leading-none text-white`}
+                        className={`flex size-[20px] items-center justify-center rounded-full ${PIN_FACE} text-[9.5px] leading-none text-white`}
                       >
                         {REVIEW_PIN.initials}
                       </span>
@@ -3186,7 +3214,7 @@ export function ReviewCard({ plain = false }: SceneProps = {}) {
                 tinted square with two grey letters read as a file icon rather
                 than as somebody. */}
             <span
-              className={`flex size-[18px] shrink-0 items-center justify-center rounded-full ${COMMENT_FACE} text-[8px] leading-none text-white`}
+              className={`flex size-[20px] shrink-0 items-center justify-center rounded-full ${COMMENT_FACE} text-[9.5px] leading-none text-white`}
             >
               {REVIEW_COMMENT.initials}
             </span>
@@ -3204,7 +3232,8 @@ export function ReviewCard({ plain = false }: SceneProps = {}) {
                 </span>
               </p>
               <p className={`mt-1 text-[color:var(--mock-ink)] ${CARD_BODY}`}>
-                {REVIEW_COMMENT.text}
+                <span className="max-sm:hidden">{REVIEW_COMMENT.text}</span>
+                <span className="sm:hidden">{REVIEW_COMMENT.textShort}</span>
               </p>
               <p
                 className={`mt-1.5 text-[color:var(--mock-ink-soft)] ${UI_SECONDARY}`}
@@ -3286,7 +3315,13 @@ export function OnboardCard({ plain = false }: SceneProps = {}) {
       <Scene {...(plain ? {} : RAIL_SCENE_PHONE_PROPS)}>
         {/* "Onboarding" — the window is titled with the stage it belongs to,
             so the card's label and the screen inside it name the same thing. */}
-        <ChecklistWindow title="Onboarding" items={ONBOARD_ITEMS} />
+        {/* No outline: on the photograph the hairline read as a frame drawn
+            around the panel. */}
+        <ChecklistWindow
+          title="Onboarding"
+          items={ONBOARD_ITEMS}
+          className="border-0"
+        />
       </Scene>
     </>
   );
@@ -3439,7 +3474,7 @@ export function InvoiceCard({ plain = false }: SceneProps = {}) {
 
           {/* The figure. Still the biggest type on the card: whatever else an
               invoice says, the amount is what it is for. */}
-          <p className="mt-[9px] px-1 text-[23px] leading-none text-[color:var(--mock-ink)]">
+          <p className="mt-[9px] px-1 text-[18px] leading-none text-[color:var(--mock-ink)]">
             $4,500.00
           </p>
 
@@ -3598,7 +3633,9 @@ export function SupportCard({ plain = false }: SceneProps = {}) {
             land. mt-auto drops it to the lower half, where it covers the desk
             instead: papers, a laptop, two coffees. The work, not the person.
             The Scene's own bottom padding still holds it off the foot. */}
-        <div className={`sm:mt-auto flex flex-col ${WINDOW}`}>
+        {/* No outline, matching the Onboard card: on a photograph the hairline
+            read as a frame drawn around the panel. */}
+        <div className={`sm:mt-auto flex flex-col ${WINDOW} border-0`}>
           <div
             className={`flex items-center gap-2.5 border-b bg-[var(--mock-well)] px-4 py-3 ${LINE}`}
           >

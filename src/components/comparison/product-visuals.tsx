@@ -235,7 +235,6 @@ export function FullExperienceVisual({
         <div className="h-full w-[calc(100%+80px)] sm:w-[max(calc(100%+80px),480px)]">
           <IntakeAppMock
             title={OPEN_APP}
-            action={false}
             accent={orbit ? ORBIT.color : undefined}
             nav={
               <WorkspaceSidebar

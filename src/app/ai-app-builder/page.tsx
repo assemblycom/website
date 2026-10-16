@@ -593,8 +593,8 @@ export default function AiAppBuilderPage() {
           // Broken at the sentence, the same place the CTA's own default lead
           // breaks. Left to wrap it set eight words on line one and "a template."
           // on line two — `text-pretty` only rescues a single-word last line. The
-          // break is md-up: below that the measure is narrow enough that the two
-          // sentences wrap into a block on their own.
+          // break holds at every width: on a phone, left to wrap, line one ran on
+          // past the first sentence and stranded "start from a template.".
           subheading={
             <>
               {/* "what your business needs" → "what you need". The reader is
@@ -603,8 +603,8 @@ export default function AiAppBuilderPage() {
                   custom build, and start either from a description or from a
                   template. */}
               Skip the five-figure custom build.
-              <br className="hidden md:inline" /> Describe what you need, or
-              start from a template.
+              <br /> Describe what you need, or{" "}
+              <span className="whitespace-nowrap">start from a template.</span>
             </>
           }
           // The page opens on a composer; closing on a second one asks the same

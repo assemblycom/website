@@ -112,7 +112,10 @@ export function LoginsVisual({ tools }: { tools: LoginTool[] }) {
       // the longest host still sets whole). At px-2 the pills ran edge to edge,
       // so they read as bars across the photograph rather than prompts laid
       // on it; the wider inset keeps the scene showing either side.
-      className="flex h-full select-none flex-col justify-center gap-2.5 px-3 md:px-8"
+      //
+      // Capped and centred, because once the tray stacks full width on a
+      // tablet the pills otherwise stretch into bars across the whole row.
+      className="mx-auto flex h-full w-full max-w-[440px] select-none flex-col justify-center gap-2.5 px-3 md:px-8"
     >
       {/* THREE ON DESKTOP, TWO ON A PHONE. At phone width three prompts fill the whole
           photograph and it stops reading as a pile laid over a scene. Two

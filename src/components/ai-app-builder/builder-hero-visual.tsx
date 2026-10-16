@@ -24,6 +24,12 @@ import {
 import { IconArrowUp } from "@/components/home/build-step-visual";
 import { ViewToggle } from "@/components/ui/view-toggle";
 import {
+  MOCK_BODY,
+  MOCK_FIGURE,
+  MOCK_PRIMARY,
+  MOCK_SECONDARY,
+} from "@/components/ui/mock-type";
+import {
   IconBookBlank,
   IconBook,
   IconBrandMark,
@@ -90,9 +96,9 @@ const LINE = "border-[var(--mock-line)]";
 // a page header, then white panels on the screen's grey ground, tables with a
 // tinted label row.
 const PANEL = `mt-4 overflow-hidden rounded-lg border bg-[var(--mock-window)] ${LINE}`;
-const TABLE_HEAD = `flex items-center gap-5 border-b bg-[var(--mock-well)] px-3.5 py-2 text-[11.5px] leading-none text-[color:var(--mock-ink-soft)] ${LINE}`;
+const TABLE_HEAD = `flex items-center gap-5 border-b bg-[var(--mock-well)] px-3.5 py-2 ${MOCK_SECONDARY} text-[color:var(--mock-ink-soft)] ${LINE}`;
 
-const CHIP = "rounded px-1.5 py-[4px] text-[11px] leading-none";
+const CHIP = `rounded px-1.5 py-[4px] ${MOCK_SECONDARY}`;
 // One chip for every state in this hero. The green/amber pair that used to sit
 // beside it is gone, not merely unused: the --mock-positive-* / --mock-warning-*
 // tokens are still there for the mocks that want them, and leaving dead
@@ -575,7 +581,10 @@ const STACKED_BLEED_PX = 12;
 // Side by side the screen is drawn at its design size.
 const SIDE_BY_SIDE_SCALE = 1;
 // The narrowest layout the stacked screen reflows to before it starts scaling.
-const STACKED_MIN_W = 460;
+// 320 so a phone draws it near 1:1, like the AI builder hero: at 460 a 300px
+// card scaled the screen to 0.65 and its labels fell to about 7px. The
+// sidebars drop below sm so that width goes to the table.
+const STACKED_MIN_W = 320;
 
 /**
  * Holds the result screen pinned to the top left and crops whatever runs past
@@ -797,7 +806,7 @@ function Composer({ run, typing }: { run: number; typing: boolean }) {
           Three lines of height held open whether or not there is text in it,
           so the card does not change height as the sentence is rubbed out and
           a longer or shorter one takes its place. */}
-      <p className="min-h-[59px] text-[14px] leading-[1.4] text-[color:var(--mock-ink)]">
+      <p className={`min-h-[53px] ${MOCK_BODY} text-[color:var(--mock-ink)]`}>
         {/* The placeholder belongs to rest, not to the run: between rubbing
             the old line out and writing the new one the box is empty for a
             beat, and the placeholder flashing into that gap read as the field
@@ -812,7 +821,7 @@ function Composer({ run, typing }: { run: number; typing: boolean }) {
             or cleared. At rest the sentence is a sentence, not a field still
             waiting for the rest of it. */}
         {typing ? (
-          <span className="ml-[1px] inline-block h-[14px] w-[1.5px] translate-y-[2px] bg-[var(--mock-ink)] motion-safe:animate-caret" />
+          <span className="ml-[1px] inline-block h-[12.5px] w-[1.5px] translate-y-[2px] bg-[var(--mock-ink)] motion-safe:animate-caret" />
         ) : null}
       </p>
       {/* The product's own composer footer: attach on the left, the model and
@@ -830,7 +839,7 @@ function Composer({ run, typing }: { run: number; typing: boolean }) {
             is a filled 26px tile and the label is loose grey type, so at 8 the
             words sat on the tile's edge and read as part of it. */}
         <span className="flex items-center gap-3">
-          <span className="text-[12px] leading-none text-[color:var(--mock-ink-soft)]">
+          <span className={`${MOCK_SECONDARY} text-[color:var(--mock-ink-soft)]`}>
             Opus 5
           </span>
           {/* The mock's own ink, not the page's: this button sits on a lifted
@@ -1111,13 +1120,13 @@ function TeamDashboard({ live }: { live: boolean }) {
         // shared with the how-it-works mocks and /ai-app-builder's Add App
         // shot, which sit on ordinary cards where the page tokens resolve
         // correctly. Nothing outside this card moves.
-        className={`flex w-[164px] shrink-0 flex-col border-r bg-[var(--mock-well)] px-1.5 py-2 [--mock-nav-size:12px] [--mock-nav-row:26px] [--mock-section-size:10px] [--foreground:var(--mock-ink)] [--muted-foreground:var(--mock-nav-rest)] [--border:var(--mock-line)] [--background:var(--mock-window)] ${LINE} [&>div:not(:first-child)]:h-[26px] [&>div:not(:first-child)]:transition-colors [&>div:not(:first-child):hover]:bg-border/50`}
+        className={`flex w-[164px] shrink-0 max-sm:hidden flex-col border-r bg-[var(--mock-well)] px-1.5 py-2 [--mock-nav-size:11.5px] [--mock-nav-row:26px] [--mock-section-size:10.5px] [--foreground:var(--mock-ink)] [--muted-foreground:var(--mock-nav-rest)] [--border:var(--mock-line)] [--background:var(--mock-window)] ${LINE} [&>div:not(:first-child)]:h-[26px] [&>div:not(:first-child)]:transition-colors [&>div:not(:first-child):hover]:bg-border/50`}
       >
         <div className="flex items-center gap-1.5 px-1.5 pb-4 pt-3">
           <span className="flex size-[16px] items-center justify-center rounded-[3px] bg-foreground text-background">
             <IconBrandMark className="size-[9px]" />
           </span>
-          <span className="text-[12px] leading-none text-[color:var(--mock-ink)]">
+          <span className={`${MOCK_PRIMARY} text-[color:var(--mock-ink)]`}>
             BrandMages
           </span>
         </div>
@@ -1171,10 +1180,10 @@ function TeamDashboard({ live }: { live: boolean }) {
                 key={label}
                 className={`px-3.5 py-3 ${i ? `border-l ${LINE}` : ""}`}
               >
-                <p className="text-[11.5px] leading-none text-[color:var(--mock-ink-soft)]">
+                <p className={`${MOCK_SECONDARY} text-[color:var(--mock-ink-soft)]`}>
                   {label}
                 </p>
-                <p className="mt-2 text-[18px] leading-none text-[color:var(--mock-ink)]">
+                <p className={`mt-2 ${MOCK_FIGURE} text-[color:var(--mock-ink)]`}>
                   {value}
                 </p>
               </div>
@@ -1219,7 +1228,7 @@ function TeamDashboard({ live }: { live: boolean }) {
                     size — the table is here to show a list of clients with
                     progress against each, not to be read. */}
                 <span
-                  className={`min-w-0 flex-1 truncate text-[13px] leading-none ${ROW_NAME}`}
+                  className={`min-w-0 flex-1 truncate ${MOCK_PRIMARY} ${ROW_NAME}`}
                 >
                   {quiet ? "" : row.name}
                 </span>
@@ -1271,7 +1280,7 @@ function ClientView() {
   return (
     <div className="flex h-full">
       <div
-        className={`flex w-[164px] shrink-0 flex-col px-1.5 py-2 ${BRAND_SIDEBAR}`}
+        className={`flex w-[164px] shrink-0 max-sm:hidden flex-col px-1.5 py-2 ${BRAND_SIDEBAR}`}
       >
         <div className="flex items-center gap-1.5 px-1.5 pb-4 pt-3">
           {/* The firm's own logo: a black mark on a white tile, the same in
@@ -1279,7 +1288,7 @@ function ClientView() {
           <span className="flex size-[16px] items-center justify-center rounded-[3px] bg-white text-black">
             <IconBrandMark className="size-[9px]" />
           </span>
-          <span className="text-[13px] leading-none text-white">
+          <span className={`${MOCK_PRIMARY} text-white`}>
             Brandmages
           </span>
         </div>
@@ -1299,7 +1308,7 @@ function ClientView() {
             <span className="flex shrink-0 items-center justify-center [&>svg]:size-[16px]">
               {icon}
             </span>
-            <span className="min-w-0 flex-1 truncate text-[13px] leading-none">
+            <span className={`min-w-0 flex-1 truncate ${MOCK_PRIMARY}`}>
               {label}
             </span>
           </div>
@@ -1326,15 +1335,17 @@ function ClientView() {
           <div
             className={`${PANEL} mt-0! px-3.5 py-3 [[data-theme=dark]_&]:bg-[var(--mock-well)]`}
           >
-            <p className="text-[11.5px] leading-none text-[color:var(--mock-ink-soft)]">
+            <p className={`${MOCK_SECONDARY} text-[color:var(--mock-ink-soft)]`}>
               Documents received
             </p>
-            <p className="mt-2 text-[18px] leading-none text-[color:var(--mock-ink)]">
+            <p className={`mt-2 ${MOCK_FIGURE} text-[color:var(--mock-ink)]`}>
               8 of 12
             </p>
             <div className="mt-3 h-1 w-full overflow-hidden rounded-full bg-[var(--mock-well-2)]">
+              {/* Ink in dark: the brand fill resolves near-black there and
+                  vanished into its own track. */}
               <span
-                className={`block h-full w-2/3 rounded-full ${BRAND_FILL}`}
+                className={`block h-full w-2/3 rounded-full ${BRAND_FILL} [[data-theme=dark]_&]:bg-[var(--mock-ink)]`}
               />
             </div>
           </div>
@@ -1352,7 +1363,7 @@ function ClientView() {
                 key={label}
                 className={`flex items-center justify-between gap-3 border-b px-3.5 py-[12px] pr-16! last:border-b-0 ${ROW_HOVER} ${LINE}`}
               >
-                <span className={`truncate text-[13px] leading-none ${ROW_NAME}`}>
+                <span className={`truncate ${MOCK_PRIMARY} ${ROW_NAME}`}>
                   {label}
                 </span>
                 <span className={STATUS_COL}>

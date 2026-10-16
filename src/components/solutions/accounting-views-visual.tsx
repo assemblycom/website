@@ -330,7 +330,7 @@ function RequestsPane({ title }: { title: string }) {
       <PaneTitleBar title={title} />
       <div className="flex min-h-0 flex-1 flex-col px-4 pt-3">
         <span
-          className={`flex shrink-0 cursor-text items-center gap-1.5 rounded-[4px] border px-2.5 py-[7px] text-[color:var(--mock-ink-soft)] transition-colors hover:border-[var(--mock-ink-soft)] ${MOCK_PRIMARY} ${LINE}`}
+          className={`flex shrink-0 items-center gap-1.5 rounded-[4px] border px-2.5 py-[7px] text-[color:var(--mock-ink-soft)] ${MOCK_PRIMARY} ${LINE}`}
         >
           <IconSearch className="size-[11px] shrink-0" />
           Search documents...

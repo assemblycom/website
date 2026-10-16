@@ -225,6 +225,9 @@ export function BuilderHowItWorks() {
               // dead ground in it. From `sm` the fixed height returns, because
               // there all three steps share one panel that must not resize as
               // you tab between them.
+              // 400 wide at most on a phone: the slot keeps its 6:5 shape, so
+              // on a wide phone it grew to ~490x410 and drew the 360px scene at
+              // 1.37x, which oversized the type and stretched the panel tall.
               // `cursor-default select-none` because this slot holds a PICTURE.
               // The scenes are built out of real text nodes rather than an
               // image, so the pointer turned into an I-beam over a screenshot
@@ -236,8 +239,8 @@ export function BuilderHowItWorks() {
                   ? // Steps with PANEL_SCENE_WIDE exactly — the slot and the
                     // design box are one decision, and a slot that lags the box
                     // fits the mock DOWN and shrinks its type.
-                    "max-w-[620px] lg:max-w-[900px] lgx:max-w-[1040px]"
-                  : "max-w-[620px]"
+                    "max-w-[400px] sm:max-w-[620px] lg:max-w-[900px] lgx:max-w-[1040px]"
+                  : "max-w-[400px] sm:max-w-[620px]"
               } mx-auto`}
             >
               {current.visual}

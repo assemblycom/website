@@ -71,7 +71,9 @@ function SessionsPane() {
           evenly gapped lines: the name sits just over the session it runs,
           and the length rides close under it. */}
       <div
-        className={`flex w-[180px] shrink-0 flex-col border-r p-5 max-md:hidden ${LINE}`}
+        // Hidden until lg as well: between md and lg the two fixed side
+        // columns left the month about 90px wide.
+        className={`flex w-[180px] shrink-0 flex-col border-r p-5 max-lg:hidden ${LINE}`}
       >
         <span className="relative size-[32px] overflow-hidden rounded-full bg-[var(--mock-well-2)]">
           <Image
@@ -121,8 +123,11 @@ function SessionsPane() {
           ))}
           {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
             <span key={day} className="flex justify-center">
+              {/* Square by ratio, not a fixed size: a narrow window squeezes
+                  the grid's columns, and a fixed height turned the circles
+                  into ovals. */}
               <span
-                className={`flex size-[24px] items-center justify-center rounded-full md:size-[32px] ${MOCK_SECONDARY} ${
+                className={`flex aspect-square w-full max-w-[24px] items-center justify-center rounded-full md:max-w-[32px] ${MOCK_SECONDARY} ${
                   day === PICKED
                     ? "bg-[var(--mock-ink)] text-[color:var(--mock-window)]"
                     : OPEN_DAYS.has(day)
