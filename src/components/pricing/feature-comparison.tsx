@@ -39,17 +39,17 @@ const GROUPS: FeatureGroup[] = [
       {
         label: "Active contacts",
         tooltip: "The client records in your CRM — the people who can sign into your client experience.",
-        values: ["5", "50", "500", "Unlimited", "Custom"],
+        values: ["5", "50", "500", "Unlimited", "Unlimited"],
       },
       {
         label: "Internal users included",
         tooltip: "Teammates with access to your workspace.",
-        values: ["1", "1", "3", "5", "Custom"],
+        values: ["1", "1", "3", "5", "Unlimited"],
       },
       {
         label: "Cost per additional internal user",
         plain: true,
-        values: [false, false, "+$29 yr / $39 mo", "+$59 yr / $79 mo", "Custom"],
+        values: [false, false, "+$29 yr / $39 mo", "+$59 yr / $79 mo", false],
       },
     ],
   },
@@ -140,6 +140,10 @@ const GROUPS: FeatureGroup[] = [
       },
       { label: "Enforce MFA", values: [false, false, false, true, true] },
       {
+        label: "Advanced security controls",
+        values: [false, false, false, false, true],
+      },
+      {
         label: "HIPAA compliance with BAA",
         tooltip: "BAA available for handling protected health information.",
         values: [false, false, false, true, true],
@@ -213,6 +217,10 @@ const GROUPS: FeatureGroup[] = [
       },
       {
         label: "Dedicated success manager",
+        values: [false, false, false, false, true],
+      },
+      {
+        label: "Implementation service",
         values: [false, false, false, false, true],
       },
       {
