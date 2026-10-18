@@ -14,6 +14,11 @@ import {
 interface PlanFeatureGroup {
   label: string;
   items: string[];
+  // This group lists what the plan adds on top of the tier below it. Its
+  // heading is worked out at render time ("Everything in Starter, plus") so it
+  // can fall back to plain "Features" when that tier's card isn't on screen —
+  // signed-in visitors don't see Free, so Starter has nothing to build on.
+  extendsPrevious?: boolean;
 }
 
 interface Plan {
@@ -23,6 +28,13 @@ interface Plan {
   description: string;
   featureGroups: PlanFeatureGroup[];
   cta: string;
+  ctaHref: string;
+  // A quieter "Book a demo" button under the main CTA, for the tiers where
+  // buying outright is the main path but a demo is a fair second.
+  secondaryDemo?: boolean;
+  // Price is a floor, not a rate: same figure on both billing toggles, and the
+  // line under it says so instead of "Billed monthly / annually".
+  startingPrice?: boolean;
   highlighted: boolean;
 }
 
@@ -58,6 +70,7 @@ const PLANS: Plan[] = [
       },
     ],
     cta: "Get started",
+    ctaHref: SIGNUP_URL,
     highlighted: false,
   },
   {
@@ -75,7 +88,8 @@ const PLANS: Plan[] = [
         ],
       },
       {
-        label: "Everything in Free, plus",
+        label: "Features",
+        extendsPrevious: true,
         items: [
           "MCP connector",
           "More included credits",
@@ -88,6 +102,7 @@ const PLANS: Plan[] = [
       },
     ],
     cta: "Get started",
+    ctaHref: SIGNUP_URL,
     highlighted: false,
   },
   {
@@ -105,7 +120,8 @@ const PLANS: Plan[] = [
         ],
       },
       {
-        label: "Everything in Starter, plus",
+        label: "Features",
+        extendsPrevious: true,
         items: [
           "Custom domains",
           "API access",
@@ -121,6 +137,8 @@ const PLANS: Plan[] = [
       },
     ],
     cta: "Get started",
+    ctaHref: SIGNUP_URL,
+    secondaryDemo: true,
     highlighted: true,
   },
   {
@@ -138,7 +156,8 @@ const PLANS: Plan[] = [
         ],
       },
       {
-        label: "Everything in Pro, plus",
+        label: "Features",
+        extendsPrevious: true,
         items: [
           "Audit log",
           "Client access permissions",
@@ -155,7 +174,42 @@ const PLANS: Plan[] = [
         ],
       },
     ],
+    cta: "Get started",
+    ctaHref: SIGNUP_URL,
+    secondaryDemo: true,
+    highlighted: false,
+  },
+  {
+    name: "Enterprise",
+    priceMonthly: 2000,
+    priceYearly: 2000,
+    description: "For firms with custom needs",
+    featureGroups: [
+      {
+        label: "Fundamentals",
+        items: [
+          "Unlimited active contacts",
+          "Unlimited internal users",
+          "Custom build credits",
+        ],
+      },
+      {
+        label: "Features",
+        extendsPrevious: true,
+        items: ["Custom SSO", "Advanced security controls", "Sandbox workspace"],
+      },
+      {
+        label: "Support",
+        items: [
+          "Dedicated success manager",
+          "Implementation service",
+          "Shared Slack channel",
+        ],
+      },
+    ],
     cta: DEMO_CTA_LABEL,
+    ctaHref: DEMO_URL,
+    startingPrice: true,
     highlighted: false,
   },
 ];
@@ -166,70 +220,9 @@ const PAID_PLANS = PLANS.filter((plan) => plan.priceMonthly > 0);
 
 type Billing = "monthly" | "yearly";
 
-// Enterprise sits BELOW the tier columns as one wide card (so adding it never
-// pushes the grid to five columns). Minimal: a label + one-line pitch, with the
-// demo CTA on the right — no perk grid, so it reads as a quiet footnote to the
-// tiers rather than a fifth plan. It's a standalone outlined card detached from
-// the plans table above (gap, not a shared border) at every breakpoint.
-function EnterpriseCard() {
-  return (
-    // Same 4-column grid as the tiers so the heading, perks, and CTA line up
-    // under the columns above (heading | perks | perks | CTA). No dividers
-    // between them: the grid already does the separating, and four hairlines
-    // inside one row made it read as a second table under the real one.
-    // Keeps its fill on desktop dark, like the tier columns above it — dropped
-    // there, this card was the one row of the pricing table still sitting on the
-    // page's own near-black.
-    <div className="mt-6 rounded-2xl border border-border bg-card px-6 py-5 md:px-8 lg:rounded-xl lg:p-0">
-      {/* Phones stack with tight spacing (the two perk groups read as one
-          list); from 560 — where the tiers above go two up — the perks split
-          into their two columns and the CTA stops running the full width of the
-          card; desktop is the 4-column grid with inset dividers. */}
-      <div className="flex flex-col min-[560px]:grid min-[560px]:grid-cols-2 min-[560px]:gap-x-8 lg:grid-cols-4 lg:gap-0">
-        <div className="min-[560px]:col-span-2 lg:col-span-1 lg:p-6">
-          <h3 className="text-base font-medium text-foreground">Enterprise</h3>
-        </div>
-        {[
-          ["Unlimited users, contacts, and apps", "Custom SSO"],
-          ["Volume-based build credits", "Dedicated architect & success manager"],
-        ].map((col, i) => (
-          <ul
-            key={i}
-            className={`relative flex cursor-default flex-col gap-2.5 min-[560px]:mt-5 lg:mt-0 lg:p-6 ${
-              i === 0 ? "mt-5" : "mt-2.5"
-            }`}
-          >
-            {col.map((item) => (
-              <li
-                key={item}
-                className="flex items-start gap-2 text-sm text-muted-foreground"
-              >
-                <span className="mt-0.5">
-                  <CheckIcon />
-                </span>
-                {item}
-              </li>
-            ))}
-          </ul>
-        ))}
-        {/* CTA column — solid dark fill, matching the tier buttons. */}
-        <div className="relative mt-5 min-[560px]:col-span-2 lg:col-span-1 lg:mt-0 lg:flex lg:items-center lg:p-6">
-          {/* Full width only on a phone. Across a two-column card it became a
-              600px-wide button, which reads as a banner rather than a control. */}
-          <a
-            href={DEMO_URL}
-            className="block w-full rounded-lg bg-foreground px-5 py-2 text-center text-sm text-background transition-opacity hover:opacity-90 min-[560px]:inline-block min-[560px]:w-auto min-[560px]:px-8 lg:block lg:w-full lg:px-5"
-          >
-            {DEMO_CTA_LABEL}
-          </a>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function planSubtitle(plan: Plan, billing: Billing) {
   if (plan.priceMonthly === 0) return "Free forever";
+  if (plan.startingPrice) return "Starting price";
   return billing === "yearly" ? "Billed annually" : "Billed monthly";
 }
 
@@ -265,13 +258,15 @@ function RollingDigit({ value }: { value: number }) {
 }
 
 function AnimatedPrice({ value }: { value: number }) {
-  const digits = String(value).split("");
+  // Thousands separators as plain glyphs between the rolling digits, so $2,000
+  // reads as one figure; the digits still roll, the comma just sits.
+  const chars = value.toLocaleString("en-US").split("");
   return (
     <span className="inline-flex items-baseline text-4xl font-medium">
       <span>$</span>
-      {digits.map((d, i) => (
-        <RollingDigit key={i} value={Number(d)} />
-      ))}
+      {chars.map((c, i) =>
+        c === "," ? <span key={i}>,</span> : <RollingDigit key={i} value={Number(c)} />,
+      )}
     </span>
   );
 }
@@ -280,7 +275,7 @@ function AnimatedPrice({ value }: { value: number }) {
  * One self-consistent grid of plan cards.
  *
  * Rendered twice — once with the Free tier and once without — because the cards
- * style their outer corners with `lg:first:`/`lg:last:`. Hiding the Free card
+ * style their outer corners with `xl:first:`/`xl:last:`. Hiding the Free card
  * inside a single grid with CSS would leave `:first-child` matching a card that
  * isn't shown, so the rounded left edge would land on a hidden element and the
  * first visible card would square off.
@@ -299,8 +294,11 @@ function PlanGrid({
           // Two up from 560 rather than sm's 640: between those widths a single
           // column left the cards running the full width of the page with the
           // price stranded on one side of it.
-          className={`grid gap-6 min-[560px]:grid-cols-2 lg:gap-0 lg:grid-rows-[auto_auto_auto_auto_auto] ${
-            plans.length === 3 ? "lg:grid-cols-3" : "lg:grid-cols-4"
+          // The side-by-side table starts at xl, not lg: five columns need the
+          // width, and below it the cards run two up (the odd one out spans the
+          // row) rather than squeezing to ~180px each.
+          className={`grid gap-6 min-[560px]:grid-cols-2 xl:gap-0 xl:grid-rows-[auto_auto_auto_auto_auto] ${
+            plans.length === 4 ? "xl:grid-cols-4" : "xl:grid-cols-5"
           } ${className}`}
         >
         {plans.map((plan, idx) => {
@@ -308,6 +306,15 @@ function PlanGrid({
           // The card AFTER the highlighted one drops its gray left divider, so
           // it doesn't double the highlighted card's blue right edge.
           const dropLeftDivider = plans[idx - 1]?.highlighted;
+          // Two-up (560–1279) with an odd number of cards leaves the last one
+          // alone in its row at half width. It takes the whole row instead, and
+          // from md its three groups sit side by side so it doesn't read as a
+          // stretched column.
+          const spansRow = plans.length % 2 === 1 && idx === plans.length - 1;
+          // The group heading: "Everything in Starter, plus" only while that
+          // card is actually on the page. Signed-in visitors don't see Free, so
+          // Starter has no card to build on and the heading is just "Features".
+          const prevName = plans[idx - 1]?.name;
           // Original structure kept: filled header panel (price pinned to the
           // bottom) → detached button → features. The only addition is an
           // outline around the WHOLE card (outer wrapper); the header panel no
@@ -323,11 +330,13 @@ function PlanGrid({
               // one table on the light page. In dark that left the whole table
               // on the page's near-black with nothing but hairlines to hold it,
               // so there the fill stays on at every width.
-              className={`relative isolate flex min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-card p-4 lg:grid lg:grid-rows-subgrid lg:row-span-5 lg:rounded-none lg:border-y lg:border-l lg:border-r-0 lg:border-solid lg:border-border lg:bg-transparent lg:[[data-theme=dark]_&]:bg-card lg:p-6 lg:first:!rounded-l-xl lg:last:!rounded-r-xl lg:[&:last-child]:border-r ${
-                dropLeftDivider ? "lg:[[data-theme=dark]_&]:border-l-0" : ""
+              className={`${
+                spansRow ? "min-[560px]:max-xl:col-span-2 " : ""
+              }relative isolate flex min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-card p-4 xl:grid xl:grid-rows-subgrid xl:row-span-5 xl:rounded-none xl:border-y xl:border-l xl:border-r-0 xl:border-solid xl:border-border xl:bg-transparent xl:[[data-theme=dark]_&]:bg-card xl:p-6 xl:first:!rounded-l-xl xl:last:!rounded-r-xl xl:[&:last-child]:border-r ${
+                dropLeftDivider ? "xl:[[data-theme=dark]_&]:border-l-0" : ""
               } ${
                 plan.highlighted
-                  ? `${PLAN_EDGE_BRAND} lg:[[data-theme=dark]_&]:border-r lg:[[data-theme=dark]_&]:[border-image:linear-gradient(to_bottom,rgba(125,164,255,0.55),#383838_75%)_1]`
+                  ? `${PLAN_EDGE_BRAND} xl:[[data-theme=dark]_&]:border-r xl:[[data-theme=dark]_&]:[border-image:linear-gradient(to_bottom,rgba(125,164,255,0.55),#383838_75%)_1]`
                   : ""
               }`}
             >
@@ -352,11 +361,11 @@ function PlanGrid({
                   the bottom: it masks the middle of the bloom so the wash reads
                   as a halo around the panel rather than a tint across the card. */}
               <div
-                // lg:bg-background is what hides this panel against the unfilled
+                // xl:bg-background is what hides this panel against the unfilled
                 // desktop card while still masking the aurora. In dark the card
                 // carries a fill, so the page black would read as a hole punched
                 // in it — take the card's own tone there.
-                className="flex min-h-[200px] flex-col justify-between rounded-xl rounded-b-none border border-transparent bg-card p-5 lg:bg-background lg:[[data-theme=dark]_&]:bg-card"
+                className="flex min-h-[200px] flex-col justify-between rounded-xl rounded-b-none border border-transparent bg-card p-5 xl:bg-background xl:[[data-theme=dark]_&]:bg-card"
               >
                 <div>
                   <h3 className="text-lg font-medium">{plan.name}</h3>
@@ -374,22 +383,47 @@ function PlanGrid({
                 </div>
               </div>
 
-              {/* Detached CTA — our standard rounded-lg button. Demo plans route
-                  to the demo page; the rest to signup. */}
-              <a
-                href={plan.cta === DEMO_CTA_LABEL ? DEMO_URL : SIGNUP_URL}
-                className="mt-3 rounded-lg bg-foreground px-5 py-2 text-center text-sm text-background transition-opacity hover:opacity-90"
-              >
-                {plan.cta}
-              </a>
+              {/* Detached CTA — our standard rounded-lg button. One grid cell
+                  (the table's second row), so a card without the secondary
+                  button below it still lines up with the ones that have it. */}
+              <div className="mt-3 flex flex-col gap-2 xl:pb-6">
+                <a
+                  href={plan.ctaHref}
+                  className="rounded-lg bg-foreground px-5 py-2 text-center text-sm text-background transition-opacity hover:opacity-90"
+                >
+                  {plan.cta}
+                </a>
+                {/* Secondary demo CTA — a borderless ghost button: same size as
+                    the primary above it, no outline, tinted on hover. */}
+                {plan.secondaryDemo && (
+                  <a
+                    href={DEMO_URL}
+                    className="rounded-lg px-5 py-2 text-center text-sm text-foreground transition-colors hover:bg-foreground/5"
+                  >
+                    {DEMO_CTA_LABEL}
+                  </a>
+                )}
+              </div>
 
-              <div className="mt-6 flex flex-1 cursor-default flex-col px-2 pb-2 lg:contents">
+              <div
+                className={`mt-6 flex flex-1 cursor-default flex-col px-2 pb-2 xl:contents ${
+                  spansRow
+                    ? "md:max-xl:grid md:max-xl:grid-cols-3 md:max-xl:items-start md:max-xl:gap-x-8"
+                    : ""
+                }`}
+              >
                 {plan.featureGroups.map((group) => (
                   <div
                     key={group.label}
-                    className="border-t border-border pt-5 [&:not(:first-child)]:mt-5"
+                    className={`border-t border-border pt-5 [&:not(:first-child)]:mt-5 ${
+                      spansRow ? "md:max-xl:[&:not(:first-child)]:mt-0" : ""
+                    }`}
                   >
-                    <p className="text-sm font-medium">{group.label}</p>
+                    <p className="text-sm font-medium">
+                      {group.extendsPrevious && prevName
+                        ? `Everything in ${prevName}, plus`
+                        : group.label}
+                    </p>
                     <ul className="mt-3 flex flex-col gap-2.5">
                       {group.items.map((item) => (
                         <li
@@ -475,19 +509,16 @@ export function PricingPlans() {
 
       {/* Plans — tucked closer under the toggle on mobile; roomier on desktop.
           Column count tracks the visible plans so hiding Free (signed-in)
-          reflows to three even columns rather than leaving a gap. */}
-      <div className="mt-5 md:mt-12 lg:overflow-hidden lg:rounded-xl">
+          reflows to four even columns rather than leaving a gap. */}
+      <div className="mt-5 md:mt-12 xl:overflow-hidden xl:rounded-xl">
         {/* Both variants ship and `data-authed` on <html> hides one before
             first paint (see globals.css). Choosing in an effect meant a
-            signed-in visitor watched four cards render and then reflow to
-            three. */}
+            signed-in visitor watched five cards render and then reflow to
+            four. */}
         <PlanGrid plans={PLANS} billing={billing} className="unauth-only" />
         <PlanGrid plans={PAID_PLANS} billing={billing} className="auth-only" />
       </div>
 
-      {/* Enterprise — a standalone outlined card below the plans table, detached
-          by a gap rather than sharing the table's border. */}
-      <EnterpriseCard />
     </div>
   );
 }

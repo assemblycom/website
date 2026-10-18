@@ -38,12 +38,12 @@ export const PLAN_WASH_NEUTRAL =
 /**
  * /pricing only. Its cards are a subgrid that runs taller than the card block's,
  * so the wash is given a longer fade there; applied after the base strings
- * above, which it overrides from lg up.
+ * above, which it overrides from xl up (where the table layout starts).
  */
 export const PLAN_WASH_BRAND_LG =
-  "lg:[background:linear-gradient(to_bottom,rgba(125,164,255,0.45),transparent_160px)]";
+  "xl:[background:linear-gradient(to_bottom,rgba(125,164,255,0.45),transparent_160px)]";
 export const PLAN_WASH_NEUTRAL_LG =
-  "lg:[background:linear-gradient(to_bottom,var(--muted),transparent_160px)]";
+  "xl:[background:linear-gradient(to_bottom,var(--muted),transparent_160px)]";
 
 /**
  * The recommended card's own edge: brand blue at the top, gone by the middle,
