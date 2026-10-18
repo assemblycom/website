@@ -386,19 +386,19 @@ function PlanGrid({
               {/* Detached CTA — our standard rounded-lg button. One grid cell
                   (the table's second row), so a card without the secondary
                   button below it still lines up with the ones that have it. */}
-              <div className="mt-3 flex flex-col gap-2">
+              <div className="mt-3 flex flex-col gap-2 xl:pb-6">
                 <a
                   href={plan.ctaHref}
                   className="rounded-lg bg-foreground px-5 py-2 text-center text-sm text-background transition-opacity hover:opacity-90"
                 >
                   {plan.cta}
                 </a>
-                {/* Secondary demo CTA — the outlined button the closing CTA
-                    below the table uses, so "Book a demo" is one look. */}
+                {/* Secondary demo CTA — a borderless ghost button: same size as
+                    the primary above it, no outline, tinted on hover. */}
                 {plan.secondaryDemo && (
                   <a
                     href={DEMO_URL}
-                    className="rounded-lg border border-foreground/20 bg-transparent px-5 py-2 text-center text-sm text-foreground transition-colors hover:bg-foreground/5"
+                    className="rounded-lg px-5 py-2 text-center text-sm text-foreground transition-colors hover:bg-foreground/5"
                   >
                     {DEMO_CTA_LABEL}
                   </a>
