@@ -24,26 +24,26 @@ export default function CustomersPage() {
             Trusted by professional service firms with 1M+ clients and counting.
           </p>
 
-          {/* Review-score strip. NOTE: placeholder ratings — confirm/replace with
-              real G2 / Capterra numbers before launch. */}
+          {/* Review-score strip. G2 4.7 and Capterra 4.8, current as of
+              2026-10-19; the template pages' proof strip quotes the same. */}
           <div className="mx-auto mt-8 flex flex-wrap items-center justify-center gap-2.5">
             <a
               href={G2_URL}
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="Assembly on G2 — 4.8 out of 5"
+              aria-label="Assembly on G2: 4.7 out of 5"
               className="inline-flex items-center gap-1.5 rounded-md bg-muted px-3 py-1.5 font-mono text-xs uppercase tracking-wide text-muted-foreground transition-colors hover:text-foreground"
             >
-              <G2Logo className="h-4 w-4" /> 4.8 rating
+              <G2Logo className="h-4 w-4" /> 4.7 rating
             </a>
             <a
               href={CAPTERRA_URL}
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="Assembly on Capterra — 4.7 out of 5"
+              aria-label="Assembly on Capterra: 4.8 out of 5"
               className="inline-flex items-center gap-1.5 rounded-md bg-muted px-3 py-1.5 font-mono text-xs uppercase tracking-wide text-muted-foreground transition-colors hover:text-foreground"
             >
-              <CapterraLogo className="h-4 w-4" /> 4.7 rating
+              <CapterraLogo className="h-4 w-4" /> 4.8 rating
             </a>
           </div>
         </div>

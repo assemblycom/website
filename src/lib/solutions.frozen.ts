@@ -215,7 +215,7 @@ export const FROZEN_SOLUTIONS: CmsPage[] = [
           },
           {
             "question": "Will my clients actually use the portal?",
-            "answer": "This is the number one question freelancers should ask. Assembly is designed to be intuitive for clients — they access a simple, clean portal on desktop or mobile, with no app download required. They can reply to messages from email, pay invoices with one click, and upload files with drag-and-drop. The simpler the portal experience, the more your clients will engage — and Assembly is rated 4.8/5 on G2 largely because of how easy it is for both businesses and their clients."
+            "answer": "This is the number one question freelancers should ask. Assembly is designed to be intuitive for clients — they access a simple, clean portal on desktop or mobile, with no app download required. They can reply to messages from email, pay invoices with one click, and upload files with drag-and-drop. The simpler the portal experience, the more your clients will engage — and Assembly is rated 4.7/5 on G2 largely because of how easy it is for both businesses and their clients."
           },
           {
             "question": "Can I automate my client onboarding?",
