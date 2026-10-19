@@ -28,6 +28,15 @@ const DELIVERY_TOKEN = process.env.CONTENTFUL_DELIVERY_TOKEN;
 // The content lives in master. Read-only, so there's nothing to isolate from.
 const ENVIRONMENT = process.env.CONTENTFUL_ENVIRONMENT || "master";
 
+export interface TemplateImage {
+  url: string;
+  title: string;
+  /** The asset's Description, which is where its alt text is written. */
+  description?: string;
+  width?: number;
+  height?: number;
+}
+
 /** The fields this site reads. The content type carries many more. */
 export interface AppTemplateEntry {
   slug: string;
@@ -39,8 +48,29 @@ export interface AppTemplateEntry {
   category?: string;
   /** "App Overview" — one rich-text field covering About + What you can customize. */
   overview?: Document;
-  /** "Image List" — the detail gallery. */
-  images: { url: string; title: string; width?: number; height?: number }[];
+  /** "Image List (Desktop)" — the hero shot first, the benefits shot second. */
+  images: TemplateImage[];
+  /** "Image List (mobile)" — the same shots cropped for a phone, in the same order. */
+  mobileImages: TemplateImage[];
+  /**
+   * The detail page's per-template copy. Every one is optional, and the page
+   * decides each fallback (see template-page.ts) so a template nobody has
+   * filled in yet still renders whole.
+   */
+  marketingHeadline?: string;
+  heroDescription?: string;
+  /** The search term, as it reads mid-sentence — "client project tracker". */
+  seoKeyword?: string;
+  definitionBody?: string;
+  ctaHeading?: string;
+  seoTitle?: string;
+  seoMetaDescription?: string;
+  /** "FAQ" — linked question/answer entries, in the order the editor set. */
+  faqs: { question: string; answer: string }[];
+  /** "Relative Apps" — the slugs picked for the Works with row. */
+  relatedSlugs: string[];
+  /** "Audience" — "Clients", "Internal Team", or both. */
+  audience: string[];
   /**
    * Contentful "Template Id" — the app id the product resolves this template
    * by, e.g. "app-0548119d". Not every entry carries one yet, so it's optional
@@ -114,17 +144,41 @@ export const isContentfulConfigured = Boolean(client);
  */
 export const contentfulClient = client;
 
-function toImage(asset: Asset) {
-  const file = asset.fields?.file;
+function toImage(asset: Asset): TemplateImage | null {
+  const file = asset?.fields?.file;
   if (!file?.url) return null;
   const details = file.details as { image?: { width: number; height: number } } | undefined;
+  const description = asset.fields.description;
   return {
     // Contentful returns protocol-relative URLs.
     url: String(file.url).startsWith("//") ? `https:${file.url}` : String(file.url),
     title: typeof asset.fields.title === "string" ? asset.fields.title : "",
+    description: typeof description === "string" && description.trim() ? description.trim() : undefined,
     width: details?.image?.width,
     height: details?.image?.height,
   };
+}
+
+function toImages(value: unknown): TemplateImage[] {
+  return Array.isArray(value)
+    ? (value as Asset[]).map(toImage).filter((i): i is TemplateImage => Boolean(i))
+    : [];
+}
+
+/** A trimmed string, or undefined for anything empty — an editor clearing a
+ *  field leaves "" behind, and that must fall back the same as never set. */
+function text(value: unknown): string | undefined {
+  return typeof value === "string" && value.trim() ? value.trim() : undefined;
+}
+
+// Linked entries arrive resolved (include: 2), but one that is unpublished or
+// out of the include depth comes back as a bare link with no fields, so each is
+// read defensively and dropped rather than rendered half-empty.
+function linkedFields(value: unknown): Record<string, unknown>[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((item) => (item as { fields?: Record<string, unknown> })?.fields)
+    .filter((f): f is Record<string, unknown> => Boolean(f));
 }
 
 function toAppTemplate(entry: Entry<never>): AppTemplateEntry | null {
@@ -134,7 +188,6 @@ function toAppTemplate(entry: Entry<never>): AppTemplateEntry | null {
   if (!slug || !name) return null;
 
   const categories = Array.isArray(f.categories) ? (f.categories as string[]) : [];
-  const imageList = Array.isArray(f.imageList) ? (f.imageList as Asset[]) : [];
 
   return {
     slug,
@@ -142,7 +195,24 @@ function toAppTemplate(entry: Entry<never>): AppTemplateEntry | null {
     subtitle: typeof f.description === "string" ? f.description : undefined,
     category: categories[0],
     overview: (f.appOverview as Document) ?? undefined,
-    images: imageList.map(toImage).filter((i): i is NonNullable<typeof i> => Boolean(i)),
+    images: toImages(f.imageList),
+    mobileImages: toImages(f.mobileImageList),
+    marketingHeadline: text(f.marketingHeadline),
+    heroDescription: text(f.heroDescription),
+    seoKeyword: text(f.seoKeyword),
+    definitionBody: text(f.definitionBody),
+    ctaHeading: text(f.ctaHeading),
+    seoTitle: text(f.seoTitle),
+    seoMetaDescription: text(f.seoMetaDescription),
+    faqs: linkedFields(f.faq).flatMap((faq) => {
+      const question = text(faq.question);
+      const answer = text(faq.answer);
+      return question && answer ? [{ question, answer }] : [];
+    }),
+    relatedSlugs: linkedFields(f.relativeApps)
+      .map((app) => text(app.slug))
+      .filter((s): s is string => Boolean(s)),
+    audience: Array.isArray(f.audience) ? (f.audience as string[]) : [],
     templateId: typeof f.templateId === "string" ? f.templateId : undefined,
     isHidden: f.isHidden === true,
     featured: f.isFeatured === true,

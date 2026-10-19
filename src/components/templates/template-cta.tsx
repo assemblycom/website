@@ -66,3 +66,29 @@ export function TemplateCta({ template }: { template: CtaTemplate }) {
     />
   );
 }
+
+/**
+ * The redesigned detail page's primary action, "Use this template", which the
+ * handoff puts in place of "Add app to workspace". Same destinations as
+ * TemplateAuthCta: both auth states take the signup link carrying the
+ * template, and a template with no app behind it falls back to the app root.
+ */
+export function TemplateUseCta({
+  template,
+  className,
+}: {
+  template: CtaTemplate;
+  className?: string;
+}) {
+  const href = templateSignupUrl(template);
+  const deeplinkable = Boolean(template.templateId);
+  return (
+    <AuthLink
+      authedHref={deeplinkable ? href : APP_URL}
+      authedLabel={deeplinkable ? "Use this template" : "Open Assembly"}
+      href={href}
+      label="Use this template"
+      className={className}
+    />
+  );
+}
