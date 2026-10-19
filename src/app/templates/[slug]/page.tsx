@@ -365,7 +365,7 @@ export default async function TemplateDetailPage({ params }: Props) {
           {copy.ctaHeading}
         </h2>
         <p className="type-lead mx-auto mt-5 max-w-sm text-balance text-muted-foreground sm:max-w-xl">
-          Start from this template and make it yours in minutes. Start for free. No credit card required.
+          Start from this template for free and make it yours in minutes. No credit card required.
         </p>
         <div className="mx-auto mt-8 flex w-full max-w-xs flex-col items-stretch gap-3 sm:w-auto sm:max-w-none sm:flex-row sm:items-center sm:justify-center">
           <TemplateUseCta template={template} className={PRIMARY_BUTTON} />
