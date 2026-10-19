@@ -273,8 +273,10 @@ export default async function TemplateDetailPage({ params }: Props) {
             {benefits ? (
               <>
                 <h2 className="type-h2 max-w-2xl text-balance">{benefits.heading}</h2>
-                <div className="mt-12 grid items-stretch gap-4 lg:grid-cols-2">
-                  <div className="grid gap-4 sm:grid-cols-2">
+                <div className={`mt-12 grid items-stretch gap-4 ${images[1] ? "lg:grid-cols-2" : ""}`}>
+                  {/* Without the second shot the cards take the full width, four across
+                      from lg, rather than leaving the right half empty. */}
+                  <div className={`grid gap-4 sm:grid-cols-2 ${images[1] ? "" : "lg:grid-cols-4"}`}>
                     {benefits.cards.map((card) => (
                       <div key={card.title} className="flex flex-col gap-2 rounded-xl border border-border bg-card p-6">
                         <h3 className="type-h4">{card.title}</h3>

@@ -68,7 +68,7 @@ export function TemplateShot({
       <picture>
         {mobileSet && <source media="(max-width: 767px)" srcSet={mobileSet} sizes={sizes} />}
         <source media="(min-width: 768px)" srcSet={desktopSet} sizes={sizes} />
-        <img {...rest} alt={label} className="object-cover object-top" />
+        <img {...rest} srcSet={desktopSet} alt={label} className="object-cover object-top" />
       </picture>
     </div>
   );
