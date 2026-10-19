@@ -100,11 +100,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     // result all name the page the same way.
     ogImageFor(copy.seoTitle),
   );
-  // No hero description and no SEO description: leave the description out so
-  // search engines write their own snippet, rather than ship an empty tag or
-  // the gallery card's one-liner.
+  // No hero description and no SEO description: no description at all, so
+  // search engines write their own snippet rather than read an empty tag or
+  // the gallery card's one-liner. null, not omitted: an omitted description
+  // inherits the root layout's, which is the homepage's copy. The social
+  // objects replace the layout's wholesale, so dropping the key is enough there.
   if (!copy.seoDescription) {
-    delete metadata.description;
+    metadata.description = null;
     if (metadata.openGraph) delete metadata.openGraph.description;
     if (metadata.twitter) delete metadata.twitter.description;
   }

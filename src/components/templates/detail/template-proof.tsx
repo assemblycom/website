@@ -57,7 +57,9 @@ export function TemplateProof() {
             href={`/customers/${slug}`}
             className="flex h-8 items-center justify-center text-foreground/45 transition-colors duration-200 hover:text-foreground"
           >
-            <span className="flex h-full w-full max-w-[120px] items-center justify-center">
+            {/* aria-hidden: some marks (Advertai's SVG) label themselves, and
+                the sr-only name below already says who it is. */}
+            <span aria-hidden className="flex h-full w-full max-w-[120px] items-center justify-center">
               <CustomerLogo slug={slug} fit />
             </span>
             {/* The marks are drawn (SVG or a CSS mask), so they carry no text of
