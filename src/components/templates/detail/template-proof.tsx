@@ -16,11 +16,12 @@ const LOGO_SLUGS = [
   "durrick-designs",
 ];
 
-// The same scores, and the same badge, as the /customers hero. Re-check both
-// against G2 and Capterra before quoting them anywhere new.
+// Current as of 2026-10-19. The line beside the badges is built from these, so
+// the two can't disagree; re-check both against G2 and Capterra before quoting
+// them anywhere new.
 const RATINGS = [
-  { href: G2_URL, label: "G2", score: "4.8", Mark: G2Logo },
-  { href: CAPTERRA_URL, label: "Capterra", score: "4.7", Mark: CapterraLogo },
+  { href: G2_URL, label: "G2", score: "4.7", Mark: G2Logo },
+  { href: CAPTERRA_URL, label: "Capterra", score: "4.8", Mark: CapterraLogo },
 ];
 
 /**
@@ -47,7 +48,7 @@ export function TemplateProof() {
           ))}
         </div>
         <p className="type-caption text-muted-foreground">
-          Rated 4.8 on G2 and 4.7 on Capterra
+          Rated {RATINGS.map((r) => `${r.score} on ${r.label}`).join(" and ")}
         </p>
       </div>
       <div className="grid w-full grid-cols-3 gap-x-6 gap-y-5 md:w-auto md:flex-1 md:grid-cols-6 md:gap-x-8">
