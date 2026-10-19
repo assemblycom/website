@@ -87,7 +87,8 @@ function article(word: string): string {
 
 export interface TemplateCopyInput {
   name: string;
-  subtitle: string;
+  /** The committed long-form description, the last stop for the meta description. */
+  longDescription?: string;
   marketingHeadline?: string;
   heroDescription?: string;
   seoKeyword?: string;
@@ -99,31 +100,37 @@ export interface TemplateCopyInput {
 
 export interface TemplateCopy {
   headline: string;
-  lead: string;
-  /** The keyword as it reads mid-sentence. */
-  keyword: string;
+  /** Undefined when there's no hero description: the subtitle is the card line. */
+  lead?: string;
   /** Null when there's no definition body: the whole section is hidden. */
   definition: { heading: string; body: string } | null;
   faqHeading: string;
   ctaHeading: string;
   /** The bare title; pageMetadata() adds " | Assembly". */
   seoTitle: string;
-  seoDescription: string;
+  /** Undefined when nothing suitable exists: better no description than the card line. */
+  seoDescription?: string;
 }
 
 export function templateCopy(input: TemplateCopyInput): TemplateCopy {
-  const keyword = input.seoKeyword ?? input.name.toLowerCase();
-  const lead = input.heroDescription ?? input.subtitle;
+  const noun = input.name.toLowerCase();
+  const keyword = input.seoKeyword ?? noun;
   return {
     headline: input.marketingHeadline ?? input.name,
-    lead,
-    keyword,
+    lead: input.heroDescription,
+    // The question names the thing (the template's own name) so it matches the
+    // answer under it. The keyword is phrased for search ("project tracker
+    // template") and reads wrong as "What is a project tracker template?".
     definition: input.definitionBody
-      ? { heading: `What is ${article(keyword)} ${keyword}?`, body: input.definitionBody }
+      ? { heading: `What is ${article(noun)} ${noun}?`, body: input.definitionBody }
       : null,
-    faqHeading: `${capitalize(keyword)} questions`,
+    faqHeading: `Questions about this ${keyword}`,
     ctaHeading: input.ctaHeading ?? `Start with the ${input.name} template`,
-    seoTitle: input.seoTitle ?? `${titleCase(keyword)} Template`,
-    seoDescription: input.seoMetaDescription ?? lead,
+    seoTitle:
+      input.seoTitle ??
+      (/template$/i.test(input.name) ? titleCase(input.name) : `${titleCase(input.name)} Template`),
+    // Never the Subtitle: that's the gallery card's one-liner, not a search snippet.
+    seoDescription:
+      input.seoMetaDescription ?? input.heroDescription ?? input.longDescription ?? input.definitionBody,
   };
 }

@@ -46,25 +46,28 @@ test('rejects the old layout, too few cards, and too many', () => {
   assert.equal(parseBenefits(undefined), null);
 });
 
-test('builds headings from the SEO keyword', () => {
+test('the definition names the template; the FAQ heading uses the keyword', () => {
   const copy = templateCopy({
     name: 'Client project tracker',
-    subtitle: 'Share milestones and progress with clients',
-    seoKeyword: 'client project tracker',
+    seoKeyword: 'project tracker template',
+    seoTitle: 'Free Project Tracker Template for Clients',
     definitionBody: 'A shared view.',
   });
   assert.equal(copy.definition?.heading, 'What is a client project tracker?');
-  assert.equal(copy.faqHeading, 'Client project tracker questions');
-  assert.equal(copy.seoTitle, 'Client Project Tracker Template');
-  assert.equal(templateCopy({ name: 'x', subtitle: 'y', seoKeyword: 'onboarding wizard', definitionBody: 'z' }).definition?.heading, 'What is an onboarding wizard?');
+  assert.equal(copy.faqHeading, 'Questions about this project tracker template');
+  assert.equal(copy.seoTitle, 'Free Project Tracker Template for Clients');
+  assert.equal(templateCopy({ name: 'Onboarding wizard', definitionBody: 'z' }).definition?.heading, 'What is an onboarding wizard?');
 });
 
-test('falls back field by field', () => {
-  const copy = templateCopy({ name: 'Time tracker', subtitle: 'Log billable hours' });
+test('falls back field by field, never to the gallery subtitle', () => {
+  const copy = templateCopy({ name: 'Time tracker', longDescription: 'Track billable time per client.' });
   assert.equal(copy.headline, 'Time tracker');
-  assert.equal(copy.lead, 'Log billable hours');
+  assert.equal(copy.lead, undefined);
   assert.equal(copy.definition, null);
+  assert.equal(copy.faqHeading, 'Questions about this time tracker');
   assert.equal(copy.ctaHeading, 'Start with the Time tracker template');
   assert.equal(copy.seoTitle, 'Time Tracker Template');
-  assert.equal(copy.seoDescription, 'Log billable hours');
+  assert.equal(copy.seoDescription, 'Track billable time per client.');
+  assert.equal(templateCopy({ name: 'x', heroDescription: 'Hero.', longDescription: 'Long.' }).seoDescription, 'Hero.');
+  assert.equal(templateCopy({ name: 'x' }).seoDescription, undefined);
 });

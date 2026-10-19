@@ -12,13 +12,12 @@ import { cn } from "@/lib/utils";
  * the hero shot is the page's LCP, so it has to be eager.
  *
  * `alt` is the asset's own Description when the editor wrote one, else the
- * caller's default.
+ * caller's "{name} screenshot".
  */
 export function TemplateShot({
   desktop,
   mobile,
   alt,
-  aspect,
   sizes,
   priority = false,
   className,
@@ -26,24 +25,28 @@ export function TemplateShot({
   desktop?: TemplateImage;
   mobile?: TemplateImage;
   alt: string;
-  /** Tailwind aspect class for the frame; the shot is cropped to it from the top. */
-  aspect: string;
   sizes: string;
   priority?: boolean;
   className?: string;
 }) {
-  // The Image List (mobile) shots are full phone screens, portrait at about
-  // 1:2.2. Kept in the desktop frame's 16:10 they'd show a sliver of status bar,
-  // so below md a frame holding one turns 4:5 and shows the top of the screen.
+  // The frame takes each shot's own proportions, read off the asset, so nothing
+  // is cropped: a 16:9 export shows whole in a 16:9 frame. Below md the mobile
+  // shot (a full phone screen, about 1:2.2) sets the shape instead, capped in
+  // height so one screenshot can't fill the phone, and contained within it.
+  const ratio = (image?: TemplateImage) =>
+    image?.width && image.height ? `${image.width} / ${image.height}` : undefined;
+  const style = {
+    "--shot-ratio": ratio(desktop) ?? "16 / 10",
+    "--shot-ratio-sm": ratio(mobile) ?? ratio(desktop) ?? "16 / 10",
+  } as React.CSSProperties;
   const frame = cn(
-    "relative overflow-hidden bg-muted",
-    aspect,
-    mobile && "max-md:aspect-[4/5]",
+    "relative overflow-hidden bg-muted aspect-[var(--shot-ratio)] max-md:aspect-[var(--shot-ratio-sm)]",
+    mobile && "max-md:max-h-[70svh]",
     className,
   );
   if (!desktop) {
     return (
-      <div className={frame} role="img" aria-label={alt}>
+      <div className={frame} style={style} role="img" aria-label={alt}>
         <PlaceholderArt />
       </div>
     );
@@ -64,11 +67,11 @@ export function TemplateShot({
     : undefined;
 
   return (
-    <div className={frame}>
+    <div className={frame} style={style}>
       <picture>
         {mobileSet && <source media="(max-width: 767px)" srcSet={mobileSet} sizes={sizes} />}
         <source media="(min-width: 768px)" srcSet={desktopSet} sizes={sizes} />
-        <img {...rest} srcSet={desktopSet} alt={label} className="object-cover object-top" />
+        <img {...rest} srcSet={desktopSet} alt={label} className="object-contain" />
       </picture>
     </div>
   );

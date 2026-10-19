@@ -55,12 +55,15 @@ export function TemplateProof() {
           <Link
             key={slug}
             href={`/customers/${slug}`}
-            aria-label={`Read the ${getCaseStudyBySlug(slug)?.company ?? ""} case study`}
             className="flex h-8 items-center justify-center text-foreground/45 transition-colors duration-200 hover:text-foreground"
           >
             <span className="flex h-full w-full max-w-[120px] items-center justify-center">
               <CustomerLogo slug={slug} fit />
             </span>
+            {/* The marks are drawn (SVG or a CSS mask), so they carry no text of
+                their own. Real text rather than an aria-label, so crawlers read
+                the link as the customer's name too, not just its path. */}
+            <span className="sr-only">{getCaseStudyBySlug(slug)?.company ?? "Customer"} logo</span>
           </Link>
         ))}
       </div>

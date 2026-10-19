@@ -88,6 +88,6 @@ export function ogImageFor(title: string, variant: OgVariant = "template") {
     url: `/api/og?title=${encodeURIComponent(printed)}&v=${variant}`,
     width: OG_IMAGE_WIDTH,
     height: OG_IMAGE_HEIGHT,
-    alt: `${printed} — ${SITE_NAME}`,
+    alt: `${printed} | ${SITE_NAME}`,
   };
 }

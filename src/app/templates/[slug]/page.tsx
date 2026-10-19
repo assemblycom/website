@@ -73,7 +73,7 @@ async function resolveTemplate(slug: string) {
     : local;
   const copy = templateCopy({
     name: template.title,
-    subtitle: template.description,
+    longDescription: template.longDescription || undefined,
     marketingHeadline: entry?.marketingHeadline,
     heroDescription: entry?.heroDescription,
     seoKeyword: entry?.seoKeyword,
@@ -90,16 +90,25 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const resolved = await resolveTemplate(slug);
   if (!resolved) return {};
   const { template, copy } = resolved;
-  return pageMetadata(
+  const metadata = pageMetadata(
     {
       title: copy.seoTitle,
-      description: copy.seoDescription,
+      description: copy.seoDescription ?? "",
       path: `/templates/${template.slug}`,
     },
-    // A template's preview names the template. Shared across every surface that
-    // unfurls the link, so what someone sees before clicking is what they get.
-    ogImageFor(template.title),
+    // The card prints the SEO title, so the unfurl, the tab and the search
+    // result all name the page the same way.
+    ogImageFor(copy.seoTitle),
   );
+  // No hero description and no SEO description: leave the description out so
+  // search engines write their own snippet, rather than ship an empty tag or
+  // the gallery card's one-liner.
+  if (!copy.seoDescription) {
+    delete metadata.description;
+    if (metadata.openGraph) delete metadata.openGraph.description;
+    if (metadata.twitter) delete metadata.twitter.description;
+  }
+  return metadata;
 }
 
 /**
@@ -174,7 +183,7 @@ export default async function TemplateDetailPage({ params }: Props) {
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",
       name: `${template.title} template`,
-      description: copy.seoDescription,
+      ...(copy.seoDescription ? { description: copy.seoDescription } : {}),
       url,
       applicationCategory: "BusinessApplication",
       operatingSystem: "Web",
@@ -220,7 +229,7 @@ export default async function TemplateDetailPage({ params }: Props) {
               <span className="text-foreground">{template.title}</span>
             </nav>
             <h1 className="type-display mt-5 text-balance">{copy.headline}</h1>
-            <p className="type-lead mt-4 max-w-xl text-pretty text-muted-foreground">{copy.lead}</p>
+            <p className="type-lead mt-4 max-w-xl text-pretty text-muted-foreground">{copy.lead ?? template.description}</p>
             <div id={HERO_CTA_ID} className="mt-8 flex flex-col gap-3 sm:flex-row">
               <TemplateUseCta template={template} className={PRIMARY_BUTTON} />
               <a href={DEMO_URL} className={SECONDARY_BUTTON}>
@@ -228,7 +237,7 @@ export default async function TemplateDetailPage({ params }: Props) {
               </a>
             </div>
             <p className="type-caption mt-4 text-muted-foreground">
-              Free plan that never expires. No credit card required.
+              Start for free. No credit card required.
             </p>
           </div>
           <figure className="min-w-0 lg:col-span-7">
@@ -236,8 +245,7 @@ export default async function TemplateDetailPage({ params }: Props) {
               <TemplateShot
                 desktop={images[0]}
                 mobile={mobileImages[0]}
-                alt={`${template.title} template in Assembly.`}
-                aspect="aspect-[16/10]"
+                alt={`${template.title} screenshot`}
                 sizes="(min-width: 1024px) 58vw, 100vw"
                 priority
               />
@@ -289,8 +297,7 @@ export default async function TemplateDetailPage({ params }: Props) {
                       <TemplateShot
                         desktop={images[1]}
                         mobile={mobileImages[1]}
-                        alt={`${template.title} as a client sees it.`}
-                        aspect="aspect-[4/3]"
+                        alt={`${template.title} screenshot`}
                         sizes="(min-width: 1024px) 50vw, 100vw"
                         className="rounded-xl border border-border"
                       />
@@ -356,7 +363,7 @@ export default async function TemplateDetailPage({ params }: Props) {
           {copy.ctaHeading}
         </h2>
         <p className="type-lead mx-auto mt-5 max-w-sm text-balance text-muted-foreground sm:max-w-xl">
-          Start from this template and make it yours in minutes. Free plan that never expires.
+          Start from this template and make it yours in minutes. Start for free. No credit card required.
         </p>
         <div className="mx-auto mt-8 flex w-full max-w-xs flex-col items-stretch gap-3 sm:w-auto sm:max-w-none sm:flex-row sm:items-center sm:justify-center">
           <TemplateUseCta template={template} className={PRIMARY_BUTTON} />
