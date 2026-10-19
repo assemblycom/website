@@ -32,7 +32,15 @@ export function TemplateShot({
   priority?: boolean;
   className?: string;
 }) {
-  const frame = cn("relative overflow-hidden bg-muted", aspect, className);
+  // The Image List (mobile) shots are full phone screens, portrait at about
+  // 1:2.2. Kept in the desktop frame's 16:10 they'd show a sliver of status bar,
+  // so below md a frame holding one turns 4:5 and shows the top of the screen.
+  const frame = cn(
+    "relative overflow-hidden bg-muted",
+    aspect,
+    mobile && "max-md:aspect-[4/5]",
+    className,
+  );
   if (!desktop) {
     return (
       <div className={frame} role="img" aria-label={alt}>
