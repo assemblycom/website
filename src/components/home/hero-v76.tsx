@@ -173,9 +173,9 @@ export function HeroV76({
 }) {
   const carousel = carouselFrom(templates);
 
-  // Every render carries one of the three messages now. Without a variant the
-  // visitor is simply outside the test — they are not shown the old headline,
-  // which is retired, but the fallback message on the fallback layout.
+  // Every render carries the shipped message. Without a variant the visitor is
+  // simply outside the arm — they are not shown the old headline, which is
+  // retired, but the fallback message on the fallback layout.
   const message = COPY_VARIANTS[variant?.copy ?? FALLBACK_COPY];
   const layout = variant?.layout ?? FALLBACK_LAYOUT;
   // A message uses its own lockup where it sets one, and balances on its own
@@ -437,7 +437,7 @@ export function HeroV76({
           <HeroArmLinks arm={variant.arm} />
         </>
       )}
-      {layout === "v2" ? (
+      {layout === "v3" ? (
         <HeroBig
           headline={message.h1}
           lines={message.big.lines}
