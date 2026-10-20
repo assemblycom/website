@@ -1,11 +1,18 @@
 /**
- * The homepage hero test: three messages on the simple big-type layout.
+ * The homepage hero: one message, the client experience one, on the simple
+ * big-type layout.
  *
- * It started as three messages crossed with two layouts (`control`, the
- * composer, and `bigtype`). Big type won the interim read and became the only
- * layout, and the page below the hero changed with it, so the arms were renamed
- * `<copy>-v2`. New names keep Experiment 2 signups from pooling with Experiment
- * 1's in the readout.
+ * It started as a test of three messages crossed with two layouts (`control`,
+ * the composer, and `bigtype`). Big type won the first read and became the only
+ * layout, and the arms were renamed `<copy>-v2` when the page below the hero
+ * changed. The second read ranked the client experience message first, so
+ * Round 3 stops the test and ships that message to everyone, with a rewritten
+ * body, as `clients-v3`. The other two messages are in git history.
+ *
+ * The arm machinery stays on purpose. Signups still carry `heroArm`, so the
+ * shipped hero has a baseline of its own, and the new name keeps it from
+ * pooling with Round 2's readout. A later round can add arms back here without
+ * touching the middleware.
  *
  * Keys are semantic rather than lettered on purpose. The prototype's switcher
  * letters its layouts by list position while the URL keys them by their own
@@ -17,15 +24,15 @@
  * this test has no traffic to read.
  */
 
-/** The message. */
-export const COPY_KEYS = ["firm", "builder", "clients"] as const;
+/** The message. Only the one that won Round 2 ships. */
+export const COPY_KEYS = ["clients"] as const;
 export type CopyKey = (typeof COPY_KEYS)[number];
 
-/** The page version. `v2` is big type over the Experiment 2 page. */
-export const LAYOUT_KEYS = ["v2"] as const;
+/** The page version. `v3` is big type with the Round 3 body copy. */
+export const LAYOUT_KEYS = ["v3"] as const;
 export type LayoutKey = (typeof LAYOUT_KEYS)[number];
 
-/** `<copy>-<layout>`, e.g. "firm-v2". What the cookie and events carry. */
+/** `<copy>-<layout>`, e.g. "clients-v3". What the cookie and events carry. */
 export type Arm = `${CopyKey}-${LayoutKey}`;
 
 export const ARMS: Arm[] = COPY_KEYS.flatMap((copy) =>
@@ -33,21 +40,12 @@ export const ARMS: Arm[] = COPY_KEYS.flatMap((copy) =>
 );
 
 /**
- * What renders for anyone the test leaves out — logged-in visitors, and every
- * request while the kill switch is on.
- *
- * A test message on the shipped layout, NOT the headline the site used to
- * carry. "The platform firms run on and build on" is retired: the three
- * messages below replace it outright, and a visitor outside the test should see
- * the site as it now reads rather than a headline nothing else still uses.
- *
- * The cost of that is deliberate and worth naming: there is no holdout. No arm
- * and no fallback reproduces the old page, so the test can say which message
- * and which layout win against each other, and cannot say whether any of them
- * beats what came before.
+ * What renders for anyone the arm leaves out — logged-in visitors, and every
+ * request while the kill switch is on. It is the shipped hero, so a visitor
+ * outside the arm sees the same page as everyone else.
  */
-export const FALLBACK_COPY: CopyKey = "firm";
-export const FALLBACK_LAYOUT: LayoutKey = "v2";
+export const FALLBACK_COPY: CopyKey = "clients";
+export const FALLBACK_LAYOUT: LayoutKey = "v3";
 
 export interface CopyVariant {
   key: CopyKey;
@@ -76,54 +74,6 @@ export interface CopyVariant {
 }
 
 export const COPY_VARIANTS: Record<CopyKey, CopyVariant> = {
-  firm: {
-    key: "firm",
-    label: "AI-native firm",
-    h1: "Become an AI-native business",
-    // Breaks before the compound rather than after it. Left to balance itself
-    // this came out "Become an AI-native" / "business", which leaves a single
-    // word on the second line and splits the phrase that carries the message.
-    h1Lines: ["Become an", "AI-native business"],
-    // Re-anchored with the headline. These are matched by `indexOf`, so the
-    // previous anchors ("firm", "for") would simply not be found in the new
-    // wording and the big-type arm would have rendered with no app tiles at
-    // all — silently, since a tile that isn't located is dropped. Same count
-    // and rhythm as before: a pair early, a single before the last word.
-    big: {
-      // Hand-set, because the automatic measure breaks "AI-native" at its own
-      // hyphen — the 16ch cap lands mid-compound at every width, and a split
-      // hyphenated word at display size reads as a mistake.
-      lines: ["Become", "an AI-native business"],
-      iconAfter: "Become",
-      iconPair: true,
-      iconBefore: "business",
-    },
-    body: "Start with customizable apps for client intake, proposals, payments, project tracking, and more. Describe anything else, and AI builds it.",
-  },
-  builder: {
-    key: "builder",
-    label: "Builder for real businesses",
-    h1: "The AI app builder for real businesses, not weekend projects",
-    h1Lines: [
-      "The AI app builder for real",
-      "businesses, not weekend projects",
-    ],
-    big: {
-      // The comma is the one in `h1`. The prototype's lockup dropped it, which
-      // would have made this message read differently in the two layouts — and
-      // a message is supposed to be the same thing in both, or the layout read
-      // is picking up a copy change.
-      lines: [
-        "The AI app builder",
-        "for real businesses, not",
-        "weekend projects",
-      ],
-      iconAfter: "real",
-      iconPair: true,
-      iconBefore: "projects",
-    },
-    body: "Built apps with secure client logins, permissions, and per-client personalization. Ready to use with clients from day one. No code, no hosting, no auth to wire up.",
-  },
   clients: {
     key: "clients",
     label: "Client experience",
@@ -133,7 +83,10 @@ export const COPY_VARIANTS: Record<CopyKey, CopyVariant> = {
       iconAfter: "Deliver",
       iconPair: true,
     },
-    body: "Assembly comes with a CRM, a branded client experience, and 30+ apps for intake, proposals, payments, project tracking, and more. Tailor any of them with AI, or build what's missing.",
+    // Opens on the client and walks their journey in order (onboard, sign,
+    // collaborate, pay). "Customizable" keeps the point that the ready-made apps
+    // can be changed, since visitors who miss it try to rebuild them with AI.
+    body: "Let clients onboard, sign, collaborate, and pay in one branded client experience, with a CRM behind it for your team. Start with 30+ customizable apps, then use AI to build what's missing.",
   },
 };
 
@@ -154,19 +107,24 @@ export function parseArm(
   return { copy, layout };
 }
 
-/** Experiment 1's layouts, both retired in favour of `v2`. */
-const LEGACY_LAYOUTS = new Set(["control", "bigtype"]);
+/** The one arm that ships. */
+const SHIPPED_ARM: Arm = `${FALLBACK_COPY}-${FALLBACK_LAYOUT}`;
+
+/** Every message and page version from Rounds 1 and 2, all retired. */
+const LEGACY_COPY = new Set(["firm", "builder", "clients"]);
+const LEGACY_LAYOUTS = new Set(["control", "bigtype", "v2"]);
 
 /**
- * The arm a held cookie should become. A visitor holding an Experiment 1 arm
- * (`<copy>-control` or `<copy>-bigtype`) keeps their message and moves to its
- * v2 arm, rather than being redrawn onto a message they were never shown.
+ * The arm a held cookie should become. Any arm from Rounds 1 or 2 moves to the
+ * shipped one, since its message or page no longer exists, and the rewritten
+ * cookie means the visitor's next signup reports the hero they actually saw.
  */
 export function migrateArm(value: string | undefined | null): Arm | null {
   if (!value) return null;
+  if (parseArm(value)) return value as Arm;
   const [copy, layout] = value.split("-");
-  if (LEGACY_LAYOUTS.has(layout) && isCopyKey(copy)) return `${copy}-v2`;
-  return parseArm(value) ? (value as Arm) : null;
+  if (LEGACY_COPY.has(copy) && LEGACY_LAYOUTS.has(layout)) return SHIPPED_ARM;
+  return null;
 }
 
 /**
@@ -175,17 +133,21 @@ export function migrateArm(value: string | undefined | null): Arm | null {
  * and the same query on this site land on the same arm.
  */
 const COPY_ALIASES: Record<string, CopyKey> = {
-  a: "firm",
-  b: "builder",
+  // Links to the retired messages land on the shipped one rather than failing.
+  a: "clients",
+  b: "clients",
   c: "clients",
+  firm: "clients",
+  builder: "clients",
 };
 const LAYOUT_ALIASES: Record<string, LayoutKey> = {
-  // The retired composer layout resolves to big type, so old review links
-  // still land on their message.
-  b: "v2",
-  c: "v2",
-  control: "v2",
-  bigtype: "v2",
+  // Every retired layout and page version resolves to the shipped one, so old
+  // review links still land on the homepage as it now reads.
+  b: "v3",
+  c: "v3",
+  control: "v3",
+  bigtype: "v3",
+  v2: "v3",
 };
 
 /**
@@ -204,7 +166,7 @@ export function armFromQuery(params: URLSearchParams): Arm | null {
   return `${copy}-${layout}`;
 }
 
-/** An even draw across the arms. */
+/** An even draw across the arms. With one arm it always returns it. */
 export function randomArm(): Arm {
   return ARMS[Math.floor(Math.random() * ARMS.length)];
 }
