@@ -12,7 +12,7 @@ import type { LegalDocument } from "@/components/legal/legal-document";
 export const PRIVACY_POLICY: LegalDocument = {
   title: "Privacy Policy",
   effective: "April 15, 2022",
-  lastUpdated: "09/24/2026",
+  lastUpdated: "10/20/2026",
   showLastUpdated: true,
   parts: [
     {
@@ -138,7 +138,7 @@ export const PRIVACY_POLICY: LegalDocument = {
                 "to carry out our obligations and enforce our rights arising from any contracts entered into between you and us, including for billing and collection;",
                 "to provide you with notices about your account and/or subscription, including expiration and renewal notices, email-instructions, etc.;",
                 "to provide you with news, special offers and general information about other goods, services and events which we offer that are similar to those that you have already purchased or enquired about unless you have opted not to receive such information;",
-                "to measure the effectiveness of our advertising campaigns and to show relevant ads to you and to people with similar interests, including by sharing hashed contact information with advertising partners as described in Section 15;",
+                "to measure the effectiveness of our advertising campaigns and to show relevant ads to you and to people with similar interests, including by sharing a hashed email address with advertising partners as described in Section 15 (we never share mobile numbers or SMS opt-in data with third parties for marketing);",
                 "in any other way we may describe when you provide the information; for any other purpose with your consent.",
               ],
             },
@@ -397,8 +397,15 @@ export const PRIVACY_POLICY: LegalDocument = {
           id: "15-behavioral-remarketing-hashed-contact-information",
           heading: "Hashed contact information",
           blocks: [
-            { type: "p", text: "When you sign up, request a demo, submit a form or otherwise give us your contact details, we may share your email address and phone number with these partners in hashed form. Hashing turns the information into a scrambled code before it leaves our systems. Our partners compare the code with codes they hold for their own users to (a) tell us whether our ads led to an action on our site, and (b) help us reach existing customers, or people similar to them, with relevant ads. This uses tools such as Google Enhanced Conversions and Customer Match, Meta Advanced Matching and the Meta Conversions API, and the LinkedIn Insight Tag and Conversions API. Our partners’ use of this information is governed by their own privacy policies." },
+            { type: "p", text: "When you sign up, request a demo, submit a form or otherwise give us your contact details, we may share your email address with these partners in hashed form. We do not share your mobile number this way. Hashing turns the information into a scrambled code before it leaves our systems. Our partners compare the code with codes they hold for their own users to (a) tell us whether our ads led to an action on our site, and (b) help us reach existing customers, or people similar to them, with relevant ads. This uses tools such as Google Enhanced Conversions and Customer Match, Meta Advanced Matching and the Meta Conversions API, and the LinkedIn Insight Tag and Conversions API. Our partners’ use of this information is governed by their own privacy policies." },
             { type: "p", text: "You can opt out of this sharing as described in Section 11, or by contacting support@assembly.com." },
+          ],
+        },
+        {
+          id: "15-behavioral-remarketing-mobile-numbers-sms",
+          heading: "Mobile numbers and SMS",
+          blocks: [
+            { type: "p", text: "Mobile numbers, SMS opt-in data and consent records, and the other contact information you give us in connection with text messaging, will not be shared with or sold to third parties or affiliates for their marketing or promotional purposes. We do not use this information for advertising, remarketing or conversion measurement, and we do not provide it to the advertising partners described in this section. We share it only with the Service Providers described in Section 12 (such as our messaging provider and mobile carriers), and only as needed to deliver messages to you, or where the law requires." },
           ],
         },
         {
