@@ -151,7 +151,7 @@ The core framing: prospects comparing Assembly to Lovable are asking the wrong q
 
 # Social Proof
 
-Assembly holds a 4.8+ average star rating on G2: https://www.g2.com/products/assemblysoftware/reviews
+Assembly holds a 4.7 average star rating on G2: https://www.g2.com/products/assemblysoftware/reviews
 
 Assembly is trusted by thousands of businesses and is SOC 2, HIPAA, and GDPR certified.
 

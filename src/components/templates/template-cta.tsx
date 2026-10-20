@@ -26,9 +26,12 @@ type CtaTemplate = { templateId?: string; title: string; description: string };
  */
 export function TemplateAuthCta({
   template,
+  label = "Get started",
   className,
 }: {
   template: CtaTemplate;
+  /** The signed-out label. The signed-in one is decided here, for every surface. */
+  label?: string;
   className?: string;
 }) {
   const href = templateSignupUrl(template);
@@ -38,7 +41,7 @@ export function TemplateAuthCta({
       authedHref={deeplinkable ? href : APP_URL}
       authedLabel={deeplinkable ? "Add app to workspace" : "Open Assembly"}
       href={href}
-      label="Get started"
+      label={label}
       className={className}
     />
   );
@@ -65,4 +68,22 @@ export function TemplateCta({ template }: { template: CtaTemplate }) {
       className="block w-full rounded-lg bg-foreground px-5 py-2.5 text-center text-sm text-background transition-opacity hover:opacity-90 sm:inline-block sm:w-auto"
     />
   );
+}
+
+/**
+ * The redesigned detail page's primary action. Signed out it reads "Use this
+ * template", per the handoff; signed in it keeps production's behaviour from
+ * TemplateAuthCta ("Add app to workspace", or "Open Assembly" when the
+ * template has no app behind it). Both variants ship in the markup and the
+ * pre-paint auth script sets display:none on the one that doesn't apply, so a
+ * screen reader meets one link, not two.
+ */
+export function TemplateUseCta({
+  template,
+  className,
+}: {
+  template: CtaTemplate;
+  className?: string;
+}) {
+  return <TemplateAuthCta template={template} label="Use this template" className={className} />;
 }
