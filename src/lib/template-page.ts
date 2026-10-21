@@ -80,9 +80,32 @@ function titleCase(s: string): string {
     .join(" ");
 }
 
-/** "a" or "an", by the keyword's first letter. */
-function article(word: string): string {
-  return /^[aeiou]/i.test(word) ? "an" : "a";
+/** Two or more capitals ("AI", "PDF", "RSVPs") marks an acronym, kept as written. */
+function isAcronym(word: string): boolean {
+  return /[A-Z].*[A-Z]/.test(word);
+}
+
+/** Sentence case for use mid-sentence: lowercases every word but acronyms. */
+function lowerCasePhrase(s: string): string {
+  return s
+    .split(" ")
+    .map((word) => (isAcronym(word) ? word : word.toLowerCase()))
+    .join(" ");
+}
+
+/**
+ * "a" or "an", by how the phrase sounds rather than how it's spelled: an
+ * acronym is read letter by letter ("an AI", "an RSVP", "a PDF"), and a few
+ * spellings break the vowel rule ("a unified", "a one-page", "an hourly").
+ */
+function article(phrase: string): string {
+  const word = phrase.split(" ")[0] ?? "";
+  // Letters whose spoken name opens on a vowel: "ay", "ee", "eff", "aitch"…
+  if (isAcronym(word)) return /^[AEFHILMNORSX]/.test(word) ? "an" : "a";
+  const lower = word.toLowerCase();
+  if (/^(hour|honest|honor|honour|heir)/.test(lower)) return "an";
+  if (/^(uni|use|usu|uti|ure|eu|ewe|one|once)/.test(lower)) return "a";
+  return /^[aeiou]/.test(lower) ? "an" : "a";
 }
 
 export interface TemplateCopyInput {
@@ -113,16 +136,15 @@ export interface TemplateCopy {
 }
 
 export function templateCopy(input: TemplateCopyInput): TemplateCopy {
-  const noun = input.name.toLowerCase();
+  const noun = lowerCasePhrase(input.name);
   const keyword = input.seoKeyword ?? noun;
   return {
     headline: input.marketingHeadline ?? input.name,
     lead: input.heroDescription,
-    // The question names the thing (the template's own name) so it matches the
-    // answer under it. The keyword is phrased for search ("project tracker
-    // template") and reads wrong as "What is a project tracker template?".
+    // The question uses the SEO keyword, so the heading carries the search term;
+    // a template without one falls back to its own name.
     definition: input.definitionBody
-      ? { heading: `What is ${article(noun)} ${noun}?`, body: input.definitionBody }
+      ? { heading: `What is ${article(keyword)} ${lowerCasePhrase(keyword)}?`, body: input.definitionBody }
       : null,
     faqHeading: `Questions about this ${keyword}`,
     ctaHeading: input.ctaHeading ?? `Start with the ${input.name} template`,
