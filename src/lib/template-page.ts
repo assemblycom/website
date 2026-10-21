@@ -102,7 +102,8 @@ const SPOKEN_ACRONYMS = new Set(["SAAS", "NASA", "NATO", "ASAP", "GIF", "JPEG", 
  * spellings break the vowel rule ("a unified", "a one-page", "an hourly").
  */
 function article(phrase: string): string {
-  const word = phrase.split(" ")[0] ?? "";
+  // The sound is set by the first part of a compound too ("RSVP-based", "one-page").
+  const word = phrase.split(/[\s/-]/)[0] ?? "";
   const lower = word.toLowerCase();
   // Only an all-caps word is read letter by letter ("AI", "PDF", "RSVPs"), and
   // not even all of those; mixed case like "SaaS" is spoken as a word.

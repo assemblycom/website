@@ -70,6 +70,8 @@ test('the definition article follows the sound, and acronyms keep their capitals
   assert.equal(heading('Internal AI assistant'), 'What is an internal AI assistant?');
   assert.equal(heading('PDF to digital intake'), 'What is a PDF to digital intake?');
   assert.equal(heading('RSVP tracker'), 'What is an RSVP tracker?');
+  assert.equal(heading('RSVP-based registration form'), 'What is an RSVP-based registration form?');
+  assert.equal(heading('SaaS-style pricing page'), 'What is a SaaS-style pricing page?');
   assert.equal(heading('Unified inbox'), 'What is a unified inbox?');
   assert.equal(heading('Uninsured patient intake form'), 'What is an uninsured patient intake form?');
   assert.equal(heading('Unidentified payments log'), 'What is an unidentified payments log?');
