@@ -93,6 +93,9 @@ function lowerCasePhrase(s: string): string {
     .join(" ");
 }
 
+/** All-caps acronyms said as a word, not letter by letter. */
+const SPOKEN_ACRONYMS = new Set(["SAAS", "NASA", "NATO", "ASAP", "GIF", "JPEG", "SCUBA"]);
+
 /**
  * "a" or "an", by how the phrase sounds rather than how it's spelled: an
  * acronym is read letter by letter ("an AI", "an RSVP", "a PDF"), and a few
@@ -100,11 +103,15 @@ function lowerCasePhrase(s: string): string {
  */
 function article(phrase: string): string {
   const word = phrase.split(" ")[0] ?? "";
-  // Letters whose spoken name opens on a vowel: "ay", "ee", "eff", "aitch"…
-  if (isAcronym(word)) return /^[AEFHILMNORSX]/.test(word) ? "an" : "a";
   const lower = word.toLowerCase();
+  // Only an all-caps word is read letter by letter ("AI", "PDF", "RSVPs"), and
+  // not even all of those; mixed case like "SaaS" is spoken as a word.
+  const spelledOut = /^[A-Z]{2,}s?$/.test(word) && !SPOKEN_ACRONYMS.has(word.replace(/s$/, ""));
+  // Letters whose spoken name opens on a vowel: "ay", "ee", "eff", "aitch"…
+  if (spelledOut) return /^[AEFHILMNORSX]/.test(word) ? "an" : "a";
   if (/^(hour|honest|honor|honour|heir)/.test(lower)) return "an";
-  if (/^(uni|use|usu|uti|ure|eu|ewe|one|once)/.test(lower)) return "a";
+  // "uni-" says "yoo" (unique, unified), except the "un-" prefix (uninsured, unimportant).
+  if (/^(uni(?![nm]|dent)|use|usu|uti|ure|eu|ewe|one|once)/.test(lower)) return "a";
   return /^[aeiou]/.test(lower) ? "an" : "a";
 }
 
