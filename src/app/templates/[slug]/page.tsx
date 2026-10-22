@@ -316,13 +316,17 @@ export default async function TemplateDetailPage({ params }: Props) {
         </section>
       )}
 
-      {/* 05 How it works: shared by every template page. */}
-      <section className="bg-muted px-6 py-28">
-        <div className="mx-auto max-w-7xl">
-          <h2 className="type-h2 text-balance">Add it, describe your changes, publish</h2>
-          <TemplateHowItWorks />
-        </div>
-      </section>
+      {/* 05 How it works: shared by every template page except the Classic
+          ones. Those are the product's core apps, which aren't added and
+          adapted through the app builder the way these steps describe. */}
+      {template.category?.toLowerCase() !== "classic" && (
+        <section className="bg-muted px-6 py-28">
+          <div className="mx-auto max-w-7xl">
+            <h2 className="type-h2 text-balance">Add it, describe your changes, publish</h2>
+            <TemplateHowItWorks />
+          </div>
+        </section>
+      )}
 
       {/* 06 Works with */}
       {related.cards.length > 0 && (
