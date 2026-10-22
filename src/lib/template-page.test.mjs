@@ -46,17 +46,40 @@ test('rejects the old layout, too few cards, and too many', () => {
   assert.equal(parseBenefits(undefined), null);
 });
 
-test('the definition names the template; the FAQ heading uses the keyword', () => {
+test('the definition and the FAQ heading both use the keyword', () => {
   const copy = templateCopy({
     name: 'Client project tracker',
     seoKeyword: 'project tracker template',
     seoTitle: 'Free Project Tracker Template for Clients',
     definitionBody: 'A shared view.',
   });
-  assert.equal(copy.definition?.heading, 'What is a client project tracker?');
+  assert.equal(copy.definition?.heading, 'What is a project tracker template?');
+  assert.equal(
+    templateCopy({ name: 'Booking app', seoKeyword: 'online booking system', definitionBody: 'z' }).definition?.heading,
+    'What is an online booking system?',
+  );
   assert.equal(copy.faqHeading, 'Questions about this project tracker template');
   assert.equal(copy.seoTitle, 'Free Project Tracker Template for Clients');
   assert.equal(templateCopy({ name: 'Onboarding wizard', definitionBody: 'z' }).definition?.heading, 'What is an onboarding wizard?');
+});
+
+test('the definition article follows the sound, and acronyms keep their capitals', () => {
+  const heading = (name) => templateCopy({ name, definitionBody: 'z' }).definition?.heading;
+  assert.equal(heading('Online booking form'), 'What is an online booking form?');
+  assert.equal(heading('AI receptionist'), 'What is an AI receptionist?');
+  assert.equal(heading('Internal AI assistant'), 'What is an internal AI assistant?');
+  assert.equal(heading('PDF to digital intake'), 'What is a PDF to digital intake?');
+  assert.equal(heading('RSVP tracker'), 'What is an RSVP tracker?');
+  assert.equal(heading('RSVP-based registration form'), 'What is an RSVP-based registration form?');
+  assert.equal(heading('SaaS-style pricing page'), 'What is a SaaS-style pricing page?');
+  assert.equal(heading('Unified inbox'), 'What is a unified inbox?');
+  assert.equal(heading('Uninsured patient intake form'), 'What is an uninsured patient intake form?');
+  assert.equal(heading('Unidentified payments log'), 'What is an unidentified payments log?');
+  assert.equal(heading('SaaS onboarding template'), 'What is a SaaS onboarding template?');
+  assert.equal(heading('SAAS onboarding template'), 'What is a SAAS onboarding template?');
+  assert.equal(heading('One-page proposal'), 'What is a one-page proposal?');
+  assert.equal(heading('Hourly timesheet'), 'What is an hourly timesheet?');
+  assert.equal(heading('Meeting Request'), 'What is a meeting request?');
 });
 
 test('falls back field by field, never to the gallery subtitle', () => {
