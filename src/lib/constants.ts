@@ -12,7 +12,7 @@ export const INVALID_EMAIL_ERROR =
 // indexed and linked, so it names the domain rather than the deployment.
 //
 // assembly.com, not the studio subdomain: the consolidation is done, and
-// studio.assembly.com now 307s here. Naming it meant every canonical, og:url and
+// studio.assembly.com now 301s here. Naming it meant every canonical, og:url and
 // sitemap <loc> pointed at a host that only redirects, so each crawl spent a hop
 // to reach the page it was already on — and /api/shorten rejected proposals the
 // creator built, because their origin no longer matched this one.
