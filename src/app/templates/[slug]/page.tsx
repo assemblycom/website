@@ -77,6 +77,16 @@ function howItWorks(template: Template) {
 // Six, the product pages' count: two full rows of the rail's three.
 const WORKS_WITH_COUNT = 6;
 
+// The hero shot's blurred foot, as a progressive blur: each layer blurs a
+// little more and starts a little lower, so the softening builds gradually
+// instead of one blur fading in over a band, which reads as a smudge.
+const HERO_FOOT_BLUR = [
+  "backdrop-blur-[0.5px] [mask-image:linear-gradient(to_bottom,transparent_0%,black_25%,black_50%,transparent_75%)]",
+  "backdrop-blur-[1px] [mask-image:linear-gradient(to_bottom,transparent_25%,black_50%,black_75%,transparent_100%)]",
+  "backdrop-blur-[2px] [mask-image:linear-gradient(to_bottom,transparent_50%,black_75%,black_100%)]",
+  "backdrop-blur-[4px] [mask-image:linear-gradient(to_bottom,transparent_75%,black_100%)]",
+];
+
 const PRIMARY_BUTTON =
   "rounded-lg bg-foreground px-5 py-2.5 text-center text-sm text-background transition-opacity hover:opacity-90";
 const SECONDARY_BUTTON =
@@ -274,8 +284,8 @@ export default async function TemplateDetailPage({ params }: Props) {
             with the screen cropped straight at the card's foot rather than
             shown whole: padded on the top and sides only, overflow clipped.
             A whole shot at this width ran the hero to ~1,000px. The foot is
-            blurred, the agency hero's scroll edge laid along the bottom, so
-            the cut reads as the screen carrying on rather than a hard stop. */}
+            blurred (HERO_FOOT_BLUR), so the cut reads as the screen carrying
+            on rather than a hard stop. */}
         <figure className="relative mt-12 h-[397px] overflow-hidden rounded-[28px] bg-[var(--surface)] px-4 pt-4 md:mt-16 md:h-[500px] md:px-10 md:pt-10">
           <BrowserFrame phone={Boolean(mobileImages[0])}>
             <TemplateShot
@@ -286,7 +296,13 @@ export default async function TemplateDetailPage({ params }: Props) {
               priority
             />
           </BrowserFrame>
-          <span className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-24 backdrop-blur-[3px] [mask-image:linear-gradient(to_bottom,transparent,black)] md:h-32" />
+          {HERO_FOOT_BLUR.map((layer) => (
+            <span
+              key={layer}
+              aria-hidden
+              className={`pointer-events-none absolute inset-x-0 bottom-0 z-10 h-32 md:h-44 ${layer}`}
+            />
+          ))}
         </figure>
       </section>
 
