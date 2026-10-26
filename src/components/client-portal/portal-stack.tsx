@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { CollapsibleRow } from "./collapsible-row";
+import { BUILDER_RAIL_HALO } from "@/components/ai-app-builder/builder-grid-rails";
 import {
   IconTemplateAutomations,
   IconTemplateEmbeds,
@@ -109,7 +110,14 @@ export function PortalStack({
     : listBeside
       ? // Beside the list (lg), held to about the heading's measure and wrapped
         // evenly; stacked below lg it runs the column like the heading above.
-        { heading: "", body: "mt-5 max-w-2xl text-balance lg:max-w-sm", list: "" }
+        // The list is an opaque block with the column grid's halo: the
+        // template pages lay this section over the builder's rails, and six
+        // of them ran straight through the rows' text.
+        {
+          heading: "",
+          body: "mt-5 max-w-2xl text-balance lg:max-w-sm",
+          list: `relative bg-background ${BUILDER_RAIL_HALO}`,
+        }
       : { heading: "", body: "mt-5", list: "lg:mt-10" };
   return (
     // Ruled top AND bottom, and both full-bleed, because the band is.
