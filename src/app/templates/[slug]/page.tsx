@@ -272,7 +272,9 @@ export default async function TemplateDetailPage({ params }: Props) {
               {copy.lead}
             </p>
           )}
-          <div>
+          {/* Pinned to the left column: with no lead the grid would otherwise
+              place the buttons in the empty right cell, beside the headline. */}
+          <div className="lg:col-start-1">
             <div id={HERO_CTA_ID} className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
               <TemplateUseCta template={template} className={PRIMARY_BUTTON} />
               <a href={DEMO_URL} className={SECONDARY_BUTTON}>
