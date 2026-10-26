@@ -442,13 +442,11 @@ export default async function TemplateDetailPage({ params }: Props) {
       {faqs.length > 0 && (
         <>
           <GridDivider onMobile lineClass={BUILDER_GRID_LINE} />
-          {/* A veil of the page ground, not the builder page's opaque block:
-              the rails stay faintly visible through the questions, so the
-              grid carries on through the section rather than stopping at it,
-              without running at full strength through every row. */}
-          <div className="relative bg-background/75">
-            <FAQ heading={copy.faqHeading} items={faqs} />
-          </div>
+          {/* No ground of its own, unlike the builder page's FAQ: the rails
+              run through the section at their usual faint strength, so the
+              grid carries on rather than stopping at the questions. (A 75%
+              veil left them at about 1%, which read as no grid at all.) */}
+          <FAQ heading={copy.faqHeading} items={faqs} />
         </>
       )}
       {/* The region's foot room, kept above the rule now that the CTA sits
