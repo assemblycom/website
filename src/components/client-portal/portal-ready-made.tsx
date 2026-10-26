@@ -94,6 +94,7 @@ export function PortalReadyMade({
   body = "Choose from 30+ pre-made app templates, all added to a branded portal ready for your clients to use. Every one is a working app: install it, use it, or tell the builder what to change.",
   picks = PICKS,
   link = { label: "Browse templates", href: "/templates" },
+  split = false,
 }: {
   /** An anchor, for a section above that jumps here. */
   id?: string;
@@ -101,6 +102,11 @@ export function PortalReadyMade({
   body?: string;
   picks?: typeof PICKS;
   link?: { label: string; href: string };
+  /**
+   * From lg, the hero's arrangement: heading on the left with the link under
+   * it, the copy on the right. The template pages, whose hero is laid out so.
+   */
+  split?: boolean;
 } = {}) {
   const cards = picks.map((pick) => ({
     ...pick,
@@ -118,13 +124,30 @@ export function PortalReadyMade({
             paragraph and a rail's width away from it, so it read as a
             control belonging to the section's edge rather than as the
             sentence's own next step. */}
-        <div className="max-w-2xl">
-          <h2 className="type-h2 text-balance">{heading}</h2>
+        <div
+          className={
+            split
+              ? "grid lg:grid-cols-[1.15fr_0.85fr] lg:items-start lg:gap-x-16"
+              : "max-w-2xl"
+          }
+        >
+          <h2 className={`type-h2 text-balance ${split ? "lg:col-start-1 lg:row-start-1" : ""}`}>
+            {heading}
+          </h2>
           {/* Balanced, as the build and stack sections' intros are: left to
               wrap greedily, a short line filled the first row and dropped one
               word onto the second. */}
-          <p className="mt-4 max-w-2xl text-balance text-muted-foreground">{body}</p>
-          <Link href={link.href} className={`mt-6 ${QUIET_BUTTON}`}>
+          <p
+            className={`mt-4 max-w-2xl text-balance text-muted-foreground ${
+              split ? "lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:mt-0 lg:pt-2" : ""
+            }`}
+          >
+            {body}
+          </p>
+          <Link
+            href={link.href}
+            className={`mt-6 ${QUIET_BUTTON} ${split ? "sm:justify-self-start lg:col-start-1 lg:row-start-2" : ""}`}
+          >
             {link.label}
           </Link>
         </div>
