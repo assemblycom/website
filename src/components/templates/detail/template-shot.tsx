@@ -74,13 +74,14 @@ export function TemplateShot({
         {mobileSet && <source media="(max-width: 767px)" srcSet={mobileSet} sizes={sizes} />}
         <source media="(min-width: 768px)" srcSet={desktopSet} sizes={sizes} />
         {/* Dimmed a touch in dark: the shots are light-theme exports, and at
-            full brightness one is the brightest thing on the page by far. */}
+            full brightness one is the brightest thing on the page by far.
+            dark-ui, so a light island (the template hero) keeps it bright. */}
         <img
           {...rest}
           srcSet={desktopSet}
           alt={label}
           className={cn(
-            "object-contain [[data-theme=dark]_&]:brightness-[0.85]",
+            "object-contain dark-ui:brightness-[0.85]",
             mobile && "max-md:object-cover max-md:object-top",
           )}
         />

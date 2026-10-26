@@ -292,8 +292,11 @@ export default async function TemplateDetailPage({ params }: Props) {
             shown whole: padded on the top and sides only, overflow clipped.
             A whole shot at this width ran the hero to ~1,000px. The foot is
             faded into the card, landing on a solid band as deep as the side
-            padding, so the card frames the shot evenly on every side. */}
-        <figure className="relative mt-12 h-[397px] overflow-hidden rounded-[28px] bg-[var(--surface)] px-4 pt-8 md:mt-16 md:h-[500px] md:px-10 md:pt-10">
+            padding, so the card frames the shot evenly on every side.
+            A light island: the shots are light-theme exports, so the card,
+            frame and fade stay light in dark mode rather than set a light
+            screen in a dark tray. */}
+        <figure className="light-island relative mt-12 h-[397px] overflow-hidden rounded-[28px] bg-[var(--surface)] px-4 pt-8 md:mt-16 md:h-[500px] md:px-10 md:pt-10">
           <BrowserFrame phone={Boolean(mobileImages[0])}>
             <TemplateShot
               desktop={images[0]}
@@ -345,7 +348,9 @@ export default async function TemplateDetailPage({ params }: Props) {
                 seg.mark ? (
                   <span
                     key={i}
-                    className="underline decoration-foreground/25 decoration-dotted decoration-1 underline-offset-[3px]"
+                    // 25% reads on white; on the near-black ground the same
+                    // share of a light ink all but vanished, so dark lifts it.
+                    className="underline decoration-foreground/25 decoration-dotted decoration-1 underline-offset-[3px] [[data-theme=dark]_&]:decoration-foreground/50"
                   >
                     {seg.text}
                   </span>
