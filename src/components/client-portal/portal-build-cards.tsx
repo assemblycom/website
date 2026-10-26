@@ -2596,6 +2596,13 @@ export function BuildCard({
           // the padding box leaves the border area genuinely empty, so the
           // card's own ground shows through and there is no line at all.
           className={`flex shrink-0 ${plain ? "mock-edge" : "w-[340px] translate-x-[25px] translate-y-px max-lg:flex-1 min-[480px]:w-[380px] min-[480px]:translate-x-[20px]"} ${WINDOW} ${R_PANEL} rounded-b-none rounded-tr-none border-transparent [background-clip:padding-box] border-b-0 border-r-0 sm:rounded-tr-[10px] sm:border-r ${
+            // sidebarOnly runs off the card's right and foot at every width,
+            // so its window has no right border (a transparent one showed the
+            // ground as a 1px line where the window met the card flush) and
+            // overhangs both edges by a few pixels: at a fractional edge on a
+            // dense screen, a 1px overhang still let the ground show through.
+            sidebarOnly ? "-mb-1 -mr-1 sm:!rounded-tr-none sm:!border-r-0" : ""
+          } ${
             plain
               ? // 340x280 ON A PHONE, which is the 360x300 box exactly minus
                 // the scene's own 20px top and left padding — so the window
