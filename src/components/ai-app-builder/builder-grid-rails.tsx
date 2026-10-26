@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────────
-// COLUMN RAILS — /ai-app-builder only, for now.
+// COLUMN RAILS — /ai-app-builder and the template detail pages.
 //
 // The shared <GridRails> draws TWO lines: the left and right edges of the
 // 1200px content column, as an overlay at z-30 so section fills cannot cover
