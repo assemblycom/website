@@ -199,6 +199,9 @@ export interface LegacyOverview {
 // the same of every template. The page says each of these elsewhere.
 const LEGACY_BOILERPLATE = /^Start from this template and describe/i;
 const FEATURES_HEADING = /^key (features|benefits)$/i;
+// Every heading the older overviews use. Any other heading is a section an
+// editor wrote, which this reading would drop, so the field renders whole.
+const LEGACY_HEADINGS = /^(overview|key (features|benefits)|what you can customi[sz]e|perfect for)$/i;
 
 /**
  * An older overview, read for the two things it holds that are this
@@ -206,7 +209,8 @@ const FEATURES_HEADING = /^key (features|benefits)$/i;
  * benefits" list. The "Overview" label above the intro, the boilerplate line,
  * and the customize / perfect-for sections are dropped, so the page can lay
  * it out like the benefits section rather than as a loose article. Null when
- * neither part is there and the field should render whole.
+ * neither part is there, or when the overview has a heading of its own (a
+ * section this would drop), and the field should render whole.
  */
 export function parseLegacyOverview(doc: Document | undefined): LegacyOverview | null {
   if (!doc) return null;
@@ -217,6 +221,7 @@ export function parseLegacyOverview(doc: Document | undefined): LegacyOverview |
     const node = doc.content[i];
     const text = plain(node).trim();
     const isHeading = node.nodeType.startsWith("heading");
+    if (isHeading && !LEGACY_HEADINGS.test(text)) return null;
     if (isHeading && /^overview$/i.test(text)) continue;
     if (isHeading) {
       sawHeading = true;

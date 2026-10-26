@@ -7,6 +7,10 @@ import { useState } from "react";
  * opens its sentence on tap — the list runs one column there, and a column of
  * open sentences was a wall of text. From lg the sentence is always shown and
  * the caret goes. The caret and the 0fr → 1fr reveal are the FAQ's.
+ *
+ * From lg the label is plain text and the button is display:none, not just
+ * unclickable: a button left in place there stayed in the tab order and
+ * announced "collapsed" over a description that was on screen.
  */
 export function CollapsibleRow({
   label,
@@ -22,11 +26,12 @@ export function CollapsibleRow({
   return (
     <li className={className}>
       <span className="min-w-0 flex-1">
+        <span className="hidden text-[15px] text-foreground lg:block">{label}</span>
         <button
           type="button"
           onClick={() => setOpen((o) => !o)}
           aria-expanded={open}
-          className="flex w-full items-center justify-between gap-4 text-left lg:pointer-events-none lg:cursor-default"
+          className="flex w-full items-center justify-between gap-4 text-left lg:hidden"
         >
           <span className="block text-[15px] text-foreground">{label}</span>
           <svg
@@ -35,7 +40,7 @@ export function CollapsibleRow({
             viewBox="0 0 20 20"
             fill="none"
             aria-hidden
-            className={`shrink-0 text-muted-foreground transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none lg:hidden ${
+            className={`shrink-0 text-muted-foreground transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
               open ? "rotate-0" : "-rotate-90"
             }`}
           >
