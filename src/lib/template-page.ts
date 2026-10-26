@@ -155,7 +155,7 @@ export function templateCopy(input: TemplateCopyInput): TemplateCopy {
       ? { heading: `What is ${article(keyword)} ${lowerCasePhrase(keyword)}?`, body: input.definitionBody }
       : null,
     faqHeading: `Questions about this ${keyword}`,
-    ctaHeading: input.ctaHeading ?? `Start with the ${input.name} template`,
+    ctaHeading: input.ctaHeading ?? `Start with the ${noun} template`,
     seoTitle:
       input.seoTitle ??
       (/template$/i.test(input.name) ? titleCase(input.name) : `${titleCase(input.name)} Template`),
