@@ -28,7 +28,6 @@ import { GridDivider } from "@/components/ui/grid-lines";
 import {
   BUILDER_GRID_LINE,
   BUILDER_RAIL_HALO,
-  BUILDER_RAIL_HALO_WIDE,
   BuilderGridRails,
 } from "@/components/ai-app-builder/builder-grid-rails";
 
@@ -435,10 +434,11 @@ export default async function TemplateDetailPage({ params }: Props) {
       {faqs.length > 0 && (
         <>
           <GridDivider onMobile lineClass={BUILDER_GRID_LINE} />
-          {/* The builder page's treatment: the FAQ is the one block with no
-              fill, so it takes the page ground and the wide halo rather than
-              have six rails run down through its questions. */}
-          <div className={`relative bg-background ${BUILDER_RAIL_HALO_WIDE}`}>
+          {/* A veil of the page ground, not the builder page's opaque block:
+              the rails stay faintly visible through the questions, so the
+              grid carries on through the section rather than stopping at it,
+              without running at full strength through every row. */}
+          <div className="relative bg-background/75">
             <FAQ heading={copy.faqHeading} items={faqs} />
           </div>
         </>
