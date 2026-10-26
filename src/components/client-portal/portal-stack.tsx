@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { CollapsibleRow } from "./collapsible-row";
-import { BUILDER_RAIL_HALO } from "@/components/ai-app-builder/builder-grid-rails";
+import { BUILDER_GRID_LINE, BUILDER_RAIL_HALO } from "@/components/ai-app-builder/builder-grid-rails";
 import {
   IconTemplateAutomations,
   IconTemplateEmbeds,
@@ -132,10 +132,14 @@ export function PortalStack({
     // card, so the same grey reads a step darker across it; at 50% it sits
     // between the page and the slot inside it, which is what a band is for.
     // No picture, no tint either: the template pages run it on the page's
-    // own ground, keeping only the rules.
+    // own ground, keeping only the rules — in the column grid's tone there,
+    // since its rails and rules run through the section. The solid #383838
+    // read a step brighter than every other rule on those pages in dark.
     <section
-      className={`border-y border-border [[data-theme=dark]_&]:border-[#383838] ${
-        listBeside ? "" : "bg-[var(--surface)]/50"
+      className={`border-y ${
+        listBeside
+          ? BUILDER_GRID_LINE
+          : "border-border bg-[var(--surface)]/50 [[data-theme=dark]_&]:border-[#383838]"
       }`}
     >
       <Reveal>
