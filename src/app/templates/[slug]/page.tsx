@@ -334,7 +334,7 @@ export default async function TemplateDetailPage({ params }: Props) {
         // equal padding read as sitting low. The text takes the page ground
         // and the rails' halo, so the column grid fades out behind it.
         <section className="mx-auto max-w-[1200px] px-6 pb-24 pt-20 md:px-10 md:pb-36 md:pt-28">
-          <div className={`relative mx-auto flex max-w-[720px] flex-col items-center bg-background text-center ${BUILDER_RAIL_HALO}`}>
+          <div className={`relative mx-auto flex max-w-[720px] flex-col items-start bg-background text-left md:items-center md:text-center ${BUILDER_RAIL_HALO}`}>
             <h2 className="type-h2 text-balance">{copy.definition.heading}</h2>
             <p className="type-lead mt-4 max-w-xl text-pretty text-muted-foreground">
               {copy.definition.body}
@@ -442,11 +442,15 @@ export default async function TemplateDetailPage({ params }: Props) {
       {faqs.length > 0 && (
         <>
           <GridDivider onMobile lineClass={BUILDER_GRID_LINE} />
-          {/* No ground of its own, unlike the builder page's FAQ: the rails
-              run through the section at their usual faint strength, so the
-              grid carries on rather than stopping at the questions. (A 75%
-              veil left them at about 1%, which read as no grid at all.) */}
-          <FAQ heading={copy.faqHeading} items={faqs} />
+          {/* No ground for the whole section, unlike the builder page's FAQ:
+              the rails run through its gaps, so the grid carries on. The
+              heading and the question list take the page ground and the
+              rails' halo, so the lines fade out behind the text. */}
+          <FAQ
+            heading={copy.faqHeading}
+            items={faqs}
+            blockClassName={`relative bg-background ${BUILDER_RAIL_HALO}`}
+          />
         </>
       )}
       {/* The region's foot room, kept above the rule now that the CTA sits

@@ -532,6 +532,7 @@ export function FAQ({
   compactQuestions = false,
   dottedRules = true,
   justifyAnswers = false,
+  blockClassName,
 }: {
   heading?: string;
   items?: FAQEntry[];
@@ -547,6 +548,12 @@ export function FAQ({
   compactQuestions?: boolean;
   /** Justify and hyphenate the answers below sm. See the class in FAQItem. */
   justifyAnswers?: boolean;
+  /**
+   * The divided layout only: classes for the heading and the question list,
+   * e.g. a ground and halo where a page draws grid rails behind the section,
+   * so the rails pass the gaps but not the text.
+   */
+  blockClassName?: string;
 } = {}) {
   // Vercel-style: heading sits in a left column, the divided question list runs
   // down the right. The heading sticks so it stays with the list on long scrolls.
@@ -572,20 +579,25 @@ export function FAQ({
       <Section id="faq" className="px-0 py-16 md:py-24">
         <div className="mx-auto grid max-w-[1200px] gap-x-16 gap-y-10 px-6 md:grid-cols-[minmax(0,0.7fr)_minmax(0,1fr)] md:px-10">
           <div className="md:sticky md:top-28 md:self-start">
-            <h2 className="type-h2">{heading}</h2>
+            <h2 className={`type-h2 ${blockClassName ? `w-fit ${blockClassName}` : ""}`}>{heading}</h2>
           </div>
           {/* flushTop off under a dotted rule: the first row keeps its top
               padding like every other, so it sits off the opening rule rather
               than against it. */}
-          <Accordion
-            items={items}
-            twoColumn={false}
-            variant={variant}
-            compactQuestions={compactQuestions}
-            dottedRules={dottedRules}
-            flushTop={!dottedRules}
-            justifyAnswers={justifyAnswers}
-          />
+          {(() => {
+            const list = (
+              <Accordion
+                items={items}
+                twoColumn={false}
+                variant={variant}
+                compactQuestions={compactQuestions}
+                dottedRules={dottedRules}
+                flushTop={!dottedRules}
+                justifyAnswers={justifyAnswers}
+              />
+            );
+            return blockClassName ? <div className={`min-w-0 ${blockClassName}`}>{list}</div> : list;
+          })()}
         </div>
       </Section>
     );
