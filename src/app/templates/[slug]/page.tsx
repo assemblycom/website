@@ -368,7 +368,7 @@ export default async function TemplateDetailPage({ params }: Props) {
           {/* The benefits band above closes with its own rule. */}
           {!benefits && <GridDivider />}
           <PortalBuild
-            heading="Add it, describe your changes, publish"
+            heading="Add your template, customize it, and publish"
             body={null}
             cta={null}
             steps={howItWorks(template)}
