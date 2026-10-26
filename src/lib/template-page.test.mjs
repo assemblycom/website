@@ -135,3 +135,12 @@ test('an older feature item gets a title from the table, its own label, or none'
   });
   assert.deepEqual(legacyFeature('unknown', 'Clients comment and pick a direction'), { label: 'Clients comment and pick a direction' });
 });
+
+test('an older overview with a section of its own renders whole instead', () => {
+  const p = (value) => ({ nodeType: 'paragraph', data: {}, content: [{ nodeType: 'text', value, marks: [], data: {} }] });
+  const h = (value) => ({ nodeType: 'heading-3', data: {}, content: [{ nodeType: 'text', value, marks: [], data: {} }] });
+  const doc = (...content) => ({ nodeType: 'document', data: {}, content });
+  assert.equal(parseLegacyOverview(doc(p('An intro.'), h('How billing works'), p('Custom copy.'))), null);
+  // An intro alone is still an older overview.
+  assert.deepEqual(parseLegacyOverview(doc(p('An intro. More.'))), { intro: 'An intro.', features: [] });
+});
