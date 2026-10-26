@@ -808,8 +808,7 @@ export function IconTemplateProposals({ className }: { className?: string }) {
  * /ai-app-builder — so a template carries the same mark everywhere it is
  * listed; a slug outside it falls back on what its name says it is. Sizes are
  * the ones those lists set per glyph, since each is drawn to a different
- * optical width. No match leaves the slot as the plain recess TemplateRail
- * draws for a row without art.
+ * optical width. No match gets PLACEHOLDER_ICON for now.
  */
 export function templateIcon(slug: string): React.ReactNode {
   const bySlug: Record<string, React.ReactNode> = {
@@ -836,5 +835,11 @@ export function templateIcon(slug: string): React.ReactNode {
   if (has("billing", "invoice", "payment")) return <IconTemplatePayments className="w-[28px]" />;
   if (has("library", "resource", "knowledge")) return <IconTemplateLibrary className="w-[26px]" />;
   if (has("onboarding", "intake", "form")) return <IconTemplateOnboarding className="w-[26px]" />;
-  return undefined;
+  return PLACEHOLDER_ICON;
 }
+
+// PLACEHOLDER: a stand-in for templates with no icon drawn yet (Home, Client
+// calendar, Tasks, Data room, the third-party embeds, …), so their row isn't
+// an empty square. It borrows the onboarding wizard's mark. When a template
+// gets its own icon, add it to `bySlug` above and it stops landing here.
+const PLACEHOLDER_ICON = <IconTemplateOnboarding className="w-[26px]" />;
