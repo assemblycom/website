@@ -89,6 +89,7 @@ export function PortalBuild({
   link,
   visual,
   railLabel = "How building works",
+  captionClassName,
 }: {
   heading?: string;
   /** null drops the line, for a page that runs the rail under its heading alone. */
@@ -107,6 +108,8 @@ export function PortalBuild({
    */
   visual?: React.ReactNode;
   railLabel?: string;
+  /** Classes for each step's caption block; see RailCard's copyClassName. */
+  captionClassName?: string;
 } = {}) {
   return (
     <section
@@ -156,6 +159,7 @@ export function PortalBuild({
                   index={`Step ${STEP_WORDS[i] ?? i + 1}`}
                   name={step.name}
                   caption={step.body}
+                  copyClassName={captionClassName}
                 >
                   {step.visual}
                 </RailCard>

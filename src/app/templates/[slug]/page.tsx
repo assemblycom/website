@@ -27,6 +27,7 @@ import { FAQ } from "@/components/home/faq";
 import { GridDivider } from "@/components/ui/grid-lines";
 import {
   BUILDER_GRID_LINE,
+  BUILDER_RAIL_HALO,
   BUILDER_RAIL_HALO_WIDE,
   BuilderGridRails,
 } from "@/components/ai-app-builder/builder-grid-rails";
@@ -314,7 +315,7 @@ export default async function TemplateDetailPage({ params }: Props) {
           rules in the same tone. `isolate` + a ground of its own is what lets
           the rails' negative z sit behind the sections (see
           builder-grid-rails). */}
-      <div className="relative isolate bg-background pb-16 md:pb-24">
+      <div className="relative isolate bg-background">
         <BuilderGridRails />
 
         {/* Full-bleed rule above the first section: there are no rails above
@@ -330,8 +331,11 @@ export default async function TemplateDetailPage({ params }: Props) {
 
       {/* 03 Definition: hidden whole when the entry has no Definition Body. */}
       {copy.definition && (
-        <section className="mx-auto max-w-[1200px] px-6 py-20 md:px-10 md:py-28">
-          <div className="mx-auto flex max-w-[720px] flex-col items-center text-center">
+        // A deeper foot than head: a centred block's last line is short, so
+        // equal padding read as sitting low. The text takes the page ground
+        // and the rails' halo, so the column grid fades out behind it.
+        <section className="mx-auto max-w-[1200px] px-6 pb-24 pt-20 md:px-10 md:pb-36 md:pt-28">
+          <div className={`relative mx-auto flex max-w-[720px] flex-col items-center bg-background text-center ${BUILDER_RAIL_HALO}`}>
             <h2 className="type-h2 text-balance">{copy.definition.heading}</h2>
             <p className="type-lead mt-4 max-w-xl text-pretty text-muted-foreground">
               {copy.definition.body}
@@ -398,6 +402,9 @@ export default async function TemplateDetailPage({ params }: Props) {
             cta={null}
             steps={howItWorks(template)}
             railLabel="How a template goes live"
+            // The column grid runs behind the rail; the captions take the
+            // page ground and the card halo so its rails don't cross them.
+            captionClassName={`relative bg-background ${BUILDER_RAIL_HALO}`}
           />
           {/* onMobile: without it the steps' arrows ran straight into the
               next heading on a phone, with nothing between the sections. */}
@@ -436,10 +443,14 @@ export default async function TemplateDetailPage({ params }: Props) {
           </div>
         </>
       )}
-      </div>
+      {/* The region's foot room, kept above the rule now that the CTA sits
+          inside the region rather than after it. */}
+      <div className="h-16 md:h-24" />
 
-      {/* 08 Final CTA */}
-      <div className="border-t border-border [[data-theme=dark]_&]:border-[#383838]" />
+      {/* 08 Final CTA: inside the region, as on /ai-app-builder, so the
+          column grid carries on behind it. Full-bleed rule: the seam between
+          the sections and the CTA. */}
+      <GridDivider fullBleed onMobile lineClass={BUILDER_GRID_LINE} />
       <section className="px-6 py-16 text-center md:py-24">
         <h2 className="type-display mx-auto max-w-md text-balance text-foreground md:max-w-2xl">
           {copy.ctaHeading}
@@ -454,7 +465,7 @@ export default async function TemplateDetailPage({ params }: Props) {
           </a>
         </div>
       </section>
-
+      </div>
     </>
   );
 }
