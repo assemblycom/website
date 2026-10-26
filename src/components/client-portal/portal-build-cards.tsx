@@ -1865,8 +1865,10 @@ export function InstallCard({
 } = {}) {
   return (
     <>
-      {/* The default Plan ground, for the same reasons (see PlanCard). */}
-      <div className="absolute -inset-px bg-[#3A3A3A] [[data-theme=dark]_&]:bg-[#FBFBF5]" />
+      {/* A blue ground of its own rather than the Plan card's grey: the
+          template pages' first step, art-directed, so it holds one colour in
+          both themes as the Build card's backdrop does. */}
+      <div className="absolute -inset-px bg-[#7DA4FF]" />
       <Scene {...RAIL_SCENE_PHONE_PROPS}>
         <ChecklistWindow
           marker={false}
