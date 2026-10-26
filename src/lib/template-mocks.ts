@@ -3,14 +3,16 @@
  * publish" mocks, per template, so each page's three cards name its own app:
  * the change typed into the composer (step two), and the one setup row of the
  * install checklist that says what the template holds (step one). The app's
- * name itself comes from the template's title.
+ * name itself comes from the template's title, unless `appName` gives the
+ * shorter name the app goes by once installed: a title that leads with a
+ * describing word ("Billable time tracker") reads oddly as a sidebar entry.
  *
  * A change is a small edit to the installed app — a field, a step, a view, a
  * reminder — never a request for a new app: the step is "Describe your
  * changes". Each fits two lines in the composer. A template not listed gets
  * the fallback, which is true of any template.
  */
-type MockCopy = { prompt: string; setup: string };
+type MockCopy = { prompt: string; setup: string; appName?: string };
 
 const BY_SLUG: Record<string, MockCopy> = {
   "client-project-tracker": {
@@ -38,7 +40,8 @@ const BY_SLUG: Record<string, MockCopy> = {
     setup: "Questions and conditions set up",
   },
   "time-tracker": {
-    prompt: "Add a weekly summary of billable hours for each client.",
+    appName: "Time tracker",
+    prompt: "Add a weekly summary of hours for each client.",
     setup: "Entries, rates, roll-ups set up",
   },
   "proposal-builder": {
@@ -74,6 +77,7 @@ const BY_SLUG: Record<string, MockCopy> = {
     setup: "Requests and statuses set up",
   },
   "client-calendar": {
+    appName: "Client calendar",
     prompt: "Let clients book a 30-minute call from the calendar.",
     setup: "Events and availability set up",
   },

@@ -55,12 +55,12 @@ const HERO_CTA_ID = "template-hero-cta";
 // to it in the composer (template-mocks.ts) — so a document collection page
 // doesn't show a project tracker being built.
 function howItWorks(template: Template) {
-  const { prompt, setup } = templateMockCopy(template.slug);
+  const { prompt, setup, appName = template.title } = templateMockCopy(template.slug);
   return [
     {
       name: "Add the template",
       body: "It installs as a working app in your workspace that you can use as is.",
-      visual: <InstallCard appName={template.title} setup={setup} />,
+      visual: <InstallCard appName={appName} setup={setup} />,
     },
     {
       name: "Describe your changes",
@@ -70,7 +70,7 @@ function howItWorks(template: Template) {
     {
       name: "Publish to clients",
       body: "It appears in your branded client experience, with sign-in and permissions already handled.",
-      visual: <BuildCard sidebarOnly appLabel={template.title} />,
+      visual: <BuildCard sidebarOnly appLabel={appName} />,
     },
   ];
 }
