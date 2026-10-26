@@ -310,7 +310,6 @@ export function VsComparisonPage({
                     variant="divided"
                     dottedRules
                     flushTop={false}
-                    narrowAnswer
                     justifyAnswers
                   />
                 </div>
