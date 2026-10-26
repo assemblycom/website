@@ -24,7 +24,12 @@ import { PortalReadyMade } from "@/components/client-portal/portal-ready-made";
 import { templateIcon } from "@/components/templates/template-icons";
 import { BuildCard, DescribeCard, InstallCard } from "@/components/client-portal/portal-build-cards";
 import { FAQ } from "@/components/home/faq";
-import { GRID_LINE, GridDivider, GridRails } from "@/components/ui/grid-lines";
+import { GridDivider } from "@/components/ui/grid-lines";
+import {
+  BUILDER_GRID_LINE,
+  BUILDER_RAIL_HALO_WIDE,
+  BuilderGridRails,
+} from "@/components/ai-app-builder/builder-grid-rails";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -303,22 +308,25 @@ export default async function TemplateDetailPage({ params }: Props) {
         </figure>
       </section>
 
-      {/* Everything from the proof strip down to the FAQ sits in one region
-          framed by the shared rails, its sections parted by rules that end on
-          them: the same grid as /security and /pricing. */}
-      <div className="relative pb-16 md:pb-24">
-        <GridRails />
+      {/* Everything from the proof strip down to the FAQ sits on the AI app
+          builder page's column grid: faint rails at the measure's sixths,
+          drawn BEHIND the content so cards and shots interrupt them, with
+          rules in the same tone. `isolate` + a ground of its own is what lets
+          the rails' negative z sit behind the sections (see
+          builder-grid-rails). */}
+      <div className="relative isolate bg-background pb-16 md:pb-24">
+        <BuilderGridRails />
 
         {/* Full-bleed rule above the first section: there are no rails above
             it for a 1200px rule to meet. Desktop only, as on /pricing. */}
-        <div className={`hidden border-t md:block ${GRID_LINE}`} />
+        <div className={`hidden border-t md:block ${BUILDER_GRID_LINE}`} />
 
       {/* 02 Social proof */}
       <section className="mx-auto max-w-[1200px] px-6 py-8 md:px-10">
         <TemplateProof />
       </section>
 
-      <GridDivider />
+      <GridDivider lineClass={BUILDER_GRID_LINE} />
 
       {/* 03 Definition: hidden whole when the entry has no Definition Body. */}
       {copy.definition && (
@@ -383,7 +391,7 @@ export default async function TemplateDetailPage({ params }: Props) {
       {template.category?.toLowerCase() !== "classic" && (
         <>
           {/* The benefits band above closes with its own rule. */}
-          {!benefits && !legacy && <GridDivider />}
+          {!benefits && !legacy && <GridDivider lineClass={BUILDER_GRID_LINE} />}
           <PortalBuild
             heading="Add your template, customize it, and publish"
             body={null}
@@ -393,7 +401,7 @@ export default async function TemplateDetailPage({ params }: Props) {
           />
           {/* onMobile: without it the steps' arrows ran straight into the
               next heading on a phone, with nothing between the sections. */}
-          <GridDivider onMobile />
+          <GridDivider onMobile lineClass={BUILDER_GRID_LINE} />
         </>
       )}
 
@@ -419,8 +427,13 @@ export default async function TemplateDetailPage({ params }: Props) {
       {/* 07 FAQ: its own column is the same 1200px, so it needs no wrapper. */}
       {faqs.length > 0 && (
         <>
-          <GridDivider onMobile />
-          <FAQ heading={copy.faqHeading} items={faqs} />
+          <GridDivider onMobile lineClass={BUILDER_GRID_LINE} />
+          {/* The builder page's treatment: the FAQ is the one block with no
+              fill, so it takes the page ground and the wide halo rather than
+              have six rails run down through its questions. */}
+          <div className={`relative bg-background ${BUILDER_RAIL_HALO_WIDE}`}>
+            <FAQ heading={copy.faqHeading} items={faqs} />
+          </div>
         </>
       )}
       </div>
