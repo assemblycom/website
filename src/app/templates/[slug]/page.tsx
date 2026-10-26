@@ -454,8 +454,10 @@ export default async function TemplateDetailPage({ params }: Props) {
         </>
       )}
       {/* The region's foot room, kept above the rule now that the CTA sits
-          inside the region rather than after it. */}
-      <div className="h-16 md:h-24" />
+          inside the region rather than after it. On a phone it gives 16px
+          back instead, so the last section's 64px foot reads as 48 there:
+          the two stacked had made 128. */}
+      <div className="-mt-4 md:mt-0 md:h-24" />
 
       {/* 08 Final CTA: inside the region, as on /ai-app-builder, so the
           column grid carries on behind it. Full-bleed rule: the seam between
