@@ -65,7 +65,7 @@ function howItWorks(template: Template) {
     {
       name: "Describe your changes",
       body: "Tell the app builder what to change and it adapts the template to your business.",
-      visual: <DescribeCard prompt={prompt} />,
+      visual: <DescribeCard prompt={prompt} photo="/images/mocks/describe-sneakers.webp" />,
     },
     {
       name: "Publish to clients",

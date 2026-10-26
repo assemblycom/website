@@ -566,6 +566,7 @@ export function DescribeCard({
   plain = false,
   vertical = "default",
   prompt,
+  photo,
 }: SceneProps & {
   /**
    * The composer's text, for a page whose step is a CHANGE rather than a new
@@ -573,6 +574,11 @@ export function DescribeCard({
    * tracker already installed, not for a tracker. Overrides the vertical's.
    */
   prompt?: string;
+  /**
+   * A portrait still in place of the vertical's own (the template pages').
+   * Portrait like the card, so it fills at the card's width.
+   */
+  photo?: string;
 } = {}) {
   return (
     <>
@@ -626,9 +632,10 @@ export function DescribeCard({
             // share. Landscape into a portrait card, so it is anchored right
             // of centre, where she sits, rather than cropped to the wall.
             src={
-              vertical === "agency"
+              photo ??
+              (vertical === "agency"
                 ? "/images/mocks/describe-laptop.webp"
-                : "/images/mocks/describe-phone.webp"
+                : "/images/mocks/describe-phone.webp")
             }
             alt=""
             fill
@@ -637,12 +644,12 @@ export function DescribeCard({
             // own width the optimiser served half the pixels and it came out
             // soft. The phone shot is near-square and fits its old size.
             sizes={
-              vertical === "agency"
+              vertical === "agency" && !photo
                 ? "(min-width: 1024px) 760px, 165vw"
                 : "(min-width: 1024px) 420px, 90vw"
             }
-            quality={vertical === "agency" ? 90 : undefined}
-            className={`object-cover ${vertical === "agency" ? "object-[68%_50%]" : ""}`}
+            quality={vertical === "agency" && !photo ? 90 : undefined}
+            className={`object-cover ${vertical === "agency" && !photo ? "object-[68%_50%]" : ""}`}
           />
         </div>
       )}
