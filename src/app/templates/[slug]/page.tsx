@@ -273,8 +273,10 @@ export default async function TemplateDetailPage({ params }: Props) {
         {/* The accounting hero's card height (397 on a phone, 500 from md),
             with the screen cropped straight at the card's foot rather than
             shown whole: padded on the top and sides only, overflow clipped.
-            A whole shot at this width ran the hero to ~1,000px. */}
-        <figure className="mt-12 h-[397px] overflow-hidden rounded-[28px] bg-[var(--surface)] px-4 pt-4 md:mt-16 md:h-[500px] md:px-10 md:pt-10">
+            A whole shot at this width ran the hero to ~1,000px. The foot is
+            blurred, the agency hero's scroll edge laid along the bottom, so
+            the cut reads as the screen carrying on rather than a hard stop. */}
+        <figure className="relative mt-12 h-[397px] overflow-hidden rounded-[28px] bg-[var(--surface)] px-4 pt-4 md:mt-16 md:h-[500px] md:px-10 md:pt-10">
           <BrowserFrame phone={Boolean(mobileImages[0])}>
             <TemplateShot
               desktop={images[0]}
@@ -284,6 +286,7 @@ export default async function TemplateDetailPage({ params }: Props) {
               priority
             />
           </BrowserFrame>
+          <span className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-24 backdrop-blur-[3px] [mask-image:linear-gradient(to_bottom,transparent,black)] md:h-32" />
         </figure>
       </section>
 
