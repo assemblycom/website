@@ -1052,6 +1052,9 @@ textarea:-webkit-autofill:focus {
   --border: #e8e9ec;
   --card: #ffffff;
   --card-foreground: #0a0a0a;
+  /* The light ground a card or tray sits on (:root's), so a light island can
+     carry its own grey tray as well as white cards. */
+  --surface: #f5f5f5;
   color-scheme: light;
 }
 

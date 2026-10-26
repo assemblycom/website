@@ -120,7 +120,10 @@ export function PortalReadyMade({
             sentence's own next step. */}
         <div className="max-w-2xl">
           <h2 className="type-h2 text-balance">{heading}</h2>
-          <p className="mt-4 max-w-2xl text-muted-foreground">{body}</p>
+          {/* Balanced, as the build and stack sections' intros are: left to
+              wrap greedily, a short line filled the first row and dropped one
+              word onto the second. */}
+          <p className="mt-4 max-w-2xl text-balance text-muted-foreground">{body}</p>
           <Link href={link.href} className={`mt-6 ${QUIET_BUTTON}`}>
             {link.label}
           </Link>

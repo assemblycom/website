@@ -80,6 +80,17 @@ export interface CareersPage {
 
 // ── Ashby ────────────────────────────────────────────────────────────────────
 
+/**
+ * Postings still open in Ashby that this site doesn't list. Hiring for them
+ * carries on through Ashby's own board; they are only kept off assembly.com.
+ * Dropped here, at the fetch, so the list and each role's detail page agree:
+ * to this site the role reads as closed. Matched by title, as the merge below
+ * matches. Delete a line to list the role again.
+ */
+const HIDDEN_ON_SITE = new Set(
+  ["Account Executive", "Associate Account Executive"].map(titleKey),
+);
+
 function toPosting(raw: unknown): AshbyPosting | null {
   if (!raw || typeof raw !== "object") return null;
   const j = raw as Record<string, unknown>;
@@ -136,7 +147,8 @@ async function fetchPostings(): Promise<AshbyPosting[]> {
     const body = (await res.json()) as { jobs?: unknown[] };
     return (body.jobs ?? [])
       .map(toPosting)
-      .filter((p): p is AshbyPosting => Boolean(p));
+      .filter((p): p is AshbyPosting => Boolean(p))
+      .filter((p) => !HIDDEN_ON_SITE.has(titleKey(p.title)));
   } catch (error) {
     // An empty board renders "no open roles right now" rather than failing the
     // page. Deliberately NOT falling back to the Contentful listings: those are

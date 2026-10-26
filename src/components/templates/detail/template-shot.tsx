@@ -31,8 +31,10 @@ export function TemplateShot({
 }) {
   // The frame takes each shot's own proportions, read off the asset, so nothing
   // is cropped: a 16:9 export shows whole in a 16:9 frame. Below md the mobile
-  // shot (a full phone screen, about 1:2.2) sets the shape instead, capped in
-  // height so one screenshot can't fill the phone, and contained within it.
+  // shot (a full phone screen, about 1:2.2) is shown at a phone's own width,
+  // centred, and cut at 9:16 from the top, so one screenshot can't fill the
+  // page. It used to keep the full page width with the height capped, which
+  // contained the narrow shot in a wide frame and left a blank band beside it.
   const ratio = (image?: TemplateImage) =>
     image?.width && image.height ? `${image.width} / ${image.height}` : undefined;
   const style = {
@@ -41,7 +43,7 @@ export function TemplateShot({
   } as React.CSSProperties;
   const frame = cn(
     "relative overflow-hidden bg-muted aspect-[var(--shot-ratio)] max-md:aspect-[var(--shot-ratio-sm)]",
-    mobile && "max-md:max-h-[70svh]",
+    mobile && "max-md:mx-auto max-md:w-full max-md:max-w-[320px] max-md:aspect-[9/16]",
     className,
   );
   if (!desktop) {
@@ -71,7 +73,18 @@ export function TemplateShot({
       <picture>
         {mobileSet && <source media="(max-width: 767px)" srcSet={mobileSet} sizes={sizes} />}
         <source media="(min-width: 768px)" srcSet={desktopSet} sizes={sizes} />
-        <img {...rest} srcSet={desktopSet} alt={label} className="object-contain" />
+        {/* Dimmed a touch in dark: the shots are light-theme exports, and at
+            full brightness one is the brightest thing on the page by far.
+            dark-ui, so a light island (the template hero) keeps it bright. */}
+        <img
+          {...rest}
+          srcSet={desktopSet}
+          alt={label}
+          className={cn(
+            "object-contain dark-ui:brightness-[0.85]",
+            mobile && "max-md:object-cover max-md:object-top",
+          )}
+        />
       </picture>
     </div>
   );
@@ -80,11 +93,29 @@ export function TemplateShot({
 /**
  * Browser chrome around the hero shot: three dots and an address pill, drawn
  * in the page's own tokens so it flips with the theme.
+ *
+ * `phone`: the shot inside is a phone screen below md, so there the chrome
+ * goes (a browser bar over a phone screen is the wrong device) and the frame
+ * narrows to the phone shot's width.
  */
-export function BrowserFrame({ children }: { children: React.ReactNode }) {
+export function BrowserFrame({
+  children,
+  phone = false,
+}: {
+  children: React.ReactNode;
+  phone?: boolean;
+}) {
   return (
-    <div className="overflow-hidden rounded-xl border border-border bg-card">
-      <div className="flex h-9 items-center gap-3 border-b border-border px-3.5" aria-hidden>
+    <div
+      className={cn(
+        "overflow-hidden rounded-xl border border-border bg-card",
+        phone && "max-md:mx-auto max-md:max-w-[320px]",
+      )}
+    >
+      <div
+        className={cn("flex h-9 items-center gap-3 border-b border-border px-3.5", phone && "max-md:hidden")}
+        aria-hidden
+      >
         <div className="flex gap-1.5">
           <span className="size-2.5 rounded-full bg-foreground/15" />
           <span className="size-2.5 rounded-full bg-foreground/15" />

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { parseBenefits, templateCopy } from './template-page.ts';
+import { legacyFeature, parseBenefits, parseLegacyOverview, templateCopy } from './template-page.ts';
 
 const text = (value) => ({ nodeType: 'text', value, marks: [], data: {} });
 const block = (nodeType, value) => ({ nodeType, data: {}, content: [text(value)] });
@@ -88,9 +88,50 @@ test('falls back field by field, never to the gallery subtitle', () => {
   assert.equal(copy.lead, undefined);
   assert.equal(copy.definition, null);
   assert.equal(copy.faqHeading, 'Questions about this time tracker');
-  assert.equal(copy.ctaHeading, 'Start with the Time tracker template');
+  assert.equal(copy.ctaHeading, 'Start with the time tracker template');
+  assert.equal(templateCopy({ name: 'Xero integration' }).ctaHeading, 'Start with the Xero integration template');
+  assert.equal(templateCopy({ name: 'Google Slides' }).ctaHeading, 'Start with the Google Slides template');
+  assert.equal(templateCopy({ name: 'QuickBooks integration' }).ctaHeading, 'Start with the QuickBooks integration template');
   assert.equal(copy.seoTitle, 'Time Tracker Template');
   assert.equal(copy.seoDescription, 'Track billable time per client.');
   assert.equal(templateCopy({ name: 'x', heroDescription: 'Hero.', longDescription: 'Long.' }).seoDescription, 'Hero.');
   assert.equal(templateCopy({ name: 'x' }).seoDescription, undefined);
+});
+
+test('an older overview keeps its first sentence and its feature list', () => {
+  const p = (value) => ({ nodeType: 'paragraph', data: {}, content: [{ nodeType: 'text', value, marks: [], data: {} }] });
+  const h = (value) => ({ nodeType: 'heading-3', data: {}, content: [{ nodeType: 'text', value, marks: [], data: {} }] });
+  const li = (value) => ({ nodeType: 'list-item', data: {}, content: [p(value)] });
+  const doc = {
+    nodeType: 'document',
+    data: {},
+    content: [
+      p('The Xero Integration is a one-way sync to Xero. When you create an invoice, it is created in Xero.'),
+      p('Start from this template and describe what you want to change.'),
+      h('Key Features'),
+      { nodeType: 'unordered-list', data: {}, content: [li('Sync invoices.'), li('Match customers.')] },
+      h('Perfect for'),
+      p('Every firm.'),
+    ],
+  };
+  assert.deepEqual(parseLegacyOverview(doc), {
+    intro: 'The Xero Integration is a one-way sync to Xero.',
+    features: ['Sync invoices.', 'Match customers.'],
+  });
+});
+
+test('an older feature item gets a title from the table, its own label, or none', () => {
+  assert.deepEqual(legacyFeature('xero', 'Automatically sync Assembly invoices and customers to Xero.'), {
+    label: 'Automatic sync',
+    body: 'Automatically sync Assembly invoices and customers to Xero.',
+  });
+  assert.deepEqual(legacyFeature('billing-app', 'Services - list services you sell to be used across all payments surface areas.'), {
+    label: 'Services',
+    body: 'List services you sell to be used across all payments surface areas.',
+  });
+  assert.deepEqual(legacyFeature('client-engagement-dashboard', 'Detail view: activity chart, app usage breakdown'), {
+    label: 'Detail view',
+    body: 'Activity chart, app usage breakdown',
+  });
+  assert.deepEqual(legacyFeature('unknown', 'Clients comment and pick a direction'), { label: 'Clients comment and pick a direction' });
 });

@@ -800,3 +800,46 @@ export function IconTemplateProposals({ className }: { className?: string }) {
     </svg>
   );
 }
+
+/**
+ * The icon for a template's row in a TemplateRail, for a list that isn't
+ * hand-picked (the template pages' related row). The slug table is the pairs
+ * the hand-picked lists already make — /client-portal, the /solutions pages,
+ * /ai-app-builder — so a template carries the same mark everywhere it is
+ * listed; a slug outside it falls back on what its name says it is. Sizes are
+ * the ones those lists set per glyph, since each is drawn to a different
+ * optical width. No match gets PLACEHOLDER_ICON for now.
+ */
+export function templateIcon(slug: string): React.ReactNode {
+  const bySlug: Record<string, React.ReactNode> = {
+    "billing-app": <IconTemplatePayments className="w-[28px]" />,
+    "client-onboarding-wizard": <IconTemplateOnboarding className="w-[26px]" />,
+    "client-project-tracker": <IconTemplateProjects className="w-[22px]" />,
+    "client-resource-library": <IconTemplateLibrary className="w-[26px]" />,
+    "conditional-forms": <IconTemplateOnboarding className="w-[26px]" />,
+    "contracts-app": <IconTemplateApprovals className="w-[30px]" />,
+    "design-approvals": <IconTemplateApprovals className="w-[30px]" />,
+    "document-collection": <IconTemplateDocuments className="w-[32px]" />,
+    "messaging-app": <IconTemplateMessages className="w-[26px]" />,
+    "proposal-builder": <IconTemplateProposals className="w-[26px]" />,
+    "time-tracker": <IconTemplateTimeTracker className="w-[26px]" />,
+  };
+  if (bySlug[slug]) return bySlug[slug];
+  const has = (...words: string[]) => words.some((w) => slug.includes(w));
+  if (has("time")) return <IconTemplateTimeTracker className="w-[26px]" />;
+  if (has("proposal")) return <IconTemplateProposals className="w-[26px]" />;
+  if (has("approval", "contract", "sign")) return <IconTemplateApprovals className="w-[30px]" />;
+  if (has("document", "file", "upload", "collect")) return <IconTemplateDocuments className="w-[32px]" />;
+  if (has("project", "tracker", "status", "case")) return <IconTemplateProjects className="w-[22px]" />;
+  if (has("message", "chat", "inbox")) return <IconTemplateMessages className="w-[26px]" />;
+  if (has("billing", "invoice", "payment")) return <IconTemplatePayments className="w-[28px]" />;
+  if (has("library", "resource", "knowledge")) return <IconTemplateLibrary className="w-[26px]" />;
+  if (has("onboarding", "intake", "form")) return <IconTemplateOnboarding className="w-[26px]" />;
+  return PLACEHOLDER_ICON;
+}
+
+// PLACEHOLDER: a stand-in for templates with no icon drawn yet (Home, Client
+// calendar, Tasks, Data room, the third-party embeds, …), so their row isn't
+// an empty square. It borrows the onboarding wizard's mark. When a template
+// gets its own icon, add it to `bySlug` above and it stops landing here.
+const PLACEHOLDER_ICON = <IconTemplateOnboarding className="w-[26px]" />;

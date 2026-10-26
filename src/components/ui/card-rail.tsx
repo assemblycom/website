@@ -636,9 +636,16 @@ export function RailCard({
   copyInside = false,
   tallOnPhone = false,
   picture = "fit",
+  copyClassName,
   children,
 }: {
   caption: string;
+  /**
+   * Extra classes for the caption block under the card, e.g. a ground and
+   * halo where a page draws grid rails behind the rail. The card is lifted
+   * above it then, so a halo can't wash over the card's foot.
+   */
+  copyClassName?: string;
   /** Shown faint ahead of `name`, e.g. "Step 1". */
   index?: string;
   name?: string;
@@ -752,7 +759,13 @@ export function RailCard({
                 card is as wide as a desktop card with none of the height to
                 spend, so it stays square. */}
 
-        <div className="relative flex aspect-square w-full select-none flex-col overflow-hidden rounded-3xl bg-[var(--surface)] lg:aspect-[3/4]">
+        {/* [transform:translateZ(0)]: the card is its own composited layer,
+            so the rounded clip masks the finished picture once. Clipped
+            layer by layer, an edge landing on a fractional pixel blends each
+            layer with the page separately, and a full-bleed scene's ground
+            (the Build card's haze) bled through as a hairline under the
+            window covering it, visible on high-density screens mid-resize. */}
+        <div className="relative flex aspect-square w-full select-none flex-col overflow-hidden rounded-3xl bg-[var(--surface)] [transform:translateZ(0)] lg:aspect-[3/4]">
           <div className="relative z-10 shrink-0 px-6 pb-4 pt-6 md:px-7 md:pt-7">
             {copy}
           </div>
@@ -834,6 +847,8 @@ export function RailCard({
           own caption most of a screen down the page. */}
       <div
         className={`relative w-full select-none overflow-hidden rounded-3xl bg-[var(--surface)] lg:aspect-[3/4] ${
+          copyClassName ? "z-[1]" : ""
+        } ${
           // The 4:5 card also tells the scenes inside it how tall to draw
           // (RAIL_SCENE_PHONE in portal-build-cards): a square phone box in a
           // 4:5 card left a bare band under the picture.
@@ -844,7 +859,7 @@ export function RailCard({
       >
         {children}
       </div>
-      <div className="mt-4 px-1">{copy}</div>
+      <div className={`mt-4 px-1 ${copyClassName ?? ""}`}>{copy}</div>
     </div>
   );
 }

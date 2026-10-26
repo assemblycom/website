@@ -143,7 +143,6 @@ function FAQItem({
   variant = "cards",
   compactQuestions = false,
   dottedRules = false,
-  narrowAnswer = false,
   justifyAnswers = false,
 }: FAQEntry & {
   open: boolean;
@@ -151,7 +150,6 @@ function FAQItem({
   variant?: FAQVariant;
   compactQuestions?: boolean;
   dottedRules?: boolean;
-  narrowAnswer?: boolean;
   justifyAnswers?: boolean;
 }) {
   // Controlled by the parent so only one answer is open at a time (opening one
@@ -181,17 +179,12 @@ function FAQItem({
             variant === "divided"
               ? // pl-3 matches the question's own inset (see the button's
                 // px-3) so the answer starts on the same vertical as the
-                // question above it. The right inset is the question's 12px
-                // plus 40px more, holding the prose to a comfortable measure
-                // in a list that runs the width of the page.
-                //
-                // `narrowAnswer` drops those 40px, for a list in a column
-                // narrow enough that they read as the answer stopping short
-                // of its own row rather than as a trim — /client-portal's
-                // trust section is half a two-column grid, where the 52px is
-                // an eighth of the measure.
-
-                `space-y-4 pb-6 pl-3 pt-2 ${narrowAnswer ? "pr-3" : "pr-[52px]"}`
+                // question above it, and pr-3 ends it on the chevron's right
+                // edge: the same 12px both sides, so the answer fills its row.
+                // It used to stop 40px further in, which read as the answer
+                // squeezed short of its own row, worst on a phone where the
+                // 52px was a sixth of the measure.
+                "space-y-4 pb-6 pl-3 pt-2 pr-3"
               : "space-y-4 px-5 pb-4 pt-2"
           }
         >
@@ -220,7 +213,8 @@ function FAQItem({
                 //
                 // Not from sm: the measure is wide enough there that the rag
                 // is shallow and justifying would be solving nothing.
-                className={`type-body whitespace-pre-line text-muted-foreground ${
+                // text-pretty keeps a lone word off the last line.
+                className={`type-body whitespace-pre-line text-pretty text-muted-foreground ${
                   justifyAnswers
                     ? "max-sm:hyphens-auto max-sm:text-justify"
                     : ""
@@ -411,7 +405,6 @@ export function Accordion({
   compactQuestions = false,
   dottedRules = false,
   flushTop = true,
-  narrowAnswer = false,
   justifyAnswers = false,
 }: {
   items: FAQEntry[];
@@ -430,11 +423,6 @@ export function Accordion({
    * above it keeps the padding, or the first question crowds whatever precedes.
    */
   flushTop?: boolean;
-  /**
-   * Drop the answer's extra right inset, for a list in a narrow column. See
-   * the inset itself in FAQItem.
-   */
-  narrowAnswer?: boolean;
   /** Justify and hyphenate the answers below sm. See the class in FAQItem. */
   justifyAnswers?: boolean;
 }) {
@@ -446,7 +434,6 @@ export function Accordion({
       variant={variant}
       compactQuestions={compactQuestions}
       dottedRules={dottedRules}
-      narrowAnswer={narrowAnswer}
       justifyAnswers={justifyAnswers}
       open={openId === faq.question}
       onToggle={() =>
@@ -545,6 +532,7 @@ export function FAQ({
   compactQuestions = false,
   dottedRules = true,
   justifyAnswers = false,
+  blockClassName,
 }: {
   heading?: string;
   items?: FAQEntry[];
@@ -560,6 +548,12 @@ export function FAQ({
   compactQuestions?: boolean;
   /** Justify and hyphenate the answers below sm. See the class in FAQItem. */
   justifyAnswers?: boolean;
+  /**
+   * The divided layout only: classes for the heading and the question list,
+   * e.g. a ground and halo where a page draws grid rails behind the section,
+   * so the rails pass the gaps but not the text.
+   */
+  blockClassName?: string;
 } = {}) {
   // Vercel-style: heading sits in a left column, the divided question list runs
   // down the right. The heading sticks so it stays with the list on long scrolls.
@@ -585,20 +579,25 @@ export function FAQ({
       <Section id="faq" className="px-0 py-16 md:py-24">
         <div className="mx-auto grid max-w-[1200px] gap-x-16 gap-y-10 px-6 md:grid-cols-[minmax(0,0.7fr)_minmax(0,1fr)] md:px-10">
           <div className="md:sticky md:top-28 md:self-start">
-            <h2 className="type-h2">{heading}</h2>
+            <h2 className={`type-h2 ${blockClassName ? `w-fit ${blockClassName}` : ""}`}>{heading}</h2>
           </div>
           {/* flushTop off under a dotted rule: the first row keeps its top
               padding like every other, so it sits off the opening rule rather
               than against it. */}
-          <Accordion
-            items={items}
-            twoColumn={false}
-            variant={variant}
-            compactQuestions={compactQuestions}
-            dottedRules={dottedRules}
-            flushTop={!dottedRules}
-            justifyAnswers={justifyAnswers}
-          />
+          {(() => {
+            const list = (
+              <Accordion
+                items={items}
+                twoColumn={false}
+                variant={variant}
+                compactQuestions={compactQuestions}
+                dottedRules={dottedRules}
+                flushTop={!dottedRules}
+                justifyAnswers={justifyAnswers}
+              />
+            );
+            return blockClassName ? <div className={`min-w-0 ${blockClassName}`}>{list}</div> : list;
+          })()}
         </div>
       </Section>
     );

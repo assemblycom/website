@@ -114,7 +114,6 @@ export function PortalTrust({
                 variant="divided"
                 dottedRules
                 flushTop={false}
-                narrowAnswer
                 justifyAnswers
               />
             </div>

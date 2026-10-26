@@ -1,4 +1,5 @@
 import { BLOCKS, type Block, type Document, type Inline, type Text } from "@contentful/rich-text-types";
+import { LEGACY_FEATURE_TITLES } from "./legacy-feature-titles";
 
 /**
  * The copy a template detail page is built from, with every fallback decided in
@@ -85,12 +86,22 @@ function isAcronym(word: string): boolean {
   return /[A-Z].*[A-Z]/.test(word);
 }
 
-/** Sentence case for use mid-sentence: lowercases every word but acronyms. */
+/**
+ * Brands among the template names. A name that starts with one is the
+ * product's own and is kept exactly as written mid-sentence ("the Xero
+ * integration template", "the Google Slides template"). Camel-cased brands
+ * ("QuickBooks", "YouTube") already pass as acronyms.
+ */
+const BRANDS = new Set([
+  "Acuity", "Cal.com", "Calendly", "Canva", "Databox", "Figma", "Google", "Hubspot", "Jotform",
+  "Loom", "Looker", "Miro", "Monday", "Notion", "Power", "Trello", "Typeform", "Xero", "Zoom",
+]);
+
+/** Sentence case for use mid-sentence: lowercases every word but acronyms and brands. */
 function lowerCasePhrase(s: string): string {
-  return s
-    .split(" ")
-    .map((word) => (isAcronym(word) ? word : word.toLowerCase()))
-    .join(" ");
+  const words = s.split(" ");
+  if (BRANDS.has(words[0]) || isAcronym(words[0])) return s;
+  return words.map((word) => (isAcronym(word) ? word : word.toLowerCase())).join(" ");
 }
 
 /** All-caps acronyms said as a word, not letter by letter. */
@@ -137,6 +148,8 @@ export interface TemplateCopy {
   definition: { heading: string; body: string } | null;
   faqHeading: string;
   ctaHeading: string;
+  /** Heads an older overview's section, which has no title of its own. */
+  overviewHeading: string;
   /** The bare title; pageMetadata() adds " | Assembly". */
   seoTitle: string;
   /** Undefined when nothing suitable exists: better no description than the card line. */
@@ -155,7 +168,8 @@ export function templateCopy(input: TemplateCopyInput): TemplateCopy {
       ? { heading: `What is ${article(keyword)} ${lowerCasePhrase(keyword)}?`, body: input.definitionBody }
       : null,
     faqHeading: `Questions about this ${keyword}`,
-    ctaHeading: input.ctaHeading ?? `Start with the ${input.name} template`,
+    ctaHeading: input.ctaHeading ?? `Start with the ${noun} template`,
+    overviewHeading: `What's in the ${noun} template`,
     seoTitle:
       input.seoTitle ??
       (/template$/i.test(input.name) ? titleCase(input.name) : `${titleCase(input.name)} Template`),
@@ -163,4 +177,78 @@ export function templateCopy(input: TemplateCopyInput): TemplateCopy {
     seoDescription:
       input.seoMetaDescription ?? input.heroDescription ?? input.longDescription ?? input.definitionBody,
   };
+}
+
+/**
+ * An older intro's first sentence. They run to two or three paragraphs (one to
+ * 105 words), and the first sentence is the one that says what the template
+ * is; the rest is detail the feature list beside it already carries.
+ */
+function firstSentence(s: string): string {
+  return s.split(/(?<=[.!?])\s+(?=[A-Z])/)[0];
+}
+
+/** What the page keeps from an overview written before the benefits layout. */
+export interface LegacyOverview {
+  intro: string | null;
+  features: string[];
+}
+
+// Copy pasted into nearly every older overview, word for word: the "start
+// from this template" line, and the customize / perfect-for lists, which say
+// the same of every template. The page says each of these elsewhere.
+const LEGACY_BOILERPLATE = /^Start from this template and describe/i;
+const FEATURES_HEADING = /^key (features|benefits)$/i;
+
+/**
+ * An older overview, read for the two things it holds that are this
+ * template's own: the intro's first sentence, and the "Key features" or "Key
+ * benefits" list. The "Overview" label above the intro, the boilerplate line,
+ * and the customize / perfect-for sections are dropped, so the page can lay
+ * it out like the benefits section rather than as a loose article. Null when
+ * neither part is there and the field should render whole.
+ */
+export function parseLegacyOverview(doc: Document | undefined): LegacyOverview | null {
+  if (!doc) return null;
+  const intro: string[] = [];
+  let features: string[] = [];
+  let sawHeading = false;
+  for (let i = 0; i < doc.content.length; i++) {
+    const node = doc.content[i];
+    const text = plain(node).trim();
+    const isHeading = node.nodeType.startsWith("heading");
+    if (isHeading && /^overview$/i.test(text)) continue;
+    if (isHeading) {
+      sawHeading = true;
+      if (FEATURES_HEADING.test(text) && !features.length) {
+        const list = doc.content[i + 1];
+        if (list?.nodeType === BLOCKS.UL_LIST || list?.nodeType === BLOCKS.OL_LIST) {
+          features = list.content.map((item) => plain(item as Block).trim()).filter(Boolean);
+        }
+      }
+      continue;
+    }
+    if (!sawHeading && node.nodeType === BLOCKS.PARAGRAPH && text && !LEGACY_BOILERPLATE.test(text)) {
+      intro.push(text);
+    }
+  }
+  if (!intro.length && !features.length) return null;
+  return { intro: intro.length ? firstSentence(intro.join(" ")) : null, features };
+}
+
+// "Detail view: activity chart, …" or "Services - list services you sell":
+// a label of up to four words, then the sentence.
+const LEADING_LABEL = /^(\S+(?: \S+){0,3}?)(?::| - | — ) *(.+)$/;
+
+/**
+ * An older feature item as a titled row: its title from
+ * LEGACY_FEATURE_TITLES, or the short label it already leads with, with the
+ * sentence beneath. With neither, the sentence stands as the title alone.
+ */
+export function legacyFeature(slug: string, item: string): { label: string; body?: string } {
+  const title = LEGACY_FEATURE_TITLES[slug]?.[item];
+  if (title) return { label: title, body: item };
+  const labelled = LEADING_LABEL.exec(item);
+  if (labelled) return { label: labelled[1], body: capitalize(labelled[2]) };
+  return { label: item };
 }
