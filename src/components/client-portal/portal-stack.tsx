@@ -82,12 +82,16 @@ export function PortalStack({
   body?: string | null;
   ways?: Way[];
   /**
-   * The right-hand picture in place of the stack picker — the template pages
-   * run their own screenshot here. null drops the column altogether.
+   * The right-hand picture in place of the stack picker. null drops the
+   * picture, and the list moves into its column beside the heading (the
+   * template pages).
    */
   visual?: React.ReactNode;
   visualTitle?: string;
 } = {}) {
+  // No picture: the heading takes the left column and the list the right, so
+  // the band keeps its two-column shape instead of leaving half of it empty.
+  const listBeside = visual === null;
   return (
     // Ruled top AND bottom, and both full-bleed, because the band is.
     //
@@ -118,7 +122,7 @@ export function PortalStack({
             No right padding from lg up: the picture runs off the rail and past
             the viewport's edge, so it reads as a portal that continues rather
             than a screenshot centred in a band. */}
-        <div className="mx-auto flex max-w-[1200px] flex-col gap-10 px-6 py-16 md:px-10 md:py-24 lg:grid lg:grid-cols-2 lg:items-center lg:gap-16">
+        <div className={`mx-auto flex max-w-[1200px] flex-col gap-10 px-6 py-16 md:px-10 md:py-24 lg:grid lg:grid-cols-2 lg:gap-16 ${listBeside ? "lg:items-start" : "lg:items-center"}`}>
           {/* `contents` BELOW lg, a block from lg. The picture goes directly
               under the body copy on a phone — it is what the sentence is
               describing, and three rows of list in between meant a reader met
@@ -129,7 +133,7 @@ export function PortalStack({
               heading block and the list straight into the flex column where
               `order` can interleave them with the picker. No duplicated
               markup, and the lg layout is untouched. */}
-          <div className="contents lg:block lg:max-w-xl">
+          <div className={listBeside ? "contents" : "contents lg:block lg:max-w-xl"}>
             <div className="order-1 lg:contents">
               <h2 className="type-h2 text-balance">{heading}</h2>
               {body ? (
@@ -167,7 +171,7 @@ export function PortalStack({
               // the wrapper is a block again and order means nothing. The top
               // margin goes with it: as a flex item the column's gap-10
               // already separates it, and mt-10 on top of that was 80px.
-              <ul className="order-3 mt-0 flex flex-col lg:order-none lg:mt-10">
+              <ul className={`order-3 mt-0 flex min-w-0 flex-col lg:order-none ${listBeside ? "" : "lg:mt-10"}`}>
                 {ways.map(({ label, body, href }, i) => {
                   const rule = `relative flex items-start gap-4 px-3 py-4 before:absolute before:inset-x-0 before:top-0 before:h-px before:content-[''] ${DOTTED_RULE_BEFORE} ${
                     i === ways.length - 1

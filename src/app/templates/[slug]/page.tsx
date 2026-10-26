@@ -324,27 +324,15 @@ export default async function TemplateDetailPage({ params }: Props) {
 
       {/* 04 Benefits: the product pages' "Keep the tools you already use"
           section (PortalStack), so the benefits read as that section's
-          dotted-rule list beside its framed panel rather than as a grid of
-          cards of this page's own. The rows have no links, so no arrows; the
-          panel holds the template's second shot, in the picker's own frame. */}
+          dotted-rule list rather than as a grid of cards of this page's own.
+          No picture: the heading sits on the left and the list on the right.
+          The rows have no links, so no arrows. */}
       {benefits ? (
         <PortalStack
           heading={benefits.heading}
           body={null}
           ways={benefits.cards.map((card) => ({ label: card.title, body: card.body }))}
-          visual={
-            images[1] ? (
-              <figure className="rounded-2xl border border-border bg-[var(--surface)] p-4 md:p-5 [[data-theme=dark]_&]:border-[#383838]">
-                <TemplateShot
-                  desktop={images[1]}
-                  mobile={mobileImages[1]}
-                  alt={`${template.title} screenshot`}
-                  sizes="(min-width: 1024px) 50vw, 100vw"
-                  className="rounded-xl border border-border"
-                />
-              </figure>
-            ) : null
-          }
+          visual={null}
         />
       ) : entry?.overview ? (
         // An overview that doesn't follow the benefits layout still renders,
