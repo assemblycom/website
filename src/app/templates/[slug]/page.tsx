@@ -241,7 +241,10 @@ export default async function TemplateDetailPage({ params }: Props) {
           the shot full width below in the same rounded --surface card the
           portal carousel sits in. On the site's hero column (1400px, 24/40
           gutters); the sections below sit on the narrower 1200px column. */}
-      <section className="mx-auto max-w-[1400px] px-6 pb-16 pt-12 md:px-10 md:pb-24">
+      {/* pb-4 on a phone: the ratings strip below brings its own 32px, and
+          64px on top of that left the ratings stranded from the shot they
+          vouch for. */}
+      <section className="mx-auto max-w-[1400px] px-6 pb-4 pt-12 md:px-10 md:pb-24">
         <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
           <Link href="/templates" className="transition-colors hover:text-foreground">
             App templates
