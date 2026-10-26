@@ -104,7 +104,13 @@ export function PortalStack({
     // Half-strength. A full-bleed band carries far more area than a tray or a
     // card, so the same grey reads a step darker across it; at 50% it sits
     // between the page and the slot inside it, which is what a band is for.
-    <section className="border-y border-border bg-[var(--surface)]/50 [[data-theme=dark]_&]:border-[#383838]">
+    // No picture, no tint either: the template pages run it on the page's
+    // own ground, keeping only the rules.
+    <section
+      className={`border-y border-border [[data-theme=dark]_&]:border-[#383838] ${
+        listBeside ? "" : "bg-[var(--surface)]/50"
+      }`}
+    >
       <Reveal>
         {/* grid-cols-[minmax(0,1fr)] IS LOAD-BEARING BELOW lg. A grid track
             sized `auto` floors at its content's min-content width, and a
