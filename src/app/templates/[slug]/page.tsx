@@ -404,7 +404,7 @@ export default async function TemplateDetailPage({ params }: Props) {
             icon: templateIcon(card.slug),
           }))}
           link={{ label: browseAllLabel(related.total), href: "/templates" }}
-          split
+          centered
         />
       )}
 
