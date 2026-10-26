@@ -94,15 +94,22 @@ export function PortalStack({
   // the band keeps its two-column shape instead of leaving half of it empty.
   const listBeside = visual === null;
   // From lg the heading block dissolves into the grid, so each piece is
-  // placed: the heading down the left, the body and the list stacked on the
-  // right, the body first.
-  const place = listBeside
-    ? {
-        heading: "lg:col-start-1 lg:row-span-2 lg:row-start-1",
-        body: "mt-5 lg:col-start-2 lg:row-start-1 lg:mt-0",
-        list: "lg:col-start-2 lg:row-start-2",
-      }
-    : { heading: "", body: "mt-5", list: "lg:mt-10" };
+  // placed: the heading and its body down the left, the list on the right,
+  // its top level with the heading's. With no list the body takes the right
+  // column instead, so that half isn't left empty.
+  const place = !listBeside
+    ? { heading: "", body: "mt-5", list: "lg:mt-10" }
+    : ways.length
+      ? {
+          heading: "lg:col-start-1 lg:row-start-1",
+          body: "mt-5 lg:col-start-1 lg:row-start-2",
+          list: "lg:col-start-2 lg:row-span-2 lg:row-start-1",
+        }
+      : {
+          heading: "lg:col-start-1 lg:row-start-1",
+          body: "mt-5 lg:col-start-2 lg:row-start-1 lg:mt-0 lg:pt-2",
+          list: "",
+        };
   return (
     // Ruled top AND bottom, and both full-bleed, because the band is.
     //
@@ -139,7 +146,7 @@ export function PortalStack({
             No right padding from lg up: the picture runs off the rail and past
             the viewport's edge, so it reads as a portal that continues rather
             than a screenshot centred in a band. */}
-        <div className={`mx-auto flex max-w-[1200px] flex-col gap-10 px-6 py-16 md:px-10 md:py-24 lg:grid lg:grid-cols-2 lg:gap-x-16 ${listBeside ? "lg:items-start lg:gap-y-8" : "lg:items-center lg:gap-y-16"}`}>
+        <div className={`mx-auto flex max-w-[1200px] flex-col gap-10 px-6 py-16 md:px-10 md:py-24 lg:grid lg:grid-cols-2 lg:gap-x-16 ${listBeside ? "lg:items-start lg:gap-y-0" : "lg:items-center lg:gap-y-16"}`}>
           {/* `contents` BELOW lg, a block from lg. The picture goes directly
               under the body copy on a phone — it is what the sentence is
               describing, and three rows of list in between meant a reader met
@@ -190,7 +197,13 @@ export function PortalStack({
               // already separates it, and mt-10 on top of that was 80px.
               <ul className={`order-3 mt-0 flex min-w-0 flex-col lg:order-none ${place.list}`}>
                 {ways.map(({ label, body, href }, i) => {
-                  const rule = `relative flex items-start gap-4 px-3 py-4 before:absolute before:inset-x-0 before:top-0 before:h-px before:content-[''] ${DOTTED_RULE_BEFORE} ${
+                  // Beside the heading the list opens without a rule, so its
+                  // first line sits level with the heading's top.
+                  const topRule =
+                    listBeside && i === 0
+                      ? "!pt-0"
+                      : `before:absolute before:inset-x-0 before:top-0 before:h-px before:content-[''] ${DOTTED_RULE_BEFORE}`;
+                  const rule = `relative flex items-start gap-4 px-3 py-4 ${topRule} ${
                     i === ways.length - 1
                       ? `after:absolute after:inset-x-0 after:bottom-0 after:h-px after:content-[''] ${DOTTED_RULE_AFTER}`
                       : ""

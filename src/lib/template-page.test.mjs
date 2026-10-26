@@ -89,6 +89,9 @@ test('falls back field by field, never to the gallery subtitle', () => {
   assert.equal(copy.definition, null);
   assert.equal(copy.faqHeading, 'Questions about this time tracker');
   assert.equal(copy.ctaHeading, 'Start with the time tracker template');
+  assert.equal(templateCopy({ name: 'Xero integration' }).ctaHeading, 'Start with the Xero integration template');
+  assert.equal(templateCopy({ name: 'Google Slides' }).ctaHeading, 'Start with the Google Slides template');
+  assert.equal(templateCopy({ name: 'QuickBooks integration' }).ctaHeading, 'Start with the QuickBooks integration template');
   assert.equal(copy.seoTitle, 'Time Tracker Template');
   assert.equal(copy.seoDescription, 'Track billable time per client.');
   assert.equal(templateCopy({ name: 'x', heroDescription: 'Hero.', longDescription: 'Long.' }).seoDescription, 'Hero.');

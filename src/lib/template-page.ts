@@ -85,12 +85,22 @@ function isAcronym(word: string): boolean {
   return /[A-Z].*[A-Z]/.test(word);
 }
 
-/** Sentence case for use mid-sentence: lowercases every word but acronyms. */
+/**
+ * Brands among the template names. A name that starts with one is the
+ * product's own and is kept exactly as written mid-sentence ("the Xero
+ * integration template", "the Google Slides template"). Camel-cased brands
+ * ("QuickBooks", "YouTube") already pass as acronyms.
+ */
+const BRANDS = new Set([
+  "Acuity", "Cal.com", "Calendly", "Canva", "Databox", "Figma", "Google", "Hubspot", "Jotform",
+  "Loom", "Looker", "Miro", "Monday", "Notion", "Power", "Trello", "Typeform", "Xero", "Zoom",
+]);
+
+/** Sentence case for use mid-sentence: lowercases every word but acronyms and brands. */
 function lowerCasePhrase(s: string): string {
-  return s
-    .split(" ")
-    .map((word) => (isAcronym(word) ? word : word.toLowerCase()))
-    .join(" ");
+  const words = s.split(" ");
+  if (BRANDS.has(words[0]) || isAcronym(words[0])) return s;
+  return words.map((word) => (isAcronym(word) ? word : word.toLowerCase())).join(" ");
 }
 
 /** All-caps acronyms said as a word, not letter by letter. */
