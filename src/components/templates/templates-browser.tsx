@@ -403,7 +403,7 @@ export function TemplatesBrowser({ templates }: Props) {
                     // there is nothing for the scroller to crop.
                     className={`type-body inline-flex h-9 shrink-0 items-center whitespace-nowrap rounded-lg px-3.5 leading-none outline-none transition-colors focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-foreground/40 ${
                       active
-                        ? "bg-border text-foreground"
+                        ? "bg-border text-foreground dark-ui:bg-[var(--surface-2)]"
                         : "bg-transparent text-muted-foreground active:bg-border [@media(hover:hover)]:hover:bg-muted [@media(hover:hover)]:hover:text-foreground"
                     }`}
                   >

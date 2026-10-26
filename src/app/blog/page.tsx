@@ -66,8 +66,12 @@ export default async function BlogPage({
         <Link
           href={`/blog/${featured.slug}`}
           // A card at every width — outlined the whole way round with the
-          // corners turned, rather than a band ruled only top and bottom.
-          className="group mt-10 block overflow-hidden rounded-2xl border border-border transition-colors hover:bg-muted/50 md:mt-14 [[data-theme=dark]_&]:border-[#383838]"
+          // corners turned, rather than a band ruled only top and bottom. In
+          // dark the card takes --card at rest so it lifts off the page ground
+          // rather than reading as an outline on it, and the outline drops to a
+          // faint white so the fill, not the line, draws the edge. Hover steps
+          // up to --muted.
+          className="group mt-10 block overflow-hidden rounded-2xl border border-border transition-colors hover:bg-muted/50 md:mt-14 dark-ui:border-white/[0.07] dark-ui:bg-card dark-ui:hover:bg-muted"
         >
           {/* Stacked on a phone and a tablet, side by side from lg. The cover's
               height is nine sixteenths of its column and the copy's is however
