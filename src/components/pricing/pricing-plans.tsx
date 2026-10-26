@@ -2,9 +2,13 @@
 
 import { useState } from "react";
 import { CheckIcon } from "@/components/ui/check-icon";
+import {
+  DOTTED_RULE_LEFT_ROW,
+  DOTTED_RULE_TOP_TABLE,
+  DOTTED_RULE_TOP_UPRIGHT,
+} from "@/components/ui/dotted-rule";
 import { SIGNUP_URL, DEMO_URL, DEMO_CTA_LABEL } from "@/lib/constants";
 import {
-  PLAN_EDGE_BRAND,
   PLAN_WASH_BRAND,
   PLAN_WASH_BRAND_LG,
   PLAN_WASH_NEUTRAL,
@@ -43,7 +47,7 @@ const PLANS: Plan[] = [
     name: "Free",
     priceMonthly: 0,
     priceYearly: 0,
-    description: "Free forever for your first clients",
+    description: "For getting started",
     featureGroups: [
       {
         label: "Fundamentals",
@@ -183,7 +187,7 @@ const PLANS: Plan[] = [
     name: "Enterprise",
     priceMonthly: 2000,
     priceYearly: 2000,
-    description: "For firms with custom needs",
+    description: "For custom needs",
     featureGroups: [
       {
         label: "Fundamentals",
@@ -291,32 +295,25 @@ function PlanGrid({
 }) {
   return (
         <div
-          // Two up from 560 rather than sm's 640: between those widths a single
-          // column left the cards running the full width of the page with the
-          // price stranded on one side of it.
-          // The side-by-side table starts at xl, not lg: five columns need the
-          // width, and below it the cards run two up (the odd one out spans the
-          // row) rather than squeezing to ~180px each.
-          className={`grid gap-6 min-[560px]:grid-cols-2 xl:gap-0 xl:grid-rows-[auto_auto_auto_auto_auto] ${
+          // The side-by-side table starts at xl: five columns need the width.
+          // Below it the plans stack in one column, as Notion, Vercel and
+          // GitHub do, rather than running two up: five (or four) cards in
+          // pairs always left one alone in a row, stretched or stranded. From
+          // sm each card turns into a row — name, price and buttons on the
+          // left, features on the right — so the width is used without any
+          // card reading differently from the rest.
+          className={`grid gap-6 xl:gap-0 xl:grid-rows-[auto_auto_auto_auto_auto] ${
             plans.length === 4 ? "xl:grid-cols-4" : "xl:grid-cols-5"
           } ${className}`}
         >
         {plans.map((plan, idx) => {
           const price = billing === "yearly" ? plan.priceYearly : plan.priceMonthly;
-          // The card AFTER the highlighted one drops its gray left divider, so
-          // it doesn't double the highlighted card's blue right edge.
-          const dropLeftDivider = plans[idx - 1]?.highlighted;
-          // Two-up (560–1279) with an odd number of cards leaves the last one
-          // alone in its row at half width. It takes the whole row instead, and
-          // from md its three groups sit side by side so it doesn't read as a
-          // stretched column.
-          const spansRow = plans.length % 2 === 1 && idx === plans.length - 1;
           // The group heading: "Everything in Starter, plus" only while that
           // card is actually on the page. Signed-in visitors don't see Free, so
           // Starter has no card to build on and the heading is just "Features".
           const prevName = plans[idx - 1]?.name;
-          // Original structure kept: filled header panel (price pinned to the
-          // bottom) → detached button → features. The only addition is an
+          // Original structure kept: filled header panel (price set 24px under
+          // the description) → detached button → features. The only addition is an
           // outline around the WHOLE card (outer wrapper); the header panel no
           // longer carries its own border so the outline reads once, around all.
           return (
@@ -330,27 +327,23 @@ function PlanGrid({
               // one table on the light page. In dark that left the whole table
               // on the page's near-black with nothing but hairlines to hold it,
               // so there the fill stays on at every width.
-              className={`${
-                spansRow ? "min-[560px]:max-xl:col-span-2 " : ""
-              }relative isolate flex min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-card p-4 xl:grid xl:grid-rows-subgrid xl:row-span-5 xl:rounded-none xl:border-y xl:border-l xl:border-r-0 xl:border-solid xl:border-border xl:bg-transparent xl:[[data-theme=dark]_&]:bg-card xl:p-6 xl:first:!rounded-l-xl xl:last:!rounded-r-xl xl:[&:last-child]:border-r ${
-                dropLeftDivider ? "xl:[[data-theme=dark]_&]:border-l-0" : ""
-              } ${
-                plan.highlighted
-                  ? `${PLAN_EDGE_BRAND} xl:[[data-theme=dark]_&]:border-r xl:[[data-theme=dark]_&]:[border-image:linear-gradient(to_bottom,rgba(125,164,255,0.55),#383838_75%)_1]`
-                  : ""
-              }`}
+              // sm–xl, the row: a two-column grid, the header panel and buttons
+              // down the left, the features filling the right.
+              className={`relative isolate sm:max-xl:grid sm:max-xl:grid-cols-[minmax(0,17rem)_minmax(0,1fr)] sm:max-xl:grid-rows-[auto_1fr] sm:max-xl:gap-x-6 flex min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-card p-6 xl:grid xl:grid-rows-subgrid xl:row-span-5 xl:rounded-none xl:border-y xl:border-l xl:border-r-0 xl:border-solid xl:border-border xl:bg-transparent xl:[[data-theme=dark]_&]:bg-card xl:p-6 xl:first:!rounded-l-xl xl:last:!rounded-r-xl xl:[&:last-child]:border-r`}
             >
               {/* Aurora wash blooming up from behind the header panel (-z-10
                   inside an isolated context). Every card carries one now, so the
                   four read as one set; only the highlighted plan's is brand
-                  blue, the rest take a neutral gray at the same lengths. */}
+                  blue, the rest take a neutral gray at the same lengths. Hidden
+                  for now at every width: the cards are flat, with a dotted rule
+                  parting price from features instead. */}
               <div
                 aria-hidden
                 // Values shared with the four-card block the product pages
                 // run, so the recommended plan cannot end up a different blue
                 // on two pages. Only the lg fade, which follows this table's
                 // taller subgrid, is this page's own.
-                className={`pointer-events-none absolute inset-0 -z-10 ${
+                className={`pointer-events-none absolute inset-0 -z-10 hidden ${
                   plan.highlighted
                     ? `${PLAN_WASH_BRAND} ${PLAN_WASH_BRAND_LG}`
                     : `${PLAN_WASH_NEUTRAL} ${PLAN_WASH_NEUTRAL_LG}`
@@ -365,15 +358,25 @@ function PlanGrid({
                 // desktop card while still masking the aurora. In dark the card
                 // carries a fill, so the page black would read as a hole punched
                 // in it — take the card's own tone there.
-                className="flex min-h-[200px] flex-col justify-between rounded-xl rounded-b-none border border-transparent bg-card p-5 xl:bg-background xl:[[data-theme=dark]_&]:bg-card"
+                className="flex flex-col rounded-xl rounded-b-none border border-transparent bg-card sm:max-xl:col-start-1 sm:max-xl:row-start-1 xl:bg-background xl:[[data-theme=dark]_&]:bg-card"
               >
                 <div>
-                  <h3 className="text-lg font-medium">{plan.name}</h3>
+                  {/* The recommended plan's marker: the site's tag chip (as on
+                      the customers page), beside the name rather than an
+                      outline round the card. */}
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-lg font-medium">{plan.name}</h3>
+                    {plan.highlighted && (
+                      <span className="inline-flex items-center rounded-md bg-muted px-2.5 py-1 font-mono text-[11px] uppercase tracking-wide text-muted-foreground [[data-theme=dark]_&]:bg-white/[0.06]">
+                        Popular
+                      </span>
+                    )}
+                  </div>
                   <p className="mt-2 text-sm text-muted-foreground">
                     {plan.description}
                   </p>
                 </div>
-                <div>
+                <div className="mt-6">
                   <div className="flex items-baseline gap-1.5">
                     <AnimatedPrice value={price} />
                   </div>
@@ -386,38 +389,39 @@ function PlanGrid({
               {/* Detached CTA — our standard rounded-lg button. One grid cell
                   (the table's second row), so a card without the secondary
                   button below it still lines up with the ones that have it. */}
-              <div className="mt-3 flex flex-col gap-2 xl:pb-6">
+              <div className="mt-6 flex flex-col gap-2 sm:max-xl:col-start-1 sm:max-xl:row-start-2 sm:max-xl:self-start xl:pb-6">
                 <a
                   href={plan.ctaHref}
-                  className="rounded-lg bg-foreground px-5 py-2 text-center text-sm text-background transition-opacity hover:opacity-90"
+                  className="rounded-lg border border-transparent bg-foreground px-5 py-2 text-center text-sm text-background transition-opacity hover:opacity-90"
                 >
                   {plan.cta}
                 </a>
-                {/* Secondary demo CTA — a borderless ghost button: same size as
-                    the primary above it, no outline, tinted on hover. */}
+                {/* Secondary demo CTA — the site's outlined secondary button (as
+                    in pricing-cta.tsx), at the primary's size. The primary
+                    carries a transparent border so the two stay one height. */}
                 {plan.secondaryDemo && (
                   <a
                     href={DEMO_URL}
-                    className="rounded-lg px-5 py-2 text-center text-sm text-foreground transition-colors hover:bg-foreground/5"
+                    className="rounded-lg border border-foreground/20 bg-transparent px-5 py-2 text-center text-sm text-foreground transition-colors hover:bg-foreground/5"
                   >
                     {DEMO_CTA_LABEL}
                   </a>
                 )}
               </div>
 
+              {/* As a row, the groups stack in the right column, and from lg
+                  sit side by side; the first loses its top rule, which would
+                  otherwise run along the card's top edge. The FAQ's dotted rule,
+                  stood upright down the column's left edge (and lying across
+                  the top on a phone, where the features sit below), parts the features from the name and
+                  price, in place of the aurora wash, which the row drops. */}
               <div
-                className={`mt-6 flex flex-1 cursor-default flex-col px-2 pb-2 xl:contents ${
-                  spansRow
-                    ? "md:max-xl:grid md:max-xl:grid-cols-3 md:max-xl:items-start md:max-xl:gap-x-8"
-                    : ""
-                }`}
+                className={`mt-6 flex flex-1 cursor-default flex-col px-2 pb-2 ${DOTTED_RULE_LEFT_ROW} ${DOTTED_RULE_TOP_UPRIGHT} max-sm:relative max-sm:before:absolute max-sm:before:inset-x-0 max-sm:before:top-0 max-sm:before:h-px max-sm:before:content-[''] sm:max-xl:col-start-2 sm:max-xl:row-span-2 sm:max-xl:row-start-1 sm:max-xl:mt-0 max-xl:px-0 sm:max-xl:relative sm:max-xl:pl-6 sm:max-xl:before:absolute sm:max-xl:before:inset-y-0 sm:max-xl:before:left-0 sm:max-xl:before:w-px sm:max-xl:before:content-[''] sm:max-xl:pt-0 lg:max-xl:grid lg:max-xl:grid-cols-3 lg:max-xl:items-start lg:max-xl:gap-x-8 xl:contents`}
               >
                 {plan.featureGroups.map((group) => (
                   <div
                     key={group.label}
-                    className={`border-t border-border pt-5 [&:not(:first-child)]:mt-5 ${
-                      spansRow ? "md:max-xl:[&:not(:first-child)]:mt-0" : ""
-                    }`}
+                    className={`border-t border-border pt-5 [&:not(:first-child)]:mt-5 max-sm:first:border-t-0 xl:first:relative xl:first:border-t-0 xl:first:before:absolute xl:first:before:inset-x-0 xl:first:before:top-0 xl:first:before:h-px xl:first:before:content-[''] ${DOTTED_RULE_TOP_TABLE} sm:max-xl:first:border-t-0 sm:max-xl:first:pt-0 lg:max-xl:border-t-0 lg:max-xl:pt-0 lg:max-xl:[&:not(:first-child)]:mt-0`}
                   >
                     <p className="text-sm font-medium">
                       {group.extendsPrevious && prevName
@@ -451,11 +455,9 @@ export function PricingPlans() {
   const [billing, setBilling] = useState<Billing>("yearly");
 
   return (
-    // Cap the width only while the cards are in one column (<560px), so a lone
-    // card doesn't stretch across a small tablet. Past that the grid is two up
-    // and the cap has to lift, or the pair sits squeezed into 448px with the
-    // page's margins going to waste on either side.
-    <div className="mx-auto max-w-md min-[560px]:max-w-none">
+    // No width cap: upright on a phone (<sm) a card fills the column, and
+    // from sm each card is a row with its features beside the price.
+    <div>
       {/* Billing toggle — enlarged on mobile (bigger tap targets, matches the
           left-aligned hero); settles back to the compact size on desktop. */}
       <div className="flex justify-start md:justify-center">
@@ -510,7 +512,11 @@ export function PricingPlans() {
       {/* Plans — tucked closer under the toggle on mobile; roomier on desktop.
           Column count tracks the visible plans so hiding Free (signed-in)
           reflows to four even columns rather than leaving a gap. */}
-      <div className="mt-5 md:mt-12 xl:overflow-hidden xl:rounded-xl">
+      {/* The five-column table reaches into the page margin once there is
+          margin to spare: whatever lies beyond a 24px gutter, up to 80px a
+          side, so the columns gain width on wide screens while the page
+          keeps its gutter. Nothing changes at 1280, where there is none. */}
+      <div className="mt-5 md:mt-12 xl:mx-[calc(-1*clamp(0px,(100vw_-_1328px)/2,5rem))] xl:overflow-hidden xl:rounded-xl">
         {/* Both variants ship and `data-authed` on <html> hides one before
             first paint (see globals.css). Choosing in an effect meant a
             signed-in visitor watched five cards render and then reflow to
