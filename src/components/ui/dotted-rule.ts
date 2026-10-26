@@ -39,3 +39,20 @@ export const DOTTED_RULE_BEFORE_MOBILE =
 
 export const DOTTED_RULE_AFTER_MOBILE =
   "max-md:after:bg-[repeating-linear-gradient(to_right,color-mix(in_oklab,var(--foreground)_32%,transparent)_0_2px,transparent_2px_5px)]";
+
+/** The same rule stood upright, on the left edge, only from `sm` to `xl` —
+    for the pricing plans' rows, where it parts each card's features from its
+    name and price. Same dot, pitch and colour as the FAQ's rules above; only
+    the direction changes. */
+export const DOTTED_RULE_LEFT_ROW =
+  "sm:max-xl:before:bg-[repeating-linear-gradient(to_bottom,color-mix(in_oklab,var(--foreground)_32%,transparent)_0_2px,transparent_2px_5px)]";
+
+/** Rules the top of a block, below `sm` only — the pricing cards while they
+    are upright on a phone, parting the features from the name and price. */
+export const DOTTED_RULE_TOP_UPRIGHT =
+  "max-sm:before:bg-[repeating-linear-gradient(to_right,color-mix(in_oklab,var(--foreground)_32%,transparent)_0_2px,transparent_2px_5px)]";
+
+/** Rules the top of the first feature group on the `xl` pricing table, where
+    each card's groups sit directly in the table's subgrid. */
+export const DOTTED_RULE_TOP_TABLE =
+  "xl:first:before:bg-[repeating-linear-gradient(to_right,color-mix(in_oklab,var(--foreground)_32%,transparent)_0_2px,transparent_2px_5px)]";

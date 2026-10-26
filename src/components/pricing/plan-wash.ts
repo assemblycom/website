@@ -45,11 +45,3 @@ export const PLAN_WASH_BRAND_LG =
 export const PLAN_WASH_NEUTRAL_LG =
   "xl:[background:linear-gradient(to_bottom,var(--muted),transparent_160px)]";
 
-/**
- * The recommended card's own edge: brand blue at the top, gone by the middle,
- * so it fades out with the wash instead of ringing the card in blue. Defined
- * in globals.css as `.plan-edge-brand` — a masked gradient border, which a
- * utility class cannot express — and dark only, since on white the neutral
- * hairline is already right. The card keeps its ordinary border underneath.
- */
-export const PLAN_EDGE_BRAND = "plan-edge-brand";
