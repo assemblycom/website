@@ -4,16 +4,16 @@ import { CapterraLogo, G2Logo } from "@/components/customers/review-marks";
 import { getCaseStudyBySlug } from "@/lib/case-studies";
 import { CAPTERRA_URL, G2_URL } from "@/lib/constants";
 
-// The six marks the handoff names, all of them firms the template pages are
+// The marks the handoff names, all of them firms the template pages are
 // written for. Shared by every template page, so it is set here and not in
-// the CMS.
+// the CMS. Durrick Designs was dropped from the handoff's six: its mark is
+// a stacked script that reads as a smudge at this size.
 const LOGO_SLUGS = [
   "advertai-marketing",
   "collective-cpa",
   "sargent-cpa",
   "heritage-law-partners",
   "valuenode-accounting",
-  "durrick-designs",
 ];
 
 // Current as of 2026-10-19. The line beside the badges is built from these, so
@@ -26,12 +26,15 @@ const RATINGS = [
 
 /**
  * The proof strip under the hero: the rating line on the left, the customer
- * marks on the right; stacked on a phone, with the marks in two rows of three.
+ * marks on the right; stacked on a phone, with the marks in two rows (three,
+ * then two centred under them).
  * No heading, by design: the marks carry it.
  */
 export function TemplateProof() {
   return (
-    <div className="flex flex-wrap items-center justify-between gap-x-12 gap-y-6 border-y border-border py-8">
+    // No rules of its own: the page draws the grid's rules above and below
+    // the strip, so they end on the rails like every other section's.
+    <div className="flex flex-wrap items-center justify-between gap-x-12 gap-y-6">
       <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
         <div className="flex gap-2">
           {RATINGS.map(({ href, label, score, Mark }) => (
@@ -43,7 +46,8 @@ export function TemplateProof() {
               aria-label={`Assembly on ${label}: ${score} out of 5`}
               className="inline-flex items-center gap-1.5 rounded-md bg-muted px-3 py-1.5 font-mono text-xs uppercase tracking-wide text-muted-foreground transition-colors hover:text-foreground"
             >
-              <Mark className="h-4 w-4" /> {score}
+              {/* The stat-chip pattern: the value in full ink. */}
+              <Mark className="h-4 w-4" /> <span className="text-foreground">{score}</span>
             </a>
           ))}
         </div>
@@ -51,12 +55,16 @@ export function TemplateProof() {
           Rated {RATINGS.map((r) => `${r.score} on ${r.label}`).join(" and ")}
         </p>
       </div>
-      <div className="grid w-full grid-cols-3 gap-x-6 gap-y-5 md:w-auto md:flex-1 md:grid-cols-6 md:gap-x-8">
-        {LOGO_SLUGS.map((slug) => (
+      {/* A six-track grid on a phone, each mark two tracks wide, so the
+          second row of two can start one track in and sit centred. */}
+      <div className="grid w-full grid-cols-6 gap-x-6 gap-y-5 md:w-auto md:flex-1 md:grid-cols-5 md:gap-x-8">
+        {LOGO_SLUGS.map((slug, i) => (
           <Link
             key={slug}
             href={`/customers/${slug}`}
-            className="flex h-8 items-center justify-center text-foreground/45 transition-colors duration-200 hover:text-foreground"
+            className={`col-span-2 flex h-8 items-center justify-center text-foreground/45 transition-colors duration-200 hover:text-foreground md:col-span-1 ${
+              i === 3 ? "col-start-2 md:col-start-auto" : ""
+            }`}
           >
             {/* aria-hidden: some marks (Advertai's SVG) label themselves, and
                 the sr-only name below already says who it is. */}

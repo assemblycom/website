@@ -565,7 +565,15 @@ const PANEL_SCENE_WIDE = {
 export function DescribeCard({
   plain = false,
   vertical = "default",
-}: SceneProps = {}) {
+  prompt,
+}: SceneProps & {
+  /**
+   * The composer's text, for a page whose step is a CHANGE rather than a new
+   * app: the template pages' "Describe your changes" asks for an edit to the
+   * tracker already installed, not for a tracker. Overrides the vertical's.
+   */
+  prompt?: string;
+} = {}) {
   return (
     <>
       {/* A photograph behind this card only, scrimmed hard.
@@ -858,13 +866,15 @@ export function DescribeCard({
                 calendar; /client-portal's rail still runs the project tracker
                 through its own Plan and Build, and a prompt shared between them
                 would be wrong on one page whichever app it named. */}
-                {plain
-                  ? "Add a shared calendar each client books their own time on."
-                  : vertical === "accounting"
-                    ? "Add a month-end close tracker each client sees for their own books."
-                    : vertical === "agency"
-                      ? "Add a project tracker each client sees for their own campaigns."
-                      : "Add a project tracker each client sees for their own project."}
+                {prompt
+                  ? prompt
+                  : plain
+                    ? "Add a shared calendar each client books their own time on."
+                    : vertical === "accounting"
+                      ? "Add a month-end close tracker each client sees for their own books."
+                      : vertical === "agency"
+                        ? "Add a project tracker each client sees for their own campaigns."
+                        : "Add a project tracker each client sees for their own project."}
                 {/* The site's own caret blink (--animate-caret, the one the
               hero typewriter uses). It BLINKS AT REST now rather than only
               while the card is hovered: a still caret parked after a finished
@@ -1083,12 +1093,16 @@ function ChecklistWindow({
   title,
   items,
   loader = false,
+  marker = true,
   className = "",
 }: {
-  title: string;
+  title: React.ReactNode;
   items: { label: string; done: boolean }[];
   /** The Assembly mark in place of the progress ring. */
   loader?: boolean;
+  /** false drops the ring (or loader) from the header, for a title that
+      carries its own sign of progress. */
+  marker?: boolean;
   className?: string;
 }) {
   const done = items.filter((i) => i.done).length;
@@ -1114,7 +1128,13 @@ function ChecklistWindow({
       <div
         className={`flex items-center gap-2.5 border-b bg-[var(--mock-well)] px-4 py-3 [[data-theme=dark]_&]:bg-[var(--mock-well-2)] ${LINE}`}
       >
-        {loader ? <AssemblyLoader /> : <Ring value={done / items.length} />}
+        {marker ? (
+          loader ? (
+            <AssemblyLoader />
+          ) : (
+            <Ring value={done / items.length} />
+          )
+        ) : null}
         <span
           className={`flex-1 truncate text-[color:var(--mock-ink)] ${UI_PRIMARY}`}
         >
@@ -1811,6 +1831,64 @@ const calDayEdge = (i: number) =>
       ? `sm:border-r ${LINE}`
       : `border-r ${LINE}`;
 
+/**
+ * A template, installing: the template pages' first step ("It installs as a
+ * working app in your workspace that you can use as is"). The Plan card's
+ * ground and checklist window, so it sits in the same rail as Describe and
+ * Build without a style of its own. Caught on its last row, like the Plan
+ * card's 3 of 4: the header says "installing…", so a fully ticked list
+ * under it would contradict the line it sits under. The header's whole line
+ * shimmers in place of the ring, so progress is shown once.
+ */
+const INSTALL_SHIMMER: React.CSSProperties = {
+  backgroundImage:
+    "linear-gradient(90deg, var(--mock-ink-soft) 35%, var(--mock-ink) 50%, var(--mock-ink-soft) 65%)",
+  backgroundSize: "200% 100%",
+  animation: "textShimmer 2.4s linear infinite",
+};
+
+const installItems = (setup: string) => [
+  { label: "Added to your workspace", done: true },
+  { label: "Each client sees only their own", done: true },
+  { label: setup, done: true },
+  { label: "Ready to use as is", done: false },
+];
+
+export function InstallCard({
+  appName = "Project tracker",
+  setup = "Milestones, dates, status set up",
+}: {
+  /** The template being installed, as the header names it. */
+  appName?: string;
+  /** The checklist row that says what the template holds. */
+  setup?: string;
+} = {}) {
+  return (
+    <>
+      {/* The default Plan ground, for the same reasons (see PlanCard). */}
+      <div className="absolute -inset-px bg-[#3A3A3A] [[data-theme=dark]_&]:bg-[#FBFBF5]" />
+      <Scene {...RAIL_SCENE_PHONE_PROPS}>
+        <ChecklistWindow
+          marker={false}
+          title={
+            // The site's textShimmer (as on the comparison hero's "Setting up
+            // the login"): a band of full ink sweeps the whole line, dots and
+            // all, the way a builder shows it is still working. In the mock's
+            // own ink tokens so it themes with the window. Still under
+            // reduced motion, where it reads as the line at rest.
+            <span
+              className="bg-clip-text text-transparent motion-reduce:![animation:none]"
+              style={INSTALL_SHIMMER}
+            >
+              {appName} installing…
+            </span>
+          }
+          items={installItems(setup)}
+        />
+      </Scene>
+    </>
+  );
+}
 export function CalendarPane({
   /** CAL_HUES_VIVID on a white ground, for a calendar that is the subject. */
   vivid = false,
@@ -2300,7 +2378,19 @@ function ProjectCard({
 export function BuildCard({
   plain = false,
   vertical = "default",
-}: SceneProps = {}) {
+  sidebarOnly = false,
+  appLabel,
+}: SceneProps & {
+  /**
+   * The portal's sidebar alone, the content area left empty: for a step whose
+   * point is that the app has arrived in the client's portal (the template
+   * pages' "Publish to clients"), where the board beside it competes with the
+   * nav row that says so. The window still bleeds off the card's right edge.
+   */
+  sidebarOnly?: boolean;
+  /** The lit nav row's name, for a page showing its own app arriving. */
+  appLabel?: string;
+} = {}) {
   // Ledgerline only off the panel: the wide `plain` scene is the calendar,
   // which no vertical changes.
   const ledgerline = vertical === "accounting" && !plain;
@@ -2437,6 +2527,11 @@ export function BuildCard({
           // A floor, not a fixed height: below lg a taller box (the 4:5 card
           // on a wide phone) would otherwise leave bare ground under the
           // window, so it grows to fill it there (max-lg:flex-1).
+          // translate-y-px: the window's foot sits ON the card's bottom edge,
+          // and at a fractional position the browser antialiases that row,
+          // letting the haze's green foot through as a hairline under the
+          // window. One pixel past the edge, clipped by the card's own
+          // overflow-hidden, closes it — the -inset-px fix the grounds use.
           style={plain ? undefined : { minHeight: 412 }}
           // The TOP-LEFT is the only corner this window has: it bleeds off the
           // right and the bottom, so three of its corners are crops. That one
@@ -2491,7 +2586,7 @@ export function BuildCard({
           // grey ground than the rule it replaced. Clipping the background to
           // the padding box leaves the border area genuinely empty, so the
           // card's own ground shows through and there is no line at all.
-          className={`flex shrink-0 ${plain ? "mock-edge" : "w-[340px] translate-x-[25px] max-lg:flex-1 min-[480px]:w-[380px] min-[480px]:translate-x-[20px]"} ${WINDOW} ${R_PANEL} rounded-b-none rounded-tr-none border-transparent [background-clip:padding-box] border-b-0 border-r-0 sm:rounded-tr-[10px] sm:border-r ${
+          className={`flex shrink-0 ${plain ? "mock-edge" : "w-[340px] translate-x-[25px] translate-y-px max-lg:flex-1 min-[480px]:w-[380px] min-[480px]:translate-x-[20px]"} ${WINDOW} ${R_PANEL} rounded-b-none rounded-tr-none border-transparent [background-clip:padding-box] border-b-0 border-r-0 sm:rounded-tr-[10px] sm:border-r ${
             plain
               ? // 340x280 ON A PHONE, which is the 360x300 box exactly minus
                 // the scene's own 20px top and left padding — so the window
@@ -2550,7 +2645,14 @@ export function BuildCard({
             // the right edge, which is what says the screen carries on.
             // Ledgerline's slab is its own clay in both themes — a firm's
             // colour does not flip with ours. See --ledgerline-* in globals.
-            className={`hidden w-[124px] shrink-0 flex-col px-2 py-2.5 lg:flex lg:w-[136px] ${
+            // sidebarOnly: the sidebar IS the picture, so it shows at every
+            // width (below lg it otherwise gives way to the board) and runs
+            // wider, to fit a template's full name on the lit row.
+            className={`${
+              sidebarOnly
+                ? "flex w-[184px]"
+                : "hidden w-[124px] lg:flex lg:w-[136px]"
+            } shrink-0 flex-col px-2 py-2.5 ${
               ledgerline
                 ? "bg-[var(--ledgerline-clay)] text-white"
                 : BRAND_SIDEBAR
@@ -2603,23 +2705,34 @@ export function BuildCard({
                 )
               }
               label={
-                plain
+                appLabel ??
+                (plain
                   ? "Calendar"
                   : ledgerline
                     ? "Close tracker"
-                    : "Project tracker"
+                    : "Project tracker")
               }
               active
             />
           </div>
 
-          <div className="flex min-w-0 flex-1 flex-col">
+          {/* sidebarOnly in light: the empty content area takes the solid
+              well, not the window's white. Bleeding off the card's right edge
+              onto a white page, a white pane had no edge and read as part of
+              the page. Dark keeps the window's own tone. */}
+          <div
+            className={`flex min-w-0 flex-1 flex-col ${
+              sidebarOnly
+                ? "bg-[var(--mock-well-2)] [[data-theme=dark]_&]:bg-transparent"
+                : ""
+            }`}
+          >
             {/* No title bar. It carried the app's name and nothing else, and the
               lit row in the nav an inch to its left says the same words — so
               the screen opened by naming itself twice and spent a bar's height
               on the repeat. The same bar came off the hero's two screens for
               the same reason. */}
-            {plain ? (
+            {sidebarOnly ? null : plain ? (
               <CalendarPane />
             ) : (
               <>

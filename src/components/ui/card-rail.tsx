@@ -752,7 +752,13 @@ export function RailCard({
                 card is as wide as a desktop card with none of the height to
                 spend, so it stays square. */}
 
-        <div className="relative flex aspect-square w-full select-none flex-col overflow-hidden rounded-3xl bg-[var(--surface)] lg:aspect-[3/4]">
+        {/* [transform:translateZ(0)]: the card is its own composited layer,
+            so the rounded clip masks the finished picture once. Clipped
+            layer by layer, an edge landing on a fractional pixel blends each
+            layer with the page separately, and a full-bleed scene's ground
+            (the Build card's haze) bled through as a hairline under the
+            window covering it, visible on high-density screens mid-resize. */}
+        <div className="relative flex aspect-square w-full select-none flex-col overflow-hidden rounded-3xl bg-[var(--surface)] [transform:translateZ(0)] lg:aspect-[3/4]">
           <div className="relative z-10 shrink-0 px-6 pb-4 pt-6 md:px-7 md:pt-7">
             {copy}
           </div>

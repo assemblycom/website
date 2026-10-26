@@ -31,12 +31,15 @@ import { API_REFERENCE_URL, GUIDE_URL } from "@/lib/constants";
  * /templates", pending Vivienne). These are the nearest real routes the site
  * has and they resolve, but they stand in for that decision.
  */
-const WAYS: {
+type Way = {
   label: string;
   body: string;
-  href: string;
-  icon: (props: { className?: string }) => React.ReactElement;
-}[] = [
+  /** Absent: the row is a statement, not a destination — no link, no arrow. */
+  href?: string;
+  icon?: (props: { className?: string }) => React.ReactElement;
+};
+
+const WAYS: Way[] = [
   {
     label: "Embeds",
     body: "Put any link or dashboard inside your portal, next to your apps.",
@@ -71,11 +74,18 @@ export function PortalStack({
   // the list. It states the three ways in and leaves the naming to the rows.
   body = "Embed the tools your clients already use, connect what you run, and automate the busywork. Every app connects to the same client records.",
   ways = WAYS,
+  visual,
   visualTitle = "Stack visual — an outside tool running as an app inside the portal: Assembly's sidebar with a scheduler open in the content area, marked Embedded, cropped right so the screen continues past the rail.",
 }: {
   heading?: string;
-  body?: string;
-  ways?: typeof WAYS;
+  /** null drops the line under the heading. */
+  body?: string | null;
+  ways?: Way[];
+  /**
+   * The right-hand picture in place of the stack picker — the template pages
+   * run their own screenshot here. null drops the column altogether.
+   */
+  visual?: React.ReactNode;
   visualTitle?: string;
 } = {}) {
   return (
@@ -122,7 +132,9 @@ export function PortalStack({
           <div className="contents lg:block lg:max-w-xl">
             <div className="order-1 lg:contents">
               <h2 className="type-h2 text-balance">{heading}</h2>
-              <p className="mt-5 text-muted-foreground">{body}</p>
+              {body ? (
+                <p className="mt-5 text-muted-foreground">{body}</p>
+              ) : null}
             </div>
 
             {/* THE DIVIDED LIST, the one this page already draws.
@@ -156,42 +168,64 @@ export function PortalStack({
               // margin goes with it: as a flex item the column's gap-10
               // already separates it, and mt-10 on top of that was 80px.
               <ul className="order-3 mt-0 flex flex-col lg:order-none lg:mt-10">
-                {ways.map(({ label, body, href }, i) => (
-                  <li key={label}>
-                    <Link
-                      href={href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      // SQUARE HOVER FILL, AND EXACTLY AS WIDE AS THE RULES.
-                      //
-                      // It was rounded-xl, which on a row spanning a ruled list
-                      // put a pill between two straight hairlines — the fill
-                      // pulled away from the rules at every corner and the row
-                      // read as a card that had landed in a table. A list
-                      // divided by full-width rules is a set of bands, so the
-                      // band is what highlights.
-                      //
-                      // And it was -mx-3 px-3, which pulled the fill twelve
-                      // pixels wider than the rules at each end: the band stuck
-                      // out past the lines that are supposed to bound it, so
-                      // the row looked like it was overflowing its own list.
-                      //
-                      // The row sits in the column now, so the band and the
-                      // rules share one measure — and the padding went INSIDE
-                      // it rather than outside. Without it the label started on
-                      // the band's own edge and the arrow ended on it, which
-                      // read as text that had been pushed up against the walls.
-                      // The cost is that the labels are inset from the heading
-                      // above them; the band having room is worth more than
-                      // that alignment, since the band is the thing you see
-                      // move.
-                      className={`group relative flex items-start gap-4 px-3 py-4 transition-colors before:absolute before:inset-x-0 before:top-0 before:h-px before:content-[''] hover:bg-foreground/[0.04] ${DOTTED_RULE_BEFORE} ${
-                        i === ways.length - 1
-                          ? `after:absolute after:inset-x-0 after:bottom-0 after:h-px after:content-[''] ${DOTTED_RULE_AFTER}`
-                          : ""
-                      } [[data-theme=dark]_&]:hover:bg-white/[0.04]`}
-                    >
-                      {/* Label and its sentence, per handoff v2, which writes
+                {ways.map(({ label, body, href }, i) => {
+                  const rule = `relative flex items-start gap-4 px-3 py-4 before:absolute before:inset-x-0 before:top-0 before:h-px before:content-[''] ${DOTTED_RULE_BEFORE} ${
+                    i === ways.length - 1
+                      ? `after:absolute after:inset-x-0 after:bottom-0 after:h-px after:content-[''] ${DOTTED_RULE_AFTER}`
+                      : ""
+                  }`;
+                  const text = (
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-[15px] text-foreground">
+                        {label}
+                      </span>
+                      <span className="mt-1 block text-sm leading-relaxed text-muted-foreground">
+                        {body}
+                      </span>
+                    </span>
+                  );
+                  // A row with nowhere to go is the same rule and type, with
+                  // no hover and no arrow: an arrow on a row that goes nowhere
+                  // promises a destination the row doesn't have.
+                  if (!href) {
+                    return (
+                      <li key={label} className={rule}>
+                        {text}
+                      </li>
+                    );
+                  }
+                  return (
+                    <li key={label}>
+                      <Link
+                        href={href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        // SQUARE HOVER FILL, AND EXACTLY AS WIDE AS THE RULES.
+                        //
+                        // It was rounded-xl, which on a row spanning a ruled list
+                        // put a pill between two straight hairlines — the fill
+                        // pulled away from the rules at every corner and the row
+                        // read as a card that had landed in a table. A list
+                        // divided by full-width rules is a set of bands, so the
+                        // band is what highlights.
+                        //
+                        // And it was -mx-3 px-3, which pulled the fill twelve
+                        // pixels wider than the rules at each end: the band stuck
+                        // out past the lines that are supposed to bound it, so
+                        // the row looked like it was overflowing its own list.
+                        //
+                        // The row sits in the column now, so the band and the
+                        // rules share one measure — and the padding went INSIDE
+                        // it rather than outside. Without it the label started on
+                        // the band's own edge and the arrow ended on it, which
+                        // read as text that had been pushed up against the walls.
+                        // The cost is that the labels are inset from the heading
+                        // above them; the band having room is worth more than
+                        // that alignment, since the band is the thing you see
+                        // move.
+                        className={`group transition-colors hover:bg-foreground/[0.04] [[data-theme=dark]_&]:hover:bg-white/[0.04] ${rule}`}
+                      >
+                        {/* Label and its sentence, per handoff v2, which writes
                           these three as cards rather than as bare destinations.
                           An earlier pass ran the label alone on the grounds
                           that the lead above already defines the words; v2
@@ -200,15 +234,15 @@ export function PortalStack({
                           thing a reader cannot infer from the word. So the
                           sentence is back, and the row is a block rather than
                           a line: no `truncate`, since these wrap by design. */}
-                      <span className="min-w-0 flex-1">
-                        <span className="block text-[15px] text-foreground">
-                          {label}
+                        <span className="min-w-0 flex-1">
+                          <span className="block text-[15px] text-foreground">
+                            {label}
+                          </span>
+                          <span className="mt-1 block text-sm leading-relaxed text-muted-foreground">
+                            {body}
+                          </span>
                         </span>
-                        <span className="mt-1 block text-sm leading-relaxed text-muted-foreground">
-                          {body}
-                        </span>
-                      </span>
-                      {/* AN ARROW, not a caret.
+                        {/* AN ARROW, not a caret.
 
                           A chevron is the mark for a disclosure — something
                           that opens where it stands, which is what the first
@@ -233,15 +267,16 @@ export function PortalStack({
                           aria-hidden: the row is already a link with its
                           label, so a screen reader reading "right arrow"
                           after it adds nothing. */}
-                      <span
-                        aria-hidden
-                        className="shrink-0 text-[15px] leading-none text-muted-foreground transition-colors group-hover:text-foreground"
-                      >
-                        &rarr;
-                      </span>
-                    </Link>
-                  </li>
-                ))}
+                        <span
+                          aria-hidden
+                          className="shrink-0 text-[15px] leading-none text-muted-foreground transition-colors group-hover:text-foreground"
+                        >
+                          &rarr;
+                        </span>
+                      </Link>
+                    </li>
+                  );
+                })}
               </ul>
             ) : null}
           </div>
@@ -261,9 +296,11 @@ export function PortalStack({
           {/* order-2: directly under the body copy on a phone, before the
               list. From lg the parent is a two-column grid and this is simply
               the second cell again. */}
-          <div className="order-2 min-w-0 lg:order-none">
-            <StackPicker title={visualTitle} />
-          </div>
+          {visual === null ? null : (
+            <div className="order-2 min-w-0 lg:order-none">
+              {visual ?? <StackPicker title={visualTitle} />}
+            </div>
+          )}
         </div>
       </Reveal>
     </section>

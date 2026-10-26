@@ -10,17 +10,22 @@ import {
   getCatalogueTemplates,
   getVisibleTemplates,
 } from "@/lib/visible-templates";
-import { getAppTemplate, getAppTemplates, type AppTemplateEntry } from "@/lib/contentful";
+import { getAppTemplate, type AppTemplateEntry } from "@/lib/contentful";
 import { getTemplateBySlug, type Template } from "@/lib/templates";
 import { parseBenefits, templateCopy } from "@/lib/template-page";
+import { templateMockCopy } from "@/lib/template-mocks";
 import { TemplateOverview } from "@/components/templates/template-overview";
 import { TemplateUseCta } from "@/components/templates/template-cta";
-import { TemplateCard } from "@/components/templates/template-card";
 import { BrowserFrame, TemplateShot } from "@/components/templates/detail/template-shot";
 import { TemplateProof } from "@/components/templates/detail/template-proof";
-import { TemplateHowItWorks } from "@/components/templates/detail/template-how-it-works";
+import { PortalBuild } from "@/components/client-portal/portal-build";
+import { PortalStack } from "@/components/client-portal/portal-stack";
+import { PortalReadyMade } from "@/components/client-portal/portal-ready-made";
+import { templateIcon } from "@/components/templates/template-icons";
+import { BuildCard, DescribeCard, InstallCard } from "@/components/client-portal/portal-build-cards";
 import { TemplateStickyCta } from "@/components/templates/detail/template-sticky-cta";
 import { FAQ } from "@/components/home/faq";
+import { GRID_LINE, GridDivider, GridRails } from "@/components/ui/grid-lines";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -42,7 +47,35 @@ export async function generateStaticParams() {
 }
 
 const HERO_CTA_ID = "template-hero-cta";
-const WORKS_WITH_COUNT = 4;
+
+// The three steps, in the rail's shape. Captions are this page's own, each
+// held to two lines like the product pages' rails: one caption deeper than
+// the rest and the rail's feet stop lining up. The mocks name THIS page's
+// app — its title on the install and on the portal's lit nav row, and a change
+// to it in the composer (template-mocks.ts) — so a document collection page
+// doesn't show a project tracker being built.
+function howItWorks(template: Template) {
+  const { prompt, setup } = templateMockCopy(template.slug);
+  return [
+    {
+      name: "Add the template",
+      body: "It installs as a working app in your workspace that you can use as is.",
+      visual: <InstallCard appName={template.title} setup={setup} />,
+    },
+    {
+      name: "Describe your changes",
+      body: "Tell the app builder what to change and it adapts the template to your business.",
+      visual: <DescribeCard prompt={prompt} />,
+    },
+    {
+      name: "Publish to clients",
+      body: "It appears in your branded client experience, with sign-in and permissions already handled.",
+      visual: <BuildCard sidebarOnly appLabel={template.title} />,
+    },
+  ];
+}
+// Six, the product pages' count: two full rows of the rail's three.
+const WORKS_WITH_COUNT = 6;
 
 const PRIMARY_BUTTON =
   "rounded-lg bg-foreground px-5 py-2.5 text-center text-sm text-background transition-opacity hover:opacity-90";
@@ -129,18 +162,8 @@ async function worksWith(template: Template, entry: AppTemplateEntry | null) {
         .filter((t) => t.category === template.category)
         .sort((a, b) => (a.rank ?? Infinity) - (b.rank ?? Infinity));
 
-  // "Internal" marks an app only the team sees, read off the CMS Audience.
-  const audience = new Map((await getAppTemplates()).map((e) => [e.slug, e.audience]));
-  const internalOnly = (slug: string) => {
-    const a = audience.get(slug) ?? [];
-    return a.includes("Internal Team") && !a.includes("Clients");
-  };
-
   return {
-    cards: cards.slice(0, WORKS_WITH_COUNT).map((t) => ({
-      template: t,
-      chip: internalOnly(t.slug) ? "Internal" : undefined,
-    })),
+    cards: cards.slice(0, WORKS_WITH_COUNT),
     // "30+", not "32": a round floor that stays true as templates come and go.
     total: listed.length + 1,
   };
@@ -210,62 +233,80 @@ export default async function TemplateDetailPage({ params }: Props) {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(schema) }} />
 
-      {/* 01 Hero: copy on the left (5 of 12), the tracker shot on the right
-          (7 of 12); stacked on a phone, copy first. */}
-      <section className="px-6 pb-24 pt-12">
-        <div className="mx-auto grid max-w-7xl items-center gap-x-16 gap-y-14 lg:grid-cols-12">
-          <div className="min-w-0 lg:col-span-5">
-            <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-              <Link href="/templates" className="transition-colors hover:text-foreground">
-                App templates
+      {/* 01 Hero: the /solutions hero's structure (see the accounting page):
+          headline top left, lead top right, buttons under the headline, and
+          the shot full width below in the same rounded --surface card the
+          portal carousel sits in. On the site's hero column (1400px, 24/40
+          gutters); the sections below sit on the narrower 1200px column. */}
+      <section className="mx-auto max-w-[1400px] px-6 pb-16 pt-12 md:px-10 md:pb-24">
+        <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+          <Link href="/templates" className="transition-colors hover:text-foreground">
+            App templates
+          </Link>
+          <span aria-hidden className="text-muted-foreground/50">/</span>
+          {template.category && (
+            <>
+              <Link href={categoryHref} className="transition-colors hover:text-foreground">
+                {template.category}
               </Link>
               <span aria-hidden className="text-muted-foreground/50">/</span>
-              {template.category && (
-                <>
-                  <Link href={categoryHref} className="transition-colors hover:text-foreground">
-                    {template.category}
-                  </Link>
-                  <span aria-hidden className="text-muted-foreground/50">/</span>
-                </>
-              )}
-              <span className="text-foreground">{template.title}</span>
-            </nav>
-            <h1 className="type-display mt-5 text-balance">{copy.headline}</h1>
-            <p className="type-lead mt-4 max-w-xl text-pretty text-muted-foreground">{copy.lead ?? template.description}</p>
-            <div id={HERO_CTA_ID} className="mt-8 flex flex-col gap-3 sm:flex-row">
+            </>
+          )}
+          <span className="text-foreground">{template.title}</span>
+        </nav>
+        <div className="mt-5 grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-start lg:gap-x-16">
+          <h1 className="type-display max-w-[30ch] text-balance lg:col-start-1">{copy.headline}</h1>
+          {/* The /solutions hero's lead: the right column, spanning the
+              headline and button rows, nudged down to the headline's cap. */}
+          <p className="type-lead max-w-[34rem] text-pretty text-muted-foreground lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:pt-2">
+            {copy.lead ?? template.description}
+          </p>
+          <div>
+            <div id={HERO_CTA_ID} className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
               <TemplateUseCta template={template} className={PRIMARY_BUTTON} />
               <a href={DEMO_URL} className={SECONDARY_BUTTON}>
                 {DEMO_CTA_LABEL}
               </a>
             </div>
-            <p className="type-caption mt-4 text-muted-foreground">
-              Start for free. No credit card required.
-            </p>
           </div>
-          <figure className="min-w-0 lg:col-span-7">
-            <BrowserFrame>
-              <TemplateShot
-                desktop={images[0]}
-                mobile={mobileImages[0]}
-                alt={`${template.title} screenshot`}
-                sizes="(min-width: 1024px) 58vw, 100vw"
-                priority
-              />
-            </BrowserFrame>
-          </figure>
         </div>
+        {/* The accounting hero's card height (397 on a phone, 500 from md),
+            with the screen cropped straight at the card's foot rather than
+            shown whole: padded on the top and sides only, overflow clipped.
+            A whole shot at this width ran the hero to ~1,000px. */}
+        <figure className="mt-12 h-[397px] overflow-hidden rounded-[28px] bg-[var(--surface)] px-4 pt-4 md:mt-16 md:h-[500px] md:px-10 md:pt-10">
+          <BrowserFrame phone={Boolean(mobileImages[0])}>
+            <TemplateShot
+              desktop={images[0]}
+              mobile={mobileImages[0]}
+              alt={`${template.title} screenshot`}
+              sizes="(min-width: 1400px) 1240px, 100vw"
+              priority
+            />
+          </BrowserFrame>
+        </figure>
       </section>
 
+      {/* Everything from the proof strip down to the FAQ sits in one region
+          framed by the shared rails, its sections parted by rules that end on
+          them: the same grid as /security and /pricing. */}
+      <div className="relative pb-16 md:pb-24">
+        <GridRails />
+
+        {/* Full-bleed rule above the first section: there are no rails above
+            it for a 1200px rule to meet. Desktop only, as on /pricing. */}
+        <div className={`hidden border-t md:block ${GRID_LINE}`} />
+
       {/* 02 Social proof */}
-      <section className="px-6">
-        <div className="mx-auto max-w-7xl">
-          <TemplateProof />
-        </div>
+      <section className="mx-auto max-w-[1200px] px-6 py-8 md:px-10">
+        <TemplateProof />
       </section>
+
+      <GridDivider />
 
       {/* 03 Definition: hidden whole when the entry has no Definition Body. */}
       {copy.definition && (
-        <section className="px-6 pb-14 pt-28">
+        <section className="mx-auto max-w-[1200px] px-6 pb-14 pt-20 md:px-10 md:pt-28">
           <div className="mx-auto flex max-w-[720px] flex-col items-center text-center">
             <h2 className="type-h2 text-balance">{copy.definition.heading}</h2>
             <p className="type-lead mt-4 max-w-xl text-pretty text-muted-foreground">
@@ -275,92 +316,101 @@ export default async function TemplateDetailPage({ params }: Props) {
         </section>
       )}
 
-      {/* 04 Benefits: 2×2 cards beside the second shot. An overview that doesn't
-          follow the layout still renders, whole, rather than vanishing. */}
-      {(benefits || entry?.overview) && (
-        <section className={`px-6 pb-28 ${copy.definition ? "pt-14" : "pt-28"}`}>
-          <div className="mx-auto max-w-7xl">
-            {benefits ? (
-              <>
-                <h2 className="type-h2 max-w-2xl text-balance">{benefits.heading}</h2>
-                <div className={`mt-12 grid items-stretch gap-4 ${images[1] ? "lg:grid-cols-2" : ""}`}>
-                  {/* Without the second shot the cards take the full width, four across
-                      from lg, rather than leaving the right half empty. */}
-                  <div className={`grid gap-4 sm:grid-cols-2 ${images[1] ? "" : "lg:grid-cols-4"}`}>
-                    {benefits.cards.map((card) => (
-                      <div key={card.title} className="flex flex-col gap-2 rounded-xl border border-border bg-card p-6">
-                        <h3 className="type-h4">{card.title}</h3>
-                        <p className="type-body text-pretty text-muted-foreground">{card.body}</p>
-                      </div>
-                    ))}
-                  </div>
-                  {images[1] && (
-                    <figure className="min-w-0">
-                      <TemplateShot
-                        desktop={images[1]}
-                        mobile={mobileImages[1]}
-                        alt={`${template.title} screenshot`}
-                        sizes="(min-width: 1024px) 50vw, 100vw"
-                        className="rounded-xl border border-border"
-                      />
-                    </figure>
-                  )}
-                </div>
-              </>
-            ) : (
-              <div className="max-w-3xl">
-                <TemplateOverview document={entry!.overview!} />
-              </div>
-            )}
+      {/* 04 Benefits: the product pages' "Keep the tools you already use"
+          section (PortalStack), so the benefits read as that section's
+          dotted-rule list beside its framed panel rather than as a grid of
+          cards of this page's own. The rows have no links, so no arrows; the
+          panel holds the template's second shot, in the picker's own frame. */}
+      {benefits ? (
+        <PortalStack
+          heading={benefits.heading}
+          body={null}
+          ways={benefits.cards.map((card) => ({ label: card.title, body: card.body }))}
+          visual={
+            images[1] ? (
+              <figure className="rounded-2xl border border-border bg-[var(--surface)] p-4 md:p-5 [[data-theme=dark]_&]:border-[#383838]">
+                <TemplateShot
+                  desktop={images[1]}
+                  mobile={mobileImages[1]}
+                  alt={`${template.title} screenshot`}
+                  sizes="(min-width: 1024px) 50vw, 100vw"
+                  className="rounded-xl border border-border"
+                />
+              </figure>
+            ) : null
+          }
+        />
+      ) : entry?.overview ? (
+        // An overview that doesn't follow the benefits layout still renders,
+        // whole, rather than vanishing.
+        <section
+          className={`mx-auto max-w-[1200px] px-6 pb-20 md:px-10 md:pb-28 ${
+            copy.definition ? "pt-14" : "pt-20 md:pt-28"
+          }`}
+        >
+          <div className="max-w-3xl">
+            <TemplateOverview document={entry.overview} />
           </div>
         </section>
-      )}
+      ) : null}
 
       {/* 05 How it works: shared by every template page except the Classic
           ones. Those are the product's core apps, which aren't added and
-          adapted through the app builder the way these steps describe. */}
+          adapted through the app builder the way these steps describe.
+
+          The product pages' own build rail (PortalBuild), not a page-local
+          section, so the three steps share their card size, grounds and
+          captions. The scenes name this page's own app (see howItWorks): the
+          template installing (InstallCard: the Plan card's ground and window),
+          a change to it typed into the composer (Describe), and the app lit in
+          the client's portal nav (Build, its sidebar alone: the board and
+          search beside it pulled the eye off the row that says the app has
+          arrived). Iterate would say step two more literally, but it is the
+          one scene with no ground of its own and sat grey between two
+          art-directed cards. No intro line or buttons: the hero's CTAs and
+          the sticky bar already carry the action. */}
       {template.category?.toLowerCase() !== "classic" && (
-        <section className="bg-muted px-6 py-28">
-          <div className="mx-auto max-w-7xl">
-            <h2 className="type-h2 text-balance">Add it, describe your changes, publish</h2>
-            <TemplateHowItWorks />
-          </div>
-        </section>
+        <>
+          {/* The benefits band above closes with its own rule. */}
+          {!benefits && <GridDivider />}
+          <PortalBuild
+            heading="Add it, describe your changes, publish"
+            body={null}
+            cta={null}
+            steps={howItWorks(template)}
+            railLabel="How a template goes live"
+          />
+          <GridDivider />
+        </>
       )}
 
-      {/* 06 Works with */}
+      {/* 06 Works with: the product pages' ready-made apps section
+          (PortalReadyMade), so related templates are the same compact rows
+          with an icon plate, and the browse link the same quiet button under
+          the copy, as on /solutions and /client-portal. */}
       {related.cards.length > 0 && (
-        <section className="px-6 pb-14 pt-28">
-          <div className="mx-auto max-w-7xl">
-            <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
-              <div className="max-w-2xl">
-                <h2 className="type-h2 text-balance">Pair it with the rest of your client experience</h2>
-                <p className="type-lead mt-4 max-w-xl text-pretty text-muted-foreground">
-                  Every app connects to the same built-in CRM and appears in the same branded client experience.
-                </p>
-              </div>
-              <Link href="/templates" className="type-body whitespace-nowrap text-foreground transition-colors hover:text-muted-foreground">
-                {browseAllLabel(related.total)} →
-              </Link>
-            </div>
-            {/* A sideways scroll on a phone, with the next card showing at the
-                edge; four across from md. */}
-            <div className="-mx-6 mt-10 flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-px-6 px-6 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:mx-0 md:grid md:grid-cols-4 md:overflow-visible md:px-0">
-              {related.cards.map(({ template: card, chip }) => (
-                <TemplateCard
-                  key={card.slug}
-                  template={card}
-                  chip={chip}
-                  className="w-[72%] shrink-0 snap-start md:w-full"
-                />
-              ))}
-            </div>
-          </div>
-        </section>
+        <PortalReadyMade
+          heading="Pair it with the rest of your client experience"
+          body="Every app connects to the same built-in CRM and appears in the same branded client experience."
+          picks={related.cards.map((card) => ({
+            slug: card.slug,
+            title: card.title,
+            description: card.description,
+            foundation: card.category,
+            icon: templateIcon(card.slug),
+          }))}
+          link={{ label: browseAllLabel(related.total), href: "/templates" }}
+        />
       )}
 
-      {/* 07 FAQ */}
-      {faqs.length > 0 && <FAQ heading={copy.faqHeading} items={faqs} />}
+      {/* 07 FAQ: its own column is the same 1200px, so it needs no wrapper. */}
+      {faqs.length > 0 && (
+        <>
+          <GridDivider />
+          <FAQ heading={copy.faqHeading} items={faqs} />
+        </>
+      )}
+      </div>
 
       {/* 08 Final CTA */}
       <div className="border-t border-border [[data-theme=dark]_&]:border-[#383838]" />

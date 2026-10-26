@@ -91,9 +91,11 @@ export function PortalBuild({
   railLabel = "How building works",
 }: {
   heading?: string;
-  body?: string;
+  /** null drops the line, for a page that runs the rail under its heading alone. */
+  body?: string | null;
   steps?: typeof BUILD_STEPS;
-  cta?: { label: string; href: string };
+  /** null drops the button row, for a page whose own CTAs sit elsewhere. */
+  cta?: { label: string; href: string } | null;
   /** Examples of what gets built, under the rail. */
   chips?: string[];
   /** The secondary action, beside the primary one. */
@@ -114,25 +116,29 @@ export function PortalBuild({
       <Reveal>
         <div className="text-center">
           <h2 className="type-h2 mx-auto max-w-3xl text-balance">{heading}</h2>
-          <p className="mx-auto mt-4 max-w-2xl text-balance text-muted-foreground">
-            {body}
-          </p>
-          <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <a
-              href={cta.href}
-              className="w-full rounded-lg bg-foreground px-5 py-3 text-center text-sm text-background transition-opacity hover:opacity-90 sm:w-auto sm:py-2.5"
-            >
-              {cta.label}
-            </a>
-            {link ? (
-              <Link
-                href={link.href}
-                className="w-full rounded-lg border border-foreground/20 bg-transparent px-5 py-3 text-center text-sm text-foreground transition-colors hover:bg-foreground/5 sm:w-auto sm:py-2.5 [[data-theme=dark]_&]:border-white/25"
+          {body ? (
+            <p className="mx-auto mt-4 max-w-2xl text-balance text-muted-foreground">
+              {body}
+            </p>
+          ) : null}
+          {cta ? (
+            <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <a
+                href={cta.href}
+                className="w-full rounded-lg bg-foreground px-5 py-3 text-center text-sm text-background transition-opacity hover:opacity-90 sm:w-auto sm:py-2.5"
               >
-                {link.label}
-              </Link>
-            ) : null}
-          </div>
+                {cta.label}
+              </a>
+              {link ? (
+                <Link
+                  href={link.href}
+                  className="w-full rounded-lg border border-foreground/20 bg-transparent px-5 py-3 text-center text-sm text-foreground transition-colors hover:bg-foreground/5 sm:w-auto sm:py-2.5 [[data-theme=dark]_&]:border-white/25"
+                >
+                  {link.label}
+                </Link>
+              ) : null}
+            </div>
+          ) : null}
         </div>
 
         {steps.length ? (
