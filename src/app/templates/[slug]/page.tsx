@@ -263,10 +263,15 @@ export default async function TemplateDetailPage({ params }: Props) {
         <div className="mt-5 grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-start lg:gap-x-16">
           <h1 className="type-display max-w-[30ch] text-balance lg:col-start-1">{copy.headline}</h1>
           {/* The /solutions hero's lead: the right column, spanning the
-              headline and button rows, nudged down to the headline's cap. */}
-          <p className="type-lead max-w-[34rem] text-pretty text-muted-foreground lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:pt-2">
-            {copy.lead ?? template.description}
-          </p>
+              headline and button rows, nudged down to the headline's cap.
+              Only the entry's Hero Description: the gallery card's one-liner
+              ("Creative sign-off, round by round") is too slight to stand
+              here, so without one the hero is headline and buttons. */}
+          {copy.lead && (
+            <p className="type-lead max-w-[34rem] text-pretty text-muted-foreground lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:pt-2">
+              {copy.lead}
+            </p>
+          )}
           <div>
             <div id={HERO_CTA_ID} className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
               <TemplateUseCta template={template} className={PRIMARY_BUTTON} />
