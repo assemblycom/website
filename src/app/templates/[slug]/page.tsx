@@ -391,7 +391,9 @@ export default async function TemplateDetailPage({ params }: Props) {
             steps={howItWorks(template)}
             railLabel="How a template goes live"
           />
-          <GridDivider />
+          {/* onMobile: without it the steps' arrows ran straight into the
+              next heading on a phone, with nothing between the sections. */}
+          <GridDivider onMobile />
         </>
       )}
 
@@ -417,7 +419,7 @@ export default async function TemplateDetailPage({ params }: Props) {
       {/* 07 FAQ: its own column is the same 1200px, so it needs no wrapper. */}
       {faqs.length > 0 && (
         <>
-          <GridDivider />
+          <GridDivider onMobile />
           <FAQ heading={copy.faqHeading} items={faqs} />
         </>
       )}
