@@ -326,7 +326,7 @@ export default async function TemplateDetailPage({ params }: Props) {
         <TemplateProof />
       </section>
 
-      <GridDivider lineClass={BUILDER_GRID_LINE} />
+      <GridDivider onMobile lineClass={BUILDER_GRID_LINE} />
 
       {/* 03 Definition: hidden whole when the entry has no Definition Body. */}
       {copy.definition && (
@@ -394,7 +394,7 @@ export default async function TemplateDetailPage({ params }: Props) {
       {template.category?.toLowerCase() !== "classic" && (
         <>
           {/* The benefits band above closes with its own rule. */}
-          {!benefits && !legacy && <GridDivider lineClass={BUILDER_GRID_LINE} />}
+          {!benefits && !legacy && <GridDivider onMobile lineClass={BUILDER_GRID_LINE} />}
           <PortalBuild
             // Two lines from sm, broken at the comma; a phone wraps it itself.
             heading={
