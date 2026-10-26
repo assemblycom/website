@@ -94,7 +94,6 @@ export function PortalReadyMade({
   body = "Choose from 30+ pre-made app templates, all added to a branded portal ready for your clients to use. Every one is a working app: install it, use it, or tell the builder what to change.",
   picks = PICKS,
   link = { label: "Browse templates", href: "/templates" },
-  centered = false,
 }: {
   /** An anchor, for a section above that jumps here. */
   id?: string;
@@ -102,11 +101,6 @@ export function PortalReadyMade({
   body?: string;
   picks?: typeof PICKS;
   link?: { label: string; href: string };
-  /**
-   * Heading, copy and link stacked on the centre line, like the template
-   * pages' steps heading just above it.
-   */
-  centered?: boolean;
 } = {}) {
   const cards = picks.map((pick) => ({
     ...pick,
@@ -124,9 +118,7 @@ export function PortalReadyMade({
             paragraph and a rail's width away from it, so it read as a
             control belonging to the section's edge rather than as the
             sentence's own next step. */}
-        <div
-          className={centered ? "mx-auto flex max-w-2xl flex-col items-center text-center" : "max-w-2xl"}
-        >
+        <div className="max-w-2xl">
           <h2 className="type-h2 text-balance">{heading}</h2>
           {/* Balanced, as the build and stack sections' intros are: left to
               wrap greedily, a short line filled the first row and dropped one

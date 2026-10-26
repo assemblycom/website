@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { parseBenefits, templateCopy } from './template-page.ts';
+import { parseBenefits, parseLegacyOverview, templateCopy } from './template-page.ts';
 
 const text = (value) => ({ nodeType: 'text', value, marks: [], data: {} });
 const block = (nodeType, value) => ({ nodeType, data: {}, content: [text(value)] });
@@ -96,4 +96,26 @@ test('falls back field by field, never to the gallery subtitle', () => {
   assert.equal(copy.seoDescription, 'Track billable time per client.');
   assert.equal(templateCopy({ name: 'x', heroDescription: 'Hero.', longDescription: 'Long.' }).seoDescription, 'Hero.');
   assert.equal(templateCopy({ name: 'x' }).seoDescription, undefined);
+});
+
+test('an older overview keeps its first sentence and its feature list', () => {
+  const p = (value) => ({ nodeType: 'paragraph', data: {}, content: [{ nodeType: 'text', value, marks: [], data: {} }] });
+  const h = (value) => ({ nodeType: 'heading-3', data: {}, content: [{ nodeType: 'text', value, marks: [], data: {} }] });
+  const li = (value) => ({ nodeType: 'list-item', data: {}, content: [p(value)] });
+  const doc = {
+    nodeType: 'document',
+    data: {},
+    content: [
+      p('The Xero Integration is a one-way sync to Xero. When you create an invoice, it is created in Xero.'),
+      p('Start from this template and describe what you want to change.'),
+      h('Key Features'),
+      { nodeType: 'unordered-list', data: {}, content: [li('Sync invoices.'), li('Match customers.')] },
+      h('Perfect for'),
+      p('Every firm.'),
+    ],
+  };
+  assert.deepEqual(parseLegacyOverview(doc), {
+    intro: 'The Xero Integration is a one-way sync to Xero.',
+    features: ['Sync invoices.', 'Match customers.'],
+  });
 });

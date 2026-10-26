@@ -178,6 +178,15 @@ export function templateCopy(input: TemplateCopyInput): TemplateCopy {
   };
 }
 
+/**
+ * An older intro's first sentence. They run to two or three paragraphs (one to
+ * 105 words), and the first sentence is the one that says what the template
+ * is; the rest is detail the feature list beside it already carries.
+ */
+function firstSentence(s: string): string {
+  return s.split(/(?<=[.!?])\s+(?=[A-Z])/)[0];
+}
+
 /** What the page keeps from an overview written before the benefits layout. */
 export interface LegacyOverview {
   intro: string | null;
@@ -192,7 +201,7 @@ const FEATURES_HEADING = /^key (features|benefits)$/i;
 
 /**
  * An older overview, read for the two things it holds that are this
- * template's own: the opening paragraph(s), and the "Key features" or "Key
+ * template's own: the intro's first sentence, and the "Key features" or "Key
  * benefits" list. The "Overview" label above the intro, the boilerplate line,
  * and the customize / perfect-for sections are dropped, so the page can lay
  * it out like the benefits section rather than as a loose article. Null when
@@ -223,5 +232,5 @@ export function parseLegacyOverview(doc: Document | undefined): LegacyOverview |
     }
   }
   if (!intro.length && !features.length) return null;
-  return { intro: intro.length ? intro.join(" ") : null, features };
+  return { intro: intro.length ? firstSentence(intro.join(" ")) : null, features };
 }

@@ -93,23 +93,22 @@ export function PortalStack({
   // No picture: the heading takes the left column and the list the right, so
   // the band keeps its two-column shape instead of leaving half of it empty.
   const listBeside = visual === null;
-  // From lg the heading block dissolves into the grid, so each piece is
-  // placed: the heading and its body down the left, the list on the right,
-  // its top level with the heading's. With no list the body takes the right
-  // column instead, so that half isn't left empty.
-  const place = !listBeside
-    ? { heading: "", body: "mt-5", list: "lg:mt-10" }
-    : ways.length
-      ? {
-          heading: "lg:col-start-1 lg:row-start-1",
-          body: "mt-5 lg:col-start-1 lg:row-start-2",
-          list: "lg:col-start-2 lg:row-span-2 lg:row-start-1",
-        }
-      : {
-          heading: "lg:col-start-1 lg:row-start-1",
-          body: "mt-5 lg:col-start-2 lg:row-start-1 lg:mt-0 lg:pt-2",
-          list: "",
-        };
+  // Beside a list, the heading and its body stay one block in the left
+  // column (as separate grid rows, the list's height stretched the gap
+  // between them) and the list's top sits level with the heading's. With no
+  // list the block dissolves and the body takes the right column instead,
+  // so that half isn't left empty.
+  const bodyBeside = listBeside && !ways.length;
+  const place = bodyBeside
+    ? {
+        heading: "lg:col-start-1 lg:row-start-1",
+        body: "mt-5 lg:col-start-2 lg:row-start-1 lg:mt-0 lg:pt-2",
+        list: "",
+      }
+    : listBeside
+      ? // Held to about the heading's measure, wrapped evenly.
+        { heading: "", body: "mt-5 max-w-sm text-balance", list: "" }
+      : { heading: "", body: "mt-5", list: "lg:mt-10" };
   return (
     // Ruled top AND bottom, and both full-bleed, because the band is.
     //
@@ -158,7 +157,7 @@ export function PortalStack({
               `order` can interleave them with the picker. No duplicated
               markup, and the lg layout is untouched. */}
           <div className={listBeside ? "contents" : "contents lg:block lg:max-w-xl"}>
-            <div className="order-1 lg:contents">
+            <div className={listBeside && !bodyBeside ? "order-1 lg:order-none" : "order-1 lg:contents"}>
               <h2 className={`type-h2 text-balance ${place.heading}`}>{heading}</h2>
               {body ? (
                 <p className={`text-muted-foreground ${place.body}`}>{body}</p>
