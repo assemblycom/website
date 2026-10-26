@@ -246,7 +246,7 @@ export default async function TemplateDetailPage({ params }: Props) {
       {/* pb-4 on a phone: the ratings strip below brings its own 32px, and
           64px on top of that left the ratings stranded from the shot they
           vouch for. */}
-      <section className="mx-auto max-w-[1400px] px-6 pb-4 pt-12 md:px-10 md:pb-24">
+      <section className="mx-auto max-w-[1400px] px-6 pb-4 pt-24 md:px-10 md:pb-24 md:pt-32">
         <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
           <Link href="/templates" className="transition-colors hover:text-foreground">
             App templates
@@ -330,7 +330,7 @@ export default async function TemplateDetailPage({ params }: Props) {
 
       {/* 03 Definition: hidden whole when the entry has no Definition Body. */}
       {copy.definition && (
-        <section className="mx-auto max-w-[1200px] px-6 pb-14 pt-20 md:px-10 md:pt-28">
+        <section className="mx-auto max-w-[1200px] px-6 py-20 md:px-10 md:py-28">
           <div className="mx-auto flex max-w-[720px] flex-col items-center text-center">
             <h2 className="type-h2 text-balance">{copy.definition.heading}</h2>
             <p className="type-lead mt-4 max-w-xl text-pretty text-muted-foreground">
