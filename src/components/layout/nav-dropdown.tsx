@@ -167,6 +167,10 @@ export function NavBarFill() {
  * header so it can fade with the sheet: while a panel is open the bar and the
  * panel are one surface, and a line across the join reads as a seam. Matches
  * the panel's own 150ms so the two settle together.
+ *
+ * Dark takes the page grid's line tone (#262626, GRID_LINE in grid-lines.tsx),
+ * not #383838: the bar's line meets the grid's rails and rules, and at the
+ * brighter value it read as lit beside them rather than as the same hairline.
  */
 export function NavBarBorder({
   visible = true,
@@ -182,7 +186,7 @@ export function NavBarBorder({
   return (
     <div
       aria-hidden
-      className={`pointer-events-none absolute inset-x-0 bottom-0 z-[6] border-b border-border transition-opacity [[data-theme=dark]_&]:border-[#383838] ${
+      className={`pointer-events-none absolute inset-x-0 bottom-0 z-[6] border-b border-border transition-opacity [[data-theme=dark]_&]:border-[#262626] ${
         open ? "duration-150" : easeClassName
       } ${open || !visible ? "opacity-0" : "opacity-100"}`}
     />
