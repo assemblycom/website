@@ -1,4 +1,5 @@
 import { BLOCKS, type Block, type Document, type Inline, type Text } from "@contentful/rich-text-types";
+import { LEGACY_FEATURE_TITLES } from "./legacy-feature-titles";
 
 /**
  * The copy a template detail page is built from, with every fallback decided in
@@ -233,4 +234,21 @@ export function parseLegacyOverview(doc: Document | undefined): LegacyOverview |
   }
   if (!intro.length && !features.length) return null;
   return { intro: intro.length ? firstSentence(intro.join(" ")) : null, features };
+}
+
+// "Detail view: activity chart, …" or "Services - list services you sell":
+// a label of up to four words, then the sentence.
+const LEADING_LABEL = /^(\S+(?: \S+){0,3}?)(?::| - | — ) *(.+)$/;
+
+/**
+ * An older feature item as a titled row: its title from
+ * LEGACY_FEATURE_TITLES, or the short label it already leads with, with the
+ * sentence beneath. With neither, the sentence stands as the title alone.
+ */
+export function legacyFeature(slug: string, item: string): { label: string; body?: string } {
+  const title = LEGACY_FEATURE_TITLES[slug]?.[item];
+  if (title) return { label: title, body: item };
+  const labelled = LEADING_LABEL.exec(item);
+  if (labelled) return { label: labelled[1], body: capitalize(labelled[2]) };
+  return { label: item };
 }

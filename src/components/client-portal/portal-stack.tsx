@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CollapsibleRow } from "./collapsible-row";
 import {
   IconTemplateAutomations,
   IconTemplateEmbeds,
@@ -202,7 +203,9 @@ export function PortalStack({
                     listBeside && i === 0
                       ? "!pt-0"
                       : `before:absolute before:inset-x-0 before:top-0 before:h-px before:content-[''] ${DOTTED_RULE_BEFORE}`;
-                  const rule = `relative flex items-start gap-4 px-3 py-4 ${topRule} ${
+                  // px-3 is room for a link row's hover band; a row with no
+                  // link has no band, so its text lines up with the heading.
+                  const rule = `relative flex items-start gap-4 py-4 ${href ? "px-3" : ""} ${topRule} ${
                     i === ways.length - 1
                       ? `after:absolute after:inset-x-0 after:bottom-0 after:h-px after:content-[''] ${DOTTED_RULE_AFTER}`
                       : ""
@@ -222,6 +225,9 @@ export function PortalStack({
                   // A row with nowhere to go is the same rule and type, with
                   // no hover and no arrow: an arrow on a row that goes nowhere
                   // promises a destination the row doesn't have.
+                  if (!href && body) {
+                    return <CollapsibleRow key={label} label={label} body={body} className={rule} />;
+                  }
                   if (!href) {
                     return (
                       <li key={label} className={rule}>

@@ -12,7 +12,7 @@ import {
 } from "@/lib/visible-templates";
 import { getAppTemplate, type AppTemplateEntry } from "@/lib/contentful";
 import { getTemplateBySlug, type Template } from "@/lib/templates";
-import { parseBenefits, parseLegacyOverview, templateCopy } from "@/lib/template-page";
+import { legacyFeature, parseBenefits, parseLegacyOverview, templateCopy } from "@/lib/template-page";
 import { templateMockCopy } from "@/lib/template-mocks";
 import { TemplateOverview } from "@/components/templates/template-overview";
 import { TemplateUseCta } from "@/components/templates/template-cta";
@@ -341,7 +341,7 @@ export default async function TemplateDetailPage({ params }: Props) {
         <PortalStack
           heading={copy.overviewHeading}
           body={legacy.intro}
-          ways={legacy.features.map((label) => ({ label }))}
+          ways={legacy.features.map((item) => legacyFeature(template.slug, item))}
           visual={null}
         />
       ) : entry?.overview ? (

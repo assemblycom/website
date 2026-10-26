@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { parseBenefits, parseLegacyOverview, templateCopy } from './template-page.ts';
+import { legacyFeature, parseBenefits, parseLegacyOverview, templateCopy } from './template-page.ts';
 
 const text = (value) => ({ nodeType: 'text', value, marks: [], data: {} });
 const block = (nodeType, value) => ({ nodeType, data: {}, content: [text(value)] });
@@ -118,4 +118,20 @@ test('an older overview keeps its first sentence and its feature list', () => {
     intro: 'The Xero Integration is a one-way sync to Xero.',
     features: ['Sync invoices.', 'Match customers.'],
   });
+});
+
+test('an older feature item gets a title from the table, its own label, or none', () => {
+  assert.deepEqual(legacyFeature('xero', 'Automatically sync Assembly invoices and customers to Xero.'), {
+    label: 'Automatic sync',
+    body: 'Automatically sync Assembly invoices and customers to Xero.',
+  });
+  assert.deepEqual(legacyFeature('billing-app', 'Services - list services you sell to be used across all payments surface areas.'), {
+    label: 'Services',
+    body: 'List services you sell to be used across all payments surface areas.',
+  });
+  assert.deepEqual(legacyFeature('client-engagement-dashboard', 'Detail view: activity chart, app usage breakdown'), {
+    label: 'Detail view',
+    body: 'Activity chart, app usage breakdown',
+  });
+  assert.deepEqual(legacyFeature('unknown', 'Clients comment and pick a direction'), { label: 'Clients comment and pick a direction' });
 });

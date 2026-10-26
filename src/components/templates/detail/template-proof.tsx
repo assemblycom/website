@@ -55,16 +55,13 @@ export function TemplateProof() {
           Rated {RATINGS.map((r) => `${r.score} on ${r.label}`).join(" and ")}
         </p>
       </div>
-      {/* A six-track grid on a phone, each mark two tracks wide, so the
-          second row of two can start one track in and sit centred. */}
-      <div className="grid w-full grid-cols-6 gap-x-6 gap-y-5 md:w-auto md:flex-1 md:grid-cols-5 md:gap-x-8">
-        {LOGO_SLUGS.map((slug, i) => (
+      {/* Logos from md up only: on a phone the ratings carry the strip. */}
+      <div className="hidden md:grid md:flex-1 md:grid-cols-5 md:gap-x-8">
+        {LOGO_SLUGS.map((slug) => (
           <Link
             key={slug}
             href={`/customers/${slug}`}
-            className={`col-span-2 flex h-8 items-center justify-center text-foreground/45 transition-colors duration-200 hover:text-foreground md:col-span-1 ${
-              i === 3 ? "col-start-2 md:col-start-auto" : ""
-            }`}
+            className="flex h-8 items-center justify-center text-foreground/45 transition-colors duration-200 hover:text-foreground"
           >
             {/* aria-hidden: some marks (Advertai's SVG) label themselves, and
                 the sr-only name below already says who it is. */}
