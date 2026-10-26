@@ -339,13 +339,13 @@ export default async function TemplateDetailPage({ params }: Props) {
           <div className={`relative mx-auto flex max-w-[720px] flex-col items-start bg-background text-left md:items-center md:text-center ${BUILDER_RAIL_HALO}`}>
             <h2 className="type-h2 text-balance">{copy.definition.heading}</h2>
             <p className="type-lead mt-4 max-w-xl text-pretty text-muted-foreground">
-              {/* Key phrases in ink with the site's dotted underline (the about
-                  page's story-note style). */}
+              {/* Key phrases get the site's dotted underline (the about page's
+                  story-note style), in the paragraph's own colour. */}
               {definitionSegments(template.slug, copy.definition.body).map((seg, i) =>
                 seg.mark ? (
                   <span
                     key={i}
-                    className="text-foreground underline decoration-foreground/25 decoration-dotted decoration-1 underline-offset-[3px]"
+                    className="underline decoration-foreground/25 decoration-dotted decoration-1 underline-offset-[3px]"
                   >
                     {seg.text}
                   </span>
