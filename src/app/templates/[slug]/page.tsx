@@ -23,7 +23,6 @@ import { PortalStack } from "@/components/client-portal/portal-stack";
 import { PortalReadyMade } from "@/components/client-portal/portal-ready-made";
 import { templateIcon } from "@/components/templates/template-icons";
 import { BuildCard, DescribeCard, InstallCard } from "@/components/client-portal/portal-build-cards";
-import { TemplateStickyCta } from "@/components/templates/detail/template-sticky-cta";
 import { FAQ } from "@/components/home/faq";
 import { GRID_LINE, GridDivider, GridRails } from "@/components/ui/grid-lines";
 
@@ -45,8 +44,6 @@ export const revalidate = 300;
 export async function generateStaticParams() {
   return (await getCatalogueTemplates()).map((t) => ({ slug: t.slug }));
 }
-
-const HERO_CTA_ID = "template-hero-cta";
 
 // The three steps, in the rail's shape. Captions are this page's own, each
 // held to two lines like the product pages' rails: one caption deeper than
@@ -275,7 +272,7 @@ export default async function TemplateDetailPage({ params }: Props) {
           {/* Pinned to the left column: with no lead the grid would otherwise
               place the buttons in the empty right cell, beside the headline. */}
           <div className="lg:col-start-1">
-            <div id={HERO_CTA_ID} className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
               <TemplateUseCta template={template} className={PRIMARY_BUTTON} />
               <a href={DEMO_URL} className={SECONDARY_BUTTON}>
                 {DEMO_CTA_LABEL}
@@ -382,7 +379,7 @@ export default async function TemplateDetailPage({ params }: Props) {
           arrived). Iterate would say step two more literally, but it is the
           one scene with no ground of its own and sat grey between two
           art-directed cards. No intro line or buttons: the hero's CTAs and
-          the sticky bar already carry the action. */}
+          the closing CTA carry the action. */}
       {template.category?.toLowerCase() !== "classic" && (
         <>
           {/* The benefits band above closes with its own rule. */}
@@ -443,9 +440,6 @@ export default async function TemplateDetailPage({ params }: Props) {
         </div>
       </section>
 
-      <TemplateStickyCta watchId={HERO_CTA_ID}>
-        <TemplateUseCta template={template} className={`block w-full ${PRIMARY_BUTTON}`} />
-      </TemplateStickyCta>
     </>
   );
 }
