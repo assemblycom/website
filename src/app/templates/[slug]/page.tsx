@@ -289,7 +289,7 @@ export default async function TemplateDetailPage({ params }: Props) {
             A whole shot at this width ran the hero to ~1,000px. The foot is
             faded into the card, landing on a solid band as deep as the side
             padding, so the card frames the shot evenly on every side. */}
-        <figure className="relative mt-12 h-[397px] overflow-hidden rounded-[28px] bg-[var(--surface)] px-4 pt-4 md:mt-16 md:h-[500px] md:px-10 md:pt-10">
+        <figure className="relative mt-12 h-[397px] overflow-hidden rounded-[28px] bg-[var(--surface)] px-4 pt-8 md:mt-16 md:h-[500px] md:px-10 md:pt-10">
           <BrowserFrame phone={Boolean(mobileImages[0])}>
             <TemplateShot
               desktop={images[0]}

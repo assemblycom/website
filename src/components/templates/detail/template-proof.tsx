@@ -26,16 +26,17 @@ const RATINGS = [
 
 /**
  * The proof strip under the hero: the rating line on the left, the customer
- * marks on the right; stacked on a phone, with the marks in two rows (three,
- * then two centred under them).
+ * marks on the right. On a phone the marks go and the ratings sit centred.
  * No heading, by design: the marks carry it.
  */
 export function TemplateProof() {
   return (
     // No rules of its own: the page draws the grid's rules above and below
     // the strip, so they end on the rails like every other section's.
-    <div className="flex flex-wrap items-center justify-between gap-x-12 gap-y-6">
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
+    // cursor-default: the caption is plain text, and the I-beam over it read
+    // as something to select rather than a line to read past.
+    <div className="flex cursor-default flex-wrap items-center justify-center gap-x-12 gap-y-6 md:justify-between">
+      <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-3 text-center md:justify-start md:text-left">
         <div className="flex gap-2">
           {RATINGS.map(({ href, label, score, Mark }) => (
             <a
@@ -44,7 +45,9 @@ export function TemplateProof() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label={`Assembly on ${label}: ${score} out of 5`}
-              className="inline-flex items-center gap-1.5 rounded-md bg-muted px-3 py-1.5 font-mono text-xs uppercase tracking-wide text-muted-foreground transition-colors hover:text-foreground"
+              // The whole chip answers the pointer, with the filter chips'
+              // active fill, not just the mark inside it.
+              className="inline-flex items-center gap-1.5 rounded-md bg-muted px-3 py-1.5 font-mono text-xs uppercase tracking-wide text-muted-foreground transition-colors hover:bg-foreground/10 hover:text-foreground"
             >
               {/* The stat-chip pattern: the value in full ink. */}
               <Mark className="h-4 w-4" /> <span className="text-foreground">{score}</span>
