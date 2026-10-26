@@ -90,8 +90,15 @@ export function PortalBuild({
   visual,
   railLabel = "How building works",
   captionClassName,
+  headingClassName,
 }: {
-  heading?: string;
+  /** A node, so a page can set its own line break. */
+  heading?: React.ReactNode;
+  /**
+   * Classes for the heading block, e.g. a ground and halo where a page draws
+   * grid rails behind the section.
+   */
+  headingClassName?: string;
   /** null drops the line, for a page that runs the rail under its heading alone. */
   body?: string | null;
   steps?: typeof BUILD_STEPS;
@@ -118,7 +125,9 @@ export function PortalBuild({
     >
       <Reveal>
         <div className="text-center">
-          <h2 className="type-h2 mx-auto max-w-3xl text-balance">{heading}</h2>
+          <h2 className={`type-h2 mx-auto max-w-3xl text-balance ${headingClassName ?? ""}`}>
+            {heading}
+          </h2>
           {body ? (
             <p className="mx-auto mt-4 max-w-2xl text-balance text-muted-foreground">
               {body}

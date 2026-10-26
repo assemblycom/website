@@ -396,7 +396,15 @@ export default async function TemplateDetailPage({ params }: Props) {
           {/* The benefits band above closes with its own rule. */}
           {!benefits && !legacy && <GridDivider lineClass={BUILDER_GRID_LINE} />}
           <PortalBuild
-            heading="Add your template, customize it, and publish"
+            // Two lines from sm, broken at the comma; a phone wraps it itself.
+            heading={
+              <>
+                Add your template,
+                <br className="hidden sm:block" /> customize it, and publish
+              </>
+            }
+            // w-fit so the ground and halo hug the type, not the column.
+            headingClassName={`relative w-fit bg-background ${BUILDER_RAIL_HALO}`}
             body={null}
             cta={null}
             steps={howItWorks(template)}
