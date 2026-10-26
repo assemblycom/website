@@ -107,8 +107,9 @@ export function PortalStack({
         list: "",
       }
     : listBeside
-      ? // Held to about the heading's measure, wrapped evenly.
-        { heading: "", body: "mt-5 max-w-sm text-balance", list: "" }
+      ? // Beside the list (lg), held to about the heading's measure and wrapped
+        // evenly; stacked below lg it runs the column like the heading above.
+        { heading: "", body: "mt-5 max-w-2xl text-balance lg:max-w-sm", list: "" }
       : { heading: "", body: "mt-5", list: "lg:mt-10" };
   return (
     // Ruled top AND bottom, and both full-bleed, because the band is.
