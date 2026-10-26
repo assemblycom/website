@@ -95,3 +95,32 @@ const FALLBACK: MockCopy = {
 export function templateMockCopy(slug: string): MockCopy {
   return BY_SLUG[slug] ?? FALLBACK;
 }
+
+/**
+ * Phrases in a template's "What is …?" definition to mark with the site's
+ * dotted underline (the about page's story-note style): the one or two that
+ * carry the answer. Matched against the Contentful Definition Body verbatim,
+ * so an edited sentence just loses its mark rather than marking the wrong
+ * words. A template not listed shows its definition plain.
+ */
+export const DEFINITION_HIGHLIGHTS: Record<string, string[]> = {
+  "client-project-tracker": [
+    "shared view of each project's milestones, dates, and progress",
+    "you choose which milestones they see",
+  ],
+  "client-onboarding-wizard": ["repeatable set of steps", "saves progress automatically"],
+  "document-collection": ["instead of sending them by email", "checklist of requested documents with due dates"],
+  "proposal-builder": ["send each proposal for e-signature", "track it until the client accepts"],
+  "new-client-intake": ["before work starts", "reviews each submission before kickoff"],
+};
+
+/** The definition split into plain runs and marked phrases, in order. */
+export function definitionSegments(slug: string, body: string): { text: string; mark: boolean }[] {
+  const phrases = (DEFINITION_HIGHLIGHTS[slug] ?? []).filter((p) => body.includes(p));
+  if (!phrases.length) return [{ text: body, mark: false }];
+  const escaped = phrases.map((p) => p.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+  return body
+    .split(new RegExp(`(${escaped.join("|")})`))
+    .filter(Boolean)
+    .map((text) => ({ text, mark: phrases.includes(text) }));
+}

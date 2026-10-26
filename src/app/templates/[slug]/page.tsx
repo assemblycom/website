@@ -13,7 +13,7 @@ import {
 import { getAppTemplate, type AppTemplateEntry } from "@/lib/contentful";
 import { getTemplateBySlug, type Template } from "@/lib/templates";
 import { legacyFeature, parseBenefits, parseLegacyOverview, templateCopy } from "@/lib/template-page";
-import { templateMockCopy } from "@/lib/template-mocks";
+import { definitionSegments, templateMockCopy } from "@/lib/template-mocks";
 import { TemplateOverview } from "@/components/templates/template-overview";
 import { TemplateUseCta } from "@/components/templates/template-cta";
 import { BrowserFrame, TemplateShot } from "@/components/templates/detail/template-shot";
@@ -245,8 +245,10 @@ export default async function TemplateDetailPage({ params }: Props) {
           gutters); the sections below sit on the narrower 1200px column. */}
       {/* pb-4 on a phone: the ratings strip below brings its own 32px, and
           64px on top of that left the ratings stranded from the shot they
-          vouch for. */}
-      <section className="mx-auto max-w-[1400px] px-6 pb-4 pt-24 md:px-10 md:pb-24 md:pt-32">
+          vouch for. pt-12 on a phone, not the site's pt-24: the breadcrumb
+          sits above the headline here, and with the full 96px the headline
+          landed a line lower than other pages' do. md up keeps pt-32. */}
+      <section className="mx-auto max-w-[1400px] px-6 pb-4 pt-12 md:px-10 md:pb-24 md:pt-32">
         <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
           <Link href="/templates" className="transition-colors hover:text-foreground">
             App templates
@@ -337,7 +339,20 @@ export default async function TemplateDetailPage({ params }: Props) {
           <div className={`relative mx-auto flex max-w-[720px] flex-col items-start bg-background text-left md:items-center md:text-center ${BUILDER_RAIL_HALO}`}>
             <h2 className="type-h2 text-balance">{copy.definition.heading}</h2>
             <p className="type-lead mt-4 max-w-xl text-pretty text-muted-foreground">
-              {copy.definition.body}
+              {/* Key phrases in ink with the site's dotted underline (the about
+                  page's story-note style). */}
+              {definitionSegments(template.slug, copy.definition.body).map((seg, i) =>
+                seg.mark ? (
+                  <span
+                    key={i}
+                    className="text-foreground underline decoration-foreground/25 decoration-dotted decoration-1 underline-offset-[3px]"
+                  >
+                    {seg.text}
+                  </span>
+                ) : (
+                  seg.text
+                ),
+              )}
             </p>
           </div>
         </section>
