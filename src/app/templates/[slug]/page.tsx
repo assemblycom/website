@@ -12,7 +12,7 @@ import {
 } from "@/lib/visible-templates";
 import { getAppTemplate, type AppTemplateEntry } from "@/lib/contentful";
 import { getTemplateBySlug, type Template } from "@/lib/templates";
-import { parseBenefits, templateCopy } from "@/lib/template-page";
+import { parseBenefits, parseLegacyOverview, templateCopy } from "@/lib/template-page";
 import { templateMockCopy } from "@/lib/template-mocks";
 import { TemplateOverview } from "@/components/templates/template-overview";
 import { TemplateUseCta } from "@/components/templates/template-cta";
@@ -182,7 +182,10 @@ export default async function TemplateDetailPage({ params }: Props) {
   const images = entry?.images ?? [];
   const mobileImages = entry?.mobileImages ?? [];
   const benefits = parseBenefits(entry?.overview);
-  if (entry?.overview && !benefits) {
+  // An overview written before the benefits layout: its intro and feature
+  // list, laid out the same way.
+  const legacy = benefits ? null : parseLegacyOverview(entry?.overview);
+  if (entry?.overview && !benefits && !legacy) {
     console.warn(
       `[templates] ${slug}: Marketing App Overview doesn't match the benefits layout (one Heading 2, then 2–4 Heading 3 + paragraph cards), so it renders whole.`,
     );
@@ -334,6 +337,13 @@ export default async function TemplateDetailPage({ params }: Props) {
           ways={benefits.cards.map((card) => ({ label: card.title, body: card.body }))}
           visual={null}
         />
+      ) : legacy ? (
+        <PortalStack
+          heading={copy.overviewHeading}
+          body={legacy.intro}
+          ways={legacy.features.map((label) => ({ label }))}
+          visual={null}
+        />
       ) : entry?.overview ? (
         // An overview that doesn't follow the benefits layout still renders,
         // whole, rather than vanishing.
@@ -366,7 +376,7 @@ export default async function TemplateDetailPage({ params }: Props) {
       {template.category?.toLowerCase() !== "classic" && (
         <>
           {/* The benefits band above closes with its own rule. */}
-          {!benefits && <GridDivider />}
+          {!benefits && !legacy && <GridDivider />}
           <PortalBuild
             heading="Add your template, customize it, and publish"
             body={null}

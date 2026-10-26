@@ -1,6 +1,6 @@
 /**
- * The words inside the template pages' "Add it, describe your changes,
- * publish" mocks, per template, so each page's three cards name its own app:
+ * The words inside the template pages' "Add your template, customize it,
+ * and publish" mocks, per template, so each page's three cards name its own app:
  * the change typed into the composer (step two), and the one setup row of the
  * install checklist that says what the template holds (step one). The app's
  * name itself comes from the template's title, unless `appName` gives the

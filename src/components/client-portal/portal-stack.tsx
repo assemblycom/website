@@ -33,7 +33,8 @@ import { API_REFERENCE_URL, GUIDE_URL } from "@/lib/constants";
  */
 type Way = {
   label: string;
-  body: string;
+  /** Absent: the label stands alone (the template pages' older feature lists). */
+  body?: string;
   /** Absent: the row is a statement, not a destination — no link, no arrow. */
   href?: string;
   icon?: (props: { className?: string }) => React.ReactElement;
@@ -92,6 +93,16 @@ export function PortalStack({
   // No picture: the heading takes the left column and the list the right, so
   // the band keeps its two-column shape instead of leaving half of it empty.
   const listBeside = visual === null;
+  // From lg the heading block dissolves into the grid, so each piece is
+  // placed: the heading down the left, the body and the list stacked on the
+  // right, the body first.
+  const place = listBeside
+    ? {
+        heading: "lg:col-start-1 lg:row-span-2 lg:row-start-1",
+        body: "mt-5 lg:col-start-2 lg:row-start-1 lg:mt-0",
+        list: "lg:col-start-2 lg:row-start-2",
+      }
+    : { heading: "", body: "mt-5", list: "lg:mt-10" };
   return (
     // Ruled top AND bottom, and both full-bleed, because the band is.
     //
@@ -128,7 +139,7 @@ export function PortalStack({
             No right padding from lg up: the picture runs off the rail and past
             the viewport's edge, so it reads as a portal that continues rather
             than a screenshot centred in a band. */}
-        <div className={`mx-auto flex max-w-[1200px] flex-col gap-10 px-6 py-16 md:px-10 md:py-24 lg:grid lg:grid-cols-2 lg:gap-16 ${listBeside ? "lg:items-start" : "lg:items-center"}`}>
+        <div className={`mx-auto flex max-w-[1200px] flex-col gap-10 px-6 py-16 md:px-10 md:py-24 lg:grid lg:grid-cols-2 lg:gap-x-16 ${listBeside ? "lg:items-start lg:gap-y-8" : "lg:items-center lg:gap-y-16"}`}>
           {/* `contents` BELOW lg, a block from lg. The picture goes directly
               under the body copy on a phone — it is what the sentence is
               describing, and three rows of list in between meant a reader met
@@ -141,9 +152,9 @@ export function PortalStack({
               markup, and the lg layout is untouched. */}
           <div className={listBeside ? "contents" : "contents lg:block lg:max-w-xl"}>
             <div className="order-1 lg:contents">
-              <h2 className="type-h2 text-balance">{heading}</h2>
+              <h2 className={`type-h2 text-balance ${place.heading}`}>{heading}</h2>
               {body ? (
-                <p className="mt-5 text-muted-foreground">{body}</p>
+                <p className={`text-muted-foreground ${place.body}`}>{body}</p>
               ) : null}
             </div>
 
@@ -177,7 +188,7 @@ export function PortalStack({
               // the wrapper is a block again and order means nothing. The top
               // margin goes with it: as a flex item the column's gap-10
               // already separates it, and mt-10 on top of that was 80px.
-              <ul className={`order-3 mt-0 flex min-w-0 flex-col lg:order-none ${listBeside ? "" : "lg:mt-10"}`}>
+              <ul className={`order-3 mt-0 flex min-w-0 flex-col lg:order-none ${place.list}`}>
                 {ways.map(({ label, body, href }, i) => {
                   const rule = `relative flex items-start gap-4 px-3 py-4 before:absolute before:inset-x-0 before:top-0 before:h-px before:content-[''] ${DOTTED_RULE_BEFORE} ${
                     i === ways.length - 1
@@ -189,9 +200,11 @@ export function PortalStack({
                       <span className="block text-[15px] text-foreground">
                         {label}
                       </span>
-                      <span className="mt-1 block text-sm leading-relaxed text-muted-foreground">
-                        {body}
-                      </span>
+                      {body ? (
+                        <span className="mt-1 block text-sm leading-relaxed text-muted-foreground">
+                          {body}
+                        </span>
+                      ) : null}
                     </span>
                   );
                   // A row with nowhere to go is the same rule and type, with
