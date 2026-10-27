@@ -379,6 +379,17 @@ function PlanGrid({
                 <div className="mt-6">
                   <div className="flex items-baseline gap-1.5">
                     <AnimatedPrice value={price} />
+                    {/* The rate's unit rides the price, as in the product
+                        dashboard ("$29 /month"). Without it the yearly
+                        figures read as one annual charge, but they are the
+                        per-month rate; the line below says how it is billed.
+                        Free is not a rate and Enterprise is a floor, so
+                        neither carries it. */}
+                    {plan.priceMonthly > 0 && !plan.startingPrice && (
+                      <span className="text-sm text-muted-foreground">
+                        /month
+                      </span>
+                    )}
                   </div>
                   <p className="mt-1 text-xs text-muted-foreground">
                     {planSubtitle(plan, billing)}
