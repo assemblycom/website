@@ -1105,85 +1105,6 @@ function CardChat() {
 
 // Document collection — an upload checklist where each requested doc checks off
 // with a staggered pop on hover.
-// Content approval — an app-like "slide to approve" control (à la iOS "slide
-// to transfer"): the item under review sits in a soft panel, and on hover the
-// white thumb glides across the track while the hint label fades out.
-// Dense enough to read as an image resolving pixel by pixel, still only ~200
-// nodes in a card that renders eight times over.
-const PREVIEW_COLS = 17;
-const PREVIEW_ROWS = 12;
-
-function CardApproval() {
-  return (
-    // The item under review owns the whole tile: a title block up top, then the
-    // preview as its own inset image. No panel wrapping the pair — a card inside
-    // a card read as a frame around a frame.
-    // Dark runs the project tracker's card gradient on the hero rail. The dark
-    // gallery instead takes the flat card face, so this tile matches the help
-    // desk beside it rather than being the one card with a ramp.
-    // bg-none is what actually drops the ramp — the card-face override only sets
-    // a background *color*, which paints behind the gradient image.
-    <div className="flex h-full flex-col bg-[var(--v69-card)] [[data-theme=light]_&]:bg-[var(--v69-card)] [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2] [[data-theme=dark]_&]:bg-[linear-gradient(160deg,#232323_0%,#1b1b1b_58%,#151515_100%)] [[data-theme=dark]_.template-mock_&]:bg-[var(--v69-card)] [[data-theme=dark]_.template-mock_&]:bg-none">
-      {/* The status tag alone in the corner, no item name: the preview under it is
-          the thing being approved, and naming it as well made the cover read as a
-          list row with a thumbnail. Stays put on hover — the render in the preview
-          is the only motion this card needs. */}
-      <div className="flex items-center px-3.5 pb-2.5 pt-3.5">
-        <span className={MOCK_UNIT_TAG} style={MOCK_MONO}>
-          Draft
-        </span>
-      </div>
-      {/* Content preview — the image rendering: a dot matrix twinkles while it
-          works, then the picture resolves in over it out of a blur. */}
-      {/* Hairline frames the preview while it's still rendering — without it the
-          dot field floats, since its fill matches the card face. Light mode's
-          preview takes the same warm chip tone the tracker/onboarding cards use
-          (E7E7DE) instead of the shared --v69-inner, which is a cool grey that
-          reads as a foreign colour on this palette's warm face. The ring is
-          redundant now that the panel has its own fill, and only stays for
-          dark, where the panel is a near-black fill close to the card behind it. */}
-      <div className="relative mx-3.5 mb-3.5 flex-1 overflow-hidden rounded-xl ring-1 ring-[rgba(16,24,40,0.14)] [[data-theme=light]_&]:bg-[var(--v69-inner)] [[data-theme=light]_.template-mock_&]:bg-[#e6e6e6] [[data-theme=light]_&]:ring-0 [[data-theme=dark]_&]:bg-[#1B1B1B] [[data-theme=dark]_&]:ring-0 [.v72-mock-dark_&]:ring-0 [[data-theme=dark]_.template-mock_&]:bg-[var(--v69-well)]">
-        <div
-          className="v69-preview-dots absolute inset-0 grid place-items-center gap-[2px] p-2.5 text-muted-foreground"
-          style={{
-            gridTemplateColumns: `repeat(${PREVIEW_COLS}, 1fr)`,
-            gridTemplateRows: `repeat(${PREVIEW_ROWS}, 1fr)`,
-          }}
-        >
-          {Array.from({ length: PREVIEW_COLS * PREVIEW_ROWS }, (_, i) => (
-            <span
-              key={i}
-              aria-hidden
-              className="v69-preview-dot aspect-square w-[2px] rounded-full bg-current"
-              // The delay is the dot's own position, so the twinkle crosses the
-              // field as a wave instead of firing everywhere at once — a scan
-              // travelling over the picture is what reads as work being done;
-              // scattered delays only read as noise. A small deterministic
-              // jitter on top keeps the wave from being a ruled diagonal line,
-              // and deterministic is the requirement either way: a random field
-              // would differ across the hydration boundary.
-              style={
-                {
-                  "--dot-op": 0.2 + ((i * 37) % 11) / 22,
-                  animationDelay: `${
-                    (((i % PREVIEW_COLS) + Math.floor(i / PREVIEW_COLS)) /
-                      (PREVIEW_COLS + PREVIEW_ROWS - 2)) *
-                      1.1 +
-                    (((i * 53) % 17) / 17) * 0.16
-                  }s`,
-                } as React.CSSProperties
-              }
-            />
-          ))}
-        </div>
-        {/* The rendered result: a sky, in the site's own two hues. The gradient
-            itself lives in globals.css so light mode can run its own ramp. */}
-        <div aria-hidden className="v69-preview-image absolute inset-0" />
-      </div>
-    </div>
-  );
-}
-
 // Document collector — a folder card. An earlier version drew a tab and a body
 // as two separately-outlined rectangles, which read as two stacked cards
 // rather than one folder. A real folder needs three overlapping layers: a back
@@ -1830,6 +1751,81 @@ const MOCK_OUTLINE =
 // Text that sits on an ink-filled surface: near-white in light mode, dark in
 // dark mode (the ink token inverts, so the label must invert with it).
 const ON_INK = "text-[var(--v69-well)]";
+
+// Content approval flow — one item under review, drawn the way the contract
+// cover draws its agreement: a white panel on the dotted ground, the item and
+// its status in the header, the Approve button on the foot. The app is a
+// table of these, but a table at cover size is five grey rows; one item with
+// its Approve button says what the app is for.
+//
+// On hover / in view the status crosses from Awaiting review to Approved — the
+// one thing the app does.
+const CONTENT_APPROVAL_ITEM = {
+  title: "Q3 client letter",
+  meta: "Brightwell · Due Nov 8",
+};
+
+// One geometry for both states, so the chip changes colour rather than size.
+const APPROVAL_CHIP =
+  "whitespace-nowrap rounded-md px-2 py-1 text-[10px] uppercase leading-none tracking-wide max-sm:[.template-mock-gallery_&]:text-[9px]";
+// No spinner beat here, so the arriving chip follows the leaving one closely
+// rather than on the support cover's 1120ms delay.
+const APPROVAL_LEAVING = `${STATUS_LAYER} group-hover:scale-75 group-hover:opacity-0 group-[.is-inview]:scale-75 group-[.is-inview]:opacity-0 group-hover:[transition-delay:500ms] group-[.is-inview]:[transition-delay:500ms]`;
+const APPROVAL_ARRIVING = `${STATUS_LAYER} scale-75 opacity-0 group-hover:scale-100 group-hover:opacity-100 group-hover:[transition-delay:700ms] group-[.is-inview]:scale-100 group-[.is-inview]:opacity-100 group-[.is-inview]:[transition-delay:700ms]`;
+
+function CardContentApproval() {
+  return (
+    // v69-cover-column is the phone treatment the data room and other
+    // single-record covers share, so this one's type lands at their size there.
+    // Ink and muted are pinned in dark for the same reason the data room pins
+    // them: the template detail page renders mocks without the dark skin.
+    <div className="v69-cover-column v69-plot-grid v69-plot-grid--dots flex h-full items-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2] [[data-theme=dark]_&]:[--muted-foreground:#8F8F8F] [[data-theme=dark]_&]:[--v69-ink:#F2F2F2]">
+      <div className="w-full overflow-hidden rounded-xl border border-black/[0.08] bg-[#FFFFFF] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.09)] [[data-theme=dark]_&]:bg-[#303030]">
+        <div className="flex flex-col items-start gap-2 px-3 py-2.5">
+          {/* The status on a row of its own: beside the title it took the
+              room the title needed, and at the hero rail's 212px both the item
+              and its client truncated to a few letters. Both chips share one
+              grid cell so the swap never moves anything. */}
+          <span className="grid">
+            {/* Waiting is neutral; only the approved state spends the covers' one
+                live colour — lime in light, periwinkle in dark, the same marker
+                the contract cover's Signed chip carries. */}
+            <span
+              className={`${APPROVAL_LEAVING} ${APPROVAL_CHIP} bg-[#EFEFEF] text-[#4d4d4d] [[data-theme=light]_.template-mock_&]:bg-[#e6e6e6] [[data-theme=dark]_&]:bg-[rgba(255,255,255,0.14)] [[data-theme=dark]_&]:text-[#EDEDED]`}
+              style={MOCK_MONO}
+            >
+              Awaiting review
+            </span>
+            <span
+              className={`${APPROVAL_ARRIVING} ${APPROVAL_CHIP} justify-self-start bg-[#D9ED92] text-[#1B1B1B] [[data-theme=dark]_&]:bg-[#7DA4FF]`}
+              style={MOCK_MONO}
+            >
+              Approved
+            </span>
+          </span>
+          {/* Real line heights, not leading-none: truncate clips to the line box,
+              and at leading-none that sheared the descenders off "Brightwell". */}
+          <span className="flex w-full min-w-0 flex-col gap-0.5">
+            <span className="truncate text-[13px] leading-[1.3] text-[var(--v69-ink)]">
+              {CONTENT_APPROVAL_ITEM.title}
+            </span>
+            <span className="truncate text-[11px] leading-[1.35] text-muted-foreground">
+              {CONTENT_APPROVAL_ITEM.meta}
+            </span>
+          </span>
+        </div>
+        {/* The one answer the flow exists to collect, full width on the foot. */}
+        <div className="border-t border-black/[0.07] px-3 py-2.5 [[data-theme=dark]_&]:border-[rgba(255,255,255,0.16)]">
+          <span
+            className={`flex h-7 w-full items-center justify-center rounded-lg bg-[var(--v69-ink)] text-[11px] leading-[1.3] ${ON_INK} [[data-theme=dark]_&]:text-[#1B1B1B]`}
+          >
+            Approve
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 // Meeting request — a composer, not a confirmation: the empty field the client
 // types their request into, with the attach control, the length they're asking
@@ -3998,7 +3994,7 @@ export function V69CardMock({ slug }: { slug: string }) {
   if (slug === "case-status-page") return <CardCaseStatus />;
   if (slug === "client-discussion-forum") return <CardDiscussion />;
   // No annotation cover exists yet, so this borrows the comment thread — the
-  // nearest true thing the set has for "comments". Not CardApproval, which would
+  // nearest true thing the set has for "comments". Not CardContentApproval, which would
   // be the closer metaphor but is already the content-approval cover and sits in
   // the same Approvals tab, where two identical covers would read as a bug.
   if (slug === "markup-comments") return <CardMarkup />;
@@ -4023,7 +4019,7 @@ export function V69CardMock({ slug }: { slug: string }) {
   if (slug === "client-project-tracker") return <CardTracker />;
   if (slug === "progress-tracker") return <CardProgressTracker />;
   if (slug === "deals-pipeline") return <CardDealsPipeline />;
-  if (slug === "content-approval-flow") return <CardApproval />;
+  if (slug === "content-approval-flow") return <CardContentApproval />;
   if (slug === "proposal-builder") return <CardProposal />;
   if (slug === "client-ai-assistant") return <CardChat />;
   if (slug === "client-onboarding-wizard") return <CardOnboarding />;
