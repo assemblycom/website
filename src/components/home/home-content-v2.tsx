@@ -173,7 +173,19 @@ export function HomeContentV2() {
           heading="Client data your clients can trust you with"
           body="The apps you build inherit the platform's security rather than asking you to get it right yourself. SOC 2 Type II certified, with HIPAA, GDPR and CCPA support."
           link={{ label: "How Assembly keeps data safe", href: "/security" }}
-          bandClassName={`relative bg-background ${BUILDER_RAIL_HALO_WIDE}`}
+          // AND ITS OWN SIDE EDGES. The band draws hairlines only BETWEEN
+          // its cells — "the outer edges get nothing", as
+          // security-compliance.tsx puts it, because on /security and
+          // /client-portal those edges ARE the page's rails, which the band is
+          // pulled out to meet. Grounding it here to stop the rails crossing
+          // it took those two lines with them, and the outer cells were left
+          // open on the left and right. Barely visible in light; plainly
+          // broken in dark.
+          //
+          // Side-specific colour utilities so the top border keeps the grid's
+          // tone while the sides take the band's own, matching the hairlines
+          // between the cells they close.
+          bandClassName={`relative border-x border-x-border bg-background ${BUILDER_RAIL_HALO_WIDE} [[data-theme=dark]_&]:border-x-[#383838]`}
         />
 
         <GridDivider lineClass={BUILDER_GRID_LINE} />
