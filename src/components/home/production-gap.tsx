@@ -8,7 +8,7 @@
 // and loops; clicking/hovering a step — or a region in the mock — jumps to it.
 // ─────────────────────────────────────────────────────────────────────────
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { IconBrandMark } from "@/components/home/mock-icons";
 
 // The section heading and body are placeholders: the PRD gives copy for the
@@ -57,7 +57,7 @@ const REGIONS = [
 // Unhurried so the longer copy has time to read.
 const DWELL_MS = 6500;
 
-type RegionId = (typeof REGIONS)[number]["id"];
+export type RegionId = (typeof REGIONS)[number]["id"];
 
 const APPS = [
   "Onboarding",
@@ -205,7 +205,7 @@ function AppIcon({ name, color }: { name: string; color: string }) {
 // Module-level (never nested in the section) so nothing remounts on parent
 // re-renders. `active` is driven by the vertical tab tour beside it; hovering a
 // region also jumps the tour to it.
-function ProductionGapVisual({
+export function ProductionGapVisual({
   active,
   setActive,
 }: {
@@ -445,7 +445,12 @@ function ProductionGapVisual({
 // mock on the right. It auto-advances through the three regions and loops;
 // clicking or hovering a tab (or a region in the mock) jumps the tour there.
 // Progress is painted imperatively (refs) so the loop never re-renders the mock.
-function ProductionGapExplorer() {
+function ProductionGapExplorer({
+  renderVisual,
+  bleedBottom,
+  framed,
+  flushVisual,
+}: ProductionGapProps) {
   const [active, setActive] = useState(0);
 
   // Refs so the rAF loop reads state without re-subscribing, and the per-tab
@@ -541,14 +546,37 @@ function ProductionGapExplorer() {
       // No frame, fill, or column divider — the tab hairlines and the blue
       // visual carry the structure on their own. The column gap matches the
       // section header's, since there's no longer a divider to sit between them.
-      className="grid md:grid-cols-[minmax(0,330px)_minmax(0,1fr)] md:items-stretch md:gap-x-12"
+      className={`grid md:grid-cols-[minmax(0,330px)_minmax(0,1fr)] md:items-stretch ${
+        framed
+          ? // AN INSET RING, NOT A BORDER. A border sits outside the padding
+            // box, and this wrapper is `overflow-hidden` — which clips to the
+            // padding box — so the first tab's progress rail, drawn 1px above
+            // its own content at `-top-px`, was cut away entirely. The patch
+            // for that was a second gray line drawn just inside, and the
+            // result was a visible DOUBLE LINE across the top-left corner
+            // whenever the first step was running.
+            //
+            // `ring-inset` draws the edge INSIDE the padding box instead, so
+            // the rail (z-10, `group-first:top-0`) paints straight over it:
+            // one line, which is grey at rest and fills dark as the step runs.
+            // AND A GROUND. The tab column has no fill of its own, so on a
+            // page drawing a column grid behind its content the rails ran
+            // straight through the labels and the copy — the frame read as
+            // tracing paper laid over the grid rather than as a panel on it.
+            "overflow-hidden rounded-xl bg-background ring-1 ring-inset ring-border [[data-theme=dark]_&]:ring-white/15"
+          : "md:gap-x-12"
+      }`}
     >
       {/* Left — vertical tabs; the active one expands its copy. */}
       <div
         role="tablist"
         aria-orientation="vertical"
         aria-label="What ships with every app"
-        className="order-2 flex flex-col pb-5 md:order-none md:pb-6"
+        className={`order-2 flex flex-col md:order-none ${
+          framed
+            ? "border-border md:border-r [[data-theme=dark]_&]:border-white/15"
+            : "pb-5 md:pb-6"
+        }`}
       >
         {REGIONS.map((r, i) => {
           const on = i === active;
@@ -566,7 +594,9 @@ function ProductionGapExplorer() {
               onFocus={() => activate(i)}
               // No horizontal inset: with the frame gone the copy aligns to the
               // section heading above instead of sitting inside a phantom edge.
-              className="group relative border-t border-border py-5 pr-5 text-left outline-none first:border-t-0 focus-visible:bg-foreground/[0.03] md:pr-8 [[data-theme=dark]_&]:border-white/15"
+              className={`group relative border-t border-border py-5 text-left outline-none first:border-t-0 focus-visible:bg-foreground/[0.03] [[data-theme=dark]_&]:border-white/15 ${
+                framed ? "px-5 md:px-6" : "pr-5 md:pr-8"
+              }`}
             >
               {/* Top-edge rail that fills left→right over the dwell on the
                   active tab. -top-px, not top-0: absolute offsets resolve against
@@ -580,7 +610,18 @@ function ProductionGapExplorer() {
                 {/* Every other step rides on its own border-t, but the first has
                     that removed, so its rail ran across nothing and the unfilled
                     remainder simply wasn't there. Mobile only for now. */}
-                {i === 0 && (
+                {/* THE FIRST STEP'S TRACK. Every other step rides its own
+                    border-t; the first has that removed, so without this its
+                    rail ran across nothing and the unfilled remainder of the
+                    line was not there at all.
+                    
+                    On the framed column it is drawn at every width, not just
+                    on a phone. The frame's own top border cannot serve as the
+                    track: the column is `overflow-hidden`, which clips to the
+                    padding box, so a rail sitting out in the border area is
+                    cut away entirely. `group-first:top-0` brings it just
+                    inside, where it is drawn like any other. */}
+                {i === 0 && !framed && (
                   <span className="absolute inset-0 bg-border md:hidden [[data-theme=dark]_&]:bg-white/15" />
                 )}
                 <span
@@ -639,7 +680,11 @@ function ProductionGapExplorer() {
           without it the grid item takes the mock's min-content width and the
           blue box runs off the phone's right edge instead of ending at the
           section gutter. */}
-      <div className="order-1 mb-8 flex min-w-0 self-stretch md:order-none md:mb-0">
+      <div
+        className={`order-1 flex min-w-0 self-stretch md:order-none md:mb-0 ${
+          framed ? "" : "mb-8"
+        }`}
+      >
         {/* Hairline below md only: the mock is laid out at desktop width and
             clipped by this box, so at phone widths its white surface reaches
             the box's right edge and meets the white page with nothing between
@@ -649,18 +694,42 @@ function ProductionGapExplorer() {
             bottom-left round sits well below the cut and never shows. One value
             all the way round on a phone: the wider bottom pair it used to carry
             made the crop read as a rounded tray under a squarer window. */}
-        <div className="h-[320px] w-full min-w-0 overflow-hidden rounded-xl bg-[#7DA4FF] py-4 pl-4 ring-1 ring-black/[0.08] md:h-auto md:py-7 md:pl-7 md:ring-0">
+        <div
+          className={`h-[320px] w-full min-w-0 overflow-hidden bg-[#7DA4FF] ${
+            flushVisual ? "" : "pl-4"
+          } ${
+            // A deeper left inset inside the frame than the free-standing box
+            // uses. There the blue is a border all the way round and 28px
+            // reads as one; here the blue only shows on two sides, so the
+            // screen needs to start later for the inset to register as a
+            // margin rather than as a seam.
+            flushVisual ? "" : framed ? "md:pl-12" : "md:pl-7"
+          } ${
+            flushVisual ? "" : bleedBottom ? "pt-4 md:pt-7" : "py-4 md:py-7"
+          } ${
+            // Inside one frame the box has no edge of its own: the frame draws
+            // it, and the blue runs flush to it. Free-standing it keeps the
+            // rounding and the ring it always had.
+            framed
+              ? "md:h-full"
+              : "rounded-xl ring-1 ring-black/[0.08] md:h-auto md:ring-0"
+          }`}
+        >
           {/* The mock is a desktop layout — the sidebar and the table are
               percentages of a wide viewport, so at phone width they collapse
               into each other. It's laid out at a desktop width and cropped by
               the box instead, the same right-edge crop the design already uses
               on desktop, and the box is height-capped so it reads as a landscape
               window rather than a tall column. */}
-          <div className="w-[760px] md:w-auto">
-            <ProductionGapVisual
-              active={REGIONS[active].id}
-              setActive={activateId}
-            />
+          <div className={`${flushVisual ? "h-full w-full" : "w-[760px]"} md:w-auto ${framed ? "md:h-full" : ""}`}>
+            {renderVisual ? (
+              renderVisual(REGIONS[active].id)
+            ) : (
+              <ProductionGapVisual
+                active={REGIONS[active].id}
+                setActive={activateId}
+              />
+            )}
           </div>
         </div>
       </div>
@@ -668,7 +737,70 @@ function ProductionGapExplorer() {
   );
 }
 
-export function ProductionGap() {
+export interface ProductionGapProps {
+  /**
+   * Draws the right-hand visual for the step the tour is on, in place of the
+   * one client-portal mock this section ships with.
+   *
+   * A render prop and not a flag, so the shipped section never has to import
+   * the thing it is being handed — the caller owns the visuals and this owns
+   * the tour. Unset, the mock renders exactly as it always has, regions and
+   * all; a caller that supplies this takes over the whole panel, so the mock's
+   * own hover-to-select goes with it (there is no region to hover once each
+   * step has a picture of its own, and `activateId` is then unused).
+   */
+  renderVisual?: (active: RegionId) => ReactNode;
+  /**
+   * Drops the blue box's BOTTOM padding, so the screen inside runs to its foot
+   * and is cut there.
+   *
+   * The box already does this on the right — it carries `pl` and no `pr`, so
+   * the app content runs off that edge and reads as continuing past the frame.
+   * The foot had `py` on both sides, so a screen could never reach it: however
+   * tall the screen was drawn, a band of blue sat under it and the mock ended
+   * on a visible bottom edge.
+   *
+   * Off by default, so the shipped section is unchanged — its mock is sized to
+   * its own table and is meant to sit inside the box, not bleed out of it.
+   */
+  bleedBottom?: boolean;
+  /**
+   * Drops the blue box's padding entirely, so the visual fills it edge to
+   * edge and the blue stops being visible at all.
+   *
+   * For a visual that brings its own ground — a product photograph or an
+   * exported shot with a field baked into it. Inset, two grounds show at once
+   * and the blue reads as a mat around someone else's picture. The blue is
+   * still there underneath, so it covers the moment between the panel
+   * rendering and the image decoding.
+   */
+  flushVisual?: boolean;
+  /**
+   * Draws ONE frame around the whole explorer — the tab column and the visual
+   * inside a single rounded outline, divided by a hairline rather than held
+   * apart by a column gap.
+   *
+   * The shipped section deliberately has none — "the tab hairlines and the
+   * blue visual carry the structure on their own" — and the cost of that is
+   * the FIRST tab: every other step's progress rail rides on its own
+   * `border-t`, but the first has that border removed, so its rail ran across
+   * nothing and the unfilled remainder of the line simply was not there. (A
+   * phone-only `bg-border` strip was patched in to cover it; desktop was left
+   * as it was.)
+   *
+   * A frame gives the first step a real line to run on at every width, and the
+   * rail lands exactly on the frame's top edge — `-top-px` resolves against
+   * the button's padding box, whose top sits just inside the frame's border.
+   */
+  framed?: boolean;
+}
+
+export function ProductionGap({
+  renderVisual,
+  bleedBottom,
+  framed,
+  flushVisual,
+}: ProductionGapProps = {}) {
   return (
     <section id="production-gap" className="py-16 md:py-24">
       <div className="mx-auto max-w-[1600px] px-6 md:px-10">
@@ -691,7 +823,12 @@ export function ProductionGap() {
         {/* Product mock (desktop) with a description + hoverable region list
             below — the list is the whole interaction on mobile. */}
         <div className="mx-auto mt-12 max-w-[1100px] md:mt-16">
-          <ProductionGapExplorer />
+          <ProductionGapExplorer
+            renderVisual={renderVisual}
+            bleedBottom={bleedBottom}
+            framed={framed}
+            flushVisual={flushVisual}
+          />
         </div>
       </div>
     </section>

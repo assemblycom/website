@@ -1,6 +1,7 @@
 "use client";
 
 import { memo, useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import {
   DescribeVisual,
   BuildAppVisual,
@@ -74,7 +75,33 @@ const STEPS: Step[] = [
 // than two things racing.
 const DWELL_MS = 7_000;
 
-export function HowItWorks() {
+export function HowItWorks({
+  /**
+   * The visual panel's height, as the whole responsive chain.
+   *
+   * The cards crop themselves at whatever this is (`max-h-full` on .mock-ui),
+   * so it is a crop, not a scale — lowering it shows less of the screen rather
+   * than shrinking it. The default is what the shipped page uses; a page that
+   * opens on its own tall hero wants less of the viewport spent here.
+   *
+   * It is one prop rather than a phone override because the default chain ends
+   * in `sm:h-auto`, which sizes to the content — fine for a panel with a screen
+   * in it, and a collapse to nothing for one without.
+   */
+  visualHeightClass = "h-[420px] sm:h-auto md:h-[560px]",
+  stepImages,
+}: {
+  visualHeightClass?: string;
+  /**
+   * A photograph per step, keyed by step id, shown INSTEAD of that step's
+   * built visual — the blue panel with a picture in it rather than a mock.
+   *
+   * For a page whose step screens are being redone: the section keeps its
+   * shape, its tour and its timing, and the panel holds something while the
+   * screens are away. Unset, every step renders its own visual as before.
+   */
+  stepImages?: Record<string, { src: string; alt: string }>;
+} = {}) {
   const [active, setActive] = useState(0);
 
   // Kept in refs so the rAF loop reads them without re-subscribing, and so the
@@ -197,7 +224,18 @@ export function HowItWorks() {
             legend. sm+ keeps tabs-then-visual, where they're one 4-across row. */}
         {/* 20px, so the blue panel inside it (12px, inset 8px) is concentric with
             it rather than a third unrelated curve. */}
-        <div className="mx-auto mt-10 flex max-w-[1100px] flex-col overflow-hidden rounded-[20px] border border-border [[data-theme=dark]_&]:border-white/15 [[data-theme=dark]_&]:bg-white/[0.04] md:mt-12">
+        <div // AN OPAQUE GROUND. The panel stated a fill for dark
+          // (`bg-white/[0.04]`) and none at all for light, so in light it was a
+          // bordered card with nothing in it. On a plain page that is
+          // invisible — the card and the page are the same colour — but on a
+          // page drawing a column grid behind its content the rails ran
+          // straight through the tab bar and the empty half of the panel, and
+          // the card read as tracing paper laid over the grid.
+          //
+          // `bg-background` rather than a hex, so it is the page's own ground
+          // in whichever theme is rendering, and the dark fill stays stacked on
+          // top of it exactly as before.
+          className="mx-auto mt-10 flex max-w-[1100px] flex-col overflow-hidden rounded-[20px] border border-border bg-background [[data-theme=dark]_&]:border-white/15 [[data-theme=dark]_&]:bg-white/[0.04] md:mt-12">
           {/* Tabs — divided by hairlines; each carries a progress track on its
               top edge that fills over the dwell on the active tab. */}
           <div
@@ -276,7 +314,7 @@ export function HowItWorks() {
           {/* grid-rows-1 (1fr, not auto): with an auto row the cell still sized
               to the tallest card, so h-full/max-h-full below resolved against
               that instead of the capped panel. */}
-          <div className="relative order-1 grid h-[420px] grid-cols-1 grid-rows-1 overflow-hidden sm:order-none sm:h-auto md:h-[560px] [font-family:var(--font-inter),system-ui,sans-serif]">
+          <div className={`relative order-1 grid ${visualHeightClass} grid-cols-1 grid-rows-1 overflow-hidden sm:order-none [font-family:var(--font-inter),system-ui,sans-serif]`}>
             {STEPS.map((step, i) => (
               <div
                 key={step.id}
@@ -295,7 +333,27 @@ export function HowItWorks() {
                     : "pointer-events-none opacity-0 [&_*]:pointer-events-none!"
                 }`}
               >
-                <step.Visual />
+                {stepImages?.[step.id] ? (
+                  // FULL BLEED, AND NO BLUE. A step's own visual sits inside
+                  // BluePanel — a blue ground with the screen floating on it,
+                  // which is the right frame for a drawn mock and the wrong
+                  // one for a photograph: the blue becomes a mat around
+                  // someone else's picture. The photograph is the panel here,
+                  // filling the cell edge to edge. The section's own wrapper
+                  // is `overflow-hidden rounded-[20px]`, so the corners are
+                  // clipped for it and it needs no radius of its own.
+                  <div className="relative h-full w-full">
+                    <Image
+                      src={stepImages[step.id].src}
+                      alt={stepImages[step.id].alt}
+                      fill
+                      className="object-cover object-center"
+                      sizes="(max-width: 768px) 100vw, 60vw"
+                    />
+                  </div>
+                ) : (
+                  <step.Visual />
+                )}
               </div>
             ))}
           </div>

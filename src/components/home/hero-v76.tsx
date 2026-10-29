@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Fragment, memo, useEffect, useRef, useState } from "react";
+import { Fragment, memo, useEffect, useRef, useState, type ReactNode } from "react";
 import { APP_URL, SIGNUP_URL, templateSignupUrl } from "@/lib/constants";
 import { type Template } from "@/lib/templates";
 import {
@@ -156,6 +156,7 @@ export function HeroV76({
   // Contentful on the server, which a client component can't await.
   templates,
   variant,
+  trustSlot,
 }: {
   showPlus?: boolean;
   templates: Template[];
@@ -170,6 +171,15 @@ export function HeroV76({
    * swaps it. That is a layout shift on the one element under test.
    */
   variant?: HeroVariantProps;
+  /**
+   * A row of proof rendered under the composer, above the template rail.
+   *
+   * A slot and not a flag: what goes here is one prototype version's answer to
+   * the trust brief (see v2/hero-credibility.tsx), and the hero should not have
+   * to know what a G2 rating is to render one. Unset — which is every shipped
+   * render — nothing is drawn and the hero is exactly as it was.
+   */
+  trustSlot?: ReactNode;
 }) {
   const carousel = carouselFrom(templates);
 
@@ -451,6 +461,7 @@ export function HeroV76({
           // test, which the fallback layout means cannot happen today — but
           // the arm is optional, so this says so rather than assuming it.
           signupHref={withHeroArm(SIGNUP_URL, variant?.arm ?? null)}
+          trustSlot={trustSlot}
         />
       ) : (
       <>
@@ -555,6 +566,8 @@ export function HeroV76({
                   />
                 </div>
               </div>
+
+              {trustSlot}
             </div>
 
             <div className="mt-8 md:mt-1">

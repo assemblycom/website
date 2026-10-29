@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, type ReactNode } from "react";
 import { AppMarkGlyph, type AppMark, type MarkTint } from "./app-marks";
 import { APP_URL, SIGNUP_URL, DEMO_URL } from "@/lib/constants";
 import { trackHeroCta } from "./hero-experiment";
@@ -129,7 +129,9 @@ function BigHeadline({
   );
 }
 
-const PRIMARY_CTA =
+/** The hero's primary action. Exported so a second hero layout runs the
+ * same control rather than restating its classes. */
+export const PRIMARY_CTA =
   "inline-flex w-full shrink-0 items-center justify-center whitespace-nowrap rounded-lg bg-foreground px-4 py-3 text-center text-sm text-background transition-opacity hover:opacity-90 sm:w-auto sm:py-2 md:px-5 md:py-2.5 [[data-theme=dark]_&]:bg-white [[data-theme=dark]_&]:text-neutral-900";
 
 export function HeroBig({
@@ -140,6 +142,7 @@ export function HeroBig({
   iconPair,
   iconBefore,
   signupHref = SIGNUP_URL,
+  trustSlot,
 }: {
   headline: string;
   body?: string;
@@ -149,6 +152,12 @@ export function HeroBig({
   iconBefore?: string;
   /** Signup, carrying the arm. Falls back to the plain CTA URL. */
   signupHref?: string;
+  /**
+   * A row of proof under the button pair. See hero-v76's own `trustSlot` — the
+   * two heroes take the same slot so a version can hand one row to whichever
+   * layout it renders, without knowing which it got.
+   */
+  trustSlot?: ReactNode;
 }) {
   return (
     <section className="relative -mt-14 bg-white md:-mt-16 [[data-theme=dark]_&]:bg-[#0a0a0a]">
@@ -231,6 +240,8 @@ export function HeroBig({
             Book a demo
           </a>
         </div>
+
+        {trustSlot}
       </div>
     </section>
   );
