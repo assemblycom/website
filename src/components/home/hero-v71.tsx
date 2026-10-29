@@ -3028,53 +3028,17 @@ function CardTeamGuides() {
 // Data room — an activity timeline: a headline metric over a weekday gantt of
 // document workstreams, with a legend. Monochrome — the inspiration's colored
 // tracks separate by brightness instead of hue.
-// Data room — who can open it, and whether their access still stands. The cover
-// used to be two percentage columns of "how reviewed" a folder was, which is a
-// reporting number; what this app is for is permissioned access, so the record it
-// shows is the invitation. The columns moved to the retainer cover, where a
-// figure against an allowance is the whole point (see CardRetainer).
-const DATA_ROOM_ACCESS: { name: string; state: "active" | "expired" }[] = [
-  { name: "Larkspur Design", state: "active" },
-  { name: "David Okonkwo", state: "expired" },
-];
-
 function CardDataRoom() {
   return (
-    // The plotted ground and the opaque record card the other single-record
-    // covers use, so this reads as one of that family rather than a new idiom.
-    // Ink and the muted grey are pinned in dark for the same reason the old
-    // version of this cover pinned them: the templates detail page renders these
-    // mocks without the .v72-mock-dark skin, so --v69-ink there is still the
-    // light-mode near-black and the names sat dark-on-dark.
-    <div className="v69-cover-column v69-plot-grid v69-plot-grid--dots v69-plot-grid--fade flex h-full items-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2] [[data-theme=dark]_&]:[--muted-foreground:#8F8F8F] [[data-theme=dark]_&]:[--v69-ink:#F2F2F2]">
-      <div className="w-full overflow-hidden rounded-xl border border-black/[0.08] bg-[#FFFFFF] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.09)] [[data-theme=dark]_&]:bg-[#303030]">
-        {DATA_ROOM_ACCESS.map((row, i) => (
-          <div
-            key={row.name}
-            className={`flex items-center gap-3 px-3 py-2.5 ${
-              i > 0
-                ? "border-t border-black/[0.06] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.16)]"
-                : ""
-            }`}
-          >
-            <span className="min-w-0 flex-1 truncate pb-[3px] -mb-[3px] text-[13px] leading-none text-[var(--v69-ink)]">
-              {row.name}
-            </span>
-            {/* The set's mono status chip, the one the contract and invoice
-                covers wear, in the covers' neutral rather than their lime: this
-                cover carries two of them at once, and a live colour on both
-                would be the loudest thing in a gallery of monotone covers. Both
-                states take the same chip, so the word is what separates them. */}
-            <span
-              className="shrink-0 rounded-md bg-[var(--v69-well)] px-2 py-1 text-[10px] uppercase leading-none tracking-wide text-[var(--v69-ink)] [[data-theme=light]_.template-mock_&]:bg-[#e6e6e6] [[data-theme=dark]_&]:bg-[rgba(255,255,255,0.14)] [[data-theme=dark]_&]:text-[#EDEDED] max-sm:[.template-mock-gallery_&]:text-[9px]"
-              style={MOCK_MONO}
-            >
-              {row.state === "active" ? "Active" : "Expired"}
-            </span>
-          </div>
-        ))}
-      </div>
-    </div>
+    // The face alone — the record list that sat on it is in the history if it
+    // is wanted back. Already a dark artwork, so it takes none of the dimming
+    // the photographic covers need in either skin.
+    <GlassCover
+      photo="bg-[url(/images/mocks/data-room-shelves.webp)]"
+      focus="bg-[position:62%_70%]"
+      dim=""
+      panel={false}
+    />
   );
 }
 
