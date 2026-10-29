@@ -3898,56 +3898,35 @@ const APPROVAL_ROWS = [
   { title: "Social kit", meta: "Round 1" },
 ];
 
-// Design approvals — a titled folder of what is out for review: a filled header
-// band naming the set, then a row per piece with the round it is on. Borrowed
-// from a files-app folder view, with the reference's colour band taken to ink so
-// the gallery stays monotone.
+// Design approvals — what is out for review and the round each piece is on,
+// on a glass panel over the aurora artwork. Dark artwork, so it takes none of
+// the dimming the photographic covers need in either skin.
 function CardDesignApprovals() {
   return (
-    // No inner panel: the header band runs to the card's own edges and the rows
-    // sit straight on the card face, so the widget IS the folder view. The frame
-    // clips the band to the card radius, so it needs no rounding of its own.
-    <div className="flex h-full flex-col bg-[var(--v69-card)]">
-      {/* Neither theme runs the inverted band any more: at this size a slab of
-          near-black in light or near-white in dark is a hard edge across the top
-          of the card rather than a header. Both are now a soft step off the panel
-          — a warm grey in light, a lifted grey in dark — with the type in the
-          theme's own ink and a hairline closing the band. */}
-      <div className="flex items-center gap-2 bg-[var(--v69-ink)] px-5 py-4 [[data-theme=light]_&]:bg-[#ebebeb] [[data-theme=light]_&]:shadow-[inset_0_-1px_0_rgba(16,24,40,0.07)] [[data-theme=dark]_&]:bg-[#343434] [[data-theme=dark]_&]:shadow-[inset_0_-1px_0_rgba(255,255,255,0.08)]">
-        <FolderGlyph
-          className={`size-4 ${ON_INK} [[data-theme=light]_&]:text-[var(--v69-ink)] [[data-theme=dark]_&]:text-[#EDEDED]`}
-        />
-        <span
-          className={`text-[13px] font-normal ${ON_INK} [[data-theme=light]_&]:text-[var(--v69-ink)] [[data-theme=dark]_&]:text-[#EDEDED]`}
+    <GlassCover
+      photo="bg-[url(/images/mocks/approvals-aurora.webp)]"
+      focus="bg-[position:62%_50%]"
+      dim=""
+      panel="w-full flex-col gap-2.5"
+    >
+      {APPROVAL_ROWS.map((row, i) => (
+        <div
+          key={row.title}
+          // A rule between the rows rather than round each: on glass a boxed
+          // row would be a second pane inside the first.
+          className={
+            i > 0
+              ? "border-t border-[rgba(255,255,255,0.18)] pt-2.5"
+              : undefined
+          }
         >
-          Design reviews
-        </span>
-      </div>
-      {/* The rail lives on each row, not on this wrapper, so it runs the full
-          width of the card the way the header band does. The first row sits off
-          the header band rather than against it, which gives the list somewhere to
-          breathe under a filled slab.
-          Every row carries a rail below it, the last one included: the list stops
-          short of the card's foot, and without that line it ended in mid-air.
-          Dark states its rail as a literal rgba: the mock's dark skin remaps
-          --color-white to a near-black, so `border-white/x` drew a dark line on a
-          dark face and the rails vanished. */}
-      <div className="v69-approval-list pt-2">
-        {APPROVAL_ROWS.map((row) => (
-          <div
-            key={row.title}
-            className="border-b px-5 py-3.5 [[data-theme=light]_&]:border-black/[0.07] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.14)]"
-          >
-            <div className="truncate text-[13px] font-normal text-[var(--v69-ink)]">
-              {row.title}
-            </div>
-            <div className="mt-0.5 truncate text-[11px] font-normal text-muted-foreground">
-              {row.meta}
-            </div>
+          <div className={`truncate ${COVER_ON_GLASS}`}>{row.title}</div>
+          <div className={`mt-1.5 truncate ${COVER_ON_GLASS_QUIET}`}>
+            {row.meta}
           </div>
-        ))}
-      </div>
-    </div>
+        </div>
+      ))}
+    </GlassCover>
   );
 }
 
