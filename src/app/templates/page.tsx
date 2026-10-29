@@ -46,7 +46,7 @@ export default async function TemplatesPage() {
               read as a third line of the header block. Only from lg: below that
               the filter row is sticky and carries its own pt-16 clearance, so a
               margin on top of it left the grid stranded far from the hero. */}
-          <div className="lg:mt-20">
+          <div className="lg:mt-32">
             <TemplatesBrowser templates={templates} />
           </div>
         </div>

@@ -141,37 +141,37 @@ function useInViewReplay(onPlay: () => void) {
 const INTAKE_CONTACT = {
   initials: "AE",
   name: "Alex Everett",
-  email: "alex@everettdesign.com",
+  email: "alex@everett.co",
 };
 
 function CardIntake() {
   const { initials, name, email } = INTAKE_CONTACT;
   return (
-    // v69-cover-column is the phone treatment: the row is held to the width it
-    // was drawn at and centred, instead of stretching across the wider frame.
-    <div className="v69-cover-column v69-plot-grid v69-plot-grid--dots v69-plot-grid--fade v69-plot-shimmer flex h-full items-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
-      {/* Opaque, like every other record card in the set: the translucent pane
-          let the dot field run straight through it, so the row read as printed
-          into the paper rather than lying on it. */}
-      <div className="flex w-full items-center gap-3 rounded-xl border border-black/[0.08] bg-[#FFFFFF] p-3 [[data-theme=dark]_&]:border-[rgba(255,255,255,0.09)] [[data-theme=dark]_&]:bg-[#303030]">
-        {/* Initials, not a photograph: the gallery is drawn art throughout, and a
-            face is the one thing on it that would read as a real person. */}
-        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[var(--v69-well)] text-[13px] leading-none text-[var(--v69-ink)] [[data-theme=light]_&]:bg-[var(--v69-inner)] [[data-theme=light]_.template-mock_&]:bg-[#e6e6e6] [[data-theme=light]_&]:text-[#595959] [[data-theme=dark]_&]:bg-[rgba(255,255,255,0.12)]">
-          {initials}
+    // The record is the panel rather than a card sitting inside one: for a
+    // single row, a white box on frosted glass on a photograph is three nested
+    // rectangles where the reference has two.
+    <GlassCover
+      photo="bg-[url(/images/mocks/describe-laptop.webp)]"
+      focus="bg-[position:46%_42%]"
+      panel="w-fit max-w-full flex-row items-center gap-3 self-center px-3.5"
+    >
+      {/* Initials, not a photograph: there is already a real person behind the
+          glass, and a second face on top of them reads as two shots at once. */}
+      <span className={COVER_SLOT}>{initials}</span>
+      <span className="min-w-0 flex-1">
+        {/* pb/-mb on both: `truncate` clips at the line box, which at
+            leading-none is exactly the font size, so the g and y in the address
+            lost their tails. */}
+        <span className={`block truncate pb-[3px] -mb-[3px] ${COVER_ON_GLASS}`}>
+          {name}
         </span>
-        <span className="min-w-0 flex-1">
-          {/* pb/-mb on both: `truncate` clips at the line box, which at
-              leading-none is exactly the font size, so the g and y in the address
-              lost their tails. */}
-          <span className="block truncate pb-[3px] -mb-[3px] text-[13px] leading-none text-[var(--v69-ink)]">
-            {name}
-          </span>
-          <span className="mt-1.5 block truncate pb-[3px] -mb-[3px] text-[10px] leading-none text-muted-foreground">
-            {email}
-          </span>
+        <span
+          className={`mt-1.5 block truncate pb-[3px] -mb-[3px] ${COVER_ON_GLASS_QUIET}`}
+        >
+          {email}
         </span>
-      </div>
-    </div>
+      </span>
+    </GlassCover>
   );
 }
 
@@ -1117,52 +1117,25 @@ function CardChat() {
 // as a `[[data-theme=…]]` variant on every layer. Dark inverts the ladder's
 // direction (its "paper" is the *lightest* grey rather than white) so the
 // sheet stays the brightest thing in the stack in both skins.
-const FOLDER_LABEL = "Documents";
-const FOLDER_META = "3 files";
-
-// Hover / in-view: the sheet rises out of the folder and settles back down.
-const PAPER_PEEK =
-  "group-hover:[animation:v69PaperPeek_1.6s_cubic-bezier(0.33,1,0.68,1)_both] group-[.is-inview]:[animation:v69PaperPeek_1.6s_cubic-bezier(0.33,1,0.68,1)_both]";
-
 function CardDocuments() {
   return (
-    <div className="h-full bg-[var(--v69-card)] [--fld-back:#E6E6E6] [--fld-edge:rgba(0,0,0,0.07)] [--fld-front:#F2F2F2] [--fld-paper:#FAFAFA] [.template-mock_&]:[--fld-back:#e6e6e6] [.template-mock_&]:[--fld-front:#f2f2f2] [.template-mock_&]:[--fld-paper:#ffffff] [--fld-ink:#262626] [[data-theme=dark]_&]:[--fld-back:#2c2c2c] [[data-theme=dark]_&]:[--fld-edge:rgba(255,255,255,0.09)] [[data-theme=dark]_&]:[--fld-front:#3a3a3a] [[data-theme=dark]_&]:[--fld-ink:#f2f2f2] [[data-theme=dark]_&]:[--fld-paper:#565656]">
-      {/* v69-cover-square is the phone treatment: a folder stretched to 16:10
-          stops reading as a folder, so it holds its square and centres. */}
-      <div className="v69-cover-square relative h-full p-3">
-        {/* Back plate + its tab. The tab's bottom edge is overlapped by the
-            plate (-mb-px, above it in stacking order) so no border line runs
-            between them — that seam is what made the old version read as two
-            separate rectangles instead of one folded shape. */}
-        <div className="flex h-full flex-col">
-          <div className="relative z-10 -mb-px h-3.5 w-[46%] rounded-t-[10px] border-x border-t border-[var(--fld-edge)] bg-[var(--fld-back)]" />
-          <div className="flex-1 rounded-[13px] rounded-tl-none border border-[var(--fld-edge)] bg-[var(--fld-back)]" />
-        </div>
-        {/* The paper in the folder — peeks above the front panel's top edge,
-            inset from the folder's sides the way a sheet sits inside it. */}
-        <div
-          className={`absolute inset-x-[16%] top-[27%] h-[16%] rounded-t-[7px] border-x border-t border-[var(--fld-edge)] bg-[var(--fld-paper)] ${PAPER_PEEK}`}
-        />
-        {/* Front panel — sits over the lower part of the plate and carries
-            the content. The upward shadow separates it from the paper.
-            Light also casts downward: --fld-front is the same F5F5F0 as the
-            card face there, so with only a 7%-black hairline the panel's bottom
-            and sides dissolved into the card. Dark keeps the upward shadow
-            alone — its front is already a clear step off the ground. The
-            gallery scales the whole cover up, which scales the cast shadow with
-            it, so there it runs shorter and lighter. */}
-        <div className="absolute inset-x-3 bottom-3 top-[36%] flex flex-col justify-between rounded-[13px] border border-[var(--fld-edge)] bg-[var(--fld-front)] p-3 shadow-[0_-2px_4px_rgba(16,24,40,0.05)] [[data-theme=light]_&]:shadow-[0_-2px_4px_rgba(16,24,40,0.05),0_1px_2px_rgba(16,24,40,0.06),0_8px_16px_-6px_rgba(16,24,40,0.16)] [[data-theme=light]_.template-mock_&]:shadow-[0_-1px_3px_rgba(16,24,40,0.04),0_1px_2px_rgba(16,24,40,0.04),0_6px_14px_-10px_rgba(16,24,40,0.10)]">
-          <div className="min-w-0">
-            <div className="truncate text-[13px] font-medium leading-tight text-[var(--fld-ink)]">
-              {FOLDER_LABEL}
-            </div>
-            <div className="mt-0.5 text-[11px] text-[color-mix(in_srgb,var(--fld-ink)_60%,transparent)]">
-              {FOLDER_META}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    // The face alone for now — the folder that sat on it is in the history if
+    // it is wanted back.
+    //
+    // Two gradient layers, because the band runs on two axes: the 135deg one
+    // cuts it across the face with a hard upper edge, and the 45deg one lays
+    // the mint along its lower-left end. A single gradient gave an even blue
+    // band, which is the part that did not look like the reference.
+    //
+    // Light leaves the artwork at its own values — dimming it turned the band
+    // to mud. Dark steps it down so the cover is not a lit square in a dark
+    // row.
+    <GlassCover
+      photo="bg-[linear-gradient(45deg,rgba(183,214,190,0.50)_0%,rgba(183,214,190,0.14)_38%,rgba(183,214,190,0)_62%),linear-gradient(135deg,#F1EDE7_0%,#F0ECE6_43%,#ACDBEE_47%,#C6E2E7_62%,#EDE9E3_80%,#F1EDE7_100%)]"
+      focus=""
+      dim="[[data-theme=dark]_&]:brightness-[0.5]"
+      panel={false}
+    />
   );
 }
 
@@ -1474,109 +1447,136 @@ function CardInfo() {
   );
 }
 
-// Client project tracker — a GitHub-style contribution heatmap: a headline
-// count over a weekday × week grid of neutral cells whose intensity encodes
-// daily task activity, tapering to empty in the "future" weeks on the right.
-const TRACKER_INK = "#7DA4FF";
-const TRACKER_COLS = 15;
-const TRACKER_ROWS = 7;
-// Deterministic 0–3 intensity per cell (no Math.random, so it can't flicker
-// between renders): a hash gives organic variation, the last few columns are
-// forced empty to read as upcoming weeks, and the first column ramps in.
-// Thresholds lean heavily on empty/light cells — a dense all-gray grid read
-// as one gray slab rather than an activity pattern.
-// A few seeded hits in the otherwise-empty top two rows so the grid doesn't
-// read top-heavy with blank space.
-const TRACKER_TOP_HITS = new Set(["0-0", "0-1", "0-2", "0-10", "1-6"]);
-function trackerLevel(r: number, c: number): number {
-  if (c >= TRACKER_COLS - 2) return 0;
-  if (TRACKER_TOP_HITS.has(`${r}-${c}`)) return 3;
-  const h = (r * 5 + c * 11 + r * c * 7 + c * c * 3) % 13;
-  let lvl = h < 6 ? 0 : h < 9 ? 1 : h < 11 ? 2 : 3;
-  if (c === 0 && r < 2) lvl = 0; // ragged start, like a mid-week first day
-  return lvl;
-}
-function CardTracker() {
-  // GitHub-style scale: solid tiles stepping from a light-gray empty tile up to
-  // a solid neutral-dark, all mixed off the well + ink so both themes track.
-  const cellFill = (lvl: number) =>
-    lvl === 0 || lvl === 1
-      ? "var(--v69-tracker-empty, #A6C0F8)"
-      : `var(--v69-tracker-hit, ${TRACKER_INK})`;
+// The glass these covers' panels are cut from: a light frost blurred and
+// desaturated so the photograph behind it is a tone rather than a scene. The
+// pane stays light — it is the picture that goes down in value under it (see
+// GlassCover), which is what lets white type sit on a frost this pale without
+// the panel itself turning into a dark slab.
+const COVER_GLASS =
+  "mock-lit-edge bg-[rgba(214,214,214,0.42)] [backdrop-filter:blur(20px)_saturate(0.6)] [-webkit-backdrop-filter:blur(20px)_saturate(0.6)] [--lit-angle:145deg] [--lit-mid:38%] [--lit-fade:78%] [--mock-edge-lit:rgba(255,255,255,0.85)] [--mock-line:rgba(255,255,255,0.28)]";
+
+// Type on the frost. One ink for the primary line and one for the second, so
+// the covers in this family agree instead of each picking its own.
+const COVER_ON_GLASS = "text-[13px] font-normal leading-none text-white";
+const COVER_ON_GLASS_QUIET =
+  "text-[10px] leading-none text-[rgba(255,255,255,0.72)]";
+// The slot an avatar or a file glyph sits in — cut from the frost rather than
+// filled, the way the slots on the reference shots are.
+const COVER_SLOT =
+  "flex size-9 shrink-0 items-center justify-center rounded-full bg-[rgba(255,255,255,0.22)] text-[13px] leading-none text-white";
+
+// A cover drawn as a frosted panel floating on a photograph — the treatment the
+// brand's product shots use. `photo` and `focus` are written as literal Tailwind
+// classes at each call site rather than built here, because the scanner only
+// generates the classes it can see in the source.
+function GlassCover({
+  photo,
+  focus,
+  panel = "flex-col",
+  // How far the panel is held off the card's edges. A record row needs more
+  // width for its second line than the tracker's chart does, so it is a knob.
+  inset = "px-7 py-4 max-sm:[.template-mock-gallery_&]:px-14 max-sm:[.template-mock-gallery_&]:py-6",
+  dim = "brightness-[0.78] [[data-theme=dark]_&]:brightness-[0.55]",
+  children,
+}: {
+  photo: string;
+  focus: string;
+  dim?: string;
+  panel?: string | false;
+  inset?: string;
+  children?: React.ReactNode;
+}) {
   return (
-    // Card face is a soft gradient rather than a flat fill, so the whole tile
-    // has a light falloff behind the grid. Neutral in both skins — the accent
-    // cells stay the only colour.
-    // The dark GALLERY is the exception: there the gradient bottoms out well
-    // below the card tone its neighbours use, so in a row of covers this one read
-    // as a hole. It takes the flat card face there, and drops the ring with it —
-    // nothing else in that row carries an outline. The hero strip keeps the
-    // gradient, where the tile stands alone against the page.
-    <div className="flex h-full flex-col rounded-[14px] bg-[linear-gradient(160deg,#ffffff_0%,#f4f6f9_58%,#eceff3_100%)] p-3.5 [--v69-tracker-empty:#00000008] [[data-theme=light]_&]:bg-none [[data-theme=light]_&]:bg-[var(--v69-card)] [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2] [[data-theme=light]_&]:[--v69-tracker-empty:#00000012] [[data-theme=dark]_&]:bg-[linear-gradient(160deg,#232323_0%,#1b1b1b_58%,#151515_100%)] [[data-theme=dark]_&]:ring-1 [[data-theme=dark]_&]:ring-[rgba(255,255,255,0.08)] [[data-theme=dark]_&]:[--v69-tracker-empty:#ffffff1a] [[data-theme=dark]_.template-mock-gallery_&]:bg-none [[data-theme=dark]_.template-mock-gallery_&]:bg-[var(--v69-card)] [[data-theme=dark]_.template-mock-gallery_&]:ring-0">
-      {/* Metric header: the count top-left, the unit pinned top-right. */}
-      <div className="flex items-end gap-1 px-0.5">
-        {/* Primary metric — clean, unstretched Inter (soft off-white, not pure).
-            Held off full ink where the cover is framed in light: at 34px on a
-            near-white card #262626 was the one pure-black mark in the rail. The
-            hero keeps full ink, where the figure carries the whole tile. */}
-        <span
-          className="text-[34px] font-medium leading-none tracking-tight text-[var(--v69-ink)] [[data-theme=light]_.template-mock_&]:text-[#3a3a3a] [[data-theme=dark]_&]:text-[#ededed]"
-          style={{
-            fontFamily: "var(--font-diatype-mono), ui-monospace, monospace",
-          }}
+    // The gallery's phone card is near full-bleed, so the default inset holds
+    // the panel in further there — at the desktop figure it ran the width of
+    // the screen.
+    <div
+      className={`relative flex h-full flex-col justify-center overflow-hidden rounded-[14px] ${inset}`}
+    >
+      {/* The face is its own layer so its dimming lands on it alone — as a
+          filter on the card it took the panel and its text down with it. It is
+          held below full brightness in BOTH skins: white type on a pale frost
+          needs what is under the frost to be darker than the type, and that
+          darkening is what the panel itself must not do. Neither a photograph
+          nor this artwork inverts, so dark only goes a step further down. */}
+      <span
+        className={`absolute inset-0 bg-cover ${photo} ${focus} ${dim}`}
+        aria-hidden
+      />
+      {panel === false || !children ? (
+        children
+      ) : (
+        <div
+          className={`relative flex rounded-[10px] p-3 ${COVER_GLASS} ${panel}`}
         >
-          96
-        </span>
-        {/* What the count is counting, as a tag in the corner — same chip idiom
-            as the gallery's category tags. */}
-        <span
-          className={`ml-auto self-start ${MOCK_UNIT_TAG}`}
-          style={MOCK_MONO}
-        >
-          Tasks
-        </span>
-      </div>
-      {/* Grid fills the space right below the header (no big white gap).
-          Aligned to the card's left edge (no weekday gutter). */}
-      <div className="mt-3 flex flex-1">
-        {/* Week columns. */}
-        <div className="flex min-w-0 flex-1 gap-[2px]">
-          {Array.from({ length: TRACKER_COLS }, (_, c) => (
-            <div key={c} className="flex flex-1 flex-col gap-[2px]">
-              {Array.from({ length: TRACKER_ROWS }, (_, r) => {
-                const lvl = trackerLevel(r, c);
-                // A sheen sweeps the whole grid left to right (slight row
-                // offset makes it diagonal) — cells lighten and settle back
-                // in place rather than popping in.
-                const hit = lvl > 1;
-                return (
-                  <div
-                    key={r}
-                    // Active days take the accent, idle ones stay a faint
-                    // neutral, so the pattern is what carries the colour.
-                    className={`flex-1 rounded-[2px] border border-black/[0.03] [[data-theme=dark]_&]:border-transparent group-hover:[animation:v69Shimmer_0.6s_ease-in-out_both] group-[.is-inview]:[animation:v69Shimmer_0.6s_ease-in-out_both] ${
-                      hit
-                        ? // Flat in both themes: one solid fill, no top lip and
-                          // no cast shadow. The top-lit gradient and the shadow
-                          // under it were extrude cues, and together they made
-                          // the grid a tray of plastic buttons on a flat page.
-                          // Spelled out rather than held in a constant —
-                          // Tailwind only generates classes it sees in source.
-                          "bg-[#7DA4FF]"
-                        : ""
-                    }`}
-                    style={{
-                      backgroundColor: hit ? undefined : cellFill(lvl),
-                      animationDelay: `${c * 45 + r * 12}ms`,
-                    }}
-                  />
-                );
-              })}
-            </div>
-          ))}
+          {children}
         </div>
-      </div>
+      )}
     </div>
+  );
+}
+
+// Client project tracker — the engagement's progress as the figure, with the
+// week's activity as a bar per day under it. A count of tasks closed was the
+// figure before and did not say anything a project tracker is for; what the
+// template promises is milestones and progress, so the headline is the
+// progress and the bars are the week behind it.
+//
+// The bars carry the palette's light blue (#BFE3F3), spelled out at each use
+// because Tailwind only generates the classes it can see in the source.
+const TRACKER_COMPLETE = 72;
+const TRACKER_DAYS: { day: string; done: number }[] = [
+  { day: "S", done: 2 },
+  { day: "M", done: 5 },
+  { day: "T", done: 3 },
+  { day: "W", done: 2 },
+  { day: "T", done: 4 },
+  { day: "F", done: 1 },
+  { day: "S", done: 1 },
+];
+// The busiest day sets the plot's top, so the week always fills its height.
+const TRACKER_PEAK = Math.max(...TRACKER_DAYS.map((d) => d.done));
+const TRACKER_PLOT = "h-[58px]";
+
+function CardTracker() {
+  return (
+    <GlassCover
+      photo="bg-[url(/images/mocks/tracker-tablet.webp)]"
+      focus="bg-[position:66%_20%]"
+      panel="flex-col"
+    >
+      {/* The figure with its unit beside it. The unit is a pill cut from the
+          frost, centred against the figure rather than sitting on its baseline
+          — on a round tag the baseline is the text's, not the tag's, and it
+          hung low. */}
+      <div className="flex items-center gap-2">
+        <span className="text-[20px] font-normal leading-none tracking-tight text-white">
+          {TRACKER_COMPLETE}%
+        </span>
+        <span className="shrink-0 whitespace-nowrap rounded-full bg-[rgba(255,255,255,0.22)] px-2.5 py-1 text-[10px] font-normal leading-none text-white">
+          complete
+        </span>
+      </div>
+      {/* No axis: two numbers down the side were the only thing on the panel
+          that was not either the figure or the week, and the reference does
+          without them. */}
+      <div className="mt-3.5 flex items-end gap-1">
+        {TRACKER_DAYS.map(({ day, done }, i) => (
+          <div
+            key={`${day}-${i}`}
+            className="flex min-w-0 flex-1 flex-col items-center gap-2"
+          >
+            <div className={`flex ${TRACKER_PLOT} items-end`}>
+              <span
+                className="w-[9px] rounded-full bg-[#BFE3F3]"
+                style={{ height: `${(done / TRACKER_PEAK) * 100}%` }}
+              />
+            </div>
+            <span className={COVER_ON_GLASS_QUIET}>{day}</span>
+          </div>
+        ))}
+      </div>
+    </GlassCover>
   );
 }
 
@@ -2043,42 +2043,44 @@ function CardResourceLibrary() {
   // the longer name truncated away its own extension.
   const file = { name: "Brand_guide.pdf", size: "754 KB" };
   return (
-    // v69-cover-column is the phone treatment: the row is held to the width it
-    // was drawn at and centred, rather than stretching across the wider frame.
-    // The hatched ground separates this from the internal library's dotted one —
-    // both covers are a single record, so the ground is what tells them apart.
-    <div className="v69-cover-column v69-cover-column--tight v69-hatch-ground flex h-full items-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
-      {/* Opaque, not the glass pane the other record covers use: over a hatched
-          ground the translucent fill let the rules run straight through the card,
-          so it read as printed on the paper rather than lying on it.
-          Its edge is the hairline alone — the drop under it read as the row
-          hovering off the page, which is the one thing a filed record isn't. The
-          other record rows in the set are drawn the same way. */}
-      <div className="flex w-full items-center gap-3 rounded-xl border bg-[#FFFFFF] p-3 border-black/[0.08] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.09)] [[data-theme=dark]_&]:bg-[#303030]">
-        {/* The file's thumbnail slot. A glyph rather than a preview: at cover size
-            a real thumbnail is a smudge, and the record is the point. */}
-        <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[var(--v69-well)] text-[var(--v69-ink)]/30 [[data-theme=light]_&]:bg-[var(--v69-inner)] [[data-theme=light]_.template-mock_&]:bg-[#e6e6e6] [[data-theme=dark]_&]:bg-[rgba(255,255,255,0.1)]">
-          <svg viewBox="0 0 24 24" className="size-[18px]" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden>
-            <rect x="3" y="3" width="18" height="18" rx="3" />
-            <circle cx="8.5" cy="8.5" r="1.6" />
-            <path d="M21 14l-4.5-4.5L6 20" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
+    <GlassCover
+      photo="bg-[url(/images/mocks/support-desk.webp)]"
+      focus="bg-[position:52%_58%]"
+      panel="w-fit max-w-full flex-row items-center gap-3 self-center px-3.5"
+    >
+      {/* The file's thumbnail slot. A glyph rather than a preview: at cover size
+          a real thumbnail is a smudge, and the record is the point. */}
+      <span className={COVER_SLOT}>
+        <svg
+          viewBox="0 0 24 24"
+          className="size-[18px] opacity-55"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.6"
+          aria-hidden
+        >
+          <rect x="3" y="3" width="18" height="18" rx="3" />
+          <circle cx="8.5" cy="8.5" r="1.6" />
+          <path
+            d="M21 14l-4.5-4.5L6 20"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </span>
+      <span className="min-w-0 flex-1">
+        {/* pb/-mb pair, the same one the other mocks carry: `truncate` brings
+            overflow:hidden with it, and at leading-none the line box is exactly
+            the font size, so the descenders — here the g and the underscore in
+            Brand_guide — were being cut off the bottom. */}
+        <span className={`block truncate pb-[3px] -mb-[3px] ${COVER_ON_GLASS}`}>
+          {file.name}
         </span>
-        <span className="min-w-0 flex-1">
-          {/* pb/-mb pair, the same one the other mocks carry: `truncate` brings
-              overflow:hidden with it, and at leading-none the line box is exactly
-              the font size, so the descenders — here the g and the underscore in
-              Brand_guide — were being cut off the bottom. The negative margin
-              takes the padding back out of the layout. */}
-          <span className="block truncate pb-[3px] -mb-[3px] text-[13px] leading-none text-[var(--v69-ink)]">
-            {file.name}
-          </span>
-          <span className="mt-1.5 block text-[10px] leading-none text-muted-foreground">
-            {file.size}
-          </span>
+        <span className={`mt-1.5 block ${COVER_ON_GLASS_QUIET}`}>
+          {file.size}
         </span>
-      </div>
-    </div>
+      </span>
+    </GlassCover>
   );
 }
 
