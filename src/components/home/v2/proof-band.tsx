@@ -27,7 +27,6 @@ const REEL = [
   "collective-cpa",
   "advertai-marketing",
   "metta-health",
-  "heritage-law-partners",
   "ditto-by-dbc",
   "orca-accounting",
   // ValueNode, not Durrick Designs. Durrick's mark is square (aspect 1/1), and
@@ -51,7 +50,12 @@ export function ProofBand() {
           was telling the reader what eight wordmarks already say, and it put a
           line of mono caps between the hero and the logos that held them down
           the page. The marks carry it on their own. */}
-      <ul className="grid grid-cols-2 items-center gap-x-8 gap-y-8 sm:grid-cols-4 lg:grid-cols-8">
+      <ul // Seven across, not eight. Heritage Law's mark is a fine-lined tree
+      // over two lines of letter-spaced small caps — detail that survives on
+      // a case-study page and turns to grey mush at 120x28, worst of all on
+      // the dark ground. Rather than fill the slot with one of the square
+      // marks (the problem Durrick had), the row is a column narrower.
+      className="grid grid-cols-2 items-center gap-x-8 gap-y-8 sm:grid-cols-4 lg:grid-cols-7">
         {REEL.map((slug) => (
           <li key={slug} className="flex items-center justify-center">
             <Link
