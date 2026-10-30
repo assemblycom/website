@@ -67,6 +67,8 @@ function NavDots({ shape }: { shape: "grid" | "x" }) {
 export function StudioNav({
   fullWidth = false,
   darkTop = false,
+  lightAtRest = false,
+  glassUntil,
   softGlass = false,
   maxWidthClass,
   restPaddingClass,
@@ -78,6 +80,13 @@ export function StudioNav({
   // When the page leads with a dark hero, the bar sits over it at rest — so its
   // contents (logo, links, CTA) need to be light even before the pill appears.
   darkTop?: boolean;
+  // For a hero that is a photograph: clear with light contents while the bar
+  // sits on it at rest.
+  lightAtRest?: boolean;
+  // For a pinned hero that animates under the bar: once scrolled, the bar is
+  // frosted glass until this scroll position (px), so it reads over the
+  // picture and the page alike mid-animation, then settles to the solid strip.
+  glassUntil?: number;
   // For soft, light heroes (V64): the scrolled pill is a light frosted capsule
   // rather than the dark slab, so its contents stay dark throughout.
   softGlass?: boolean;
@@ -103,6 +112,8 @@ export function StudioNav({
   // that opens, and nothing here has to close to make room.
   const [openGroups, setOpenGroups] = useState<string[]>([]);
   const [scrolled, setScrolled] = useState(false);
+  const [panelOpen, setPanelOpen] = useState(false);
+  const [pastGlass, setPastGlass] = useState(false);
   // Signed-in visitors get a single "Open Assembly" action instead of the
   // Log in / Get started pair — mirrors www.assembly.com's signed-in nav.
   // The menu is portaled to <body>, so it needs the client to have mounted.
@@ -252,7 +263,11 @@ export function StudioNav({
   // The scrolled pill now matches the surface theme: a light capsule in light
   // contexts, a dark one over a dark hero/theme (darkTop). So contents are light
   // only in a dark context — dark otherwise, whether at rest or scrolled.
-  const lightContent = softGlass ? false : darkTop;
+  // The dropdown sheet and the mobile menu are both page-coloured, so the
+  // contents go back to the theme's ink while either is open.
+  const overImage = lightAtRest && !scrolled && !panelOpen && !mobileMenuOpen;
+  const glass = glassUntil !== undefined && scrolled && !pastGlass;
+  const lightContent = softGlass ? false : darkTop || overImage;
   // Resolved site theme — the nav CTA turns lime in light mode only.
   const { theme } = useTheme();
 
@@ -284,9 +299,13 @@ export function StudioNav({
   // which drew a band across the top of every page. And no bottom rule — with the
   // bar and the page the same colour there is nothing to divide, and the rule was
   // the only thing making the bar a separate object.
-  const navStripStyle: CSSProperties = {
-    background: "var(--background)",
-  };
+  const navStripStyle: CSSProperties = glass
+    ? {
+        background: "color-mix(in srgb, var(--background) 72%, transparent)",
+        backdropFilter: "blur(20px) saturate(1.8)",
+        WebkitBackdropFilter: "blur(20px) saturate(1.8)",
+      }
+    : { background: "var(--background)" };
 
   // One shared easing/duration for the rest→pill transition so every animated
   // property (chrome, geometry, logo tint) settles together on the same soft
@@ -414,7 +433,7 @@ export function StudioNav({
   // Matches linkBase above, for the same reason.
   const disabledCls = `cursor-default whitespace-nowrap rounded-lg px-2 py-1.5 text-sm lg:px-3 ${lightContent ? "text-white/50" : darkDisabled}`;
   const ctaCls = `whitespace-nowrap rounded-lg px-4 py-1.5 text-sm transition-[background-color,color,opacity] hover:opacity-90 ${
-    theme === "light"
+    theme === "light" && !overImage
       ? "bg-neutral-900 text-white"
       : lightContent
         ? "bg-white text-neutral-900"
@@ -534,16 +553,18 @@ export function StudioNav({
     // jitter/vibration. Requiring the scroll to move past a margin before
     // toggling in each direction stops the oscillation.
     const MARGIN = 24;
-    const onScroll = () =>
+    const onScroll = () => {
       setScrolled((prev) =>
         prev
           ? window.scrollY > SCROLL_THRESHOLD - MARGIN
           : window.scrollY > SCROLL_THRESHOLD + MARGIN,
       );
+      if (glassUntil !== undefined) setPastGlass(window.scrollY > glassUntil);
+    };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  }, [glassUntil]);
 
   return (
     <>
@@ -576,7 +597,7 @@ export function StudioNav({
             (data-toc-bar is set on <html> by ui/toc-mobile while that bar shows.) */}
         <div
           aria-hidden
-          className={`pointer-events-none absolute inset-x-0 top-0 h-full transition-opacity ${ease} [[data-toc-bar]_&]:opacity-0 [[data-toc-bar]_&]:transition-none ${mobileMenuOpen ? "invisible" : ""}`}
+          className={`pointer-events-none absolute inset-x-0 top-0 h-full transition-opacity ${ease} [[data-toc-bar]_&]:opacity-0 [[data-toc-bar]_&]:transition-none ${overImage ? "opacity-0" : ""} ${mobileMenuOpen ? "invisible" : ""}`}
           style={navStripStyle}
         />
         <div
@@ -619,7 +640,7 @@ export function StudioNav({
         {/* The provider wraps the bar AND the sheet below it: the panel is a
             sibling of the triggers now, not a child, so they have to share one
             open-state from above both. */}
-        <NavDropdownGroup>
+        <NavDropdownGroup onOpenChange={setPanelOpen}>
           <div
             aria-hidden
             className={`pointer-events-none absolute inset-x-0 top-0 h-full transition-opacity ${ease} ${scrolled ? "opacity-100" : "opacity-0"}`}
