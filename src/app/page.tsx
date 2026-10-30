@@ -1,33 +1,56 @@
 import type { Metadata } from "next";
 import { HomeContent } from "@/components/home/home-content";
+import { HomeContentV2 } from "@/components/home/home-content-v2";
+import { HeroPhoto } from "@/components/home/v3/hero-photo";
+import { HeroCanvas } from "@/components/home/v4/hero-canvas";
+import { HeroBento } from "@/components/home/v5/hero-bento";
+import { PlatformCards } from "@/components/home/v4/platform-cards";
+import { VersionSwitcher } from "@/components/proto/version-switcher";
 
-// Re-resolved against Contentful every few minutes rather than only at deploy.
-// Prerendered once, an editor hiding a template in the CMS had no effect until
-// somebody happened to ship — which is not what "the CMS is the catalogue" can
-// mean in practice. Five minutes is short enough that a change lands while the
-// person who made it is still looking, and long enough that crawlers aren't
-// re-running the query on every hit.
-// Only the canonical, deliberately: the layout already sets this page's title,
-// description and card, and routing home through pageMetadata() would push its
-// title through the "%s | Assembly" template and brand it twice.
-//
-// Written out rather than left to the layout's relative "./". Relative resolves
-// against the route, and for the root route that came out as /index — a URL that
-// does not exist, offered to crawlers as the canonical one.
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
+  // Nothing here should ever be indexed: this is an exploration of the
+  // homepage, served from its own deployment, and two pages making the same
+  // claims would compete with the real one.
+  robots: { index: false, follow: false },
 };
 
-export const revalidate = 300;
-
 /**
- * The homepage as served to anyone the hero test leaves out: logged-in
- * visitors, and everyone while the kill switch is on. Enrolled visitors are
- * rewritten to /hero-variant/<arm> by middleware and never reach this route,
- * though the URL in their address bar still reads "/".
+ * The homepage, in the versions this prototype is comparing.
  *
- * No `variant`, so the hero renders exactly as it did before the test.
+ * `?v=1` is the page as it ships today (Round 3), kept untouched as the
+ * baseline. `?v=2` is the Round 4 exploration, and `?v=3` is V2 with a
+ * full-bleed photo hero. `?v=4` pairs a flim.ai-style canvas hero with
+ * the platform tour as cards, and `?v=5` is V4 with an x.ai-style
+ * bento hero and a running logo strip. V2 is the default, since it is
+ * what the prototype is for; V1 is a click away for comparison.
+ *
+ * The hero A/B machinery is off here (HERO_TEST_ENABLED=0), so `/` renders
+ * this page directly instead of rewriting to an arm.
  */
-export default function HomePage() {
-  return <HomeContent />;
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ v?: string }>;
+}) {
+  const { v } = await searchParams;
+  const active = v === "1" || v === "3" || v === "4" || v === "5" ? v : "2";
+  return (
+    <>
+      {active === "1" ? (
+        <HomeContent />
+      ) : active === "3" ? (
+        <HomeContentV2 hero={<HeroPhoto />} />
+      ) : active === "4" || active === "5" ? (
+        <HomeContentV2
+          hero={active === "4" ? <HeroCanvas /> : <HeroBento />}
+          platform={<PlatformCards />}
+          logoMarquee={active === "5"}
+        />
+      ) : (
+        <HomeContentV2 />
+      )}
+      <VersionSwitcher active={active} />
+    </>
+  );
 }

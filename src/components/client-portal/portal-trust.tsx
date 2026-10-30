@@ -49,6 +49,8 @@ export function PortalTrust({
   link = { label: "Visit the Trust Center", href: TRUST_CENTER_URL },
   omitSeals,
   visual,
+  bandClassName,
+  bandDividers = true,
 }: {
   heading?: string;
   body?: string;
@@ -56,6 +58,20 @@ export function PortalTrust({
   link?: { label: string; href: string };
   /** Seal titles to leave out of the compliance band. */
   omitSeals?: string[];
+  /**
+   * Extra classes for the certification band alone.
+   *
+   * For a page drawing a column grid behind its content. The band splits
+   * itself into four cells with its own hairlines, which land on QUARTERS of
+   * the measure where the grid's rails land on sixths — so the two sets of
+   * verticals cross at a rhythm neither of them has, which reads as a
+   * rendering fault. A ground here stops the rails at the band and leaves its
+   * own dividers as the only verticals in it. The rest of the section is
+   * ordinary type and the rails are welcome to run behind it.
+   */
+  bandClassName?: string;
+  /** Draw the hairlines between the band's seals. See SecurityCompliance. */
+  bandDividers?: boolean;
   /**
    * Fills the right column when `claims` is empty — for a brief that makes the
    * security case in its paragraph rather than in rows a reader opens.
@@ -127,8 +143,8 @@ export function PortalTrust({
             rails, and opened by its own rule. It closes on the section divider
             instead of drawing a second one, so the section carries no bottom
             padding: the band runs to the end of it. */}
-        <div className={`-mx-6 mt-14 border-t md:-mx-10 ${GRID_LINE}`}>
-          <SecurityCompliance omit={omitSeals} />
+        <div className={`-mx-6 mt-14 border-t md:-mx-10 ${GRID_LINE} ${bandClassName ?? ""}`}>
+          <SecurityCompliance omit={omitSeals} dividers={bandDividers} />
         </div>
       </Reveal>
     </section>

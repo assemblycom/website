@@ -58,11 +58,21 @@ function useMenu(component: string): MenuContext {
  * Wrap the header's whole content — the triggers AND the panel — since the two
  * are siblings rather than parent and child.
  */
-export function NavDropdownGroup({ children }: { children: React.ReactNode }) {
+export function NavDropdownGroup({
+  children,
+  onOpenChange,
+}: {
+  children: React.ReactNode;
+  /** Told when any panel opens or the last one closes, for a bar that has to
+   *  restyle itself over the sheet (light contents over a photo, say). */
+  onOpenChange?: (open: boolean) => void;
+}) {
   const [state, setState] = useState<MenuState>({
     label: null,
     handoff: false,
   });
+  const anyOpen = Boolean(state.label);
+  useEffect(() => onOpenChange?.(anyOpen), [anyOpen, onOpenChange]);
   const pathname = usePathname();
   // One timer for the row, not one per trigger: a per-trigger timer set on the
   // way out of Product would still be pending when Resources opened, and firing
@@ -376,7 +386,10 @@ export function NavMegaPanel({
               }`}
             >
               {columnsOf(group).map((column) => (
-                <div key={column.label ?? group.label} className="min-w-0 basis-56">
+                <div
+                  key={column.label ?? group.label}
+                  className="min-w-0 basis-56"
+                >
                   <p className={COLUMN_LABEL}>{column.label ?? group.label}</p>
                   <ul className="mt-3 -ml-1">
                     {column.items.map((item) => (

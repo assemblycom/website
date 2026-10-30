@@ -94,10 +94,16 @@ export function PortalFrictionless({
   heading = "Finally, a frictionless client experience",
   body = "Don’t force clients to remember another password or fumble with links.",
   cards = CARDS,
+  gridClassName = "lg:grid-cols-2",
+  aspectClassName = "lg:aspect-[10/9]",
 }: {
   heading?: string;
   body?: string;
   cards?: typeof CARDS;
+  /** Column count for the card row; a set of four wants more than a pair. */
+  gridClassName?: string;
+  /** The picture's proportions once the cards sit side by side. */
+  aspectClassName?: string;
 } = {}) {
   return (
     <section className="mx-auto max-w-[1200px] px-6 py-16 md:px-10 md:py-24">
@@ -124,14 +130,14 @@ export function PortalFrictionless({
             app off the card's edge, where these two hold a composed scene
             whole. A scene that is not cropped wants the card to close under
             it, which puts the copy last. */}
-        <div className="mt-12 grid gap-10 md:mt-14 lg:grid-cols-2 lg:gap-5">
+        <div className={`mt-12 grid gap-10 md:mt-14 lg:gap-5 ${gridClassName}`}>
           {cards.map((card) => (
             <div key={card.title} className="flex min-w-0 flex-col">
               {/* COPY OUTSIDE THE BOX, the shape the comparison pages' cards
                   use, so the photo or ramp can fill the picture to its edges
                   instead of sitting inset on a grey card. */}
               <div
-                className={`overflow-hidden rounded-3xl lg:aspect-[10/9] ${
+                className={`overflow-hidden rounded-3xl ${aspectClassName} ${
                   card.fitOnPhone ? "py-14 lg:py-0" : "aspect-[4/3]"
                 } ${card.background ? "" : CARD_GROUND}`}
                 style={

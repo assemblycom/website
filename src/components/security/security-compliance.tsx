@@ -119,9 +119,16 @@ function Seal({ label }: { label: string }) {
 
 export function SecurityCompliance({
   omit,
+  dividers = true,
 }: {
   /** Seal titles to leave out — a page may make a claim one of these outruns. */
   omit?: string[];
+  /**
+   * The hairlines between cells. Off on a page whose column grid already
+   * draws verticals behind the band: four cells fall on quarters where the
+   * grid's rails fall on sixths, so the two sets of lines never meet.
+   */
+  dividers?: boolean;
 } = {}) {
   const standards = omit?.length
     ? STANDARDS.filter((s) => !omit.includes(s.title))
@@ -147,7 +154,7 @@ export function SecurityCompliance({
         // there. A bottom border below sm closes it, bleeding to the screen
         // edges like the -mx-6 it sits in and like every other phone-only rule
         // on the site.
-        className={`-mx-6 grid grid-cols-2 gap-px bg-border max-sm:border-b max-sm:border-border sm:mx-0 ${columns} [[data-theme=dark]_&]:bg-[#383838] [[data-theme=dark]_&]:max-sm:border-[#383838]`}
+        className={`-mx-6 grid grid-cols-2 gap-px max-sm:border-b max-sm:border-border sm:mx-0 ${columns} [[data-theme=dark]_&]:max-sm:border-[#383838] ${dividers ? "bg-border [[data-theme=dark]_&]:bg-[#383838]" : "bg-background"}`}
       >
         {standards.map((s) => (
           <div
