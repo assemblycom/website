@@ -549,11 +549,8 @@ const GAUGE_SEG_GAP = 5;
 // true radius on all four corners at whatever size is asked for.
 const GAUGE_CORNER = 2;
 const GAUGE_ARC_LEN = Math.PI * GAUGE_R;
-const GAUGE_TRACK_BAND = GAUGE_BAND + 4;
-// The bands stop short of the track at both ends, so the track reads as a layer
-// the scale sits ON rather than as an outline drawn round it — at the shared
-// extent the two ran into the baseline together and the bottom was one flat cut
-// across three colours.
+// The bands stop a little short of the baseline at both ends, so the scale's
+// ends sit just above the 0 and 100 under them.
 const GAUGE_END_INSET = 3;
 const GAUGE_BAND_SPAN = GAUGE_ARC_LEN - 2 * GAUGE_END_INSET;
 const GAUGE_SEG_VISIBLE =
@@ -564,10 +561,10 @@ const GAUGE_SEG_STEP = GAUGE_SEG_VISIBLE + GAUGE_SEG_GAP;
 // and a ramp underneath it made the colour do two jobs at once — reading partly
 // as progress and partly as a scale of its own.
 const GAUGE_FILL = "#7DA4FF";
-// What a band looks like where the score has not reached it, and the layer the
-// whole set sits on.
-const GAUGE_UNFILLED = "color-mix(in srgb, var(--v69-ink) 10%, var(--v69-card))";
-const GAUGE_TRACK = "color-mix(in srgb, var(--v69-ink) 5%, var(--v69-card))";
+// What a band looks like where the score has not reached it: a slot of plain
+// white on the frost. Opaque, since a see-through band drew its fill and its
+// rounding stroke as two visible layers.
+const GAUGE_UNFILLED = "#ffffff";
 // The progress clip reaches past the band on both sides; it only ever has to
 // cover it.
 const GAUGE_CLIP_R = 70;
@@ -613,8 +610,6 @@ function gaugeBandPath(index: number) {
   );
 }
 
-const GAUGE_TRACK_PATH = gaugeSectorPath(Math.PI, 0, GAUGE_TRACK_BAND);
-
 /** The wedge the score has swept, used to clip the coloured bands. */
 function gaugeProgressPath(score: number) {
   const from = gaugePolar(GAUGE_CLIP_R, gaugeTheta(0));
@@ -629,9 +624,17 @@ const GAUGE_BANDS = Array.from({ length: GAUGE_SEG_COUNT }, (_, i) =>
   gaugeBandPath(i),
 );
 
+// The gauge on a glass panel over the blue shapes artwork. The artwork is pale,
+// so unlike the dark covers the panel keeps dark type in both skins. No track
+// under the bands: on glass the frost is already the layer they sit on.
 function CardEngagement() {
   return (
-    <div className="flex h-full items-center justify-center bg-[var(--v69-card)] p-5">
+    <GlassCover
+      photo="bg-[url(/images/mocks/engagement-shapes.webp)]"
+      focus="bg-[position:50%_85%]"
+      dim="[[data-theme=dark]_&]:brightness-[0.8]"
+      panel="w-full flex-col items-center [--muted-foreground:#3F444C] [--v69-ink:#262626]"
+    >
       {/* Sized from the frame rather than pinned in px: this cover is square in
           the gallery, 16/10 on a phone and 212 square in the home rail, and a
           fixed gauge either overflows the short axis or leaves the square half
@@ -643,16 +646,6 @@ function CardEngagement() {
               <path d={gaugeProgressPath(ENGAGEMENT_SCORE)} />
             </clipPath>
           </defs>
-          {/* A layer under the bands, so the gaps between them are gaps in
-              something rather than in nothing. Same corner as the bands — it is
-              drawn by the same sector helper. */}
-          <path
-            d={GAUGE_TRACK_PATH}
-            fill={GAUGE_TRACK}
-            stroke={GAUGE_TRACK}
-            strokeWidth={GAUGE_CORNER * 2}
-            strokeLinejoin="round"
-          />
           {/* Every band unfilled first, then the same shapes in colour clipped to
               how far the score has got — so the band the score lands in is part
               shaded rather than all or nothing. */}
@@ -711,7 +704,7 @@ function CardEngagement() {
           </span>
         </div>
       </div>
-    </div>
+    </GlassCover>
   );
 }
 
@@ -965,74 +958,53 @@ function V69RollingTotal({ value }: { value: string }) {
 // the card face stays blank until a better composition lands.
 // Static (non-animated) filling mocks for the remaining featured cards — rows
 // centered with even gaps so the card reads composed, not top-clustered.
-// Proposal builder — banking-widget composition (à la the iOS wallet card):
-// a white panel carrying the proposal total up top, page dots, then a row of
-// circular actions beneath. The chip/well tokens keep it dark-skin safe.
+// Proposal builder — the proposal total and the sections that build it, on a
+// glass panel over the pink shapes artwork. Dark artwork, so it takes none of
+// the dimming the photographic covers need in either skin.
 function CardProposal() {
   const rows = ["Pricing", "Terms & e-sign"];
   return (
-    // One light card. Its only motion is the total revealing itself once — see
-    // v69TotalIn. It used to count up from zero, which needed a play counter, a
-    // rAF loop and an in-view observer; the reveal is a single declaration and
-    // restarts on its own each time the card is hovered.
-    <div className="flex h-full flex-col bg-[var(--v69-card)] p-3">
-      {/* A plain panel, carried by its fill alone. It used to be a pane of smoked
-          glass seated in the card — a specular band across the top, a vertical
-          fall from lit to shaded, a lit hairline, an inward shadow at the seam and
-          a two-step drop in dark; a carved recess with a catch-light along the
-          bottom and sides in light. The frame took the eye before the total did,
-          which is the one thing the cover has to carry, and an outline on it does
-          the same at lower volume. */}
-      {/* On a phone the panel takes the card's own 14px corner. Radii inside a
-          cover are drawn in the design box and scaled by MockFit, while the card
-          frame's radius is a real 14px that doesn't scale — so at the phone
-          gallery's near-1:1 fit this panel's 16px came out slightly rounder than
-          the card holding it, and two corners a pixel and a half apart read as
-          a mismatch rather than as a pair. */}
-      <div className="flex flex-1 flex-col rounded-2xl bg-[var(--v69-inner)] p-4 max-sm:rounded-[14px] [[data-theme=dark]_&]:bg-[#2E2E2E]">
-        <div className="text-[10px] text-muted-foreground">Proposal</div>
-        {/* A hair of vertical padding so descender room isn't shaved off the
-            digit columns, which clip themselves as they roll. */}
-        <div className="mt-1.5 -my-0.5 py-0.5">
-          <div className="text-[26px] font-normal leading-none tracking-tight text-[var(--v69-ink)]">
-            <V69RollingTotal value="$18,500" />
-          </div>
-        </div>
-        {/* Build sections with chevrons, pinned low so they clear the total. */}
-        <div className="mt-auto flex flex-col gap-2">
-          {rows.map((title) => (
-            <div
-              key={title}
-              // Flat fills in both skins, no ramp, no lip, no cast shadow: the
-              // rows are a plain step off the panel. Light is white, the same
-              // surface the onboarding wizard's tile uses, so a control reads the
-              // same wherever it sits on the rail; dark steps a notch brighter
-              // than the panel instead, since a darker step there read as a hole
-              // punched through the glass.
-              // No ring in either skin: the fill already steps off the panel, so
-              // a hairline only drew a box around each row.
-              className="flex items-center justify-between rounded-lg bg-white px-3 py-3.5 ring-0 [[data-theme=dark]_&]:bg-[#3A3A3A]"
-            >
-              <div className="text-[11px] font-normal leading-tight text-[var(--v69-ink)]">
-                {title}
-              </div>
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden
-                className="size-3.5 shrink-0 text-muted-foreground"
-              >
-                <path d="M9 6l6 6-6 6" />
-              </svg>
-            </div>
-          ))}
+    // Its only motion is the total revealing itself once — see v69TotalIn —
+    // which restarts on its own each time the card is hovered.
+    <GlassCover
+      photo="bg-[url(/images/mocks/proposal-shapes.webp)]"
+      focus="bg-[position:50%_25%]"
+      dim=""
+      panel="w-full flex-col"
+    >
+      <div className={COVER_ON_GLASS_QUIET}>Proposal</div>
+      {/* A hair of vertical padding so descender room isn't shaved off the
+          digit columns, which clip themselves as they roll. */}
+      <div className="mt-2 -my-0.5 py-0.5">
+        <div className="text-[26px] font-normal leading-none tracking-tight text-white">
+          <V69RollingTotal value="$18,500" />
         </div>
       </div>
-    </div>
+      <div className="mt-4 flex flex-col">
+        {rows.map((title) => (
+          <div
+            key={title}
+            // A rule above each row rather than a filled tile: on glass a boxed
+            // row would be a second pane inside the first.
+            className="flex items-center justify-between border-t border-[rgba(255,255,255,0.18)] py-2.5 last:pb-0"
+          >
+            <div className={`truncate ${COVER_ON_GLASS}`}>{title}</div>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden
+              className="size-3.5 shrink-0 text-[rgba(255,255,255,0.72)]"
+            >
+              <path d="M9 6l6 6-6 6" />
+            </svg>
+          </div>
+        ))}
+      </div>
+    </GlassCover>
   );
 }
 
