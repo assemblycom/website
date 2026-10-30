@@ -20,6 +20,7 @@ export interface ProtoVersion {
 export const VERSIONS: ProtoVersion[] = [
   { key: "1", label: "V1", note: "Live homepage" },
   { key: "2", label: "V2", note: "Round 4" },
+  { key: "3", label: "V3", note: "Photo hero" },
 ];
 
 export function VersionSwitcher({ active }: { active: string }) {

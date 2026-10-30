@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { HowItWorks } from "@/components/home/how-it-works";
 import { HomeFAQ } from "@/components/home/faq";
 import { CTA } from "@/components/home/cta";
@@ -50,10 +51,16 @@ import { UnifiedPlatform } from "@/components/home/v2/platform-visuals";
  * hero's own trust claim, and splitting it from the hero to make room for the
  * industry links broke both. Worth flipping in a variant if it tests badly.
  */
-export function HomeContentV2() {
+export function HomeContentV2({
+  // V3 is this page with a different hero, so it passes its own here rather
+  // than forking everything below it.
+  hero = <HeroSplit />,
+}: {
+  hero?: ReactNode;
+} = {}) {
   return (
     <>
-      <HeroSplit />
+      {hero}
 
       {/* THE LOGO STRIP, UNRULED. It used to sit between two full-bleed
           rules, the slot V1 gives its numbers band — but those rules were

@@ -13,13 +13,13 @@ import { useEffect, useRef, useState } from "react";
 
 const STAT_FONT = "[font-family:var(--font-pp-mori),system-ui,sans-serif]";
 
-type Stat = {
+export type Stat = {
   label: string;
   to: number;
   format: (n: number) => string;
 };
 
-const STATS: Stat[] = [
+export const STATS: Stat[] = [
   {
     label: "Businesses powered",
     to: 1_250,
