@@ -55,8 +55,21 @@ export function HomeContentV2({
   // V3 is this page with a different hero, so it passes its own here rather
   // than forking everything below it.
   hero = <HeroSplit />,
+  // V4 swaps the tabbed platform tour for a row of cards the same way.
+  platform = (
+    <Reveal variant="fade">
+      {/* Each step gets its own screen rather than a region lit inside
+          one shared mock — the builder and security steps had nothing to
+          light at all. See v2/platform-visuals.tsx. */}
+      <UnifiedPlatform />
+    </Reveal>
+  ),
+  logoMarquee = false,
 }: {
   hero?: ReactNode;
+  platform?: ReactNode;
+  // V5 runs the logo strip as a scrolling marquee.
+  logoMarquee?: boolean;
 } = {}) {
   return (
     <>
@@ -71,7 +84,7 @@ export function HomeContentV2({
           trust claim, and the grid's own first rule is a few hundred pixels
           below. */}
       <Reveal variant="fade">
-        <ProofBand />
+        <ProofBand marquee={logoMarquee} />
       </Reveal>
 
       {/* THE CONTENT REGION, on /ai-app-builder's grid rather than the two
@@ -106,12 +119,7 @@ export function HomeContentV2({
 
         <GridDivider lineClass={BUILDER_GRID_LINE} />
 
-        <Reveal variant="fade">
-          {/* Each step gets its own screen rather than a region lit inside
-              one shared mock — the builder and security steps had nothing to
-              light at all. See v2/platform-visuals.tsx. */}
-          <UnifiedPlatform />
-        </Reveal>
+        {platform}
 
         <GridDivider lineClass={BUILDER_GRID_LINE} />
 
@@ -193,6 +201,10 @@ export function HomeContentV2({
           // tone while the sides take the band's own, matching the hairlines
           // between the cells they close.
           bandClassName={`relative border-x border-x-border bg-background ${BUILDER_RAIL_HALO_WIDE} [[data-theme=dark]_&]:border-x-[#383838]`}
+          // No hairlines between the seals: they land on quarters where the
+          // grid's rails land on sixths, and the mismatch read as broken
+          // lines. The rails stop at the band's edges instead.
+          bandDividers={false}
         />
 
         <GridDivider lineClass={BUILDER_GRID_LINE} />

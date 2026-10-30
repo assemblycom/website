@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { HomeContent } from "@/components/home/home-content";
 import { HomeContentV2 } from "@/components/home/home-content-v2";
 import { HeroPhoto } from "@/components/home/v3/hero-photo";
+import { HeroCanvas } from "@/components/home/v4/hero-canvas";
+import { HeroBento } from "@/components/home/v5/hero-bento";
+import { PlatformCards } from "@/components/home/v4/platform-cards";
 import { VersionSwitcher } from "@/components/proto/version-switcher";
 
 export const metadata: Metadata = {
@@ -17,7 +20,9 @@ export const metadata: Metadata = {
  *
  * `?v=1` is the page as it ships today (Round 3), kept untouched as the
  * baseline. `?v=2` is the Round 4 exploration, and `?v=3` is V2 with a
- * full-bleed photo hero. V2 is the default, since it is
+ * full-bleed photo hero. `?v=4` pairs a flim.ai-style canvas hero with
+ * the platform tour as cards, and `?v=5` is V4 with an x.ai-style
+ * bento hero and a running logo strip. V2 is the default, since it is
  * what the prototype is for; V1 is a click away for comparison.
  *
  * The hero A/B machinery is off here (HERO_TEST_ENABLED=0), so `/` renders
@@ -29,13 +34,19 @@ export default async function HomePage({
   searchParams: Promise<{ v?: string }>;
 }) {
   const { v } = await searchParams;
-  const active = v === "1" || v === "3" ? v : "2";
+  const active = v === "1" || v === "3" || v === "4" || v === "5" ? v : "2";
   return (
     <>
       {active === "1" ? (
         <HomeContent />
       ) : active === "3" ? (
         <HomeContentV2 hero={<HeroPhoto />} />
+      ) : active === "4" || active === "5" ? (
+        <HomeContentV2
+          hero={active === "4" ? <HeroCanvas /> : <HeroBento />}
+          platform={<PlatformCards />}
+          logoMarquee={active === "5"}
+        />
       ) : (
         <HomeContentV2 />
       )}

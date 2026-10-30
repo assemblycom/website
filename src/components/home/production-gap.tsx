@@ -14,8 +14,8 @@ import { IconBrandMark } from "@/components/home/mock-icons";
 // The section heading and body are placeholders: the PRD gives copy for the
 // four tabs and the "Unified platform" eyebrow, not for the header.
 const EYEBROW = "Unified platform";
-const HEADING = "Everything your firm runs on, in one place";
-const BODY =
+export const HEADING = "Everything your firm runs on, in one place";
+export const BODY =
   "A CRM for your team, a branded client experience, 30+ ready-made apps, and an AI app builder for everything else.";
 
 // Active-region highlight — a quiet surface fill (the sidebar/URL step up a
@@ -26,7 +26,7 @@ const HL_PILL_BG = "var(--mk-fill)";
 // Order is the tour's order, building from the foundation up. Only the first
 // two steps have a region in the mock; the builder and security steps read as
 // copy in the step list and light nothing until they get visuals of their own.
-const REGIONS = [
+export const REGIONS = [
   {
     id: "url",
     tag: "Foundation",

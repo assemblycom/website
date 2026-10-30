@@ -38,7 +38,44 @@ const REEL = [
   "valuenode-accounting",
 ];
 
-export function ProofBand() {
+function ReelLogo({ slug }: { slug: string }) {
+  return (
+    <Link
+      href={`/customers/${slug}`}
+      className="flex h-7 w-full max-w-[120px] items-center justify-center text-foreground/40 transition-colors hover:text-foreground/80"
+    >
+      <span
+        aria-hidden
+        className="flex h-full w-full items-center justify-center"
+      >
+        <CustomerLogo slug={slug} fit surface="var(--background)" />
+      </span>
+    </Link>
+  );
+}
+
+export function ProofBand({ marquee = false }: { marquee?: boolean } = {}) {
+  // A running strip, after mobbin.com: the reel twice over on one track that
+  // slides by half its width, faded out at both ends. Hover holds it still.
+  if (marquee) {
+    return (
+      <section className="pb-28 pt-2 md:pb-40 md:pt-4">
+        <div className="mx-auto max-w-[1200px] overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_12%,black_88%,transparent)]">
+          <ul className="flex w-max animate-marquee items-center hover:[animation-play-state:paused] motion-reduce:animate-none">
+            {[...REEL, ...REEL].map((slug, i) => (
+              <li
+                key={`${slug}-${i}`}
+                aria-hidden={i >= REEL.length}
+                className="flex w-[180px] shrink-0 items-center justify-center px-8"
+              >
+                <ReelLogo slug={slug} />
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    );
+  }
   return (
     // ASYMMETRIC BY DESIGN. The top inset is almost nothing, so the marks ride
     // up under the hero tile and read as the foot of the hero; the bottom is
@@ -51,29 +88,20 @@ export function ProofBand() {
           line of mono caps between the hero and the logos that held them down
           the page. The marks carry it on their own. */}
       <ul // Seven across, not eight. Heritage Law's mark is a fine-lined tree
-      // over two lines of letter-spaced small caps — detail that survives on
-      // a case-study page and turns to grey mush at 120x28, worst of all on
-      // the dark ground. Rather than fill the slot with one of the square
-      // marks (the problem Durrick had), the row is a column narrower.
-      className="grid grid-cols-2 items-center gap-x-8 gap-y-8 sm:grid-cols-4 lg:grid-cols-7">
+        // over two lines of letter-spaced small caps — detail that survives on
+        // a case-study page and turns to grey mush at 120x28, worst of all on
+        // the dark ground. Rather than fill the slot with one of the square
+        // marks (the problem Durrick had), the row is a column narrower.
+        className="grid grid-cols-2 items-center gap-x-8 gap-y-8 sm:grid-cols-4 lg:grid-cols-7"
+      >
         {REEL.map((slug) => (
           <li key={slug} className="flex items-center justify-center">
-            <Link
-              href={`/customers/${slug}`}
-              // Muted at rest and full strength on hover: a reel at full
-              // contrast competes with the hero's own headline a few hundred
-              // pixels above it, and these are proof, not navigation.
-              className="flex h-7 w-full max-w-[120px] items-center justify-center text-foreground/40 transition-colors hover:text-foreground/80"
-            >
-              {/* The wrapper has to carry a width as well as a height: a
-                  `fit` logo ignores its own aspect ratio and takes its box from
-                  the parent, so an auto-width flex row collapsed every masked
-                  wordmark to nothing while the two inline SVGs — which have a
-                  viewBox to size from — rendered fine. */}
-              <span aria-hidden className="flex h-full w-full items-center justify-center">
-                <CustomerLogo slug={slug} fit surface="var(--background)" />
-              </span>
-            </Link>
+            {/* Muted at rest and full strength on hover: a reel at full
+                contrast competes with the hero's own headline a few hundred
+                pixels above it, and these are proof, not navigation. The
+                wrapper carries a width as well as a height, since a `fit`
+                logo takes its box from its parent. */}
+            <ReelLogo slug={slug} />
           </li>
         ))}
       </ul>

@@ -25,7 +25,7 @@ import {
 // ─────────────────────────────────────────────────────────────────────────
 
 /** One photograph per tab, keyed by the region ids in production-gap.tsx. */
-const SHOTS: Record<RegionId, { src: string; alt: string }> = {
+export const SHOTS: Record<RegionId, { src: string; alt: string }> = {
   url: {
     src: "/images/mocks/crm-bg.webp",
     alt: "Someone working at a laptop in a sunlit booth",

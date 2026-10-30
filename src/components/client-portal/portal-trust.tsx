@@ -50,6 +50,7 @@ export function PortalTrust({
   omitSeals,
   visual,
   bandClassName,
+  bandDividers = true,
 }: {
   heading?: string;
   body?: string;
@@ -69,6 +70,8 @@ export function PortalTrust({
    * ordinary type and the rails are welcome to run behind it.
    */
   bandClassName?: string;
+  /** Draw the hairlines between the band's seals. See SecurityCompliance. */
+  bandDividers?: boolean;
   /**
    * Fills the right column when `claims` is empty — for a brief that makes the
    * security case in its paragraph rather than in rows a reader opens.
@@ -141,7 +144,7 @@ export function PortalTrust({
             instead of drawing a second one, so the section carries no bottom
             padding: the band runs to the end of it. */}
         <div className={`-mx-6 mt-14 border-t md:-mx-10 ${GRID_LINE} ${bandClassName ?? ""}`}>
-          <SecurityCompliance omit={omitSeals} />
+          <SecurityCompliance omit={omitSeals} dividers={bandDividers} />
         </div>
       </Reveal>
     </section>
