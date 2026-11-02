@@ -282,6 +282,7 @@ export const LEGACY_REDIRECTS = [
   { source: "/blog/the-2023-copilot-fall-release", destination: "/blog/the-2023-assembly-fall-release", permanent: true },
   { source: "/blog/the-best-client-portal-software", destination: "/blog/best-client-portal-software", permanent: true },
   { source: "/blog/the-best-professional-services-software-for-2021", destination: "/blog/professional-services-automation-software", permanent: true },
+  { source: "/blog/the-top-5-software-picks-for-effectively-managing-your-clients", destination: "/blog/best-client-management-software", permanent: true },
   { source: "/blog/value-based-pricing-strategy", destination: "/blog/agency-pricing-models", permanent: true },
   { source: "/blog/virtual-accounting-firm", destination: "/blog/how-to-start-a-virtual-bookkeeping-business", permanent: true },
   { source: "/blog/virtual-accounting-firms-what-are-they-and-how-do-you-start-one", destination: "/blog/how-to-start-an-accounting-firm", permanent: true },
