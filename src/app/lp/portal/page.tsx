@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import { CTA } from "@/components/home/cta";
 import { FAQ, type FAQEntry } from "@/components/home/faq";
 import { HowItWorks } from "@/components/home/how-it-works";
@@ -16,19 +17,29 @@ import { DEMO_URL, SIGNUP_URL } from "@/lib/constants";
 import { PAGE_SEO, pageMetadata } from "@/lib/seo";
 
 /**
- * Paid-only landing page for Google Ads on the client portal keywords.
+ * Paid-only landing page for the Google Ads "Portal" ad groups (US/CA, UK and
+ * AU; exact, phrase and broad). Each keyword's final URL carries `?kw=` so the
+ * headline, the section that follows the logos and the first FAQ answer all
+ * restate what that search was for. The themes, and the keywords that point at
+ * each (from the live ad groups, Nov 2026):
  *
- * The homepage's shell (big-type hero, platform tour, builder walkthrough)
- * with the client portal page's proof (logos, white-label, templates, quotes,
- * security, pricing), written for three ad themes. Each ad group's final URL
- * carries `?kw=` so the headline restates what that ad promised:
+ *   (none)      client portal(s), client portal software, best client portal
+ *               software, portal software, online portal, web portal, simple
+ *               client portal, easy client portal
+ *   customer    customer portal(s), customer portal software, best customer
+ *               portal software, small business customer portal, self service
+ *               portal, customer onboarding portal
+ *   build       client portal builder, create a portal, create your own client
+ *               portal, custom client portal, customizable client portal,
+ *               customized portal
+ *   whitelabel  white label client portal, branded portal, branded customer
+ *               portal
+ *   documents   online document portal, document upload portal, customer file
+ *               sharing portal
+ *   secure      secure client portal, hipaa client portal
  *
- *   ?kw=best        "best customer portal software"
- *   ?kw=whitelabel  "white label client portal"
- *   ?kw=builder     "client portal builder"
- *
- * No param, or one this map does not know, gets the default, which is written
- * to cover all three.
+ * `best` and `builder` are kept as aliases for the first URLs handed out.
+ * Anything else falls back to the default.
  *
  * NOT INDEXED: noindex here AND listed in EXCLUDED in src/lib/sitemap-data.ts.
  * Do not block /lp in robots.ts: AdsBot has to crawl the page to rate it, and
@@ -39,78 +50,137 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-const HERO: Record<"default" | "best" | "whitelabel" | "builder", LpHeroMessage> = {
+type Theme =
+  | "default"
+  | "customer"
+  | "build"
+  | "whitelabel"
+  | "documents"
+  | "secure";
+
+type Lead = "tour" | "brand" | "builder" | "trust";
+
+interface ThemeCopy {
+  hero: LpHeroMessage;
+  /** The section set straight under the logos. */
+  lead: Lead;
+  /** The FAQ question to open the list with. */
+  faq: string;
+}
+
+const THEMES: Record<Theme, ThemeCopy> = {
   default: {
-    h1: "Client portal software you can build on",
-    lines: ["Client portal software", "you can build on"],
-    iconAfter: "software",
-    iconPair: true,
-    body: "Give clients one branded portal to message you, share files, sign, and pay. Start with 30+ ready-made apps, then use AI to build what's missing.",
+    hero: {
+      h1: "A client portal you can set up today",
+      lines: ["A client portal", "you can set up today"],
+      iconAfter: "portal",
+      iconPair: true,
+      body: "Messages, files, forms, contracts, and invoices in one place under your brand. Clients sign in with a link and see only their own work. Need a project tracker too? Describe it and Assembly builds it in.",
+    },
+    lead: "tour",
+    faq: "What is a client portal?",
   },
-  best: {
-    h1: "Client portal software clients actually use",
-    lines: ["Client portal software", "clients actually use"],
-    iconAfter: "software",
-    iconPair: true,
-    body: "One branded place for clients to message, share files, sign, and pay, with a CRM behind it for your team. Start with 30+ ready-made apps, then use AI to build the rest.",
+  customer: {
+    hero: {
+      h1: "A customer portal with your name on it",
+      lines: ["A customer portal", "with your name on it"],
+      iconAfter: "portal",
+      iconPair: true,
+      body: "Give every customer one place to message you, send files, sign, and pay. They sign in with a link, no password to forget, and see only their own account.",
+    },
+    lead: "tour",
+    faq: "What is a client portal?",
+  },
+  build: {
+    hero: {
+      h1: "Build your own client portal",
+      lines: ["Build your own", "client portal"],
+      iconAfter: "Build",
+      iconPair: true,
+      body: "Start with messaging, files, forms, and billing. Then describe what else your firm needs, like an intake form or a project tracker. Assembly shows you the plan and builds it in.",
+    },
+    lead: "builder",
+    faq: "How do I build my own client portal?",
   },
   whitelabel: {
-    h1: "White-label client portal that looks like yours",
-    lines: ["White-label client portal", "that looks like yours"],
-    iconAfter: "portal",
-    iconPair: true,
-    body: "Your logo and colors on every plan. From Professional up, clients sign in on your own domain with no Assembly badge. Messaging, files, contracts, and billing included.",
+    hero: {
+      h1: "A white-label client portal under your brand",
+      lines: ["A white-label client portal", "under your brand"],
+      iconAfter: "portal",
+      iconPair: true,
+      body: "Your logo and colors on every plan. From Professional up, clients sign in on your own domain with no Assembly badge.",
+    },
+    lead: "brand",
+    faq: "Can I white-label the client portal?",
   },
-  builder: {
-    h1: "Build your client portal with AI",
-    lines: ["Build your", "client portal with AI"],
-    iconAfter: "Build",
-    iconPair: true,
-    body: "Describe what you need. Assembly plans it, builds it, and ships a working app into your branded portal with logins and permissions handled.",
+  documents: {
+    hero: {
+      h1: "Collect client documents without the chasing",
+      lines: ["Collect client documents", "without the chasing"],
+      iconAfter: "documents",
+      iconPair: true,
+      body: "Send a checklist, clients upload to one secure portal, and reminders go out on their own. Messages, contracts, and invoices sit right next to the files.",
+    },
+    lead: "tour",
+    faq: "Can clients upload documents to the portal?",
+  },
+  secure: {
+    hero: {
+      h1: "A secure client portal for sensitive work",
+      lines: ["A secure client portal", "for sensitive work"],
+      iconAfter: "portal",
+      iconPair: true,
+      body: "SOC 2 Type II certified, encrypted in transit and at rest, with MFA on every plan. Each client sees only their own files. HIPAA with a BAA on Advanced.",
+    },
+    lead: "trust",
+    faq: "Is my client portal secure?",
   },
 };
 
-const HERO_NOTE =
-  "Free forever plan. No credit card required. Built for firms that serve clients.";
-
-type Theme = keyof typeof HERO;
+const ALIASES: Record<string, Theme> = {
+  customer: "customer",
+  best: "customer",
+  build: "build",
+  builder: "build",
+  whitelabel: "whitelabel",
+  documents: "documents",
+  secure: "secure",
+};
 
 function themeFor(kw: string | string[] | undefined): Theme {
   const key = (Array.isArray(kw) ? kw[0] : kw)?.toLowerCase();
   // Own keys only: `in` also matches inherited names, so ?kw=constructor
   // would hand back a function and break the page.
-  return key && Object.hasOwn(HERO, key) ? (key as Theme) : "default";
+  return key && Object.hasOwn(ALIASES, key) ? ALIASES[key] : "default";
 }
 
+const HERO_NOTE = "Free forever plan. No credit card required.";
+
 /**
- * The first question keeps the searcher's own words ("customer portal") on
- * purpose, once: the house term is "client portal", and the hero uses it, but
- * a question is matched to the query it answers.
- *
- * Six, answering the three ad themes first, then cost, safety and fit. No
- * links in the answers: on a paid page every link is a way off the one action
- * the page is for, and the sections above already carry the detail.
+ * Answers built from the /client-portal FAQ, which is already fact-checked.
+ * No links in the answers: on a paid page every link is a way off the one
+ * action the page is for. The theme's own question is moved to the top.
  */
 const FAQS: FAQEntry[] = [
   {
-    question: "What is the best customer portal software for service firms?",
+    question: "What is a client portal?",
     answer:
-      "The one clients actually log in to and your firm never outgrows. Assembly pairs 30+ ready-made apps for messaging, files, contracts, and billing with an AI app builder: the essentials on day one, custom apps when you need them.",
+      "One secure, branded place where clients message you, share files, sign contracts, and pay invoices. Assembly gives you all of that on day one, plus a CRM for your team and an AI builder for anything else your firm needs.",
   },
   {
     question: "Can I white-label the client portal?",
     answer:
-      "Yes. Your logo and colors are on every plan. On Professional and up, clients sign in on your own domain with the Assembly badge removed, and every new app inherits your brand.",
+      "Yes. Your logo and colors are on every plan. On Professional and up, clients sign in on your own domain with the Assembly badge removed, and every new app picks up your brand.",
   },
   {
-    question: "How do I build a client portal without code?",
+    question: "How do I build my own client portal?",
     answer:
-      "Describe the app you want. Assembly shows a plan to approve or edit, then ships a working app into your portal with logins, permissions, and branding handled. Or start from one of 30+ templates and tell the builder what to change.",
+      "Sign up, add your logo, and invite a client. Messaging, files, forms, contracts, and billing are ready to go. For anything else, describe it: Assembly asks a few questions, shows you the plan, and builds it in once you approve. No code.",
   },
   {
-    question: "What does the client portal cost?",
+    question: "Can clients upload documents to the portal?",
     answer:
-      "There is a free forever plan with the CRM, the client portal, the app builder, and real, publishable apps. Paid plans add more clients, more apps, and your own domain. No credit card needed to start.",
+      "Yes. Send a document checklist and clients upload straight to it. Automatic reminders follow up on anything missing, and each client only ever sees their own files.",
   },
   {
     question: "Is my client portal secure?",
@@ -118,11 +188,26 @@ const FAQS: FAQEntry[] = [
       "Yes. Assembly is SOC 2 Type II certified and supports HIPAA, GDPR, and CCPA. Data is encrypted in transit and at rest, each client sees only their own data, and MFA is on every plan.",
   },
   {
+    question: "Does Assembly offer a HIPAA-compliant client portal?",
+    answer:
+      "Yes, with a BAA on the Advanced plan. Ready-made apps that do not use AI can handle PHI. Apps built with the AI app builder are not covered.",
+  },
+  {
+    question: "What does the client portal cost?",
+    answer:
+      "There is a free forever plan with the CRM, the client portal, the app builder, and up to 3 apps. Paid plans add more clients, more apps, and your own domain. No credit card needed to start.",
+  },
+  {
     question: "What is the client portal not good for?",
     answer:
-      "Public marketing websites. Assembly builds experiences for your team and your signed-in clients. Build a public site elsewhere and link to it from inside your portal.",
+      "Public marketing websites. Assembly is for your team and your signed-in clients. Build a public site elsewhere and link to it from inside your portal.",
   },
 ];
+
+function faqsFor(first: string): FAQEntry[] {
+  const lead = FAQS.find((f) => f.question === first);
+  return lead ? [lead, ...FAQS.filter((f) => f !== lead)] : FAQS;
+}
 
 export default async function LpPortalPage({
   searchParams,
@@ -130,39 +215,55 @@ export default async function LpPortalPage({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { kw } = await searchParams;
-  const theme = themeFor(kw);
-  const hero = HERO[theme];
-  // The white-label ad group reorders the page as well as the headline: the
-  // branding section moves up to sit straight under the logos, ahead of the
-  // platform tour, and its FAQ answer leads. Everything else keeps the order
-  // below, so the variants differ only in what comes first.
-  const whiteLabelFirst = theme === "whitelabel";
-  const faqs = whiteLabelFirst
-    ? [FAQS[1], FAQS[0], ...FAQS.slice(2)]
-    : FAQS;
+  const theme = THEMES[themeFor(kw)];
 
-  const tour = (
-    <div className="section-follow">
+  // Four sections that every variant shows. The theme picks which one sits
+  // straight under the logos; the rest keep this order, so variants differ
+  // only in what comes first.
+  const sections: Record<Lead, ReactNode> = {
+    tour: (
+      <div className="section-follow">
+        <Reveal variant="fade">
+          <ProductionGap
+            eyebrow="Client portal + CRM"
+            heading="One branded place for every client"
+            body="Messages, files, forms, contracts, and invoices for your clients. A CRM for your team. 30+ ready-made apps, and an AI builder for anything else."
+          />
+        </Reveal>
+      </div>
+    ),
+    brand: (
+      <PortalCustomizations
+        id="customizations"
+        heading="Make it look like your firm built it"
+        body="Your logo and colors on every plan. Your own domain and no Assembly badge from Professional up. Every app you add picks up your brand."
+      />
+    ),
+    builder: (
       <Reveal variant="fade">
-        <ProductionGap
-          eyebrow="Client portal + CRM"
-          heading="Everything your clients need, in one portal"
-          body="A branded portal for clients, a CRM for your team, 30+ ready-made apps, and an AI builder for everything else."
+        <HowItWorks
+          eyebrow="Client portal builder"
+          heading="Need something custom? Describe it."
+          body="Describe a project tracker, an intake form, or an approval flow. Assembly asks a few questions, shows you the plan, and publishes it in your portal once you approve."
         />
       </Reveal>
-    </div>
-  );
-  const customizations = (
-    <PortalCustomizations
-      id="customizations"
-      heading="White-label every detail, down to the apps"
-      body="Your logo and colors on every plan, your own domain from Professional up, and apps shaped to how your firm works. Every new app inherits your brand."
-    />
+    ),
+    trust: <PortalTrust />,
+  };
+  const order: Lead[] = [
+    theme.lead,
+    ...(["tour", "brand", "builder", "trust"] as Lead[]).filter(
+      (s) => s !== theme.lead,
+    ),
+  ];
+  // Templates sit after the builder walkthrough on every variant.
+  const withTemplates = order.flatMap((s) =>
+    s === "builder" ? [s, "templates" as const] : [s],
   );
 
   return (
     <>
-      <LpHero message={hero} note={HERO_NOTE} />
+      <LpHero message={theme.hero} note={HERO_NOTE} />
 
       {/* Logos straight under the fold, as on /client-portal. */}
       <div className="mx-auto max-w-[1400px] px-6 pb-8 md:px-10">
@@ -172,34 +273,23 @@ export default async function LpPortalPage({
       <div className="relative">
         <GridRails />
         <GridDivider fullBleed />
-
-        {whiteLabelFirst ? customizations : tour}
-        <GridDivider />
-
-        {whiteLabelFirst ? tour : customizations}
-        <GridDivider />
-
-        <Reveal variant="fade">
-          <HowItWorks
-            eyebrow="Client portal builder"
-            heading="Build portal apps in four steps"
-            body="Describe what you want, approve the plan, and publish. No code. The app goes live in your portal with sign-in, permissions, and branding already handled."
-          />
-        </Reveal>
-        <GridDivider />
-
-        <PortalReadyMade body="30+ ready-made app templates. Every one is a working app: install it, use it as is, or tell the builder what to change." />
-        <GridDivider />
-
-        <PortalTrust />
-        <GridDivider />
+        {withTemplates.map((s) => (
+          <div key={s}>
+            {s === "templates" ? (
+              <PortalReadyMade body="30+ ready-made apps, from onboarding wizards to document collectors. Install one as is, or tell the builder what to change." />
+            ) : (
+              sections[s]
+            )}
+            <GridDivider />
+          </div>
+        ))}
       </div>
 
       <div className="relative">
         <GridRails />
         <BuilderCustomerQuotes
           heading="Firms that stopped settling"
-          body="See how firms replaced rigid tools with a portal they built around their own workflow."
+          body="How firms gave their clients one place to work with them."
           quotes={[
             {
               quote:
@@ -244,7 +334,7 @@ export default async function LpPortalPage({
         <GridRails />
         <FAQ
           heading="Client portal questions, answered"
-          items={faqs}
+          items={faqsFor(theme.faq)}
           variant="divided"
           dottedRules
           justifyAnswers
@@ -256,9 +346,9 @@ export default async function LpPortalPage({
       <CTA
         heading={
           <>
-            Build the client portal
+            Give clients one place
             <br />
-            only your firm could
+            to work with you
           </>
         }
         planChips={false}
