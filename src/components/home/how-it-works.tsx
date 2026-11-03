@@ -74,7 +74,19 @@ const STEPS: Step[] = [
 // than two things racing.
 const DWELL_MS = 7_000;
 
-export function HowItWorks() {
+/**
+ * Header copy is overridable for the paid landing pages; the homepage passes
+ * nothing and keeps these defaults.
+ */
+export function HowItWorks({
+  eyebrow = "App builder",
+  heading = "Go from idea to a working app in four steps",
+  body = "Describe what you want, approve the plan, and publish. Your app goes live in your workspace with sign-in, permissions, and branding already handled. Then keep refining it by chat.",
+}: {
+  eyebrow?: string;
+  heading?: string;
+  body?: string;
+} = {}) {
   const [active, setActive] = useState(0);
 
   // Kept in refs so the rAF loop reads them without re-subscribing, and so the
@@ -174,15 +186,13 @@ export function HowItWorks() {
             (left) and supporting copy (right) sharing a row so the copy lines
             up with the heading, not the eyebrow. */}
         <div className="mx-auto max-w-[1100px]">
-          <p className="type-eyebrow text-muted-foreground">App builder</p>
+          <p className="type-eyebrow text-muted-foreground">{eyebrow}</p>
           <div className="mt-4 grid gap-y-5 md:grid-cols-2 md:items-start md:gap-x-12">
             <h2 className="type-h2 max-w-lg text-balance text-foreground">
-              Go from idea to a working app in four steps
+              {heading}
             </h2>
             <p className="type-lead max-w-lg text-pretty text-muted-foreground">
-              Describe what you want, approve the plan, and publish. Your app goes
-              live in your workspace with sign-in, permissions, and branding
-              already handled. Then keep refining it by chat.
+              {body}
             </p>
           </div>
         </div>

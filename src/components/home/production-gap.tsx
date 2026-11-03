@@ -668,22 +668,35 @@ function ProductionGapExplorer() {
   );
 }
 
-export function ProductionGap() {
+/**
+ * The header copy is overridable for the paid landing pages, which run this
+ * tour under their own keyword. The homepage passes nothing and keeps the
+ * strings above.
+ */
+export function ProductionGap({
+  eyebrow = EYEBROW,
+  heading = HEADING,
+  body = BODY,
+}: {
+  eyebrow?: string;
+  heading?: string;
+  body?: string;
+} = {}) {
   return (
     <section id="production-gap" className="py-16 md:py-24">
       <div className="mx-auto max-w-[1600px] px-6 md:px-10">
         {/* Header — left-aligned: eyebrow on top, then heading (left) and body
             (right) sharing a row. */}
         <div className="mx-auto max-w-[1100px]">
-          <p className="type-eyebrow text-muted-foreground">{EYEBROW}</p>
+          <p className="type-eyebrow text-muted-foreground">{eyebrow}</p>
           <div className="mt-4 grid gap-y-5 md:grid-cols-2 md:items-start md:gap-x-12">
             {/* Balanced: unbalanced, this heading left "part" alone on a second
                 line at phone widths. No effect on desktop, where it fits one. */}
             <h2 className="type-h2 max-w-lg text-balance text-foreground">
-              {HEADING}
+              {heading}
             </h2>
             <p className="type-lead max-w-lg text-pretty text-muted-foreground">
-              {BODY}
+              {body}
             </p>
           </div>
         </div>

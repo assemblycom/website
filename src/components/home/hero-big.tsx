@@ -140,6 +140,8 @@ export function HeroBig({
   iconPair,
   iconBefore,
   signupHref = SIGNUP_URL,
+  trackCtas = true,
+  note,
 }: {
   headline: string;
   body?: string;
@@ -149,6 +151,14 @@ export function HeroBig({
   iconBefore?: string;
   /** Signup, carrying the arm. Falls back to the plain CTA URL. */
   signupHref?: string;
+  /**
+   * Report button clicks to the homepage hero test. Off on the paid landing
+   * pages, which borrow this hero: a visitor who saw the homepage first still
+   * holds an arm cookie, and their clicks there would be counted as the arm's.
+   */
+  trackCtas?: boolean;
+  /** One short line under the buttons, e.g. the free plan terms. */
+  note?: string;
 }) {
   return (
     <section className="relative -mt-14 bg-white md:-mt-16 [[data-theme=dark]_&]:bg-[#0a0a0a]">
@@ -206,7 +216,7 @@ export function HeroBig({
         <div className="mx-auto mt-10 flex w-full max-w-sm flex-col gap-3 sm:w-auto sm:max-w-none sm:flex-row sm:items-center sm:justify-center">
           <a
             href={signupHref}
-            onClick={() => trackHeroCta("bigtype-primary")}
+            onClick={trackCtas ? () => trackHeroCta("bigtype-primary") : undefined}
             // White on dark, not `bg-foreground`. That token resolves to
             // #d9d9d9 there, which next to the nav's own primary a few hundred
             // pixels above reads as a greyed-out version of the same button.
@@ -225,12 +235,18 @@ export function HeroBig({
           </a>
           <a
             href={DEMO_URL}
-            onClick={() => trackHeroCta("bigtype-demo")}
+            onClick={trackCtas ? () => trackHeroCta("bigtype-demo") : undefined}
             className="inline-flex w-full shrink-0 items-center justify-center whitespace-nowrap rounded-lg border border-foreground/20 bg-transparent px-4 py-3 text-center text-sm text-foreground transition-colors hover:bg-foreground/5 sm:w-auto sm:py-2 md:px-5 md:py-2.5"
           >
             Book a demo
           </a>
         </div>
+
+        {note && (
+          <p className="mx-auto mt-5 max-w-xl text-pretty text-center text-sm text-muted-foreground">
+            {note}
+          </p>
+        )}
       </div>
     </section>
   );

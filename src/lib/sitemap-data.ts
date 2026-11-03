@@ -79,6 +79,9 @@ const EXCLUDED = new Set<string>([
   // there is no reachable URL for a crawler to index. See the page's own
   // comment in src/app/hero-variant/[arm]/page.tsx.
   "/hero-variant",
+  // Paid-only landing page for Google Ads (client portal keywords). It exists
+  // for ad clicks, not search, and is noindex in its own metadata.
+  "/lp/portal",
 ]);
 
 // /about is finished but held on staging, where it redirects to the homepage in

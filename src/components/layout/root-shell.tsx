@@ -31,6 +31,9 @@ export function RootShell({ children }: { children: React.ReactNode }) {
   const { theme, preference, setPreference } = useTheme();
   const dark = theme === "dark";
   const isHome = pathname === "/";
+  // Paid landing pages render their own pared-back nav inside the hero, the
+  // way the homepage does, so the global one would be a second bar.
+  const isPaidLanding = pathname.startsWith("/lp/");
   // Every page this shell renders gets the reveal footer. It used to be an
   // allowlist of known routes, which meant anything not on it — in practice
   // only the 404 — fell through to a plain footer that ended flat, with no
@@ -58,7 +61,7 @@ export function RootShell({ children }: { children: React.ReactNode }) {
   // the nav. Contents ride light over the dark theme and dark over the light.
   // The home hero renders its own sticky nav, so the global header is omitted
   // there to avoid a duplicate bar.
-  const nav = isHome ? null : (
+  const nav = isHome || isPaidLanding ? null : (
     <StudioNav
       darkTop={dark}
       // Match the home hero's nav rail exactly so the logo/links don't shift
