@@ -603,12 +603,22 @@ export function StudioNav({
               the logo beside it already goes home. It stays on desktop, where
               there's room for it. */}
           {minimal ? null : paid ? (
-            <a
-              href={SIGNUP_URL}
-              className={`pointer-events-auto unauth-only ${ctaCls}`}
-            >
-              Get started
-            </a>
+            // Both ship and `data-authed` picks one before paint, as on the
+            // desktop bar: a signed-in visitor gets their way back in.
+            <>
+              <a
+                href={SIGNUP_URL}
+                className={`pointer-events-auto unauth-only ${ctaCls}`}
+              >
+                Get started
+              </a>
+              <a
+                href={APP_URL}
+                className={`pointer-events-auto auth-only ${ctaCls}`}
+              >
+                Open Assembly
+              </a>
+            </>
           ) : (
             <button
               ref={menuTriggerRef}

@@ -75,7 +75,11 @@ const HERO_NOTE =
 
 function heroFor(kw: string | string[] | undefined): LpHeroMessage {
   const key = (Array.isArray(kw) ? kw[0] : kw)?.toLowerCase();
-  return key && key in HERO ? HERO[key as keyof typeof HERO] : HERO.default;
+  // Own keys only: `in` also matches inherited names, so ?kw=constructor
+  // would hand back a function and break the page.
+  return key && Object.hasOwn(HERO, key)
+    ? HERO[key as keyof typeof HERO]
+    : HERO.default;
 }
 
 /**
