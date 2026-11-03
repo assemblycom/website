@@ -73,13 +73,13 @@ const HERO: Record<"default" | "best" | "whitelabel" | "builder", LpHeroMessage>
 const HERO_NOTE =
   "Free forever plan. No credit card required. Built for firms that serve clients.";
 
-function heroFor(kw: string | string[] | undefined): LpHeroMessage {
+type Theme = keyof typeof HERO;
+
+function themeFor(kw: string | string[] | undefined): Theme {
   const key = (Array.isArray(kw) ? kw[0] : kw)?.toLowerCase();
   // Own keys only: `in` also matches inherited names, so ?kw=constructor
   // would hand back a function and break the page.
-  return key && Object.hasOwn(HERO, key)
-    ? HERO[key as keyof typeof HERO]
-    : HERO.default;
+  return key && Object.hasOwn(HERO, key) ? (key as Theme) : "default";
 }
 
 /**
@@ -130,7 +130,35 @@ export default async function LpPortalPage({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { kw } = await searchParams;
-  const hero = heroFor(kw);
+  const theme = themeFor(kw);
+  const hero = HERO[theme];
+  // The white-label ad group reorders the page as well as the headline: the
+  // branding section moves up to sit straight under the logos, ahead of the
+  // platform tour, and its FAQ answer leads. Everything else keeps the order
+  // below, so the variants differ only in what comes first.
+  const whiteLabelFirst = theme === "whitelabel";
+  const faqs = whiteLabelFirst
+    ? [FAQS[1], FAQS[0], ...FAQS.slice(2)]
+    : FAQS;
+
+  const tour = (
+    <div className="section-follow">
+      <Reveal variant="fade">
+        <ProductionGap
+          eyebrow="Client portal + CRM"
+          heading="Everything your clients need, in one portal"
+          body="A branded portal for clients, a CRM for your team, 30+ ready-made apps, and an AI builder for everything else."
+        />
+      </Reveal>
+    </div>
+  );
+  const customizations = (
+    <PortalCustomizations
+      id="customizations"
+      heading="White-label every detail, down to the apps"
+      body="Your logo and colors on every plan, your own domain from Professional up, and apps shaped to how your firm works. Every new app inherits your brand."
+    />
+  );
 
   return (
     <>
@@ -145,22 +173,10 @@ export default async function LpPortalPage({
         <GridRails />
         <GridDivider fullBleed />
 
-        <div className="section-follow">
-          <Reveal variant="fade">
-            <ProductionGap
-              eyebrow="Client portal + CRM"
-              heading="Everything your clients need, in one portal"
-              body="A branded portal for clients, a CRM for your team, 30+ ready-made apps, and an AI builder for everything else."
-            />
-          </Reveal>
-        </div>
+        {whiteLabelFirst ? customizations : tour}
         <GridDivider />
 
-        <PortalCustomizations
-          id="customizations"
-          heading="White-label every detail, down to the apps"
-          body="Your logo and colors on every plan, your own domain from Professional up, and apps shaped to how your firm works. Every new app inherits your brand."
-        />
+        {whiteLabelFirst ? tour : customizations}
         <GridDivider />
 
         <Reveal variant="fade">
@@ -228,7 +244,7 @@ export default async function LpPortalPage({
         <GridRails />
         <FAQ
           heading="Client portal questions, answered"
-          items={FAQS}
+          items={faqs}
           variant="divided"
           dottedRules
           justifyAnswers
