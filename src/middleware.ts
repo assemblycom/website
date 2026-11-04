@@ -33,6 +33,21 @@ const COOKIE_MAX_AGE = 60 * 60 * 24 * 90;
 const enabled = process.env.HERO_TEST_ENABLED !== "0";
 
 /**
+ * PRODUCTION ONLY, so a preview shows the page the branch is actually about.
+ *
+ * The rewrite below sends `/` to `/hero-variant/<arm>`, which renders the
+ * SHIPPED homepage body. On a preview deployment that meant the branch's own
+ * homepage — the three hero versions and the switcher between them — was
+ * unreachable: every visit to `/` was rewritten away from it, and the review
+ * link showed main's page with no sign that anything had changed.
+ *
+ * `VERCEL_ENV` is "production" only on a production deployment, so previews
+ * and local runs serve `/` straight through and production keeps the test
+ * exactly as it is. `HERO_TEST_ENABLED` still overrides it either way.
+ */
+const isProduction = process.env.VERCEL_ENV === "production";
+
+/**
  * `/hero-variant/<arm>` is the rewrite target and never a destination: a
  * visitor who types it gets sent home, so the test cannot leak a second URL for
  * the homepage into shares or search results.
@@ -60,7 +75,7 @@ export function middleware(request: NextRequest) {
   // stamped an arm onto signup, so a returning visitor was credited to a hero
   // the switch had just stopped showing them. Collapsing the test has to
   // collapse what it reports as well, or the arm outlives the experiment.
-  if (!enabled) {
+  if (!enabled || !isProduction) {
     const response = NextResponse.next();
     if (request.cookies.has(HERO_COOKIE)) {
       response.cookies.delete(HERO_COOKIE);

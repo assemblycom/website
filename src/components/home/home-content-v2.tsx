@@ -15,6 +15,12 @@ import { ProofBand } from "@/components/home/v2/proof-band";
 import { Industries } from "@/components/home/v2/industries";
 import { CustomerProof } from "@/components/home/v2/customer-proof";
 import { PortalTrust } from "@/components/client-portal/portal-trust";
+import {
+  DescribeCard,
+  PlanCard,
+  BuildCard,
+  IterateCard,
+} from "@/components/client-portal/portal-build-cards";
 import { UnifiedPlatform } from "@/components/home/v2/platform-visuals";
 
 /**
@@ -51,28 +57,42 @@ import { UnifiedPlatform } from "@/components/home/v2/platform-visuals";
  * hero's own trust claim, and splitting it from the hero to make room for the
  * industry links broke both. Worth flipping in a variant if it tests badly.
  */
+/**
+ * The logo reel, as a hero closes with it.
+ *
+ * Exported so a page composing its own hero can put the same band under it,
+ * with the same reveal, rather than restating the pairing.
+ */
+export function HomeProofBand() {
+  return (
+    <Reveal variant="fade">
+      <ProofBand />
+    </Reveal>
+  );
+}
+
 export function HomeContentV2({
   // V3 is this page with a different hero, so it passes its own here rather
   // than forking everything below it.
-  hero = <HeroSplit />,
+  //
+  // THE LOGO STRIP COMES IN WITH IT. The reel is drawn to ride up under the
+  // split hero's tile and close that hero's trust claim — it is the foot of a
+  // hero rather than a section of its own, which is why it carries no rules.
+  // Over a hero that ends on a different shape it has nothing to sit under,
+  // and its deep bottom inset leaves it stranded in white. So it belongs to
+  // whichever hero wants it, and the heroes that do bring it themselves.
+  hero = (
+    <>
+      <HeroSplit />
+      <HomeProofBand />
+    </>
+  ),
 }: {
   hero?: ReactNode;
 } = {}) {
   return (
     <>
       {hero}
-
-      {/* THE LOGO STRIP, UNRULED. It used to sit between two full-bleed
-          rules, the slot V1 gives its numbers band — but those rules were
-          drawn for a band with a coloured ground and four figures in it, and
-          around eight muted wordmarks they fenced off a strip of mostly empty
-          page. The strip reads as the foot of the hero now rather than as a
-          section of its own, which is what it is: the logos close the hero's
-          trust claim, and the grid's own first rule is a few hundred pixels
-          below. */}
-      <Reveal variant="fade">
-        <ProofBand />
-      </Reveal>
 
       {/* THE CONTENT REGION, on /ai-app-builder's grid rather than the two
           framing rails V1 draws.
@@ -147,6 +167,50 @@ export function HomeContentV2({
                 alt: "Someone talking in a sunlit sitting room",
               },
             }}
+            // The product pages' own step scenes, laid over the photographs:
+            // /ai-app-builder draws exactly these for Describe, Plan and
+            // Build, so the homepage shows the same screens rather than a
+            // second set that would drift from them. `plain` drops each
+            // scene's own ground — the photograph is the ground here.
+            stepUi={{
+              // CENTRED. The composer carries `sm:mt-[66px] sm:mb-auto`, which
+              // is the arithmetic that drops it clear of the "Describe" heading
+              // on /ai-app-builder's panel. There is no heading over it here,
+              // so that offset just sat it high in the picture.
+              describe: (
+                <div className="absolute inset-0 [&_.template-mock-fit>div>div]:my-auto!">
+                  <DescribeCard plain />
+                </div>
+              ),
+              // FLUSH TO THE FOOT. The plan is a document longer than the
+              // window it is read in, and it is drawn to be cut by its own
+              // bottom edge — so a band of photograph under it read as the
+              // document ending early rather than as a page running on. The
+              // frame drops to the panel's own foot, and the card with it.
+              plan: (
+                // On a phone the frame is wider than the card's own shape, so
+                // MockFit sizes the card by the width and centres the slack —
+                // dropping the frame to the foot there just recentres it. The
+                // frame takes the card's 6:5 instead, which leaves no slack to
+                // centre, and sits on the panel's floor.
+                <div className="absolute inset-x-0 -bottom-4 top-auto aspect-[6/5] sm:-bottom-6 sm:top-0 sm:aspect-auto md:-bottom-10">
+                  <PlanCard plain />
+                </div>
+              ),
+              build: <BuildCard plain />,
+              // The other three take the panel's landscape design box; this
+              // one is drawn portrait for the rail on /client-portal and has
+              // no landscape variant, so fitted into a wide slot it came out
+              // a third smaller than its neighbours and read as a different
+              // family of screen. A taller frame is what MockFit scales
+              // against, so the card lands at the others' size; the panel
+              // clips, and the scene centres itself inside the frame anyway.
+              iterate: (
+                <div className="absolute inset-x-0 -inset-y-10 sm:-inset-y-24">
+                  <IterateCard reply />
+                </div>
+              ),
+            }}
           />
         </Reveal>
 
@@ -193,9 +257,22 @@ export function HomeContentV2({
           // tone while the sides take the band's own, matching the hairlines
           // between the cells they close.
           bandClassName={`relative border-x border-x-border bg-background ${BUILDER_RAIL_HALO_WIDE} [[data-theme=dark]_&]:border-x-[#383838]`}
+          // ON THE RAILS. The band divided the measure into quarters while the
+          // page divides it into sixths, so its hairlines and the rails above
+          // and below it ran at two rhythms a pixel or so apart — read as a
+          // doubled line rather than as a grid. Six cells with the ends left
+          // empty puts every vertical in the band on a rail.
+          bandOnRails
         />
 
-        <GridDivider lineClass={BUILDER_GRID_LINE} />
+        {/* THE BAND'S OWN CLOSING RULE, so it takes the default tone rather
+            than the rails'. The band is a box: its top edge, its sides and the
+            hairlines between its cells are all drawn at the grid line's solid
+            tone, and the rail tone underneath them is faint enough that the
+            band read as open at the foot with a rule missing. Every other
+            divider on the page joins two stretches of plain type, where the
+            rails' own weight is the right one. */}
+        <GridDivider />
 
         <Reveal variant="fade">
           <WholeStack />

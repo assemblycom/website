@@ -17,9 +17,11 @@ export interface ProtoVersion {
   note: string;
 }
 
+// Every version runs the same page and differs only in its hero, so the notes
+// name heroes rather than homepages.
 export const VERSIONS: ProtoVersion[] = [
-  { key: "1", label: "V1", note: "Live homepage" },
-  { key: "2", label: "V2", note: "Round 4" },
+  { key: "1", label: "V1", note: "Live hero" },
+  { key: "2", label: "V2", note: "Split hero" },
   { key: "3", label: "V3", note: "Photo hero" },
 ];
 

@@ -119,15 +119,40 @@ function Seal({ label }: { label: string }) {
 
 export function SecurityCompliance({
   omit,
+  railAligned = false,
 }: {
   /** Seal titles to leave out — a page may make a claim one of these outruns. */
   omit?: string[];
+  /**
+   * Lay the band out on SIXTHS of the measure rather than on its own equal
+   * share of it.
+   *
+   * For a page that draws column rails behind its content. The band's cells
+   * divide the measure by their own count, the rails divide it by six, and the
+   * two rhythms meet at the band's top and bottom edges — hairlines inside it
+   * at quarters, rails above and below it at sixths, out of step by enough to
+   * read as a rendering fault rather than as a grid.
+   *
+   * On here the four seals take the middle four sixths and an empty cell
+   * closes each end, so every vertical in the band stands on a rail and the
+   * grid runs through the section unbroken. Only a page with those rails
+   * passes it; /security and /client-portal have none and keep the band at
+   * full width.
+   */
+  railAligned?: boolean;
 } = {}) {
   const standards = omit?.length
     ? STANDARDS.filter((s) => !omit.includes(s.title))
     : STANDARDS;
+  // Only the four-seal band divides into sixths cleanly (one empty cell each
+  // end); a shorter list keeps its own equal share of the measure.
+  const onRails = railAligned && standards.length === 4;
   // Written out rather than interpolated so Tailwind sees the whole class name.
-  const columns = standards.length === 3 ? "sm:grid-cols-3" : "sm:grid-cols-4";
+  const columns = onRails
+    ? "sm:grid-cols-6"
+    : standards.length === 3
+      ? "sm:grid-cols-3"
+      : "sm:grid-cols-4";
   return (
     // px-0 once the rails are present (≥1200px) so the grid fills the full rail
     // width and the outer cells meet the guide rails — smaller viewports keep a
@@ -149,6 +174,13 @@ export function SecurityCompliance({
         // on the site.
         className={`-mx-6 grid grid-cols-2 gap-px bg-border max-sm:border-b max-sm:border-border sm:mx-0 ${columns} [[data-theme=dark]_&]:bg-[#383838] [[data-theme=dark]_&]:max-sm:border-[#383838]`}
       >
+        {/* The end cells. Page ground, not the hairline bed, so each one reads
+            as the measure carrying on rather than as a fifth empty seal.
+            Hidden on a phone, where the band is two-up and has no rails to
+            stand on. */}
+        {onRails ? (
+          <div aria-hidden className="hidden bg-background sm:block" />
+        ) : null}
         {standards.map((s) => (
           <div
             key={s.title}
@@ -169,6 +201,9 @@ export function SecurityCompliance({
             columns match the count. */}
         {standards.length % 2 ? (
           <div aria-hidden className="bg-background sm:hidden" />
+        ) : null}
+        {onRails ? (
+          <div aria-hidden className="hidden bg-background sm:block" />
         ) : null}
       </div>
     </section>

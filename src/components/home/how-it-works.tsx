@@ -90,6 +90,7 @@ export function HowItWorks({
    */
   visualHeightClass = "h-[420px] sm:h-auto md:h-[560px]",
   stepImages,
+  stepUi,
 }: {
   visualHeightClass?: string;
   /**
@@ -101,6 +102,15 @@ export function HowItWorks({
    * screens are away. Unset, every step renders its own visual as before.
    */
   stepImages?: Record<string, { src: string; alt: string }>;
+  /**
+   * A piece of product UI per step, drawn ON TOP of that step's photograph.
+   *
+   * The photograph says who the step is for; the UI says what the step
+   * actually is, which a picture of someone holding a phone cannot. The
+   * product pages already draw these screens, so this takes their scenes
+   * rather than redrawing them — see `portal-build-cards`.
+   */
+  stepUi?: Record<string, React.ReactNode>;
 } = {}) {
   const [active, setActive] = useState(0);
 
@@ -265,7 +275,15 @@ export function HowItWorks({
                 {/* Progress track (fills over the dwell on the active tab). */}
                 <span
                   aria-hidden
-                  className="absolute inset-x-0 -bottom-px z-10 h-px overflow-hidden"
+                  // INSIDE THE TAB, not straddling its edge. At -bottom-px the
+                  // bar sat ON the rule between the strip and the panel, so
+                  // over a photograph it had a dark edge immediately under it
+                  // and read as part of the picture rather than as a bar
+                  // filling. Held off that rule, it always has the strip's own
+                  // ground behind it and the rule as a line under it. Two
+                  // pixels rather than one for the same reason: a hairline is
+                  // a border, and this is the one thing here that moves.
+                  className="absolute inset-x-0 bottom-0 z-10 h-0.5 overflow-hidden"
                 >
                   <span
                     ref={(el) => {
@@ -350,6 +368,27 @@ export function HowItWorks({
                       className="object-cover object-center"
                       sizes="(max-width: 768px) 100vw, 60vw"
                     />
+                    {stepUi?.[step.id] ? (
+                      <>
+                        {/* The photographs are mid-tone and busy, and the
+                            product's own UI is near-white — dropped straight
+                            on, the screen's edges dissolve into the picture.
+                            This settles the photograph far enough for the
+                            white to read as a surface above it, without
+                            turning the picture grey. */}
+                        <div
+                          aria-hidden
+                          className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(16,24,40,0.34),rgba(16,24,40,0.46))]"
+                        />
+                        {/* MockFit measures the frame it is given, so the UI
+                            gets its own inset box rather than the full cell:
+                            the inset is the air that makes the screen read as
+                            placed on the photograph rather than cropped by it. */}
+                        <div className="absolute inset-4 sm:inset-6 md:inset-10">
+                          {stepUi[step.id]}
+                        </div>
+                      </>
+                    ) : null}
                   </div>
                 ) : (
                   <step.Visual />

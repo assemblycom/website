@@ -50,6 +50,7 @@ export function PortalTrust({
   omitSeals,
   visual,
   bandClassName,
+  bandOnRails,
 }: {
   heading?: string;
   body?: string;
@@ -69,6 +70,13 @@ export function PortalTrust({
    * ordinary type and the rails are welcome to run behind it.
    */
   bandClassName?: string;
+  /**
+   * Lays the band's cells on the column rails rather than on quarters of the
+   * measure — see `railAligned` in security-compliance. For the same page the
+   * ground above is for: the ground stops the rails crossing the band, this
+   * puts the band's own verticals where the rails would have been.
+   */
+  bandOnRails?: boolean;
   /**
    * Fills the right column when `claims` is empty — for a brief that makes the
    * security case in its paragraph rather than in rows a reader opens.
@@ -141,7 +149,7 @@ export function PortalTrust({
             instead of drawing a second one, so the section carries no bottom
             padding: the band runs to the end of it. */}
         <div className={`-mx-6 mt-14 border-t md:-mx-10 ${GRID_LINE} ${bandClassName ?? ""}`}>
-          <SecurityCompliance omit={omitSeals} />
+          <SecurityCompliance omit={omitSeals} railAligned={bandOnRails} />
         </div>
       </Reveal>
     </section>

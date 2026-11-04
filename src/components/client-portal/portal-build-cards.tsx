@@ -2912,15 +2912,60 @@ function BusyRing({ className = "" }: { className?: string }) {
 // ── 4. Iterate ───────────────────────────────────────────────────────────
 // Hover applies the change: the revision is sent and the column it asked for
 // appears in the table.
-export function IterateCard() {
+export function IterateCard({
+  reply = false,
+}: {
+  /**
+   * Draws the top of the card as a CHAT — the request as a message you sent,
+   * the builder's answer under it — rather than as one banded line of type.
+   *
+   * Opt-in: the rail on /client-portal shows this card at a third of the
+   * measure, where a sent bubble and a reply are two things to read in a space
+   * with room for one, and the band is the right compression of them. A page
+   * giving the step a whole panel has the room, and the step's claim — that
+   * you keep changing the app by asking — is an exchange, so it should look
+   * like one rather than resting on a table quietly growing a column.
+   */
+  reply?: boolean;
+} = {}) {
   return (
     <Scene>
       <div className={`flex flex-col ${WINDOW}`}>
-        <p
-          className={`shrink-0 bg-[var(--mock-well-2)] px-4 py-3 text-[color:var(--mock-ink)] ${CARD_BODY}`}
-        >
-          Add a due date to every project.
-        </p>
+        {reply ? (
+          <div className={`shrink-0 border-b px-4 py-3.5 ${LINE}`}>
+            {/* Sent: pushed to the right and given the solid well, which is
+                what marks your own turn in every chat anyone reading this has
+                used. Capped short of the full measure so the side it is on is
+                legible as a side. */}
+            <p
+              className={`ml-auto w-fit max-w-[82%] ${R_PANEL} bg-[var(--mock-well-2)] px-3 py-2 text-[color:var(--mock-ink)] ${CARD_BODY}`}
+            >
+              Add a due date to every project.
+            </p>
+            {/* The answer, on the window's own ground and hard against the
+                left: no bubble, because the assistant's turn carries the
+                conversation and a second filled shape would make the two reads
+                as a pair of labels rather than as question and answer. */}
+            <p
+              className={`mt-3 flex max-w-[82%] items-center gap-2 text-[color:var(--mock-ink-soft)] ${CARD_BODY}`}
+            >
+              <span
+                aria-hidden
+                // Turning on its own account, not on hover: this line is the
+                // card at rest saying the change is in progress, and a still
+                // ring beside "Applying" reads as a change that has stalled.
+                className="size-[13px] shrink-0 rounded-full border-2 border-[var(--mock-line)] border-t-[color:var(--mock-ink-soft)] motion-safe:animate-spin"
+              />
+              Applying your change now.
+            </p>
+          </div>
+        ) : (
+          <p
+            className={`shrink-0 bg-[var(--mock-well-2)] px-4 py-3 text-[color:var(--mock-ink)] ${CARD_BODY}`}
+          >
+            Add a due date to every project.
+          </p>
+        )}
         <div className="px-4 py-4">
           <div className={`overflow-hidden ${R_CHROME} border ${LINE}`}>
             <div
