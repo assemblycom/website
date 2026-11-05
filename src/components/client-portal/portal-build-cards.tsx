@@ -1204,7 +1204,18 @@ function ChecklistWindow({
 export function PlanCard({
   plain = false,
   vertical = "default",
-}: SceneProps = {}) {
+  doc = PLAN_DOC,
+}: SceneProps & {
+  /**
+   * The requirements the plan came back with.
+   *
+   * A prop because the three `plain` scenes are ONE SESSION — what you typed,
+   * what came back, what got built — so a page that asks for a different app
+   * in its Describe step has to get that app's plan here, or the sequence
+   * stops being a sequence. See TRACKER_PLAN_DOC.
+   */
+  doc?: typeof PLAN_DOC;
+} = {}) {
   // The agency and accounting pages run the build-in-progress version.
   const building = vertical === "agency" || vertical === "accounting";
   return (
@@ -1277,7 +1288,7 @@ export function PlanCard({
           // footFlush, and the deeper foot ramp inside RequirementsPane.
           footFlush
         >
-          <RequirementsPane />
+          <RequirementsPane doc={doc} />
         </Scene>
       ) : (
         // The PHONE box, as Describe and Build take — see the note on
@@ -1466,6 +1477,26 @@ const PLAN_DOC = {
 };
 
 /**
+ * The same document for a client project tracker, which is the app the
+ * homepage's panel asks for in its Describe step.
+ *
+ * Written to the shape above rather than freely: one overview sentence, four
+ * flows in plain connectives, and one marked noun per flow. The marks name
+ * places in the product, not actions.
+ */
+export const TRACKER_PLAN_DOC = {
+  overview:
+    "A client-facing project tracker where your team runs every project and each client sees only their own.",
+  flows: [
+    "Internal user opens the app from the dashboard, sees every project across every client, and filters by company or stage.",
+    "Internal user clicks New project, picks a company, an owner and a due date, then publishes it to that client's tracker.",
+    "Client opens the tracker in the client experience and sees their own projects, each with its stage and what is due next.",
+    "Client comments on a project, gets a reply from your team, and a notification when the stage moves.",
+  ],
+  marks: ["dashboard", "New project", "client experience", "notification"],
+};
+
+/**
  * The plan, as the CONVERSATION it arrives in: what you asked for, what came
  * back, and the box you answer in.
  *
@@ -1485,7 +1516,7 @@ const PLAN_DOC = {
  * Still no sidebar and no window chrome. Where the plan LIVES is step three's
  * job; this step is only what the plan says and whether you accept it.
  */
-function RequirementsPane() {
+function RequirementsPane({ doc = PLAN_DOC }: { doc?: typeof PLAN_DOC } = {}) {
   return (
     <div className="flex size-full flex-col gap-2.5">
       {/* NO PROMPT BUBBLE AND NO COMPOSER. The scene used to run the whole
@@ -1631,13 +1662,13 @@ function RequirementsPane() {
               Overview
             </span>
             <p className={`text-[color:var(--mock-ink-soft)] ${PLAN_PROSE}`}>
-              {PLAN_DOC.overview}
+              {doc.overview}
             </p>
             <span className={`mt-1 text-[color:var(--mock-ink)] ${PLAN_HEAD}`}>
               Core Flows
             </span>
             <ul className="flex flex-col gap-1.5">
-              {PLAN_DOC.flows.map((f, i) => (
+              {doc.flows.map((f, i) => (
                 <li
                   key={f}
                   className={`flex gap-2 text-[color:var(--mock-ink-soft)] ${PLAN_PROSE}`}
@@ -1657,9 +1688,7 @@ function RequirementsPane() {
                   <span className="flex h-[22.4px] shrink-0 items-center sm:h-[20.8px]">
                     <span className="size-[3px] rounded-full bg-current" />
                   </span>
-                  <span className="min-w-0">
-                    {markedFlow(f, PLAN_DOC.marks[i])}
-                  </span>
+                  <span className="min-w-0">{markedFlow(f, doc.marks[i])}</span>
                 </li>
               ))}
             </ul>
@@ -2389,7 +2418,19 @@ export function BuildCard({
   vertical = "default",
   sidebarOnly = false,
   appLabel,
+  tracker = false,
 }: SceneProps & {
+  /**
+   * Shows the project-tracker board in a `plain` scene, where that scene
+   * otherwise draws the calendar.
+   *
+   * The board is what the rail's own Build step already draws; this only
+   * lets the wide scene reach it. For a page whose three steps describe,
+   * plan and build a tracker rather than a calendar — the Describe prompt
+   * and the plan document are the other two halves of that (see
+   * TRACKER_PLAN_DOC).
+   */
+  tracker?: boolean;
   /**
    * The portal's sidebar alone, the content area left empty: for a step whose
    * point is that the app has arrived in the client's portal (the template
@@ -2400,8 +2441,8 @@ export function BuildCard({
   /** The lit nav row's name, for a page showing its own app arriving. */
   appLabel?: string;
 } = {}) {
-  // Ledgerline only off the panel: the wide `plain` scene is the calendar,
-  // which no vertical changes.
+  // Ledgerline only off the panel: the wide `plain` scene is the calendar or
+  // the tracker, neither of which a vertical changes.
   const ledgerline = vertical === "accounting" && !plain;
   const bloomhouse = vertical === "agency" && !plain;
   const board = ledgerline
@@ -2712,7 +2753,7 @@ export function BuildCard({
                 whole reason neither pane carries a title bar. */}
             <ClientNavRow
               icon={
-                plain ? (
+                plain && !tracker ? (
                   <IconClock />
                 ) : bloomhouse ? (
                   <IconCalendarDays />
@@ -2722,7 +2763,7 @@ export function BuildCard({
               }
               label={
                 appLabel ??
-                (plain
+                (plain && !tracker
                   ? "Calendar"
                   : ledgerline
                     ? "Close tracker"
@@ -2748,7 +2789,7 @@ export function BuildCard({
               the screen opened by naming itself twice and spent a bar's height
               on the repeat. The same bar came off the hero's two screens for
               the same reason. */}
-            {sidebarOnly ? null : plain ? (
+            {sidebarOnly ? null : plain && !tracker ? (
               <CalendarPane />
             ) : (
               <>
@@ -2916,101 +2957,127 @@ export function IterateCard({
   reply = false,
 }: {
   /**
-   * Draws the top of the card as a CHAT — the request as a message you sent,
-   * the builder's answer under it — rather than as one banded line of type.
+   * Draws the request and the builder's answer as a CHAT above the card —
+   * two bubbles on whatever is behind the scene — rather than as one banded
+   * line of type inside it.
    *
    * Opt-in: the rail on /client-portal shows this card at a third of the
-   * measure, where a sent bubble and a reply are two things to read in a space
-   * with room for one, and the band is the right compression of them. A page
-   * giving the step a whole panel has the room, and the step's claim — that
-   * you keep changing the app by asking — is an exchange, so it should look
-   * like one rather than resting on a table quietly growing a column.
+   * measure, where a sent bubble and a reply are two things to read in a
+   * space with room for one, and the band is the right compression of them.
+   * A page giving the step a whole panel has the room, and the step's claim —
+   * that you keep changing the app by asking — is an exchange, so it should
+   * look like one rather than resting on a table quietly growing a column.
    */
   reply?: boolean;
 } = {}) {
-  return (
-    <Scene>
-      <div className={`flex flex-col ${WINDOW}`}>
-        {reply ? (
-          <div className={`shrink-0 border-b px-4 py-3.5 ${LINE}`}>
-            {/* Sent: pushed to the right and given the solid well, which is
-                what marks your own turn in every chat anyone reading this has
-                used. Capped short of the full measure so the side it is on is
-                legible as a side. */}
-            <p
-              className={`ml-auto w-fit max-w-[82%] ${R_PANEL} bg-[var(--mock-well-2)] px-3 py-2 text-[color:var(--mock-ink)] ${CARD_BODY}`}
+  const table = (
+    <div className="px-4 py-4">
+      <div className={`overflow-hidden ${R_CHROME} border ${LINE}`}>
+        <div
+          className={`flex items-center gap-2 border-b bg-[var(--mock-well)] px-3 py-2 text-[color:var(--mock-ink-soft)] ${UI_SECONDARY} ${LINE}`}
+        >
+          <span className="flex-1">Client</span>
+          {/* The spinner leads the new column in and then retires, so the
+                  card shows the builder DOING the change the line above it
+                  asked for — at rest the table simply has no Due date, which
+                  is the before. */}
+          <BusyRing />
+          <span
+            className={`${MOVE} w-0 overflow-hidden whitespace-nowrap text-right opacity-0 group-hover/card:w-[58px] group-hover/card:opacity-100`}
+          >
+            Due date
+          </span>
+        </div>
+        {[
+          ["Meridian Corp", "12 Nov"],
+          ["Oakwood LLC", "28 Nov"],
+          ["Bloom Studios", "4 Dec"],
+        ].map(([client, due], i) => (
+          <div
+            key={client}
+            className={`flex items-center gap-2 border-b px-3 py-[11px] last:border-b-0 ${ROW_HOVER} ${LINE}`}
+          >
+            <span
+              className={`flex-1 truncate text-[color:var(--mock-ink)] ${UI_PRIMARY}`}
             >
-              Add a due date to every project.
-            </p>
-            {/* The answer, on the window's own ground and hard against the
-                left: no bubble, because the assistant's turn carries the
-                conversation and a second filled shape would make the two reads
-                as a pair of labels rather than as question and answer. */}
-            <p
-              className={`mt-3 flex max-w-[82%] items-center gap-2 text-[color:var(--mock-ink-soft)] ${CARD_BODY}`}
+              {client}
+            </span>
+            <span
+              className={`${MOVE} w-0 overflow-hidden whitespace-nowrap text-right text-[color:var(--mock-ink-soft)] ${UI_SECONDARY} opacity-0 group-hover/card:w-[58px] group-hover/card:opacity-100`}
+              // Held back behind the spinner rather than starting with it.
+              // The dates used to land in the same instant the column was
+              // asked for, which read as a column that had been there all
+              // along; arriving one at a time while the ring is still
+              // turning, they read as values being written into it.
+              style={{ transitionDelay: `${260 + i * 90}ms` }}
             >
-              <span
-                aria-hidden
-                // Turning on its own account, not on hover: this line is the
-                // card at rest saying the change is in progress, and a still
-                // ring beside "Applying" reads as a change that has stalled.
-                className="size-[13px] shrink-0 rounded-full border-2 border-[var(--mock-line)] border-t-[color:var(--mock-ink-soft)] motion-safe:animate-spin"
-              />
-              Applying your change now.
-            </p>
+              {due}
+            </span>
           </div>
-        ) : (
+        ))}
+      </div>
+    </div>
+  );
+
+  if (!reply) {
+    return (
+      <Scene>
+        <div className={`flex flex-col ${WINDOW}`}>
           <p
             className={`shrink-0 bg-[var(--mock-well-2)] px-4 py-3 text-[color:var(--mock-ink)] ${CARD_BODY}`}
           >
             Add a due date to every project.
           </p>
-        )}
-        <div className="px-4 py-4">
-          <div className={`overflow-hidden ${R_CHROME} border ${LINE}`}>
-            <div
-              className={`flex items-center gap-2 border-b bg-[var(--mock-well)] px-3 py-2 text-[color:var(--mock-ink-soft)] ${UI_SECONDARY} ${LINE}`}
-            >
-              <span className="flex-1">Client</span>
-              {/* The spinner leads the new column in and then retires, so the
-                  card shows the builder DOING the change the line above it
-                  asked for — at rest the table simply has no Due date, which
-                  is the before. */}
-              <BusyRing />
-              <span
-                className={`${MOVE} w-0 overflow-hidden whitespace-nowrap text-right opacity-0 group-hover/card:w-[58px] group-hover/card:opacity-100`}
-              >
-                Due date
-              </span>
-            </div>
-            {[
-              ["Meridian Corp", "12 Nov"],
-              ["Oakwood LLC", "28 Nov"],
-              ["Bloom Studios", "4 Dec"],
-            ].map(([client, due], i) => (
-              <div
-                key={client}
-                className={`flex items-center gap-2 border-b px-3 py-[11px] last:border-b-0 ${ROW_HOVER} ${LINE}`}
-              >
-                <span
-                  className={`flex-1 truncate text-[color:var(--mock-ink)] ${UI_PRIMARY}`}
-                >
-                  {client}
-                </span>
-                <span
-                  className={`${MOVE} w-0 overflow-hidden whitespace-nowrap text-right text-[color:var(--mock-ink-soft)] ${UI_SECONDARY} opacity-0 group-hover/card:w-[58px] group-hover/card:opacity-100`}
-                  // Held back behind the spinner rather than starting with it.
-                  // The dates used to land in the same instant the column was
-                  // asked for, which read as a column that had been there all
-                  // along; arriving one at a time while the ring is still
-                  // turning, they read as values being written into it.
-                  style={{ transitionDelay: `${260 + i * 90}ms` }}
-                >
-                  {due}
-                </span>
-              </div>
-            ))}
-          </div>
+          {table}
+        </div>
+      </Scene>
+    );
+  }
+
+  return (
+    // A LANDSCAPE BOX, not the rail's portrait one. The scene's design box is
+    // what MockFit fits, not the content inside it — so with the table gone
+    // the two bubbles were being fitted into a 340x453 portrait frame and
+    // drawn tiny against the top of it. Sized to what is actually here.
+    <Scene w={680} h={260}>
+      {/* THE CHAT IS THE WHOLE SCENE. The pair used to sit at the top of the
+          white window with the client table under it, which put a sheet of
+          white behind two messages and made them read as a header the card
+          carries. The table went with the window: the step's claim is that
+          you change the app by asking, and the asking is the part worth
+          showing — a table quietly growing a column is a detail you have to
+          hunt for, on a card big enough to bury the exchange above it. */}
+      <div className="flex flex-col">
+        <div className="px-1">
+          {/* Sent: pushed to the right and given the solid well, which is
+              what marks your own turn in every chat anyone reading this has
+              used. Capped short of the full measure so the side it is on is
+              legible as a side. */}
+          <p
+            className={`chat-turn ml-auto w-fit max-w-[82%] [animation:chat-turn_7s_ease-out_infinite] ${R_PANEL} bg-[var(--mock-well-2)] px-3 py-2 text-[color:var(--mock-ink)] ${CARD_BODY}`}
+          >
+            Add a due date to every project.
+          </p>
+          {/* The answer, as its own bubble on the left. OUTLINED, not filled:
+              the filled well is what marks your own turn above, so giving the
+              reply the same fill would make the two read as a pair of labels
+              instead of as question and answer. Both carry a solid ground
+              rather than a wash, because what is behind them is a photograph
+              and type on a photograph has to sit on something. */}
+          <p
+            // A second behind the request, so the two read as one exchange
+            // rather than as two labels that appeared together.
+            className={`chat-turn mt-2.5 flex w-fit max-w-[82%] items-center gap-2 [animation:chat-turn_7s_ease-out_1s_infinite] ${R_PANEL} border bg-[var(--mock-window)] px-3 py-2 ${LINE} text-[color:var(--mock-ink-soft)] ${CARD_BODY}`}
+          >
+            <span
+              aria-hidden
+              // Turning on its own account, not on hover: this line is the
+              // card at rest saying the change is in progress, and a still
+              // ring beside "Applying" reads as a change that has stalled.
+              className="size-[13px] shrink-0 rounded-full border-2 border-[var(--mock-line)] border-t-[color:var(--mock-ink-soft)] motion-safe:animate-spin"
+            />
+            Applying your change now.
+          </p>
         </div>
       </div>
     </Scene>

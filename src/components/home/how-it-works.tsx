@@ -91,8 +91,22 @@ export function HowItWorks({
   visualHeightClass = "h-[420px] sm:h-auto md:h-[560px]",
   stepImages,
   stepUi,
+  manual = false,
 }: {
   visualHeightClass?: string;
+  /**
+   * Steps change only when someone clicks one: no clock, and no progress rail
+   * filling along the active tab.
+   *
+   * The tour sells itself on a page where this section is the product demo.
+   * On a page that already opens with a hero carrying its own product shot,
+   * a second thing moving on its own competes for the same attention, and
+   * the rail reads as a loading bar rather than as a timer — it is a dark
+   * line creeping across the foot of a tab, directly over a photograph.
+   *
+   * Off by default, so the shipped homepage keeps its tour.
+   */
+  manual?: boolean;
   /**
    * A photograph per step, keyed by step id, shown INSTEAD of that step's
    * built visual — the blue panel with a picture in it rather than a mock.
@@ -145,7 +159,10 @@ export function HowItWorks({
   };
 
   useEffect(() => {
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (manual) return; // click-only; no clock to run and no rail to paint
+    const reduce = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
     if (reduce) return; // no auto-advance; tabs still switch on click
 
     // Only run the clock while the section is on screen. Browsers throttle rAF
@@ -178,7 +195,8 @@ export function HowItWorks({
         // Clamp the delta so one long throttled gap can never jump the bar.
         const dt = Math.min(ts - last, 64);
         last = ts;
-        progressRef.current += dt / (STEPS[activeRef.current].dwellMs ?? DWELL_MS);
+        progressRef.current +=
+          dt / (STEPS[activeRef.current].dwellMs ?? DWELL_MS);
         if (progressRef.current >= 1) {
           progressRef.current = 0;
           // Advance activeRef in the same frame as setActive. The [active] effect
@@ -198,7 +216,7 @@ export function HowItWorks({
       cancelAnimationFrame(raf);
       io?.disconnect();
     };
-  }, []);
+  }, [manual]);
 
   return (
     <section
@@ -217,9 +235,9 @@ export function HowItWorks({
               Go from idea to a working app in four steps
             </h2>
             <p className="type-lead max-w-lg text-pretty text-muted-foreground">
-              Describe what you want, approve the plan, and publish. Your app goes
-              live in your workspace with sign-in, permissions, and branding
-              already handled. Then keep refining it by chat.
+              Describe what you want, approve the plan, and publish. Your app
+              goes live in your workspace with sign-in, permissions, and
+              branding already handled. Then keep refining it by chat.
             </p>
           </div>
         </div>
@@ -245,7 +263,8 @@ export function HowItWorks({
           // `bg-background` rather than a hex, so it is the page's own ground
           // in whichever theme is rendering, and the dark fill stays stacked on
           // top of it exactly as before.
-          className="mx-auto mt-10 flex max-w-[1100px] flex-col overflow-hidden rounded-[20px] border border-border bg-background [[data-theme=dark]_&]:border-white/15 [[data-theme=dark]_&]:bg-white/[0.04] md:mt-12">
+          className="mx-auto mt-10 flex max-w-[1100px] flex-col overflow-hidden rounded-[20px] border border-border bg-background [[data-theme=dark]_&]:border-white/15 [[data-theme=dark]_&]:bg-white/[0.04] md:mt-12"
+        >
           {/* Tabs — divided by hairlines; each carries a progress track on its
               top edge that fills over the dwell on the active tab. */}
           <div
@@ -270,29 +289,43 @@ export function HowItWorks({
                 // one strip, so a box around a single cell fights the dividers
                 // that define it and notches at the strip's rounded corner. A
                 // deeper version of the hover fill is the strip's own language.
-                className="group relative cursor-pointer px-5 py-4 text-left outline-none transition-colors hover:bg-foreground/[0.03] focus-visible:shadow-[inset_0_-2px_0_0_rgba(0,0,0,0.45)] sm:text-center [[data-theme=dark]_&]:focus-visible:shadow-[inset_0_-2px_0_0_rgba(255,255,255,0.45)]"
+                // THE ACTIVE TAB IS FILLED when there is no rail to mark it.
+                // With the tour running, the bar creeping along the active tab
+                // says which one is on; take it away and the only difference
+                // left is the label's tone, which is too quiet to find at a
+                // glance. The fill is the strip's own hover tint a step
+                // deeper, so it is the same language rather than a new one.
+                className={`group relative cursor-pointer px-5 py-4 text-left outline-none transition-colors hover:bg-foreground/[0.03] focus-visible:shadow-[inset_0_-2px_0_0_rgba(0,0,0,0.45)] sm:text-center [[data-theme=dark]_&]:focus-visible:shadow-[inset_0_-2px_0_0_rgba(255,255,255,0.45)] ${
+                  manual && active === i
+                    ? "bg-foreground/[0.05] [[data-theme=dark]_&]:bg-white/[0.07]"
+                    : ""
+                }`}
               >
-                {/* Progress track (fills over the dwell on the active tab). */}
-                <span
-                  aria-hidden
-                  // INSIDE THE TAB, not straddling its edge. At -bottom-px the
-                  // bar sat ON the rule between the strip and the panel, so
-                  // over a photograph it had a dark edge immediately under it
-                  // and read as part of the picture rather than as a bar
-                  // filling. Held off that rule, it always has the strip's own
-                  // ground behind it and the rule as a line under it. Two
-                  // pixels rather than one for the same reason: a hairline is
-                  // a border, and this is the one thing here that moves.
-                  className="absolute inset-x-0 bottom-0 z-10 h-0.5 overflow-hidden"
-                >
+                {/* Progress track (fills over the dwell on the active tab).
+                    Not drawn at all when the steps are click-only — there is
+                    no dwell for it to measure. */}
+                {!manual && (
                   <span
-                    ref={(el) => {
-                      fillRefs.current[i] = el;
-                    }}
-                    className="block h-full origin-left bg-foreground"
-                    style={{ transform: "scaleX(0)" }}
-                  />
-                </span>
+                    aria-hidden
+                    // INSIDE THE TAB, not straddling its edge. At -bottom-px the
+                    // bar sat ON the rule between the strip and the panel, so
+                    // over a photograph it had a dark edge immediately under it
+                    // and read as part of the picture rather than as a bar
+                    // filling. Held off that rule, it always has the strip's own
+                    // ground behind it and the rule as a line under it. Two
+                    // pixels rather than one for the same reason: a hairline is
+                    // a border, and this is the one thing here that moves.
+                    className="absolute inset-x-0 bottom-0 z-10 h-0.5 overflow-hidden"
+                  >
+                    <span
+                      ref={(el) => {
+                        fillRefs.current[i] = el;
+                      }}
+                      className="block h-full origin-left bg-foreground"
+                      style={{ transform: "scaleX(0)" }}
+                    />
+                  </span>
+                )}
 
                 <span className="flex items-center justify-start gap-2 sm:justify-center">
                   <span
@@ -332,7 +365,9 @@ export function HowItWorks({
           {/* grid-rows-1 (1fr, not auto): with an auto row the cell still sized
               to the tallest card, so h-full/max-h-full below resolved against
               that instead of the capped panel. */}
-          <div className={`relative order-1 grid ${visualHeightClass} grid-cols-1 grid-rows-1 overflow-hidden sm:order-none [font-family:var(--font-inter),system-ui,sans-serif]`}>
+          <div
+            className={`relative order-1 grid ${visualHeightClass} grid-cols-1 grid-rows-1 overflow-hidden sm:order-none [font-family:var(--font-inter),system-ui,sans-serif]`}
+          >
             {STEPS.map((step, i) => (
               <div
                 key={step.id}

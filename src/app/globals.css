@@ -4804,3 +4804,39 @@ html:not([data-authed]) .auth-only {
     opacity: 1;
   }
 }
+
+/* ── The iterate step's exchange ──────────────────────────────────────────
+   The homepage's four-steps panel keeps every step mounted and crossfades
+   between them, so an animation that runs on mount would only ever play on
+   page load — by the time you clicked Iterate it would be long over. These
+   loop instead, on one shared 7s cycle: the request arrives, the answer
+   follows it a beat later, both hold while they can be read, then the pair
+   clears and it begins again. Whenever you arrive at the tab, the exchange
+   is either playing or about to.
+
+   The reply is the same animation shifted by its own delay rather than a
+   second set of keyframes, so the two can never drift out of step. */
+@keyframes chat-turn {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  8%,
+  82% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  92%,
+  100% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chat-turn {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

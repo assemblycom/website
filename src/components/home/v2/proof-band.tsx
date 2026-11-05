@@ -1,5 +1,5 @@
-import Link from "next/link";
-import { CustomerLogo } from "@/components/customers/customer-logos";
+import { getCaseStudyBySlug } from "@/lib/case-studies";
+import { ProofReel, type ReelItem } from "@/components/home/v2/proof-reel";
 
 // ─────────────────────────────────────────────────────────────────────────
 // PROOF BAND — the logo strip under the hero.
@@ -17,7 +17,9 @@ import { CustomerLogo } from "@/components/customers/customer-logos";
 // it is simply not in this band any more.
 //
 // The logos are the customers with published case studies, so every mark here
-// has a page behind it. Ordered to put the largest name first and then to
+// has a page behind it — and the reel now says so: hovering a mark dims its
+// neighbours and prints that customer's headline figure under the row. See
+// proof-reel.tsx, which is the client half of this. Ordered to put the largest name first and then to
 // alternate industries, so the row reads as a spread of businesses rather than
 // a list of accounting firms.
 // ─────────────────────────────────────────────────────────────────────────
@@ -39,6 +41,21 @@ const REEL = [
 ];
 
 export function ProofBand() {
+  // Resolved here rather than in the reel itself: case-studies.ts carries the
+  // full editorial body of every story, and importing it from a client
+  // component would ship all of it to the browser to read two fields.
+  const items: ReelItem[] = REEL.flatMap((slug) => {
+    const study = getCaseStudyBySlug(slug);
+    const stat = study?.stats[0];
+    // A mark with no story or no figure behind it has nothing to say on
+    // hover, so it does not belong in a reel whose whole point is that it
+    // does. Skipped rather than shown mute, which would read as a broken cell.
+    if (!study || !stat) return [];
+    return [
+      { slug, company: study.company, result: `${stat.value} ${stat.label}` },
+    ];
+  });
+
   return (
     // ASYMMETRIC BY DESIGN. The top inset is almost nothing, so the marks ride
     // up under the hero tile and read as the foot of the hero; the bottom is
@@ -50,33 +67,7 @@ export function ProofBand() {
           was telling the reader what eight wordmarks already say, and it put a
           line of mono caps between the hero and the logos that held them down
           the page. The marks carry it on their own. */}
-      <ul // Seven across, not eight. Heritage Law's mark is a fine-lined tree
-      // over two lines of letter-spaced small caps — detail that survives on
-      // a case-study page and turns to grey mush at 120x28, worst of all on
-      // the dark ground. Rather than fill the slot with one of the square
-      // marks (the problem Durrick had), the row is a column narrower.
-      className="grid grid-cols-2 items-center gap-x-8 gap-y-8 sm:grid-cols-4 lg:grid-cols-7">
-        {REEL.map((slug) => (
-          <li key={slug} className="flex items-center justify-center">
-            <Link
-              href={`/customers/${slug}`}
-              // Muted at rest and full strength on hover: a reel at full
-              // contrast competes with the hero's own headline a few hundred
-              // pixels above it, and these are proof, not navigation.
-              className="flex h-7 w-full max-w-[120px] items-center justify-center text-foreground/40 transition-colors hover:text-foreground/80"
-            >
-              {/* The wrapper has to carry a width as well as a height: a
-                  `fit` logo ignores its own aspect ratio and takes its box from
-                  the parent, so an auto-width flex row collapsed every masked
-                  wordmark to nothing while the two inline SVGs — which have a
-                  viewBox to size from — rendered fine. */}
-              <span aria-hidden className="flex h-full w-full items-center justify-center">
-                <CustomerLogo slug={slug} fit surface="var(--background)" />
-              </span>
-            </Link>
-          </li>
-        ))}
-      </ul>
+      <ProofReel items={items} />
     </section>
   );
 }

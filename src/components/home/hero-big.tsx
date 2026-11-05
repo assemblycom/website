@@ -143,6 +143,7 @@ export function HeroBig({
   iconBefore,
   signupHref = SIGNUP_URL,
   trustSlot,
+  roomy = false,
 }: {
   headline: string;
   body?: string;
@@ -158,6 +159,23 @@ export function HeroBig({
    * layout it renders, without knowing which it got.
    */
   trustSlot?: ReactNode;
+  /**
+   * Opens the hero's own box, for a page that does not run this hero's usual
+   * neighbours. See `roomy` on HeroV76, which passes it through.
+   *
+   * It raises the floor and the insets together rather than only the padding:
+   * the box already centres its content (`justify-center`), so a taller floor
+   * is what gives the lockup room on both sides of itself instead of pushing
+   * it down into the section below.
+   *
+   * FULL SCREEN FROM md. The hero gets the first view to itself: with the box
+   * at 80svh the next section's heading and half its chips sat under the
+   * buttons on a laptop, so the page opened on two things at once and the
+   * hero never had a moment of its own. At 100svh the content still centres,
+   * it just centres in the whole screen, and the top padding drops to match
+   * so the lockup does not slide down with the floor.
+   */
+  roomy?: boolean;
 }) {
   return (
     <section className="relative -mt-14 bg-white md:-mt-16 [[data-theme=dark]_&]:bg-[#0a0a0a]">
@@ -167,7 +185,13 @@ export function HeroBig({
           put the numbers band entirely below the fold on a laptop. The floor
           keeps the hero generous on a short viewport; above that it stops
           growing and the band comes up into view. */}
-      <div className="mx-auto flex min-h-[calc(68svh-5rem)] max-w-[1200px] flex-col justify-center px-6 pb-16 pt-28 md:px-10 md:pb-20">
+      <div
+        className={`mx-auto flex max-w-[1200px] flex-col justify-center px-6 md:px-10 ${
+          roomy
+            ? "min-h-[calc(80svh-5rem)] pb-24 pt-40 md:min-h-[100svh] md:pb-28 md:pt-32"
+            : "min-h-[calc(68svh-5rem)] pb-16 pt-28 md:pb-20"
+        }`}
+      >
         <h1
           className={`type-display-xl mx-auto text-balance text-center ${lines ? "max-w-none" : "max-w-[16ch]"} text-neutral-900 [[data-theme=dark]_&]:text-white`}
         >

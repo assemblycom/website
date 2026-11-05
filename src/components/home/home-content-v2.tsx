@@ -20,6 +20,7 @@ import {
   PlanCard,
   BuildCard,
   IterateCard,
+  TRACKER_PLAN_DOC,
 } from "@/components/client-portal/portal-build-cards";
 import { UnifiedPlatform } from "@/components/home/v2/platform-visuals";
 
@@ -144,6 +145,10 @@ export function HomeContentV2({
               a phone, and a real height at sm: the default chain ends in
               `sm:h-auto`, which collapses to nothing once the panel is empty. */}
           <HowItWorks
+            // Click to change step. See `manual` — this page opens on a hero
+            // with its own product shot, and a second panel advancing by
+            // itself a screen below it competes with it.
+            manual
             visualHeightClass="h-[320px] sm:h-[420px] md:h-[560px]"
             // The site's own photography, one per step, standing in while the
             // step screens are redone. Named for what they are of: the phone
@@ -172,6 +177,11 @@ export function HomeContentV2({
             // Build, so the homepage shows the same screens rather than a
             // second set that would drift from them. `plain` drops each
             // scene's own ground — the photograph is the ground here.
+            // A CLIENT PROJECT TRACKER, not the booking calendar the product
+            // page's version of these scenes runs. The three steps are one
+            // session — what you typed, what came back, what got built — so
+            // the prompt, the plan document and the published app all have to
+            // name the same thing. /ai-app-builder keeps the calendar.
             stepUi={{
               // CENTRED. The composer carries `sm:mt-[66px] sm:mb-auto`, which
               // is the arithmetic that drops it clear of the "Describe" heading
@@ -179,7 +189,10 @@ export function HomeContentV2({
               // so that offset just sat it high in the picture.
               describe: (
                 <div className="absolute inset-0 [&_.template-mock-fit>div>div]:my-auto!">
-                  <DescribeCard plain />
+                  <DescribeCard
+                    plain
+                    prompt="Add a project tracker each client sees for their own projects."
+                  />
                 </div>
               ),
               // FLUSH TO THE FOOT. The plan is a document longer than the
@@ -188,25 +201,46 @@ export function HomeContentV2({
               // document ending early rather than as a page running on. The
               // frame drops to the panel's own foot, and the card with it.
               plan: (
+                // NARROWED BY ITS HEIGHT, not by its sides. From sm the card
+                // is HEIGHT-bound in this frame: it fills the frame's height
+                // exactly and takes whatever width that leaves, which is what
+                // keeps it cut by the panel's foot rather than floating above
+                // it. So insetting the sides would only have left slack for
+                // MockFit to centre. Dropping the frame's top is what makes
+                // the card smaller, and the foot stays where it was.
+                //
                 // On a phone the frame is wider than the card's own shape, so
                 // MockFit sizes the card by the width and centres the slack —
                 // dropping the frame to the foot there just recentres it. The
                 // frame takes the card's 6:5 instead, which leaves no slack to
                 // centre, and sits on the panel's floor.
-                <div className="absolute inset-x-0 -bottom-4 top-auto aspect-[6/5] sm:-bottom-6 sm:top-0 sm:aspect-auto md:-bottom-10">
-                  <PlanCard plain />
+                <div className="absolute inset-x-0 -bottom-4 top-auto aspect-[6/5] sm:-bottom-6 sm:top-8 sm:aspect-auto md:-bottom-10 md:top-14">
+                  <PlanCard plain doc={TRACKER_PLAN_DOC} />
                 </div>
               ),
-              build: <BuildCard plain />,
-              // The other three take the panel's landscape design box; this
-              // one is drawn portrait for the rail on /client-portal and has
-              // no landscape variant, so fitted into a wide slot it came out
-              // a third smaller than its neighbours and read as a different
-              // family of screen. A taller frame is what MockFit scales
-              // against, so the card lands at the others' size; the panel
-              // clips, and the scene centres itself inside the frame anyway.
+              // FLUSH TO THE FOOT. This scene is WIDTH-bound in the panel —
+              // it takes the full measure and whatever height that leaves —
+              // so pulling the frame's bottom past the floor did nothing but
+              // re-centre the card in a taller box, and it sat ~56px above
+              // the photograph's foot reading as a short card rather than as
+              // a screen the panel is cropping. The frame takes the scene's
+              // own aspect at each breakpoint instead, which leaves no slack
+              // for MockFit to centre, and sits on the floor.
+              //
+              // The negative bottom is how it reaches that floor: every step
+              // here is drawn inside an inset box (inset-4 / 6 / 10), so
+              // `bottom-0` is the inset's foot and still left the panel's own
+              // padding showing under the screen. These numbers cancel it.
+              build: (
+                <div className="absolute inset-x-0 -bottom-4 top-auto aspect-[360/300] sm:-bottom-6 sm:aspect-[620/400] md:-bottom-10 lg:aspect-[900/400] lgx:aspect-[1040/400]">
+                  <BuildCard plain tracker />
+                </div>
+              ),
+              // The chat alone, on the photograph — no window and no table.
+              // Its scene is landscape like the others now, so it needs none
+              // of the taller frame the portrait rail card used to want.
               iterate: (
-                <div className="absolute inset-x-0 -inset-y-10 sm:-inset-y-24">
+                <div className="absolute inset-0">
                   <IterateCard reply />
                 </div>
               ),
@@ -216,20 +250,38 @@ export function HomeContentV2({
 
         <GridDivider lineClass={BUILDER_GRID_LINE} />
 
-        {/* Proof, then the security case it raises: a visitor convinced by
-            the stories is the one who then asks where the data lives. */}
+        {/* The customer stories, then the capability index they raise: a
+            visitor convinced by the stories is the one who then asks what is
+            actually in the box. */}
         <Reveal variant="fade">
           <CustomerProof />
         </Reveal>
 
         <GridDivider lineClass={BUILDER_GRID_LINE} />
 
+        <Reveal variant="fade">
+          {/* Nine rows, not ten. Security has a section of its own directly
+              below, with the certifications and the way through to
+              /security — so the row here was the same argument a second time,
+              and the weaker of the two. */}
+          <WholeStack omit={["Security"]} />
+        </Reveal>
+
+        <GridDivider lineClass={BUILDER_GRID_LINE} />
+
         {/* THE PRODUCT PAGES' SECURITY SECTION, not a homepage one.
             PortalTrust is what /client-portal and both solution pages already
-            run — the claim and its way out on the left, the claims a
-            safety-first buyer checks as rows on the right, and the
-            certification seals closing it. It carries its own Reveal, so
-            there is no wrapper here.
+            run — the claim and its way out on the left, the certification
+            seals closing it. It carries its own Reveal, so there is no
+            wrapper here.
+
+            BETWEEN THE STACK AND THE FAQ, not before them. The capability
+            index and the FAQ are the same object twice: a sticky heading in
+            the left column and a list of dotted rules you open in the right.
+            Run back to back they read as one very long accordion that changes
+            subject halfway. The security section is the page's one block with
+            a band of its own, so it breaks the pair and closes the product
+            argument where a buyer actually asks the question.
 
             THE GRID RUNS BEHIND IT. An earlier pass grounded the whole
             section to stop the rails fighting the seal band's own dividers,
@@ -242,8 +294,16 @@ export function HomeContentV2({
             pages send a reader to the Trust Center. */}
         <PortalTrust
           heading="Client data your clients can trust you with"
-          body="The apps you build inherit the platform's security rather than asking you to get it right yourself. SOC 2 Type II certified, with HIPAA, GDPR and CCPA support."
+          body="Your apps inherit the platform's security rather than reinventing it. SOC 2 Type II certified, with HIPAA, GDPR and CCPA support."
           link={{ label: "How Assembly keeps data safe", href: "/security" }}
+          // NO ROWS TO OPEN. The four claims are drawn with the FAQ's own
+          // accordion, which is exactly what made this stretch of the page
+          // read as three identical lists in a row. The seals say the same
+          // thing in a shape nothing else here uses, and the detail behind
+          // them is one click away on /security — which is what the link is
+          // for. The product pages keep their rows; only the homepage drops
+          // them.
+          claims={[]}
           // AND ITS OWN SIDE EDGES. The band draws hairlines only BETWEEN
           // its cells — "the outer edges get nothing", as
           // security-compliance.tsx puts it, because on /security and
@@ -253,10 +313,33 @@ export function HomeContentV2({
           // open on the left and right. Barely visible in light; plainly
           // broken in dark.
           //
-          // Side-specific colour utilities so the top border keeps the grid's
-          // tone while the sides take the band's own, matching the hairlines
-          // between the cells they close.
-          bandClassName={`relative border-x border-x-border bg-background ${BUILDER_RAIL_HALO_WIDE} [[data-theme=dark]_&]:border-x-[#383838]`}
+          // A HARD 2px RING BEFORE THE SOFT HALO, which is why this no longer
+          // takes BUILDER_RAIL_HALO_WIDE as it is. The rails are 1px spans
+          // centred on the measure's sixths, so the outer two straddle the
+          // band's own edges — half a pixel of rail sits OUTSIDE the band's
+          // border on each side, and the soft halo is only ~65% opaque that
+          // close in, so it never quite covered it. A faint line half a pixel
+          // from a solid one reads as a doubled edge. The crisp ring covers
+          // the overhang outright; the 96px halo still does its own job of
+          // fading the rails out above and below.
+          //
+          // AND ITS FOOT. The closing rule used to be a GridDivider after this
+          // section, and it was never visible: the band is taller than the
+          // section that holds it and paints an opaque ground, so the divider
+          // landed behind it. The seals sat in a box open at the bottom. The
+          // border belongs on the band itself, which is the thing being
+          // closed.
+          //
+          // ONE TONE ON ALL FOUR SIDES. The band is a box drawn in three
+          // greys: its cells are separated by `gap-px bg-border`, so the
+          // hairlines inside it are --border, while the top edge came in at
+          // the grid line's lighter --color-grid. Against the FAQ's own side
+          // rules below — also --border — the top of the band read as a
+          // different line from the rest of it, and the column the two share
+          // changed weight halfway down. Every drawn edge here is --border
+          // now; the rails behind stay fainter, which is what a backdrop
+          // should be.
+          bandClassName={`relative border-x border-b border-x-border border-b-border border-t-border bg-background shadow-[0_0_0_2px_var(--background),0_0_96px_10px_var(--background)] [[data-theme=dark]_&]:border-x-[#383838] [[data-theme=dark]_&]:border-b-[#383838]`}
           // ON THE RAILS. The band divided the measure into quarters while the
           // page divides it into sixths, so its hairlines and the rails above
           // and below it ran at two rhythms a pixel or so apart — read as a
@@ -264,21 +347,6 @@ export function HomeContentV2({
           // empty puts every vertical in the band on a rail.
           bandOnRails
         />
-
-        {/* THE BAND'S OWN CLOSING RULE, so it takes the default tone rather
-            than the rails'. The band is a box: its top edge, its sides and the
-            hairlines between its cells are all drawn at the grid line's solid
-            tone, and the rail tone underneath them is faint enough that the
-            band read as open at the foot with a rule missing. Every other
-            divider on the page joins two stretches of plain type, where the
-            rails' own weight is the right one. */}
-        <GridDivider />
-
-        <Reveal variant="fade">
-          <WholeStack />
-        </Reveal>
-
-        <GridDivider lineClass={BUILDER_GRID_LINE} />
 
         {/* THE FAQ TAKES THE PAGE GROUND AND THE WIDE RAIL HALO, for the
             reason /ai-app-builder's does: it is the one block here with no
@@ -288,6 +356,17 @@ export function HomeContentV2({
             them, and the halo fades them out either side of it instead of
             cutting all six on one scanline. */}
         <div className={`relative bg-background ${BUILDER_RAIL_HALO_WIDE}`}>
+          {/* THE MEASURE'S OWN SIDES, redrawn. The ground above is what stops
+              six rails running down through the questions, but it takes the
+              OUTER two with them — and those are the ones holding the block
+              on the page, so the FAQ was the one section floating free of the
+              grid. Drawn at the band's weight rather than the rails', for the
+              same reason the band's are: a line that has to be read against
+              plain type, with no fill behind it, needs more than 5.5%. */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-y-0 left-1/2 w-full max-w-[1200px] -translate-x-1/2 border-x border-x-border [[data-theme=dark]_&]:border-x-[#383838]"
+          />
           <Reveal variant="fade">
             {/* -mx-3 so the questions start on the measure, level with the
                 heading and with the ruled list in the section above. */}

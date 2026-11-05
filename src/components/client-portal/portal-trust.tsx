@@ -84,15 +84,31 @@ export function PortalTrust({
   visual?: React.ReactNode;
 } = {}) {
   const external = link.href.startsWith("http");
+  // Nothing to put beside the claim: a caller that drops the rows and passes
+  // no visual would otherwise leave half a row of empty page above the band.
+  // The copy centres over the band instead, which is itself centred in the
+  // measure — ranged left it read as a two-column section with the right
+  // column missing.
+  const solo = !claims.length && !visual;
   return (
     <section className="mx-auto max-w-[1200px] px-6 pt-16 md:px-10 md:pt-24">
       <Reveal>
         {/* Same two-column shape as the stack section: claim and its way out on
             the left, the rows that answer it on the right. */}
-        <div className="grid gap-10 md:grid-cols-2 md:gap-16">
+        <div
+          className={
+            solo
+              ? "mx-auto max-w-[52ch] text-center"
+              : "grid gap-10 md:grid-cols-2 md:gap-16"
+          }
+        >
           <div className="md:self-start">
             <h2 className="type-h2 text-balance">{heading}</h2>
-            <p className="mt-5 max-w-md text-muted-foreground">{body}</p>
+            <p
+              className={`mt-5 text-muted-foreground ${solo ? "" : "max-w-md"}`}
+            >
+              {body}
+            </p>
             <a
               href={link.href}
               {...(external
@@ -148,7 +164,9 @@ export function PortalTrust({
             rails, and opened by its own rule. It closes on the section divider
             instead of drawing a second one, so the section carries no bottom
             padding: the band runs to the end of it. */}
-        <div className={`-mx-6 mt-14 border-t md:-mx-10 ${GRID_LINE} ${bandClassName ?? ""}`}>
+        <div
+          className={`-mx-6 mt-14 border-t md:-mx-10 ${GRID_LINE} ${bandClassName ?? ""}`}
+        >
           <SecurityCompliance omit={omitSeals} railAligned={bandOnRails} />
         </div>
       </Reveal>

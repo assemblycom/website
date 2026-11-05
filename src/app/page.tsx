@@ -60,17 +60,12 @@ export default async function HomePage({
             // marks had nothing to sit against and their deep bottom inset
             // left a screen of white between them and the first section.
             //
-            // ROOM EITHER SIDE. This hero is built to open a page that then
-            // runs a coloured numbers band under it, and it sets its spacing
-            // against both: it slides up under the transparent nav, and its
-            // foot is sized for a band that closes it. Dropped on this page it
-            // has neither — the headline sat just under the nav links and the
-            // first section started right off the buttons. The padding is here
-            // rather than in the hero because it is this page's arrangement
-            // that asks for it, and the hero still ships as it is.
-            <div className="pb-10 pt-8 md:pb-16 md:pt-14">
-              <HeroV76 templates={templates} />
-            </div>
+            // ROOM VIA THE HERO'S OWN PROP, not a wrapper. This hero renders
+            // the nav bar itself and then pulls its section up underneath it,
+            // so padding it from out here moved the NAV down the page and left
+            // a band of white above the logo. `roomy` opens the space inside
+            // the hero, below the bar, which is where it was wanted.
+            <HeroV76 templates={templates} roomy />
           ) : active === "3" ? (
             <>
               <HeroPhoto />

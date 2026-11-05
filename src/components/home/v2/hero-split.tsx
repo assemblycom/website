@@ -1,15 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
 import { StudioNav } from "@/components/home/studio-nav";
 import { useTheme } from "@/components/theme/theme-provider";
 import { APP_URL, DEMO_URL, SIGNUP_URL } from "@/lib/constants";
 import { COPY_VARIANTS, FALLBACK_COPY } from "@/lib/hero-variants";
 import { PRIMARY_CTA } from "@/components/home/hero-big";
 import { SECONDARY_CTA } from "@/components/home/cta";
-import { SegmentedTabs } from "@/components/ui/segmented-tabs";
 import { HeroCredibility } from "@/components/home/v2/hero-credibility";
+import { OnboardingTrackerMock } from "@/components/client-portal/segment-mock";
 
 // ─────────────────────────────────────────────────────────────────────────
 // HERO (V2, SPLIT) — the layout from the elevenlabs.io reference: headline
@@ -34,21 +33,16 @@ import { HeroCredibility } from "@/components/home/v2/hero-credibility";
 //      repeat of the primary action, inside the panel, so the tile is a
 //      self-contained pitch rather than a screenshot.
 //
-// THE TABS SIT INSIDE THE VISUAL, in its top-right corner — not on the page
-// above the panel, where they were first drawn. On the page the control was
-// another object stacked over the tile and the two read as separate things;
-// laid on the shot it reads as the shot's own control, which is what it is.
+// NO TABS ON THE TILE. The panel used to carry a Portal / Builder / Apps
+// switch in its top-right corner, and it is gone: a hero asks a visitor to
+// read one claim, and a control up there asks them to choose between three
+// before they have read any of it. A hero should not have a decision in it.
 //
-// That corner is what `round="pill"` exists for, and the prop says so: a soft
-// rectangle reads as another panel among the panels, a pill reads as a control
-// laid on top of one. /client-portal's Theirs/Ours switch is the other case.
-//
-// NO ICONS ON THE TABS — the reference sets a small coloured sphere beside
-// each one and this deliberately does not: asked for without them.
-//
-// THE PANEL IS A GREY PLACEHOLDER, as asked. It is labelled with the active
-// tab so switching is visible while there is nothing real behind it. When the
-// shots land, replace PlaceholderPanel and nothing else here moves.
+// It also hid the strongest thing we can show. Round 1-3 found the client
+// experience on its own outsold every framing that put the builder beside it,
+// and the headline makes that same promise — so the tile shows a client's
+// portal, one screen, standing still. Side by side would be fine; a control
+// the visitor has to operate would not.
 
 // THE PRODUCT PAGES' HERO RAIL — 1400 with px-6 md:px-10, which is what
 // /client-portal and /ai-app-builder both set on their own hero blocks. Taken
@@ -70,52 +64,34 @@ const RAIL = "mx-auto max-w-[1400px] px-6 md:px-10";
 // `rounded-lg`, every other page closes on it, and a hero with a different
 // button shape from the rest of the site reads as a different site.
 
-interface Tab {
-  id: string;
-  label: string;
-  /** The label on a phone, where the full one cannot fit three across. */
-  short: string;
-}
-
-// Three, as the reference has — and named from NAV_ENTRIES' own Features
-// column rather than invented, so a tab and the nav item it corresponds to
-// are the same words.
-const TABS: Tab[] = [
-  {
-    id: "portal",
-    label: "Client portal",
-    short: "Portal",
-  },
-  // The builder second, the ready-made apps third. The portal is what the
-  // headline just promised, the builder is the thing that is ours, and the
-  // ready-made apps are the detail of how you get there — so the middle slot
-  // goes to the claim rather than to the catalogue.
-  {
-    id: "builder",
-    label: "AI app builder",
-    short: "Builder",
-  },
-  {
-    id: "apps",
-    label: "Ready-made apps",
-    short: "Apps",
-  },
-];
-
 /**
- * The space the product shot will occupy.
+ * The product shot: a client's own portal, with the firm's nav down the side
+ * and an onboarding tracker open in it.
  *
- * Empty — no fill of its own (the tile around it is already `--surface`) and
- * no label. It carried the active tab's name so the panel visibly answered the
- * tabs while there was nothing in it; the tab control says which tab is on,
- * and a word floating in the middle of an empty panel read as a caption for a
- * picture that is not there yet.
+ * STILL, and drawn once. It is the same window /client-portal's hero carries,
+ * minus the carousel around it — the screens there are picked by the reader,
+ * which is the right control on a page about the portal and the wrong one on
+ * a homepage, where this is the first picture anyone sees.
  *
- * The height is the product pages' hero-tray height. See the comment on it.
+ * It fills the tile rather than being scaled into it. The mock is fluid —
+ * `h-full` and `flex-1` throughout — so a wider window means the rows lay out
+ * with more room at the same type size, which is a screen someone could
+ * actually be looking at. Scaling a fixed drawing up instead would magnify
+ * the type along with it and read as a screenshot zoomed in.
+ *
+ * The mock brings its own portal nav, so there is no sidebar to add here.
+ *
+ * The height is the product pages' hero-tray height.
  */
-function PlaceholderPanel() {
+function ClientExperiencePanel() {
   return (
-    <div className="h-[280px] w-full overflow-hidden rounded-xl md:h-[391px]" />
+    <div
+      // Its own ground and hairline, so the window reads as a window sitting
+      // in the tile rather than as rows printed straight onto it.
+      className="h-[280px] w-full overflow-hidden rounded-xl border border-[var(--mock-line)] bg-background md:h-[391px]"
+    >
+      <OnboardingTrackerMock />
+    </div>
   );
 }
 
@@ -125,7 +101,6 @@ export function HeroSplit() {
   // The hand-set lockup where the message carries one, the plain headline as
   // a single line where it does not — `big.lines` is optional on the record.
   const lines = message.big?.lines ?? [message.h1];
-  const [active, setActive] = useState(TABS[0].id);
 
   return (
     <>
@@ -215,34 +190,7 @@ export function HeroSplit() {
           <div className="mt-12 md:mt-16">
             {/* The panel. rounded-3xl, the radius the site's large panels use. */}
             <div className="rounded-3xl bg-[var(--surface)] p-3 md:p-5">
-              {/* The control sits BELOW the panel on a phone, full width, and
-                  moves into the panel's top-right corner from md up — one
-                  instance either way, so the tab/panel ids stay unique. */}
-              <div className="relative">
-                <PlaceholderPanel />
-                <div className="mt-3 md:absolute md:right-4 md:top-4 md:mt-0">
-                  <SegmentedTabs
-                    // Pill track and thumb — the variant for a control laid on
-                    // a picture. `bg-background` so the track is legible over
-                    // whatever the shot behind it turns out to be.
-                    round="pill"
-                    className="w-full bg-background md:w-auto"
-                    label="What Assembly does"
-                    idBase="hero-tile"
-                    value={active}
-                    onChange={setActive}
-                    options={TABS.map((t) => ({
-                      value: t.id,
-                      label: (
-                        <>
-                          <span className="md:hidden">{t.short}</span>
-                          <span className="hidden md:inline">{t.label}</span>
-                        </>
-                      ),
-                    }))}
-                  />
-                </div>
-              </div>
+              <ClientExperiencePanel />
             </div>
           </div>
         </div>

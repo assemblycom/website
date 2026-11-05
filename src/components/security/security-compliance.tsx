@@ -11,7 +11,8 @@ interface Standard {
   seal: string;
 }
 
-const STANDARDS: Standard[] = [
+/** The seals, for a caller drawing them outside this band. */
+export const SECURITY_STANDARDS: Standard[] = [
   { title: "SOC 2 Type II", seal: "SOC 2" },
   { title: "HIPAA", seal: "HIPAA" },
   { title: "GDPR", seal: "GDPR" },
@@ -32,7 +33,11 @@ const SEAL_LABEL =
 const STAR_COUNT = 8;
 const STAR_RADIUS_PCT = 36;
 
-function Seal({ label }: { label: string }) {
+/**
+ * Exported for the homepage's unified-platform panel, which lays the four
+ * seals straight onto its photograph with none of the band around them.
+ */
+export function Seal({ label }: { label: string }) {
   const isLine = label !== "HIPAA" && label !== "GDPR";
 
   // Divider badges — the circle is split into two halves by a full-bleed line;
@@ -142,8 +147,8 @@ export function SecurityCompliance({
   railAligned?: boolean;
 } = {}) {
   const standards = omit?.length
-    ? STANDARDS.filter((s) => !omit.includes(s.title))
-    : STANDARDS;
+    ? SECURITY_STANDARDS.filter((s) => !omit.includes(s.title))
+    : SECURITY_STANDARDS;
   // Only the four-seal band divides into sixths cleanly (one empty cell each
   // end); a shorter list keeps its own equal share of the measure.
   const onRails = railAligned && standards.length === 4;
