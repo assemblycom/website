@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { BuilderGridRails } from "@/components/ai-app-builder/builder-grid-rails";
 import { StudioNav } from "@/components/home/studio-nav";
 import { useTheme } from "@/components/theme/theme-provider";
 import { APP_URL, DEMO_URL, SIGNUP_URL } from "@/lib/constants";
@@ -82,7 +83,8 @@ const RAIL = "mx-auto max-w-[1400px] px-6 md:px-10";
  *
  * The mock brings its own portal nav, so there is no sidebar to add here.
  *
- * The height is the product pages' hero-tray height.
+ * The height is the product pages' hero-tray height from md; the phone's is
+ * set against the window's own width there — see the class.
  */
 function ClientExperiencePanel() {
   return (
@@ -102,7 +104,12 @@ function ClientExperiencePanel() {
       // their card's, so the last row is cropped by the frame rather than
       // stopping short of it with a band of tile underneath — which read as
       // the table having run out rather than as a window onto more.
-      className="mx-auto h-[280px] w-full max-w-[1080px] overflow-hidden rounded-t-xl border border-b-0 border-[var(--mock-line)] bg-background md:h-[391px]"
+      // TALLER ON A PHONE than the 280 it was. The window is about 300px wide
+      // there, so at 280 tall it was square — and a square window reads as a
+      // crop of an app rather than as a screen, because no screen anyone uses
+      // is square. At 340 it is portrait, like the phone holding it, and two
+      // more rows of the tracker clear the fold.
+      className="mx-auto h-[340px] w-full max-w-[1080px] overflow-hidden rounded-t-xl border border-b-0 border-[var(--mock-line)] bg-background md:h-[391px]"
     >
       <OnboardingTrackerMock />
     </div>
@@ -136,7 +143,17 @@ export function HeroSplit() {
         restPaddingClass="px-6 md:px-10"
       />
 
-      <section className="relative -mt-14 bg-background pb-16 md:-mt-16 md:pb-20">
+      {/* THE GRID STARTS HERE, not below the hero. The rails used to begin
+          with the content region, which left the hero and the logo band under
+          it as the one stretch of the page with nothing behind them — and
+          because that stretch is mostly air, it read as the page not having
+          started yet. `isolate` makes this section the stacking context the
+          rails' negative z resolves against, so they sit above the section's
+          own ground and below everything drawn on it: the tile and the nav
+          cut them, which is the effect. No bottom fade — the logo band's bed
+          picks them straight up. */}
+      <section className="relative -mt-14 isolate bg-background pb-16 md:-mt-16 md:pb-20">
+        <BuilderGridRails fadeBottom={false} />
         {/* pt-28 md:pt-32 — hero-big's own top inset and /security's, rather
             than a number picked for this layout. The -mt-14/-mt-16 above pulls
             the section under the fixed bar, so this is what actually sets the
@@ -157,7 +174,21 @@ export function HeroSplit() {
               hero. The alignment now changes at the same breakpoint the
               layout does. /client-portal ranges left at every width; this is
               the one place V2 departs from it, deliberately. */}
-          <div className="grid gap-8 text-center lg:grid-cols-[1.15fr_0.85fr] lg:items-start lg:gap-x-16 lg:text-left">
+          {/* THREE ITEMS, PLACED, rather than the rating and the headline in
+              one column box beside the lead. With the left column as a single
+              box the lead could only start at the top of it, which is the
+              rating's line — so the lead sat a clear step above the headline
+              it belongs to and read as a caption on the rating. Given a row
+              of its own, the rating spans nothing and the headline and the
+              lead share the row below it, which is what puts their first
+              lines together.
+
+              The row gap is zero at every width and the spacing is carried by
+              the pieces themselves — the rating's own `mb-5`, and the lead's
+              `mt-8` while the two are stacked — because a row gap here would
+              fall between the rating and the headline as well, and those two
+              are one lockup. */}
+          <div className="grid gap-x-8 gap-y-0 text-center lg:grid-cols-[1.15fr_0.85fr] lg:items-start lg:gap-x-16 lg:text-left">
             {/* CAPPED BELOW type-display-xl's OWN TOP END. That clamp runs to
                 84px, which is sized for a headline that owns the full measure
                 — in a column a little over half of it, "Deliver remarkable"
@@ -165,11 +196,12 @@ export function HeroSplit() {
                 56px is what holds the lockup at this column width; the
                 ladder's line-height and tracking are kept by leaving
                 type-display-xl on and overriding only the size. */}
-            <div>
-              {/* The rating, above the claim it vouches for. Inside the
-                  headline's column so it starts on the same left line. */}
+            {/* The rating, above the claim it vouches for. In the headline's
+                column so it starts on the same left line. */}
+            <div className="lg:col-start-1 lg:row-start-1">
               <HeroCredibility />
-              <h1 className="type-display-xl text-balance text-foreground [font-size:clamp(2.5rem,1.1rem+3.3vw,3.5rem)]">
+            </div>
+            <h1 className="type-display-xl text-balance text-foreground lg:col-start-1 lg:row-start-2 [font-size:clamp(2.5rem,1.1rem+3.3vw,3.5rem)]">
                 {lines.map((line) => (
                   // Each line a block, so the lockup's breaks hold at every
                   // width rather than being re-balanced by the browser.
@@ -177,8 +209,7 @@ export function HeroSplit() {
                     {line}
                   </span>
                 ))}
-              </h1>
-            </div>
+            </h1>
             {/* 34rem is /client-portal's measure, and it is right once the
                 lead has a column of its own from lg. Stacked under the
                 headline it is not: at the full width the first sentence very
@@ -186,8 +217,16 @@ export function HeroSplit() {
                 line and one short one with the break landing on the full
                 stop. A tighter measure breaks the first sentence itself,
                 which is what gives the block two lines of similar length
-                under a centred headline. lg:pt-2 is /client-portal's. */}
-            <p className="type-lead mx-auto max-w-[26rem] text-pretty text-muted-foreground lg:mx-0 lg:max-w-[34rem] lg:pt-2">
+                under a centred headline.
+
+                `mt-8` is the stacked gap the grid used to supply, moved onto
+                the element so the rating and the headline above it keep their
+                own tighter spacing; from lg the lead is beside the headline
+                rather than under it, so it goes. /client-portal's `lg:pt-2`
+                goes with it: that nudge was for a lead that started at the
+                top of its own column, and this one starts on the headline's
+                line. */}
+            <p className="type-lead mx-auto mt-8 max-w-[26rem] text-pretty text-muted-foreground lg:col-start-2 lg:row-start-2 lg:mx-0 lg:mt-0 lg:max-w-[34rem]">
               {PROTO_HERO_BODY}
             </p>
           </div>

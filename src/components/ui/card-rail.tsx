@@ -120,6 +120,54 @@ const ARROW =
   "flex size-11 shrink-0 items-center justify-center rounded-xl border border-border text-foreground transition-[color,border-color,opacity] hover:border-foreground/30 disabled:pointer-events-none disabled:opacity-30 [[data-theme=dark]_&]:border-white/15 [[data-theme=dark]_&]:hover:border-white/30";
 
 /**
+ * The pair of step arrows, for any scroller on the site.
+ *
+ * Presentational on purpose: it takes the two handlers and the two end flags
+ * rather than a ref, because the thing that knows how far one step is differs
+ * per rail — this rail steps by a card plus the gap, a row of small cards
+ * steps by a screenful. What has to be the same everywhere is the control:
+ * the shape, the size, the disabled state and the chevron.
+ */
+export function RailArrows({
+  onPrev,
+  onNext,
+  atStart,
+  atEnd,
+  className = "",
+}: {
+  onPrev: () => void;
+  onNext: () => void;
+  /** Disables "previous" — the scroller is already at its start. */
+  atStart: boolean;
+  /** Disables "next". */
+  atEnd: boolean;
+  className?: string;
+}) {
+  return (
+    <div className={`flex shrink-0 items-center gap-2 ${className}`}>
+      <button
+        type="button"
+        onClick={onPrev}
+        disabled={atStart}
+        aria-label="Previous"
+        className={ARROW}
+      >
+        <Chevron direction="prev" />
+      </button>
+      <button
+        type="button"
+        onClick={onNext}
+        disabled={atEnd}
+        aria-label="Next"
+        className={ARROW}
+      >
+        <Chevron direction="next" />
+      </button>
+    </div>
+  );
+}
+
+/**
  * How wide one card is.
  *
  * A fraction of the SCROLLER — 78% on a phone so the next card peeks and the
@@ -568,26 +616,12 @@ export function CardRail({
         <div className="mt-10 flex items-center justify-end gap-4">
           {lead ? <div className="mr-auto">{lead}</div> : null}
           {steppable ? (
-            <div className="flex shrink-0 items-center gap-2">
-              <button
-                type="button"
-                onClick={() => step(-1)}
-                disabled={atStart}
-                aria-label="Previous"
-                className={ARROW}
-              >
-                <Chevron direction="prev" />
-              </button>
-              <button
-                type="button"
-                onClick={() => step(1)}
-                disabled={atEnd}
-                aria-label="Next"
-                className={ARROW}
-              >
-                <Chevron direction="next" />
-              </button>
-            </div>
+            <RailArrows
+              onPrev={() => step(-1)}
+              onNext={() => step(1)}
+              atStart={atStart}
+              atEnd={atEnd}
+            />
           ) : null}
         </div>
       ) : null}

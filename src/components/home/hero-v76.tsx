@@ -180,6 +180,7 @@ export function HeroV76({
   variant,
   trustSlot,
   roomy = false,
+  rating = false,
   body: bodyOverride,
   iconSplitAfter,
 }: {
@@ -212,6 +213,8 @@ export function HeroV76({
    * it, which is exactly what it did.
    */
   roomy?: boolean;
+  /** Passed through to HeroBig — the G2 line above the headline. */
+  rating?: boolean;
   /**
    * The hero test arm, resolved in middleware and handed down from the server
    * (see src/lib/hero-variants.ts). Omitted for anyone the test left out —
@@ -515,6 +518,7 @@ export function HeroV76({
           signupHref={withHeroArm(SIGNUP_URL, variant?.arm ?? null)}
           trustSlot={trustSlot}
           roomy={roomy}
+          rating={rating}
           iconSplitAfter={iconSplitAfter}
         />
       ) : (

@@ -586,7 +586,11 @@ function ProductionGapExplorer({
             // would jump with it. Stated outright so the panel holds still
             // whatever the copy does. Tall enough for the longest step; the
             // shorter ones simply leave the slack at the foot of the column.
-            "overflow-hidden rounded-xl bg-background ring-1 ring-inset ring-border [[data-theme=dark]_&]:ring-white/15 md:h-[452px]"
+            // ONE CARD, at `rounded-lg`. It was `rounded-xl`: on a panel this
+            // size a 12px corner reads as a soft tile, and the page's other
+            // large blocks are squarer than that. 8px keeps the corner from
+            // being a hard miter without rounding the panel into a card.
+            "overflow-hidden rounded-lg bg-background ring-1 ring-inset ring-border [[data-theme=dark]_&]:ring-white/15 md:h-[452px]"
           : "md:gap-x-12"
       }`}
     >
@@ -595,6 +599,14 @@ function ProductionGapExplorer({
         role="tablist"
         aria-orientation="vertical"
         aria-label="What ships with every app"
+        // THE FIRST STEP'S RAIL SITS ON THE PANEL'S TOP LINE, not below it.
+        // That step has no border-t of its own, so its progress rail IS its
+        // top line, and at rest it is hard to pick out against the panel's
+        // own ring. Insetting the column by the corner radius made it easy to
+        // see and wrong: a black line running across the panel a few pixels
+        // under its edge reads as a mistake rather than as the top of the
+        // first step. It is back on the edge, where the fill paints over the
+        // ring as the step runs.
         className={`order-2 flex flex-col md:order-none ${
           framed
             ? "border-border md:border-r [[data-theme=dark]_&]:border-white/15"
@@ -656,16 +668,16 @@ function ProductionGapExplorer({
                 />
               </span>
 
-              <span
-                className={`block [font-family:var(--font-diatype-mono)] text-[11px] uppercase tracking-[0.08em] ${
-                  on ? "text-muted-foreground" : "text-muted-foreground/50"
-                }`}
-              >
-                {r.tag}
-              </span>
-
+              {/* NO TAG OVER THE HEADER. Each step carried a mono-caps label
+                  above its own line — FOUNDATION over "Built-in CRM and client
+                  experience" — which named the step in two registers one above
+                  the other and said nothing the header did not. Four of them
+                  down a column also made the panel read as a table of contents
+                  rather than as four steps. `tag` stays on the record — it is
+                  the step's short name and the obvious handle for anything
+                  that lists these later — it is simply not drawn here. */}
               <p
-                className={`mt-1.5 text-[17px] leading-snug transition-colors ${
+                className={`text-[17px] leading-snug transition-colors ${
                   on
                     ? "text-foreground"
                     : "text-muted-foreground group-hover:text-foreground"

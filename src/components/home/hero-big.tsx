@@ -2,6 +2,7 @@ import { Fragment, type ReactNode } from "react";
 import { AppMarkGlyph, type AppMark, type MarkTint } from "./app-marks";
 import { APP_URL, SIGNUP_URL, DEMO_URL } from "@/lib/constants";
 import { trackHeroCta } from "./hero-experiment";
+import { HeroCredibility } from "@/components/home/v2/hero-credibility";
 
 // The "big type" arm of the hero test (see src/lib/hero-variants.ts): oversized
 // type with app marks set into the headline, and no prompt box — the ask is the
@@ -179,6 +180,7 @@ export function HeroBig({
   signupHref = SIGNUP_URL,
   trustSlot,
   roomy = false,
+  rating = false,
 }: {
   headline: string;
   body?: string;
@@ -228,6 +230,15 @@ export function HeroBig({
    * centres, it just centres in the whole screen, and the top padding drops
    * to match so the lockup does not slide down with the floor.
    *
+   * BUT NOT ON A WIDE DISPLAY. A screen is a good measure of the hero while
+   * the screen is a laptop's; at 1920 it is 1080px of box holding 460px of
+   * lockup, so the headline floats in the middle of a field with a third of a
+   * screen of nothing above it and a third below, and the logo reel that
+   * should close the hero is pushed out of view entirely. The box takes its
+   * content's own height there instead, with a floor under it — which is what
+   * every wide-screen page that reads well does: the column stops growing and
+   * the margins take the extra.
+   *
    * The phone was left at 80svh and had the same fault for the same reason —
    * the eyebrow of the industries row sat under the buttons. It takes
    * `100svh + 3.5rem` rather than a plain 100svh because the section is
@@ -236,6 +247,15 @@ export function HeroBig({
    * under it. The extra is that pull given back.
    */
   roomy?: boolean;
+  /**
+   * The G2 line above the headline.
+   *
+   * Off by default: this hero ships on several pages and the rating belongs
+   * to the homepage's argument, not to every one of them. Centred here rather
+   * than ranged left as it is in the split hero, because this lockup is
+   * centred and the rating is part of it.
+   */
+  rating?: boolean;
 }) {
   return (
     <section className="relative -mt-14 bg-white md:-mt-16 [[data-theme=dark]_&]:bg-[#0a0a0a]">
@@ -248,10 +268,20 @@ export function HeroBig({
       <div
         className={`mx-auto flex max-w-[1200px] flex-col justify-center px-6 md:px-10 ${
           roomy
-            ? "min-h-[calc(100svh+3.5rem)] pb-24 pt-32 md:min-h-[100svh] md:pb-28 md:pt-32"
+            ? "min-h-[calc(100svh+3.5rem)] pb-24 pt-32 md:min-h-[100svh] md:pb-28 md:pt-32 wide:min-h-[660px] wide:pb-20 wide:pt-28"
             : "min-h-[calc(68svh-5rem)] pb-16 pt-28 md:pb-20"
         }`}
       >
+        {/* ABOVE THE CLAIM IT VOUCHES FOR, not under it: a rating read
+            before the claim frames the claim — someone else already vouched
+            for this — where the same line read after it is a footnote to
+            something you have already decided about. Shared with the split
+            hero rather than restated, so the two are one object. */}
+        {rating ? (
+          <div className="mb-1 text-center">
+            <HeroCredibility />
+          </div>
+        ) : null}
         <h1
           className={`type-display-xl mx-auto text-balance text-center ${lines ? "max-w-none" : "max-w-[16ch]"} text-neutral-900 [[data-theme=dark]_&]:text-white`}
         >

@@ -83,10 +83,19 @@ export function BuilderCustomerQuotesStack({
               // card clips its overflow, so an outline drawn outside the
               // button is cropped on every side and the row has no visible
               // focus state at all.
-              // pr-14 always, open or closed: the arrow is laid over this
+              // pr-12 always, open or closed: the arrow is laid over this
               // corner when the row is open, and reserving the room in both
               // states stops the name reflowing as the card opens.
-              className="flex w-full cursor-pointer items-center gap-4 p-4 pr-14 text-left outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-foreground/40"
+              //
+              // 12px of inset, not 16, and 56px of reserved corner cut to 48.
+              // On a ~310px phone measure the wider insets made every row a
+              // band of empty surface with a small portrait and two short
+              // lines adrift in it — and because the arrow is laid out
+              // against that corner, the inset was also what pushed it off
+              // to the card's far edge, a long way from the name it belongs
+              // to. The pieces move in together: the row closes up and the
+              // arrow comes back to the text.
+              className="flex w-full cursor-pointer items-center gap-3.5 p-3 pr-12 text-left outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-foreground/40"
             >
               {/* 48px, not the row's 72px. Closed, this is a list of four
                   rows that should fit a screen together; the portrait is
@@ -142,7 +151,11 @@ export function BuilderCustomerQuotesStack({
               <Link
                 href={q.href}
                 aria-label={`Read ${q.firm}'s story`}
-                className="group/story absolute right-4 top-[28px] flex size-8 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-foreground/40"
+                // right-3 and top-[24px] are the header's own inset and its
+                // first text line, which is what the arrow is set against —
+                // both moved with the padding above rather than being
+                // numbers of their own.
+                className="group/story absolute right-3 top-[24px] flex size-8 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-foreground/40"
               >
                 {/* PP MORI'S OWN ARROW, not a drawn one. The face ships a
                     U+2192 and it is the arrow the rest of the site's type is
@@ -180,7 +193,7 @@ export function BuilderCustomerQuotesStack({
                 className={`min-h-0 ${open ? "overflow-clip [overflow-clip-margin:6px]" : "overflow-hidden"}`}
               >
                 {/* pt-1 is headroom for that focus ring, not spacing. */}
-                <div className="px-4 pb-4 pt-1">
+                <div className="px-3 pb-3 pt-1">
                   {/* 17px, where the row above `md` runs 19. Same move — the quote
                       outranks the attribution that opened it — at the size a
                       ~310px phone measure can carry without setting three

@@ -10,11 +10,28 @@
 // page (a soft "melt" rather than a quick cut).
 const MELT = "linear-gradient(to bottom, #000 40%, transparent 90%)";
 
-export function PhoneShell({ children }: { children: React.ReactNode }) {
+export function PhoneShell({
+  children,
+  melt = true,
+}: {
+  children: React.ReactNode;
+  /**
+   * Whether the device's lower half dissolves into the page.
+   *
+   * True is right where the phone stands on the page's own ground and the
+   * fade is what keeps it from ending on a hard edge. It is wrong over a
+   * PHOTOGRAPH: the mask takes the bezel AND the screen's own background with
+   * it, so the picture shows through the device's lower half and the mock
+   * reads as a broken, half-transparent phone rather than one lying on the
+   * shot. A caller laying the device on an image turns it off and lets the
+   * frame around it do the cropping instead.
+   */
+  melt?: boolean;
+}) {
   return (
     <div
       className="relative mx-auto w-full max-w-[380px]"
-      style={{ maskImage: MELT, WebkitMaskImage: MELT }}
+      style={melt ? { maskImage: MELT, WebkitMaskImage: MELT } : undefined}
     >
       {/* Side buttons — faint edge detail on the bezel. */}
       <span className="absolute -left-px top-[122px] h-8 w-[2px] rounded-l-sm bg-foreground/10" />

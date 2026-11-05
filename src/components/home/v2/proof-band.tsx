@@ -1,3 +1,4 @@
+import { BuilderGridRails } from "@/components/ai-app-builder/builder-grid-rails";
 import { getCaseStudyBySlug } from "@/lib/case-studies";
 import { ProofReel, type ReelItem } from "@/components/home/v2/proof-reel";
 
@@ -40,7 +41,7 @@ const REEL = [
   "valuenode-accounting",
 ];
 
-export function ProofBand() {
+export function ProofBand({ rails = false }: { rails?: boolean } = {}) {
   // Resolved here rather than in the reel itself: case-studies.ts carries the
   // full editorial body of every story, and importing it from a client
   // component would ship all of it to the browser to read two fields.
@@ -62,7 +63,20 @@ export function ProofBand() {
     // deep, so the industries row below starts a clear beat later rather than
     // feeling clipped to the logos. At the old pb-16 the two were close enough
     // that the reel read as that section's header.
-    <section className="mx-auto max-w-[1200px] px-6 pb-28 pt-2 md:px-10 md:pb-40 md:pt-4">
+    // AND IT COMES BACK IN ON A WIDE DISPLAY. 160px below the marks is a beat
+    // on a laptop; at 1920 the same inset plus the industries row's own top
+    // padding is 240px of white between the logos and the first heading,
+    // which reads as the page having ended rather than as a pause in it.
+    <section className="relative mx-auto isolate max-w-[1200px] bg-background px-6 pb-28 pt-2 md:px-10 md:pb-40 md:pt-4 wide:pb-16">
+      {/* The middle bed, so the grid runs unbroken from the hero into the
+          content region. Neither end fades: both of its neighbours carry the
+          rails on.
+          
+          Only for a hero that draws them itself. Under a hero that does not,
+          a bed here would switch the grid on at the logo band and off again
+          before the first section, which is a band of rails on its own rather
+          than a page laid out on a grid. */}
+      {rails ? <BuilderGridRails fadeTop={false} fadeBottom={false} /> : null}
       {/* NO LABEL OVER THE ROW. "Trusted by teams who bill for their time"
           was telling the reader what eight wordmarks already say, and it put a
           line of mono caps between the hero and the logos that held them down

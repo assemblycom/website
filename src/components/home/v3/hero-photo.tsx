@@ -2,7 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, type CSSProperties } from "react";
+import {
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+} from "react";
 import { StudioNav } from "@/components/home/studio-nav";
 import { useTheme } from "@/components/theme/theme-provider";
 import { APP_URL, DEMO_URL, SIGNUP_URL } from "@/lib/constants";
@@ -60,6 +66,13 @@ import { PROTO_HERO_BODY } from "@/components/proto/hero-copy";
 // The cost is the thing the cap was for: on a very tall display there is
 // more photograph above the lockup than the composition wants. The
 // photograph is the one element here that can carry that space.
+//
+// EXCEPT ON A WIDE DISPLAY, WHERE IT IS A CARD AT REST. From `wide` the hero
+// stops being full-bleed at all: it sits inside the site's 1400px rail with
+// the nav above it on the page's own ground, which is the width the rest of
+// the page is set to and the width the photograph can actually fill. The
+// scroll move has nothing left to do there, so it does not run — the card is
+// already at the size it would have pulled in to.
 // ─────────────────────────────────────────────────────────────────────────
 
 // The product pages' hero rail, as in V2.
@@ -107,13 +120,44 @@ const SHRINK_VH = 0.45;
  * drives the inset and the radius together.
  */
 const FRAME =
-  "[inset:calc(var(--p)*56px)_calc(var(--p)*24px)_calc(var(--p)*24px)] [border-radius:calc(var(--p)*20px)] md:[inset:calc(var(--p)*72px)_calc(var(--p)*40px)_calc(var(--p)*40px)] md:[border-radius:calc(var(--p)*24px)]";
+  "[inset:calc(var(--p)*56px)_calc(var(--p)*24px)_calc(var(--p)*24px)] [border-radius:calc(var(--p)*20px)] md:[inset:calc(var(--p)*72px)_calc(var(--p)*40px)_calc(var(--p)*40px)] md:[border-radius:calc(var(--p)*24px)] wide:[inset:96px_max(40px,calc((100%_-_1400px)*0.5))_40px] wide:[border-radius:24px]";
+
+/**
+ * The width at which the hero stops being full-bleed and becomes a card.
+ *
+ * A wide display was the one place the full-bleed photograph worked against
+ * itself: the picture is 1333px wide, so past that it is stretched, and the
+ * extra width lands on the two sides of the frame where nothing sits — a
+ * metre of wall on the left and a plant on the right, with the lockup and the
+ * figures marooned in the middle. Held to the site's own 1400px rail it is a
+ * rectangle on the page like every other block, cropped to the part of the
+ * shot that has the subject in it. Below this width the hero is unchanged,
+ * full-bleed at rest and pulling in as you scroll.
+ *
+ * `wide` (90rem) and not a `min-[1440px]:` variant: Tailwind sorts arbitrary
+ * breakpoints ahead of the named ones, so `md:`'s own inset came after this
+ * one and won at every width above it — the card silently did nothing.
+ */
+const CARD_FROM = "(min-width: 90rem)"; // `wide`, the site's own breakpoint
 
 export function HeroPhoto() {
   const { theme } = useTheme();
   const message = COPY_VARIANTS[FALLBACK_COPY];
   const lines = message.big?.lines ?? [message.h1];
   const wrapRef = useRef<HTMLDivElement>(null);
+  // The nav is light-on-photo while the hero is full-bleed, and the card
+  // leaves it sitting on the page's own background instead, where white type
+  // would be invisible. False first so the server and the first client paint
+  // agree; the layout effect corrects it before anything is drawn.
+  const [carded, setCarded] = useState(false);
+
+  useLayoutEffect(() => {
+    const mq = window.matchMedia(CARD_FROM);
+    const sync = () => setCarded(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
 
   useEffect(() => {
     const wrap = wrapRef.current;
@@ -145,7 +189,7 @@ export function HeroPhoto() {
     <>
       <StudioNav
         darkTop={theme === "dark"}
-        lightAtRest
+        lightAtRest={!carded}
         maxWidthClass="max-w-[1600px]"
         restPaddingClass="px-6 md:px-10"
       />
@@ -162,7 +206,7 @@ export function HeroPhoto() {
         // pair and figures come to more than the screen — the figures were
         // cropped by the card's own foot. The hero runs a little past the
         // fold there instead, which is what it did before.
-        // A CEILING FROM 1536. A full screen is the right size for the hero
+        // A CEILING FROM `wide`. A full screen is the right size for the hero
         // on a laptop; on a large display it is 1200px of photograph with the
         // lockup in the bottom fifth of it and the figures a long way off to
         // the side — the copy stops holding its own against the frame, and
@@ -170,7 +214,7 @@ export function HeroPhoto() {
         // deep band rather than a whole screen, the lockup sits nearer its
         // middle, and what follows comes into view. It is a max, so a short
         // wide window still takes 100svh and nothing is cropped.
-        className="relative -mt-14 h-[100svh] min-h-[780px] md:-mt-16 md:min-h-[600px] min-[1536px]:max-h-[880px]"
+        className="relative -mt-14 h-[100svh] min-h-[780px] md:-mt-16 md:min-h-[600px] wide:max-h-[820px]"
       >
         <section
           data-theme="dark"
@@ -202,7 +246,22 @@ export function HeroPhoto() {
               size; the figures sit on the buttons' row below, as in the
               reference, rather than beside the headline where they squeeze
               each line into two. */}
-            <h1 className="type-display-xl max-w-[60rem] text-balance text-foreground">
+            {/* A STEP DOWN FROM THE SHARED DISPLAY SIZE. `type-display-xl`
+              runs to 84px, which is right on V1 where the lockup is the
+              whole composition and has a screen to itself. Here it shares a
+              card with a lead, a pair of buttons and three figures, and at
+              84px against a 16px lead it was five times the size of
+              everything under it — the headline read as the only thing in
+              the hero. The same clamp with a 64px ceiling keeps the curve
+              the rest of the site is set on and only lowers where it stops,
+              so nothing changes below about 1290px. */}
+            {/* WHITE, NOT `text-foreground`. The dark theme's foreground is
+              #d9d9d9 — an off-white picked for reading long text on a dark
+              UI ground, where pure white glares. Over a photograph it is not
+              type on a surface, it is type on a picture, and the same grey
+              reads as washed out rather than as soft. The lead under it is
+              already white at 70%; this is the same ink at full strength. */}
+            <h1 className="type-display-xl max-w-[60rem] text-balance text-white [font-size:clamp(2.5rem,calc(1.36rem_+_4.86vw),4rem)]">
               {lines.map((line) => (
                 <span key={line} className="block">
                   {line}
@@ -214,30 +273,16 @@ export function HeroPhoto() {
             </p>
 
             <div className="mt-8 flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between">
-              {/* THE PAIR GOES INLINE AT 480, not at sm (640). This hero
-                  ranges everything left, and between those two widths the
-                  stacked buttons were capped at 384 while the headline and
-                  the lead above them ran the full 540 of the column — a
-                  left-aligned block whose last element stopped 150px short of
-                  the rest, which reads as a mistake rather than as a narrower
-                  control. Side by side they are auto-width and sit on the
-                  copy's own left line, which is the composition this hero is
-                  built on. Both fit from about 430.
-
-                  The `[&>a]:w-auto` is not optional: PRIMARY_CTA and
-                  SECONDARY_CTA are the site's shared controls and carry
-                  `w-full sm:w-auto` themselves, so moving only the row to 480
-                  left two full-width buttons laid side by side and the second
-                  one off the screen. The override moves the buttons' own
-                  width to the same breakpoint without editing a control three
-                  other heroes use.
-
-                  AND NO max-w-sm BELOW IT. That cap only ever bound between
-                  about 430 and 480, and in exactly that band it put the
-                  stacked buttons 47px short of the lead above them — the same
-                  fault in miniature. Stacked, they take the column, which is
-                  what the copy takes. */}
-              <div className="flex w-full flex-col gap-3 min-[480px]:w-auto min-[480px]:flex-row min-[480px]:items-center min-[480px]:[&>a]:w-auto">
+              {/* THE PAIR IS THE SITE'S OWN MOBILE PAIR. PRIMARY_CTA and
+                  SECONDARY_CTA carry `w-full sm:w-auto` themselves — full
+                  width stacked on a phone, sized to their labels from sm —
+                  and every other hero on the site closes that way. This row
+                  briefly overrode it to sit the buttons on the copy's left
+                  line, which made this the one hero whose buttons were a
+                  different shape from the rest of the site's. The override is
+                  gone: the row stacks and goes inline at `sm`, which is the
+                  breakpoint the controls are written for. */}
+              <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center">
                 <a href={SIGNUP_URL} className={`unauth-only ${PRIMARY_CTA}`}>
                   Get started
                 </a>
@@ -259,7 +304,17 @@ export function HeroPhoto() {
                   own thirds landing nowhere near them. `self-start` shrinks
                   it to its content, which puts the first figure on the
                   copy's left line. */}
-              <dl className="grid shrink-0 grid-cols-3 self-start lg:self-auto">
+              {/* ACROSS THE MEASURE ON A PHONE, ranged left once the hero is
+                  wide enough to range anything. Sized to its own content the
+                  row came to about half the screen and sat in the middle of
+                  it, under two buttons that each span the whole measure — a
+                  third object with a third width, where the hero only has
+                  two. At full width the three figures are equal thirds that
+                  end on the same lines the buttons do, so the foot of the
+                  hero is one block. It takes the copy's left line back at sm,
+                  where the buttons shrink to their labels and that line
+                  exists again. */}
+              <dl className="grid w-full shrink-0 grid-cols-3 sm:w-auto sm:self-start lg:self-auto">
                 {HERO_STATS.map((stat) => (
                   <div
                     key={stat.label}

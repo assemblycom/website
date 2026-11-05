@@ -36,8 +36,18 @@ const STAR_RADIUS_PCT = 36;
 /**
  * Exported for the homepage's unified-platform panel, which lays the four
  * seals straight onto its photograph with none of the band around them.
+ *
+ * `size` replaces the band's own step for a caller drawing them smaller. It
+ * is the only thing that changes: every detail inside a seal is placed as a
+ * percentage of the box, so the artwork holds at whatever size it is given.
  */
-export function Seal({ label }: { label: string }) {
+export function Seal({
+  label,
+  size = SEAL_SIZE,
+}: {
+  label: string;
+  size?: string;
+}) {
   const isLine = label !== "HIPAA" && label !== "GDPR";
 
   // Divider badges — the circle is split into two halves by a full-bleed line;
@@ -49,7 +59,7 @@ export function Seal({ label }: { label: string }) {
     const bottomFill = label === "CCPA" ? fill : "";
     return (
       <span
-        className={`relative flex ${SEAL_SIZE} flex-col items-center overflow-hidden rounded-full border border-border text-muted-foreground [[data-theme=dark]_&]:border-[#4d4d4d]`}
+        className={`relative flex ${size} flex-col items-center overflow-hidden rounded-full border border-border text-muted-foreground [[data-theme=dark]_&]:border-[#4d4d4d]`}
       >
         <span
           className={`flex w-full flex-1 items-end justify-center pb-1 sm:pb-1.5 ${topFill}`}
@@ -76,7 +86,7 @@ export function Seal({ label }: { label: string }) {
       : "";
   return (
     <span
-      className={`relative flex ${SEAL_SIZE} flex-col items-center justify-center overflow-hidden rounded-full border border-border text-muted-foreground [[data-theme=dark]_&]:border-[#4d4d4d] ${gdprFill}`}
+      className={`relative flex ${size} flex-col items-center justify-center overflow-hidden rounded-full border border-border text-muted-foreground [[data-theme=dark]_&]:border-[#4d4d4d] ${gdprFill}`}
     >
       {label === "HIPAA" && (
         // inset as a percentage, not fixed px, so the inner ring keeps the same

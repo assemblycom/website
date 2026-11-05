@@ -65,15 +65,20 @@ import { UnifiedPlatform } from "@/components/home/v2/platform-visuals";
  * Exported so a page composing its own hero can put the same band under it,
  * with the same reveal, rather than restating the pairing.
  */
-export function HomeProofBand() {
+export function HomeProofBand({ rails = false }: { rails?: boolean } = {}) {
   return (
     <Reveal variant="fade">
-      <ProofBand />
+      <ProofBand rails={rails} />
     </Reveal>
   );
 }
 
 export function HomeContentV2({
+  // True where the hero passed in carries the grid itself (V2's does), so the
+  // content region picks the rails up at full strength instead of fading them
+  // in over its first 200px — which, under a hero that already has them, is a
+  // dip in the middle of one continuous grid rather than an opening.
+  heroRails = false,
   // V3 is this page with a different hero, so it passes its own here rather
   // than forking everything below it.
   //
@@ -86,11 +91,12 @@ export function HomeContentV2({
   hero = (
     <>
       <HeroSplit />
-      <HomeProofBand />
+      <HomeProofBand rails />
     </>
   ),
 }: {
   hero?: ReactNode;
+  heroRails?: boolean;
 } = {}) {
   return (
     <>
@@ -113,7 +119,7 @@ export function HomeContentV2({
           which are an OVERLAY at z-30 that the content had to be lifted
           against; this grid is behind everything by construction. */}
       <div className="relative isolate bg-background">
-        <BuilderGridRails />
+        <BuilderGridRails fadeTop={!heroRails} />
 
         {/* No rule opening the region: the rails begin on this line and run
             the full measure, so an opening rule would state it twice — the
@@ -250,7 +256,14 @@ export function HomeContentV2({
                 // tab strip with nothing at all under it — a third of the
                 // panel spent on photograph above the one thing the step is
                 // about. The phone keeps its placement (see the Plan step).
-                <div className="absolute inset-x-6 -bottom-4 top-auto aspect-[360/300] sm:inset-x-0 sm:aspect-auto sm:-bottom-6 sm:top-0 md:-bottom-10">
+                // The frame's foot sits well past the panel's own, so the
+                // screen is CROPPED by the panel rather than ending on it.
+                // Landed exactly on the floor it still finished about six
+                // pixels short: the scene is scaled to fit, and any rounding
+                // in that scale shows as a strip of photograph under the
+                // screen. There is no strip to show if the screen runs past
+                // the edge.
+                <div className="absolute inset-x-6 -bottom-4 top-auto aspect-[360/300] sm:inset-x-0 sm:aspect-auto sm:-bottom-6 sm:top-0 md:-bottom-14">
                   <BuildCard plain tracker tall closedRight />
                 </div>
               ),

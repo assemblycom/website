@@ -3,8 +3,12 @@
 import Image from "next/image";
 import type { ReactNode } from "react";
 import { ProductionGap, type RegionId } from "@/components/home/production-gap";
-import { OnboardingTrackerMock } from "@/components/client-portal/segment-mock";
-import { SECURITY_STANDARDS } from "@/components/security/security-compliance";
+import { PhoneShell } from "@/components/home/phone-shell";
+import { TeamCrmVisual } from "@/components/home/team-crm-visual";
+import {
+  SECURITY_STANDARDS,
+  Seal,
+} from "@/components/security/security-compliance";
 import {
   IconApp,
   IconBook,
@@ -138,23 +142,26 @@ function AppPills() {
  */
 function SecuritySeals() {
   return (
-    // 220 on a phone, not 420. At the panel's full width the four tiles were
-    // 140px squares covering the photograph almost edge to edge — a block of
-    // white with a picture behind it rather than four badges laid on one.
-    <div className="grid w-full max-w-[220px] grid-cols-2 gap-2 sm:max-w-[560px] sm:grid-cols-4 sm:gap-3">
+    // THE BAND'S OWN SEALS, smaller. These were four white rounded squares
+    // with the standard's name set in mono inside them — a shape the site
+    // draws nowhere else, and big enough that the four of them covered most
+    // of the photograph. The security page already has an engraved seal for
+    // each standard, and `Seal` is exported for exactly this; using it means
+    // the homepage and the security page show one object rather than two
+    // drawings of the same claim.
+    //
+    // ON A WHITE DISC. The seal's own artwork is a hairline circle in the
+    // page's grey ink, which is drawn to sit on the page's ground — over a
+    // photograph it is barely there. The disc is the ground it expects,
+    // the same white plate the square tiles carried, cut to the seal's
+    // own shape.
+    <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-5">
       {SECURITY_STANDARDS.map((s) => (
         <span
           key={s.title}
-          className="flex aspect-square flex-col items-center justify-center gap-1.5 rounded-lg bg-white px-1.5 text-center shadow-[0_10px_30px_-12px_rgba(16,24,40,0.45)] sm:rounded-xl sm:px-2"
+          className="rounded-full bg-white shadow-[0_10px_30px_-12px_rgba(16,24,40,0.45)]"
         >
-          {/* ONE LINE, THE TITLE. The band's seals carry a short mark inside
-              the circle and the full name under it; on a badge the two sit
-              one above the other, and for three of the four they are the
-              same word printed twice. The mono face is what carries the mark
-              over from the band. */}
-          <span className="text-[10px] leading-tight tracking-[0.04em] text-foreground [font-family:var(--font-diatype-mono)] sm:text-[12px]">
-            {s.title}
-          </span>
+          <Seal label={s.seal} size="size-16 sm:size-20" />
         </span>
       ))}
     </div>
@@ -168,17 +175,26 @@ interface TabScreen {
 }
 
 const SCREENS: Record<RegionId, TabScreen> = {
-  // A client's portal: the firm's nav down the side, their own people and
-  // companies in it. The CRM and the client experience in one picture, and
-  // the one claim here that is genuinely about a screen.
-  url: { node: <OnboardingTrackerMock />, windowed: true },
+  // THE CRM ITSELF — contacts and companies in a table, which is what the
+  // step's own sentence promises. It used to be the onboarding tracker, on
+  // the reasoning that a client's portal shows the CRM and the client
+  // experience in one picture; in practice a reader looking for "contacts and
+  // companies in one CRM" was shown a different app with its own name across
+  // the top, and had to take the connection on trust. This is the same screen
+  // /ai-app-builder draws for its CRM claim.
+  url: { node: <TeamCrmVisual moreRows />, windowed: true },
   // A few of the apps, named. See AppPills.
   sidebar: { node: <AppPills /> },
   // The composer, and nothing holding it. It is one field: a window around
   // it was a sheet of white with a text box in the middle of it.
   builder: {
     node: (
-      <div className="w-[560px] max-w-full [&_.template-mock-fit>div>div]:my-auto!">
+      // 460, not 560. The composer is one field with a short sentence in it,
+      // and at 560 the sentence ran out halfway across and left the rest of
+      // the box empty — a wide, mostly blank panel laid over the photograph.
+      // Narrower, the line fills it and the box reads as the thing you type
+      // into rather than as a bar across the picture.
+      <div className="w-[460px] max-w-full [&_.template-mock-fit>div>div]:my-auto!">
         <DescribeCard
           plain
           prompt="Add a project tracker each client sees for their own projects."
@@ -202,17 +218,42 @@ function Screen({ active }: { active: RegionId }) {
         className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(16,24,40,0.34),rgba(16,24,40,0.46))]"
       />
       {screen.windowed ? (
-        // Anchored, not inset: top and left only, with no right or bottom, so
-        // the box below keeps its own size and the panel crops it. The inset
-        // is deep enough that the photograph still reads as the ground the
-        // screen is sitting on rather than a hairline around it.
-        <div className="absolute left-4 top-5 md:left-20 md:top-16">
-          <div
-            className={`relative overflow-hidden rounded-tl-xl border-l border-t border-[var(--mock-line)] bg-[var(--mock-window)] shadow-[0_24px_60px_-20px_rgba(16,24,40,0.45)] ${UI_BOX}`}
-          >
-            {screen.node}
+        <>
+          {/* A PHONE ON A PHONE. The window below is 520px wide and anchored
+              to the panel's top-left, so on a 390px screen it was a desktop
+              app with most of it off the edge — the one picture on the page
+              that still said "this is software for a desk". The mock already
+              lays itself out for a narrow box (it drops its sidebar and its
+              last columns on its own), so all it needed was the right frame
+              around it: `PhoneShell`, the device the rest of the landing
+              page's phone mocks are drawn in. */}
+          <div className="absolute inset-0 flex items-end justify-center px-8 pt-10 md:hidden">
+            {/* THE DEVICE IS CROPPED BY THE PANEL, NOT FADED OUT. PhoneShell
+                melts its lower half into the page by default, which is right
+                on the page's own ground and wrong here: the mask takes the
+                screen's background with it, so the photograph came through
+                the tracker and the phone read as broken. Solid, standing on
+                the panel's bottom edge, it is the same move the desktop
+                window makes — a screen the frame cuts off, which says there
+                is more of it. */}
+            <div className="w-full max-w-[260px]">
+              <PhoneShell melt={false}>{screen.node}</PhoneShell>
+            </div>
           </div>
-        </div>
+
+          {/* Anchored, not inset: top and left only, with no right or bottom,
+              so the box below keeps its own size and the panel crops it. The
+              inset is deep enough that the photograph still reads as the
+              ground the screen is sitting on rather than a hairline around
+              it. */}
+          <div className="absolute left-4 top-5 hidden md:block md:left-20 md:top-16">
+            <div
+              className={`relative overflow-hidden rounded-tl-xl border-l border-t border-[var(--mock-line)] bg-[var(--mock-window)] shadow-[0_24px_60px_-20px_rgba(16,24,40,0.45)] ${UI_BOX}`}
+            >
+              {screen.node}
+            </div>
+          </div>
+        </>
       ) : (
         <div className="absolute inset-0 flex items-center justify-center p-6 md:p-10">
           {screen.node}

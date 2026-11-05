@@ -54,6 +54,10 @@ export default async function HomePage({
   return (
     <>
       <HomeContentV2
+        // Only V2's hero draws the rails behind itself; V1's and V3's are
+        // opaque grounds that would hide them, so those two keep the content
+        // region's own fade-in.
+        heroRails={active === "2"}
         hero={
           active === "1" ? (
             // NO LOGO REEL UNDER THIS ONE. The reel is drawn to ride up under
@@ -69,6 +73,9 @@ export default async function HomePage({
             <HeroV76
               templates={templates}
               roomy
+              // The same G2 line V2 and V3 carry, so the three versions differ
+              // in their hero's arrangement and not in what is in it.
+              rating
               body={PROTO_HERO_BODY}
               // On a phone the lockup wraps, and both marks went with the
               // first line — two tiles crowded after "Deliver" with

@@ -2560,6 +2560,16 @@ export function BuildCard({
     : bloomhouse
       ? BOARD_AGENCY
       : BOARD;
+  // The app the screen is showing, named once. The nav's lit row and the
+  // phone's title bar are the same label in two places, and the two have to
+  // say the same thing or the screen names itself twice over.
+  const screenName =
+    appLabel ??
+    (plain && !tracker
+      ? "Calendar"
+      : ledgerline
+        ? "Close tracker"
+        : "Project tracker");
   return (
     <>
       {/* The Build card's ground, the third of the set — the Describe card
@@ -2786,7 +2796,22 @@ export function BuildCard({
                 // The PHONE step stays flush at 340 in its 360 box. It still
                 // bleeds off the right and ramps out into the panel, so there
                 // the left pad is doing its job and nothing answers it.
-                "h-[280px] w-[340px] sm:h-[380px] sm:w-[580px] lg:w-[860px] lgx:w-[1000px]"
+                `h-[280px] w-[340px] sm:h-[380px] sm:w-[580px] lg:w-[860px] lgx:w-[1000px] ${
+                  // TALLER IN A TALL BOX. The window's height was written for
+                  // the 400-tall scene; in the 520 box the homepage panel
+                  // gives it, the same 380 left 140px of slack that a bleed
+                  // scene puts above the window — a band of photograph over
+                  // the screen, and a screen that read as short for the panel
+                  // it is in. It keeps the bleed's own top pad and takes the
+                  // rest and then some: 540 in a 520 box, so after the bleed
+                  // frame's own 20px top pad the window runs 40px PAST the
+                  // box's floor and the panel crops it. Sized to land exactly
+                  // on the floor it still finished a few pixels short — the
+                  // scene is scaled to fit, so any rounding in that scale
+                  // shows as a strip of photograph under the screen. Cropping
+                  // cannot leave a strip.
+                  tall ? "md:h-[540px]" : ""
+                }`
               : ""
           }`}
         >
@@ -2876,14 +2901,7 @@ export function BuildCard({
                   <IconApp />
                 )
               }
-              label={
-                appLabel ??
-                (plain && !tracker
-                  ? "Calendar"
-                  : ledgerline
-                    ? "Close tracker"
-                    : "Project tracker")
-              }
+              label={screenName}
               active
             />
           </div>
@@ -2899,11 +2917,25 @@ export function BuildCard({
                 : ""
             }`}
           >
-            {/* No title bar. It carried the app's name and nothing else, and the
-              lit row in the nav an inch to its left says the same words — so
-              the screen opened by naming itself twice and spent a bar's height
-              on the repeat. The same bar came off the hero's two screens for
-              the same reason. */}
+            {/* No title bar — FROM sm. It carried the app's name and nothing
+              else, and the lit row in the nav an inch to its left says the
+              same words, so the screen opened by naming itself twice and
+              spent a bar's height on the repeat.
+              
+              That argument is only true while the nav is there. Below sm it
+              is not: the sidebar is hidden, so the screen came up as a bare
+              search field with nothing naming what you were looking at, and
+              it read as a window whose top had been cut off. The bar comes
+              back at exactly the width the nav goes away, carrying the same
+              name the lit row would have. */}
+            {sidebarOnly ? null : (
+              <div
+                className={`flex shrink-0 items-center gap-1.5 border-b px-3 py-2 ${LINE} text-[color:var(--mock-ink)] ${UI_PRIMARY} sm:hidden`}
+              >
+                <IconApp className="size-[10px] shrink-0" />
+                <span className="truncate">{screenName}</span>
+              </div>
+            )}
             {sidebarOnly ? null : plain && !tracker ? (
               <CalendarPane />
             ) : (
@@ -3163,13 +3195,31 @@ export function IterateCard({
           showing — a table quietly growing a column is a detail you have to
           hunt for, on a card big enough to bury the exchange above it. */}
       <div className="flex flex-col">
-        <div className="px-1">
+        {/* A THREAD, NOT TWO LABELS. The scene is 680 wide and the turns were
+            capped at a share of it, so the question sat at one end of the
+            panel and the answer at the other with half a metre of photograph
+            between them — two captions on a picture rather than an exchange.
+            Held to a column the width of a chat, one turn lands under the
+            other and the eye reads them in order, which is the whole thing
+            this step is showing. */}
+        <div className="mx-auto w-full max-w-[360px] px-1">
           {/* Sent: pushed to the right and given the solid well, which is
               what marks your own turn in every chat anyone reading this has
               used. Capped short of the full measure so the side it is on is
               legible as a side. */}
           <p
-            className={`chat-turn ml-auto w-fit max-w-[82%] [animation:chat-turn-in_600ms_ease-out_both] ${R_PANEL} bg-[var(--mock-well-2)] px-3 py-2 text-[color:var(--mock-ink)] ${CARD_BODY}`}
+            // ROUNDED LIKE A MESSAGE, AND SHORT OF THE MEASURE. At the panel's
+            // 10px radius and 82% of the row the two turns read as a pair of
+            // tags rather than as a conversation: a shallow radius is what
+            // this mock uses for panels, and a bubble that nearly fills the
+            // row leaves no visible side for it to be on. A chat radius and a
+            // tighter cap put each turn on its own side with the photograph
+            // showing past it, which is what says these are messages.
+            //
+            // The ink is the soft one, as the reply's already is. At full
+            // strength, 12.5px of solid black on a white well read heavier
+            // than anything else in the panel.
+            className={`chat-turn ml-auto w-fit max-w-[72%] [animation:chat-turn-in_600ms_ease-out_both] rounded-2xl bg-[var(--mock-well-2)] px-3.5 py-2 font-normal text-[color:var(--mock-ink-soft)] ${CARD_BODY}`}
           >
             Add a due date to every project.
           </p>
@@ -3182,7 +3232,7 @@ export function IterateCard({
           <p
             // A second behind the request, so the two read as one exchange
             // rather than as two labels that appeared together.
-            className={`chat-turn mt-2.5 flex w-fit max-w-[82%] items-center gap-2 [animation:chat-turn-in_600ms_ease-out_900ms_both] ${R_PANEL} border bg-[var(--mock-window)] px-3 py-2 ${LINE} text-[color:var(--mock-ink-soft)] ${CARD_BODY}`}
+            className={`chat-turn mt-2.5 flex w-fit max-w-[72%] items-center gap-2 [animation:chat-turn-in_600ms_ease-out_900ms_both] rounded-2xl border bg-[var(--mock-window)] px-3.5 py-2 ${LINE} font-normal text-[color:var(--mock-ink-soft)] ${CARD_BODY}`}
           >
             <span
               aria-hidden
