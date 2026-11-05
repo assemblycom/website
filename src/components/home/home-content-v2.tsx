@@ -159,6 +159,8 @@ export function HomeContentV2({
             // with its own product shot, and a second panel advancing by
             // itself a screen below it competes with it.
             manual
+            // Same corner as the platform panel above it.
+            frameRadiusClass="rounded-lg"
             visualHeightClass="h-[320px] sm:h-[420px] md:h-[560px]"
             // The site's own photography, one per step, standing in while the
             // step screens are redone. Named for what they are of: the phone

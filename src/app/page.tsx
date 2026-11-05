@@ -1,3 +1,4 @@
+import { BuilderGridRails } from "@/components/ai-app-builder/builder-grid-rails";
 import type { Metadata } from "next";
 import { HeroV76 } from "@/components/home/hero-v76";
 import {
@@ -54,10 +55,10 @@ export default async function HomePage({
   return (
     <>
       <HomeContentV2
-        // Only V2's hero draws the rails behind itself; V1's and V3's are
-        // opaque grounds that would hide them, so those two keep the content
-        // region's own fade-in.
-        heroRails={active === "2"}
+        // V2's hero draws the rails behind itself and V1 lays them over its
+        // empty foot (below), so both hand them on at full strength. V3's is
+        // a photograph, so it keeps the content region's own fade-in.
+        heroRails={active !== "3"}
         hero={
           active === "1" ? (
             // NO LOGO REEL UNDER THIS ONE. The reel is drawn to ride up under
@@ -70,20 +71,39 @@ export default async function HomePage({
             // so padding it from out here moved the NAV down the page and left
             // a band of white above the logo. `roomy` opens the space inside
             // the hero, below the bar, which is where it was wanted.
-            <HeroV76
-              templates={templates}
-              roomy
-              // The same G2 line V2 and V3 carry, so the three versions differ
-              // in their hero's arrangement and not in what is in it.
-              rating
-              body={PROTO_HERO_BODY}
-              // On a phone the lockup wraps, and both marks went with the
-              // first line — two tiles crowded after "Deliver" with
-              // "remarkable" alone underneath. One moves to the end of the
-              // wrapped word, so each line carries a mark. Desktop, where
-              // the line does not wrap, is unchanged.
-              iconSplitAfter="remarkable"
-            />
+            <>
+              <HeroV76
+                templates={templates}
+                roomy
+                // The same G2 line V2 and V3 carry, so the three versions differ
+                // in their hero's arrangement and not in what is in it.
+                rating
+                body={PROTO_HERO_BODY}
+                // On a phone the lockup wraps, and both marks went with the
+                // first line — two tiles crowded after "Deliver" with
+                // "remarkable" alone underneath. One moves to the end of the
+                // wrapped word, so each line carries a mark. Desktop, where
+                // the line does not wrap, is unchanged.
+                iconSplitAfter="remarkable"
+              />
+              {/* Rails over the hero's empty foot, fading in under the buttons
+                  and running on into the content region with no seam. Sized
+                  to the gap under the buttons: from `wide` the hero has a
+                  fixed floor and the gap is ~125px; below it the hero is a
+                  full screen tall and the gap grows with the window. Hung off a zero-height marker rather
+                  than a wrapper: the hero renders the sticky nav, and a
+                  wrapper would stop it sticking at the hero's end. An
+                  overlay, since the hero's ground is opaque and would hide a
+                  backdrop. */}
+              <div
+                aria-hidden
+                className="pointer-events-none relative z-[1] h-0"
+              >
+                <div className="absolute inset-x-0 bottom-0 isolate h-[max(120px,calc(50svh-250px))] [mask-image:linear-gradient(to_bottom,transparent,#000_45%)] wide:h-[120px]">
+                  <BuilderGridRails fadeTop={false} fadeBottom={false} />
+                </div>
+              </div>
+            </>
           ) : active === "3" ? (
             <>
               <HeroPhoto />

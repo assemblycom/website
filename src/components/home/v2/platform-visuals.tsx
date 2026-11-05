@@ -325,23 +325,32 @@ function Screen({ active }: { active: RegionId }) {
 function Shot({ active }: { active: RegionId }) {
   return (
     <div className="relative h-full w-full overflow-hidden">
-      {Object.entries(SHOTS).map(([id, shot]) => (
-        <Image
-          key={id}
-          src={shot.src}
-          alt={id === active ? shot.alt : ""}
-          aria-hidden={id !== active}
-          fill
-          // `cover`, centred. These are photographs with their subject in the
-          // middle of the frame — the top-left anchor the UI screenshots
-          // wanted would crop the person out of two of the four.
-          className={`object-cover object-center transition-opacity duration-500 ease-out motion-reduce:transition-none ${
-            id === active ? "opacity-100" : "opacity-0"
-          }`}
-          sizes="(max-width: 768px) 100vw, 60vw"
-          priority={false}
-        />
-      ))}
+      {/* The incoming shot fades in ON TOP of the outgoing one, which holds at
+          full strength until the fade is done. Fading both at once left each
+          half see-through mid-way, so the panel's ground showed through and
+          every click flashed dark. `isolate` keeps the shots' z-index from
+          lifting them over the screen drawn after them. */}
+      <div className="absolute inset-0 isolate">
+        {Object.entries(SHOTS).map(([id, shot]) => (
+          <Image
+            key={id}
+            src={shot.src}
+            alt={id === active ? shot.alt : ""}
+            aria-hidden={id !== active}
+            fill
+            // `cover`, centred. These are photographs with their subject in the
+            // middle of the frame — the top-left anchor the UI screenshots
+            // wanted would crop the person out of two of the four.
+            className={`object-cover object-center transition-opacity ease-out motion-reduce:transition-none ${
+              id === active
+                ? "z-[1] opacity-100 duration-500"
+                : "z-0 opacity-0 duration-0 delay-500"
+            }`}
+            sizes="(max-width: 768px) 100vw, 60vw"
+            priority={false}
+          />
+        ))}
+      </div>
       <Screen active={active} />
     </div>
   );

@@ -94,8 +94,14 @@ export function HowItWorks({
   stepGrounds,
   blurSteps,
   manual = false,
+  frameRadiusClass = "rounded-[20px]",
 }: {
   visualHeightClass?: string;
+  /**
+   * The frame's corner. A page whose neighbouring panel is squarer passes its
+   * radius so the two blocks read as one family.
+   */
+  frameRadiusClass?: string;
   /**
    * Steps change only when someone clicks one: no clock, and no progress rail
    * filling along the active tab.
@@ -248,8 +254,16 @@ export function HowItWorks({
     <section
       ref={sectionRef}
       id="how-it-works"
-      className="pb-16 pt-16 md:pb-24 md:pt-24"
+      className="relative pb-16 pt-16 md:pb-24 md:pt-24"
     >
+      {/* Dark only: a film of the page ground over the column rails, so they
+          sit quieter behind this header. At a negative z it lands above the
+          rails' backdrop and below the copy; the mask hands the rails back
+          at full strength over the bottom padding instead of on one line. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -z-[5] hidden bg-background/50 [mask-image:linear-gradient(to_bottom,#000_calc(100%-96px),transparent)] [[data-theme=dark]_&]:block"
+      />
       <div className="mx-auto max-w-[1600px] px-6 md:px-10">
         {/* Header, aligned to the block below: eyebrow on top, then heading
             (left) and supporting copy (right) sharing a row so the copy lines
@@ -298,7 +312,7 @@ export function HowItWorks({
           // the thing the light fill was added to stop. #151515 is what that
           // film resolved to over the page, and the panel tone the rest of
           // the page already uses.
-          className="mx-auto mt-10 flex max-w-[1100px] flex-col overflow-hidden rounded-[20px] border border-border bg-background [[data-theme=dark]_&]:border-white/15 [[data-theme=dark]_&]:bg-[#151515] md:mt-12"
+          className={`mx-auto mt-10 flex max-w-[1100px] flex-col overflow-hidden ${frameRadiusClass} border border-border bg-background [[data-theme=dark]_&]:border-white/15 [[data-theme=dark]_&]:bg-[#151515] md:mt-12`}
         >
           {/* Tabs — divided by hairlines; each carries a progress track on its
               top edge that fills over the dwell on the active tab. */}
@@ -428,7 +442,7 @@ export function HowItWorks({
                   // one for a photograph: the blue becomes a mat around
                   // someone else's picture. The photograph is the panel here,
                   // filling the cell edge to edge. The section's own wrapper
-                  // is `overflow-hidden rounded-[20px]`, so the corners are
+                  // is `overflow-hidden` and rounded, so the corners are
                   // clipped for it and it needs no radius of its own.
                   <div className="relative h-full w-full">
                     <Image
