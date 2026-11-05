@@ -4,10 +4,7 @@ import Image from "next/image";
 import type { ReactNode } from "react";
 import { ProductionGap, type RegionId } from "@/components/home/production-gap";
 import { OnboardingTrackerMock } from "@/components/client-portal/segment-mock";
-import {
-  Seal,
-  SECURITY_STANDARDS,
-} from "@/components/security/security-compliance";
+import { SECURITY_STANDARDS } from "@/components/security/security-compliance";
 import {
   IconApp,
   IconBook,
@@ -77,7 +74,13 @@ const SHOTS: Record<RegionId, { src: string; alt: string }> = {
  * this starts 64px down — so the bottom and the right run off the frame and
  * are cropped by it.
  */
-const UI_BOX = "h-[480px] w-[900px]";
+// A PHONE GETS A SMALLER WINDOW. The panel is ~342x320 there, so a 900x480
+// box showed about a third of the screen's width and ran 200px past the
+// foot — the crop landed mid-row with the photograph's own dark half
+// underneath it, which is the hard black band along the bottom edge. At
+// 520x300 the window reaches the panel's foot with nothing showing under it
+// and the table still reads.
+const UI_BOX = "h-[300px] w-[520px] md:h-[480px] md:w-[900px]";
 
 /** The portal apps named on the pills, with the icon each one carries. */
 const APP_PILLS = [
@@ -106,7 +109,12 @@ function AppPills() {
           {app.label}
         </span>
       ))}
-      <span className="flex items-center gap-3 rounded-xl border border-dashed border-white/25 px-4 py-3 text-[15px] text-white/70">
+      {/* THE SAME FILL AS THE THREE ABOVE IT, not a dashed outline. The
+          dashes said "placeholder" — the convention for a slot with nothing
+          in it yet — about the one row whose point is that there are 27 more
+          apps that do exist. It is the quietest of the four by its ink, not
+          by its edge. */}
+      <span className="flex items-center gap-3 rounded-xl border border-white/25 bg-white/15 px-4 py-3 text-[15px] text-white/70 backdrop-blur-md">
         <IconPlus className="size-4" />
         27 more
       </span>
@@ -115,21 +123,38 @@ function AppPills() {
 }
 
 /**
- * The four certifications, as the marks alone.
+ * The four certifications, as solid square badges.
  *
- * The same seals the band at the foot of the page draws; here they have no
- * band, no dividers and no card — the photograph is the ground. White at a
- * low alpha rather than the band's grey, because these sit on a picture.
+ * NOT THE BAND'S SEALS. Those are outlined circles drawn for a white card,
+ * and over a photograph the outline is the first thing the picture eats:
+ * four rings of white at 40% over a sunlit room, with the mark inside them
+ * reading as a watermark rather than as a certification. A filled tile has
+ * its own ground, so the type sits on paper instead of on the photograph,
+ * and it holds whatever is behind it.
+ *
+ * Square, and the title is INSIDE. The circles carried a caption underneath,
+ * which on a phone made each one two objects tall and the set of four a
+ * block four rows deep. One tile per standard says the same thing in one.
  */
 function SecuritySeals() {
   return (
-    <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-6">
+    // 220 on a phone, not 420. At the panel's full width the four tiles were
+    // 140px squares covering the photograph almost edge to edge — a block of
+    // white with a picture behind it rather than four badges laid on one.
+    <div className="grid w-full max-w-[220px] grid-cols-2 gap-2 sm:max-w-[560px] sm:grid-cols-4 sm:gap-3">
       {SECURITY_STANDARDS.map((s) => (
-        <span key={s.title} className="flex flex-col items-center gap-3">
-          <span className="text-white [&_span]:border-white/40 [&_span]:bg-transparent [&_span]:text-white/90">
-            <Seal label={s.seal} />
+        <span
+          key={s.title}
+          className="flex aspect-square flex-col items-center justify-center gap-1.5 rounded-lg bg-white px-1.5 text-center shadow-[0_10px_30px_-12px_rgba(16,24,40,0.45)] sm:rounded-xl sm:px-2"
+        >
+          {/* ONE LINE, THE TITLE. The band's seals carry a short mark inside
+              the circle and the full name under it; on a badge the two sit
+              one above the other, and for three of the four they are the
+              same word printed twice. The mono face is what carries the mark
+              over from the band. */}
+          <span className="text-[10px] leading-tight tracking-[0.04em] text-foreground [font-family:var(--font-diatype-mono)] sm:text-[12px]">
+            {s.title}
           </span>
-          <span className="text-[13px] text-white">{s.title}</span>
         </span>
       ))}
     </div>
@@ -181,7 +206,7 @@ function Screen({ active }: { active: RegionId }) {
         // the box below keeps its own size and the panel crops it. The inset
         // is deep enough that the photograph still reads as the ground the
         // screen is sitting on rather than a hairline around it.
-        <div className="absolute left-8 top-8 md:left-20 md:top-16">
+        <div className="absolute left-4 top-5 md:left-20 md:top-16">
           <div
             className={`relative overflow-hidden rounded-tl-xl border-l border-t border-[var(--mock-line)] bg-[var(--mock-window)] shadow-[0_24px_60px_-20px_rgba(16,24,40,0.45)] ${UI_BOX}`}
           >

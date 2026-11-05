@@ -185,7 +185,7 @@ export function BuilderCustomerQuotesStack({
                       outranks the attribution that opened it — at the size a
                       ~310px phone measure can carry without setting three
                       words to a line. */}
-                  <blockquote className="text-[17px] leading-snug text-foreground">
+                  <blockquote className="text-[15px] leading-snug text-foreground sm:text-[17px]">
                     “{q.quote}”
                   </blockquote>
                   {/* NO "Read the story" LINE. The quote is the whole body

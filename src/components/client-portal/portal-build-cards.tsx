@@ -14,7 +14,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { MockFit } from "@/components/templates/mock-fit";
 import { fadeMask } from "@/components/ui/fade-mask";
@@ -583,12 +583,43 @@ const PANEL_SCENE_WIDE = {
   size: "w-[360px] h-[300px] sm:w-[620px] sm:h-[400px] lg:w-[900px] lgx:w-[1040px]",
 };
 
+/** How long each character of the typed prompt takes, and the pause first. */
+const TYPE_MS = 34;
+const TYPE_DELAY_MS = 450;
+
+/**
+ * Build's panel box, drawn to the FULL height of the slot it is given.
+ *
+ * Same widths as PANEL_SCENE_WIDE, taller box. For a panel where the screen
+ * runs from under the tab strip to the panel's own foot rather than sitting
+ * in the lower half of it with a band of photograph above and nothing below.
+ * Separate from PANEL_SCENE_WIDE so /ai-app-builder, whose slot is a fixed
+ * 400 tall, is untouched.
+ */
+const PANEL_SCENE_WIDE_TALL = {
+  vars: "[--template-mock-w:360px] [--template-mock-h:300px] sm:[--template-mock-w:620px] sm:[--template-mock-h:400px] md:[--template-mock-h:520px] lg:[--template-mock-w:900px] lgx:[--template-mock-w:1040px]",
+  size: "w-[360px] h-[300px] sm:w-[620px] sm:h-[400px] md:h-[520px] lg:w-[900px] lgx:w-[1040px]",
+};
+
 export function DescribeCard({
   plain = false,
   vertical = "default",
   prompt,
   photo,
+  typing = false,
 }: SceneProps & {
+  /**
+   * Types the prompt out a character at a time instead of showing it whole.
+   *
+   * The step's claim is that you say what you want in plain language, and a
+   * finished sentence sitting in a box shows the result of that rather than
+   * the doing of it. Opt-in, so the rail and the product pages keep the
+   * still composer they were drawn with.
+   *
+   * It runs ONCE and stays, like the Iterate step's chat: the panel remounts
+   * a step when you tab to it, which is what replays this.
+   */
+  typing?: boolean;
   /**
    * The composer's text, for a page whose step is a CHANGE rather than a new
    * app: the template pages' "Describe your changes" asks for an edit to the
@@ -601,6 +632,50 @@ export function DescribeCard({
    */
   photo?: string;
 } = {}) {
+  const line =
+    prompt ??
+    (plain
+      ? "Add a shared calendar each client books their own time on."
+      : vertical === "accounting"
+        ? "Add a month-end close tracker each client sees for their own books."
+        : vertical === "agency"
+          ? "Add a project tracker each client sees for their own campaigns."
+          : "Add a project tracker each client sees for their own project.");
+
+  // WRITTEN STRAIGHT TO THE DOM, not held in state. The sentence is rendered
+  // whole on the server — so the box is its full size before any of this runs
+  // and there is nothing to hydrate around — and the two spans always hold
+  // the whole line between them, so the composer never changes height as the
+  // characters arrive.
+  const typedRef = useRef<HTMLSpanElement>(null);
+  const restRef = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    if (!typing) return;
+    const head = typedRef.current;
+    const tail = restRef.current;
+    if (!head || !tail) return;
+    // Reduced motion keeps the finished sentence, which is what the server
+    // already rendered — so there is nothing to do.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    let timer = 0;
+    let i = 0;
+    const tick = () => {
+      i += 1;
+      head.textContent = line.slice(0, i);
+      tail.textContent = line.slice(i);
+      if (i < line.length) timer = window.setTimeout(tick, TYPE_MS);
+    };
+    const start = window.setTimeout(() => {
+      head.textContent = "";
+      tail.textContent = line;
+      tick();
+    }, TYPE_DELAY_MS);
+    return () => {
+      window.clearTimeout(start);
+      window.clearTimeout(timer);
+    };
+  }, [typing, line]);
+
   return (
     <>
       {/* A photograph behind this card only, scrimmed hard.
@@ -894,15 +969,7 @@ export function DescribeCard({
                 calendar; /client-portal's rail still runs the project tracker
                 through its own Plan and Build, and a prompt shared between them
                 would be wrong on one page whichever app it named. */}
-                {prompt
-                  ? prompt
-                  : plain
-                    ? "Add a shared calendar each client books their own time on."
-                    : vertical === "accounting"
-                      ? "Add a month-end close tracker each client sees for their own books."
-                      : vertical === "agency"
-                        ? "Add a project tracker each client sees for their own campaigns."
-                        : "Add a project tracker each client sees for their own project."}
+                <span ref={typedRef}>{line}</span>
                 {/* The site's own caret blink (--animate-caret, the one the
               hero typewriter uses). It BLINKS AT REST now rather than only
               while the card is hovered: a still caret parked after a finished
@@ -914,6 +981,10 @@ export function DescribeCard({
                 <span
                   className={`ml-[1px] inline-block w-[1.5px] translate-y-[2px] bg-[var(--mock-ink)] motion-safe:animate-caret ${plain ? "h-[15px]" : "h-[14px]"}`}
                 />
+                {/* The part not yet typed, holding its own space. Without it
+                    the box would grow line by line under the caret as the
+                    sentence arrives, and the composer would jump. */}
+                <span ref={restRef} aria-hidden className="invisible" />
               </p>
 
               {/* The composer's control row, where the product puts it.
@@ -2440,7 +2511,25 @@ export function BuildCard({
   sidebarOnly = false,
   appLabel,
   tracker = false,
+  tall = false,
+  closedRight = false,
 }: SceneProps & {
+  /**
+   * Closes the window's right edge on a phone as well as from sm.
+   *
+   * The window is drawn to run off its card's right edge, so below sm it has
+   * no border and no radius there — three of its four corners are crops. A
+   * panel that insets the scene instead (the homepage's four-steps section
+   * does on a phone) puts that edge back inside the picture, where a square
+   * corner beside three finished ones reads as the shot having been cut.
+   */
+  closedRight?: boolean;
+  /**
+   * Draws the `plain` scene to the full height of its slot — see
+   * PANEL_SCENE_WIDE_TALL. For a panel that gives this step the whole frame
+   * rather than a 400-tall band inside it.
+   */
+  tall?: boolean;
   /**
    * Shows the project-tracker board in a `plain` scene, where that scene
    * otherwise draws the calendar.
@@ -2527,8 +2616,9 @@ export function BuildCard({
         fadeFrom={100}
         {...(plain
           ? {
-              boxClass: PANEL_SCENE_WIDE.vars,
-              boxSizeClass: PANEL_SCENE_WIDE.size,
+              boxClass: (tall ? PANEL_SCENE_WIDE_TALL : PANEL_SCENE_WIDE).vars,
+              boxSizeClass: (tall ? PANEL_SCENE_WIDE_TALL : PANEL_SCENE_WIDE)
+                .size,
             }
           : // The phone box, like the other rail cards — see RAIL_SCENE_PHONE.
             // It matters more here than anywhere: this card's whole idea is a
@@ -2657,7 +2747,11 @@ export function BuildCard({
           // grey ground than the rule it replaced. Clipping the background to
           // the padding box leaves the border area genuinely empty, so the
           // card's own ground shows through and there is no line at all.
-          className={`flex shrink-0 ${plain ? "mock-edge" : "w-[340px] translate-x-[25px] translate-y-px max-lg:flex-1 min-[480px]:w-[380px] min-[480px]:translate-x-[20px]"} ${WINDOW} ${R_PANEL} rounded-b-none rounded-tr-none border-transparent [background-clip:padding-box] border-b-0 border-r-0 sm:rounded-tr-[10px] sm:border-r ${
+          className={`flex shrink-0 ${plain ? "mock-edge" : "w-[340px] translate-x-[25px] translate-y-px max-lg:flex-1 min-[480px]:w-[380px] min-[480px]:translate-x-[20px]"} ${WINDOW} ${R_PANEL} rounded-b-none border-transparent [background-clip:padding-box] border-b-0 ${
+            closedRight
+              ? "border-r rounded-tr-[10px]"
+              : "rounded-tr-none border-r-0 sm:rounded-tr-[10px] sm:border-r"
+          } ${
             // sidebarOnly runs off the card's right and foot at every width,
             // so its window has no right border (a transparent one showed the
             // ground as a 1px line where the window met the card flush) and

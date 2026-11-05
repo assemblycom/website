@@ -79,14 +79,16 @@ const HERO_STATS = STATS.filter((s) => s.label !== "Clients managed");
 /**
  * The phone's labels for those figures.
  *
- * Three columns on a 390px screen give each label about 110px, and
- * "Businesses powered" and "Payments processed" both broke across two lines
- * there while "Apps created" held one — so the row sat on a ragged baseline
- * with one column short. The noun on its own is the part that does the work;
- * the full label returns from sm, where there is room for it.
+ * The row is sized to its own content on a phone, so each column is only as
+ * wide as the figure above it — about 90px — and every label that is two
+ * words broke across two lines, leaving the row on a ragged baseline. The
+ * noun on its own is the part that does the work, and `whitespace-nowrap`
+ * is what guarantees it: a label that cannot wrap cannot stagger the row.
+ * The full labels return from sm, where there is room for them.
  */
 const SHORT_LABELS: Record<string, string> = {
   "Businesses powered": "Businesses",
+  "Apps created": "Apps",
   "Payments processed": "Payments",
 };
 
@@ -160,7 +162,15 @@ export function HeroPhoto() {
         // pair and figures come to more than the screen — the figures were
         // cropped by the card's own foot. The hero runs a little past the
         // fold there instead, which is what it did before.
-        className="relative -mt-14 h-[100svh] min-h-[780px] md:-mt-16 md:min-h-[600px]"
+        // A CEILING FROM 1536. A full screen is the right size for the hero
+        // on a laptop; on a large display it is 1200px of photograph with the
+        // lockup in the bottom fifth of it and the figures a long way off to
+        // the side — the copy stops holding its own against the frame, and
+        // the page below never hints at itself. Capped, the photograph is a
+        // deep band rather than a whole screen, the lockup sits nearer its
+        // middle, and what follows comes into view. It is a max, so a short
+        // wide window still takes 100svh and nothing is cropped.
+        className="relative -mt-14 h-[100svh] min-h-[780px] md:-mt-16 md:min-h-[600px] min-[1536px]:max-h-[880px]"
       >
         <section
           data-theme="dark"
@@ -242,13 +252,20 @@ export function HeroPhoto() {
               {/* The figures, value over label, divided by hairlines as in the
                 reference. One row at every width; on a phone the labels may
                 wrap rather than the row breaking. */}
-              <dl className="grid shrink-0 grid-cols-3">
+              {/* SIZED TO ITSELF AND RANGED LEFT until the row splits at lg.
+                  Stacked under the buttons the figures were a flex child at
+                  full width, so three equal columns spread across the whole
+                  measure and the row sat under a left-ranged pair with its
+                  own thirds landing nowhere near them. `self-start` shrinks
+                  it to its content, which puts the first figure on the
+                  copy's left line. */}
+              <dl className="grid shrink-0 grid-cols-3 self-start lg:self-auto">
                 {HERO_STATS.map((stat) => (
                   <div
                     key={stat.label}
                     className="flex flex-col-reverse gap-1 border-l border-white/15 px-3 text-center first:border-l-0 first:pl-0 last:pr-0 sm:px-5"
                   >
-                    <dt className="text-sm text-white/60 sm:whitespace-nowrap">
+                    <dt className="whitespace-nowrap text-sm text-white/60">
                       <span className="sm:hidden">
                         {SHORT_LABELS[stat.label] ?? stat.label}
                       </span>

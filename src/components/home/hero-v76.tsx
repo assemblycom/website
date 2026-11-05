@@ -181,6 +181,7 @@ export function HeroV76({
   trustSlot,
   roomy = false,
   body: bodyOverride,
+  iconSplitAfter,
 }: {
   showPlus?: boolean;
   templates: Template[];
@@ -193,6 +194,8 @@ export function HeroV76({
    * COPY_VARIANTS exactly as it always has.
    */
   body?: string;
+  /** Passed through to HeroBig — see `iconSplitAfter` there. */
+  iconSplitAfter?: string;
   /**
    * Extra room above and below the hero's own content, for a page that does
    * not run this hero's usual neighbours.
@@ -512,6 +515,7 @@ export function HeroV76({
           signupHref={withHeroArm(SIGNUP_URL, variant?.arm ?? null)}
           trustSlot={trustSlot}
           roomy={roomy}
+          iconSplitAfter={iconSplitAfter}
         />
       ) : (
         <>

@@ -43,6 +43,7 @@ const CLAIMS: FAQEntry[] = [
 
 /** Clears the safety-first buyer's objections. */
 export function PortalTrust({
+  eyebrow,
   heading = "Enterprise-grade security for your client data",
   body = "SOC 2 Type II certified, with HIPAA, GDPR, and CCPA support. Encrypted in transit and at rest, with client-level permissions and MFA on every plan.",
   claims = CLAIMS,
@@ -52,7 +53,14 @@ export function PortalTrust({
   bandClassName,
   bandOnRails,
   bandFramed,
+  bandLineClass,
 }: {
+  /**
+   * The small label over the heading, for a page whose sections all carry
+   * one. Opt-in: /client-portal and the solution pages name this section
+   * with the heading alone.
+   */
+  eyebrow?: string;
   heading?: string;
   body?: string;
   claims?: FAQEntry[];
@@ -84,6 +92,9 @@ export function PortalTrust({
    * security-compliance.
    */
   bandFramed?: boolean;
+  /** The band's cell hairlines, for a page whose guide lines have a tone of
+   *  their own — see `lineClass` in security-compliance. */
+  bandLineClass?: string;
   /**
    * Fills the right column when `claims` is empty — for a brief that makes the
    * security case in its paragraph rather than in rows a reader opens.
@@ -105,11 +116,22 @@ export function PortalTrust({
         <div
           className={
             solo
-              ? "mx-auto max-w-[52ch] text-center"
+              ? // CENTRED FROM md, RANGED LEFT ON A PHONE. Centred type over
+                // a centred band is the right shape once the band is wide
+                // enough to read as the thing the copy sits on; on a phone
+                // the band is two seals stacked and every other section of
+                // the page opens on its left line, so this was the one block
+                // whose heading started somewhere else.
+                "mx-auto max-w-[52ch] md:text-center"
               : "grid gap-10 md:grid-cols-2 md:gap-16"
           }
         >
           <div className="md:self-start">
+            {eyebrow ? (
+              <p className="type-eyebrow mb-4 text-muted-foreground">
+                {eyebrow}
+              </p>
+            ) : null}
             <h2 className="type-h2 text-balance">{heading}</h2>
             <p
               className={`mt-5 text-muted-foreground ${solo ? "" : "max-w-md"}`}
@@ -178,6 +200,7 @@ export function PortalTrust({
             omit={omitSeals}
             railAligned={bandOnRails}
             framed={bandFramed}
+            lineClass={bandLineClass}
           />
         </div>
       </Reveal>

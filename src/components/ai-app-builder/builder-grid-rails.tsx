@@ -52,6 +52,18 @@ export const BUILDER_GRID_LINE =
   "border-[rgba(16,17,20,0.055)] [[data-theme=dark]_&]:border-[rgba(232,237,239,0.085)]";
 
 /**
+ * The same tone as a FILL, for a line drawn as a span or as the bed behind a
+ * gap rather than as a border.
+ *
+ * Any guide line on a page with these rails has to be this colour whichever
+ * way it is painted. The certification band's cell hairlines and the FAQ's
+ * own side rules were --border, a step darker, and the column they share
+ * with a rail changed weight where one handed over to the other.
+ */
+export const BUILDER_GRID_LINE_BG =
+  "bg-[rgba(16,17,20,0.055)] [[data-theme=dark]_&]:bg-[rgba(232,237,239,0.085)]";
+
+/**
  * The soft edge a card gives the rails passing behind it.
  *
  * The rails are a BACKDROP — they run the height of the region and every

@@ -51,7 +51,12 @@ export function ProofReel({ items }: { items: ReelItem[] }) {
         // The scrollbar is hidden and the ends are inset by the page gutter,
         // so the first mark starts on the measure and the last one has room
         // to clear it.
-        className="-mx-6 flex snap-x snap-mandatory items-center gap-2 overflow-x-auto px-6 [scrollbar-width:none] sm:mx-0 sm:grid sm:grid-cols-4 sm:gap-x-4 sm:gap-y-2 sm:overflow-visible sm:px-0 lg:grid-cols-7 [&::-webkit-scrollbar]:hidden"
+        // SEVEN ACROSS FROM md, not from lg. Four columns and seven marks is
+        // a row of four over a row of three, which reads as a grid that ran
+        // out rather than as a reel — and the ragged second row is the first
+        // thing the eye lands on. A tighter gutter is what buys the seventh
+        // column at this width; it opens back up at lg.
+        className="-mx-6 flex snap-x snap-mandatory items-center gap-2 overflow-x-auto px-6 [scrollbar-width:none] sm:mx-0 sm:grid sm:grid-cols-4 sm:gap-x-4 sm:gap-y-2 sm:overflow-visible sm:px-0 md:grid-cols-7 md:gap-x-2 lg:gap-x-4 [&::-webkit-scrollbar]:hidden"
         onMouseLeave={() => setHovered(null)}
       >
         {items.map((item) => (
@@ -65,16 +70,17 @@ export function ProofReel({ items }: { items: ReelItem[] }) {
               onFocus={() => setHovered(item.slug)}
               onBlur={() => setHovered(null)}
               aria-label={`${item.company}: ${item.result}. Read the story`}
-              // A soft fill on the whole cell, the same tone the site's other
-              // hover rows use — the mark alone brightening was too small a
-              // change to register as "this is a link".
-              //
-              // The rest of the row dims while one is hovered, so the mark
-              // under the pointer is the only one at full strength and the
-              // caption below plainly belongs to it.
-              className={`flex h-14 w-[132px] items-center justify-center rounded-lg px-3 transition-all duration-200 sm:w-full hover:bg-foreground/[0.04] [[data-theme=dark]_&]:hover:bg-white/[0.05] ${
+              // THE MARK CHANGES COLOUR; NOTHING IS DRAWN BEHIND IT. There
+              // was a soft plate on the whole cell, and at 132x56 it is a
+              // grey square appearing beside seven marks that have no boxes
+              // — the plate became the thing you noticed rather than the
+              // logo under it. The row already dims every other mark while
+              // one is hovered, so the mark under the pointer goes to full
+              // ink against neighbours at a fifth of it: a bigger change
+              // than the plate was, and it happens to the logo itself.
+              className={`flex h-14 w-[132px] items-center justify-center px-3 transition-colors duration-200 sm:w-full ${
                 hovered === item.slug
-                  ? "text-foreground/80"
+                  ? "text-foreground"
                   : hovered
                     ? "text-foreground/20"
                     : "text-foreground/40"

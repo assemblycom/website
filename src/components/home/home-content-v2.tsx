@@ -6,9 +6,10 @@ import { WholeStack } from "@/components/home/whole-stack";
 import { Reveal } from "@/components/ui/reveal";
 import { GridDivider } from "@/components/ui/grid-lines";
 import {
-  BuilderGridRails,
   BUILDER_GRID_LINE,
+  BUILDER_GRID_LINE_BG,
   BUILDER_RAIL_HALO_WIDE,
+  BuilderGridRails,
 } from "@/components/ai-app-builder/builder-grid-rails";
 import { HeroSplit } from "@/components/home/v2/hero-split";
 import { ProofBand } from "@/components/home/v2/proof-band";
@@ -191,6 +192,7 @@ export function HomeContentV2({
                 <div className="absolute inset-0 [&_.template-mock-fit>div>div]:my-auto!">
                   <DescribeCard
                     plain
+                    typing
                     prompt="Add a project tracker each client sees for their own projects."
                   />
                 </div>
@@ -223,7 +225,7 @@ export function HomeContentV2({
                 // the width, so the card sits on the photograph with the
                 // picture around it — which is what the Describe step does
                 // and the one treatment on this panel that reads.
-                <div className="absolute inset-x-6 bottom-0 top-auto aspect-[6/5] sm:inset-x-0 sm:-bottom-6 sm:top-8 sm:aspect-auto md:-bottom-10 md:top-14">
+                <div className="absolute inset-x-6 -bottom-4 top-auto aspect-[6/5] sm:inset-x-0 sm:-bottom-6 sm:top-8 sm:aspect-auto md:-bottom-10 md:top-14">
                   <PlanCard plain doc={TRACKER_PLAN_DOC} />
                 </div>
               ),
@@ -243,8 +245,13 @@ export function HomeContentV2({
               build: (
                 // Phone: see the Plan step above — placed on the photograph
                 // rather than filling it and being cut by the floor.
-                <div className="absolute inset-x-6 bottom-0 top-auto aspect-[360/300] sm:inset-x-0 sm:-bottom-6 sm:aspect-[620/400] md:-bottom-10 lg:aspect-[900/400] lgx:aspect-[1040/400]">
-                  <BuildCard plain tracker />
+                // ANCHORED TO THE TOP FROM sm, not the foot. Bottom-anchored
+                // with its own aspect, the screen sat about 170px below the
+                // tab strip with nothing at all under it — a third of the
+                // panel spent on photograph above the one thing the step is
+                // about. The phone keeps its placement (see the Plan step).
+                <div className="absolute inset-x-6 -bottom-4 top-auto aspect-[360/300] sm:inset-x-0 sm:aspect-auto sm:-bottom-6 sm:top-0 md:-bottom-10">
+                  <BuildCard plain tracker tall closedRight />
                 </div>
               ),
               // The chat alone, on the photograph — no window and no table.
@@ -304,6 +311,7 @@ export function HomeContentV2({
             the homepage to link out to the security centre, where the product
             pages send a reader to the Trust Center. */}
         <PortalTrust
+          eyebrow="Security"
           heading="Client data your clients can trust you with"
           body="Your apps inherit the platform's security rather than reinventing it. SOC 2 Type II certified, with HIPAA, GDPR and CCPA support."
           link={{ label: "How Assembly keeps data safe", href: "/security" }}
@@ -320,6 +328,12 @@ export function HomeContentV2({
           // close its last row — the two landed a pixel apart under the bottom
           // two seals and read as a doubled line.
           bandFramed
+          // ONE TONE FOR EVERY LINE ON THIS PAGE. The band's hairlines were
+          // --border, a step darker than the rails running past it, so a
+          // column handed over from a faint rail to a darker divider and the
+          // grid read as two colours. They take the rails' own tone now, as
+          // the band's frame and the FAQ's side rules below do.
+          bandLineClass={BUILDER_GRID_LINE_BG}
           // AND ITS OWN SIDE EDGES. The band draws hairlines only BETWEEN
           // its cells — "the outer edges get nothing", as
           // security-compliance.tsx puts it, because on /security and
@@ -355,7 +369,7 @@ export function HomeContentV2({
           // changed weight halfway down. Every drawn edge here is --border
           // now; the rails behind stay fainter, which is what a backdrop
           // should be.
-          bandClassName={`relative border-x border-b border-x-border border-b-border border-t-border bg-background shadow-[0_0_0_2px_var(--background),0_0_96px_10px_var(--background)] [[data-theme=dark]_&]:border-x-[#383838] [[data-theme=dark]_&]:border-b-[#383838]`}
+          bandClassName={`relative border-x border-b ${BUILDER_GRID_LINE} bg-background shadow-[0_0_0_2px_var(--background),0_0_96px_10px_var(--background)]`}
           // ON THE RAILS. The band divided the measure into quarters while the
           // page divides it into sixths, so its hairlines and the rails above
           // and below it ran at two rhythms a pixel or so apart — read as a
@@ -392,8 +406,12 @@ export function HomeContentV2({
             aria-hidden
             className="pointer-events-none absolute inset-y-0 left-1/2 w-full max-w-[1200px] -translate-x-1/2"
           >
-            <span className="absolute inset-y-0 left-0 w-px -translate-x-1/2 bg-border [[data-theme=dark]_&]:bg-[#383838]" />
-            <span className="absolute inset-y-0 right-0 w-px translate-x-1/2 bg-border [[data-theme=dark]_&]:bg-[#383838]" />
+            <span
+              className={`absolute inset-y-0 left-0 w-px -translate-x-1/2 ${BUILDER_GRID_LINE_BG}`}
+            />
+            <span
+              className={`absolute inset-y-0 right-0 w-px translate-x-1/2 ${BUILDER_GRID_LINE_BG}`}
+            />
           </div>
           <Reveal variant="fade">
             {/* -mx-3 so the questions start on the measure, level with the
@@ -422,9 +440,9 @@ export function HomeContentV2({
           heading="Start free and stay free"
           subheading={
             <>
-              The free plan is free forever — one app, real clients, no card.
+              Get started for free, with no credit card required.
               <br className="hidden md:inline" />
-              Upgrade when the work outgrows it, not before.
+              {" "}Upgrade only when you need more.
             </>
           }
         />

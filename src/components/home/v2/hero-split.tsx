@@ -149,12 +149,15 @@ export function HeroSplit() {
               same gaps. Its hero is this same arrangement — headline ranged
               left, lead in the opposite column — so the two should measure the
               same, not merely look alike. */}
-          {/* CENTRED ON A PHONE, ranged left from md. The split only exists
-              from lg, and a single stacked column of left-ranged type on a
-              375px screen reads as the desktop layout with the second column
-              missing. /client-portal ranges left at every width; this is the
-              one place V2 departs from it, deliberately. */}
-          <div className="grid gap-8 text-center md:text-left lg:grid-cols-[1.15fr_0.85fr] lg:items-start lg:gap-x-16">
+          {/* CENTRED UNTIL THE SPLIT, ranged left once there is one. The two
+              columns only exist from lg, so between md and there the hero was
+              a single stacked column of left-ranged type with the right half
+              of the measure empty beside it — which reads as the desktop
+              layout with its second column missing rather than as a narrower
+              hero. The alignment now changes at the same breakpoint the
+              layout does. /client-portal ranges left at every width; this is
+              the one place V2 departs from it, deliberately. */}
+          <div className="grid gap-8 text-center lg:grid-cols-[1.15fr_0.85fr] lg:items-start lg:gap-x-16 lg:text-left">
             {/* CAPPED BELOW type-display-xl's OWN TOP END. That clamp runs to
                 84px, which is sized for a headline that owns the full measure
                 — in a column a little over half of it, "Deliver remarkable"
@@ -176,8 +179,15 @@ export function HeroSplit() {
                 ))}
               </h1>
             </div>
-            {/* max-w-[34rem] and lg:pt-2, both /client-portal's. */}
-            <p className="type-lead mx-auto max-w-[34rem] text-pretty text-muted-foreground md:mx-0 lg:pt-2">
+            {/* 34rem is /client-portal's measure, and it is right once the
+                lead has a column of its own from lg. Stacked under the
+                headline it is not: at the full width the first sentence very
+                nearly fills one line on its own, so the pair set as one long
+                line and one short one with the break landing on the full
+                stop. A tighter measure breaks the first sentence itself,
+                which is what gives the block two lines of similar length
+                under a centred headline. lg:pt-2 is /client-portal's. */}
+            <p className="type-lead mx-auto max-w-[26rem] text-pretty text-muted-foreground lg:mx-0 lg:max-w-[34rem] lg:pt-2">
               {PROTO_HERO_BODY}
             </p>
           </div>
@@ -185,7 +195,14 @@ export function HeroSplit() {
           {/* The pair, on the headline's own left line. */}
           {/* Stacked and full width on a phone, inline from sm — the shape
               PRIMARY_CTA and SECONDARY_CTA are written for (see hero-big). */}
-          <div className="mx-auto mt-9 flex w-full max-w-sm flex-col gap-3 sm:w-auto sm:max-w-none sm:flex-row sm:items-center md:mx-0">
+          {/* CENTRED WHILE THE COPY IS. The row is a block, so `w-auto` from
+              sm made it full width and `mx-auto` had nothing to centre — the
+              pair sat on the left under a headline and a lead that are both
+              still centred until md. Between 640 and 768 that read as the
+              buttons having slipped their column. `justify-center` is what
+              actually centres flex children; it hands back to the left at md,
+              where the copy does too. */}
+          <div className="mx-auto mt-9 flex w-full max-w-sm flex-col gap-3 sm:w-auto sm:max-w-none sm:flex-row sm:items-center sm:justify-center lg:mx-0 lg:justify-start">
             <a href={SIGNUP_URL} className={`unauth-only ${PRIMARY_CTA}`}>
               Get started
             </a>

@@ -2698,11 +2698,14 @@ export function WholeStack({
           </h2>
           {/* The heading states the claim; this says why it matters before the
               reader has to open any of the ten rows to find out. */}
+          {/* The closing list went with the fourth sentence: "CRM, branded
+              client experience, and a secure app builder" names the same
+              three things the three sentences above it have just named, so
+              the paragraph made its point and then made it again. */}
           <p className="type-lead mt-5 max-w-md text-pretty text-muted-foreground">
             Practice management tools run your back office. Client portals
-            handle the front. Most app builders stop at prototypes. Assembly
-            does all three: CRM, branded client experience, and a secure app
-            builder.
+            handle the front. App builders stop at prototypes. Assembly does
+            all three.
           </p>
         </div>
 
@@ -2731,7 +2734,7 @@ export function WholeStack({
               // on a 6px pitch read as dots. Inset to the row's own padding, so
               // the rule starts where the label does and the hover fill still
               // breathes past it.
-              className="group relative flex w-full items-baseline gap-5 rounded-lg px-3 py-4 text-left transition-colors after:absolute after:inset-x-3 after:bottom-0 after:h-px after:bg-[repeating-linear-gradient(to_right,var(--border)_0_1.5px,transparent_1.5px_6px)] after:content-[''] last:after:hidden hover:bg-foreground/[0.04] [[data-theme=dark]_&]:hover:bg-white/[0.05]"
+              className="group relative flex w-full items-baseline gap-5 px-3 py-4 text-left transition-colors after:absolute after:inset-x-3 after:bottom-0 after:h-px after:bg-[repeating-linear-gradient(to_right,var(--border)_0_1.5px,transparent_1.5px_6px)] after:content-[''] last:after:hidden hover:bg-foreground/[0.035] [[data-theme=dark]_&]:hover:bg-foreground/[0.06]"
             >
               <span className="type-body flex-1 text-foreground">
                 {p.short}

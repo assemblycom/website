@@ -30,13 +30,13 @@ function Stars({ rating }: { rating: number }) {
         // 4.8 rather than rounding itself up to a perfect score.
         const fill = Math.max(0, Math.min(1, rating - i));
         return (
-          <span key={i} className="relative block size-3.5">
+          <span key={i} className="relative block size-3 sm:size-3.5">
             <Star className="absolute inset-0 text-foreground/15" />
             <span
               className="absolute inset-0 overflow-hidden"
               style={{ width: `${fill * 100}%` }}
             >
-              <Star className="size-3.5 text-foreground/70" />
+              <Star className="size-3 text-foreground/70 sm:size-3.5" />
             </span>
           </span>
         );
@@ -61,7 +61,13 @@ export function HeroCredibility() {
       href={G2.href}
       target="_blank"
       rel="noopener noreferrer"
-      className="mb-5 inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+      // ONE LINE AT EVERY WIDTH. The row is a rating, and a rating that
+      // breaks reads as two facts rather than one — on a 320px screen the
+      // stars and the figure held the first line and "420+ reviews" fell to
+      // a third. It is held together with `whitespace-nowrap` and paid for
+      // with a step down in the type and the stars below sm, which is what
+      // makes it fit the narrowest screen rather than merely hope to.
+      className="mb-5 inline-flex flex-nowrap items-center gap-1.5 whitespace-nowrap text-[13px] text-muted-foreground transition-colors hover:text-foreground sm:gap-2 sm:text-sm"
     >
       <Stars rating={G2.rating} />
       <span className="text-foreground">{G2.rating}</span>

@@ -126,6 +126,7 @@ export function SecurityCompliance({
   omit,
   railAligned = false,
   framed = false,
+  lineClass,
 }: {
   /** Seal titles to leave out — a page may make a claim one of these outruns. */
   omit?: string[];
@@ -140,6 +141,15 @@ export function SecurityCompliance({
    * line under the last two seals.
    */
   framed?: boolean;
+  /**
+   * The hairline colour between the cells, as background utilities.
+   *
+   * For a page drawing guide rails behind its content: every line on such a
+   * page has to be the rails' own tone or the column a cell divider shares
+   * with a rail changes weight where one takes over from the other. Unset,
+   * the band keeps --border, which is what the pages without rails use.
+   */
+  lineClass?: string;
   /**
    * Lay the band out on SIXTHS of the measure rather than on its own equal
    * share of it.
@@ -189,7 +199,9 @@ export function SecurityCompliance({
         // there. A bottom border below sm closes it, bleeding to the screen
         // edges like the -mx-6 it sits in and like every other phone-only rule
         // on the site.
-        className={`-mx-6 grid grid-cols-2 gap-px bg-border sm:mx-0 ${columns} [[data-theme=dark]_&]:bg-[#383838] ${
+        className={`-mx-6 grid grid-cols-2 gap-px sm:mx-0 ${columns} ${
+          lineClass ?? "bg-border [[data-theme=dark]_&]:bg-[#383838]"
+        } ${
           framed
             ? ""
             : "max-sm:border-b max-sm:border-border [[data-theme=dark]_&]:max-sm:border-[#383838]"

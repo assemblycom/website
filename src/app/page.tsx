@@ -66,7 +66,17 @@ export default async function HomePage({
             // so padding it from out here moved the NAV down the page and left
             // a band of white above the logo. `roomy` opens the space inside
             // the hero, below the bar, which is where it was wanted.
-            <HeroV76 templates={templates} roomy body={PROTO_HERO_BODY} />
+            <HeroV76
+              templates={templates}
+              roomy
+              body={PROTO_HERO_BODY}
+              // On a phone the lockup wraps, and both marks went with the
+              // first line — two tiles crowded after "Deliver" with
+              // "remarkable" alone underneath. One moves to the end of the
+              // wrapped word, so each line carries a mark. Desktop, where
+              // the line does not wrap, is unchanged.
+              iconSplitAfter="remarkable"
+            />
           ) : active === "3" ? (
             <>
               <HeroPhoto />

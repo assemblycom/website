@@ -58,10 +58,16 @@ const HEADLINE_MARKS: { mark: AppMark; tint: MarkTint }[] = [
  */
 const TILE_GAP = "0.17em";
 
-function HeadlineTiles({ children }: { children: React.ReactNode }) {
+function HeadlineTiles({
+  children,
+  className = "",
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   return (
     <span
-      className="inline-flex items-center align-[-0.04em]"
+      className={`inline-flex items-center align-[-0.04em] ${className}`}
       style={{ gap: TILE_GAP, marginInline: TILE_GAP }}
     >
       {children}
@@ -78,14 +84,22 @@ function BigHeadline({
   iconAfter,
   iconPair,
   iconBefore,
+  iconSplitAfter,
 }: {
   text: string;
   iconAfter?: string;
   iconPair?: boolean;
   iconBefore?: string;
+  iconSplitAfter?: string;
 }) {
   const afterAt = iconAfter ? text.indexOf(iconAfter) : -1;
   const beforeAt = iconBefore ? text.indexOf(iconBefore) : -1;
+  // Where the pair's second mark goes once the line has wrapped — see
+  // `iconSplitAfter` on HeroBig. Only when this line holds both words.
+  const splitAt =
+    iconPair && iconSplitAfter && afterAt >= 0
+      ? text.indexOf(iconSplitAfter)
+      : -1;
 
   const tiles = [
     {
@@ -93,7 +107,27 @@ function BigHeadline({
       tile: (
         <HeadlineTiles>
           <HeadlineTile {...HEADLINE_MARKS[0]} />
-          {iconPair && <HeadlineTile {...HEADLINE_MARKS[1]} />}
+          {iconPair && (
+            // The second mark is drawn twice and one of the two is always
+            // hidden: there is no way to move a node between two points in a
+            // sentence with CSS, and the pair has to sit together on a line
+            // that does not wrap and apart on one that does.
+            <span
+              className={
+                splitAt >= 0 ? "hidden min-[560px]:contents" : "contents"
+              }
+            >
+              <HeadlineTile {...HEADLINE_MARKS[1]} />
+            </span>
+          )}
+        </HeadlineTiles>
+      ),
+    },
+    {
+      at: splitAt >= 0 ? splitAt + iconSplitAfter!.length : -1,
+      tile: (
+        <HeadlineTiles className="min-[560px]:hidden">
+          <HeadlineTile {...HEADLINE_MARKS[1]} />
         </HeadlineTiles>
       ),
     },
@@ -141,6 +175,7 @@ export function HeroBig({
   iconAfter,
   iconPair,
   iconBefore,
+  iconSplitAfter,
   signupHref = SIGNUP_URL,
   trustSlot,
   roomy = false,
@@ -151,6 +186,24 @@ export function HeroBig({
   iconAfter?: string;
   iconPair?: boolean;
   iconBefore?: string;
+  /**
+   * The word the pair's SECOND mark moves to once the headline wraps, below
+   * md.
+   *
+   * The lockup is one line on a desktop, so both marks sit together after
+   * the first word and read as a pair. On a phone that line breaks, and the
+   * pair went with it: two marks crowded onto the end of a short first line
+   * with the next word alone underneath. Moving one of them to the end of
+   * the wrapped word puts a mark on each line. Opt-in, so the live hero is
+   * unchanged.
+   *
+   * 560, NOT md. The split is only right on a line that has actually
+   * wrapped, and this lockup holds one line down to about 550 — so between
+   * there and md the two marks were separated across a line that had not
+   * broken, which is just a mark adrift at the end of a word. Measured, not
+   * picked: the line sets on one row at 560 and on two at 540.
+   */
+  iconSplitAfter?: string;
   /** Signup, carrying the arm. Falls back to the plain CTA URL. */
   signupHref?: string;
   /**
@@ -220,6 +273,7 @@ export function HeroBig({
                   iconAfter={iconAfter}
                   iconPair={iconPair}
                   iconBefore={iconBefore}
+                  iconSplitAfter={iconSplitAfter}
                 />
               </span>
             ))
