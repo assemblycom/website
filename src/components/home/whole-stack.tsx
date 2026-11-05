@@ -83,7 +83,7 @@ type VisualSlug =
 // app, not of the marketing site. Sized to sit close up on the field: the mocks
 // are the argument, so they take the width rather than floating small in it.
 const MOCK_CARD_BASE =
-  "mock-ui overflow-hidden border-[var(--mk-border)] bg-[var(--mk-surface)] [font-family:var(--font-inter),system-ui,sans-serif]";
+  "mock-ui overflow-hidden border-[var(--mk-border)] bg-[var(--mk-surface)] font-sans";
 
 // The default: a card floating centred on the blue field.
 const MOCK_CARD = `${MOCK_CARD_BASE} w-full max-w-[380px] rounded-[8px] border`;
@@ -1760,7 +1760,7 @@ const MCP_BRIEFING = [
 // No bottom padding and no bottom border: the screen has to run clean off the
 // field's edge, and 6px of bezel or a ring underneath it read as a grey seam.
 const PHONE_BEZEL =
-  "mock-ui h-full w-full max-w-[268px] overflow-hidden rounded-t-[30px] border border-b-0 border-[var(--mk-border)] bg-[var(--mk-fill)] px-[6px] pt-[6px] [font-family:var(--font-inter),system-ui,sans-serif]";
+  "mock-ui h-full w-full max-w-[268px] overflow-hidden rounded-t-[30px] border border-b-0 border-[var(--mk-border)] bg-[var(--mk-fill)] px-[6px] pt-[6px] font-sans";
 
 function McpChatVisual() {
   return (

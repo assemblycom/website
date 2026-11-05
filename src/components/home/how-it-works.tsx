@@ -366,7 +366,7 @@ export function HowItWorks({
               to the tallest card, so h-full/max-h-full below resolved against
               that instead of the capped panel. */}
           <div
-            className={`relative order-1 grid ${visualHeightClass} grid-cols-1 grid-rows-1 overflow-hidden sm:order-none [font-family:var(--font-inter),system-ui,sans-serif]`}
+            className={`relative order-1 grid ${visualHeightClass} grid-cols-1 grid-rows-1 overflow-hidden sm:order-none font-sans`}
           >
             {STEPS.map((step, i) => (
               <div

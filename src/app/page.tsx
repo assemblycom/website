@@ -87,7 +87,10 @@ export default async function HomePage({
           ) : active === "3" ? (
             <>
               <HeroPhoto />
-              <HomeProofBand />
+              {/* A beat under the photograph before the marks — see
+                  `headroom`. The split hero's reel rides up under its tile;
+                  this one has a picture's edge to clear instead. */}
+              <HomeProofBand headroom />
             </>
           ) : undefined
         }

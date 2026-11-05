@@ -88,7 +88,7 @@ export function BluePanel({ children }: { children?: React.ReactNode }) {
         // Top-anchored on phones, where the child is a screen that runs off the
         // bottom edge — centring it split the overflow and pushed it down. From
         // sm up the child is a floating card again and wants to be centred.
-        className="flex h-full w-full flex-col justify-start overflow-hidden rounded-xl p-5 sm:justify-center sm:p-7 lg:p-9 [font-family:var(--font-inter),system-ui,sans-serif]"
+        className="flex h-full w-full flex-col justify-start overflow-hidden rounded-xl p-5 sm:justify-center sm:p-7 lg:p-9 font-sans"
         style={{ backgroundColor: BLUE }}
       >
         {children}

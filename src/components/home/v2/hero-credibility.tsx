@@ -53,7 +53,19 @@ function Star({ className }: { className?: string }) {
   );
 }
 
-export function HeroCredibility() {
+export function HeroCredibility({
+  /**
+   * Drops the review count on a phone, leaving the stars, the figure and the
+   * source.
+   *
+   * The rating is one line held together with `whitespace-nowrap`, and on a
+   * narrow screen the count is what pushes it to the edge of the measure —
+   * it is also the least of the three things the line says. The score and
+   * who gave it are the proof; how many people gave it is detail for a
+   * screen with room for detail.
+   */
+  compactOnPhone = false,
+}: { compactOnPhone?: boolean } = {}) {
   return (
     // Ranged left on the headline's own line, not centred: the hero is a split
     // layout now and this is the first thing in its left column.
@@ -71,7 +83,13 @@ export function HeroCredibility() {
     >
       <Stars rating={G2.rating} />
       <span className="text-foreground">{G2.rating}</span>
-      <span>on G2 · {G2.reviews}+ reviews</span>
+      <span>
+        on G2
+        <span className={compactOnPhone ? "hidden sm:inline" : ""}>
+          {" "}
+          · {G2.reviews}+ reviews
+        </span>
+      </span>
     </Link>
   );
 }

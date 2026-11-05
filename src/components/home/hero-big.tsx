@@ -279,7 +279,10 @@ export function HeroBig({
             hero rather than restated, so the two are one object. */}
         {rating ? (
           <div className="mb-1 text-center">
-            <HeroCredibility />
+            {/* The count is dropped on a phone here: this hero centres its
+                rating over a full-width column, where the line is at its
+                longest and nearest the screen's edges. */}
+            <HeroCredibility compactOnPhone />
           </div>
         ) : null}
         <h1

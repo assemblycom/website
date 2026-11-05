@@ -65,10 +65,13 @@ import { UnifiedPlatform } from "@/components/home/v2/platform-visuals";
  * Exported so a page composing its own hero can put the same band under it,
  * with the same reveal, rather than restating the pairing.
  */
-export function HomeProofBand({ rails = false }: { rails?: boolean } = {}) {
+export function HomeProofBand({
+  rails = false,
+  headroom = false,
+}: { rails?: boolean; headroom?: boolean } = {}) {
   return (
     <Reveal variant="fade">
-      <ProofBand rails={rails} />
+      <ProofBand rails={rails} headroom={headroom} />
     </Reveal>
   );
 }
@@ -195,7 +198,16 @@ export function HomeContentV2({
               // on /ai-app-builder's panel. There is no heading over it here,
               // so that offset just sat it high in the picture.
               describe: (
-                <div className="absolute inset-0 [&_.template-mock-fit>div>div]:my-auto!">
+                // 620 WIDE FROM sm, WHICH IS THE SCENE'S OWN DESIGN WIDTH.
+                // MockFit scales a scene to the frame it is given, and this
+                // frame was the whole 938px panel: a 620x400 scene drawn at
+                // 1.2, so the mock's 13.5px body landed at 16 and every rule
+                // and radius in it grew with the type. Every step on this
+                // panel is held to its design width now, so each one draws at
+                // 1:1 and the four read as one set of screens rather than as
+                // four zoom levels. The phone keeps the full width — the
+                // scene has its own 360px box there and is already near 1:1.
+                <div className="absolute inset-y-0 left-0 right-0 [&_.template-mock-fit>div>div]:my-auto! sm:left-1/2 sm:w-[620px] sm:max-w-full sm:-translate-x-1/2">
                   <DescribeCard
                     plain
                     typing
@@ -231,7 +243,18 @@ export function HomeContentV2({
                 // the width, so the card sits on the photograph with the
                 // picture around it — which is what the Describe step does
                 // and the one treatment on this panel that reads.
-                <div className="absolute inset-x-6 -bottom-4 top-auto aspect-[6/5] sm:inset-x-0 sm:-bottom-6 sm:top-8 sm:aspect-auto md:-bottom-10 md:top-14">
+                // AND HELD TO THE SCENE'S 620 FROM sm — see the Describe
+                // step above. The frame still runs past the panel's foot, so
+                // the card is still cut by it; it is only the WIDTH that is
+                // pinned, which is what takes the scale back to 1:1.
+                // AND ITS OWN 400 HEIGHT, anchored past the panel's floor.
+                // Pinning only the width left the 400-tall scene with slack
+                // in a 464-tall frame, and MockFit centres slack — so the
+                // document floated with a band of photograph under it, which
+                // is the exact thing this step is drawn not to do. Given its
+                // design height and hung off the bottom, it is cut by the
+                // panel again.
+                <div className="absolute inset-x-6 -bottom-4 top-auto aspect-[6/5] sm:left-1/2 sm:right-auto sm:top-auto sm:h-[400px] sm:w-[620px] sm:max-w-full sm:-translate-x-1/2 sm:-bottom-10 sm:aspect-auto md:-bottom-14">
                   <PlanCard plain doc={TRACKER_PLAN_DOC} />
                 </div>
               ),
@@ -271,7 +294,11 @@ export function HomeContentV2({
               // Its scene is landscape like the others now, so it needs none
               // of the taller frame the portrait rail card used to want.
               iterate: (
-                <div className="absolute inset-0">
+                // 680 WIDE FROM sm, the chat scene's own design width. Given
+                // the whole panel it was drawn at 1.5, which put a 13.5px
+                // message at 19 — larger than the section's own body copy, on
+                // the one step whose subject is a chat window.
+                <div className="absolute inset-y-0 left-0 right-0 sm:left-1/2 sm:w-[680px] sm:max-w-full sm:-translate-x-1/2">
                   <IterateCard reply />
                 </div>
               ),

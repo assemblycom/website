@@ -258,6 +258,7 @@ function Scene({
   boxClass,
   boxSizeClass,
   footFlush = false,
+  bleedFromTop = false,
 }: {
   children: React.ReactNode;
   /**
@@ -312,6 +313,18 @@ function Scene({
    * spare rather than as a page running off the bottom.
    */
   footFlush?: boolean;
+  /**
+   * Keeps a bleed scene pinned to its TOP at `lg`, where it otherwise flips to
+   * the foot.
+   *
+   * The foot is right for a scene whose box is shorter than the window it
+   * holds by a row or two — the board's rows run off the bottom and still read
+   * as a list carrying on. It is wrong for a scene drawn to fill a tall panel
+   * (see `tall`), where the overrun is large enough that pinning to the foot
+   * takes the window's own header — the workspace name and the search row —
+   * off the top of a screen that is the step's whole subject.
+   */
+  bleedFromTop?: boolean;
 }) {
   return (
     <MockFit
@@ -372,7 +385,9 @@ function Scene({
               // and name — off the top of a card whose subject is the firm's
               // portal. Pinned to the top instead, the same 113px comes off
               // the bottom, which is the end that was always meant to be cut.
-              "flex flex-col justify-start overflow-hidden pl-5 pt-5 lg:justify-end"
+              `flex flex-col justify-start overflow-hidden pl-5 pt-5 ${
+                bleedFromTop ? "" : "lg:justify-end"
+              }`
             : `flex flex-col gap-4 p-5 ${
                 // justify-center centres a short scene in the box; with the
                 // foot open the child is meant to FILL it and be cut, so it
@@ -2623,6 +2638,9 @@ export function BuildCard({
           spoil, dimming the only column on screen from 82% of its width on. */}
       <Scene
         bleed
+        // The tall scene's window overruns its box by more than a row, so the
+        // `lg` flip to the foot would cut the screen's own header off the top.
+        bleedFromTop={plain && tall}
         fadeFrom={100}
         {...(plain
           ? {
@@ -3219,9 +3237,16 @@ export function IterateCard({
             // The ink is the soft one, as the reply's already is. At full
             // strength, 12.5px of solid black on a white well read heavier
             // than anything else in the panel.
-            className={`chat-turn ml-auto w-fit max-w-[72%] [animation:chat-turn-in_600ms_ease-out_both] rounded-2xl bg-[var(--mock-well-2)] px-3.5 py-2 font-normal text-[color:var(--mock-ink-soft)] ${CARD_BODY}`}
+            className={`chat-turn ml-auto w-fit max-w-[72%] [animation:chat-turn-in_600ms_ease-out_both] rounded-xl bg-[var(--mock-well-2)] px-3.5 py-2 font-normal text-[color:var(--mock-ink-soft)] ${CARD_BODY}`}
           >
-            Add a due date to every project.
+            {/* LONG ENOUGH TO WRAP. At one short line each turn was a single
+                word-length chip, and two chips stacked on a photograph read as
+                a pair of tags rather than as someone typing. A sentence that
+                runs to two or three lines is the shape of a message, and it
+                also shows the step's real claim — that the change you ask for
+                can be a specific one, not a one-word command. */}
+            Add a due date to every project, and sort the list so the ones due
+            soonest are at the top.
           </p>
           {/* The answer, as its own bubble on the left. OUTLINED, not filled:
               the filled well is what marks your own turn above, so giving the
@@ -3232,7 +3257,10 @@ export function IterateCard({
           <p
             // A second behind the request, so the two read as one exchange
             // rather than as two labels that appeared together.
-            className={`chat-turn mt-2.5 flex w-fit max-w-[72%] items-center gap-2 [animation:chat-turn-in_600ms_ease-out_900ms_both] rounded-2xl border bg-[var(--mock-window)] px-3.5 py-2 ${LINE} font-normal text-[color:var(--mock-ink-soft)] ${CARD_BODY}`}
+            // mt-5, not 2.5. Two turns a few pixels apart read as one block
+            // of type with a rule through it; a chat leaves a clear gap
+            // between one person's turn and the next.
+            className={`chat-turn mt-5 flex w-fit max-w-[72%] items-center gap-2 [animation:chat-turn-in_600ms_ease-out_900ms_both] rounded-xl border bg-[var(--mock-window)] px-3.5 py-2 ${LINE} font-normal text-[color:var(--mock-ink-soft)] ${CARD_BODY}`}
           >
             <span
               aria-hidden

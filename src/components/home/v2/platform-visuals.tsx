@@ -98,18 +98,28 @@ const APP_PILLS = [
  *
  * The claim is "30+ ready-made apps", and the honest picture of that is a few
  * of them named — not one of them opened, which is a picture of a helpdesk.
- * Glassy rather than solid so the photograph stays visible through them and
- * they read as laid on it.
+ *
+ * SOLID, NOT GLASS. Frosted white over a photograph takes whatever is behind
+ * it: on a busy shot each pill came out a different tone from the one above
+ * it, the ink sat on a moving ground and the set read as four smudges rather
+ * than as four apps. A full fill gives the type its own paper.
+ *
+ * `--mock-well`, not the window white: four white plates on a photograph read
+ * as holes punched in it. A rung down is still a surface the type sits on and
+ * still clearly lighter than anything in the picture.
+ *
+ * 200 WIDE, not 260. The labels are one word each, so the extra width was
+ * empty plate running past the end of every name.
  */
 function AppPills() {
   return (
-    <div className="flex w-[260px] flex-col gap-2.5">
+    <div className="flex w-[200px] flex-col gap-2.5">
       {APP_PILLS.map((app) => (
         <span
           key={app.label}
-          className="flex items-center gap-3 rounded-xl border border-white/25 bg-white/15 px-4 py-3 text-[15px] text-white backdrop-blur-md"
+          className="flex items-center gap-3 rounded-xl bg-[var(--mock-well)] px-4 py-3 text-[15px] text-[color:var(--mock-ink)] shadow-[0_10px_30px_-12px_rgba(16,24,40,0.45)]"
         >
-          <span className="text-white/80">{app.icon}</span>
+          <span className="text-[color:var(--mock-ink-soft)]">{app.icon}</span>
           {app.label}
         </span>
       ))}
@@ -118,7 +128,7 @@ function AppPills() {
           in it yet — about the one row whose point is that there are 27 more
           apps that do exist. It is the quietest of the four by its ink, not
           by its edge. */}
-      <span className="flex items-center gap-3 rounded-xl border border-white/25 bg-white/15 px-4 py-3 text-[15px] text-white/70 backdrop-blur-md">
+      <span className="flex items-center gap-3 rounded-xl bg-[var(--mock-well)] px-4 py-3 text-[15px] text-[color:var(--mock-ink-soft)] shadow-[0_10px_30px_-12px_rgba(16,24,40,0.45)]">
         <IconPlus className="size-4" />
         27 more
       </span>
@@ -189,12 +199,18 @@ const SCREENS: Record<RegionId, TabScreen> = {
   // it was a sheet of white with a text box in the middle of it.
   builder: {
     node: (
-      // 460, not 560. The composer is one field with a short sentence in it,
-      // and at 560 the sentence ran out halfway across and left the rest of
-      // the box empty — a wide, mostly blank panel laid over the photograph.
-      // Narrower, the line fills it and the box reads as the thing you type
-      // into rather than as a bar across the picture.
-      <div className="w-[460px] max-w-full [&_.template-mock-fit>div>div]:my-auto!">
+      // 620x400 — THE SCENE'S OWN DESIGN BOX, so MockFit's scale is exactly
+      // 1 and the composer's type is drawn at the size it was set at. At 520
+      // the scale was 0.84 and the mock's 13.5px body came out near 11,
+      // which is smaller than anything else on the page and the reason this
+      // panel read as a screenshot shrunk to fit. It is still well short of
+      // the panel's full width, so the photograph shows either side.
+      // `relative h-full`, not a bare width. The card's scene is
+      // `absolute inset-0`, so a zero-height wrapper let it resolve against
+      // the PANEL and the width here did nothing at all — which is why the
+      // earlier numbers below never narrowed anything. A positioned frame of
+      // its own is what the fit actually measures.
+      <div className="relative h-full w-[620px] max-w-full sm:h-[480px] sm:w-[744px] sm:max-w-none sm:shrink-0 [&_.template-mock-fit>div>div]:my-auto!">
         <DescribeCard
           plain
           prompt="Add a project tracker each client sees for their own projects."
@@ -213,9 +229,19 @@ function Screen({ active }: { active: RegionId }) {
       {/* The photographs are bright and everything laid over them is light,
           so they need a ground to sit against — the same scrim the four-steps
           panel puts under its own screens. */}
+      {/* THE CRM TAB ALONE IS BLURRED. That step lays a whole product screen
+          over its photograph — a table of names and numbers against a window
+          frame and a person at a desk — and the picture's own detail competed
+          with the screen's. The other three put a handful of objects on the
+          shot (four pills, one field, four seals), where the photograph is
+          still the picture and softening it would only make the panel look
+          out of focus. A backdrop filter rather than a blur on the image
+          itself, so there is no soft edge where the picture meets the panel. */}
       <div
         aria-hidden
-        className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(16,24,40,0.34),rgba(16,24,40,0.46))]"
+        className={`absolute inset-0 bg-[linear-gradient(to_bottom,rgba(16,24,40,0.34),rgba(16,24,40,0.46))] ${
+          active === "url" ? "backdrop-blur-[6px]" : ""
+        }`}
       />
       {screen.windowed ? (
         <>

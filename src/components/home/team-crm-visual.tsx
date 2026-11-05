@@ -24,6 +24,10 @@ type Contact = {
   phone: string;
   /** A custom field. Blank for the rows that have not been given one. */
   tag?: string;
+  /** The product's own client status — see DefaultCRMColumnSettings. */
+  status: "Active" | "Invited";
+  /** The product's "Creation date", in the format the CRM prints it. */
+  created: string;
 };
 
 /**
@@ -272,6 +276,8 @@ function initials(name: string) {
 const CONTACTS: Contact[] = [
   {
     name: "Mary Sung",
+    status: "Active",
+    created: "Oct 23, 2026",
     email: "mary@symphony.co",
     company: "Symphony",
     phone: "(555) 010-4471",
@@ -279,12 +285,16 @@ const CONTACTS: Contact[] = [
   },
   {
     name: "Chuck Wilford",
+    status: "Active",
+    created: "Oct 23, 2026",
     email: "chuckd@symphony.co",
     company: "Symphony",
     phone: "(555) 010-2286",
   },
   {
     name: "Timothy Leclerc",
+    status: "Active",
+    created: "Oct 21, 2026",
     email: "timmy@wave.co",
     company: "Wave",
     phone: "(555) 010-7715",
@@ -292,12 +302,16 @@ const CONTACTS: Contact[] = [
   },
   {
     name: "Jasmin Khan",
+    status: "Invited",
+    created: "Oct 9, 2026",
     email: "jasmin@symphony.co",
     company: "2 companies",
     phone: "(555) 010-3390",
   },
   {
     name: "Kenny Tse",
+    status: "Active",
+    created: "Sep 29, 2026",
     email: "ktse2@godo.com",
     company: "Godo",
     phone: "(555) 010-6128",
@@ -305,6 +319,8 @@ const CONTACTS: Contact[] = [
   },
   {
     name: "Andy Alvarez",
+    status: "Active",
+    created: "Sep 25, 2026",
     email: "andy@wave.co",
     company: "Wave",
     phone: "(555) 010-8834",
@@ -316,6 +332,8 @@ const CONTACTS: Contact[] = [
 const MORE_CONTACTS: Contact[] = [
   {
     name: "Priya Nair",
+    status: "Active",
+    created: "Aug 13, 2026",
     email: "priya@godo.com",
     company: "Godo",
     phone: "(555) 010-5172",
@@ -323,12 +341,16 @@ const MORE_CONTACTS: Contact[] = [
   },
   {
     name: "Leo Brandt",
+    status: "Invited",
+    created: "Aug 11, 2026",
     email: "leo@symphony.co",
     company: "Symphony",
     phone: "(555) 010-9043",
   },
   {
     name: "Nadia Osei",
+    status: "Active",
+    created: "Aug 11, 2026",
     email: "nadia@wave.co",
     company: "Wave",
     phone: "(555) 010-2617",
@@ -498,6 +520,18 @@ export function TeamCrmVisual({
                   only one of the three the shot was not showing. */}
               <span className="hidden w-[130px] shrink-0 sm:block">Phone</span>
               <span className="hidden w-[130px] shrink-0 sm:block">Tags</span>
+              {/* THE LAST TWO THE PRODUCT'S OWN CONTACTS TABLE CARRIES —
+                  Status and Creation date, the fields next to Name and
+                  Company in DefaultCRMColumnSettings. Without them the table
+                  stopped four columns in and left a third of the window as
+                  empty ground, which read as a screen still loading rather
+                  than as a CRM. They sit at the crop, so the table now runs
+                  past the frame the way the right-edge ramp already claims
+                  it does. */}
+              <span className="hidden w-[90px] shrink-0 sm:block">Status</span>
+              <span className="hidden w-[120px] shrink-0 sm:block">
+                Creation date
+              </span>
               <span className="flex-1" />
             </div>
             {contacts.map((contact, i) => (
@@ -662,6 +696,27 @@ export function TeamCrmVisual({
                           {contact.tag}
                         </span>
                       ) : null}
+                    </span>
+                    {/* A dot and a word, not a filled chip: the Tags column
+                        beside it already draws a pill, and two pill shapes in
+                        adjacent columns made the row read as two tags rather
+                        than as a status and a custom field. */}
+                    <span
+                      className={`hidden w-[90px] shrink-0 items-center gap-1.5 truncate text-[color:var(--mock-ink-soft)] sm:flex ${MOCK_PRIMARY}`}
+                    >
+                      <span
+                        className={`size-[5px] shrink-0 rounded-full ${
+                          contact.status === "Active"
+                            ? "bg-[#2f7d6c] [[data-theme=dark]_&]:bg-[#8ed2c1]"
+                            : "bg-[#9d7325] [[data-theme=dark]_&]:bg-[#dec08a]"
+                        }`}
+                      />
+                      {contact.status}
+                    </span>
+                    <span
+                      className={`hidden w-[120px] shrink-0 truncate text-[color:var(--mock-ink-soft)] sm:block ${MOCK_PRIMARY}`}
+                    >
+                      {contact.created}
                     </span>
                   </>
                 )}

@@ -41,7 +41,10 @@ const REEL = [
   "valuenode-accounting",
 ];
 
-export function ProofBand({ rails = false }: { rails?: boolean } = {}) {
+export function ProofBand({
+  rails = false,
+  headroom = false,
+}: { rails?: boolean; headroom?: boolean } = {}) {
   // Resolved here rather than in the reel itself: case-studies.ts carries the
   // full editorial body of every story, and importing it from a client
   // component would ship all of it to the browser to read two fields.
@@ -67,7 +70,18 @@ export function ProofBand({ rails = false }: { rails?: boolean } = {}) {
     // on a laptop; at 1920 the same inset plus the industries row's own top
     // padding is 240px of white between the logos and the first heading,
     // which reads as the page having ended rather than as a pause in it.
-    <section className="relative mx-auto isolate max-w-[1200px] bg-background px-6 pb-28 pt-2 md:px-10 md:pb-40 md:pt-4 wide:pb-16">
+    // `headroom` IS FOR A HERO THAT DOES NOT END ON A TILE. The near-zero top
+    // inset is what makes the marks read as the foot of the split hero — they
+    // ride up under its screen. V3's hero ends on a full-bleed photograph,
+    // where the same inset parks the logos right on the picture's edge with
+    // no beat between them, and it reads worst on a phone, where there is no
+    // width for the eye to use as the gap instead. Phone only, so the desktop
+    // rhythm the band was tuned to is untouched.
+    <section
+      className={`relative mx-auto isolate max-w-[1200px] bg-background px-6 pb-28 pt-2 md:px-10 md:pb-40 md:pt-4 wide:pb-16 ${
+        headroom ? "max-md:pt-14" : ""
+      }`}
+    >
       {/* The middle bed, so the grid runs unbroken from the hero into the
           content region. Neither end fades: both of its neighbours carry the
           rails on.

@@ -149,7 +149,7 @@ const TemplateCard = memo(function TemplateCard({
           return (
             <div
               data-slot="card-media"
-              className={`h-[212px] w-full overflow-hidden [font-family:var(--font-inter),system-ui,sans-serif] ${hue ? "v72-mock-color" : "v76-mock-auto"}`}
+              className={`h-[212px] w-full overflow-hidden font-sans ${hue ? "v72-mock-color" : "v76-mock-auto"}`}
               style={hue ? { backgroundColor: hue } : undefined}
             >
               <div className="h-full w-full">

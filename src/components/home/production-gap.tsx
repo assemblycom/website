@@ -228,7 +228,7 @@ export function ProductionGapVisual({
   return (
     // No shadow: the border alone separates the window from the blue frame, and
     // the drop shadow read as a heavy smudge along the bottom of the panel.
-    <div className="production-mock relative w-full select-none overflow-hidden rounded-l-lg border-y border-l border-border bg-[var(--mk-surface)] md:rounded-l-2xl [font-family:var(--font-inter),system-ui,sans-serif]">
+    <div className="production-mock relative w-full select-none overflow-hidden rounded-l-lg border-y border-l border-border bg-[var(--mk-surface)] md:rounded-l-2xl font-sans">
       {/* Browser top bar — same right-edge fade as the body (fades to the dark
           mock surface behind it, not the bezel), so the top bar cuts off too. */}
       <div className="production-cut-fade flex h-[44px] items-center gap-3 border-b border-[var(--mk-hairline)] px-4">
@@ -676,8 +676,15 @@ function ProductionGapExplorer({
                   rather than as four steps. `tag` stays on the record — it is
                   the step's short name and the obvious handle for anything
                   that lists these later — it is simply not drawn here. */}
+              {/* ON THE SITE'S OWN SCALE. The pair here was 17px over 14px
+                  `leading-relaxed` — a size that exists nowhere else on the
+                  site and a line height that belongs to reading copy, so the
+                  one block on the page with a heading and a paragraph in it
+                  was the one block not set from the scale. `.type-h4` over
+                  `.type-caption` is 18 over 14, which is the sub-head and
+                  small register every other section already uses. */}
               <p
-                className={`text-[17px] leading-snug transition-colors ${
+                className={`type-h4 transition-colors ${
                   on
                     ? "text-foreground"
                     : "text-muted-foreground group-hover:text-foreground"
@@ -694,7 +701,7 @@ function ProductionGapExplorer({
                     : "grid-rows-[0fr] opacity-0"
                 }`}
               >
-                <p className="overflow-hidden text-pretty text-sm leading-relaxed text-muted-foreground">
+                <p className="type-caption overflow-hidden text-pretty text-muted-foreground">
                   {concise ? r.shortBody : r.body}
                 </p>
               </div>

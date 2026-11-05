@@ -1,7 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { BuilderGridRails } from "@/components/ai-app-builder/builder-grid-rails";
+import {
+  BuilderGridRails,
+  BUILDER_RAIL_HALO_WIDE,
+} from "@/components/ai-app-builder/builder-grid-rails";
 import { StudioNav } from "@/components/home/studio-nav";
 import { useTheme } from "@/components/theme/theme-provider";
 import { APP_URL, DEMO_URL, SIGNUP_URL } from "@/lib/constants";
@@ -109,7 +112,13 @@ function ClientExperiencePanel() {
       // crop of an app rather than as a screen, because no screen anyone uses
       // is square. At 340 it is portrait, like the phone holding it, and two
       // more rows of the tracker clear the fold.
-      className="mx-auto h-[340px] w-full max-w-[1080px] overflow-hidden rounded-t-xl border border-b-0 border-[var(--mock-line)] bg-background md:h-[391px]"
+      // 470 FROM md, NOT 391. The product pages' hero draws its screen at
+      // about 880x378 — a 2.3 ratio — and this tile is 1080 wide, so at 391
+      // it was a 2.8: the same screen in a letterbox, flatter than anything
+      // else the site shows a product in. 470 puts this tile on the product
+      // pages' own proportion, and the extra height is spent on rows of the
+      // tracker rather than on mat.
+      className="mx-auto h-[340px] w-full max-w-[1080px] overflow-hidden rounded-t-xl border border-b-0 border-[var(--mock-line)] bg-background md:h-[470px]"
     >
       <OnboardingTrackerMock />
     </div>
@@ -270,7 +279,18 @@ export function HeroSplit() {
                 20 from md: at 12 the screen sat almost on the tile's edge and
                 the frame read as a hairline around it rather than as a mat the
                 screen is set in. The foot stays open — see below. */}
-            <div className="overflow-hidden rounded-3xl bg-[var(--surface)] p-5 pb-0">
+            {/* THE RAILS LEAVE BEFORE THEY REACH IT. The tile is the full
+                measure and its ground is opaque, so its top edge cut all
+                seven rails on one scanline — a 1200px seam with the lines
+                stopping dead on it, which is the hard cut the FAQ's own halo
+                exists to avoid. The wide halo is the page ground drawn just
+                outside the tile, so each rail fades out over about 48px of
+                hero instead of ending on an edge. `relative`, because the
+                shadow has to paint over a layer the hero deliberately puts
+                at a negative z. */}
+            <div
+              className={`relative overflow-hidden rounded-3xl bg-[var(--surface)] p-5 pb-0 ${BUILDER_RAIL_HALO_WIDE}`}
+            >
               <ClientExperiencePanel />
             </div>
           </div>
