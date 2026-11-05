@@ -88,9 +88,9 @@ const UI_BOX = "h-[300px] w-[520px] md:h-[480px] md:w-[900px]";
 
 /** The portal apps named on the pills, with the icon each one carries. */
 const APP_PILLS = [
-  { label: "Onboarding", icon: <IconApp className="size-4" /> },
-  { label: "Invoices", icon: <IconClock className="size-4" /> },
-  { label: "Documents", icon: <IconBook className="size-4" /> },
+  { label: "Onboarding", icon: <IconApp className="size-3.5" /> },
+  { label: "Invoices", icon: <IconClock className="size-3.5" /> },
+  { label: "Documents", icon: <IconBook className="size-3.5" /> },
 ];
 
 /**
@@ -108,16 +108,23 @@ const APP_PILLS = [
  * as holes punched in it. A rung down is still a surface the type sits on and
  * still clearly lighter than anything in the picture.
  *
- * 200 WIDE, not 260. The labels are one word each, so the extra width was
+ * 172 WIDE, not 260. The labels are one word each, so the extra width was
  * empty plate running past the end of every name.
+ *
+ * AT THE MOCK SCALE, 12.5px. These were set at 15 — the site's reading size,
+ * not a mock's — while the composer two panels down, drawn on a photograph
+ * the same way and the same distance from the reader, is 12.5. Two product
+ * drawings a screen apart at a fifth of a step from each other read as one
+ * zoomed in and the other out. The plate and its padding came down with the
+ * type, or the pills would be the old boxes with smaller names in them.
  */
 function AppPills() {
   return (
-    <div className="flex w-[200px] flex-col gap-2.5">
+    <div className="flex w-[172px] flex-col gap-2">
       {APP_PILLS.map((app) => (
         <span
           key={app.label}
-          className="flex items-center gap-3 rounded-xl bg-[var(--mock-well)] px-4 py-3 text-[15px] text-[color:var(--mock-ink)] shadow-[0_10px_30px_-12px_rgba(16,24,40,0.45)]"
+          className="flex items-center gap-2.5 rounded-[10px] bg-[var(--mock-well)] px-3.5 py-2.5 text-[12.5px] text-[color:var(--mock-ink)] shadow-[0_10px_30px_-12px_rgba(16,24,40,0.45)]"
         >
           <span className="text-[color:var(--mock-ink-soft)]">{app.icon}</span>
           {app.label}
@@ -128,8 +135,8 @@ function AppPills() {
           in it yet — about the one row whose point is that there are 27 more
           apps that do exist. It is the quietest of the four by its ink, not
           by its edge. */}
-      <span className="flex items-center gap-3 rounded-xl bg-[var(--mock-well)] px-4 py-3 text-[15px] text-[color:var(--mock-ink-soft)] shadow-[0_10px_30px_-12px_rgba(16,24,40,0.45)]">
-        <IconPlus className="size-4" />
+      <span className="flex items-center gap-2.5 rounded-[10px] bg-[var(--mock-well)] px-3.5 py-2.5 text-[12.5px] text-[color:var(--mock-ink-soft)] shadow-[0_10px_30px_-12px_rgba(16,24,40,0.45)]">
+        <IconPlus className="size-3.5" />
         27 more
       </span>
     </div>
