@@ -55,10 +55,11 @@ export default async function HomePage({
   return (
     <>
       <HomeContentV2
-        // V2's hero draws the rails behind itself and V1 lays them over its
-        // empty foot (below), so both hand them on at full strength. V3's is
-        // a photograph, so it keeps the content region's own fade-in.
-        heroRails={active !== "3"}
+        // Every hero hands the rails on at full strength: V2 draws them behind
+        // itself, V1 lays them over its empty foot, and V3's logo band fades
+        // them in under the photograph (below).
+        heroRails
+        openingRule={active !== "1"}
         hero={
           active === "1" ? (
             // NO LOGO REEL UNDER THIS ONE. The reel is drawn to ride up under
@@ -110,7 +111,7 @@ export default async function HomePage({
               {/* A beat under the photograph before the marks — see
                   `headroom`. The split hero's reel rides up under its tile;
                   this one has a picture's edge to clear instead. */}
-              <HomeProofBand headroom />
+              <HomeProofBand headroom rails="fadeIn" />
             </>
           ) : undefined
         }

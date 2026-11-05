@@ -44,7 +44,14 @@ const REEL = [
 export function ProofBand({
   rails = false,
   headroom = false,
-}: { rails?: boolean; headroom?: boolean } = {}) {
+}: {
+  /**
+   * "fadeIn" for a hero that does not draw the rails: the grid starts here,
+   * so it fades in rather than switching on under the hero's edge.
+   */
+  rails?: boolean | "fadeIn";
+  headroom?: boolean;
+} = {}) {
   // Resolved here rather than in the reel itself: case-studies.ts carries the
   // full editorial body of every story, and importing it from a client
   // component would ship all of it to the browser to read two fields.
@@ -90,7 +97,19 @@ export function ProofBand({
           a bed here would switch the grid on at the logo band and off again
           before the first section, which is a band of rails on its own rather
           than a page laid out on a grid. */}
-      {rails ? <BuilderGridRails fadeTop={false} fadeBottom={false} /> : null}
+      {rails === "fadeIn" ? (
+        // The band is shorter than the rails' own 200px fade-in, so that ramp
+        // never reached full strength and the grid stepped up where the next
+        // section began. Its own ramp, done by the row of marks.
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 -z-10 [mask-image:linear-gradient(to_bottom,transparent,#000_60%)]"
+        >
+          <BuilderGridRails fadeTop={false} fadeBottom={false} />
+        </div>
+      ) : rails ? (
+        <BuilderGridRails fadeTop={false} fadeBottom={false} />
+      ) : null}
       {/* NO LABEL OVER THE ROW. "Trusted by teams who bill for their time"
           was telling the reader what eight wordmarks already say, and it put a
           line of mono caps between the hero and the logos that held them down

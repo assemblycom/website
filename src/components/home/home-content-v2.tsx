@@ -68,7 +68,7 @@ import { UnifiedPlatform } from "@/components/home/v2/platform-visuals";
 export function HomeProofBand({
   rails = false,
   headroom = false,
-}: { rails?: boolean; headroom?: boolean } = {}) {
+}: { rails?: boolean | "fadeIn"; headroom?: boolean } = {}) {
   return (
     <Reveal variant="fade">
       <ProofBand rails={rails} headroom={headroom} />
@@ -82,6 +82,7 @@ export function HomeContentV2({
   // in over its first 200px — which, under a hero that already has them, is a
   // dip in the middle of one continuous grid rather than an opening.
   heroRails = false,
+  openingRule = false,
   // V3 is this page with a different hero, so it passes its own here rather
   // than forking everything below it.
   //
@@ -100,6 +101,8 @@ export function HomeContentV2({
 }: {
   hero?: ReactNode;
   heroRails?: boolean;
+  /** A rule across the top of the content region, above the first section. */
+  openingRule?: boolean;
 } = {}) {
   return (
     <>
@@ -124,9 +127,11 @@ export function HomeContentV2({
       <div className="relative isolate bg-background">
         <BuilderGridRails fadeTop={!heroRails} />
 
-        {/* No rule opening the region: the rails begin on this line and run
-            the full measure, so an opening rule would state it twice — the
-            same reason /ai-app-builder dropped its own. */}
+        {/* Only where the page asks for it: V2 and V3 close their hero on
+            the logo band, and a rule marks where the band ends and the
+            sections begin. Under the other heroes the rails opening here already say
+            that, the reason /ai-app-builder dropped its own. */}
+        {openingRule ? <GridDivider lineClass={BUILDER_GRID_LINE} /> : null}
 
         {/* Specialization before the product tour: the brief's point is that
             a visitor decides whether this is for them before they decide
