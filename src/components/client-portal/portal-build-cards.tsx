@@ -1312,7 +1312,18 @@ export function PlanCard({
   plain = false,
   vertical = "default",
   doc = PLAN_DOC,
+  tall = false,
 }: SceneProps & {
+  /**
+   * Draws the `plain` document 500px tall from `md` instead of 400.
+   *
+   * The scene is cut by the panel's foot, so its height is what decides how
+   * far DOWN its top edge sits. At 400 in a 560 panel the document began a
+   * third of the way into the photograph, with a band of picture over it. A
+   * taller box starts higher and shows more of the page at the same 1:1 — it
+   * is not a scale. Off by default: the panel that runs it is 464 tall.
+   */
+  tall?: boolean;
   /**
    * The requirements the plan came back with.
    *
@@ -1389,8 +1400,10 @@ export function PlanCard({
         // there is no screen left to need a screen's width — two cards and a
         // measure of prose, which is what the shared 620 is for.
         <Scene
-          boxClass={PANEL_SCENE_PHONE.vars}
-          boxSizeClass={PANEL_SCENE_PHONE.size}
+          boxClass={`${PANEL_SCENE_PHONE.vars}${
+            tall ? " md:[--template-mock-h:460px]" : ""
+          }`}
+          boxSizeClass={`${PANEL_SCENE_PHONE.size}${tall ? " md:h-[460px]" : ""}`}
           // The card runs to the panel's bottom edge and is cut by it — see
           // footFlush, and the deeper foot ramp inside RequirementsPane.
           footFlush

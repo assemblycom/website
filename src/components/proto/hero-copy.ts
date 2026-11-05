@@ -12,4 +12,4 @@
  * a second variable inside the comparison.
  */
 export const PROTO_HERO_BODY =
-  "Let clients onboard, sign, collaborate, and pay in one branded experience. Start with 30+ apps, then use AI to build the rest.";
+  "Let clients onboard, sign, collaborate, and pay in a branded client portal, with a CRM for your team. Start with 30+ apps, then use AI to build what's missing.";

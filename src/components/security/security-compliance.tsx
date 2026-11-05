@@ -194,7 +194,7 @@ export function SecurityCompliance({
     // px-0 once the rails are present (≥1200px) so the grid fills the full rail
     // width and the outer cells meet the guide rails — smaller viewports keep a
     // little edge padding.
-    <section className="mx-auto max-w-[1200px] px-6 md:max-[1199px]:px-10 min-[1200px]:px-0">
+    <section className="relative mx-auto max-w-[1200px] px-6 md:max-[1199px]:px-10 min-[1200px]:px-0">
       {/* gap-px over a border-colored bed draws a hairline between each cell;
           each cell repaints the page background over it. */}
       {/* Bleeds past the section's padding on a phone so the hairline between
@@ -209,7 +209,16 @@ export function SecurityCompliance({
         // there. A bottom border below sm closes it, bleeding to the screen
         // edges like the -mx-6 it sits in and like every other phone-only rule
         // on the site.
-        className={`-mx-6 grid grid-cols-2 gap-px sm:mx-0 ${columns} ${
+        className={`-mx-6 grid grid-cols-2 gap-px sm:mx-0 ${
+          // ON THE RAILS THE GAPS DRAW NOTHING. A `gap-px` hairline starts ON
+          // the column boundary and runs a pixel to its right, while the page's
+          // guide rails are `w-px -translate-x-1/2` spans CENTRED on it — so the
+          // two land half a pixel apart and paint about 1.4px of line between
+          // them, which is the doubled vertical down this band. The overlay
+          // below redraws them on the rails' own geometry instead. Under
+          // 1200px the bed stays: there are no rails there to line up with.
+          onRails ? "min-[1200px]:gap-0" : ""
+        } ${columns} ${
           lineClass ?? "bg-border [[data-theme=dark]_&]:bg-[#383838]"
         } ${
           framed
@@ -249,6 +258,37 @@ export function SecurityCompliance({
           <div aria-hidden className="hidden bg-background sm:block" />
         ) : null}
       </div>
+      {/* THE BAND'S VERTICALS, DRAWN LIKE THE RAILS THEY SIT ON.
+          Seven spans — both edges and the five boundaries between the six
+          cells — each `w-px -translate-x-1/2` at a sixth of the measure, which
+          is exactly how the page's rails are placed. Each one lands on the
+          rail it continues, so a column is one line at one weight from the top
+          of the page to the bottom of it, instead of the band's own edge
+          sitting a half-pixel off the rail above and the pair reading as a
+          doubled rule. Over the cells rather than behind them: the cells are
+          opaque and would hide the rails otherwise. */}
+      {onRails ? (
+        <div
+          aria-hidden
+          // AT THE RAILS' OWN BREAKPOINT. The spans are sixths of this
+          // section's box, which is the 1200 measure exactly only from 1200up,
+          // where the section drops its padding. Below that the box is the
+          // viewport and a span at 100% would land on the window's edge rather
+          // than the band's — and there are no rails down there to line up
+          // with anyway, so the gap bed draws the verticals instead.
+          className="pointer-events-none absolute inset-y-0 left-0 right-0 hidden min-[1200px]:block"
+        >
+          {[0, 1, 2, 3, 4, 5, 6].map((i) => (
+            <span
+              key={i}
+              style={{ left: `${(i / 6) * 100}%` }}
+              className={`absolute inset-y-0 w-px -translate-x-1/2 ${
+                lineClass ?? "bg-border [[data-theme=dark]_&]:bg-[#383838]"
+              }`}
+            />
+          ))}
+        </div>
+      ) : null}
     </section>
   );
 }

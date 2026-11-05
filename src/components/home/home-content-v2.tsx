@@ -254,8 +254,8 @@ export function HomeContentV2({
                 // is the exact thing this step is drawn not to do. Given its
                 // design height and hung off the bottom, it is cut by the
                 // panel again.
-                <div className="absolute inset-x-6 -bottom-4 top-auto aspect-[6/5] sm:left-1/2 sm:right-auto sm:top-auto sm:h-[400px] sm:w-[620px] sm:max-w-full sm:-translate-x-1/2 sm:-bottom-10 sm:aspect-auto md:-bottom-14">
-                  <PlanCard plain doc={TRACKER_PLAN_DOC} />
+                <div className="absolute inset-x-6 -bottom-4 top-auto aspect-[6/5] sm:left-1/2 sm:right-auto sm:top-auto sm:h-[400px] sm:w-[620px] sm:max-w-full sm:-translate-x-1/2 sm:bottom-0 sm:aspect-auto md:h-[460px] md:-bottom-10">
+                  <PlanCard plain tall doc={TRACKER_PLAN_DOC} />
                 </div>
               ),
               // FLUSH TO THE FOOT. This scene is WIDTH-bound in the panel —
@@ -400,16 +400,25 @@ export function HomeContentV2({
           // border belongs on the band itself, which is the thing being
           // closed.
           //
-          // ONE TONE ON ALL FOUR SIDES. The band is a box drawn in three
-          // greys: its cells are separated by `gap-px bg-border`, so the
-          // hairlines inside it are --border, while the top edge came in at
+          // ONE TONE ON ALL FOUR SIDES, and NO border-x. The band is a box
+          // drawn in three greys: its cells were separated by `gap-px`, so the
+          // hairlines inside it were --border, while the top edge came in at
           // the grid line's lighter --color-grid. Against the FAQ's own side
           // rules below — also --border — the top of the band read as a
           // different line from the rest of it, and the column the two share
-          // changed weight halfway down. Every drawn edge here is --border
+          // changed weight halfway down. Every drawn edge here is one tone
           // now; the rails behind stay fainter, which is what a backdrop
           // should be.
-          bandClassName={`relative border-x border-b ${BUILDER_GRID_LINE} bg-background shadow-[0_0_0_2px_var(--background),0_0_96px_10px_var(--background)]`}
+          //
+          // The sides are gone from here because a border paints INSIDE the
+          // box — its left edge covered 120 to 121 while the rail behind it
+          // covers 119.5 to 120.5, and the pair read as one thick, off-centre
+          // line. SecurityCompliance draws all seven of the band's verticals
+          // as rail-geometry spans instead (see `railAligned`), the same fix
+          // the FAQ's own sides take below. Under 1200px there are no rails to
+          // collide with and the spans are not drawn, so the border comes back
+          // to close the band.
+          bandClassName={`relative border-b max-[1199px]:border-x ${BUILDER_GRID_LINE} bg-background shadow-[0_0_0_2px_var(--background),0_0_96px_10px_var(--background)]`}
           // ON THE RAILS. The band divided the measure into quarters while the
           // page divides it into sixths, so its hairlines and the rails above
           // and below it ran at two rhythms a pixel or so apart — read as a

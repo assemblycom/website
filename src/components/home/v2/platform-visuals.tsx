@@ -210,7 +210,7 @@ const SCREENS: Record<RegionId, TabScreen> = {
       // the PANEL and the width here did nothing at all — which is why the
       // earlier numbers below never narrowed anything. A positioned frame of
       // its own is what the fit actually measures.
-      <div className="relative h-full w-[620px] max-w-full sm:h-[480px] sm:w-[744px] sm:max-w-none sm:shrink-0 [&_.template-mock-fit>div>div]:my-auto!">
+      <div className="relative h-full w-[620px] max-w-full sm:h-[480px] sm:w-[620px] sm:max-w-none sm:shrink-0 [&_.template-mock-fit>div>div]:my-auto!">
         <DescribeCard
           plain
           prompt="Add a project tracker each client sees for their own projects."

@@ -326,7 +326,7 @@ export function HeroPhoto() {
                       </span>
                       <span className="hidden sm:inline">{stat.label}</span>
                     </dt>
-                    <dd className="text-base text-white">
+                    <dd className="type-h4 text-white">
                       {stat.format(stat.to)}
                     </dd>
                   </div>

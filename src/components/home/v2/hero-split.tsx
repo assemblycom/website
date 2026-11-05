@@ -95,12 +95,13 @@ function ClientExperiencePanel() {
       // Its own ground and hairline, so the window reads as a window sitting
       // in the tile rather than as rows printed straight onto it.
       //
-      // CAPPED AND CENTRED AT 1080. The mock is fluid and its type is fixed,
-      // so a window the full width of a 1400 tile lays the same rows out
-      // across half a metre at 9px and reads as an app stretched rather than
-      // as an app. The product pages draw their screen at about 780 and crop
-      // it; 1080 is the widest this one holds that density at. The tile keeps
-      // its own width and the slack falls either side as mat.
+      // CAPPED AND CENTRED AT 880, which is the width the product pages draw
+      // their hero screen at. The mock is fluid and its type is fixed, so the
+      // window's width is what decides how that type reads: at 1080 the same
+      // rows were laid out across half a metre at 9px and the screen looked
+      // stretched, with type a size smaller than the site shows a product at
+      // anywhere else. The tile keeps its own width and the slack falls
+      // either side as mat.
       //
       // OPEN AT THE FOOT. No bottom border and no bottom radius: the screen
       // runs off the tile's bottom edge the way the product pages' does off
@@ -118,7 +119,7 @@ function ClientExperiencePanel() {
       // else the site shows a product in. 470 puts this tile on the product
       // pages' own proportion, and the extra height is spent on rows of the
       // tracker rather than on mat.
-      className="mx-auto h-[340px] w-full max-w-[1080px] overflow-hidden rounded-t-xl border border-b-0 border-[var(--mock-line)] bg-background md:h-[470px]"
+      className="mx-auto h-[340px] w-full max-w-[880px] overflow-hidden rounded-t-xl border border-b-0 border-[var(--mock-line)] bg-background md:h-[470px]"
     >
       <OnboardingTrackerMock />
     </div>
