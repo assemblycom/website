@@ -167,16 +167,23 @@ function SecuritySeals() {
     // the homepage and the security page show one object rather than two
     // drawings of the same claim.
     //
-    // ON A WHITE DISC. The seal's own artwork is a hairline circle in the
-    // page's grey ink, which is drawn to sit on the page's ground — over a
-    // photograph it is barely there. The disc is the ground it expects,
-    // the same white plate the square tiles carried, cut to the seal's
-    // own shape.
+    // ON A DISC OF THE PANEL'S OWN PLATE TONE. The seal's artwork is a
+    // hairline circle in the page's ink, drawn to sit on the page's ground —
+    // over a photograph it is barely there, so it is given the ground it
+    // expects, cut to its own shape.
+    //
+    // `--mock-well`, NOT WHITE. A hardcoded white disc is right in light and
+    // wrong in dark: four white circles over a photograph on a near-black
+    // page were the brightest objects in the section, and the seal inside
+    // each one — which themes with the page — came out as dark artwork on a
+    // light plate while everything around it was the other way up. The token
+    // is the same plate the app pills in this panel sit on, so the two steps
+    // put their objects on one surface in both themes.
     <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-5">
       {SECURITY_STANDARDS.map((s) => (
         <span
           key={s.title}
-          className="rounded-full bg-white shadow-[0_10px_30px_-12px_rgba(16,24,40,0.45)]"
+          className="rounded-full bg-[var(--mock-well)] shadow-[0_10px_30px_-12px_rgba(16,24,40,0.45)]"
         >
           <Seal label={s.seal} size="size-16 sm:size-20" />
         </span>
@@ -220,6 +227,11 @@ const SCREENS: Record<RegionId, TabScreen> = {
       <div className="relative h-full w-[620px] max-w-full sm:h-[480px] sm:w-[620px] sm:max-w-none sm:shrink-0 [&_.template-mock-fit>div>div]:my-auto!">
         <DescribeCard
           plain
+          // NO RING. The composer has this whole panel to itself over a bright
+          // photograph, and the lime-to-blue band around it was the first
+          // thing read in a step whose subject is the field. Its own hairline
+          // is what holds it against the picture.
+          ring={false}
           prompt="Add a project tracker each client sees for their own projects."
         />
       </div>
@@ -286,6 +298,20 @@ function Screen({ active }: { active: RegionId }) {
               {screen.node}
             </div>
           </div>
+
+          {/* THE PANEL'S OWN RIGHT EDGE, SHADED. The window is wider than the
+              panel and is cropped by it, and what it is cropped against is the
+              page — white paper beside a white table, with nothing between
+              them, so the screen did not end so much as dissolve. A short ramp
+              inside the edge darkens the last of the table into it, which is
+              how a thing passing under a frame reads. Drawn over the window
+              rather than outside it: a drop shadow on the page would be a
+              shadow cast by the panel, and the panel is not the object going
+              off the edge. */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-y-0 right-0 hidden w-24 bg-[linear-gradient(to_left,rgba(16,24,40,0.30)_0%,rgba(16,24,40,0.10)_45%,transparent_100%)] md:block"
+          />
         </>
       ) : (
         <div className="absolute inset-0 flex items-center justify-center p-6 md:p-10">

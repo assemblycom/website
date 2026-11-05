@@ -23,15 +23,15 @@ import { RailArrows } from "@/components/ui/card-rail";
 // one a visitor skimmed past. A card with a picture in it holds the eye long
 // enough to be read, and the name still leads.
 //
-// The picture sits UNDER the name rather than above it. The name is what a
-// visitor is scanning for — they are looking for their own trade in a list of
-// nine — so it stays on the card's first line where the eye lands, and the
-// picture is what makes the card worth stopping at once the name has caught.
+// The name sits ON the picture, across its foot. It used to be set in a bar
+// above it, which made every card two stacked blocks in two tones — a row of
+// headers with pictures hanging off them rather than a row of pictures. One
+// frame, one subject, the name written on it.
 //
-// THE PICTURES ARE PLACEHOLDERS. `image` is optional and every industry is
-// currently without one, so each card draws an empty tinted slot at the size
-// and shape the real shot will take. Giving an industry a real picture is
-// adding one field to its entry below; nothing else changes.
+// THE PICTURES ARE PLACEHOLDERS, taken from the site's own photography so the
+// cards can be judged full rather than empty. They are not shots OF these
+// trades; swapping one for a real picture is changing the `image` field on its
+// entry below, and nothing else moves.
 // ─────────────────────────────────────────────────────────────────────────
 
 interface Industry {
@@ -70,46 +70,82 @@ const INDUSTRIES: Industry[] = [
     label: "Accounting",
     slug: "accounting-client-portal",
     blurb: "Onboarding and billing",
+    image: {
+      src: "/images/solutions/accounting-desk.webp",
+      alt: "An accountant at a desk",
+    },
   },
   {
     label: "Marketing agencies",
     slug: "marketing-agency-client-portal",
     blurb: "Briefs and approvals",
+    image: {
+      src: "/images/mocks/describe-sneakers.webp",
+      alt: "Someone talking in a sunlit sitting room",
+    },
   },
   {
     label: "Consulting",
     slug: "consulting-client-portal",
     blurb: "Scopes and invoices",
+    image: {
+      src: "/images/mocks/describe-laptop.webp",
+      alt: "Someone reading at a laptop in afternoon light",
+    },
   },
   {
     label: "Law firms",
     slug: "law-firm-client-portal-practice-management",
     blurb: "Intake and signatures",
+    image: {
+      src: "/images/mocks/sign-in-bg.jpg",
+      alt: "Someone working at a desk",
+    },
   },
   {
     label: "Real estate",
     slug: "real-estate-property-management-rental-management-client-portal",
     blurb: "Paperwork and payments",
+    image: {
+      src: "/images/mocks/hosted-mvp-bg.jpg",
+      alt: "A room in daylight",
+    },
   },
   {
     label: "Design studios",
     slug: "designer-client-portal",
     blurb: "Proposals and reviews",
+    image: {
+      src: "/images/mocks/crm-bg.webp",
+      alt: "A designer at work",
+    },
   },
   {
     label: "Startups",
     slug: "startups-client-portal",
     blurb: "Onboarding and support",
+    image: {
+      src: "/images/mocks/public-store-bg.jpg",
+      alt: "Two people reviewing a screen together",
+    },
   },
   {
     label: "Freelancers",
     slug: "freelancer-client-portal",
     blurb: "Contracts and payments",
+    image: {
+      src: "/images/mocks/describe-phone.webp",
+      alt: "Someone holding a phone on a sofa",
+    },
   },
   {
     label: "Small business",
     slug: "small-business-smb-client-portal",
     blurb: "Documents and payments",
+    image: {
+      src: "/images/mocks/support-desk.webp",
+      alt: "Someone at a support desk",
+    },
   },
 ];
 
@@ -155,11 +191,22 @@ export function Industries() {
   };
 
   return (
-    <section className="mx-auto max-w-[1200px] px-6 py-14 md:px-10 md:py-20">
+    <section className="relative mx-auto max-w-[1200px] px-6 py-14 md:px-10 md:py-20">
+      {/* THE RAILS GO SOFT BEHIND THIS SECTION, IN DARK ONLY. The grid runs
+          between nine cards and through the gaps around them, and in dark
+          those lines are the brightest thing in the section — drawn at full
+          strength across a block whose subject is nine pictures. A small
+          backdrop blur keeps the grid present and takes it out of focus, so
+          it reads as the surface the cards sit on. Light needs none of it:
+          there the rails are ink at 5.5% on white and already sit back. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 hidden [[data-theme=dark]_&]:block [[data-theme=dark]_&]:backdrop-blur-[3px]"
+      />
       {/* Heading and links share a row from lg up: the claim is short, and set
           above a nine-item wrap it left a band of empty page between the two
           halves of one sentence. */}
-      <div className="grid gap-y-6 lg:grid-cols-[minmax(0,320px)_minmax(0,1fr)] lg:items-start lg:gap-x-16">
+      <div className="relative grid gap-y-6 lg:grid-cols-[minmax(0,320px)_minmax(0,1fr)] lg:items-start lg:gap-x-16">
         <div>
           <p className="type-eyebrow text-muted-foreground">Built for your work</p>
           <h2 className="type-h3 mt-3 text-balance text-foreground">
@@ -194,56 +241,60 @@ export function Industries() {
             <li key={industry.slug} className="w-[200px] shrink-0 snap-start sm:w-auto sm:shrink">
               <Link
                 href={`/solutions/${industry.slug}`}
-                // The card chrome the site already uses for a grid of
-                // destinations with a picture in them (see the templates
-                // grid), so this is recognisably the same object rather than
-                // a tenth kind of tile. `flex flex-col` with the slot last is
-                // what lets the picture meet the card's own bottom edge, so
-                // the radius cuts the image instead of framing it.
-                className="group flex h-full flex-col-reverse justify-end transition-colors hover:[&_.industry-name]:text-foreground sm:flex-col sm:justify-start sm:overflow-hidden sm:rounded-xl sm:border sm:border-border sm:hover:border-foreground/20 sm:[[data-theme=dark]_&]:border-white/15 sm:[[data-theme=dark]_&]:hover:border-white/30"
+                // THE CARD IS THE PICTURE, with the name written across its
+                // foot. It used to be a name in a bar with a picture hanging
+                // under it, which made each card two stacked blocks in two
+                // tones rather than one object — and in a grid of nine that
+                // is eighteen things to look at. One frame, one subject, the
+                // name on it.
+                //
+                // A SOFT SHADOW ON HOVER, NOT A BRIGHTER BORDER. Lifting the
+                // border to white on hover drew a hard ring around the card,
+                // which in dark is the brightest thing in the section and
+                // reads as a selection rather than as a pointer resting on
+                // something. Depth says the same thing without a line: the
+                // card lifts a little and its picture moves under the frame.
+                className="group relative block aspect-[3/4] overflow-hidden rounded-xl border border-border shadow-[0_0_0_0_rgba(16,24,40,0)] transition-shadow duration-300 hover:shadow-[0_12px_32px_-14px_rgba(16,24,40,0.45)] sm:aspect-[4/3] [[data-theme=dark]_&]:border-white/15 [[data-theme=dark]_&]:hover:shadow-[0_12px_32px_-14px_rgba(0,0,0,0.85)]"
               >
-                {/* UNDER THE PICTURE ON A PHONE, INSIDE THE CARD FROM sm.
-                  In a scrolled row the card IS the picture — a name set in a
-                  bar across the top of each one turned a row of pictures into
-                  a row of headers with pictures hanging off them, and the two
-                  tones, surface and slot, made each card read as two stacked
-                  blocks rather than one object. Set as a caption below, the
-                  row is pictures with their names under them, which is what a
-                  row of nine places to go should look like. `flex-col-reverse`
-                  is what does it, so the name stays FIRST in the document and
-                  the reading order never depends on the layout. */}
-                <span className="block pt-2.5 sm:px-3.5 sm:pb-3 sm:pt-3">
-                  <span className="industry-name block text-sm text-foreground transition-colors">
+                {industry.image ? (
+                  <Image
+                    src={industry.image.src}
+                    alt={industry.image.alt}
+                    fill
+                    sizes="(min-width: 1024px) 272px, (min-width: 640px) 30vw, 45vw"
+                    // EAGER, NOT LAZY. Nine cards of 272px sit a screen into
+                    // the page, well inside the margin a browser loads lazy
+                    // images within — and most of them still did not load,
+                    // because the row is a nine-item grid whose cards are the
+                    // same size and the observer settles on a few of them.
+                    // The result was a section of empty slots with names on
+                    // them. Eager rather than `priority`: they should load
+                    // without being preloaded ahead of the hero.
+                    loading="eager"
+                    className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04] motion-reduce:transition-none"
+                  />
+                ) : (
+                  // The slot keeps the card's shape while an industry is
+                  // still without a shot, so dropping real pictures in later
+                  // cannot move the grid.
+                  <span aria-hidden className="absolute inset-0 bg-muted" />
+                )}
+                {/* THE NAME'S OWN GROUND. The type is white in both themes —
+                    it is written on a photograph, not on the page — so it
+                    needs the foot of the picture settled under it whatever
+                    the shot turns out to be. It deepens slightly on hover,
+                    with the lift, rather than switching colour. */}
+                <span
+                  aria-hidden
+                  className="absolute inset-0 bg-[linear-gradient(to_top,rgba(10,12,16,0.86)_0%,rgba(10,12,16,0.55)_30%,rgba(10,12,16,0.12)_62%,transparent_100%)] transition-opacity duration-300 group-hover:opacity-90 motion-reduce:transition-none"
+                />
+                <span className="absolute inset-x-0 bottom-0 p-3.5">
+                  <span className="block text-sm text-white">
                     {industry.label}
                   </span>
-                  <span className="mt-0.5 block text-sm text-muted-foreground">
+                  <span className="mt-0.5 block text-sm text-white/70">
                     {industry.blurb}
                   </span>
-                </span>
-                {/* The slot keeps its ratio whether or not there is a picture
-                    in it, so dropping real shots in later cannot move the
-                    grid. It carries the card's own chrome on a phone, where
-                    it IS the card; from sm the chrome moves out to the link
-                    and this is flush inside it, with `mt-auto` holding it to
-                    the foot of a card whose name wrapped to two lines so
-                    every picture in a row starts on the same line. */}
-                {/* PORTRAIT ON A PHONE, landscape in the grid. In a scrolled
-                    row the card is a 200px column and a 4:3 picture in it is
-                    a letterbox — the row read as a strip of wide slots rather
-                    than as nine cards. 3:4 fills the column the way the phone
-                    holding it is filled, and it is the shape a shot of a
-                    person at work wants anyway. The grid keeps 4:3, where the
-                    cards are wider than they are tall. */}
-                <span className="relative block aspect-[3/4] overflow-hidden rounded-xl border border-border bg-muted sm:mt-auto sm:aspect-[4/3] sm:rounded-none sm:border-0 [[data-theme=dark]_&]:border-white/15">
-                  {industry.image ? (
-                    <Image
-                      src={industry.image.src}
-                      alt={industry.image.alt}
-                      fill
-                      sizes="(min-width: 1024px) 272px, (min-width: 640px) 30vw, 45vw"
-                      className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-                    />
-                  ) : null}
                 </span>
               </Link>
             </li>

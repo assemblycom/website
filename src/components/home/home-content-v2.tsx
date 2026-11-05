@@ -192,6 +192,23 @@ export function HomeContentV2({
             // session — what you typed, what came back, what got built — so
             // the prompt, the plan document and the published app all have to
             // name the same thing. /ai-app-builder keeps the calendar.
+            // THE PLAN STEP SITS ON A GRADIENT, not on its photograph. Its
+            // screen is a DOCUMENT — a white page — and a white page on a
+            // photograph is still a white page, with the picture behind it
+            // doing no work. The ramp is the builder's own lime-to-blue, read
+            // top to bottom, so the one step that is about what the AI came
+            // back with wears the AI's colours. The other three keep their
+            // pictures: each of those is a screen, and a screen on a desk is
+            // a thing someone is doing.
+            // THE PUBLISHED APP'S PHOTOGRAPH IS SOFTENED. That step lays a
+            // whole portal screen over its picture — a sidebar, a list and
+            // three progress bars against two people at a desk — and the two
+            // competed, both in focus. The others put one object on a shot
+            // that is still the picture.
+            blurSteps={["build"]}
+            stepGrounds={{
+              plan: "bg-[linear-gradient(to_bottom,#f4f7fc_0%,#dde4f5_8%,#c3cae7_26%,#bcc6e6_50%,#c6d6bd_70%,#d4e79f_86%,#dcee92_100%)]",
+            }}
             stepUi={{
               // CENTRED. The composer carries `sm:mt-[66px] sm:mb-auto`, which
               // is the arithmetic that drops it clear of the "Describe" heading
@@ -317,13 +334,31 @@ export function HomeContentV2({
 
         <GridDivider lineClass={BUILDER_GRID_LINE} />
 
-        <Reveal variant="fade">
-          {/* Nine rows, not ten. Security has a section of its own directly
-              below, with the certifications and the way through to
-              /security — so the row here was the same argument a second time,
-              and the weaker of the two. */}
-          <WholeStack omit={["Security"]} />
-        </Reveal>
+        {/* THE RAILS GO SOFT UNDER THE INDEX, IN DARK ONLY. This block is
+            plain reading — nine dotted rules and their labels — and in dark
+            the rails crossing it are the brightest lines in the stretch,
+            drawn at full strength straight through the list. The FAQ below
+            solves the same problem with an opaque ground, but that takes the
+            grid out of a whole screen of the page; here a small backdrop blur
+            keeps the grid present and takes it out of focus, so it reads as
+            the surface the list sits on rather than as lines over the text.
+            Light needs none of it: there the rails are ink at 5.5% on white
+            and already sit under the type. */}
+        <div className="relative">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 hidden [[data-theme=dark]_&]:block [[data-theme=dark]_&]:backdrop-blur-[3px]"
+          />
+          <div className="relative">
+            <Reveal variant="fade">
+              {/* Nine rows, not ten. Security has a section of its own
+                  directly below, with the certifications and the way through
+                  to /security — so the row here was the same argument a
+                  second time, and the weaker of the two. */}
+              <WholeStack omit={["Security"]} />
+            </Reveal>
+          </div>
+        </div>
 
         <GridDivider lineClass={BUILDER_GRID_LINE} />
 

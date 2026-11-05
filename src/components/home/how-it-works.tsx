@@ -91,6 +91,8 @@ export function HowItWorks({
   visualHeightClass = "h-[420px] sm:h-auto md:h-[560px]",
   stepImages,
   stepUi,
+  stepGrounds,
+  blurSteps,
   manual = false,
 }: {
   visualHeightClass?: string;
@@ -125,6 +127,30 @@ export function HowItWorks({
    * rather than redrawing them — see `portal-build-cards`.
    */
   stepUi?: Record<string, React.ReactNode>;
+  /**
+   * A flat ground for one step, drawn OVER its photograph, as class names.
+   *
+   * For a step whose screen is a document rather than an app — a white page
+   * on a photograph is a white page on a photograph, and the picture behind
+   * it does no work. A ground of its own gives it something to sit on. The
+   * step keeps its entry in `stepImages` so the panel's shape and timing are
+   * unchanged; this simply paints over it.
+   *
+   * The dark scrim is skipped for such a step: the scrim exists to settle a
+   * busy photograph under near-white UI, and a flat ground needs no settling.
+   */
+  stepGrounds?: Record<string, string>;
+  /**
+   * Step ids whose PHOTOGRAPH is blurred behind the screen laid on it.
+   *
+   * For a step whose screen is a full app — a sidebar, a list, a row of
+   * progress bars — where the picture's own detail competes with the
+   * screen's and both are in focus at once. The four-steps panel's other
+   * screens are a field or a document, small objects on a photograph that is
+   * still the picture, and softening those would only make the panel look
+   * out of focus. Named per step for that reason.
+   */
+  blurSteps?: string[];
 } = {}) {
   const [active, setActive] = useState(0);
 
@@ -260,10 +286,19 @@ export function HowItWorks({
           // straight through the tab bar and the empty half of the panel, and
           // the card read as tracing paper laid over the grid.
           //
-          // `bg-background` rather than a hex, so it is the page's own ground
-          // in whichever theme is rendering, and the dark fill stays stacked on
-          // top of it exactly as before.
-          className="mx-auto mt-10 flex max-w-[1100px] flex-col overflow-hidden rounded-[20px] border border-border bg-background [[data-theme=dark]_&]:border-white/15 [[data-theme=dark]_&]:bg-white/[0.04] md:mt-12"
+          // `bg-background` rather than a hex in light, so it is the page's own
+          // ground in whichever theme is rendering.
+          //
+          // AND AN OPAQUE VALUE IN DARK, not `bg-white/[0.04]`. A later
+          // `bg-*` REPLACES background-color, it does not stack on the one
+          // before it — so the dark variant was not a film over the page
+          // ground, it was the panel's whole fill, at four percent. The rails
+          // ran straight through the tab bar and the empty half of the panel
+          // and the card read as tracing paper laid over the grid, which is
+          // the thing the light fill was added to stop. #151515 is what that
+          // film resolved to over the page, and the panel tone the rest of
+          // the page already uses.
+          className="mx-auto mt-10 flex max-w-[1100px] flex-col overflow-hidden rounded-[20px] border border-border bg-background [[data-theme=dark]_&]:border-white/15 [[data-theme=dark]_&]:bg-[#151515] md:mt-12"
         >
           {/* Tabs — divided by hairlines; each carries a progress track on its
               top edge that fills over the dwell on the active tab. */}
@@ -400,9 +435,23 @@ export function HowItWorks({
                       src={stepImages[step.id].src}
                       alt={stepImages[step.id].alt}
                       fill
-                      className="object-cover object-center"
+                      // `scale-105` with the blur: a blurred image samples
+                      // past its own edges and comes out with a soft band of
+                      // nothing down each side, so it is drawn slightly
+                      // larger than the cell and the band is cropped off.
+                      className={`object-cover object-center ${
+                        blurSteps?.includes(step.id)
+                          ? "scale-105 blur-[7px]"
+                          : ""
+                      }`}
                       sizes="(max-width: 768px) 100vw, 60vw"
                     />
+                    {stepGrounds?.[step.id] ? (
+                      <div
+                        aria-hidden
+                        className={`absolute inset-0 ${stepGrounds[step.id]}`}
+                      />
+                    ) : null}
                     {stepUi?.[step.id] ? (
                       <>
                         {/* The photographs are mid-tone and busy, and the
@@ -410,11 +459,14 @@ export function HowItWorks({
                             on, the screen's edges dissolve into the picture.
                             This settles the photograph far enough for the
                             white to read as a surface above it, without
-                            turning the picture grey. */}
-                        <div
-                          aria-hidden
-                          className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(16,24,40,0.34),rgba(16,24,40,0.46))]"
-                        />
+                            turning the picture grey. A step with a ground of
+                            its own has nothing to settle. */}
+                        {stepGrounds?.[step.id] ? null : (
+                          <div
+                            aria-hidden
+                            className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(16,24,40,0.34),rgba(16,24,40,0.46))]"
+                          />
+                        )}
                         {/* MockFit measures the frame it is given, so the UI
                             gets its own inset box rather than the full cell:
                             the inset is the air that makes the screen read as

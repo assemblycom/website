@@ -622,7 +622,20 @@ export function DescribeCard({
   prompt,
   photo,
   typing = false,
+  ring = true,
 }: SceneProps & {
+  /**
+   * The lime-to-blue ring around the composer, and the band of ground inside
+   * it. On by default.
+   *
+   * Off where the composer is the only object on a bright photograph and has
+   * the whole panel to itself: there the lime-to-blue band is the first thing
+   * the eye lands on, and it is decoration on the one element the step is
+   * pointing at. The double outline itself stays either way — a hairline, the
+   * band of ground, the box's own border — because that is the composer's
+   * shape rather than its colour.
+   */
+  ring?: boolean;
   /**
    * Types the prompt out a character at a time instead of showing it whole.
    *
@@ -830,7 +843,18 @@ export function DescribeCard({
             plain
               ? // Lifted 13px on a phone, where the panel's caption sits right
                 // above the slot and a centred composer read as sitting low.
-                "max-sm:-translate-y-[13px] rounded-[14px] bg-[linear-gradient(to_bottom,#d9ed92_0%,#9fd6c4_45%,#8ea2f4_100%)] bg-[length:100%_200%] bg-[position:0%_0%] p-px transition-[background-position] duration-700 ease-out group-hover/card:bg-[position:0%_100%] motion-reduce:transition-none sm:mb-auto sm:mt-[66px]"
+                // The placement classes stay whether or not the ring is drawn;
+                // only the paint is conditional (see `ring`).
+                `max-sm:-translate-y-[13px] rounded-[14px] p-px sm:mb-auto sm:mt-[66px] ${
+                  ring
+                    ? "bg-[linear-gradient(to_bottom,#d9ed92_0%,#9fd6c4_45%,#8ea2f4_100%)] bg-[length:100%_200%] bg-[position:0%_0%] transition-[background-position] duration-700 ease-out group-hover/card:bg-[position:0%_100%] motion-reduce:transition-none"
+                    : // The same ring as a plain hairline. `ring` decides
+                      // the PAINT, not the shape: the outer line, the band
+                      // of ground inside it and the box's own border are
+                      // what give this composer its double outline, and
+                      // that is the object, not the colour.
+                      "bg-[var(--mock-line)]"
+                }`
               : "contents"
           }
         >

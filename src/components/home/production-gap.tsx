@@ -35,7 +35,12 @@ const REGIONS = [
   {
     id: "url",
     tag: "Foundation",
-    header: "Built-in CRM and client experience",
+    // ONE LINE IN THE STEP LIST. The column is 281px and the header is set
+    // at 18, where "Built-in CRM and client experience" came to 291 and
+    // wrapped — the only one of the four that did, so it sat two lines deep
+    // over three one-liners. "Client portal" is the same thing in the words
+    // the hero and /client-portal already use, and it fits at 248.
+    header: "Built-in CRM and client portal",
     body: "Contacts and companies live in one CRM. Clients get a branded experience on your domain to message your team, share files, sign contracts, pay, and more.",
     shortBody:
       "Contacts and companies in one CRM. On your branded domain, clients message your team, share files, sign contracts, pay, and more.",
@@ -676,15 +681,19 @@ function ProductionGapExplorer({
                   rather than as four steps. `tag` stays on the record — it is
                   the step's short name and the obvious handle for anything
                   that lists these later — it is simply not drawn here. */}
-              {/* ON THE SITE'S OWN SCALE. The pair here was 17px over 14px
-                  `leading-relaxed` — a size that exists nowhere else on the
-                  site and a line height that belongs to reading copy, so the
-                  one block on the page with a heading and a paragraph in it
-                  was the one block not set from the scale. `.type-h4` over
-                  `.type-caption` is 18 over 14, which is the sub-head and
-                  small register every other section already uses. */}
+              {/* ON THE SITE'S OWN SCALE, AND ON THE CARD PAIRING. The pair
+                  here was 17px over 14px `leading-relaxed` — a size that
+                  exists nowhere else on the site and a line height that
+                  belongs to reading copy — and then `.type-h4` over
+                  `.type-caption`, which is 18 over 14. Both are scale steps,
+                  but four points apart in a 330px column the name read as a
+                  section heading rather than as the label of a step, and
+                  plainly larger than it should be.
+                  `.type-body` over `.type-caption` is 15 over 14, which is
+                  the pairing the site's own picture cards take (see the
+                  templates grid). The name still leads; it stops shouting. */}
               <p
-                className={`type-h4 transition-colors ${
+                className={`type-body transition-colors ${
                   on
                     ? "text-foreground"
                     : "text-muted-foreground group-hover:text-foreground"
