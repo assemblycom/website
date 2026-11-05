@@ -125,9 +125,21 @@ export function Seal({ label }: { label: string }) {
 export function SecurityCompliance({
   omit,
   railAligned = false,
+  framed = false,
 }: {
   /** Seal titles to leave out — a page may make a claim one of these outruns. */
   omit?: string[];
+  /**
+   * The band already has a rule under it, drawn by whatever frames it, so it
+   * should not add its own on a phone.
+   *
+   * Two-up on a phone the grid's last row ends on nothing — the hairline bed
+   * only shows BETWEEN cells — so the band normally closes itself there. A
+   * page that boxes the band instead (see `bandClassName` on PortalTrust)
+   * draws that rule one pixel lower, and the two together read as a doubled
+   * line under the last two seals.
+   */
+  framed?: boolean;
   /**
    * Lay the band out on SIXTHS of the measure rather than on its own equal
    * share of it.
@@ -177,7 +189,11 @@ export function SecurityCompliance({
         // there. A bottom border below sm closes it, bleeding to the screen
         // edges like the -mx-6 it sits in and like every other phone-only rule
         // on the site.
-        className={`-mx-6 grid grid-cols-2 gap-px bg-border max-sm:border-b max-sm:border-border sm:mx-0 ${columns} [[data-theme=dark]_&]:bg-[#383838] [[data-theme=dark]_&]:max-sm:border-[#383838]`}
+        className={`-mx-6 grid grid-cols-2 gap-px bg-border sm:mx-0 ${columns} [[data-theme=dark]_&]:bg-[#383838] ${
+          framed
+            ? ""
+            : "max-sm:border-b max-sm:border-border [[data-theme=dark]_&]:max-sm:border-[#383838]"
+        }`}
       >
         {/* The end cells. Page ground, not the hairline bed, so each one reads
             as the measure carrying on rather than as a fifth empty seal.

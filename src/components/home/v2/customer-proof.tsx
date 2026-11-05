@@ -29,6 +29,9 @@ import { BuilderCustomerQuotes } from "@/components/ai-app-builder/builder-custo
 export function CustomerProof() {
   return (
     <BuilderCustomerQuotes
+      // Every other section on this page names itself with one; this row and
+      // the capability index under it were the two that did not.
+      eyebrow="Customers"
       heading="Firms running on Assembly"
       body="Four firms, four kinds of work, one platform underneath all of it."
       quotes={[

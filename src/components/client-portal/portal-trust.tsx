@@ -51,6 +51,7 @@ export function PortalTrust({
   visual,
   bandClassName,
   bandOnRails,
+  bandFramed,
 }: {
   heading?: string;
   body?: string;
@@ -77,6 +78,12 @@ export function PortalTrust({
    * puts the band's own verticals where the rails would have been.
    */
   bandOnRails?: boolean;
+  /**
+   * The classes above close the band on all four sides, so the band must not
+   * draw its own phone-only foot as well — see `framed` in
+   * security-compliance.
+   */
+  bandFramed?: boolean;
   /**
    * Fills the right column when `claims` is empty — for a brief that makes the
    * security case in its paragraph rather than in rows a reader opens.
@@ -167,7 +174,11 @@ export function PortalTrust({
         <div
           className={`-mx-6 mt-14 border-t md:-mx-10 ${GRID_LINE} ${bandClassName ?? ""}`}
         >
-          <SecurityCompliance omit={omitSeals} railAligned={bandOnRails} />
+          <SecurityCompliance
+            omit={omitSeals}
+            railAligned={bandOnRails}
+            framed={bandFramed}
+          />
         </div>
       </Reveal>
     </section>

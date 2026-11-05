@@ -8,6 +8,7 @@ import { COPY_VARIANTS, FALLBACK_COPY } from "@/lib/hero-variants";
 import { PRIMARY_CTA } from "@/components/home/hero-big";
 import { SECONDARY_CTA } from "@/components/home/cta";
 import { HeroCredibility } from "@/components/home/v2/hero-credibility";
+import { PROTO_HERO_BODY } from "@/components/proto/hero-copy";
 import { OnboardingTrackerMock } from "@/components/client-portal/segment-mock";
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -88,7 +89,20 @@ function ClientExperiencePanel() {
     <div
       // Its own ground and hairline, so the window reads as a window sitting
       // in the tile rather than as rows printed straight onto it.
-      className="h-[280px] w-full overflow-hidden rounded-xl border border-[var(--mock-line)] bg-background md:h-[391px]"
+      //
+      // CAPPED AND CENTRED AT 1080. The mock is fluid and its type is fixed,
+      // so a window the full width of a 1400 tile lays the same rows out
+      // across half a metre at 9px and reads as an app stretched rather than
+      // as an app. The product pages draw their screen at about 780 and crop
+      // it; 1080 is the widest this one holds that density at. The tile keeps
+      // its own width and the slack falls either side as mat.
+      //
+      // OPEN AT THE FOOT. No bottom border and no bottom radius: the screen
+      // runs off the tile's bottom edge the way the product pages' does off
+      // their card's, so the last row is cropped by the frame rather than
+      // stopping short of it with a band of tile underneath — which read as
+      // the table having run out rather than as a window onto more.
+      className="mx-auto h-[280px] w-full max-w-[1080px] overflow-hidden rounded-t-xl border border-b-0 border-[var(--mock-line)] bg-background md:h-[391px]"
     >
       <OnboardingTrackerMock />
     </div>
@@ -164,7 +178,7 @@ export function HeroSplit() {
             </div>
             {/* max-w-[34rem] and lg:pt-2, both /client-portal's. */}
             <p className="type-lead mx-auto max-w-[34rem] text-pretty text-muted-foreground md:mx-0 lg:pt-2">
-              {message.body}
+              {PROTO_HERO_BODY}
             </p>
           </div>
 
@@ -187,9 +201,20 @@ export function HeroSplit() {
           </div>
 
           {/* ── The tile ───────────────────────────────────────────────── */}
+          {/* THE TILE KEEPS THE HERO RAIL. It was briefly capped at 1080 to
+              settle the screen inside it, and that moved the wrong box: the
+              tile is the hero's own closing element and measures 1400 with
+              everything above it. The cap is on the WINDOW now, inside a tile
+              that is still full width — see ClientExperiencePanel. */}
           <div className="mt-12 md:mt-16">
-            {/* The panel. rounded-3xl, the radius the site's large panels use. */}
-            <div className="rounded-3xl bg-[var(--surface)] p-3 md:p-5">
+            {/* The panel. rounded-3xl, the radius the site's large panels use.
+                Clipped, and open at the foot, so the screen inside ends on the
+                tile's own edge — see ClientExperiencePanel. */}
+            {/* One inset at every width (20px), rather than 12 on a phone and
+                20 from md: at 12 the screen sat almost on the tile's edge and
+                the frame read as a hairline around it rather than as a mat the
+                screen is set in. The foot stays open — see below. */}
+            <div className="overflow-hidden rounded-3xl bg-[var(--surface)] p-5 pb-0">
               <ClientExperiencePanel />
             </div>
           </div>

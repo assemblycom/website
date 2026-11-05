@@ -6,6 +6,7 @@ import {
 } from "@/components/home/home-content-v2";
 import { HeroPhoto } from "@/components/home/v3/hero-photo";
 import { VersionSwitcher } from "@/components/proto/version-switcher";
+import { PROTO_HERO_BODY } from "@/components/proto/hero-copy";
 import { getVisibleTemplates } from "@/lib/visible-templates";
 
 export const metadata: Metadata = {
@@ -65,7 +66,7 @@ export default async function HomePage({
             // so padding it from out here moved the NAV down the page and left
             // a band of white above the logo. `roomy` opens the space inside
             // the hero, below the bar, which is where it was wanted.
-            <HeroV76 templates={templates} roomy />
+            <HeroV76 templates={templates} roomy body={PROTO_HERO_BODY} />
           ) : active === "3" ? (
             <>
               <HeroPhoto />

@@ -2692,7 +2692,8 @@ export function WholeStack({
       <div className="mx-auto grid max-w-[1200px] gap-x-16 gap-y-10 px-6 md:grid-cols-[minmax(0,0.7fr)_minmax(0,1fr)] md:px-10">
         {/* Heading — left column (sticky on desktop), matching the FAQ layout. */}
         <div className="md:sticky md:top-28 md:self-start">
-          <h2 className="type-h2 text-foreground">
+          <p className="type-eyebrow text-muted-foreground">The platform</p>
+          <h2 className="type-h2 mt-4 text-foreground">
             Everything you need to run your business
           </h2>
           {/* The heading states the claim; this says why it matters before the

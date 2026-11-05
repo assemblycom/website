@@ -553,6 +553,27 @@ const PANEL_SCENE_PHONE = {
  * between them must not resize it, so only the width is per-step — and width
  * is the axis with the slack, since all three slots run to the panel's foot.
  */
+/**
+ * The Iterate chat's design box.
+ *
+ * It was a flat 680x260 at every width, and on a phone that is what made the
+ * exchange unreadable: MockFit fits the box to the frame, so a 680 box in a
+ * ~310px frame is drawn at 0.45 and 13px type lands at under 6. The other
+ * steps on that panel already take a 360-wide phone box (PANEL_SCENE_PHONE),
+ * which resolves near 1:1 there — this follows them, so all four steps draw
+ * their type at one size on a phone. 200 rather than 300 tall because the
+ * chat is two bubbles and nothing else; at 300 it sat in a third of a box of
+ * empty ground.
+ */
+const ITERATE_SCENE = {
+  vars: "[--template-mock-w:360px] [--template-mock-h:200px] sm:[--template-mock-w:680px] sm:[--template-mock-h:260px]",
+  size: "w-[360px] h-[200px] sm:w-[680px] sm:h-[260px]",
+};
+const ITERATE_SCENE_PROPS = {
+  boxClass: ITERATE_SCENE.vars,
+  boxSizeClass: ITERATE_SCENE.size,
+};
+
 const PANEL_SCENE_WIDE = {
   // The phone step is the same one PANEL_SCENE_PHONE takes and for the
   // same reason — see there. Build's scene is a portal screen that bleeds off
@@ -3039,7 +3060,7 @@ export function IterateCard({
     // what MockFit fits, not the content inside it — so with the table gone
     // the two bubbles were being fitted into a 340x453 portrait frame and
     // drawn tiny against the top of it. Sized to what is actually here.
-    <Scene w={680} h={260}>
+    <Scene {...ITERATE_SCENE_PROPS}>
       {/* THE CHAT IS THE WHOLE SCENE. The pair used to sit at the top of the
           white window with the client table under it, which put a sheet of
           white behind two messages and made them read as a header the card
@@ -3054,7 +3075,7 @@ export function IterateCard({
               used. Capped short of the full measure so the side it is on is
               legible as a side. */}
           <p
-            className={`chat-turn ml-auto w-fit max-w-[82%] [animation:chat-turn_7s_ease-out_infinite] ${R_PANEL} bg-[var(--mock-well-2)] px-3 py-2 text-[color:var(--mock-ink)] ${CARD_BODY}`}
+            className={`chat-turn ml-auto w-fit max-w-[82%] [animation:chat-turn-in_600ms_ease-out_both] ${R_PANEL} bg-[var(--mock-well-2)] px-3 py-2 text-[color:var(--mock-ink)] ${CARD_BODY}`}
           >
             Add a due date to every project.
           </p>
@@ -3067,7 +3088,7 @@ export function IterateCard({
           <p
             // A second behind the request, so the two read as one exchange
             // rather than as two labels that appeared together.
-            className={`chat-turn mt-2.5 flex w-fit max-w-[82%] items-center gap-2 [animation:chat-turn_7s_ease-out_1s_infinite] ${R_PANEL} border bg-[var(--mock-window)] px-3 py-2 ${LINE} text-[color:var(--mock-ink-soft)] ${CARD_BODY}`}
+            className={`chat-turn mt-2.5 flex w-fit max-w-[82%] items-center gap-2 [animation:chat-turn-in_600ms_ease-out_900ms_both] ${R_PANEL} border bg-[var(--mock-window)] px-3 py-2 ${LINE} text-[color:var(--mock-ink-soft)] ${CARD_BODY}`}
           >
             <span
               aria-hidden

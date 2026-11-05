@@ -180,9 +180,19 @@ export function HeroV76({
   variant,
   trustSlot,
   roomy = false,
+  body: bodyOverride,
 }: {
   showPlus?: boolean;
   templates: Template[];
+  /**
+   * The supporting line, in place of the message's own.
+   *
+   * For the homepage prototype, where all three versions have to make the
+   * same claim in the same words or the comparison has two variables in it.
+   * Unset — which is every live render — the hero reads the line off
+   * COPY_VARIANTS exactly as it always has.
+   */
+  body?: string;
   /**
    * Extra room above and below the hero's own content, for a page that does
    * not run this hero's usual neighbours.
@@ -234,7 +244,7 @@ export function HeroV76({
   // Headline and body are one message, so the body always renders with it.
   // The `showBody` prop that used to gate it is gone: it defaulted to off for
   // the retired headline, which had no body line.
-  const body = message.body;
+  const body = bodyOverride ?? message.body;
   // Theme is global now (persisted, applied to <html data-theme>), so the hero
   // reads it from context and the nav toggle drives the whole site.
   const { theme } = useTheme();
@@ -490,7 +500,7 @@ export function HeroV76({
         <HeroBig
           headline={message.h1}
           lines={message.big.lines}
-          body={message.body}
+          body={body}
           iconAfter={message.big.iconAfter}
           iconPair={message.big.iconPair}
           iconBefore={message.big.iconBefore}

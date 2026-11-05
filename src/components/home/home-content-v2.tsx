@@ -214,7 +214,16 @@ export function HomeContentV2({
                 // dropping the frame to the foot there just recentres it. The
                 // frame takes the card's 6:5 instead, which leaves no slack to
                 // centre, and sits on the panel's floor.
-                <div className="absolute inset-x-0 -bottom-4 top-auto aspect-[6/5] sm:-bottom-6 sm:top-8 sm:aspect-auto md:-bottom-10 md:top-14">
+                // ON A PHONE IT IS PLACED, NOT CROPPED. The phone panel is
+                // 320 tall against the photograph's own 340 wide, so a frame
+                // running the full width at the scene's 6:5 filled the cell
+                // edge to edge: the picture survived as two 16px slivers down
+                // the sides and the card was cut by the panel's floor at the
+                // same time. The frame keeps the scene's shape but gives up
+                // the width, so the card sits on the photograph with the
+                // picture around it — which is what the Describe step does
+                // and the one treatment on this panel that reads.
+                <div className="absolute inset-x-6 bottom-0 top-auto aspect-[6/5] sm:inset-x-0 sm:-bottom-6 sm:top-8 sm:aspect-auto md:-bottom-10 md:top-14">
                   <PlanCard plain doc={TRACKER_PLAN_DOC} />
                 </div>
               ),
@@ -232,7 +241,9 @@ export function HomeContentV2({
               // `bottom-0` is the inset's foot and still left the panel's own
               // padding showing under the screen. These numbers cancel it.
               build: (
-                <div className="absolute inset-x-0 -bottom-4 top-auto aspect-[360/300] sm:-bottom-6 sm:aspect-[620/400] md:-bottom-10 lg:aspect-[900/400] lgx:aspect-[1040/400]">
+                // Phone: see the Plan step above — placed on the photograph
+                // rather than filling it and being cut by the floor.
+                <div className="absolute inset-x-6 bottom-0 top-auto aspect-[360/300] sm:inset-x-0 sm:-bottom-6 sm:aspect-[620/400] md:-bottom-10 lg:aspect-[900/400] lgx:aspect-[1040/400]">
                   <BuildCard plain tracker />
                 </div>
               ),
@@ -304,6 +315,11 @@ export function HomeContentV2({
           // for. The product pages keep their rows; only the homepage drops
           // them.
           claims={[]}
+          // The band's frame below closes it on all four sides, so the band
+          // itself must not also draw the phone-only rule it normally uses to
+          // close its last row — the two landed a pixel apart under the bottom
+          // two seals and read as a doubled line.
+          bandFramed
           // AND ITS OWN SIDE EDGES. The band draws hairlines only BETWEEN
           // its cells — "the outer edges get nothing", as
           // security-compliance.tsx puts it, because on /security and
@@ -363,10 +379,22 @@ export function HomeContentV2({
               grid. Drawn at the band's weight rather than the rails', for the
               same reason the band's are: a line that has to be read against
               plain type, with no fill behind it, needs more than 5.5%. */}
+          {/* TWO SPANS, NOT A border-x, and that is the whole point of the
+              shape. A border is drawn INSIDE the 1200 box — its left edge
+              lands on 120 and covers 120 to 121 — while the rail behind it is
+              a `w-px -translate-x-1/2` span centred on 120, covering 119.5 to
+              120.5. Half a pixel apart, the two paint 1.5px of line between
+              them, which is the doubled rule down the FAQ's left side (and
+              its right). These spans take the rails' own geometry, so each
+              one lands exactly on the rail it is redrawing and the two read
+              as one line at the band's weight. */}
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-y-0 left-1/2 w-full max-w-[1200px] -translate-x-1/2 border-x border-x-border [[data-theme=dark]_&]:border-x-[#383838]"
-          />
+            className="pointer-events-none absolute inset-y-0 left-1/2 w-full max-w-[1200px] -translate-x-1/2"
+          >
+            <span className="absolute inset-y-0 left-0 w-px -translate-x-1/2 bg-border [[data-theme=dark]_&]:bg-[#383838]" />
+            <span className="absolute inset-y-0 right-0 w-px translate-x-1/2 bg-border [[data-theme=dark]_&]:bg-[#383838]" />
+          </div>
           <Reveal variant="fade">
             {/* -mx-3 so the questions start on the measure, level with the
                 heading and with the ruled list in the section above. */}

@@ -10,6 +10,7 @@ import { COPY_VARIANTS, FALLBACK_COPY } from "@/lib/hero-variants";
 import { PRIMARY_CTA } from "@/components/home/hero-big";
 import { SECONDARY_CTA } from "@/components/home/cta";
 import { STATS } from "@/components/home/trust-ticker";
+import { PROTO_HERO_BODY } from "@/components/proto/hero-copy";
 
 // ─────────────────────────────────────────────────────────────────────────
 // HERO (V3, PHOTO) — V2's message on a full-bleed photograph, after the
@@ -38,7 +39,17 @@ import { STATS } from "@/components/home/trust-ticker";
 // while the hero leaves — the page never stops, and the section below it
 // arrives on schedule.
 //
-// Phones and reduced-motion keep the plain full-bleed hero.
+// IT RUNS ON PHONES TOO. It used to be an md-and-up effect — the inset and
+// the radius were written at `md:` only, so a phone got a static full-bleed
+// picture and the one version of the homepage whose whole idea is a move had
+// nothing to show on the device most visitors arrive on. The phone's card
+// closes on smaller margins (the hero rail's own px-6 at the sides, and
+// enough at the top to clear the shorter nav), because 40px of gutter on a
+// 390px screen is a tenth of the width on each side.
+//
+// Reduced-motion still keeps the plain full-bleed hero: the handler returns
+// before it writes --p, so the card stays at p=0, which IS the full-bleed
+// state.
 //
 // IT TAKES THE WHOLE FIRST SCREEN. It was capped at 820px so a tall display
 // would not leave a band of empty picture between the nav and the type, and
@@ -66,6 +77,20 @@ const PHOTO = {
 const HERO_STATS = STATS.filter((s) => s.label !== "Clients managed");
 
 /**
+ * The phone's labels for those figures.
+ *
+ * Three columns on a 390px screen give each label about 110px, and
+ * "Businesses powered" and "Payments processed" both broke across two lines
+ * there while "Apps created" held one — so the row sat on a ragged baseline
+ * with one column short. The noun on its own is the part that does the work;
+ * the full label returns from sm, where there is room for it.
+ */
+const SHORT_LABELS: Record<string, string> = {
+  "Businesses powered": "Businesses",
+  "Payments processed": "Payments",
+};
+
+/**
  * Scroll, as a fraction of the viewport height, over which the photo shrinks.
  *
  * Shorter than the pinned version's 0.6: with no runway holding the hero in
@@ -80,7 +105,7 @@ const SHRINK_VH = 0.45;
  * drives the inset and the radius together.
  */
 const FRAME =
-  "md:[inset:calc(var(--p)*72px)_calc(var(--p)*40px)_calc(var(--p)*40px)] md:[border-radius:calc(var(--p)*24px)]";
+  "[inset:calc(var(--p)*56px)_calc(var(--p)*24px)_calc(var(--p)*24px)] [border-radius:calc(var(--p)*20px)] md:[inset:calc(var(--p)*72px)_calc(var(--p)*40px)_calc(var(--p)*40px)] md:[border-radius:calc(var(--p)*24px)]";
 
 export function HeroPhoto() {
   const { theme } = useTheme();
@@ -129,14 +154,21 @@ export function HeroPhoto() {
       <div
         ref={wrapRef}
         style={{ "--p": 0 } as CSSProperties}
-        className="relative -mt-14 md:-mt-16 md:h-[100svh] md:min-h-[600px]"
+        // min-h-[780px] is the phone's floor, not a design number: the card
+        // is absolute now, so it cannot grow with its own copy the way the
+        // in-flow section did, and on a 667px-tall phone the headline, lead,
+        // pair and figures come to more than the screen — the figures were
+        // cropped by the card's own foot. The hero runs a little past the
+        // fold there instead, which is what it did before.
+        className="relative -mt-14 h-[100svh] min-h-[780px] md:-mt-16 md:min-h-[600px]"
       >
         <section
           data-theme="dark"
-          // Full screen on a phone, where the hero IS the first view and there
-          // is nothing to gain by showing a strip of the next section. Capped
-          // from md, so a large display gets a band and the page below it.
-          className={`relative flex min-h-[100svh] flex-col justify-end overflow-hidden bg-neutral-950 pt-28 md:absolute md:min-h-0 md:pt-0 ${FRAME}`}
+          // Absolute inside the wrapper at every width, so the card can pull
+          // its own edges in without the page below it moving. It was in flow
+          // below md, which is what kept the phone's hero static: an element
+          // in flow has no inset to animate.
+          className={`absolute flex flex-col justify-end overflow-hidden bg-neutral-950 ${FRAME}`}
         >
           <Image
             src={PHOTO.src}
@@ -168,7 +200,7 @@ export function HeroPhoto() {
               ))}
             </h1>
             <p className="type-lead mt-5 max-w-[34rem] text-pretty text-white/70">
-              {message.body}
+              {PROTO_HERO_BODY}
             </p>
 
             <div className="mt-8 flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between">
@@ -217,7 +249,10 @@ export function HeroPhoto() {
                     className="flex flex-col-reverse gap-1 border-l border-white/15 px-3 text-center first:border-l-0 first:pl-0 last:pr-0 sm:px-5"
                   >
                     <dt className="text-sm text-white/60 sm:whitespace-nowrap">
-                      {stat.label}
+                      <span className="sm:hidden">
+                        {SHORT_LABELS[stat.label] ?? stat.label}
+                      </span>
+                      <span className="hidden sm:inline">{stat.label}</span>
                     </dt>
                     <dd className="text-base text-white">
                       {stat.format(stat.to)}

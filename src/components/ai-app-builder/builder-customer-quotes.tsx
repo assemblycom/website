@@ -129,10 +129,18 @@ const QUOTES: CustomerQuote[] = [
  * card is too narrow for a name and a firm to set on two lines.
  */
 export function BuilderCustomerQuotes({
+  eyebrow,
   heading = "Firms already building",
   body,
   quotes = QUOTES,
 }: {
+  /**
+   * The small label over the heading, for a page whose sections all carry
+   * one. Opt-in: the product pages name their sections with the heading
+   * alone, and an eyebrow added to all of them would be a change to three
+   * pages this row happens to be shared by.
+   */
+  eyebrow?: string;
   heading?: string;
   /** A lead under the heading, where a page's brief calls for one. */
   body?: string;
@@ -161,6 +169,9 @@ export function BuilderCustomerQuotes({
     // The measure and rhythm BuilderTemplates uses, so the two sections either
     // side of the divider between them sit on one column.
     <section className="mx-auto max-w-[1200px] px-6 py-14 md:px-10 md:py-20">
+      {eyebrow ? (
+        <p className="type-eyebrow mb-4 text-muted-foreground">{eyebrow}</p>
+      ) : null}
       <h2 className="type-h3 text-balance">{heading}</h2>
       {body ? (
         <p className="mt-4 max-w-2xl text-muted-foreground">{body}</p>

@@ -419,7 +419,18 @@ export function HowItWorks({
                             gets its own inset box rather than the full cell:
                             the inset is the air that makes the screen read as
                             placed on the photograph rather than cropped by it. */}
-                        <div className="absolute inset-4 sm:inset-6 md:inset-10">
+                        {/* KEYED ON WHETHER THIS STEP IS THE OPEN ONE, so the
+                            screen REMOUNTS when you tab to it and whatever it
+                            animates on entry plays then rather than on page
+                            load, behind three other steps. The scenes settle
+                            and stay — nothing here loops — so without this a
+                            visitor who tabs to a step arrives after its one
+                            performance is over. Only this branch: a step
+                            rendering its own built visual is untouched. */}
+                        <div
+                          key={`${step.id}-${active === i}`}
+                          className="absolute inset-4 sm:inset-6 md:inset-10"
+                        >
                           {stepUi[step.id]}
                         </div>
                       </>

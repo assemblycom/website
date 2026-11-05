@@ -4833,6 +4833,21 @@ html:not([data-authed]) .auth-only {
   }
 }
 
+/* The entrance on its own, for a chat that ARRIVES AND STAYS. `chat-turn`
+   above fades back out at 92% because it was written to loop; a panel you
+   tab to should play its exchange once and leave it on screen, so this holds
+   the settled state and the step's own remount is what replays it. */
+@keyframes chat-turn-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .chat-turn {
     animation: none !important;

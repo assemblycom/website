@@ -168,12 +168,19 @@ export function HeroBig({
    * is what gives the lockup room on both sides of itself instead of pushing
    * it down into the section below.
    *
-   * FULL SCREEN FROM md. The hero gets the first view to itself: with the box
-   * at 80svh the next section's heading and half its chips sat under the
-   * buttons on a laptop, so the page opened on two things at once and the
-   * hero never had a moment of its own. At 100svh the content still centres,
-   * it just centres in the whole screen, and the top padding drops to match
-   * so the lockup does not slide down with the floor.
+   * FULL SCREEN, PHONES INCLUDED. The hero gets the first view to itself:
+   * with the box at 80svh the next section's heading and half its chips sat
+   * under the buttons on a laptop, so the page opened on two things at once
+   * and the hero never had a moment of its own. At 100svh the content still
+   * centres, it just centres in the whole screen, and the top padding drops
+   * to match so the lockup does not slide down with the floor.
+   *
+   * The phone was left at 80svh and had the same fault for the same reason —
+   * the eyebrow of the industries row sat under the buttons. It takes
+   * `100svh + 3.5rem` rather than a plain 100svh because the section is
+   * pulled up under the fixed bar by -mt-14: at exactly one screen the box
+   * ends 56px above the fold and that much of the next section shows through
+   * under it. The extra is that pull given back.
    */
   roomy?: boolean;
 }) {
@@ -188,7 +195,7 @@ export function HeroBig({
       <div
         className={`mx-auto flex max-w-[1200px] flex-col justify-center px-6 md:px-10 ${
           roomy
-            ? "min-h-[calc(80svh-5rem)] pb-24 pt-40 md:min-h-[100svh] md:pb-28 md:pt-32"
+            ? "min-h-[calc(100svh+3.5rem)] pb-24 pt-32 md:min-h-[100svh] md:pb-28 md:pt-32"
             : "min-h-[calc(68svh-5rem)] pb-16 pt-28 md:pb-20"
         }`}
       >
