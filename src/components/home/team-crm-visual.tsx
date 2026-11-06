@@ -267,6 +267,8 @@ function initials(name: string) {
 /**
  * FICTIONAL NUMBERS ONLY, and the 555-01xx block specifically — it is the
  * range reserved for fiction, so nothing here can ever ring a real person.
+ * The block is reserved under every area code, so each contact gets a real
+ * city's code in front: a column of "(555)" read as fake at a glance.
  *
  * This list is sample data in a marketing screenshot. Nothing in it may be
  * copied from a real CRM, a support ticket, or a screenshot someone shared to
@@ -280,7 +282,7 @@ const CONTACTS: Contact[] = [
     created: "Oct 23, 2026",
     email: "mary@symphony.co",
     company: "Symphony",
-    phone: "(555) 010-4471",
+    phone: "(415) 555-0147",
     tag: "Retainer",
   },
   {
@@ -289,7 +291,7 @@ const CONTACTS: Contact[] = [
     created: "Oct 23, 2026",
     email: "chuckd@symphony.co",
     company: "Symphony",
-    phone: "(555) 010-2286",
+    phone: "(312) 555-0186",
   },
   {
     name: "Timothy Leclerc",
@@ -297,7 +299,7 @@ const CONTACTS: Contact[] = [
     created: "Oct 21, 2026",
     email: "timmy@wave.co",
     company: "Wave",
-    phone: "(555) 010-7715",
+    phone: "(646) 555-0123",
     tag: "Project",
   },
   {
@@ -306,7 +308,7 @@ const CONTACTS: Contact[] = [
     created: "Oct 9, 2026",
     email: "jasmin@symphony.co",
     company: "2 companies",
-    phone: "(555) 010-3390",
+    phone: "(206) 555-0139",
   },
   {
     name: "Kenny Tse",
@@ -314,7 +316,7 @@ const CONTACTS: Contact[] = [
     created: "Sep 29, 2026",
     email: "ktse2@godo.com",
     company: "Godo",
-    phone: "(555) 010-6128",
+    phone: "(512) 555-0162",
     tag: "Retainer",
   },
   {
@@ -323,7 +325,7 @@ const CONTACTS: Contact[] = [
     created: "Sep 25, 2026",
     email: "andy@wave.co",
     company: "Wave",
-    phone: "(555) 010-8834",
+    phone: "(617) 555-0108",
   },
 ];
 
@@ -336,7 +338,7 @@ const MORE_CONTACTS: Contact[] = [
     created: "Aug 13, 2026",
     email: "priya@godo.com",
     company: "Godo",
-    phone: "(555) 010-5172",
+    phone: "(303) 555-0175",
     tag: "Project",
   },
   {
@@ -345,7 +347,7 @@ const MORE_CONTACTS: Contact[] = [
     created: "Aug 11, 2026",
     email: "leo@symphony.co",
     company: "Symphony",
-    phone: "(555) 010-9043",
+    phone: "(213) 555-0194",
   },
   {
     name: "Nadia Osei",
@@ -353,7 +355,7 @@ const MORE_CONTACTS: Contact[] = [
     created: "Aug 11, 2026",
     email: "nadia@wave.co",
     company: "Wave",
-    phone: "(555) 010-2617",
+    phone: "(404) 555-0131",
     tag: "Retainer",
   },
 ];
@@ -691,27 +693,28 @@ export function TeamCrmVisual({
                     <span className="hidden w-[130px] shrink-0 sm:block">
                       {contact.tag ? (
                         <span
-                          className={`inline-flex items-center rounded-[4px] border border-[var(--mock-line)] px-1.5 py-[3px] text-[color:var(--mock-ink-soft)] ${MOCK_SECONDARY}`}
+                          className={`inline-flex items-center rounded-[4px] border border-[var(--mock-line)] px-1.5 py-[3px] text-[color:var(--mock-ink-soft)] [[data-theme=dark]_&]:bg-white/[0.06] ${MOCK_SECONDARY}`}
                         >
                           {contact.tag}
                         </span>
                       ) : null}
                     </span>
-                    {/* A dot and a word, not a filled chip: the Tags column
-                        beside it already draws a pill, and two pill shapes in
-                        adjacent columns made the row read as two tags rather
-                        than as a status and a custom field. */}
-                    <span
-                      className={`hidden w-[90px] shrink-0 items-center gap-1.5 truncate text-[color:var(--mock-ink-soft)] sm:flex ${MOCK_PRIMARY}`}
-                    >
+                    {/* The Tags column's own outlined chip, with the status
+                        dot kept inside it: the dot's colour is what tells a
+                        status from a tag, so the two can share one shape. */}
+                    <span className="hidden w-[90px] shrink-0 sm:block">
                       <span
-                        className={`size-[5px] shrink-0 rounded-full ${
-                          contact.status === "Active"
-                            ? "bg-[#2f7d6c] [[data-theme=dark]_&]:bg-[#8ed2c1]"
-                            : "bg-[#9d7325] [[data-theme=dark]_&]:bg-[#dec08a]"
-                        }`}
-                      />
-                      {contact.status}
+                        className={`inline-flex items-center gap-1.5 rounded-[4px] border border-[var(--mock-line)] px-1.5 py-[3px] text-[color:var(--mock-ink-soft)] [[data-theme=dark]_&]:bg-white/[0.06] ${MOCK_SECONDARY}`}
+                      >
+                        <span
+                          className={`size-[5px] shrink-0 rounded-full ${
+                            contact.status === "Active"
+                              ? "bg-[#2f7d6c] [[data-theme=dark]_&]:bg-[#8ed2c1]"
+                              : "bg-[#9d7325] [[data-theme=dark]_&]:bg-[#dec08a]"
+                          }`}
+                        />
+                        {contact.status}
+                      </span>
                     </span>
                     <span
                       className={`hidden w-[120px] shrink-0 truncate text-[color:var(--mock-ink-soft)] sm:block ${MOCK_PRIMARY}`}

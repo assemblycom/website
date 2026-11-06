@@ -211,7 +211,7 @@ export function Industries() {
                   // reads as a selection rather than as a pointer resting on
                   // something. Depth says the same thing without a line: the
                   // card lifts a little and its picture moves under the frame.
-                  className="group relative block aspect-[3/4] overflow-hidden rounded-xl border border-border shadow-[0_0_0_0_rgba(16,24,40,0)] transition-shadow duration-300 hover:shadow-[0_12px_32px_-14px_rgba(16,24,40,0.45)] sm:aspect-[4/3] [[data-theme=dark]_&]:border-white/15 [[data-theme=dark]_&]:hover:shadow-[0_12px_32px_-14px_rgba(0,0,0,0.85)]"
+                  className="group relative block aspect-[3/4] overflow-hidden rounded-xl border border-border shadow-[0_0_0_0_rgba(16,24,40,0)] transition-shadow duration-300 hover:shadow-[0_12px_32px_-14px_rgba(16,24,40,0.45)] sm:aspect-[4/3] [[data-theme=dark]_&]:border-transparent [[data-theme=dark]_&]:hover:shadow-[0_12px_32px_-14px_rgba(0,0,0,0.85)]"
                 >
                   {industry.image ? (
                     <Image

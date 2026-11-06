@@ -1511,6 +1511,55 @@ const BOARD = {
   ],
 };
 
+/**
+ * The homepage panel's board: the tracker at the panel's full width, where
+ * there is room for the board the product ships, so a lone "Active" lane no
+ * longer reads as a list that lost its neighbours.
+ */
+const WIDE_BOARD = [
+  {
+    name: "Planning",
+    count: 6,
+    cards: [
+      {
+        who: "Harbor Dental",
+        initials: "HD",
+        title: "Patient Portal",
+        done: 0,
+        of: 4,
+      },
+      {
+        who: "Northwind Coffee",
+        initials: "NC",
+        title: "Brand Refresh",
+        done: 0,
+        of: 5,
+      },
+    ],
+  },
+  BOARD,
+  {
+    name: "Done",
+    count: 14,
+    cards: [
+      {
+        who: "Wave Studio",
+        initials: "WS",
+        title: "Website Launch",
+        done: 5,
+        of: 5,
+      },
+      {
+        who: "Godo Partners",
+        initials: "GP",
+        title: "Onboarding Kit",
+        done: 4,
+        of: 4,
+      },
+    ],
+  },
+];
+
 /** The agency page's board: client campaigns, the hero's book of work. */
 const BOARD_AGENCY = {
   name: "Active",
@@ -3015,28 +3064,37 @@ export function BuildCard({
                 reading as a lane. --mock-well-2 is #f2f3f6, double the step,
                 which is the scale's own next rung rather than a value invented
                 here. */}
-                  <div className="flex min-w-0 flex-1 flex-col gap-1.5 rounded-t-[4px] bg-[var(--mock-well-2)] p-1.5">
-                    <div className="flex items-center gap-1.5 px-0.5 pt-0.5">
-                      <span
-                        className={`text-[color:var(--mock-ink)] ${UI_PRIMARY}`}
-                      >
-                        {board.name}
-                      </span>
-                      <span
-                        className={`text-[color:var(--mock-ink-soft)] ${UI_SECONDARY}`}
-                      >
-                        {board.count}
-                      </span>
+                  {(plain && tracker ? WIDE_BOARD : [board]).map((lane) => (
+                    <div
+                      key={lane.name}
+                      // On a phone the Active lane alone, at the full width:
+                      // three lanes in that window were slivers.
+                      className={`min-w-0 flex-1 flex-col gap-1.5 rounded-t-[4px] bg-[var(--mock-well-2)] p-1.5 sm:[&+&]:ml-2 ${
+                        lane === board ? "flex" : "hidden sm:flex"
+                      }`}
+                    >
+                      <div className="flex items-center gap-1.5 px-0.5 pt-0.5">
+                        <span
+                          className={`text-[color:var(--mock-ink)] ${UI_PRIMARY}`}
+                        >
+                          {lane.name}
+                        </span>
+                        <span
+                          className={`text-[color:var(--mock-ink-soft)] ${UI_SECONDARY}`}
+                        >
+                          {lane.count}
+                        </span>
+                      </div>
+                      {lane.cards.map((card, i) => (
+                        <ProjectCard
+                          key={card.title}
+                          {...card}
+                          lead={lane === board && i === 0}
+                          tint={i}
+                        />
+                      ))}
                     </div>
-                    {board.cards.map((card, i) => (
-                      <ProjectCard
-                        key={card.title}
-                        {...card}
-                        lead={i === 0}
-                        tint={i}
-                      />
-                    ))}
-                  </div>
+                  ))}
                 </div>
               </>
             )}

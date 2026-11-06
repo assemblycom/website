@@ -22,6 +22,9 @@ const GAP_PX = 16;
 // A step can land a pixel or two off, and a trackpad can leave a fractional
 // scrollLeft, so the ends are judged with a little slack rather than exactly.
 const END_SLACK = 2;
+/** One auto-advance step, and the longer run back from the last card. */
+const SLIDE_MS = 900;
+const SLIDE_BACK_MS = 1400;
 
 // ── How a released drag is thrown ────────────────────────────────────────
 // How far back the release velocity is read. Short enough that the last
@@ -527,26 +530,74 @@ export function CardRail({
       { threshold: 0.5 },
     );
     io.observe(el);
-    const hold = () => (held = true);
+    // Set once the slide below exists; a pointer arriving mid-slide stops it,
+    // so the rail never moves under a hand that is about to grab it.
+    let stopSlide = () => {};
+    const hold = () => {
+      held = true;
+      stopSlide();
+    };
     const release = () => (held = root.contains(document.activeElement));
     root.addEventListener("pointerenter", hold);
     root.addEventListener("pointerleave", release);
     root.addEventListener("focusin", hold);
     root.addEventListener("focusout", release);
+    // OUR OWN EASED SLIDE, aimed at the next card's exact edge. A native
+    // smooth scrollBy stepped by the card's rounded width, so the row drifted
+    // a fraction of a pixel per step and snap then tugged it back at the end
+    // of each slide: a second little jump that read as jitter. Snap is off
+    // while the slide runs, so nothing corrects a landing that is already on
+    // a card.
+    let raf = 0;
+    const slideTo = (target: number, ms: number) => {
+      const from = el.scrollLeft;
+      const distance = target - from;
+      const start = performance.now();
+      el.style.scrollBehavior = "auto";
+      el.style.scrollSnapType = "none";
+      const frame = (now: number) => {
+        const t = Math.min((now - start) / ms, 1);
+        const eased = t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
+        el.scrollLeft = from + distance * eased;
+        if (t < 1) {
+          raf = requestAnimationFrame(frame);
+        } else {
+          raf = 0;
+          el.style.scrollBehavior = "";
+          el.style.scrollSnapType = "";
+        }
+      };
+      raf = requestAnimationFrame(frame);
+    };
+    stopSlide = () => {
+      if (!raf) return;
+      cancelAnimationFrame(raf);
+      raf = 0;
+      el.style.scrollBehavior = "";
+      el.style.scrollSnapType = "";
+    };
     const id = window.setInterval(() => {
       if (held || !onScreen || drag.current || document.hidden) return;
       const end = el.scrollWidth - el.clientWidth;
       if (end <= END_SLACK) return;
       if (el.scrollLeft >= end - END_SLACK) {
-        el.scrollTo({ left: 0, behavior: "smooth" });
+        slideTo(0, SLIDE_BACK_MS);
         return;
       }
-      const card = el.firstElementChild as HTMLElement | null;
-      const by = (card?.offsetWidth ?? el.clientWidth) + GAP_PX;
-      el.scrollBy({ left: by, behavior: "smooth" });
+      // Snap positions, not raw card edges: on a phone the track is padded
+      // and snaps a card to that inset (scroll-px-6), so aiming at the edge
+      // itself landed 24px off and the snap yanked it back when it came on.
+      const origin =
+        el.getBoundingClientRect().left +
+        (parseFloat(getComputedStyle(el).scrollPaddingLeft) || 0);
+      const next = Array.from(el.children)
+        .map((c) => c.getBoundingClientRect().left - origin + el.scrollLeft)
+        .find((left) => left > el.scrollLeft + END_SLACK);
+      slideTo(Math.min(next ?? end, end), SLIDE_MS);
     }, autoAdvanceMs);
     return () => {
       window.clearInterval(id);
+      stopSlide();
       io.disconnect();
       root.removeEventListener("pointerenter", hold);
       root.removeEventListener("pointerleave", release);

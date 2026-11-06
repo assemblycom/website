@@ -116,17 +116,28 @@ export function PortalTrust({
         <div
           className={
             solo
-              ? // CENTRED FROM md, RANGED LEFT ON A PHONE. Centred type over
+              ? // `relative` holds the blur below. CENTRED FROM md, RANGED LEFT ON A PHONE. Centred type over
                 // a centred band is the right shape once the band is wide
                 // enough to read as the thing the copy sits on; on a phone
                 // the band is two seals stacked and every other section of
                 // the page opens on its left line, so this was the one block
                 // whose heading started somewhere else.
-                "mx-auto max-w-[52ch] md:text-center"
+                "relative mx-auto max-w-[52ch] md:text-center"
               : "grid gap-10 md:grid-cols-2 md:gap-16"
           }
         >
-          <div className="md:self-start">
+          {/* DARK ONLY, centred layout only (the homepage): the rails run
+              straight through the heading and in dark they are bright
+              enough to cross the type. A small backdrop blur behind the
+              copy takes them out of focus there, its edge eased out so the
+              blur has no boundary of its own. Light needs none of it. */}
+          {solo ? (
+            <span
+              aria-hidden
+              className="pointer-events-none absolute -inset-x-24 -inset-y-12 hidden [mask-image:radial-gradient(closest-side,#000_60%,transparent)] [[data-theme=dark]_&]:block [[data-theme=dark]_&]:backdrop-blur-[3px]"
+            />
+          ) : null}
+          <div className="relative md:self-start">
             {eyebrow ? (
               <p className="type-eyebrow mb-4 text-muted-foreground">
                 {eyebrow}

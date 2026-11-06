@@ -310,7 +310,7 @@ function Screen({ active }: { active: RegionId }) {
               off the edge. */}
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-y-0 right-0 hidden w-24 bg-[linear-gradient(to_left,rgba(16,24,40,0.30)_0%,rgba(16,24,40,0.10)_45%,transparent_100%)] md:block"
+            className="pointer-events-none absolute inset-y-0 right-0 hidden w-24 bg-[linear-gradient(to_left,rgba(16,24,40,0.14)_0%,rgba(16,24,40,0.05)_45%,transparent_100%)] md:block"
           />
         </>
       ) : (

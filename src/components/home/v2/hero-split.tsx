@@ -13,7 +13,10 @@ import { PRIMARY_CTA } from "@/components/home/hero-big";
 import { SECONDARY_CTA } from "@/components/home/cta";
 import { HeroCredibility } from "@/components/home/v2/hero-credibility";
 import { PROTO_HERO_BODY } from "@/components/proto/hero-copy";
-import { AgencyHeroVisual } from "@/components/solutions/agency-hero-visual";
+import { BrandedPortalVisual } from "@/components/ai-app-builder/branded-portal-visual";
+import { CalendarPane } from "@/components/client-portal/portal-build-cards";
+import { IconClock, IconList } from "@/components/home/mock-icons";
+import { MOCK_BODY } from "@/components/ui/mock-type";
 
 // ─────────────────────────────────────────────────────────────────────────
 // HERO (V2, SPLIT) — the layout from the elevenlabs.io reference: headline
@@ -122,13 +125,44 @@ function ClientExperiencePanel() {
       //
       // THE CLIENT'S SIDE, not the firm's. This was the onboarding tracker, a
       // table the firm reads; the hero sells what clients get, so it is a
-      // client's portal open on its project tracker, the client nav beside
-      // it. The screen draws its own border, so the tile carries none. 1000
-      // rather than 880: the timeline is the picture, and wider shows more of
-      // it without shrinking the type.
-      className="mx-auto h-[340px] w-full max-w-[1000px] overflow-hidden rounded-t-xl md:h-[470px]"
+      // client's portal with the client nav beside it. The screen draws its
+      // own border, so the tile carries none.
+      //
+      // SIZED TO THE SOLUTIONS PAGES' HERO, not to its own numbers: the same
+      // 1040 window, 280/391 tall, holding a screen taller than itself so the
+      // frame crops it. A homepage hero shot a different size from the
+      // product pages' read as a different template.
+      className="relative mx-auto h-[280px] w-full max-w-[1040px] overflow-hidden rounded-t-xl md:h-[391px]"
     >
-      <AgencyHeroVisual scrollEdge={false} />
+      <div className="absolute inset-x-0 top-0 h-[860px]">
+        {/* A client's portal open on a calendar they book their own time in:
+            the client's side of the product, in the firm's colour. The week
+            view is /client-portal's build-step calendar, as the comparison
+            pages already show it. */}
+        <BrandedPortalVisual
+          apps={[
+            { icon: <IconList />, label: "Project tracker" },
+            { icon: <IconClock />, label: "Calendar" },
+          ]}
+          // A step under the shared title size, and off pure white in dark:
+          // at full ink the title was the brightest thing in the window.
+          title={
+            <span
+              className={`${MOCK_BODY} [[data-theme=dark]_&]:text-white/75`}
+            >
+              Calendar
+            </span>
+          }
+          // On a phone the client nav steps aside for the calendar, as the
+          // product does, rather than squeezing a desktop window into 280px.
+          navOnPhone={false}
+          // No break before the firm's apps: in a nav this short the gap
+          // read as uneven spacing, not as a group.
+          appsBreak={false}
+        >
+          <CalendarPane vivid />
+        </BrandedPortalVisual>
+      </div>
     </div>
   );
 }
@@ -283,10 +317,8 @@ export function HeroSplit() {
             {/* The panel. rounded-3xl, the radius the site's large panels use.
                 Clipped, and open at the foot, so the screen inside ends on the
                 tile's own edge — see ClientExperiencePanel. */}
-            {/* One inset at every width (20px), rather than 12 on a phone and
-                20 from md: at 12 the screen sat almost on the tile's edge and
-                the frame read as a hairline around it rather than as a mat the
-                screen is set in. The foot stays open — see below. */}
+            {/* The solutions pages' tray inset, 24 then 48, so this hero and
+                theirs are one template. The foot stays open — see below. */}
             {/* THE RAILS LEAVE BEFORE THEY REACH IT. The tile is the full
                 measure and its ground is opaque, so its top edge cut all
                 seven rails on one scanline — a 1200px seam with the lines
@@ -297,7 +329,7 @@ export function HeroSplit() {
                 shadow has to paint over a layer the hero deliberately puts
                 at a negative z. */}
             <div
-              className={`relative overflow-hidden rounded-3xl bg-[var(--surface)] p-5 pb-0 ${BUILDER_RAIL_HALO_WIDE}`}
+              className={`relative overflow-hidden rounded-3xl bg-[var(--surface)] p-6 pb-0 md:p-12 md:pb-0 ${BUILDER_RAIL_HALO_WIDE}`}
             >
               <ClientExperiencePanel />
             </div>
