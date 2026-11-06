@@ -18,28 +18,33 @@ import { PAGE_SEO, pageMetadata } from "@/lib/seo";
 
 /**
  * Paid-only landing page for the Google Ads "Portal" ad groups (US/CA, UK and
- * AU; exact, phrase and broad). Each keyword's final URL carries `?kw=` so the
- * headline, the section that follows the logos and the first FAQ answer all
- * restate what that search was for. The themes, and the keywords that point at
- * each (from the live ad groups, Nov 2026):
+ * AU; exact, phrase and broad). Every ad group uses one final URL,
+ * `/lp/portal?kw={keyword}`: Google fills in the matched keyword, and the page
+ * sorts it into a group by the words it contains. ONLY THE H1 CHANGES. The
+ * subhead, the sections, their order and the FAQ are the same for everyone.
  *
- *   (none)      client portal(s), client portal software, best client portal
- *               software, portal software, online portal, web portal, simple
- *               client portal, easy client portal
- *   customer    customer portal(s), customer portal software, best customer
- *               portal software, small business customer portal, self service
- *               portal, customer onboarding portal
- *   build       client portal builder, create a portal, create your own client
- *               portal, custom client portal, customizable client portal,
- *               customized portal
- *   whitelabel  white label client portal, branded portal, branded customer
- *               portal
- *   documents   online document portal, document upload portal, customer file
- *               sharing portal
- *   secure      secure client portal, hipaa client portal
+ * Groups, checked in order (first match wins), with the live keywords each
+ * one catches (Nov 2026):
  *
- * `best` and `builder` are kept as aliases for the first URLs handed out.
- * Anything else falls back to the default.
+ *   whitelabel  "white label", "branded": white label client portal, branded
+ *               portal, branded customer portal
+ *   build       "build", "create", "custom*" (not "customer"): client portal
+ *               builder, create a portal, create your own client portal,
+ *               custom / customizable client portal, customized portal
+ *   documents   "document", "file", "upload": online document portal, document
+ *               upload portal, customer file sharing portal
+ *   secure      "secure", "security", "hipaa": secure client portal, hipaa
+ *               client portal
+ *   customer    "customer", "self service", "user": customer portal(s),
+ *               customer portal software, best customer portal software, small
+ *               business customer portal, customer onboarding portal, self
+ *               service portal
+ *   default     everything else: client portal(s), client portal software, best
+ *               client portal software, portal software, online / web portal,
+ *               simple / easy client portal
+ *
+ * The first URLs used group names (`?kw=whitelabel`, `builder`, `best`); those
+ * still resolve, through the same patterns plus one alias for `best`.
  *
  * NOT INDEXED: noindex here AND listed in EXCLUDED in src/lib/sitemap-data.ts.
  * Do not block /lp in robots.ts: AdsBot has to crawl the page to rate it, and
@@ -50,7 +55,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-type Theme =
+type Group =
   | "default"
   | "customer"
   | "build"
@@ -58,103 +63,71 @@ type Theme =
   | "documents"
   | "secure";
 
-type Lead = "tour" | "brand" | "builder" | "trust";
-
-interface ThemeCopy {
-  hero: LpHeroMessage;
-  /** The section set straight under the logos. */
-  lead: Lead;
-  /** The FAQ question to open the list with. */
-  faq: string;
-}
-
-const THEMES: Record<Theme, ThemeCopy> = {
+// "Customer portal" breaks the house noun rule on purpose: J's call is that
+// on paid LPs the searcher's own words win.
+const HEADLINES: Record<Group, Omit<LpHeroMessage, "body">> = {
   default: {
-    hero: {
-      h1: "The client portal that grows with your firm",
-      lines: ["The client portal that", "grows with your firm"],
-      iconAfter: "portal",
-      iconPair: true,
-      body: "Assembly gives accountants, agencies, consultants, and law firms a branded client portal with a built-in CRM. Messages, files, contracts, and invoices are ready on day one. Need something else, like a project tracker? Describe it and Assembly builds it.",
-    },
-    lead: "tour",
-    faq: "What is Assembly?",
+    h1: "The client portal that grows with your firm",
+    lines: ["The client portal that", "grows with your firm"],
+    iconAfter: "portal",
+    iconPair: true,
   },
-  // "Customer portal" breaks the house noun rule on purpose: J's call is that
-  // on paid LPs the searcher's own words win.
   customer: {
-    hero: {
-      h1: "A customer portal with your name on it",
-      lines: ["A customer portal", "with your name on it"],
-      iconAfter: "portal",
-      iconPair: true,
-      body: "Assembly is customer portal software for service firms. Each customer signs in to one branded place to message you, share files, sign, and pay, and sees only their own account. Add 30+ ready-made apps, or describe one and Assembly builds it.",
-    },
-    lead: "tour",
-    faq: "What is the best customer portal software?",
+    h1: "A customer portal with your name on it",
+    lines: ["A customer portal", "with your name on it"],
+    iconAfter: "portal",
+    iconPair: true,
   },
   build: {
-    hero: {
-      h1: "Build your own client portal",
-      lines: ["Build your own", "client portal"],
-      iconAfter: "Build",
-      iconPair: true,
-      body: "Assembly starts you with a branded client portal, a built-in CRM, and 30+ ready-made apps. For anything else, describe what you need. Assembly asks a few questions, shows you a one-page plan, and builds it once you approve.",
-    },
-    lead: "builder",
-    faq: "How do I build my own client portal?",
+    h1: "Build your own client portal",
+    lines: ["Build your own", "client portal"],
+    iconAfter: "Build",
+    iconPair: true,
   },
   whitelabel: {
-    hero: {
-      h1: "A white-label client portal for your firm",
-      lines: ["A white-label client portal", "for your firm"],
-      iconAfter: "portal",
-      iconPair: true,
-      body: "Assembly is a client portal and CRM that your clients see as yours. Your logo and colors on every plan, plus your own domain with no Assembly badge from Professional up. Messages, files, contracts, and invoices come ready on day one.",
-    },
-    lead: "brand",
-    faq: "Can I white-label the client portal?",
+    h1: "A white-label client portal for your firm",
+    lines: ["A white-label client portal", "for your firm"],
+    iconAfter: "portal",
+    iconPair: true,
   },
   documents: {
-    hero: {
-      h1: "Collect client documents without the chasing",
-      lines: ["Collect client documents", "without the chasing"],
-      iconAfter: "documents",
-      iconPair: true,
-      body: "Assembly gives service firms a secure, branded client portal. Send a document checklist, clients upload to it, and automatic reminders follow up on overdue requests. Messages, contracts, and invoices sit in the same place.",
-    },
-    lead: "tour",
-    faq: "Can clients upload documents to the portal?",
+    h1: "Collect client documents without the chasing",
+    lines: ["Collect client documents", "without the chasing"],
+    iconAfter: "documents",
+    iconPair: true,
   },
   secure: {
-    hero: {
-      h1: "A secure client portal for sensitive work",
-      lines: ["A secure client portal", "for sensitive work"],
-      iconAfter: "portal",
-      iconPair: true,
-      body: "Assembly is a branded client portal and CRM, SOC 2 Type II certified. Clients sign in with Google or a secure one-click email link, MFA is on every plan, and each client sees only what you allow. Data is encrypted in transit and at rest.",
-    },
-    lead: "trust",
-    faq: "Is my client portal secure?",
+    h1: "A secure client portal for sensitive work",
+    lines: ["A secure client portal", "for sensitive work"],
+    iconAfter: "portal",
+    iconPair: true,
   },
 };
 
-const ALIASES: Record<string, Theme> = {
-  customer: "customer",
-  best: "customer",
-  build: "build",
-  builder: "build",
-  whitelabel: "whitelabel",
-  documents: "documents",
-  secure: "secure",
-};
+/**
+ * Checked in order; the first match wins. More specific intent comes first,
+ * so "branded customer portal" is white label and "customer file sharing
+ * portal" is documents. `custom` is matched as its own word stem (custom,
+ * customizable, customized) so "customer" never lands in build.
+ */
+const GROUPS: { group: Group; pattern: RegExp }[] = [
+  { group: "whitelabel", pattern: /white ?label|branded/ },
+  { group: "build", pattern: /build|create|\bcustom(?!er)/ },
+  { group: "documents", pattern: /document|file|upload/ },
+  { group: "secure", pattern: /secur|hipaa/ },
+  { group: "customer", pattern: /customer|self ?service|\buser|^best$/ },
+];
 
-function themeFor(kw: string | string[] | undefined): Theme {
-  const key = (Array.isArray(kw) ? kw[0] : kw)?.toLowerCase();
-  // Own keys only: `in` also matches inherited names, so ?kw=constructor
-  // would hand back a function and break the page.
-  return key && Object.hasOwn(ALIASES, key) ? ALIASES[key] : "default";
+function groupFor(kw: string | string[] | undefined): Group {
+  const raw = Array.isArray(kw) ? kw[0] : kw;
+  if (!raw) return "default";
+  const text = raw.toLowerCase().replace(/[+_-]+/g, " ").trim();
+  return GROUPS.find((g) => g.pattern.test(text))?.group ?? "default";
 }
+
+// Every visitor reads the same subhead: only the headline follows the keyword.
+const HERO_BODY =
+  "Assembly gives accountants, agencies, consultants, and law firms a branded client portal with a built-in CRM. Messages, files, contracts, and invoices are ready on day one. Need something else, like a project tracker? Describe it and Assembly builds it.";
 
 const HERO_NOTE =
   "Start free. The free plan never expires. No credit card required.";
@@ -162,7 +135,7 @@ const HERO_NOTE =
 /**
  * Answers built from the /client-portal FAQ, which is already fact-checked.
  * No links in the answers: on a paid page every link is a way off the one
- * action the page is for. The theme's own question is moved to the top.
+ * action the page is for. The order is the same for every visitor.
  */
 const FAQS: FAQEntry[] = [
   {
@@ -217,23 +190,16 @@ const FAQS: FAQEntry[] = [
   },
 ];
 
-function faqsFor(first: string): FAQEntry[] {
-  const lead = FAQS.find((f) => f.question === first);
-  return lead ? [lead, ...FAQS.filter((f) => f !== lead)] : FAQS;
-}
-
 export default async function LpPortalPage({
   searchParams,
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { kw } = await searchParams;
-  const theme = THEMES[themeFor(kw)];
+  const hero: LpHeroMessage = { ...HEADLINES[groupFor(kw)], body: HERO_BODY };
 
-  // Four sections that every variant shows. The theme picks which one sits
-  // straight under the logos; the rest keep this order, so variants differ
-  // only in what comes first.
-  const sections: Record<Lead, ReactNode> = {
+  // The same sections in the same order for every visitor.
+  const sections: Record<"tour" | "brand" | "builder" | "trust", ReactNode> = {
     tour: (
       <div className="section-follow">
         <Reveal variant="fade">
@@ -268,20 +234,11 @@ export default async function LpPortalPage({
       />
     ),
   };
-  const order: Lead[] = [
-    theme.lead,
-    ...(["tour", "brand", "builder", "trust"] as Lead[]).filter(
-      (s) => s !== theme.lead,
-    ),
-  ];
-  // Templates sit after the builder walkthrough on every variant.
-  const withTemplates = order.flatMap((s) =>
-    s === "builder" ? [s, "templates" as const] : [s],
-  );
+  const order = ["tour", "brand", "builder", "templates", "trust"] as const;
 
   return (
     <>
-      <LpHero message={theme.hero} note={HERO_NOTE} />
+      <LpHero message={hero} note={HERO_NOTE} />
 
       {/* Logos straight under the fold, as on /client-portal. */}
       <div className="mx-auto max-w-[1400px] px-6 pb-8 md:px-10">
@@ -291,7 +248,7 @@ export default async function LpPortalPage({
       <div className="relative">
         <GridRails />
         <GridDivider fullBleed />
-        {withTemplates.map((s) => (
+        {order.map((s) => (
           <div key={s}>
             {s === "templates" ? (
               <PortalReadyMade
@@ -358,7 +315,7 @@ export default async function LpPortalPage({
         <GridRails />
         <FAQ
           heading="Questions about Assembly's client portal"
-          items={faqsFor(theme.faq)}
+          items={FAQS}
           variant="divided"
           dottedRules
           justifyAnswers
