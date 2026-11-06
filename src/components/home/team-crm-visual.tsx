@@ -416,7 +416,14 @@ export function TeamCrmVisual({
               the frame. pt-3.5 against the tabs' own pb-1.5 is not symmetry
               for its own sake — a tab's underline IS its bottom edge, so the
               gap under it reads shorter than the number says. */}
-          <div className="flex shrink-0 gap-4 border-b border-[var(--mock-line)] px-3 pt-3.5">
+          <div
+            // Taller in the big frames (the homepage panel and the comparison
+            // pages), where the 14px top inset left the tabs pressed against
+            // the window's edge; the small /ai-app-builder card keeps its own.
+            className={`flex shrink-0 gap-4 border-b border-[var(--mock-line)] px-3 ${
+              moreRows ? "pt-5" : "pt-3.5"
+            }`}
+          >
             {["Companies", "Contacts"].map((tab, i) => (
               <span
                 key={tab}
@@ -428,7 +435,7 @@ export function TeamCrmVisual({
                 // Reused rather than re-picked: this is the same token the Add
                 // App rail's resting rows take, which is the same job — a
                 // destination you are NOT on.
-                className={`-mb-px border-b pb-1.5 ${MOCK_PRIMARY} ${
+                className={`-mb-px border-b ${moreRows ? "pb-2.5" : "pb-1.5"} ${MOCK_PRIMARY} ${
                   i === 1
                     ? "border-[var(--mock-ink)] text-[color:var(--mock-ink)]"
                     : "border-transparent text-[color:var(--mock-nav-rest)]"

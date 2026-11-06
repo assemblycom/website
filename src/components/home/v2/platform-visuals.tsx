@@ -9,12 +9,12 @@ import {
   SECURITY_STANDARDS,
   Seal,
 } from "@/components/security/security-compliance";
-import {
-  IconApp,
-  IconBook,
-  IconClock,
-} from "@/components/home/mock-icons";
 import { DescribeCard } from "@/components/client-portal/portal-build-cards";
+import {
+  MOCK_PRIMARY_STACKED,
+  MOCK_SECONDARY,
+  MOCK_TITLE,
+} from "@/components/ui/mock-type";
 
 // ─────────────────────────────────────────────────────────────────────────
 // UNIFIED PLATFORM (V2) — a photograph per tab, filling the panel.
@@ -85,35 +85,36 @@ const SHOTS: Record<RegionId, { src: string; alt: string }> = {
 // and the table still reads.
 const UI_BOX = "h-[300px] w-[520px] md:h-[480px] md:w-[900px]";
 
-/** The portal apps named on the pills, with the icon each one carries. */
-const APP_PILLS = [
-  { label: "Onboarding", icon: <IconApp className="size-3.5" /> },
-  { label: "Invoices", icon: <IconClock className="size-3.5" /> },
-  { label: "Documents", icon: <IconBook className="size-3.5" /> },
-];
-
 /**
- * Three of the apps, named, as solid plates on the photograph. The claim is
- * "30+ ready-made apps", and a few of them named says that better than one of
- * them opened. Mock scale (12.5px), matching the composer two panels down.
+ * One of the ready-made apps at work: a Messages notification, laid on the
+ * photograph the way it would land on a client's screen. The tile is the
+ * product's own grey chat icon (the template set in public/), and the card
+ * stays light in both themes because it sits on the picture, not the page.
  */
-function AppPills() {
+function AppNotification() {
   return (
-    <div className="flex w-[156px] flex-col gap-2">
-      {APP_PILLS.map((app, i) => (
-        <span
-          key={app.label}
-          // Light in both themes: they sit on the photograph, not the page,
-          // and a dark plate on a dark wall disappeared into it. The first
-          // one is selected, so the set reads as a picker rather than a list.
-          className={`flex items-center gap-2.5 rounded-[9px] bg-[#f7f8fa] px-3 py-2 text-[12.5px] text-[#101114] shadow-[0_10px_30px_-12px_rgba(16,24,40,0.45)] ${
-            i === 0 ? "ring-2 ring-blue-500" : ""
-          }`}
+    <div className="flex w-[320px] max-w-full items-center gap-4 rounded-2xl bg-[#fcfcfd] p-2.5 pr-5 shadow-[0_18px_40px_-18px_rgba(16,24,40,0.45)]">
+      <Image
+        src="/images/template-icons/chat.svg"
+        alt=""
+        width={76}
+        height={76}
+        className="size-[76px] shrink-0"
+      />
+      <div className="min-w-0 flex-1">
+        <p className={`${MOCK_TITLE} text-[#101114]`}>
+          New message from Patrick Peterson
+        </p>
+        <p
+          className={`mt-1.5 line-clamp-2 ${MOCK_PRIMARY_STACKED} text-[#6b7079]`}
         >
-          <span className="text-[#6b7079]">{app.icon}</span>
-          {app.label}
-        </span>
-      ))}
+          Hey Jen, thanks for sending over the recent invoice...
+        </p>
+      </div>
+      <div className="flex shrink-0 flex-col items-center gap-1.5 self-center">
+        <span className="size-2 rounded-full bg-[#7DA4FF]" />
+        <span className={`${MOCK_SECONDARY} text-[#101114]`}>5h</span>
+      </div>
     </div>
   );
 }
@@ -151,9 +152,7 @@ function SecuritySeals() {
     // wrong in dark: four white circles over a photograph on a near-black
     // page were the brightest objects in the section, and the seal inside
     // each one — which themes with the page — came out as dark artwork on a
-    // light plate while everything around it was the other way up. The token
-    // is the same plate the app pills in this panel sit on, so the two steps
-    // put their objects on one surface in both themes.
+    // light plate while everything around it was the other way up.
     <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-5">
       {SECURITY_STANDARDS.map((s) => (
         <span
@@ -173,8 +172,6 @@ interface TabScreen {
   windowed?: boolean;
   /** Where an unwindowed screen sits on the photo. Defaults to centred. */
   placement?: string;
-  /** Leaves the photograph at full strength, with no scrim over it. */
-  noScrim?: boolean;
 }
 
 const SCREENS: Record<RegionId, TabScreen> = {
@@ -186,12 +183,11 @@ const SCREENS: Record<RegionId, TabScreen> = {
   // the top, and had to take the connection on trust. This is the same screen
   // /ai-app-builder draws for its CRM claim.
   url: { node: <TeamCrmVisual moreRows />, windowed: true },
-  // A few of the apps, named. See AppPills.
+  // One of the apps at work. See AppNotification.
   // On the dark wall to the left, clear of his face.
   sidebar: {
-    node: <AppPills />,
+    node: <AppNotification />,
     placement: "items-center justify-center sm:justify-start sm:pl-[8%]",
-    noScrim: true,
   },
   // The composer, and nothing holding it. It is one field: a window around
   // it was a sheet of white with a text box in the middle of it.
@@ -229,24 +225,10 @@ function Screen({ active }: { active: RegionId }) {
   const screen = SCREENS[active];
   return (
     <>
-      {/* The photographs are bright and everything laid over them is light,
-          so they need a ground to sit against — the same scrim the four-steps
-          panel puts under its own screens. */}
-      {/* THE CRM TAB ALONE IS BLURRED. That step lays a whole product screen
-          over its photograph — a table of names and numbers against a window
-          frame and a person at a desk — and the picture's own detail competed
-          with the screen's. The other three put a handful of objects on the
-          shot (four pills, one field, four seals), where the photograph is
-          still the picture and softening it would only make the panel look
-          out of focus. A backdrop filter rather than a blur on the image
-          itself, so there is no soft edge where the picture meets the panel. */}
-      {!screen.noScrim && (
-        <div
-          aria-hidden
-          className={`absolute inset-0 bg-[linear-gradient(to_bottom,rgba(16,24,40,0.34),rgba(16,24,40,0.46))] ${
-            active === "url" ? "backdrop-blur-[6px]" : ""
-          }`}
-        />
+      {/* No dark wash on any tab: the photographs stay at full strength. The
+          CRM tab keeps its blur, since a whole table sits over that picture. */}
+      {active === "url" && (
+        <div aria-hidden className="absolute inset-0 backdrop-blur-[6px]" />
       )}
       {screen.windowed ? (
         <>

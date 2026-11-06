@@ -68,10 +68,11 @@ import { UnifiedPlatform } from "@/components/home/v2/platform-visuals";
 export function HomeProofBand({
   rails = false,
   headroom = false,
-}: { rails?: boolean | "fadeIn"; headroom?: boolean } = {}) {
+  tight = false,
+}: { rails?: boolean | "fadeIn"; headroom?: boolean; tight?: boolean } = {}) {
   return (
     <Reveal variant="fade">
-      <ProofBand rails={rails} headroom={headroom} />
+      <ProofBand rails={rails} headroom={headroom} tight={tight} />
     </Reveal>
   );
 }
@@ -95,7 +96,7 @@ export function HomeContentV2({
   hero = (
     <>
       <HeroSplit />
-      <HomeProofBand rails />
+      <HomeProofBand rails tight />
     </>
   ),
 }: {
@@ -166,7 +167,10 @@ export function HomeContentV2({
             manual
             // Same corner as the platform panel above it.
             frameRadiusClass="rounded-lg"
-            visualHeightClass="h-[320px] sm:h-[420px] md:h-[560px]"
+            // 460 on desktop, not the shipped 560: the platform panel above
+            // draws its photograph about 450 tall and /ai-app-builder's step
+            // stage is 400, so at 560 this one read as the odd one out.
+            visualHeightClass="h-[320px] sm:h-[400px] md:h-[460px]"
             // The site's own photography, one per step, standing in while the
             // step screens are redone. Named for what they are of: the phone
             // in hand for describing, the laptop for the plan, two people
@@ -231,7 +235,10 @@ export function HomeContentV2({
                 // 1:1 and the four read as one set of screens rather than as
                 // four zoom levels. The phone keeps the full width — the
                 // scene has its own 360px box there and is already near 1:1.
-                <div className="absolute inset-y-0 left-0 right-0 [&_.template-mock-fit>div>div]:my-auto! sm:left-1/2 sm:w-[620px] sm:max-w-full sm:-translate-x-1/2">
+                // ZOOMED 1.2 FROM md: with the panel at 460 the scene is held
+                // by its height, so a wider frame did not enlarge it; the
+                // composer read small on a desktop-wide photograph.
+                <div className="absolute inset-y-0 left-0 right-0 [&_.template-mock-fit>div>div]:my-auto! sm:left-1/2 sm:w-[620px] sm:max-w-full sm:-translate-x-1/2 md:scale-[1.2]">
                   <DescribeCard
                     plain
                     typing
@@ -309,8 +316,10 @@ export function HomeContentV2({
                 // pixels short: the scene is scaled to fit, and any rounding
                 // in that scale shows as a strip of photograph under the
                 // screen. There is no strip to show if the screen runs past
-                // the edge.
-                <div className="absolute inset-x-6 -bottom-4 top-auto aspect-[360/300] sm:inset-x-0 sm:aspect-auto sm:-bottom-6 sm:top-0 md:-bottom-14">
+                // the edge. -bottom-36 from md: the scene scales to the
+                // frame's height, so with the panel at 460 a deeper frame is
+                // what keeps the board wide; the extra is empty column foot.
+                <div className="absolute inset-x-6 -bottom-4 top-auto aspect-[360/300] sm:inset-x-0 sm:aspect-auto sm:-bottom-6 sm:top-0 md:-bottom-36">
                   <BuildCard plain tracker tall closedRight />
                 </div>
               ),
@@ -532,8 +541,8 @@ export function HomeContentV2({
           subheading={
             <>
               Get started for free, with no credit card required.
-              <br className="hidden md:inline" />
-              {" "}Upgrade only when you need more.
+              <br className="hidden md:inline" /> Upgrade only when you need
+              more.
             </>
           }
         />

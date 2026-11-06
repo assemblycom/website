@@ -1539,6 +1539,28 @@ const WIDE_BOARD = [
   },
   BOARD,
   {
+    name: "In review",
+    count: 5,
+    // Desktop only: four lanes in a tablet-width window were slivers.
+    desktopOnly: true,
+    cards: [
+      {
+        who: "Meridian Law",
+        initials: "ML",
+        title: "Client Intake",
+        done: 4,
+        of: 5,
+      },
+      {
+        who: "Atlas Partners",
+        initials: "AP",
+        title: "Pitch Deck",
+        done: 3,
+        of: 4,
+      },
+    ],
+  },
+  {
     name: "Done",
     count: 14,
     cards: [
@@ -3070,7 +3092,11 @@ export function BuildCard({
                       // On a phone the Active lane alone, at the full width:
                       // three lanes in that window were slivers.
                       className={`min-w-0 flex-1 flex-col gap-1.5 rounded-t-[4px] bg-[var(--mock-well-2)] p-1.5 sm:[&+&]:ml-2 ${
-                        lane === board ? "flex" : "hidden sm:flex"
+                        lane === board
+                          ? "flex"
+                          : "desktopOnly" in lane
+                            ? "hidden md:flex"
+                            : "hidden sm:flex"
                       }`}
                     >
                       <div className="flex items-center gap-1.5 px-0.5 pt-0.5">

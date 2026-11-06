@@ -240,7 +240,7 @@ export function Industries() {
                   // card's sides and foot.
                   className="group block"
                 >
-                  <span className="relative block aspect-[3/4] overflow-hidden rounded-xl border border-border sm:aspect-[4/3] [[data-theme=dark]_&]:border-transparent">
+                  <span className="relative block aspect-[3/4] overflow-hidden rounded-xl sm:aspect-[4/3]">
                     {industry.image ? (
                       <Image
                         src={industry.image.src}

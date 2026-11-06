@@ -44,6 +44,7 @@ const REEL = [
 export function ProofBand({
   rails = false,
   headroom = false,
+  tight = false,
 }: {
   /**
    * "fadeIn" for a hero that does not draw the rails: the grid starts here,
@@ -51,6 +52,12 @@ export function ProofBand({
    */
   rails?: boolean | "fadeIn";
   headroom?: boolean;
+  /**
+   * A shorter beat under the marks, for V2: its hero tile already closes the
+   * section above, so the full 160 read as the page stalling before the
+   * industries row.
+   */
+  tight?: boolean;
 } = {}) {
   // Resolved here rather than in the reel itself: case-studies.ts carries the
   // full editorial body of every story, and importing it from a client
@@ -85,9 +92,9 @@ export function ProofBand({
     // width for the eye to use as the gap instead. Phone only, so the desktop
     // rhythm the band was tuned to is untouched.
     <section
-      className={`relative mx-auto isolate max-w-[1200px] bg-background px-6 pb-28 pt-2 md:px-10 md:pb-40 md:pt-4 wide:pb-16 ${
-        headroom ? "max-md:pt-14" : ""
-      }`}
+      className={`relative mx-auto isolate max-w-[1200px] bg-background px-6 pt-2 md:px-10 md:pt-4 wide:pb-16 ${
+        tight ? "pb-16 md:pb-20" : "pb-28 md:pb-40"
+      } ${headroom ? "max-md:pt-14" : ""}`}
     >
       {/* The middle bed, so the grid runs unbroken from the hero into the
           content region. Neither end fades: both of its neighbours carry the

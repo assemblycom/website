@@ -567,17 +567,8 @@ function ProductionGapExplorer({
       // section header's, since there's no longer a divider to sit between them.
       className={`grid md:grid-cols-[minmax(0,330px)_minmax(0,1fr)] md:items-stretch ${
         framed
-          ? // AN INSET RING, NOT A BORDER. A border sits outside the padding
-            // box, and this wrapper is `overflow-hidden` — which clips to the
-            // padding box — so the first tab's progress rail, drawn 1px above
-            // its own content at `-top-px`, was cut away entirely. The patch
-            // for that was a second gray line drawn just inside, and the
-            // result was a visible DOUBLE LINE across the top-left corner
-            // whenever the first step was running.
-            //
-            // `ring-inset` draws the edge INSIDE the padding box instead, so
-            // the rail (z-10, `group-first:top-0`) paints straight over it:
-            // one line, which is grey at rest and fills dark as the step runs.
+          ? // AN INSET RING, NOT A BORDER, so the frame's edge sits inside
+            // the padding box this `overflow-hidden` wrapper clips to.
             // AND A GROUND. The tab column has no fill of its own, so on a
             // page drawing a column grid behind its content the rails ran
             // straight through the labels and the copy — the frame read as
@@ -604,14 +595,6 @@ function ProductionGapExplorer({
         role="tablist"
         aria-orientation="vertical"
         aria-label="What ships with every app"
-        // THE FIRST STEP'S RAIL SITS ON THE PANEL'S TOP LINE, not below it.
-        // That step has no border-t of its own, so its progress rail IS its
-        // top line, and at rest it is hard to pick out against the panel's
-        // own ring. Insetting the column by the corner radius made it easy to
-        // see and wrong: a black line running across the panel a few pixels
-        // under its edge reads as a mistake rather than as the top of the
-        // first step. It is back on the edge, where the fill paints over the
-        // ring as the step runs.
         className={`order-2 flex flex-col md:order-none ${
           framed
             ? "border-border md:border-r [[data-theme=dark]_&]:border-white/15"
@@ -638,49 +621,36 @@ function ProductionGapExplorer({
                 framed ? "px-5 md:px-6" : "pr-5 md:pr-8"
               }`}
             >
-              {/* Top-edge rail that fills left→right over the dwell on the
-                  active tab. -top-px, not top-0: absolute offsets resolve against
-                  the padding box, which begins inside the 1px border-t, so top-0
-                  parked the fill one pixel BELOW the gray hairline instead of
-                  covering it. */}
-              <span
-                aria-hidden
-                className="absolute inset-x-0 -top-px z-10 h-px overflow-hidden group-first:top-0"
-              >
-                {/* Every other step rides on its own border-t, but the first has
-                    that removed, so its rail ran across nothing and the unfilled
-                    remainder simply wasn't there. Mobile only for now. */}
-                {/* THE FIRST STEP'S TRACK. Every other step rides its own
-                    border-t; the first has that removed, so without this its
-                    rail ran across nothing and the unfilled remainder of the
-                    line was not there at all.
-                    
-                    On the framed column it is drawn at every width, not just
-                    on a phone. The frame's own top border cannot serve as the
-                    track: the column is `overflow-hidden`, which clips to the
-                    padding box, so a rail sitting out in the border area is
-                    cut away entirely. `group-first:top-0` brings it just
-                    inside, where it is drawn like any other. */}
-                {i === 0 && !framed && (
-                  <span className="absolute inset-0 bg-border md:hidden [[data-theme=dark]_&]:bg-white/15" />
-                )}
+              {/* The rail runs on the line BELOW the active step, filling
+                  left to right over the dwell, so it underlines the step being
+                  read rather than sitting over its heading. -bottom-px lays it
+                  on the next step's border-t, the hairline that is already
+                  there. The last step has none: under it is the panel's own
+                  edge, where a filling line read as a thick, broken border. */}
+              {i < REGIONS.length - 1 && (
                 <span
-                  ref={(el) => {
-                    fillRefs.current[i] = el;
-                  }}
-                  className="relative block h-full w-full origin-left bg-foreground"
-                  style={{ transform: "scaleX(0)" }}
-                />
-              </span>
+                  aria-hidden
+                  className="absolute inset-x-0 -bottom-px z-10 h-px overflow-hidden"
+                >
+                  <span
+                    ref={(el) => {
+                      fillRefs.current[i] = el;
+                    }}
+                    className="relative block h-full w-full origin-left bg-foreground"
+                    style={{ transform: "scaleX(0)" }}
+                  />
+                </span>
+              )}
 
-              {/* NO TAG OVER THE HEADER. Each step carried a mono-caps label
-                  above its own line — FOUNDATION over "Built-in CRM and client
-                  experience" — which named the step in two registers one above
-                  the other and said nothing the header did not. Four of them
-                  down a column also made the panel read as a table of contents
-                  rather than as four steps. `tag` stays on the record — it is
-                  the step's short name and the obvious handle for anything
-                  that lists these later — it is simply not drawn here. */}
+              {/* The step's short name as an eyebrow over its line, in the
+                  site's own eyebrow style, so each step reads as a labelled
+                  part of the platform. Only on the concise panel the redesign
+                  uses, so the shipped homepage is unchanged. */}
+              {concise && (
+                <p className="type-eyebrow mb-1 text-muted-foreground">
+                  {r.tag}
+                </p>
+              )}
               {/* ON THE SITE'S OWN SCALE, AND ON THE CARD PAIRING. The pair
                   here was 17px over 14px `leading-relaxed` — a size that
                   exists nowhere else on the site and a line height that
@@ -841,17 +811,8 @@ export interface ProductionGapProps {
    * inside a single rounded outline, divided by a hairline rather than held
    * apart by a column gap.
    *
-   * The shipped section deliberately has none — "the tab hairlines and the
-   * blue visual carry the structure on their own" — and the cost of that is
-   * the FIRST tab: every other step's progress rail rides on its own
-   * `border-t`, but the first has that border removed, so its rail ran across
-   * nothing and the unfilled remainder of the line simply was not there. (A
-   * phone-only `bg-border` strip was patched in to cover it; desktop was left
-   * as it was.)
-   *
-   * A frame gives the first step a real line to run on at every width, and the
-   * rail lands exactly on the frame's top edge — `-top-px` resolves against
-   * the button's padding box, whose top sits just inside the frame's border.
+   * The shipped section deliberately has none, letting the tab hairlines and
+   * the visual carry the structure on their own.
    */
   framed?: boolean;
 }

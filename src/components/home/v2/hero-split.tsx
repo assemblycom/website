@@ -14,8 +14,8 @@ import { SECONDARY_CTA } from "@/components/home/cta";
 import { HeroCredibility } from "@/components/home/v2/hero-credibility";
 import { PROTO_HERO_BODY } from "@/components/proto/hero-copy";
 import { BrandedPortalVisual } from "@/components/ai-app-builder/branded-portal-visual";
-import { CalendarPane } from "@/components/client-portal/portal-build-cards";
-import { IconClock, IconList } from "@/components/home/mock-icons";
+import { ClientAssistantPane } from "@/components/home/v2/client-ai-assistant-visual";
+import { IconChat, IconClock, IconList } from "@/components/home/mock-icons";
 import { MOCK_BODY } from "@/components/ui/mock-type";
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -74,7 +74,7 @@ const RAIL = "mx-auto max-w-[1400px] px-6 md:px-10";
 
 /**
  * The product shot: a client's own portal, with the firm's nav down the side
- * and an onboarding tracker open in it.
+ * and the AI Assistant open in it.
  *
  * STILL, and drawn once. It is the same window /client-portal's hero carries,
  * minus the carousel around it — the screens there are picked by the reader,
@@ -123,26 +123,21 @@ function ClientExperiencePanel() {
       // pages' own proportion, and the extra height is spent on rows of the
       // tracker rather than on mat.
       //
-      // THE CLIENT'S SIDE, not the firm's. This was the onboarding tracker, a
-      // table the firm reads; the hero sells what clients get, so it is a
-      // client's portal with the client nav beside it. The screen draws its
-      // own border, so the tile carries none.
-      //
       // SIZED TO THE SOLUTIONS PAGES' HERO, not to its own numbers: the same
       // 1040 window, 280/391 tall, holding a screen taller than itself so the
       // frame crops it. A homepage hero shot a different size from the
       // product pages' read as a different template.
       className="relative mx-auto h-[280px] w-full max-w-[1040px] overflow-hidden rounded-t-xl md:h-[391px]"
     >
-      <div className="absolute inset-x-0 top-0 h-[860px]">
-        {/* A client's portal open on a calendar they book their own time in:
-            the client's side of the product, in the firm's colour. The week
-            view is /client-portal's build-step calendar, as the comparison
-            pages already show it. */}
+      {/* FILLS THE TILE rather than running past it, so the question field
+          lands on the tile's foot instead of below the crop. */}
+      <div className="absolute inset-0">
+        {/* A client's portal open on the AI Assistant, in the firm's colour:
+            the client's side of the product, before they have asked anything. */}
         <BrandedPortalVisual
           apps={[
             { icon: <IconList />, label: "Project tracker" },
-            { icon: <IconClock />, label: "Calendar" },
+            { icon: <IconChat />, label: "AI Assistant" },
           ]}
           // A step under the shared title size, and off pure white in dark:
           // at full ink the title was the brightest thing in the window.
@@ -150,17 +145,20 @@ function ClientExperiencePanel() {
             <span
               className={`${MOCK_BODY} [[data-theme=dark]_&]:text-white/75`}
             >
-              Calendar
+              Assistant
             </span>
           }
-          // On a phone the client nav steps aside for the calendar, as the
+          headerAction={
+            <span className="text-[color:var(--mock-ink-soft)]">
+              <IconClock className="size-3.5" />
+            </span>
+          }
+          // On a phone the client nav steps aside for the assistant, as the
           // product does, rather than squeezing a desktop window into 280px.
           navOnPhone={false}
-          // No break before the firm's apps: in a nav this short the gap
-          // read as uneven spacing, not as a group.
           appsBreak={false}
         >
-          <CalendarPane vivid />
+          <ClientAssistantPane />
         </BrandedPortalVisual>
       </div>
     </div>
@@ -253,13 +251,13 @@ export function HeroSplit() {
               <HeroCredibility />
             </div>
             <h1 className="type-display-xl text-balance text-foreground lg:col-start-1 lg:row-start-2 [font-size:clamp(2.5rem,1.1rem+3.3vw,3.5rem)]">
-                {lines.map((line) => (
-                  // Each line a block, so the lockup's breaks hold at every
-                  // width rather than being re-balanced by the browser.
-                  <span key={line} className="block">
-                    {line}
-                  </span>
-                ))}
+              {lines.map((line) => (
+                // Each line a block, so the lockup's breaks hold at every
+                // width rather than being re-balanced by the browser.
+                <span key={line} className="block">
+                  {line}
+                </span>
+              ))}
             </h1>
             {/* 34rem is /client-portal's measure, and it is right once the
                 lead has a column of its own from lg. Stacked under the

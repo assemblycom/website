@@ -170,11 +170,17 @@ export function BuilderCustomerQuotes({
     // side of the divider between them sit on one column.
     <section className="mx-auto max-w-[1200px] px-6 py-14 md:px-10 md:py-20">
       {eyebrow ? (
-        <p className="type-eyebrow mb-4 text-muted-foreground">{eyebrow}</p>
+        <p className="type-eyebrow mb-3 text-muted-foreground">{eyebrow}</p>
       ) : null}
       <h2 className="type-h3 text-balance">{heading}</h2>
       {body ? (
-        <p className="mt-4 max-w-2xl text-muted-foreground">{body}</p>
+        <p
+          // Under an eyebrow the block is the homepage's header shape, which
+          // sets its lines a step closer (see Industries).
+          className={`${eyebrow ? "mt-3" : "mt-4"} max-w-2xl text-pretty text-muted-foreground`}
+        >
+          {body}
+        </p>
       ) : null}
 
       {/* BELOW `md`, THE SAME FOUR AS AN ACCORDION.

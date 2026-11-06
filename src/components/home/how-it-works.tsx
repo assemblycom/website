@@ -468,19 +468,9 @@ export function HowItWorks({
                     ) : null}
                     {stepUi?.[step.id] ? (
                       <>
-                        {/* The photographs are mid-tone and busy, and the
-                            product's own UI is near-white — dropped straight
-                            on, the screen's edges dissolve into the picture.
-                            This settles the photograph far enough for the
-                            white to read as a surface above it, without
-                            turning the picture grey. A step with a ground of
-                            its own has nothing to settle. */}
-                        {stepGrounds?.[step.id] ? null : (
-                          <div
-                            aria-hidden
-                            className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(16,24,40,0.34),rgba(16,24,40,0.46))]"
-                          />
-                        )}
+                        {/* No wash over the photograph: it stays at full
+                            strength, and the screen's own edge and shadow hold
+                            it apart from the picture. */}
                         {/* MockFit measures the frame it is given, so the UI
                             gets its own inset box rather than the full cell:
                             the inset is the air that makes the screen read as
