@@ -84,11 +84,22 @@ const CONNECT: NavLink[] = [
   { label: "Instagram", href: "https://instagram.com/assembly", external: true, newTab: true },
 ];
 
-// The socials are the last column. They live here rather than in constants
-// because nothing but the footer shows them.
+// Linked from every page so these posts get site-wide internal links for SEO.
+// Kept to three so the column stays about as tall as its neighbours.
+const FEATURED_POSTS: NavLink[] = [
+  { label: "Best AI app builders", href: "/blog/best-ai-app-builder" },
+  { label: "Custom dashboard software", href: "/blog/custom-dashboard-software" },
+  { label: "Base44 alternatives", href: "/blog/base44-alternatives" },
+];
+
+// The socials and featured posts share the last column. They live here rather
+// than in constants because nothing but the footer shows them.
 const COLUMNS: FooterGroup[][] = [
   ...FOOTER_COLUMNS,
-  [{ label: "Connect", links: CONNECT }],
+  [
+    { label: "Connect", links: CONNECT },
+    { label: "Featured blog posts", links: FEATURED_POSTS },
+  ],
 ];
 
 function FooterLink({
