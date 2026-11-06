@@ -157,6 +157,9 @@ export const CONTENTFUL_CACHE_TAG = "contentful";
 // Contentful calls. unstable_cache rather than `use cache`: the directive needs
 // Cache Components switched on site-wide, and its default cache is per instance.
 const CATALOGUE_CACHE = { revalidate: 3600, tags: [CONTENTFUL_CACHE_TAG] };
+// Part of every cache key: the shared cache outlives deploys, so pointing the
+// site at another space or environment must not serve the old catalogue.
+const CATALOGUE_SOURCE = [SPACE_ID ?? "", ENVIRONMENT];
 
 /**
  * Reads a catalogue through the shared cache, or straight from Contentful in
@@ -282,7 +285,11 @@ async function queryAppTemplates(): Promise<AppTemplateEntry[]> {
     .filter((t): t is AppTemplateEntry => Boolean(t));
 }
 
-const cachedAppTemplates = unstable_cache(queryAppTemplates, ["contentful-app-templates"], CATALOGUE_CACHE);
+const cachedAppTemplates = unstable_cache(
+  queryAppTemplates,
+  ["contentful-app-templates", ...CATALOGUE_SOURCE],
+  CATALOGUE_CACHE,
+);
 
 export async function getAppTemplate(slug: string): Promise<AppTemplateEntry | null> {
   const all = await getAppTemplates();
@@ -339,7 +346,7 @@ async function queryEmbeds(): Promise<EmbedEntry[]> {
 }
 
 // Its own cache key, so the embeds and templates lists never share an entry.
-const cachedEmbeds = unstable_cache(queryEmbeds, ["contentful-embeds"], CATALOGUE_CACHE);
+const cachedEmbeds = unstable_cache(queryEmbeds, ["contentful-embeds", ...CATALOGUE_SOURCE], CATALOGUE_CACHE);
 
 export async function getEmbed(slug: string): Promise<EmbedEntry | null> {
   const all = await getEmbeds();

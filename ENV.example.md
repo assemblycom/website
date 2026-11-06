@@ -153,18 +153,13 @@ Then add `CONTENTFUL_SPACE_ID` and `CONTENTFUL_DELIVERY_TOKEN` to Vercel
 staging reviewing a different set of templates than production ships is worse
 than sharing them). `prebuild` runs the pull on every deploy.
 
-### Publishing rebuilds the site
-
-1. Vercel → **Settings → Git → Deploy Hooks**, create one, copy the URL.
-2. Contentful → **Settings → Webhooks → Add webhook**, paste it, and trigger on
-   **Publish** and **Unpublish** for Entry.
-
-Publishing then rebuilds the site on its own — a couple of minutes, no PR.
-
 ### Publishing refreshes the catalogue (no rebuild)
 
 The templates and embeds catalogue is cached once for all server instances and
-refreshed hourly. To show an edit within seconds instead:
+refreshed hourly. Publishing no longer needs a rebuild: if an earlier setup
+added a Contentful webhook pointing at a Vercel **Deploy Hook**, delete that
+webhook (and the hook), since every rebuild re-fetches the catalogue. To show an
+edit within seconds instead:
 
 1. Generate a long random secret and set it as `CONTENTFUL_REVALIDATE_SECRET` on
    all three Vercel scopes.
