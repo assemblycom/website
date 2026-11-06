@@ -340,6 +340,7 @@ export function HomeContentV2({
                         squareFoot
                         screenBg="bg-[var(--mock-window)]"
                         bezelBg="bg-[#f5f5f5] [[data-theme=dark]_&]:bg-[#191919]"
+                        outline={false}
                       >
                         <div className="relative min-h-0 flex-1 [&_.mock-edge]:rounded-none [&_.mock-edge]:border-0 [&_.template-mock-fit]:[--template-mock-w:244px]! [&_.template-mock-fit]:[--template-mock-h:270px]! [&_.template-mock-fit>div]:h-[270px]! [&_.template-mock-fit>div]:w-[244px]! [&_.template-mock-fit>div]:p-0! [&_.template-mock-fit_.mock-edge]:w-full!">
                           <BuildCard plain tracker tall closedRight menuBar />

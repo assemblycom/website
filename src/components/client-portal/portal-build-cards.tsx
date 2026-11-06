@@ -599,9 +599,11 @@ const PANEL_SCENE_PHONE = {
  * chat is two bubbles and nothing else; at 300 it sat in a third of a box of
  * empty ground.
  */
+// 280 on a phone, under the ~290px frame it gets there, so the chat draws at
+// about 1:1. At 360 it was shrunk to fit and the messages came out near 10px.
 const ITERATE_SCENE = {
-  vars: "[--template-mock-w:360px] [--template-mock-h:200px] sm:[--template-mock-w:680px] sm:[--template-mock-h:260px]",
-  size: "w-[360px] h-[200px] sm:w-[680px] sm:h-[260px]",
+  vars: "[--template-mock-w:280px] [--template-mock-h:200px] sm:[--template-mock-w:680px] sm:[--template-mock-h:260px]",
+  size: "w-[280px] h-[200px] sm:w-[680px] sm:h-[260px]",
 };
 const ITERATE_SCENE_PROPS = {
   boxClass: ITERATE_SCENE.vars,
@@ -3406,7 +3408,10 @@ export function IterateCard({
             Held to a column the width of a chat, one turn lands under the
             other and the eye reads them in order, which is the whole thing
             this step is showing. */}
-        <div className="mx-auto w-full max-w-[360px] px-1">
+        {/* White bubbles in dark mode too: they sit on a photograph, not on
+            the page, and dark bubbles sank into the darker parts of it. The
+            light theme's own mock values, so nothing new is introduced. */}
+        <div className="mx-auto w-full max-w-[360px] px-1 [[data-theme=dark]_&]:[--mock-window:#fcfcfd] [[data-theme=dark]_&]:[--mock-ink-soft:#6b7079] [[data-theme=dark]_&]:[--mock-line:#e8e9ec]">
           {/* Sent: pushed to the right and given the solid well, which is
               what marks your own turn in every chat anyone reading this has
               used. Capped short of the full measure so the side it is on is
