@@ -148,6 +148,9 @@ const INDUSTRIES: Industry[] = [
   },
 ];
 
+/** Long enough to read a card's name and line before the next one arrives. */
+const AUTO_ADVANCE_MS = 3500;
+
 export function Industries() {
   return (
     <section className="relative mx-auto max-w-[1200px] px-6 py-14 md:px-10 md:py-20">
@@ -181,7 +184,10 @@ export function Industries() {
             desktop with the rest a step away. On a phone the card stays 200px,
             narrower than the rail's own cards, so a third still peeks. */}
         <div className="min-w-0">
-          <CardRail label="Industries">
+          {/* Moves on its own so all nine trades pass through the three
+              slots without a click. See CardRail's autoAdvanceMs for when
+              it holds still. */}
+          <CardRail label="Industries" autoAdvanceMs={AUTO_ADVANCE_MS}>
             {INDUSTRIES.map((industry) => (
               // 200px holds the name on one line for every label here and
               // leaves most of a third card showing at 390. From sm the

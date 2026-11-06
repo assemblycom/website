@@ -13,7 +13,7 @@ import { PRIMARY_CTA } from "@/components/home/hero-big";
 import { SECONDARY_CTA } from "@/components/home/cta";
 import { HeroCredibility } from "@/components/home/v2/hero-credibility";
 import { PROTO_HERO_BODY } from "@/components/proto/hero-copy";
-import { OnboardingTrackerMock } from "@/components/client-portal/segment-mock";
+import { AgencyHeroVisual } from "@/components/solutions/agency-hero-visual";
 
 // ─────────────────────────────────────────────────────────────────────────
 // HERO (V2, SPLIT) — the layout from the elevenlabs.io reference: headline
@@ -119,9 +119,16 @@ function ClientExperiencePanel() {
       // else the site shows a product in. 470 puts this tile on the product
       // pages' own proportion, and the extra height is spent on rows of the
       // tracker rather than on mat.
-      className="mx-auto h-[340px] w-full max-w-[880px] overflow-hidden rounded-t-xl border border-b-0 border-[var(--mock-line)] bg-background md:h-[470px]"
+      //
+      // THE CLIENT'S SIDE, not the firm's. This was the onboarding tracker, a
+      // table the firm reads; the hero sells what clients get, so it is a
+      // client's portal open on its project tracker, the client nav beside
+      // it. The screen draws its own border, so the tile carries none. 1000
+      // rather than 880: the timeline is the picture, and wider shows more of
+      // it without shrinking the type.
+      className="mx-auto h-[340px] w-full max-w-[1000px] overflow-hidden rounded-t-xl md:h-[470px]"
     >
-      <OnboardingTrackerMock />
+      <AgencyHeroVisual scrollEdge={false} />
     </div>
   );
 }

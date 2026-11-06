@@ -133,7 +133,7 @@ const PROJECTS = [
 /** A bordered control in the toolbar: Search, Filters, the view group. */
 const CONTROL = `flex h-[26px] items-center rounded-[4px] border bg-[var(--mock-window)] ${LINE}`;
 
-function TrackerScreen() {
+function TrackerScreen({ scrollEdge }: { scrollEdge: boolean }) {
   return (
     <>
       {/* Toolbar. On a phone the view switcher steps aside rather than
@@ -192,7 +192,9 @@ function TrackerScreen() {
             cue that the table carries on. A blur rather than a fade to the
             ground, so the bars keep their colour and only soften; masked so it
             eases in rather than starting at a hard line. */}
-        <span className="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 backdrop-blur-[2px] [mask-image:linear-gradient(to_right,transparent,black)] max-sm:hidden" />
+        {scrollEdge ? (
+          <span className="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 backdrop-blur-[2px] [mask-image:linear-gradient(to_right,transparent,black)] max-sm:hidden" />
+        ) : null}
         {/* On a phone the table is ~240px, five weeks. Scrolled to start at
             the end of June (eight weeks on), every bar's start falls inside
             it — the early ones run in from the left, the late ones begin in
@@ -281,7 +283,10 @@ function TrackerScreen() {
   );
 }
 
-export function AgencyHeroVisual() {
+export function AgencyHeroVisual({
+  /** Off where the bars should run cleanly into the border (the homepage hero). */
+  scrollEdge = true,
+}: { scrollEdge?: boolean } = {}) {
   return (
     <BrandedPortalVisual
       brand="Bloomhouse"
@@ -310,7 +315,7 @@ export function AgencyHeroVisual() {
       navOnPhone={false}
       appsBreak={false}
     >
-      <TrackerScreen />
+      <TrackerScreen scrollEdge={scrollEdge} />
     </BrandedPortalVisual>
   );
 }

@@ -274,10 +274,18 @@ export function CardRail({
   label,
   children,
   lead,
+  autoAdvanceMs,
 }: {
   /** Names the rail for screen readers, e.g. "How building works". */
   label: string;
   children: React.ReactNode;
+  /**
+   * Steps one card every this many ms, back to the start after the last.
+   * Off by default. It holds still while a pointer or focus is on the rail,
+   * while it is off screen, and for anyone who has asked for reduced motion:
+   * a row that moves under the reader's hand is a row they cannot read.
+   */
+  autoAdvanceMs?: number;
   /** Sits at the foot opposite the arrows — usually the section's CTA. */
   lead?: React.ReactNode;
 }) {
@@ -506,6 +514,47 @@ export function CardRail({
     e.stopPropagation();
   };
 
+  const rootRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    const root = rootRef.current;
+    if (!autoAdvanceMs || !el || !root) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    let held = false;
+    let onScreen = false;
+    const io = new IntersectionObserver(
+      ([entry]) => (onScreen = entry.isIntersecting),
+      { threshold: 0.5 },
+    );
+    io.observe(el);
+    const hold = () => (held = true);
+    const release = () => (held = root.contains(document.activeElement));
+    root.addEventListener("pointerenter", hold);
+    root.addEventListener("pointerleave", release);
+    root.addEventListener("focusin", hold);
+    root.addEventListener("focusout", release);
+    const id = window.setInterval(() => {
+      if (held || !onScreen || drag.current || document.hidden) return;
+      const end = el.scrollWidth - el.clientWidth;
+      if (end <= END_SLACK) return;
+      if (el.scrollLeft >= end - END_SLACK) {
+        el.scrollTo({ left: 0, behavior: "smooth" });
+        return;
+      }
+      const card = el.firstElementChild as HTMLElement | null;
+      const by = (card?.offsetWidth ?? el.clientWidth) + GAP_PX;
+      el.scrollBy({ left: by, behavior: "smooth" });
+    }, autoAdvanceMs);
+    return () => {
+      window.clearInterval(id);
+      io.disconnect();
+      root.removeEventListener("pointerenter", hold);
+      root.removeEventListener("pointerleave", release);
+      root.removeEventListener("focusin", hold);
+      root.removeEventListener("focusout", release);
+    };
+  }, [autoAdvanceMs]);
+
   // One card plus its gap, read off the DOM rather than recomputed from the
   // breakpoint, so the step stays right wherever the card widths are set.
   const step = (direction: 1 | -1) => {
@@ -517,7 +566,7 @@ export function CardRail({
   };
 
   return (
-    <div>
+    <div ref={rootRef}>
       {/* Clipped at the section's measure, not bled past it. The scroller used
           to run 40px wider on each side so a card's shadow and focus ring were
           not cut — but that also let the next card show in the gutter, where

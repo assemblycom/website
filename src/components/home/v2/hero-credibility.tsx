@@ -86,8 +86,7 @@ export function HeroCredibility({
       <span>
         on G2
         <span className={compactOnPhone ? "hidden sm:inline" : ""}>
-          {" "}
-          {G2.reviews}+ reviews
+          , {G2.reviews}+ reviews
         </span>
       </span>
     </Link>
