@@ -54,7 +54,7 @@ export function BuilderCustomerQuotesStack({
   );
 
   return (
-    <ul className="mt-10 flex flex-col gap-3 md:hidden">
+    <ul className="mt-10 flex flex-col gap-2.5 md:hidden">
       {quotes.map((q) => {
         const open = openFirm === q.firm;
         const panelId = `builder-quote-${q.href.split("/").pop()}`;
@@ -95,7 +95,7 @@ export function BuilderCustomerQuotesStack({
               // to the card's far edge, a long way from the name it belongs
               // to. The pieces move in together: the row closes up and the
               // arrow comes back to the text.
-              className="flex w-full cursor-pointer items-center gap-3.5 p-3 pr-12 text-left outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-foreground/40"
+              className="flex w-full cursor-pointer items-center gap-4 p-4 pr-12 text-left outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-foreground/40"
             >
               {/* 48px, not the row's 72px. Closed, this is a list of four
                   rows that should fit a screen together; the portrait is
@@ -114,7 +114,9 @@ export function BuilderCustomerQuotesStack({
                 <span className="block text-[15px] leading-snug text-foreground">
                   {q.name}
                 </span>
-                <span className="mt-1 block text-[15px] leading-snug text-muted-foreground">
+                {/* 15 over 14, the site's picture-card pairing: two lines at
+                    one size read as two names rather than a name and a firm. */}
+                <span className="mt-0.5 block text-[14px] leading-snug text-muted-foreground">
                   {q.firm}
                 </span>
               </span>
@@ -155,7 +157,7 @@ export function BuilderCustomerQuotesStack({
                 // first text line, which is what the arrow is set against —
                 // both moved with the padding above rather than being
                 // numbers of their own.
-                className="group/story absolute right-3 top-[24px] flex size-8 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-foreground/40"
+                className="group/story absolute right-4 top-[40px] flex size-8 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-foreground/40"
               >
                 {/* PP MORI'S OWN ARROW, not a drawn one. The face ships a
                     U+2192 and it is the arrow the rest of the site's type is
@@ -193,12 +195,12 @@ export function BuilderCustomerQuotesStack({
                 className={`min-h-0 ${open ? "overflow-clip [overflow-clip-margin:6px]" : "overflow-hidden"}`}
               >
                 {/* pt-1 is headroom for that focus ring, not spacing. */}
-                <div className="px-3 pb-3 pt-1">
+                <div className="px-4 pb-5 pt-1">
                   {/* 17px, where the row above `md` runs 19. Same move — the quote
                       outranks the attribution that opened it — at the size a
                       ~310px phone measure can carry without setting three
                       words to a line. */}
-                  <blockquote className="text-[15px] leading-snug text-foreground sm:text-[17px]">
+                  <blockquote className="text-[15px] leading-[1.55] text-foreground sm:text-[17px]">
                     “{q.quote}”
                   </blockquote>
                   {/* NO "Read the story" LINE. The quote is the whole body

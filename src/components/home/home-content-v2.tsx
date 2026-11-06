@@ -1,3 +1,4 @@
+import { PhoneShell } from "@/components/home/phone-shell";
 import type { ReactNode } from "react";
 import { HowItWorks } from "@/components/home/how-it-works";
 import { HomeFAQ } from "@/components/home/faq";
@@ -24,6 +25,7 @@ import {
   TRACKER_PLAN_DOC,
 } from "@/components/client-portal/portal-build-cards";
 import { UnifiedPlatform } from "@/components/home/v2/platform-visuals";
+import { IterateScreen, PlanScreen } from "@/components/home/v2/plan-screen";
 
 /**
  * ROUND 4 — the homepage as the improvement brief asks for it.
@@ -166,7 +168,7 @@ export function HomeContentV2({
             // itself a screen below it competes with it.
             manual
             // Same corner as the platform panel above it.
-            frameRadiusClass="rounded-lg"
+            frameRadiusClass="rounded-xl"
             // 460 on desktop, not the shipped 560: the platform panel above
             // draws its photograph about 450 tall and /ai-app-builder's step
             // stage is 400, so at 560 this one read as the odd one out.
@@ -216,9 +218,9 @@ export function HomeContentV2({
             // three progress bars against two people at a desk — and the two
             // competed, both in focus. The others put one object on a shot
             // that is still the picture.
-            blurSteps={["build"]}
+            blurSteps={["describe", "build", "iterate"]}
             stepGrounds={{
-              plan: "bg-[linear-gradient(to_bottom,#f4f7fc_0%,#dde4f5_8%,#c3cae7_26%,#bcc6e6_50%,#c6d6bd_70%,#d4e79f_86%,#dcee92_100%)]",
+              plan: "bg-[linear-gradient(to_bottom,#c3cae7_0%,#bcc6e6_35%,#c6d6bd_65%,#d4e79f_85%,#dcee92_100%)]",
             }}
             stepUi={{
               // CENTRED. The composer carries `sm:mt-[66px] sm:mb-auto`, which
@@ -238,12 +240,24 @@ export function HomeContentV2({
                 // ZOOMED 1.2 FROM md: with the panel at 460 the scene is held
                 // by its height, so a wider frame did not enlarge it; the
                 // composer read small on a desktop-wide photograph.
-                <div className="absolute inset-y-0 left-0 right-0 [&_.template-mock-fit>div>div]:my-auto! sm:left-1/2 sm:w-[620px] sm:max-w-full sm:-translate-x-1/2 md:scale-[1.2]">
-                  <DescribeCard
-                    plain
-                    typing
-                    prompt="Add a project tracker each client sees for their own projects."
-                  />
+                <div className="absolute inset-y-0 left-0 right-0 [&_.template-mock-fit>div>div]:my-auto! sm:left-1/2 sm:w-[620px] sm:max-w-full sm:-translate-x-1/2 md:scale-[1.2] max-sm:[&_.template-mock-fit]:[--template-mock-w:335px]! max-sm:[&_.template-mock-fit]:[--template-mock-h:246px]! max-sm:[&_.template-mock-fit>div]:h-[246px]! max-sm:[&_.template-mock-fit>div]:w-[335px]!">
+                  {/* The short prompt on a phone, where the long one wrapped; the
+                      full sentence from sm. `contents`, so the scene still measures
+                      against this frame. */}
+                  <div className="contents sm:hidden">
+                    <DescribeCard
+                      plain
+                      typing
+                      prompt="Add a project tracker for each client."
+                    />
+                  </div>
+                  <div className="hidden sm:contents">
+                    <DescribeCard
+                      plain
+                      typing
+                      prompt="Add a project tracker each client sees for their own projects."
+                    />
+                  </div>
                 </div>
               ),
               // FLUSH TO THE FOOT. The plan is a document longer than the
@@ -285,9 +299,18 @@ export function HomeContentV2({
                 // is the exact thing this step is drawn not to do. Given its
                 // design height and hung off the bottom, it is cut by the
                 // panel again.
-                <div className="absolute inset-x-6 -bottom-4 top-auto aspect-[6/5] sm:left-1/2 sm:right-auto sm:top-auto sm:h-[400px] sm:w-[620px] sm:max-w-full sm:-translate-x-1/2 sm:bottom-0 sm:aspect-auto md:h-[460px] md:-bottom-10">
-                  <PlanCard plain tall doc={TRACKER_PLAN_DOC} />
-                </div>
+                <>
+                  <div className="absolute sm:hidden inset-x-3 -bottom-4 top-10 max-sm:[&_.template-mock-fit]:[--template-mock-w:309px]! max-sm:[&_.template-mock-fit]:[--template-mock-h:280px]! max-sm:[&_.template-mock-fit>div]:h-[280px]! max-sm:[&_.template-mock-fit>div]:w-[309px]! [&_.mock-edge]:rounded-t-[14px]! max-sm:[&_.template-mock-fit>div]:px-2! max-sm:[&_.template-mock-fit>div]:pt-3! max-sm:[&_.mock-edge]:mx-0! sm:left-1/2 sm:right-auto sm:top-auto sm:h-[400px] sm:w-[620px] sm:max-w-full sm:-translate-x-1/2 sm:bottom-0 sm:aspect-auto md:h-[460px] md:-bottom-10">
+                    <PlanCard plain tall doc={TRACKER_PLAN_DOC} />
+                  </div>
+                  {/* From sm, the builder's own plan view filling the panel:
+                      the thread, the requirements card, and the composer with
+                      Approve, with no sidebar. A window on the gradient,
+                      inside the stage's inset and open at the panel's foot. */}
+                  <div className="absolute left-1/2 top-0 hidden w-[760px] max-w-full -translate-x-1/2 sm:-bottom-6 sm:block md:-bottom-10">
+                    <PlanScreen />
+                  </div>
+                </>
               ),
               // FLUSH TO THE FOOT. This scene is WIDTH-bound in the panel —
               // it takes the full measure and whatever height that leaves —
@@ -303,25 +326,31 @@ export function HomeContentV2({
               // `bottom-0` is the inset's foot and still left the panel's own
               // padding showing under the screen. These numbers cancel it.
               build: (
-                // Phone: see the Plan step above — placed on the photograph
-                // rather than filling it and being cut by the floor.
-                // ANCHORED TO THE TOP FROM sm, not the foot. Bottom-anchored
-                // with its own aspect, the screen sat about 170px below the
-                // tab strip with nothing at all under it — a third of the
-                // panel spent on photograph above the one thing the step is
-                // about. The phone keeps its placement (see the Plan step).
-                // The frame's foot sits well past the panel's own, so the
-                // screen is CROPPED by the panel rather than ending on it.
-                // Landed exactly on the floor it still finished about six
-                // pixels short: the scene is scaled to fit, and any rounding
-                // in that scale shows as a strip of photograph under the
-                // screen. There is no strip to show if the screen runs past
-                // the edge. -bottom-36 from md: the scene scales to the
-                // frame's height, so with the panel at 460 a deeper frame is
-                // what keeps the board wide; the extra is empty column foot.
-                <div className="absolute inset-x-6 -bottom-4 top-auto aspect-[360/300] sm:inset-x-0 sm:aspect-auto sm:-bottom-6 sm:top-0 md:-bottom-36">
-                  <BuildCard plain tracker tall closedRight />
-                </div>
+                <>
+                  {/* ON A PHONE, A PHONE: the board in the same frame as the
+                      hero and the CRM tab, drawn at the screen's own width
+                      (scale 1) instead of a 360px box shrunk to 0.7. Anchored
+                      48px under the panel's floor so the crop always lands on
+                      the screen, with a solid bezel over the photograph. */}
+                  <div className="absolute inset-x-0 -bottom-12 top-0 flex items-end justify-center px-8 sm:hidden">
+                    <div className="w-full max-w-[260px]">
+                      <PhoneShell
+                        melt={false}
+                        sideButtons={false}
+                        squareFoot
+                        screenBg="bg-[var(--mock-window)]"
+                        bezelBg="bg-[#f5f5f5] [[data-theme=dark]_&]:bg-[#191919]"
+                      >
+                        <div className="relative min-h-0 flex-1 [&_.mock-edge]:rounded-none [&_.mock-edge]:border-0 [&_.template-mock-fit]:[--template-mock-w:244px]! [&_.template-mock-fit]:[--template-mock-h:270px]! [&_.template-mock-fit>div]:h-[270px]! [&_.template-mock-fit>div]:w-[244px]! [&_.template-mock-fit>div]:p-0! [&_.template-mock-fit_.mock-edge]:w-full!">
+                          <BuildCard plain tracker tall closedRight menuBar />
+                        </div>
+                      </PhoneShell>
+                    </div>
+                  </div>
+                  <div className="absolute hidden sm:block sm:inset-x-0 sm:aspect-auto sm:-bottom-6 sm:top-0 md:-bottom-36">
+                    <BuildCard plain tracker tall closedRight titleBar />
+                  </div>
+                </>
               ),
               // The chat alone, on the photograph — no window and no table.
               // Its scene is landscape like the others now, so it needs none
@@ -331,9 +360,15 @@ export function HomeContentV2({
                 // the whole panel it was drawn at 1.5, which put a 13.5px
                 // message at 19 — larger than the section's own body copy, on
                 // the one step whose subject is a chat window.
-                <div className="absolute inset-y-0 left-0 right-0 sm:left-1/2 sm:w-[680px] sm:max-w-full sm:-translate-x-1/2">
-                  <IterateCard reply />
-                </div>
+                <>
+                  <div className="absolute inset-y-0 left-0 right-0 sm:hidden">
+                    <IterateCard reply />
+                  </div>
+                  {/* From sm, the chat inside the builder window, as Plan. */}
+                  <div className="absolute left-1/2 top-0 hidden w-[760px] max-w-full -translate-x-1/2 sm:-bottom-6 sm:block md:-bottom-10">
+                    <IterateScreen />
+                  </div>
+                </>
               ),
             }}
           />
@@ -358,12 +393,12 @@ export function HomeContentV2({
             grid out of a whole screen of the page; here a small backdrop blur
             keeps the grid present and takes it out of focus, so it reads as
             the surface the list sits on rather than as lines over the text.
-            Light needs none of it: there the rails are ink at 5.5% on white
-            and already sit under the type. */}
+            Now a fade rather than a blur, in both themes: the page ground at
+            70% over the rails, so they recede behind the list. */}
         <div className="relative">
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-0 hidden [[data-theme=dark]_&]:block [[data-theme=dark]_&]:backdrop-blur-[3px]"
+            className="pointer-events-none absolute inset-0 bg-background/70"
           />
           <div className="relative">
             <Reveal variant="fade">
@@ -371,7 +406,11 @@ export function HomeContentV2({
                   directly below, with the certifications and the way through
                   to /security — so the row here was the same argument a
                   second time, and the weaker of the two. */}
-              <WholeStack omit={["Security"]} />
+              <WholeStack
+                omit={["Security"]}
+                // The Plan step's lavender-to-lime ramp, not the flat blue.
+                fieldClass="bg-[linear-gradient(to_bottom,#c3cae7_0%,#bcc6e6_35%,#c6d6bd_65%,#d4e79f_85%,#dcee92_100%)]"
+              />
             </Reveal>
           </div>
         </div>

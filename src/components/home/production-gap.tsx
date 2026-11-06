@@ -586,7 +586,7 @@ function ProductionGapExplorer({
             // size a 12px corner reads as a soft tile, and the page's other
             // large blocks are squarer than that. 8px keeps the corner from
             // being a hard miter without rounding the panel into a card.
-            "overflow-hidden rounded-lg bg-background ring-1 ring-inset ring-border [[data-theme=dark]_&]:ring-white/15 md:h-[452px]"
+            "overflow-hidden rounded-xl bg-background ring-1 ring-inset ring-border [[data-theme=dark]_&]:ring-white/15 md:h-[452px]"
           : "md:gap-x-12"
       }`}
     >

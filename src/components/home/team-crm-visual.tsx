@@ -222,12 +222,20 @@ const COMPANY_MARKS: Record<
   Godo: { Mark: MarkGodo, size: "size-[7.5px]" },
 };
 
-function CompanyMark({
+/** True when this company has its own artwork, for callers outside the CRM. */
+export function hasCompanyMark(company: string) {
+  return company in COMPANY_MARKS;
+}
+
+export function CompanyMark({
   company,
   className = "",
+  markClassName,
 }: {
   company: string;
   className?: string;
+  /** Overrides the mark's own size, for a tile drawn larger than 14px. */
+  markClassName?: string;
 }) {
   const entry = COMPANY_MARKS[company];
   const tile = COMPANY_TILES[company];
@@ -241,7 +249,7 @@ function CompanyMark({
       } ${className}`}
     >
       {entry ? (
-        <entry.Mark className={entry.size} />
+        <entry.Mark className={markClassName ?? entry.size} />
       ) : (
         <IconBrandMark className="size-[8px]" />
       )}

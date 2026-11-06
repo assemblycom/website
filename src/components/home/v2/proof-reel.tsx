@@ -60,9 +60,7 @@ function Mark({
       onFocus={() => setHovered(item.slug)}
       onBlur={() => setHovered(null)}
       aria-label={`${item.company}: ${item.result}. Read the story`}
-      {...(duplicate
-        ? { "aria-hidden": true, tabIndex: -1 }
-        : null)}
+      {...(duplicate ? { "aria-hidden": true, tabIndex: -1 } : null)}
       // OPACITY, NOT AN INK ALPHA. The marks were `text-foreground/40`, which
       // is 40% ink — fine for a wordmark drawn as one flat mask, wrong for the
       // two that are real SVGs: their shapes overlap, and two 40% shapes
@@ -124,8 +122,10 @@ export function ProofReel({ items }: { items: ReelItem[] }) {
               <Mark
                 key={`${copy}-${item.slug}`}
                 item={item}
-                hovered={hovered}
-                setHovered={setHovered}
+                // No hover state on the phone's reel: a tap sticks as a hover
+                // there and left one moving logo lit. Every mark stays grey.
+                hovered={null}
+                setHovered={() => {}}
                 duplicate={copy === 1}
               />
             )),
@@ -148,10 +148,7 @@ export function ProofReel({ items }: { items: ReelItem[] }) {
         onMouseLeave={() => setHovered(null)}
       >
         {items.map((item) => (
-          <li
-            key={item.slug}
-            className="flex items-center justify-center"
-          >
+          <li key={item.slug} className="flex items-center justify-center">
             <Mark item={item} hovered={hovered} setHovered={setHovered} />
           </li>
         ))}

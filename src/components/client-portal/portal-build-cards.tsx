@@ -15,6 +15,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { CompanyMark, hasCompanyMark } from "@/components/home/team-crm-visual";
 import Image from "next/image";
 import { MockFit } from "@/components/templates/mock-fit";
 import { fadeMask } from "@/components/ui/fade-mask";
@@ -39,6 +40,7 @@ import {
   IconSearch,
   IconMegaphone,
   IconPenNib,
+  IconMenu,
 } from "@/components/home/mock-icons";
 
 // 3:4, the rail's card shape.
@@ -113,6 +115,23 @@ const LINE = "border-[var(--mock-line)]";
  * mark fades with its line under the foot ramp instead of staying lit after
  * the words around it have gone.
  */
+/** markedFlow for several phrases in one line, each underlined in place. */
+function markedText(text: string, marks: string[]): React.ReactNode {
+  const [first, ...rest] = marks;
+  if (!first) return text;
+  const at = text.indexOf(first);
+  if (at === -1) return markedText(text, rest);
+  return (
+    <>
+      {markedText(text.slice(0, at), rest)}
+      <span className="underline decoration-dotted decoration-1 underline-offset-[3px]">
+        {first}
+      </span>
+      {markedText(text.slice(at + first.length), rest)}
+    </>
+  );
+}
+
 function markedFlow(text: string, mark: string) {
   const at = text.indexOf(mark);
   if (at === -1) return text;
@@ -1356,7 +1375,7 @@ export function PlanCard({
    * in its Describe step has to get that app's plan here, or the sequence
    * stops being a sequence. See TRACKER_PLAN_DOC.
    */
-  doc?: typeof PLAN_DOC;
+  doc?: typeof PLAN_DOC & { overviewMarks?: string[] };
 } = {}) {
   // The agency and accounting pages run the build-in-progress version.
   const building = vertical === "agency" || vertical === "accounting";
@@ -1488,8 +1507,8 @@ const BOARD = {
     // truncated project name in a mock is just a smaller mistake than a second
     // type size.
     {
-      who: "Lumen Analytics",
-      initials: "LA",
+      who: "Symphony Labs",
+      initials: "SL",
       title: "Series B Data Room",
       done: 1,
       of: 4,
@@ -1709,6 +1728,7 @@ export const TRACKER_PLAN_DOC = {
     "Client comments on a project, gets a reply from your team, and a notification when the stage moves.",
   ],
   marks: ["dashboard", "New project", "client experience", "notification"],
+  overviewMarks: ["project tracker", "each client"],
 };
 
 /**
@@ -1731,7 +1751,9 @@ export const TRACKER_PLAN_DOC = {
  * Still no sidebar and no window chrome. Where the plan LIVES is step three's
  * job; this step is only what the plan says and whether you accept it.
  */
-function RequirementsPane({ doc = PLAN_DOC }: { doc?: typeof PLAN_DOC } = {}) {
+function RequirementsPane({
+  doc = PLAN_DOC,
+}: { doc?: typeof PLAN_DOC & { overviewMarks?: string[] } } = {}) {
   return (
     <div className="flex size-full flex-col gap-2.5">
       {/* NO PROMPT BUBBLE AND NO COMPOSER. The scene used to run the whole
@@ -1797,7 +1819,7 @@ function RequirementsPane({ doc = PLAN_DOC }: { doc?: typeof PLAN_DOC } = {}) {
           // --mock-line hairline already reads against the card. The missing
           // bottom border is unaffected: the ramp is painted on the border box
           // and simply has no band to paint there.
-          className={`mock-edge relative flex h-full flex-col overflow-hidden ${R_PANEL} rounded-b-none border border-b-0 bg-[var(--mock-window)] max-sm:mx-6 ${LINE}`}
+          className={`mock-edge relative flex h-full cursor-default flex-col overflow-hidden ${R_PANEL} rounded-b-none border border-b-0 bg-[var(--mock-window)] max-sm:mx-6 ${LINE}`}
         >
           {/* The action, in the card's own top-right corner — the corner the
               product puts a document's controls in, and where the eye goes
@@ -1877,7 +1899,7 @@ function RequirementsPane({ doc = PLAN_DOC }: { doc?: typeof PLAN_DOC } = {}) {
               Overview
             </span>
             <p className={`text-[color:var(--mock-ink-soft)] ${PLAN_PROSE}`}>
-              {doc.overview}
+              {markedText(doc.overview, doc.overviewMarks ?? [])}
             </p>
             <span className={`mt-1 text-[color:var(--mock-ink)] ${PLAN_HEAD}`}>
               Core Flows
@@ -2598,11 +2620,21 @@ function ProjectCard({
             The tints are their own family rather than the status pills reused
             — a green avatar would read as a finished project. See
             --mock-avatar-* in globals.css. */}
-        <span
-          className={`flex size-[18px] shrink-0 items-center justify-center ${R_CHROME} text-[9.5px] leading-none ${AVATAR_TINT[tint % AVATAR_TINT.length]}`}
-        >
-          {initials}
-        </span>
+        {/* A client with real artwork (the CRM's Symphony, Wave and Godo)
+            wears its logo, as the CRM does; the rest keep initials. */}
+        {hasCompanyMark(who.split(" ")[0]) ? (
+          <CompanyMark
+            company={who.split(" ")[0]}
+            className={`size-[18px]! ${R_CHROME}`}
+            markClassName="size-[10px]"
+          />
+        ) : (
+          <span
+            className={`flex size-[18px] shrink-0 items-center justify-center ${R_CHROME} text-[9.5px] leading-none ${AVATAR_TINT[tint % AVATAR_TINT.length]}`}
+          >
+            {initials}
+          </span>
+        )}
         <span
           className={`min-w-0 flex-1 truncate text-[color:var(--mock-ink-soft)] ${UI_SECONDARY}`}
         >
@@ -2636,7 +2668,16 @@ export function BuildCard({
   tracker = false,
   tall = false,
   closedRight = false,
+  menuBar = false,
+  titleBar = false,
 }: SceneProps & {
+  /** The screen's name as a top bar from sm too, where the sidebar shows. */
+  titleBar?: boolean;
+  /**
+   * The phone bar as the homepage hero draws it: a bordered menu button
+   * beside the screen's name, for a board shown inside a phone frame.
+   */
+  menuBar?: boolean;
   /**
    * Closes the window's right edge on a phone as well as from sm.
    *
@@ -3054,7 +3095,20 @@ export function BuildCard({
               it read as a window whose top had been cut off. The bar comes
               back at exactly the width the nav goes away, carrying the same
               name the lit row would have. */}
-            {sidebarOnly ? null : (
+            {sidebarOnly ? null : menuBar ? (
+              <div
+                className={`flex shrink-0 items-center gap-2.5 border-b px-4 py-2 ${LINE} text-[color:var(--mock-ink)] sm:hidden`}
+              >
+                <span
+                  className={`flex size-[22px] shrink-0 items-center justify-center rounded-[4px] border ${LINE}`}
+                >
+                  <IconMenu className="size-[11px]" />
+                </span>
+                <span className="truncate text-[12.5px] leading-[1.4]">
+                  {screenName}
+                </span>
+              </div>
+            ) : (
               <div
                 className={`flex shrink-0 items-center gap-1.5 border-b px-3 py-2 ${LINE} text-[color:var(--mock-ink)] ${UI_PRIMARY} sm:hidden`}
               >
@@ -3062,6 +3116,17 @@ export function BuildCard({
                 <span className="truncate">{screenName}</span>
               </div>
             )}
+            {titleBar && !sidebarOnly ? (
+              <div
+                className={`hidden h-[37px] shrink-0 items-center gap-2 border-b px-3 ${LINE} text-[color:var(--mock-ink)] sm:flex`}
+              >
+                {/* The board's own primary size, as the workspace name and
+                    column heads: a larger title read as a second type scale. */}
+                <span className={`truncate ${UI_PRIMARY}`}>
+                  {screenName}
+                </span>
+              </div>
+            ) : null}
             {sidebarOnly ? null : plain && !tracker ? (
               <CalendarPane />
             ) : (
@@ -3070,7 +3135,7 @@ export function BuildCard({
               crop took, so the row ended on half a control. */}
                 <div className="flex shrink-0 items-center px-3 pt-2.5">
                   <span
-                    className={`flex h-[22px] w-[120px] items-center gap-1.5 ${R_CHROME} border px-2 text-[color:var(--mock-ink-soft)] ${UI_SECONDARY} ${LINE}`}
+                    className={`flex h-[22px] ${menuBar ? "w-full" : "w-[120px]"} items-center gap-1.5 ${R_CHROME} border px-2 text-[color:var(--mock-ink-soft)] ${UI_SECONDARY} ${LINE}`}
                   >
                     <IconSearch className="size-[9px] shrink-0" />
                     Search
@@ -3091,7 +3156,7 @@ export function BuildCard({
                       key={lane.name}
                       // On a phone the Active lane alone, at the full width:
                       // three lanes in that window were slivers.
-                      className={`min-w-0 flex-1 flex-col gap-1.5 rounded-t-[4px] bg-[var(--mock-well-2)] p-1.5 sm:[&+&]:ml-2 ${
+                      className={`min-w-0 flex-1 flex-col gap-1.5 rounded-t-[4px] bg-[var(--mock-well-2)] p-1.5 transition-colors duration-150 hover:bg-[var(--mock-well-3)] sm:[&+&]:ml-2 ${
                         lane === board
                           ? "flex"
                           : "desktopOnly" in lane
@@ -3358,7 +3423,7 @@ export function IterateCard({
             // The ink is the soft one, as the reply's already is. At full
             // strength, 12.5px of solid black on a white well read heavier
             // than anything else in the panel.
-            className={`chat-turn ml-auto w-fit max-w-[72%] [animation:chat-turn-in_600ms_ease-out_both] rounded-xl bg-[var(--mock-well-2)] px-3.5 py-2 font-normal text-[color:var(--mock-ink-soft)] ${CARD_BODY}`}
+            className={`chat-turn relative ml-auto w-fit max-w-[72%] [animation:chat-turn-in_600ms_ease-out_both] rounded-[18px] bg-[var(--mock-window)] px-3.5 py-2 font-normal text-[color:var(--mock-ink-soft)] ${CARD_BODY}`}
           >
             {/* LONG ENOUGH TO WRAP. At one short line each turn was a single
                 word-length chip, and two chips stacked on a photograph read as
@@ -3366,8 +3431,22 @@ export function IterateCard({
                 runs to two or three lines is the shape of a message, and it
                 also shows the step's real claim — that the change you ask for
                 can be a specific one, not a one-word command. */}
-            Add a due date to every project, and sort the list so the ones due
-            soonest are at the top.
+            {/* Shorter on a phone, where the full turns ran to three lines. */}
+            <span className="max-sm:hidden">
+              Add a due date to every project, and sort the list so the ones due
+              soonest are at the top.
+            </span>
+            <span className="sm:hidden">Add due dates, soonest first.</span>
+            {/* The iMessage tail, on the sender's side. It covers the
+                bubble's whole 18px corner, so the edge runs into it with no
+                notch, then flares out to the point. */}
+            <svg
+              aria-hidden
+              viewBox="0 0 23 18"
+              className="absolute -right-[5px] bottom-0 h-[18px] w-[23px] text-[var(--mock-window)]"
+            >
+              <path fill="currentColor" d="M0 0H18V5C18 11 20 15 23 18H0Z" />
+            </svg>
           </p>
           {/* The answer, as its own bubble on the left. OUTLINED, not filled:
               the filled well is what marks your own turn above, so giving the
@@ -3375,13 +3454,24 @@ export function IterateCard({
               instead of as question and answer. Both carry a solid ground
               rather than a wash, because what is behind them is a photograph
               and type on a photograph has to sit on something. */}
+          {/* The builder answers in two turns: it confirms what it heard,
+              then says it is on it. Same bubble, a tighter gap between the
+              two since they are one speaker. */}
+          <p
+            className={`chat-turn relative mt-5 w-fit max-w-[72%] [animation:chat-turn-in_600ms_ease-out_900ms_both] rounded-[18px] bg-[var(--mock-window)] px-3.5 py-2 font-normal text-[color:var(--mock-ink-soft)] ${CARD_BODY}`}
+          >
+            <span className="max-sm:hidden">
+              Got it. Adding due dates and sorting by the soonest.
+            </span>
+            <span className="sm:hidden">Got it.</span>
+          </p>
           <p
             // A second behind the request, so the two read as one exchange
             // rather than as two labels that appeared together.
             // mt-5, not 2.5. Two turns a few pixels apart read as one block
             // of type with a rule through it; a chat leaves a clear gap
             // between one person's turn and the next.
-            className={`chat-turn mt-5 flex w-fit max-w-[72%] items-center gap-2 [animation:chat-turn-in_600ms_ease-out_900ms_both] rounded-xl border bg-[var(--mock-window)] px-3.5 py-2 ${LINE} font-normal text-[color:var(--mock-ink-soft)] ${CARD_BODY}`}
+            className={`chat-turn relative mt-1 flex w-fit max-w-[72%] items-center gap-2 [animation:chat-turn-in_600ms_ease-out_1600ms_both] rounded-[18px] bg-[var(--mock-window)] px-3.5 py-2 font-normal text-[color:var(--mock-ink-soft)] ${CARD_BODY}`}
           >
             <span
               aria-hidden
@@ -3390,7 +3480,16 @@ export function IterateCard({
               // ring beside "Applying" reads as a change that has stalled.
               className="size-[13px] shrink-0 rounded-full border-2 border-[var(--mock-line)] border-t-[color:var(--mock-ink-soft)] motion-safe:animate-spin"
             />
-            Applying your change now.
+            <span className="max-sm:hidden">Applying your change now.</span>
+            <span className="sm:hidden">Applying it now.</span>
+            {/* The builder's tail, on its last turn only, as a chat groups them. */}
+            <svg
+              aria-hidden
+              viewBox="0 0 23 18"
+              className="absolute -left-[5px] bottom-0 h-[18px] w-[23px] -scale-x-100 text-[var(--mock-window)]"
+            >
+              <path fill="currentColor" d="M0 0H18V5C18 11 20 15 23 18H0Z" />
+            </svg>
           </p>
         </div>
       </div>

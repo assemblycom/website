@@ -8,6 +8,7 @@
 // with a supporting visual).
 // ─────────────────────────────────────────────────────────────────────────
 
+import { DOTTED_RULE_AFTER } from "@/components/ui/dotted-rule";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTheme } from "@/components/theme/theme-provider";
@@ -220,26 +221,14 @@ function useTint(tint: AvatarTint, prominence: "quiet" | "strong" = "quiet") {
   };
 }
 
-// The workspace's own mark. Square rather than round — a workspace isn't a
-// person — but coloured from the same palette as every other fallback.
+// The workspace's own mark: Brandmages' stacked bars on a dark tile, the same
+// logo the other product mocks on the site carry, rather than a "B" initial.
 function BrandMark({ className = "" }: { className?: string }) {
-  // Strong: this is a lone logo tile, not one of a column of avatars, and at
-  // the quiet strength it sank into the dark sidebar and the dark settings row.
-  const colors = useTint(MOCK_BRAND_TINT, "strong");
   return (
     <span
-      className={`flex shrink-0 items-center justify-center rounded-[4px] bg-[var(--mk-invert-bg)] leading-none text-[var(--mk-invert-fg)] ${className}`}
-      style={
-        colors
-          ? {
-              backgroundColor: colors.bg,
-              color: colors.fg,
-              boxShadow: `inset 0 0 0 1px ${colors.ring}`,
-            }
-          : undefined
-      }
+      className={`flex shrink-0 items-center justify-center rounded-[4px] bg-[#111111] text-white [[data-theme=dark]_&]:bg-white [[data-theme=dark]_&]:text-[#111111] ${className}`}
     >
-      B
+      <IconBrandMark className="size-[58%]" />
     </span>
   );
 }
@@ -724,26 +713,28 @@ function ClientSidebarVisual({ bleed = false }: { bleed?: boolean }) {
   const { theme } = useTheme();
   const isLight = theme !== "dark";
   const brand = AVATAR_TINTS[MOCK_BRAND_TINT];
-  const surfaceTint = isLight ? brand.bg : undefined;
-  const selected = isLight
-    ? {
-        backgroundColor: `color-mix(in oklab, ${brand.fg} 13%, ${brand.bg})`,
-        color: brand.fg,
-      }
-    : undefined;
+  void isLight;
+  void brand;
+  // Brandmages' own black, in both themes: the sidebar is the firm's branded
+  // area, so it takes the firm's colour and the mock's inks go light on it.
+  const surfaceTint = "#111111";
+  const selected = {
+    backgroundColor: "rgba(255,255,255,0.12)",
+    color: "#ffffff",
+  };
   return (
     <div className={bleed ? MOCK_CARD_BLEED : MOCK_CARD}>
       {/* Bleeding, the card owns the field's full height, so the columns
           stretch to it instead of stopping at the sidebar's natural height. */}
       <div className={bleed ? "flex h-full" : "flex min-h-[168px]"}>
         <div
-          className="w-[152px] shrink-0 border-r border-[var(--mk-hairline)] p-2"
-          style={surfaceTint ? { backgroundColor: surfaceTint } : undefined}
+          className="w-[152px] shrink-0 border-r border-[var(--mk-hairline)] p-2 [--mk-fg:rgba(255,255,255,0.92)] [--mk-muted:rgba(255,255,255,0.6)] [--mk-subtle:rgba(255,255,255,0.45)]"
+          style={{ backgroundColor: surfaceTint }}
         >
           <div className="mb-1.5 flex items-center gap-2 px-2 py-[6px]">
-            <BrandMark className="size-[16px] text-[9px]" />
+            <BrandMark className="size-[16px] bg-white! text-[#111111]!" />
             <span className="truncate pb-[3px] -mb-[3px] text-[12px] leading-none text-[var(--mk-fg)]">
-              Your brand
+              Brandmages
             </span>
           </div>
 
@@ -873,8 +864,8 @@ function BrandingVisual() {
         <span
           className="size-[28px] shrink-0 rounded-[6px] bg-[var(--mk-fill)] ring-1 ring-inset ring-[var(--mk-border)]"
           style={{
-            backgroundColor: AVATAR_TINTS[MOCK_BRAND_TINT].fg,
-            boxShadow: `inset 0 0 0 1px ${AVATAR_TINTS[MOCK_BRAND_TINT].fg}`,
+            backgroundColor: "#111111",
+            boxShadow: "inset 0 0 0 1px #111111",
           }}
         />
       </div>
@@ -2463,10 +2454,12 @@ function DetailPanel({
   pillar,
   open,
   onClose,
+  fieldClass = PANEL_FIELD,
 }: {
   pillar: Pillar;
   open: boolean;
   onClose: () => void;
+  fieldClass?: string;
 }) {
   // Portal the overlay to <body>: the section sits under a transform (Reveal
   // animation), and position:fixed anchors to a transformed ancestor rather
@@ -2645,7 +2638,7 @@ function DetailPanel({
                     : s.visual && BOTTOM_BLEED_VISUALS.has(s.visual)
                       ? "items-stretch justify-center px-4 pt-4 sm:px-6 sm:pt-6"
                       : "items-center justify-center p-4 sm:p-6"
-                } ${PANEL_FIELD}`}
+                } ${fieldClass}`}
               >
                 {s.visual && <SectionVisual slug={s.visual} />}
               </div>
@@ -2669,7 +2662,12 @@ export function WholeStack({
    * been answered back into a panel.
    */
   omit,
-}: { omit?: string[] } = {}) {
+  fieldClass,
+}: {
+  omit?: string[];
+  /** The ground the drawer's visuals sit on; the brand blue by default. */
+  fieldClass?: string;
+} = {}) {
   // One rest colour for both themes now. Light used to run the chevron at 40%,
   // which on white was a mark you had to look for — it read as an artefact of
   // the row rather than as the affordance saying the row opens.
@@ -2704,8 +2702,8 @@ export function WholeStack({
               the paragraph made its point and then made it again. */}
           <p className="type-lead mt-5 max-w-md text-pretty text-muted-foreground">
             Practice management tools run your back office. Client portals
-            handle the front. App builders stop at prototypes. Assembly does
-            all three.
+            handle the front. App builders stop at prototypes. Assembly does all
+            three.
           </p>
         </div>
 
@@ -2730,11 +2728,12 @@ export function WholeStack({
               // A dotted rule under every row but the last, the same treatment
               // the client portal's collapsible uses. Drawn as a pseudo-element
               // rather than a border: `border-dotted` at 1px sets its dots one
-              // pixel apart and reads as a broken hairline, where 1.5px marks
-              // on a 6px pitch read as dots. Inset to the row's own padding, so
+              // pixel apart and reads as a broken hairline. The site's shared
+              // dotted rule, so it is the FAQ's own dot and tone; the lighter
+              // --border dots it had were near invisible on a phone. Inset to the row's own padding, so
               // the rule starts where the label does and the hover fill still
               // breathes past it.
-              className="group relative flex w-full items-baseline gap-5 px-3 py-4 text-left transition-colors after:absolute after:inset-x-3 after:bottom-0 after:h-px after:bg-[repeating-linear-gradient(to_right,var(--border)_0_1.5px,transparent_1.5px_6px)] after:content-[''] last:after:hidden hover:bg-foreground/[0.035] [[data-theme=dark]_&]:hover:bg-foreground/[0.06]"
+              className={`group relative flex w-full items-baseline gap-5 px-3 py-4 text-left transition-colors after:absolute after:inset-x-3 after:bottom-0 after:h-px ${DOTTED_RULE_AFTER} after:content-[''] last:after:hidden hover:bg-foreground/[0.035] [[data-theme=dark]_&]:hover:bg-foreground/[0.06]`}
             >
               <span className="type-body flex-1 text-foreground">
                 {p.short}
@@ -2763,6 +2762,7 @@ export function WholeStack({
         pillar={pillars[current]}
         open={openIdx !== null}
         onClose={() => setOpenIdx(null)}
+        fieldClass={fieldClass}
       />
     </section>
   );

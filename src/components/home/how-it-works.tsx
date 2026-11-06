@@ -2,6 +2,7 @@
 
 import { memo, useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { GRAIN } from "@/components/comparison/brand-panel";
 import {
   DescribeVisual,
   BuildAppVisual,
@@ -93,6 +94,7 @@ export function HowItWorks({
   stepUi,
   stepGrounds,
   blurSteps,
+  blurStepsMobile,
   manual = false,
   frameRadiusClass = "rounded-[20px]",
 }: {
@@ -157,6 +159,9 @@ export function HowItWorks({
    * out of focus. Named per step for that reason.
    */
   blurSteps?: string[];
+  /** As blurSteps, below sm only: where the overlay fills more of the
+      narrower photograph and the two compete there but not on desktop. */
+  blurStepsMobile?: string[];
 } = {}) {
   const [active, setActive] = useState(0);
 
@@ -338,13 +343,15 @@ export function HowItWorks({
                 // one strip, so a box around a single cell fights the dividers
                 // that define it and notches at the strip's rounded corner. A
                 // deeper version of the hover fill is the strip's own language.
+                // On a phone the bottom bar went too: a tap left it under the
+                // stacked row, reading as a broken border. The fill does it there.
                 // THE ACTIVE TAB IS FILLED when there is no rail to mark it.
                 // With the tour running, the bar creeping along the active tab
                 // says which one is on; take it away and the only difference
                 // left is the label's tone, which is too quiet to find at a
                 // glance. The fill is the strip's own hover tint a step
                 // deeper, so it is the same language rather than a new one.
-                className={`group relative cursor-pointer px-5 py-4 text-left outline-none transition-colors hover:bg-foreground/[0.03] focus-visible:shadow-[inset_0_-2px_0_0_rgba(0,0,0,0.45)] sm:text-center [[data-theme=dark]_&]:focus-visible:shadow-[inset_0_-2px_0_0_rgba(255,255,255,0.45)] ${
+                className={`group relative cursor-pointer px-5 py-4 text-left outline-none transition-colors hover:bg-foreground/[0.03] max-sm:focus-visible:bg-foreground/[0.05] sm:text-center sm:focus-visible:shadow-[inset_0_-2px_0_0_rgba(0,0,0,0.45)] sm:[[data-theme=dark]_&]:focus-visible:shadow-[inset_0_-2px_0_0_rgba(255,255,255,0.45)] ${
                   manual && active === i
                     ? "bg-foreground/[0.05] [[data-theme=dark]_&]:bg-white/[0.07]"
                     : ""
@@ -456,10 +463,26 @@ export function HowItWorks({
                       className={`object-cover object-center ${
                         blurSteps?.includes(step.id)
                           ? "scale-105 blur-[7px]"
-                          : ""
+                          : blurStepsMobile?.includes(step.id)
+                            ? "max-sm:scale-105 max-sm:blur-[7px]"
+                            : ""
                       }`}
                       sizes="(max-width: 768px) 100vw, 60vw"
                     />
+                    {/* Grain over a blurred photograph, so the soft picture
+                        reads as material rather than as an out-of-focus shot.
+                        The comparison panels' own grain, on the same widths
+                        the blur is. */}
+                    {blurSteps?.includes(step.id) ||
+                    blurStepsMobile?.includes(step.id) ? (
+                      <div
+                        aria-hidden
+                        className={`pointer-events-none absolute inset-0 opacity-70 mix-blend-overlay ${
+                          blurSteps?.includes(step.id) ? "" : "sm:hidden"
+                        }`}
+                        style={{ backgroundImage: GRAIN }}
+                      />
+                    ) : null}
                     {stepGrounds?.[step.id] ? (
                       <div
                         aria-hidden

@@ -1,9 +1,10 @@
 "use client";
 
-import Image from "next/image";
+import { IconTemplateProjects } from "@/components/templates/template-icons";
 import type { ReactNode } from "react";
 import { ProductionGap, type RegionId } from "@/components/home/production-gap";
 import { PhoneShell } from "@/components/home/phone-shell";
+import { IconMenu } from "@/components/home/mock-icons";
 import { TeamCrmVisual } from "@/components/home/team-crm-visual";
 import {
   SECURITY_STANDARDS,
@@ -14,48 +15,17 @@ import {
   MOCK_PRIMARY_STACKED,
   MOCK_SECONDARY,
   MOCK_TITLE,
+  MOCK_BODY,
 } from "@/components/ui/mock-type";
 
 // ─────────────────────────────────────────────────────────────────────────
-// UNIFIED PLATFORM (V2) — a photograph per tab, filling the panel.
-//
-// The hand-built mocks that used to live here were removed. These are the
-// site's own lifestyle photography from `public/images/mocks`, the set the
-// product pages already use — people at work rather than pictures of the
-// product, which is what the panel was asked for.
-//
-// THEY FILL THE PANEL, edge to edge (`flushVisual`), so the photograph IS the
-// background and no blue shows. The blue is still painted underneath, so it
-// covers the moment between the panel laying out and the image decoding.
-//
-// A STAND-IN, chosen for what each one is OF rather than art-directed for this
-// section: the CRM shot for the foundation tab, someone on a tablet for the
-// ready-made apps, hands at a laptop for the builder, and the sign-in field
-// for security. No photograph is used twice on the page.
+// UNIFIED PLATFORM (V2) — one product screen per tab, on the site's surface
+// gray. The photographs that sat behind them were dropped: every tab's subject
+// is the screen, and a picture under it was a second thing to read.
 // ─────────────────────────────────────────────────────────────────────────
 
-/** One photograph per tab, keyed by the region ids in production-gap.tsx. */
-const SHOTS: Record<RegionId, { src: string; alt: string }> = {
-  url: {
-    src: "/images/mocks/crm-bg.webp",
-    alt: "Someone working at a laptop in a sunlit booth",
-  },
-  sidebar: {
-    src: "/images/mocks/ready-apps-tablet.webp",
-    alt: "Someone sketching on a tablet against a red wall",
-  },
-  builder: {
-    src: "/images/mocks/hosted-mvp-bg.jpg",
-    alt: "Someone working at a laptop, mid-gesture",
-  },
-  avatar: {
-    src: "/images/mocks/sign-in-bg.jpg",
-    alt: "Hands drawing on a canvas in afternoon light",
-  },
-};
-
 // ─────────────────────────────────────────────────────────────────────────
-// ONE SCREEN PER TAB, over the photograph.
+// ONE SCREEN PER TAB.
 //
 // The photographs say who each step is for; they cannot say what the step
 // IS. A picture of someone at a laptop is the same picture whichever of the
@@ -86,34 +56,54 @@ const SHOTS: Record<RegionId, { src: string; alt: string }> = {
 const UI_BOX = "h-[300px] w-[520px] md:h-[480px] md:w-[900px]";
 
 /**
- * One of the ready-made apps at work: a Messages notification, laid on the
- * photograph the way it would land on a client's screen. The tile is the
- * product's own grey chat icon (the template set in public/), and the card
- * stays light in both themes because it sits on the picture, not the page.
+ * One of the ready-made apps arriving: Project tracker, installed. It is one
+ * of the apps the tab's copy names, and installing then remixing is the claim
+ * itself. The tile carries the template's own icon.
+ *
+ * FRAMED LIKE THE COMPOSER on the App builder tab (see DescribeCard's `plain`
+ * frame): a 14px hairline ring, a 3px band of ground, then a 10px window with
+ * its own border. The two tabs show the same kind of object on the same
+ * ground, so they share one outline and one radius.
  */
 function AppNotification() {
   return (
-    <div className="flex w-[320px] max-w-full items-center gap-4 rounded-2xl bg-[#fcfcfd] p-2.5 pr-5 shadow-[0_18px_40px_-18px_rgba(16,24,40,0.45)]">
-      <Image
-        src="/images/template-icons/chat.svg"
-        alt=""
-        width={76}
-        height={76}
-        className="size-[76px] shrink-0"
-      />
-      <div className="min-w-0 flex-1">
-        <p className={`${MOCK_TITLE} text-[#101114]`}>
-          New message from Patrick Peterson
-        </p>
-        <p
-          className={`mt-1.5 line-clamp-2 ${MOCK_PRIMARY_STACKED} text-[#6b7079]`}
-        >
-          Hey Jen, thanks for sending over the recent invoice...
-        </p>
-      </div>
-      <div className="flex shrink-0 flex-col items-center gap-1.5 self-center">
-        <span className="size-2 rounded-full bg-[#7DA4FF]" />
-        <span className={`${MOCK_SECONDARY} text-[#101114]`}>5h</span>
+    // On a phone, drawn at 1.05: the step the other mobile mocks (Plan,
+    // the composers) land on, so its type matches theirs, not a new size.
+    <div className="w-[332px] max-w-full origin-center rounded-[14px] bg-[var(--mock-line)] p-px max-sm:scale-[1.05]">
+      <div className="rounded-[13px] bg-[var(--surface)] p-[3px]">
+        <div className="flex items-center gap-3 rounded-[10px] border border-[var(--mock-line)] bg-[var(--mock-window)] p-2 pr-3.5 sm:gap-4 sm:p-2.5 sm:pr-5">
+          {/* The template's own icon on the template-icons chip grey, since
+              there is no tile file for it. Its radius steps down inside the
+              window's 10px corner rather than out past it. The icon is
+              shifted so the dark document is centred, not the whole mark:
+              the pale pencil pulls the mark's box up and left, which left the
+              document visibly low and right (measured 21/15 and 28/20). */}
+          <span className="flex size-14 shrink-0 items-center justify-center rounded-[8px] bg-[#ECECEC] sm:size-[76px]">
+            <IconTemplateProjects className="h-[34px] w-auto -translate-x-[3px] -translate-y-[2px] sm:h-[46px] sm:-translate-x-[4px] sm:-translate-y-[3px]" />
+          </span>
+          <div className="min-w-0 flex-1">
+            <p
+              className={`${MOCK_TITLE} truncate text-[color:var(--mock-ink)]`}
+            >
+              Project tracker installed
+            </p>
+            <p
+              className={`mt-1.5 line-clamp-2 ${MOCK_PRIMARY_STACKED} text-[color:var(--mock-ink-soft)]`}
+            >
+              Ready for your clients.
+              <span className="max-sm:hidden">
+                {" "}
+                Remix it to fit how you work.
+              </span>
+            </p>
+          </div>
+          <div className="flex shrink-0 flex-col items-center gap-1.5 self-center">
+            <span className="size-2 rounded-full bg-[#7DA4FF]" />
+            <span className={`${MOCK_SECONDARY} text-[color:var(--mock-ink)]`}>
+              5h
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -143,23 +133,15 @@ function SecuritySeals() {
     // the homepage and the security page show one object rather than two
     // drawings of the same claim.
     //
-    // ON A DISC OF THE PANEL'S OWN PLATE TONE. The seal's artwork is a
-    // hairline circle in the page's ink, drawn to sit on the page's ground —
-    // over a photograph it is barely there, so it is given the ground it
-    // expects, cut to its own shape.
-    //
-    // `--mock-well`, NOT WHITE. A hardcoded white disc is right in light and
-    // wrong in dark: four white circles over a photograph on a near-black
-    // page were the brightest objects in the section, and the seal inside
-    // each one — which themes with the page — came out as dark artwork on a
-    // light plate while everything around it was the other way up.
-    <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-5">
+    // ON A WHITE DISC (the window tone, so dark mode follows), with no shadow:
+    // on the panel's flat gray the seals read as white objects, not outlines.
+    // Their hairlines a step darker than the page's --border, which on the
+    // panel's gray left the seals blending into it. Redefined here only, as
+    // a foreground tint so dark mode follows.
+    <div className="flex flex-wrap items-center justify-center gap-3 [--border:color-mix(in_oklab,var(--foreground)_14%,transparent)] sm:gap-5">
       {SECURITY_STANDARDS.map((s) => (
-        <span
-          key={s.title}
-          className="rounded-full bg-[var(--mock-well)] shadow-[0_10px_30px_-12px_rgba(16,24,40,0.45)]"
-        >
-          <Seal label={s.seal} size="size-16 sm:size-20" />
+        <span key={s.title} className="rounded-full bg-[var(--mock-window)]">
+          <Seal label={s.seal} size="size-18 sm:size-20" />
         </span>
       ))}
     </div>
@@ -184,11 +166,7 @@ const SCREENS: Record<RegionId, TabScreen> = {
   // /ai-app-builder draws for its CRM claim.
   url: { node: <TeamCrmVisual moreRows />, windowed: true },
   // One of the apps at work. See AppNotification.
-  // On the dark wall to the left, clear of his face.
-  sidebar: {
-    node: <AppNotification />,
-    placement: "items-center justify-center sm:justify-start sm:pl-[8%]",
-  },
+  sidebar: { node: <AppNotification /> },
   // The composer, and nothing holding it. It is one field: a window around
   // it was a sheet of white with a text box in the middle of it.
   builder: {
@@ -204,16 +182,40 @@ const SCREENS: Record<RegionId, TabScreen> = {
       // the PANEL and the width here did nothing at all — which is why the
       // earlier numbers below never narrowed anything. A positioned frame of
       // its own is what the fit actually measures.
-      <div className="relative h-full w-[620px] max-w-full sm:h-[480px] sm:w-[620px] sm:max-w-none sm:shrink-0 [&_.template-mock-fit>div>div]:my-auto!">
-        <DescribeCard
-          plain
-          // NO RING. The composer has this whole panel to itself over a bright
-          // photograph, and the lime-to-blue band around it was the first
-          // thing read in a step whose subject is the field. Its own hairline
-          // is what holds it against the picture.
-          ring={false}
-          prompt="Add a project tracker each client sees for their own projects."
-        />
+      // FROM sm, ZOOMED IN: a 440x390 design box in a 540 frame, so the
+      // composer draws at about 1.23 (15px type) and runs shorter than the
+      // 620-at-1 it was, which left a long thin field across the panel.
+      // ON A PHONE the scene's design box is 300x220, not the shared 360x300,
+      // so the fit scales it UP into the ~340px panel and the prompt reads at
+      // about 13px on one line instead of 12, and its side padding drops so the field
+      // runs nearly the panel's width. Scoped here: the shared box is right
+      // for the product pages' narrower phone cards.
+      <div className="relative h-full w-[620px] max-w-full sm:h-[480px] sm:w-[540px] sm:max-w-none sm:shrink-0 sm:[&_.template-mock-fit]:[--template-mock-w:440px]! sm:[&_.template-mock-fit]:[--template-mock-h:390px]! sm:[&_.template-mock-fit>div]:h-[390px]! sm:[&_.template-mock-fit>div]:w-[440px]! [&_.template-mock-fit>div>div]:my-auto! max-sm:[&_.template-mock-fit]:[--template-mock-w:300px]! max-sm:[&_.template-mock-fit]:[--template-mock-h:220px]! max-sm:[&_.template-mock-fit>div]:h-[220px]! max-sm:[&_.template-mock-fit>div]:w-[300px]! max-sm:[&_.template-mock-fit>div]:px-2!">
+        {/* The short prompt on a phone, where the long one wrapped; the
+            full sentence from sm. `contents`, so the scene still measures
+            against this frame. */}
+        <div className="contents sm:hidden">
+          <DescribeCard
+            plain
+            // NO RING. The composer has this whole panel to itself over a bright
+            // photograph, and the lime-to-blue band around it was the first
+            // thing read in a step whose subject is the field. Its own hairline
+            // is what holds it against the picture.
+            ring={false}
+            prompt="Add a project tracker for each client."
+          />
+        </div>
+        <div className="hidden sm:contents">
+          <DescribeCard
+            plain
+            // NO RING. The composer has this whole panel to itself over a bright
+            // photograph, and the lime-to-blue band around it was the first
+            // thing read in a step whose subject is the field. Its own hairline
+            // is what holds it against the picture.
+            ring={false}
+            prompt="Add a project tracker each client sees for their own projects."
+          />
+        </div>
       </div>
     ),
   },
@@ -225,11 +227,7 @@ function Screen({ active }: { active: RegionId }) {
   const screen = SCREENS[active];
   return (
     <>
-      {/* No dark wash on any tab: the photographs stay at full strength. The
-          CRM tab keeps its blur, since a whole table sits over that picture. */}
-      {active === "url" && (
-        <div aria-hidden className="absolute inset-0 backdrop-blur-[6px]" />
-      )}
+      {/* No dark wash on any tab: the photographs stay at full strength. */}
       {screen.windowed ? (
         <>
           {/* A PHONE ON A PHONE. The window below is 520px wide and anchored
@@ -240,17 +238,47 @@ function Screen({ active }: { active: RegionId }) {
               last columns on its own), so all it needed was the right frame
               around it: `PhoneShell`, the device the rest of the landing
               page's phone mocks are drawn in. */}
-          <div className="absolute inset-0 flex items-end justify-center px-8 pt-10 md:hidden">
+          <div className="absolute inset-x-0 -bottom-12 top-0 flex items-end justify-center px-8 md:hidden">
             {/* THE DEVICE IS CROPPED BY THE PANEL, NOT FADED OUT. PhoneShell
                 melts its lower half into the page by default, which is right
                 on the page's own ground and wrong here: the mask takes the
                 screen's background with it, so the photograph came through
-                the tracker and the phone read as broken. Solid, standing on
-                the panel's bottom edge, it is the same move the desktop
-                window makes — a screen the frame cuts off, which says there
-                is more of it. */}
+                the tracker and the phone read as broken. Solid, anchored 48px
+                under the panel's floor so it always runs past it, it is the same
+                move the desktop window makes: a screen the frame cuts off,
+                which says there is more of it. */}
             <div className="w-full max-w-[260px]">
-              <PhoneShell melt={false}>{screen.node}</PhoneShell>
+              <PhoneShell
+                melt={false}
+                sideButtons={false}
+                squareFoot
+                screenBg="bg-[var(--mock-window)]"
+              >
+                {/* The hero's phone bar: a bordered menu button and the
+                    app's name, so the table reads as an app, not a crop. */}
+                <div className="flex h-full flex-col">
+                  <div className="flex shrink-0 items-center gap-2.5 border-b border-[var(--mock-line)] bg-[var(--mock-window)] px-4 py-2">
+                    <span className="flex size-[22px] shrink-0 items-center justify-center rounded-[4px] border border-[var(--mock-line)] text-[color:var(--mock-ink)]">
+                      <IconMenu className="size-[11px]" />
+                    </span>
+                    <span
+                      className={`${MOCK_BODY} text-[color:var(--mock-ink)]`}
+                    >
+                      CRM
+                    </span>
+                  </div>
+                  <div className="relative min-h-0 flex-1">
+                    {screen.node}
+                    {/* The table runs past the screen's right edge; soften it
+                        there (a light blur under a fade to the window tone)
+                        rather than cutting the last column hard. */}
+                    <div
+                      aria-hidden
+                      className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-[var(--mock-window)] to-transparent backdrop-blur-[2px] [mask-image:linear-gradient(to_left,#000_30%,transparent)]"
+                    />
+                  </div>
+                </div>
+              </PhoneShell>
             </div>
           </div>
 
@@ -259,9 +287,9 @@ function Screen({ active }: { active: RegionId }) {
               inset is deep enough that the photograph still reads as the
               ground the screen is sitting on rather than a hairline around
               it. */}
-          <div className="absolute left-4 top-5 hidden md:block md:left-20 md:top-16">
+          <div className="absolute left-4 top-5 hidden md:block md:left-20 md:top-10">
             <div
-              className={`relative overflow-hidden rounded-tl-xl border-l border-t border-[var(--mock-line)] bg-[var(--mock-window)] shadow-[0_24px_60px_-20px_rgba(16,24,40,0.45)] ${UI_BOX}`}
+              className={`relative overflow-hidden rounded-tl-xl border-l border-t border-[var(--mock-line)] bg-[var(--mock-window)] ${UI_BOX}`}
             >
               {screen.node}
             </div>
@@ -278,12 +306,12 @@ function Screen({ active }: { active: RegionId }) {
               off the edge. */}
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-y-0 right-0 hidden w-24 bg-[linear-gradient(to_left,rgba(16,24,40,0.14)_0%,rgba(16,24,40,0.05)_45%,transparent_100%)] md:block"
+            className="pointer-events-none absolute inset-y-0 right-0 hidden w-24 bg-[linear-gradient(to_left,rgba(16,24,40,0.06)_0%,rgba(16,24,40,0.02)_45%,transparent_100%)] md:block"
           />
         </>
       ) : (
         <div
-          className={`absolute inset-0 flex p-6 md:p-10 ${
+          className={`absolute inset-0 flex p-4 sm:p-6 md:p-10 ${
             screen.placement ?? "items-center justify-center"
           }`}
         >
@@ -297,33 +325,15 @@ function Screen({ active }: { active: RegionId }) {
 function Shot({ active }: { active: RegionId }) {
   return (
     <div className="relative h-full w-full overflow-hidden">
-      {/* The incoming shot fades in ON TOP of the outgoing one, which holds at
-          full strength until the fade is done. Fading both at once left each
-          half see-through mid-way, so the panel's ground showed through and
-          every click flashed dark. `isolate` keeps the shots' z-index from
-          lifting them over the screen drawn after them. */}
-      <div className="absolute inset-0 isolate">
-        {Object.entries(SHOTS).map(([id, shot]) => (
-          <Image
-            key={id}
-            src={shot.src}
-            alt={id === active ? shot.alt : ""}
-            aria-hidden={id !== active}
-            fill
-            // `cover`, centred. These are photographs with their subject in the
-            // middle of the frame — the top-left anchor the UI screenshots
-            // wanted would crop the person out of two of the four.
-            className={`object-cover object-center transition-opacity ease-out motion-reduce:transition-none ${
-              id === active
-                ? "z-[1] opacity-100 duration-500"
-                : "z-0 opacity-0 duration-0 delay-500"
-            }`}
-            sizes="(max-width: 768px) 100vw, 60vw"
-            priority={false}
-          />
-        ))}
-      </div>
+      <div aria-hidden className="absolute inset-0 bg-[var(--surface)]" />
       <Screen active={active} />
+      {/* The card's hairline, redrawn over the visual: the frame's inset ring
+          sits under this gray and was lost on its outer sides. Not on the side
+          that meets the step list, which draws its own divider there. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 rounded-t-xl border border-b-0 border-border md:rounded-none md:rounded-r-xl md:border-b md:border-l-0 [[data-theme=dark]_&]:border-white/15"
+      />
     </div>
   );
 }

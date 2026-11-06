@@ -129,10 +129,14 @@ function AssistantOrb() {
   );
 }
 
-const SUGGESTIONS = [
-  "What forms or contracts do I have open?",
-  "Where can I find my latest files?",
-  "How do I get in touch with my team?",
+// `short` is the phone's wording, where the full line wrapped to two.
+const SUGGESTIONS: { text: string; short?: string }[] = [
+  {
+    text: "What forms or contracts do I have open?",
+    short: "What contracts do I have open?",
+  },
+  { text: "Where can I find my latest files?" },
+  { text: "How do I get in touch with my team?" },
 ];
 
 /**
@@ -150,20 +154,28 @@ export function ClientAssistantPane() {
     <div className="flex h-full min-h-0 flex-col">
       <div className="flex flex-1 flex-col items-center justify-center text-center">
         <AssistantOrb />
+        {/* 15 on a phone, the site's body step: 18 crowded a 244px screen. */}
         <p
-          className={`mt-3 ${MOCK_FIGURE} ${INK} md:mt-4 [[data-theme=dark]_&]:text-white/85`}
+          className={`mt-3 ${MOCK_FIGURE} ${INK} max-md:text-[15px] md:mt-4 [[data-theme=dark]_&]:text-white/85`}
         >
           How can we help?
         </p>
         <div className="mt-4 flex w-full max-w-[340px] flex-col gap-2 md:mt-5">
           {SUGGESTIONS.map((question, i) => (
             <span
-              key={question}
-              className={`rounded-md border ${LINE} px-3.5 py-2.5 text-left transition-colors duration-150 bg-[var(--surface)] hover:bg-[var(--surface-2)] [[data-theme=dark]_&]:bg-[var(--mock-well-soft)] [[data-theme=dark]_&]:hover:bg-[var(--mock-well-2)] ${MOCK_PRIMARY} ${INK} [[data-theme=dark]_&]:text-white/75 ${
+              key={question.text}
+              className={`rounded-md border ${LINE} px-3.5 py-2.5 text-left max-md:truncate transition-colors duration-150 bg-[var(--mock-well-soft)] hover:bg-[var(--mock-well)] [[data-theme=dark]_&]:bg-[var(--mock-well-soft)] [[data-theme=dark]_&]:hover:bg-[var(--mock-well-2)] ${MOCK_PRIMARY} ${INK} [[data-theme=dark]_&]:text-white/75 ${
                 i === SUGGESTIONS.length - 1 ? "hidden md:block" : ""
               }`}
             >
-              {question}
+              {question.short ? (
+                <>
+                  <span className="md:hidden">{question.short}</span>
+                  <span className="max-md:hidden">{question.text}</span>
+                </>
+              ) : (
+                question.text
+              )}
             </span>
           ))}
         </div>
