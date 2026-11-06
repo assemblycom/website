@@ -120,6 +120,7 @@ the templates committed in `src/lib/templates.ts` and nothing changes. **Set** �
 | `CONTENTFUL_DELIVERY_TOKEN` | the site | Read-only. **Settings → API keys** |
 | `CONTENTFUL_MANAGEMENT_TOKEN` | setup + migration only | Write access. Delete it once the migration is done |
 | `CONTENTFUL_ENVIRONMENT` | optional | Defaults to `master` |
+| `CONTENTFUL_REVALIDATE_SECRET` | publish refresh | Shared with the Contentful webhook below. Unset → `/api/revalidate-contentful` refuses every call and edits wait for the hourly refresh |
 
 ### Sharing a space with another site
 
@@ -159,6 +160,18 @@ than sharing them). `prebuild` runs the pull on every deploy.
    **Publish** and **Unpublish** for Entry.
 
 Publishing then rebuilds the site on its own — a couple of minutes, no PR.
+
+### Publishing refreshes the catalogue (no rebuild)
+
+The templates and embeds catalogue is cached once for all server instances and
+refreshed hourly. To show an edit within seconds instead:
+
+1. Generate a long random secret and set it as `CONTENTFUL_REVALIDATE_SECRET` on
+   all three Vercel scopes.
+2. Contentful → **Settings → Webhooks → Add webhook**: `POST` to
+   `https://assembly.com/api/revalidate-contentful` (one webhook per deployed
+   domain), with a header `x-revalidate-secret` set to the same secret. Trigger
+   on **Publish**, **Unpublish** and **Delete** for Entry and Asset.
 
 ### What stays in code
 
