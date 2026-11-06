@@ -349,7 +349,7 @@ export default async function LpPortalPage({
         <GridDivider />
         <PortalPricing
           heading="Start free. The free plan never expires."
-          body="The free plan includes the CRM, the client portal, the AI app builder, and 3 apps, and can publish real apps your clients use. Paid plans add more clients, more apps, and your own domain."
+          body="The free plan includes the CRM, the client portal, the AI app builder, and 3 apps, and can publish real apps your clients use. Paid plans add more clients, more apps, and your own domain. Monthly prices shown are billed annually."
         />
         <GridDivider />
       </div>
