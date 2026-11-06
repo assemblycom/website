@@ -100,7 +100,12 @@ export function TemplateCard({
         <h3 className="type-body mt-4 text-foreground">
           {template.title}
         </h3>
-        <p className="type-caption mt-1 text-muted-foreground">
+        {/* Two lines are reserved whether or not the line under the name needs
+            them. Grid cells stretch to the tallest in their row, so a one-line
+            description left its own cell short and the whole gap to the next
+            row read bigger under that card than under its neighbours. 42px is
+            two lines of .type-caption (14px at 1.5). */}
+        <p className="type-caption mt-1 min-h-[42px] text-muted-foreground">
           {template.description}
         </p>
         {chip && (

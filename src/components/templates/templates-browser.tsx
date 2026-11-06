@@ -401,10 +401,10 @@ export function TemplatesBrowser({ templates }: Props) {
                     // overflow scroller, so it was clipped top and bottom on every
                     // chip and clipped again at the ends of the row. Drawn inside,
                     // there is nothing for the scroller to crop.
-                    className={`type-body inline-flex h-9 shrink-0 items-center whitespace-nowrap rounded-lg px-3.5 leading-none outline-none transition-colors focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-foreground/40 ${
+                    className={`type-body inline-flex h-9 shrink-0 items-center whitespace-nowrap rounded-lg px-3.5 leading-none lg:h-8 lg:px-2.5 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-foreground/40 ${
                       active
-                        ? "bg-border text-foreground dark-ui:bg-[var(--surface-2)]"
-                        : "bg-transparent text-muted-foreground active:bg-border [@media(hover:hover)]:hover:bg-muted [@media(hover:hover)]:hover:text-foreground"
+                        ? "bg-muted text-foreground dark-ui:bg-[var(--surface-2)]"
+                        : "bg-transparent text-muted-foreground active:bg-muted [@media(hover:hover)]:hover:text-foreground"
                     }`}
                   >
                     {cat}
@@ -439,7 +439,7 @@ export function TemplatesBrowser({ templates }: Props) {
           two very wide cards and then jumped straight to five. */}
       <div ref={resultsRef}>
         {filtered.length > 0 ? (
-          <div className="mt-10 grid gap-x-6 gap-y-12 min-[560px]:grid-cols-2 min-[760px]:grid-cols-3 min-[1100px]:grid-cols-4 lg:gap-x-8 lg:gap-y-[72px] min-[1440px]:grid-cols-5">
+          <div className="mt-10 grid gap-x-6 gap-y-12 min-[560px]:grid-cols-2 min-[760px]:grid-cols-3 min-[1100px]:grid-cols-4 lg:gap-x-8 lg:gap-y-[72px] min-[1280px]:grid-cols-5">
             {filtered.map((template) => (
               <TemplateCard key={template.slug} template={template} />
             ))}
