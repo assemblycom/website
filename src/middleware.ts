@@ -36,10 +36,8 @@ const enabled = process.env.HERO_TEST_ENABLED !== "0";
  * PRODUCTION ONLY, so a preview shows the page the branch is actually about.
  *
  * The rewrite below sends `/` to `/hero-variant/<arm>`, which renders the
- * SHIPPED homepage body. On a preview deployment that meant the branch's own
- * homepage — the three hero versions and the switcher between them — was
- * unreachable: every visit to `/` was rewritten away from it, and the review
- * link showed main's page with no sign that anything had changed.
+ * arm's version of the homepage. Previews serve `/` straight through instead,
+ * where `?v=1|2|3` shows any of the three versions for review.
  *
  * `VERCEL_ENV` is "production" only on a production deployment, so previews
  * and local runs serve `/` straight through and production keeps the test

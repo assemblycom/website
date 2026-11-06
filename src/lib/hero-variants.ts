@@ -28,8 +28,13 @@
 export const COPY_KEYS = ["clients"] as const;
 export type CopyKey = (typeof COPY_KEYS)[number];
 
-/** The page version. `v3` is big type with the Round 3 body copy. */
-export const LAYOUT_KEYS = ["v3"] as const;
+/**
+ * The page version. Round 4 tests three heroes over one shared page body:
+ * `v3` is the shipped big-type hero (the prototype's V1; the key is kept so
+ * the hero component that reads it is unchanged), `split` the split hero with
+ * the client's assistant (V2), and `photo` the full-bleed photograph (V3).
+ */
+export const LAYOUT_KEYS = ["v3", "split", "photo"] as const;
 export type LayoutKey = (typeof LAYOUT_KEYS)[number];
 
 /** `<copy>-<layout>`, e.g. "clients-v3". What the cookie and events carry. */
@@ -107,24 +112,14 @@ export function parseArm(
   return { copy, layout };
 }
 
-/** The one arm that ships. */
-const SHIPPED_ARM: Arm = `${FALLBACK_COPY}-${FALLBACK_LAYOUT}`;
-
-/** Every message and page version from Rounds 1 and 2, all retired. */
-const LEGACY_COPY = new Set(["firm", "builder", "clients"]);
-const LEGACY_LAYOUTS = new Set(["control", "bigtype", "v2"]);
-
 /**
- * The arm a held cookie should become. Any arm from Rounds 1 or 2 moves to the
- * shipped one, since its message or page no longer exists, and the rewritten
- * cookie means the visitor's next signup reports the hero they actually saw.
+ * The arm a held cookie should become: itself if it is a Round 4 arm, nothing
+ * otherwise. Round 4 is a new experiment under a new cookie, so nobody carries
+ * an earlier round's assignment into it; everyone is drawn fresh.
  */
 export function migrateArm(value: string | undefined | null): Arm | null {
   if (!value) return null;
-  if (parseArm(value)) return value as Arm;
-  const [copy, layout] = value.split("-");
-  if (LEGACY_COPY.has(copy) && LEGACY_LAYOUTS.has(layout)) return SHIPPED_ARM;
-  return null;
+  return parseArm(value) ? (value as Arm) : null;
 }
 
 /**
@@ -141,6 +136,10 @@ const COPY_ALIASES: Record<string, CopyKey> = {
   builder: "clients",
 };
 const LAYOUT_ALIASES: Record<string, LayoutKey> = {
+  // The prototype switcher's numbers, so `?v=2` style review links still work.
+  "1": "v3",
+  "2": "split",
+  "3": "photo",
   // Every retired layout and page version resolves to the shipped one, so old
   // review links still land on the homepage as it now reads.
   b: "v3",
@@ -157,6 +156,12 @@ const LAYOUT_ALIASES: Record<string, LayoutKey> = {
  * arm they did not ask for.
  */
 export function armFromQuery(params: URLSearchParams): Arm | null {
+  // `?v=1|2|3` alone, the prototype's review links, picks the layout on the
+  // one message there is.
+  const v = params.get("v");
+  if (v && LAYOUT_ALIASES[v] && !params.get("layout")) {
+    return `${FALLBACK_COPY}-${LAYOUT_ALIASES[v]}`;
+  }
   const rawCopy = params.get("copy");
   const rawLayout = params.get("layout");
   if (!rawCopy || !rawLayout) return null;
@@ -172,7 +177,8 @@ export function randomArm(): Arm {
 }
 
 /** Where the assignment is kept. Written by middleware, read by both sides. */
-export const HERO_COOKIE = "ab_hero";
+// A new name for Round 4, so no assignment from the earlier rounds carries over.
+export const HERO_COOKIE = "ab_hero_r4";
 
 /** The arm's name on the signup URL, where the product reads it. */
 export const HERO_ARM_PARAM = "heroArm";
