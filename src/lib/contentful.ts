@@ -1,3 +1,4 @@
+import { unstable_cache } from "next/cache";
 import { createClient, type Entry, type Asset } from "contentful";
 import type { Document } from "@contentful/rich-text-types";
 
@@ -144,6 +145,38 @@ export const isContentfulConfigured = Boolean(client);
  */
 export const contentfulClient = client;
 
+/**
+ * Tag on every cached catalogue read. The Contentful publish webhook
+ * (src/app/api/revalidate-contentful) revalidates it, so an edit shows within
+ * seconds instead of waiting out the hourly refresh.
+ */
+export const CONTENTFUL_CACHE_TAG = "contentful";
+
+// One copy of each catalogue in Next's data cache, which Vercel shares across
+// every server instance. A copy per instance is what made the site most of our
+// Contentful calls. unstable_cache rather than `use cache`: the directive needs
+// Cache Components switched on site-wide, and its default cache is per instance.
+const CATALOGUE_CACHE = { revalidate: 3600, tags: [CONTENTFUL_CACHE_TAG] };
+// Part of every cache key: the shared cache outlives deploys, so pointing the
+// site at another space or environment must not serve the old catalogue.
+const CATALOGUE_SOURCE = [SPACE_ID ?? "", ENVIRONMENT];
+
+/**
+ * Reads a catalogue through the shared cache, or straight from Contentful in
+ * dev, where an editor wants a refresh to show their change. A failed read
+ * throws inside the cache so it is never stored: caching the empty fallback
+ * would hide the catalogue for the whole hour.
+ */
+async function readCatalogue<T>(cached: () => Promise<T[]>, query: () => Promise<T[]>, failure: string): Promise<T[]> {
+  if (!client) return [];
+  try {
+    return process.env.NODE_ENV === "production" ? await cached() : await query();
+  } catch (error) {
+    console.warn(failure, error);
+    return [];
+  }
+}
+
 function toImage(asset: Asset): TemplateImage | null {
   const file = asset?.fields?.file;
   if (!file?.url) return null;
@@ -231,43 +264,32 @@ function toAppTemplate(entry: Entry<never>): AppTemplateEntry | null {
  * Returns an empty list when Contentful isn't configured or is unreachable — the pages fall back to the templates committed
  * in templates.ts, so a CMS problem can't take the gallery down.
  */
-// A production build renders every template page in one process, so without this
-// the same query would run once per page. Deliberately not cached in dev, where
-// an editor wants a refresh to show their change.
-//
-// Time-bounded, and that matters now the pages revalidate: an unbounded module
-// promise outlives a regeneration, so a warm lambda would keep serving the
-// catalogue it fetched the first time and the ISR window would do nothing. A
-// minute still collapses a whole build's worth of renders into one query, while
-// being far shorter than the pages' own revalidate.
-const CACHE_MS = 60_000;
-let cached: { at: number; value: Promise<AppTemplateEntry[]> } | null = null;
-
 export function getAppTemplates(): Promise<AppTemplateEntry[]> {
-  if (process.env.NODE_ENV !== "production") return fetchAppTemplates();
-  if (!cached || Date.now() - cached.at > CACHE_MS) {
-    cached = { at: Date.now(), value: fetchAppTemplates() };
-  }
-  return cached.value;
+  return readCatalogue(
+    cachedAppTemplates,
+    queryAppTemplates,
+    "Contentful fetch failed, using the committed templates:",
+  );
 }
 
-async function fetchAppTemplates(): Promise<AppTemplateEntry[]> {
+async function queryAppTemplates(): Promise<AppTemplateEntry[]> {
   if (!client) return [];
-  try {
-    const res = await client.getEntries({
-      content_type: CONTENT_TYPE,
-      "fields.appType[in]": GALLERY_APP_TYPES,
-      include: 2,
-      limit: 200,
-    });
-    return res.items
-      .map((item) => toAppTemplate(item as Entry<never>))
-      .filter((t): t is AppTemplateEntry => Boolean(t));
-  } catch (error) {
-    console.warn("Contentful fetch failed, using the committed templates:", error);
-    return [];
-  }
+  const res = await client.getEntries({
+    content_type: CONTENT_TYPE,
+    "fields.appType[in]": GALLERY_APP_TYPES,
+    include: 2,
+    limit: 200,
+  });
+  return res.items
+    .map((item) => toAppTemplate(item as Entry<never>))
+    .filter((t): t is AppTemplateEntry => Boolean(t));
 }
+
+const cachedAppTemplates = unstable_cache(
+  queryAppTemplates,
+  ["contentful-app-templates", ...CATALOGUE_SOURCE],
+  CATALOGUE_CACHE,
+);
 
 export async function getAppTemplate(slug: string): Promise<AppTemplateEntry | null> {
   const all = await getAppTemplates();
@@ -297,12 +319,6 @@ function toEmbed(entry: Entry<never>): EmbedEntry | null {
   };
 }
 
-// Its own cache rather than a shared one keyed by type: the two catalogues are
-// queried by different pages, and one warming the other's entry would hand it a
-// list filtered for somebody else. Same minute-long bound as the templates
-// cache, for the same reason — see above.
-let embedCache: { at: number; value: Promise<EmbedEntry[]> } | null = null;
-
 /**
  * Every published Embed, hidden ones included — the flag is applied where the
  * listing is built, so a hidden embed still has a page.
@@ -312,31 +328,25 @@ let embedCache: { at: number; value: Promise<EmbedEntry[]> } | null = null;
  * than rendering a gallery that is silently missing half its entries.
  */
 export function getEmbeds(): Promise<EmbedEntry[]> {
-  if (process.env.NODE_ENV !== "production") return fetchEmbeds();
-  if (!embedCache || Date.now() - embedCache.at > CACHE_MS) {
-    embedCache = { at: Date.now(), value: fetchEmbeds() };
-  }
-  return embedCache.value;
+  return readCatalogue(cachedEmbeds, queryEmbeds, "Contentful embed fetch failed:");
 }
 
-async function fetchEmbeds(): Promise<EmbedEntry[]> {
+async function queryEmbeds(): Promise<EmbedEntry[]> {
   if (!client) return [];
-  try {
-    const res = await client.getEntries({
-      content_type: CONTENT_TYPE,
-      "fields.appType": EMBED,
-      include: 2,
-      limit: 200,
-      order: ["fields.name"],
-    });
-    return res.items
-      .map((item) => toEmbed(item as Entry<never>))
-      .filter((embed): embed is EmbedEntry => Boolean(embed));
-  } catch (error) {
-    console.warn("Contentful embed fetch failed:", error);
-    return [];
-  }
+  const res = await client.getEntries({
+    content_type: CONTENT_TYPE,
+    "fields.appType": EMBED,
+    include: 2,
+    limit: 200,
+    order: ["fields.name"],
+  });
+  return res.items
+    .map((item) => toEmbed(item as Entry<never>))
+    .filter((embed): embed is EmbedEntry => Boolean(embed));
 }
+
+// Its own cache key, so the embeds and templates lists never share an entry.
+const cachedEmbeds = unstable_cache(queryEmbeds, ["contentful-embeds", ...CATALOGUE_SOURCE], CATALOGUE_CACHE);
 
 export async function getEmbed(slug: string): Promise<EmbedEntry | null> {
   const all = await getEmbeds();

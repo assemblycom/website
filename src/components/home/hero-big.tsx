@@ -1,7 +1,8 @@
-import { Fragment } from "react";
+import { Fragment, type ReactNode } from "react";
 import { AppMarkGlyph, type AppMark, type MarkTint } from "./app-marks";
 import { APP_URL, SIGNUP_URL, DEMO_URL } from "@/lib/constants";
 import { trackHeroCta } from "./hero-experiment";
+import { HeroCredibility } from "@/components/home/v2/hero-credibility";
 
 // The "big type" arm of the hero test (see src/lib/hero-variants.ts): oversized
 // type with app marks set into the headline, and no prompt box — the ask is the
@@ -58,10 +59,16 @@ const HEADLINE_MARKS: { mark: AppMark; tint: MarkTint }[] = [
  */
 const TILE_GAP = "0.17em";
 
-function HeadlineTiles({ children }: { children: React.ReactNode }) {
+function HeadlineTiles({
+  children,
+  className = "",
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   return (
     <span
-      className="inline-flex items-center align-[-0.04em]"
+      className={`inline-flex items-center align-[-0.04em] ${className}`}
       style={{ gap: TILE_GAP, marginInline: TILE_GAP }}
     >
       {children}
@@ -78,14 +85,22 @@ function BigHeadline({
   iconAfter,
   iconPair,
   iconBefore,
+  iconSplitAfter,
 }: {
   text: string;
   iconAfter?: string;
   iconPair?: boolean;
   iconBefore?: string;
+  iconSplitAfter?: string;
 }) {
   const afterAt = iconAfter ? text.indexOf(iconAfter) : -1;
   const beforeAt = iconBefore ? text.indexOf(iconBefore) : -1;
+  // Where the pair's second mark goes once the line has wrapped — see
+  // `iconSplitAfter` on HeroBig. Only when this line holds both words.
+  const splitAt =
+    iconPair && iconSplitAfter && afterAt >= 0
+      ? text.indexOf(iconSplitAfter)
+      : -1;
 
   const tiles = [
     {
@@ -93,7 +108,27 @@ function BigHeadline({
       tile: (
         <HeadlineTiles>
           <HeadlineTile {...HEADLINE_MARKS[0]} />
-          {iconPair && <HeadlineTile {...HEADLINE_MARKS[1]} />}
+          {iconPair && (
+            // The second mark is drawn twice and one of the two is always
+            // hidden: there is no way to move a node between two points in a
+            // sentence with CSS, and the pair has to sit together on a line
+            // that does not wrap and apart on one that does.
+            <span
+              className={
+                splitAt >= 0 ? "hidden min-[560px]:contents" : "contents"
+              }
+            >
+              <HeadlineTile {...HEADLINE_MARKS[1]} />
+            </span>
+          )}
+        </HeadlineTiles>
+      ),
+    },
+    {
+      at: splitAt >= 0 ? splitAt + iconSplitAfter!.length : -1,
+      tile: (
+        <HeadlineTiles className="min-[560px]:hidden">
+          <HeadlineTile {...HEADLINE_MARKS[1]} />
         </HeadlineTiles>
       ),
     },
@@ -129,7 +164,9 @@ function BigHeadline({
   );
 }
 
-const PRIMARY_CTA =
+/** The hero's primary action. Exported so a second hero layout runs the
+ * same control rather than restating its classes. */
+export const PRIMARY_CTA =
   "inline-flex w-full shrink-0 items-center justify-center whitespace-nowrap rounded-lg bg-foreground px-4 py-3 text-center text-sm text-background transition-opacity hover:opacity-90 sm:w-auto sm:py-2 md:px-5 md:py-2.5 [[data-theme=dark]_&]:bg-white [[data-theme=dark]_&]:text-neutral-900";
 
 export function HeroBig({
@@ -139,7 +176,11 @@ export function HeroBig({
   iconAfter,
   iconPair,
   iconBefore,
+  iconSplitAfter,
   signupHref = SIGNUP_URL,
+  trustSlot,
+  roomy = false,
+  rating = false,
 }: {
   headline: string;
   body?: string;
@@ -147,8 +188,74 @@ export function HeroBig({
   iconAfter?: string;
   iconPair?: boolean;
   iconBefore?: string;
+  /**
+   * The word the pair's SECOND mark moves to once the headline wraps, below
+   * md.
+   *
+   * The lockup is one line on a desktop, so both marks sit together after
+   * the first word and read as a pair. On a phone that line breaks, and the
+   * pair went with it: two marks crowded onto the end of a short first line
+   * with the next word alone underneath. Moving one of them to the end of
+   * the wrapped word puts a mark on each line. Opt-in, so the live hero is
+   * unchanged.
+   *
+   * 560, NOT md. The split is only right on a line that has actually
+   * wrapped, and this lockup holds one line down to about 550 — so between
+   * there and md the two marks were separated across a line that had not
+   * broken, which is just a mark adrift at the end of a word. Measured, not
+   * picked: the line sets on one row at 560 and on two at 540.
+   */
+  iconSplitAfter?: string;
   /** Signup, carrying the arm. Falls back to the plain CTA URL. */
   signupHref?: string;
+  /**
+   * A row of proof under the button pair. See hero-v76's own `trustSlot` — the
+   * two heroes take the same slot so a version can hand one row to whichever
+   * layout it renders, without knowing which it got.
+   */
+  trustSlot?: ReactNode;
+  /**
+   * Opens the hero's own box, for a page that does not run this hero's usual
+   * neighbours. See `roomy` on HeroV76, which passes it through.
+   *
+   * It raises the floor and the insets together rather than only the padding:
+   * the box already centres its content (`justify-center`), so a taller floor
+   * is what gives the lockup room on both sides of itself instead of pushing
+   * it down into the section below.
+   *
+   * FULL SCREEN, PHONES INCLUDED. The hero gets the first view to itself:
+   * with the box at 80svh the next section's heading and half its chips sat
+   * under the buttons on a laptop, so the page opened on two things at once
+   * and the hero never had a moment of its own. At 100svh the content still
+   * centres, it just centres in the whole screen, and the top padding drops
+   * to match so the lockup does not slide down with the floor.
+   *
+   * BUT NOT ON A WIDE DISPLAY. A screen is a good measure of the hero while
+   * the screen is a laptop's; at 1920 it is 1080px of box holding 460px of
+   * lockup, so the headline floats in the middle of a field with a third of a
+   * screen of nothing above it and a third below, and the logo reel that
+   * should close the hero is pushed out of view entirely. The box takes its
+   * content's own height there instead, with a floor under it — which is what
+   * every wide-screen page that reads well does: the column stops growing and
+   * the margins take the extra.
+   *
+   * The phone was left at 80svh and had the same fault for the same reason —
+   * the eyebrow of the industries row sat under the buttons. It takes
+   * `100svh + 3.5rem` rather than a plain 100svh because the section is
+   * pulled up under the fixed bar by -mt-14: at exactly one screen the box
+   * ends 56px above the fold and that much of the next section shows through
+   * under it. The extra is that pull given back.
+   */
+  roomy?: boolean;
+  /**
+   * The G2 line above the headline.
+   *
+   * Off by default: this hero ships on several pages and the rating belongs
+   * to the homepage's argument, not to every one of them. Centred here rather
+   * than ranged left as it is in the split hero, because this lockup is
+   * centred and the rating is part of it.
+   */
+  rating?: boolean;
 }) {
   return (
     <section className="relative -mt-14 bg-white md:-mt-16 [[data-theme=dark]_&]:bg-[#0a0a0a]">
@@ -158,7 +265,26 @@ export function HeroBig({
           put the numbers band entirely below the fold on a laptop. The floor
           keeps the hero generous on a short viewport; above that it stops
           growing and the band comes up into view. */}
-      <div className="mx-auto flex min-h-[calc(68svh-5rem)] max-w-[1200px] flex-col justify-center px-6 pb-16 pt-28 md:px-10 md:pb-20">
+      <div
+        className={`mx-auto flex max-w-[1200px] flex-col justify-center px-6 md:px-10 ${
+          roomy
+            ? "min-h-[calc(100svh+3.5rem)] pb-24 pt-32 md:min-h-[100svh] md:pb-28 md:pt-32 wide:min-h-[660px] wide:pb-20 wide:pt-28"
+            : "min-h-[calc(68svh-5rem)] pb-16 pt-28 md:pb-20"
+        }`}
+      >
+        {/* ABOVE THE CLAIM IT VOUCHES FOR, not under it: a rating read
+            before the claim frames the claim — someone else already vouched
+            for this — where the same line read after it is a footnote to
+            something you have already decided about. Shared with the split
+            hero rather than restated, so the two are one object. */}
+        {rating ? (
+          <div className="mb-1 text-center">
+            {/* The count is dropped on a phone here: this hero centres its
+                rating over a full-width column, where the line is at its
+                longest and nearest the screen's edges. */}
+            <HeroCredibility compactOnPhone />
+          </div>
+        ) : null}
         <h1
           className={`type-display-xl mx-auto text-balance text-center ${lines ? "max-w-none" : "max-w-[16ch]"} text-neutral-900 [[data-theme=dark]_&]:text-white`}
         >
@@ -180,6 +306,7 @@ export function HeroBig({
                   iconAfter={iconAfter}
                   iconPair={iconPair}
                   iconBefore={iconBefore}
+                  iconSplitAfter={iconSplitAfter}
                 />
               </span>
             ))
@@ -231,6 +358,8 @@ export function HeroBig({
             Book a demo
           </a>
         </div>
+
+        {trustSlot}
       </div>
     </section>
   );

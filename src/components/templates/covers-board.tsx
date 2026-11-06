@@ -36,7 +36,7 @@ function CoverCard({ template, dark }: { template: Template; dark: boolean }) {
             page would show a layout the gallery never renders. */}
         <MockFit>
           <div
-            className={`template-mock template-mock-gallery [font-family:var(--font-inter),system-ui,sans-serif] ${
+            className={`template-mock template-mock-gallery font-sans ${
               dark ? "v72-mock-dark" : ""
             }`}
           >

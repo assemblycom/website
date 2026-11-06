@@ -52,6 +52,18 @@ export const BUILDER_GRID_LINE =
   "border-[rgba(16,17,20,0.055)] [[data-theme=dark]_&]:border-[rgba(232,237,239,0.085)]";
 
 /**
+ * The same tone as a FILL, for a line drawn as a span or as the bed behind a
+ * gap rather than as a border.
+ *
+ * Any guide line on a page with these rails has to be this colour whichever
+ * way it is painted. The certification band's cell hairlines and the FAQ's
+ * own side rules were --border, a step darker, and the column they share
+ * with a rail changed weight where one handed over to the other.
+ */
+export const BUILDER_GRID_LINE_BG =
+  "bg-[rgba(16,17,20,0.055)] [[data-theme=dark]_&]:bg-[rgba(232,237,239,0.085)]";
+
+/**
  * The soft edge a card gives the rails passing behind it.
  *
  * The rails are a BACKDROP — they run the height of the region and every
@@ -104,7 +116,40 @@ export const BUILDER_RAIL_HALO_WIDE =
 /** The six interior boundaries plus both edges: sevenths of nothing, sixths of the measure. */
 const COLUMNS = [0, 1, 2, 3, 4, 5, 6];
 
-export function BuilderGridRails() {
+/**
+ * The mask, as the four literal class strings Tailwind can see.
+ *
+ * A fade states that the grid STOPS here. Where one bed hands straight over
+ * to the next — the hero's rails into the logo band's, the band's into the
+ * content region's — a fade on each side of the seam is two statements that
+ * are both wrong: the grid does not stop there, and a reader sees the dip.
+ * Only the first bed fades in and only the last fades out.
+ */
+const MASK = {
+  both: "[mask-image:linear-gradient(to_bottom,transparent_0,#000_200px,#000_calc(100%-260px),transparent_100%)]",
+  top: "[mask-image:linear-gradient(to_bottom,transparent_0,#000_200px)]",
+  bottom:
+    "[mask-image:linear-gradient(to_bottom,#000_calc(100%-260px),transparent_100%)]",
+  none: "",
+};
+
+export function BuilderGridRails({
+  fadeTop = true,
+  fadeBottom = true,
+}: {
+  /** False where the bed above this one already carries the rails. */
+  fadeTop?: boolean;
+  /** False where the bed below this one carries them on. */
+  fadeBottom?: boolean;
+} = {}) {
+  const mask =
+    fadeTop && fadeBottom
+      ? MASK.both
+      : fadeTop
+        ? MASK.top
+        : fadeBottom
+          ? MASK.bottom
+          : MASK.none;
   return (
     <div
       aria-hidden
@@ -167,7 +212,7 @@ export function BuilderGridRails() {
       // instead, so whatever the wrapper's `bg-background` resolves to in the
       // current theme is what the rails fade into — one declaration, correct
       // in both.
-      className="pointer-events-none absolute inset-0 -z-10 hidden [mask-image:linear-gradient(to_bottom,transparent_0,#000_200px,#000_calc(100%-260px),transparent_100%)] min-[1200px]:block"
+      className={`pointer-events-none absolute inset-0 -z-10 hidden min-[1200px]:block ${mask}`}
     >
             {/* NO HORIZONTAL PADDING. The rails and the horizontal rules have to
           share one box or the grid does not close at its corners: GridDivider

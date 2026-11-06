@@ -24,6 +24,10 @@ type Contact = {
   phone: string;
   /** A custom field. Blank for the rows that have not been given one. */
   tag?: string;
+  /** The product's own client status — see DefaultCRMColumnSettings. */
+  status: "Active" | "Invited";
+  /** The product's "Creation date", in the format the CRM prints it. */
+  created: string;
 };
 
 /**
@@ -218,12 +222,20 @@ const COMPANY_MARKS: Record<
   Godo: { Mark: MarkGodo, size: "size-[7.5px]" },
 };
 
-function CompanyMark({
+/** True when this company has its own artwork, for callers outside the CRM. */
+export function hasCompanyMark(company: string) {
+  return company in COMPANY_MARKS;
+}
+
+export function CompanyMark({
   company,
   className = "",
+  markClassName,
 }: {
   company: string;
   className?: string;
+  /** Overrides the mark's own size, for a tile drawn larger than 14px. */
+  markClassName?: string;
 }) {
   const entry = COMPANY_MARKS[company];
   const tile = COMPANY_TILES[company];
@@ -237,7 +249,7 @@ function CompanyMark({
       } ${className}`}
     >
       {entry ? (
-        <entry.Mark className={entry.size} />
+        <entry.Mark className={markClassName ?? entry.size} />
       ) : (
         <IconBrandMark className="size-[8px]" />
       )}
@@ -263,6 +275,8 @@ function initials(name: string) {
 /**
  * FICTIONAL NUMBERS ONLY, and the 555-01xx block specifically — it is the
  * range reserved for fiction, so nothing here can ever ring a real person.
+ * The block is reserved under every area code, so each contact gets a real
+ * city's code in front: a column of "(555)" read as fake at a glance.
  *
  * This list is sample data in a marketing screenshot. Nothing in it may be
  * copied from a real CRM, a support ticket, or a screenshot someone shared to
@@ -272,42 +286,54 @@ function initials(name: string) {
 const CONTACTS: Contact[] = [
   {
     name: "Mary Sung",
+    status: "Active",
+    created: "Oct 23, 2026",
     email: "mary@symphony.co",
     company: "Symphony",
-    phone: "(555) 010-4471",
+    phone: "(415) 555-0147",
     tag: "Retainer",
   },
   {
     name: "Chuck Wilford",
+    status: "Active",
+    created: "Oct 23, 2026",
     email: "chuckd@symphony.co",
     company: "Symphony",
-    phone: "(555) 010-2286",
+    phone: "(312) 555-0186",
   },
   {
     name: "Timothy Leclerc",
+    status: "Active",
+    created: "Oct 21, 2026",
     email: "timmy@wave.co",
     company: "Wave",
-    phone: "(555) 010-7715",
+    phone: "(646) 555-0123",
     tag: "Project",
   },
   {
     name: "Jasmin Khan",
+    status: "Invited",
+    created: "Oct 9, 2026",
     email: "jasmin@symphony.co",
     company: "2 companies",
-    phone: "(555) 010-3390",
+    phone: "(206) 555-0139",
   },
   {
     name: "Kenny Tse",
+    status: "Active",
+    created: "Sep 29, 2026",
     email: "ktse2@godo.com",
     company: "Godo",
-    phone: "(555) 010-6128",
+    phone: "(512) 555-0162",
     tag: "Retainer",
   },
   {
     name: "Andy Alvarez",
+    status: "Active",
+    created: "Sep 25, 2026",
     email: "andy@wave.co",
     company: "Wave",
-    phone: "(555) 010-8834",
+    phone: "(617) 555-0108",
   },
 ];
 
@@ -316,22 +342,28 @@ const CONTACTS: Contact[] = [
 const MORE_CONTACTS: Contact[] = [
   {
     name: "Priya Nair",
+    status: "Active",
+    created: "Aug 13, 2026",
     email: "priya@godo.com",
     company: "Godo",
-    phone: "(555) 010-5172",
+    phone: "(303) 555-0175",
     tag: "Project",
   },
   {
     name: "Leo Brandt",
+    status: "Invited",
+    created: "Aug 11, 2026",
     email: "leo@symphony.co",
     company: "Symphony",
-    phone: "(555) 010-9043",
+    phone: "(213) 555-0194",
   },
   {
     name: "Nadia Osei",
+    status: "Active",
+    created: "Aug 11, 2026",
     email: "nadia@wave.co",
     company: "Wave",
-    phone: "(555) 010-2617",
+    phone: "(404) 555-0131",
     tag: "Retainer",
   },
 ];
@@ -392,7 +424,14 @@ export function TeamCrmVisual({
               the frame. pt-3.5 against the tabs' own pb-1.5 is not symmetry
               for its own sake — a tab's underline IS its bottom edge, so the
               gap under it reads shorter than the number says. */}
-          <div className="flex shrink-0 gap-4 border-b border-[var(--mock-line)] px-3 pt-3.5">
+          <div
+            // Taller in the big frames (the homepage panel and the comparison
+            // pages), where the 14px top inset left the tabs pressed against
+            // the window's edge; the small /ai-app-builder card keeps its own.
+            className={`flex shrink-0 gap-4 border-b border-[var(--mock-line)] px-3 ${
+              moreRows ? "pt-5" : "pt-3.5"
+            }`}
+          >
             {["Companies", "Contacts"].map((tab, i) => (
               <span
                 key={tab}
@@ -404,7 +443,7 @@ export function TeamCrmVisual({
                 // Reused rather than re-picked: this is the same token the Add
                 // App rail's resting rows take, which is the same job — a
                 // destination you are NOT on.
-                className={`-mb-px border-b pb-1.5 ${MOCK_PRIMARY} ${
+                className={`-mb-px border-b ${moreRows ? "pb-2.5" : "pb-1.5"} ${MOCK_PRIMARY} ${
                   i === 1
                     ? "border-[var(--mock-ink)] text-[color:var(--mock-ink)]"
                     : "border-transparent text-[color:var(--mock-nav-rest)]"
@@ -498,6 +537,18 @@ export function TeamCrmVisual({
                   only one of the three the shot was not showing. */}
               <span className="hidden w-[130px] shrink-0 sm:block">Phone</span>
               <span className="hidden w-[130px] shrink-0 sm:block">Tags</span>
+              {/* THE LAST TWO THE PRODUCT'S OWN CONTACTS TABLE CARRIES —
+                  Status and Creation date, the fields next to Name and
+                  Company in DefaultCRMColumnSettings. Without them the table
+                  stopped four columns in and left a third of the window as
+                  empty ground, which read as a screen still loading rather
+                  than as a CRM. They sit at the crop, so the table now runs
+                  past the frame the way the right-edge ramp already claims
+                  it does. */}
+              <span className="hidden w-[90px] shrink-0 sm:block">Status</span>
+              <span className="hidden w-[120px] shrink-0 sm:block">
+                Creation date
+              </span>
               <span className="flex-1" />
             </div>
             {contacts.map((contact, i) => (
@@ -657,11 +708,33 @@ export function TeamCrmVisual({
                     <span className="hidden w-[130px] shrink-0 sm:block">
                       {contact.tag ? (
                         <span
-                          className={`inline-flex items-center rounded-[4px] border border-[var(--mock-line)] px-1.5 py-[3px] text-[color:var(--mock-ink-soft)] ${MOCK_SECONDARY}`}
+                          className={`inline-flex items-center rounded-[4px] border border-[var(--mock-line)] px-1.5 py-[3px] text-[color:var(--mock-ink-soft)] [[data-theme=dark]_&]:bg-white/[0.06] ${MOCK_SECONDARY}`}
                         >
                           {contact.tag}
                         </span>
                       ) : null}
+                    </span>
+                    {/* The Tags column's own outlined chip, with the status
+                        dot kept inside it: the dot's colour is what tells a
+                        status from a tag, so the two can share one shape. */}
+                    <span className="hidden w-[90px] shrink-0 sm:block">
+                      <span
+                        className={`inline-flex items-center gap-1.5 rounded-[4px] border border-[var(--mock-line)] px-1.5 py-[3px] text-[color:var(--mock-ink-soft)] [[data-theme=dark]_&]:bg-white/[0.06] ${MOCK_SECONDARY}`}
+                      >
+                        <span
+                          className={`size-[5px] shrink-0 rounded-full ${
+                            contact.status === "Active"
+                              ? "bg-[#2f7d6c] [[data-theme=dark]_&]:bg-[#8ed2c1]"
+                              : "bg-[#9d7325] [[data-theme=dark]_&]:bg-[#dec08a]"
+                          }`}
+                        />
+                        {contact.status}
+                      </span>
+                    </span>
+                    <span
+                      className={`hidden w-[120px] shrink-0 truncate text-[color:var(--mock-ink-soft)] sm:block ${MOCK_PRIMARY}`}
+                    >
+                      {contact.created}
                     </span>
                   </>
                 )}

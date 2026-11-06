@@ -1,7 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { Fragment, memo, useEffect, useRef, useState } from "react";
+import {
+  Fragment,
+  memo,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { APP_URL, SIGNUP_URL, templateSignupUrl } from "@/lib/constants";
 import { type Template } from "@/lib/templates";
 import {
@@ -37,7 +44,8 @@ export interface HeroVariantProps {
   layout: LayoutKey;
 }
 
-const MONO = '"ABC Diatype Mono", ui-monospace, SFMono-Regular, Menlo, monospace';
+const MONO =
+  '"ABC Diatype Mono", ui-monospace, SFMono-Regular, Menlo, monospace';
 const RAIL = "mx-auto max-w-[1600px] px-6 md:px-10";
 const FRAME_PAD = 6; // breathing room between the card and the selector ring
 const CARD_RADIUS = 16; // the cards' rounded-2xl, in px — the ring adds its own gap on top
@@ -74,10 +82,20 @@ const carouselFrom = (templates: Template[]): Template[] => {
   return [...preferred, ...rest].slice(0, STRIP_MAX);
 };
 
-
 function IconChevron({ className }: { className?: string }) {
   return (
-    <svg className={className} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <svg
+      className={className}
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
       <path d="M9 6l6 6-6 6" />
     </svg>
   );
@@ -131,7 +149,7 @@ const TemplateCard = memo(function TemplateCard({
           return (
             <div
               data-slot="card-media"
-              className={`h-[212px] w-full overflow-hidden [font-family:var(--font-inter),system-ui,sans-serif] ${hue ? "v72-mock-color" : "v76-mock-auto"}`}
+              className={`h-[212px] w-full overflow-hidden font-sans ${hue ? "v72-mock-color" : "v76-mock-auto"}`}
               style={hue ? { backgroundColor: hue } : undefined}
             >
               <div className="h-full w-full">
@@ -144,8 +162,12 @@ const TemplateCard = memo(function TemplateCard({
       {/* Clear of the selector ring, which stands 6px outside the cover: at
           mt-3 the title sat 6px under the ring's bottom edge and read as
           crowded by it. */}
-      <p className="mt-4 line-clamp-2 text-[13px] font-normal leading-[1.3] text-neutral-900 [[data-theme=dark]_&]:text-white">{template.title}</p>
-      <p className="mt-1 text-[11px] text-muted-foreground">{template.category}</p>
+      <p className="mt-4 line-clamp-2 text-[13px] font-normal leading-[1.3] text-neutral-900 [[data-theme=dark]_&]:text-white">
+        {template.title}
+      </p>
+      <p className="mt-1 text-[11px] text-muted-foreground">
+        {template.category}
+      </p>
     </Link>
   );
 });
@@ -156,9 +178,43 @@ export function HeroV76({
   // Contentful on the server, which a client component can't await.
   templates,
   variant,
+  trustSlot,
+  roomy = false,
+  rating = false,
+  body: bodyOverride,
+  iconSplitAfter,
 }: {
   showPlus?: boolean;
   templates: Template[];
+  /**
+   * The supporting line, in place of the message's own.
+   *
+   * For the homepage prototype, where all three versions have to make the
+   * same claim in the same words or the comparison has two variables in it.
+   * Unset — which is every live render — the hero reads the line off
+   * COPY_VARIANTS exactly as it always has.
+   */
+  body?: string;
+  /** Passed through to HeroBig — see `iconSplitAfter` there. */
+  iconSplitAfter?: string;
+  /**
+   * Extra room above and below the hero's own content, for a page that does
+   * not run this hero's usual neighbours.
+   *
+   * The shipped homepage opens on this hero and closes it with a coloured
+   * numbers band, and its insets are set against both. Dropped onto a page
+   * with neither, the headline sat just under the nav links and the next
+   * section started straight off the buttons.
+   *
+   * It is a prop rather than padding on a wrapper because the hero RENDERS
+   * THE NAV: the bar is inside this component and the section under it is
+   * pulled up by -mt-14/-mt-16 to slide beneath it. Padding the whole thing
+   * from outside moves the nav down the page and opens a band of white above
+   * it, which is exactly what it did.
+   */
+  roomy?: boolean;
+  /** Passed through to HeroBig — the G2 line above the headline. */
+  rating?: boolean;
   /**
    * The hero test arm, resolved in middleware and handed down from the server
    * (see src/lib/hero-variants.ts). Omitted for anyone the test left out —
@@ -170,6 +226,15 @@ export function HeroV76({
    * swaps it. That is a layout shift on the one element under test.
    */
   variant?: HeroVariantProps;
+  /**
+   * A row of proof rendered under the composer, above the template rail.
+   *
+   * A slot and not a flag: what goes here is one prototype version's answer to
+   * the trust brief (see v2/hero-credibility.tsx), and the hero should not have
+   * to know what a G2 rating is to render one. Unset — which is every shipped
+   * render — nothing is drawn and the hero is exactly as it was.
+   */
+  trustSlot?: ReactNode;
 }) {
   const carousel = carouselFrom(templates);
 
@@ -185,7 +250,7 @@ export function HeroV76({
   // Headline and body are one message, so the body always renders with it.
   // The `showBody` prop that used to gate it is gone: it defaulted to off for
   // the retired headline, which had no body line.
-  const body = message.body;
+  const body = bodyOverride ?? message.body;
   // Theme is global now (persisted, applied to <html data-theme>), so the hero
   // reads it from context and the nav toggle drives the whole site.
   const { theme } = useTheme();
@@ -247,7 +312,6 @@ export function HeroV76({
     return () => cancelAnimationFrame(id);
   }, []);
 
-
   // Measure the selected card and glide the frame to it. getBoundingClientRect
   // (not offsetLeft) so it's independent of which ancestor is the offsetParent;
   // re-measured on layout via ResizeObserver.
@@ -258,7 +322,9 @@ export function HeroV76({
       const cardEl = row.querySelector<HTMLElement>(
         `[data-card="${selectedIndex}"]`,
       );
-      const media = cardEl?.querySelector<HTMLElement>('[data-slot="card-media"]');
+      const media = cardEl?.querySelector<HTMLElement>(
+        '[data-slot="card-media"]',
+      );
       if (!cardEl || !media) return;
       const rowRect = row.getBoundingClientRect();
       const mRect = media.getBoundingClientRect();
@@ -404,7 +470,6 @@ export function HeroV76({
     el.scrollBy({ left: dir * el.clientWidth * 0.8, behavior: "smooth" });
   };
 
-
   // The rail's token ladder now lives in .v76-card-row (globals.css) and the
   // ground and chevrons take data-theme variants: all three were `dark ?`
   // ternaries, and `dark` only resolves after hydration, so the server sent the
@@ -437,11 +502,11 @@ export function HeroV76({
           <HeroArmLinks arm={variant.arm} />
         </>
       )}
-      {layout === "v3" ? (
+      {layout === "type" ? (
         <HeroBig
           headline={message.h1}
           lines={message.big.lines}
-          body={message.body}
+          body={body}
           iconAfter={message.big.iconAfter}
           iconPair={message.big.iconPair}
           iconBefore={message.big.iconBefore}
@@ -451,306 +516,338 @@ export function HeroV76({
           // test, which the fallback layout means cannot happen today — but
           // the arm is optional, so this says so rather than assuming it.
           signupHref={withHeroArm(SIGNUP_URL, variant?.arm ?? null)}
+          trustSlot={trustSlot}
+          roomy={roomy}
+          rating={rating}
+          iconSplitAfter={iconSplitAfter}
         />
       ) : (
-      <>
-      {/* Theme-dependent colour here is written as a data-theme variant, not as a
+        <>
+          {/* Theme-dependent colour here is written as a data-theme variant, not as a
           `dark ? …` ternary: `dark` only resolves after hydration, so the server
           sent the light face to every visitor and a dark-mode phone painted a
           white hero until the JS landed. The pre-paint script sets the attribute,
           so a variant is correct on the first paint. */}
-      <section className="relative -mt-14 bg-white pb-24 md:-mt-16 [[data-theme=dark]_&]:bg-[#0a0a0a]">
-        <div className="relative overflow-hidden bg-white [[data-theme=dark]_&]:bg-[var(--background)]">
-
-          <div className={`relative z-10 ${RAIL} pb-16 pt-36 md:pt-36 lg:pb-20`}>
-            <div
-              // 3xl, not 2xl. The builder message's hand-set lockup has a
-              // 717px line, and at the old 576px headline cap two lines were
-              // not possible at all — the whole headline measures 1278px, so a
-              // two-line set needs 639px each and it broke to three. Widened
-              // for every message rather than only that one: a measure that
-              // changed with the copy would put a layout difference inside the
-              // message comparison.
-              className="relative z-30 mx-auto max-w-3xl"
-            >
-              <h1
-                className="type-display mx-auto max-w-3xl text-center text-neutral-900 [[data-theme=dark]_&]:text-white"
+          <section className="relative -mt-14 bg-white pb-24 md:-mt-16 [[data-theme=dark]_&]:bg-[#0a0a0a]">
+            <div className="relative overflow-hidden bg-white [[data-theme=dark]_&]:bg-[var(--background)]">
+              <div
+                className={`relative z-10 ${RAIL} ${
+                  roomy
+                    ? "pb-28 pt-48 md:pt-56 lg:pb-36"
+                    : "pb-16 pt-36 md:pt-36 lg:pb-20"
+                }`}
               >
-                {/* Fixed lockup on every breakpoint, for the shipped headline
+                <div
+                  // 3xl, not 2xl. The builder message's hand-set lockup has a
+                  // 717px line, and at the old 576px headline cap two lines were
+                  // not possible at all — the whole headline measures 1278px, so a
+                  // two-line set needs 639px each and it broke to three. Widened
+                  // for every message rather than only that one: a measure that
+                  // changed with the copy would put a layout difference inside the
+                  // message comparison.
+                  className="relative z-30 mx-auto max-w-3xl"
+                >
+                  <h1 className="type-display mx-auto max-w-3xl text-center text-neutral-900 [[data-theme=dark]_&]:text-white">
+                    {/* Fixed lockup on every breakpoint, for the shipped headline
                     and for any test message that sets its own lines. A message
                     without them balances on its own. */}
-                {headlineLines
-                  ? headlineLines.map((line, i) => (
-                      <Fragment key={line}>
-                        {i > 0 && <br />}
-                        {line}
-                      </Fragment>
-                    ))
-                  : headline}
-              </h1>
+                    {headlineLines
+                      ? headlineLines.map((line, i) => (
+                          <Fragment key={line}>
+                            {i > 0 && <br />}
+                            {line}
+                          </Fragment>
+                        ))
+                      : headline}
+                  </h1>
 
-              {body && (
-                <p
-                  className="type-lead mx-auto mt-4 max-w-lg text-center text-muted-foreground"
-                >
-                  {body ??
-                    "Describe what you need in plain language and Assembly ships a polished, client-ready app — no code, no handoffs."}
-                </p>
-              )}
+                  {body && (
+                    <p className="type-lead mx-auto mt-4 max-w-lg text-center text-muted-foreground">
+                      {body ??
+                        "Describe what you need in plain language and Assembly ships a polished, client-ready app — no code, no handoffs."}
+                    </p>
+                  )}
 
-              <div className="mx-auto mt-8 max-w-xl">
-                {/* The submit pill's two fills, as a custom property the
+                  <div className="mx-auto mt-8 max-w-xl">
+                    {/* The submit pill's two fills, as a custom property the
                     composer reads. Deliberately the nav's primary in both
                     themes — near-black on the light page, white on the dark
                     one. It used to take the brand periwinkle on dark, which put
                     two differently-coloured primaries in one view: this pill and
                     "Open Assembly" a few hundred pixels above it. */}
-                <div className="v63-gradient-border v63-ring-solid relative rounded-[18px] [--composer-submit:var(--color-neutral-900)] md:rounded-[22px] [[data-theme=dark]_&]:[--composer-submit:#FFFFFF]">
-                  <V66Composer
-                    textareaRef={inputRef}
-                    // Reports this composer as the control arm's hero CTA. Left
-                    // unset the shared composer stays silent, which is what the
-                    // page-bottom CTA wants.
-                    ctaSurface={variant ? "control-composer" : undefined}
-                    typewriter
-                    // Always accented — the arrow routes to onboarding even
-                    // with an empty box, so it never reads as disabled.
-                    submitDisabled={false}
-                    glow={false}
-                    tone={theme}
-                    // The composer states both skins in CSS rather than taking
-                    // the one `tone` resolves to after hydration — `tone` stays
-                    // for the parts that aren't first paint.
-                    themeAuto
-                    compact
-                    minimalControls
-                    promptPicker
-                    promptPickerLabel="Ideas"
-                    promptPickerSide="left"
-                    promptItems={PROMPT_IDEAS}
-                    hidePlus={!showPlus}
-                    hideHowTo
-                    splitFooter
-                    plusAsAttach
-                    submitLabel="Get started"
+                    <div className="v63-gradient-border v63-ring-solid relative rounded-[18px] [--composer-submit:var(--color-neutral-900)] md:rounded-[22px] [[data-theme=dark]_&]:[--composer-submit:#FFFFFF]">
+                      <V66Composer
+                        textareaRef={inputRef}
+                        // Reports this composer as the control arm's hero CTA. Left
+                        // unset the shared composer stays silent, which is what the
+                        // page-bottom CTA wants.
+                        ctaSurface={variant ? "control-composer" : undefined}
+                        typewriter
+                        // Always accented — the arrow routes to onboarding even
+                        // with an empty box, so it never reads as disabled.
+                        submitDisabled={false}
+                        glow={false}
+                        tone={theme}
+                        // The composer states both skins in CSS rather than taking
+                        // the one `tone` resolves to after hydration — `tone` stays
+                        // for the parts that aren't first paint.
+                        themeAuto
+                        compact
+                        minimalControls
+                        promptPicker
+                        promptPickerLabel="Ideas"
+                        promptPickerSide="left"
+                        promptItems={PROMPT_IDEAS}
+                        hidePlus={!showPlus}
+                        hideHowTo
+                        splitFooter
+                        plusAsAttach
+                        submitLabel="Get started"
 
-                    // Signed in, "Get started" is the wrong sentence to hand someone who
+                        // Signed in, "Get started" is the wrong sentence to hand someone who
 
-                    // already has an account, and it sat next to a nav saying otherwise.
+                        // already has an account, and it sat next to a nav saying otherwise.
 
-                    authedSubmitLabel="Open Assembly"
-                    // Light mode uses a solid black submit button; dark keeps
-                    // the accent fill. Both are handed over as one custom
-                    // property so the swap happens in CSS, on the first paint.
-                    submitDark={!dark}
-                    value={prompt}
-                    onValueChange={setPrompt}
-                    accent={dark ? "#7DA4FF" : "#D9ED92"}
-                    surfaceRadiusClass="rounded-[18px] md:rounded-[22px]"
-                    surfaceClassName={
-                      dark
-                        ? "bg-transparent shadow-[0_24px_60px_-28px_rgba(0,0,0,0.8)]"
-                        : "bg-transparent shadow-[0_1px_2px_rgba(16,24,40,0.04)]"
-                    }
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-8 md:mt-1">
-              <div className="flex items-center justify-end gap-4">
-                <div className="hidden items-center md:flex">
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      type="button"
-                      onClick={() => scrollRow(-1)}
-                      disabled={!canLeft}
-                      aria-label="Previous templates"
-                      className={`flex size-9 items-center justify-center rounded-lg ring-1 transition-colors disabled:pointer-events-none disabled:opacity-30 ${chevronCls}`}
-                    >
-                      <IconChevron className="size-4 rotate-180" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => scrollRow(1)}
-                      disabled={!canRight}
-                      aria-label="More templates"
-                      className={`flex size-9 items-center justify-center rounded-lg ring-1 transition-colors disabled:pointer-events-none disabled:opacity-30 ${chevronCls}`}
-                    >
-                      <IconChevron className="size-4" />
-                    </button>
+                        authedSubmitLabel="Open Assembly"
+                        // Light mode uses a solid black submit button; dark keeps
+                        // the accent fill. Both are handed over as one custom
+                        // property so the swap happens in CSS, on the first paint.
+                        submitDark={!dark}
+                        value={prompt}
+                        onValueChange={setPrompt}
+                        accent={dark ? "#7DA4FF" : "#D9ED92"}
+                        surfaceRadiusClass="rounded-[18px] md:rounded-[22px]"
+                        surfaceClassName={
+                          dark
+                            ? "bg-transparent shadow-[0_24px_60px_-28px_rgba(0,0,0,0.8)]"
+                            : "bg-transparent shadow-[0_1px_2px_rgba(16,24,40,0.04)]"
+                        }
+                      />
+                    </div>
                   </div>
-                </div>
-              </div>
 
-              {/* Relative wrapper (bleeds to the screen edge) so the edge blur
+                  {trustSlot}
+                </div>
+
+                <div className="mt-8 md:mt-1">
+                  <div className="flex items-center justify-end gap-4">
+                    <div className="hidden items-center md:flex">
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => scrollRow(-1)}
+                          disabled={!canLeft}
+                          aria-label="Previous templates"
+                          className={`flex size-9 items-center justify-center rounded-lg ring-1 transition-colors disabled:pointer-events-none disabled:opacity-30 ${chevronCls}`}
+                        >
+                          <IconChevron className="size-4 rotate-180" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => scrollRow(1)}
+                          disabled={!canRight}
+                          aria-label="More templates"
+                          className={`flex size-9 items-center justify-center rounded-lg ring-1 transition-colors disabled:pointer-events-none disabled:opacity-30 ${chevronCls}`}
+                        >
+                          <IconChevron className="size-4" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Relative wrapper (bleeds to the screen edge) so the edge blur
                   overlays can pin to the row's visible sides without scrolling. */}
-              <div className="relative -mx-6">
-              <div
-                ref={rowRef}
-                onScroll={updateArrows}
-                // The two fade switches drive the row's edge mask (see
-                // .v76-card-row): a side only dissolves while there's still
-                // something to scroll to on it, so the first and last card sit
-                // crisp at the ends.
-                style={{
-                  "--v76-fade-l": canLeft ? 1 : 0,
-                  "--v76-fade-r": canRight ? 1 : 0,
-                } as React.CSSProperties}
-                // Card left edge lines up with the hero title/prompt box: the
-                // left pad is px-6 (24px) + FRAME_PAD, so it's the selector
-                // frame — which hugs 6px outside the card — that lines up with
-                // the title, not the card. The top pad clears the tab, on both
-                // layouts now that mobile carries the frame too.
-                className="v76-card-row relative mt-1 flex gap-4 overflow-x-auto pb-10 pl-[30px] pr-6 pt-9 md:mt-3 md:pt-10 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-              >
-                {/* Selector frame — a ring with a flush-right tab, wrapping the
+                  <div className="relative -mx-6">
+                    <div
+                      ref={rowRef}
+                      onScroll={updateArrows}
+                      // The two fade switches drive the row's edge mask (see
+                      // .v76-card-row): a side only dissolves while there's still
+                      // something to scroll to on it, so the first and last card sit
+                      // crisp at the ends.
+                      style={
+                        {
+                          "--v76-fade-l": canLeft ? 1 : 0,
+                          "--v76-fade-r": canRight ? 1 : 0,
+                        } as React.CSSProperties
+                      }
+                      // Card left edge lines up with the hero title/prompt box: the
+                      // left pad is px-6 (24px) + FRAME_PAD, so it's the selector
+                      // frame — which hugs 6px outside the card — that lines up with
+                      // the title, not the card. The top pad clears the tab, on both
+                      // layouts now that mobile carries the frame too.
+                      className="v76-card-row relative mt-1 flex gap-4 overflow-x-auto pb-10 pl-[30px] pr-6 pt-9 md:mt-3 md:pt-10 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                    >
+                      {/* Selector frame — a ring with a flush-right tab, wrapping the
                     hovered card on desktop and the card swiped into focus on
                     mobile. */}
-                <div
-                  aria-hidden
-                    className={`pointer-events-none absolute left-0 top-0 z-20 ${frameMeasured ? "" : "opacity-0"} ${frameReady ? "transition-transform duration-[760ms] ease-[cubic-bezier(0.45,0,0.15,1)]" : ""}`}
-                    style={{
-                      transform: `translateX(${frame.x}px)`,
-                      top: frame.top,
-                      width: frame.w,
-                      height: frame.h,
-                    }}
-                  >
-                    {(() => {
-                      // Ring and tab are one colour so they read as one piece.
-                      // The tab sits flush on the ring's top edge — its bottom
-                      // corners ease into that edge with a concave fillet, so
-                      // the junction is a curve rather than a notch.
-                      const W = frame.w;
-                      const H = frame.h;
-                      const T = 30; // tab height above the frame
-                      // Concentric with the card: the ring's radius is the card's
-                      // plus the gap it stands off by, so the two curves run
-                      // parallel instead of crossing at the corners.
-                      const R = CARD_RADIUS + FRAME_PAD;
-                      const K = 10; // tab top-corner radius
-                      const CR = 9; // concave fillet where tab meets the frame's top edge
-                      const TAB_W = 84;
-                      // One step down from the card face, in the same neutral
-                      // grey family the rail's widgets use — the frame belongs
-                      // to the card it wraps, so it can't be a stray tint.
-                      // Dark takes an equal-RGB neutral rather than the cool
-                      // #7a7a80 it had: that grey carried a blue cast nothing
-                      // else in the dark skin has, and at that brightness the
-                      // ring was the loudest edge on the page — louder than the
-                      // cards it wraps. This sits in the same family as the
-                      // covers' own surfaces. Both values ride on the element as
-                      // data-theme variants rather than as a JS-picked attribute,
-                      // so the ring isn't near-white on a dark first paint.
-                      const selectorCls =
-                        "stroke-[#eaeaea] [[data-theme=dark]_&]:stroke-[#4A4A4A]";
-                      const tabFillCls =
-                        "fill-[#eaeaea] [[data-theme=dark]_&]:fill-[#4A4A4A]";
-                      // Inset from the rounded top-right corner so both of the
-                      // tab's bases land on the straight run of the top edge.
-                      const tabRight = W - R - CR;
-                      const tabLeft = tabRight - TAB_W;
-                      const ring = `M ${R} ${T} H ${W - R} Q ${W} ${T} ${W} ${T + R} V ${T + H - R} Q ${W} ${T + H} ${W - R} ${T + H} H ${R} Q 0 ${T + H} 0 ${T + H - R} V ${T + R} Q 0 ${T} ${R} ${T} Z`;
-                      const tab = `M ${tabLeft - CR} ${T} Q ${tabLeft} ${T} ${tabLeft} ${T - CR} L ${tabLeft} ${K} Q ${tabLeft} 0 ${tabLeft + K} 0 H ${tabRight - K} Q ${tabRight} 0 ${tabRight} ${K} L ${tabRight} ${T - CR} Q ${tabRight} ${T} ${tabRight + CR} ${T} Z`;
-                      return (
-                        <>
-                          <svg
-                            width={W}
-                            height={T + H}
-                            viewBox={`0 0 ${W} ${T + H}`}
-                            fill="none"
-                            className="absolute left-0 overflow-visible"
-                            style={{ top: -T }}
-                          >
-                            <path d={ring} className={selectorCls} strokeWidth="1.5" />
-                            <path d={tab} className={tabFillCls} />
-                          </svg>
-                          <span
-                            // The label inverts with the tab it sits on — the tab
-                            // is a dark surface in dark mode, so near-black type
-                            // has nothing left to hold there.
-                            className="absolute flex items-center justify-center text-[12.5px] font-normal leading-none text-neutral-900 [[data-theme=dark]_&]:text-[#F2F2F2]"
-                            style={{ left: tabLeft, top: -T, width: TAB_W, height: T }}
-                          >
-                            Template
-                          </span>
-                        </>
-                      );
-                    })()}
-                </div>
-                {carousel.map((t, i) => (
-                  <TemplateCard
-                    key={t.slug}
-                    template={t}
-                    index={i}
-                    href={templateSignupUrl(t)}
-                    onSelect={setSelectedIndex}
-                  />
-                ))}
+                      <div
+                        aria-hidden
+                        className={`pointer-events-none absolute left-0 top-0 z-20 ${frameMeasured ? "" : "opacity-0"} ${frameReady ? "transition-transform duration-[760ms] ease-[cubic-bezier(0.45,0,0.15,1)]" : ""}`}
+                        style={{
+                          transform: `translateX(${frame.x}px)`,
+                          top: frame.top,
+                          width: frame.w,
+                          height: frame.h,
+                        }}
+                      >
+                        {(() => {
+                          // Ring and tab are one colour so they read as one piece.
+                          // The tab sits flush on the ring's top edge — its bottom
+                          // corners ease into that edge with a concave fillet, so
+                          // the junction is a curve rather than a notch.
+                          const W = frame.w;
+                          const H = frame.h;
+                          const T = 30; // tab height above the frame
+                          // Concentric with the card: the ring's radius is the card's
+                          // plus the gap it stands off by, so the two curves run
+                          // parallel instead of crossing at the corners.
+                          const R = CARD_RADIUS + FRAME_PAD;
+                          const K = 10; // tab top-corner radius
+                          const CR = 9; // concave fillet where tab meets the frame's top edge
+                          const TAB_W = 84;
+                          // One step down from the card face, in the same neutral
+                          // grey family the rail's widgets use — the frame belongs
+                          // to the card it wraps, so it can't be a stray tint.
+                          // Dark takes an equal-RGB neutral rather than the cool
+                          // #7a7a80 it had: that grey carried a blue cast nothing
+                          // else in the dark skin has, and at that brightness the
+                          // ring was the loudest edge on the page — louder than the
+                          // cards it wraps. This sits in the same family as the
+                          // covers' own surfaces. Both values ride on the element as
+                          // data-theme variants rather than as a JS-picked attribute,
+                          // so the ring isn't near-white on a dark first paint.
+                          const selectorCls =
+                            "stroke-[#eaeaea] [[data-theme=dark]_&]:stroke-[#4A4A4A]";
+                          const tabFillCls =
+                            "fill-[#eaeaea] [[data-theme=dark]_&]:fill-[#4A4A4A]";
+                          // Inset from the rounded top-right corner so both of the
+                          // tab's bases land on the straight run of the top edge.
+                          const tabRight = W - R - CR;
+                          const tabLeft = tabRight - TAB_W;
+                          const ring = `M ${R} ${T} H ${W - R} Q ${W} ${T} ${W} ${T + R} V ${T + H - R} Q ${W} ${T + H} ${W - R} ${T + H} H ${R} Q 0 ${T + H} 0 ${T + H - R} V ${T + R} Q 0 ${T} ${R} ${T} Z`;
+                          const tab = `M ${tabLeft - CR} ${T} Q ${tabLeft} ${T} ${tabLeft} ${T - CR} L ${tabLeft} ${K} Q ${tabLeft} 0 ${tabLeft + K} 0 H ${tabRight - K} Q ${tabRight} 0 ${tabRight} ${K} L ${tabRight} ${T - CR} Q ${tabRight} ${T} ${tabRight + CR} ${T} Z`;
+                          return (
+                            <>
+                              <svg
+                                width={W}
+                                height={T + H}
+                                viewBox={`0 0 ${W} ${T + H}`}
+                                fill="none"
+                                className="absolute left-0 overflow-visible"
+                                style={{ top: -T }}
+                              >
+                                <path
+                                  d={ring}
+                                  className={selectorCls}
+                                  strokeWidth="1.5"
+                                />
+                                <path d={tab} className={tabFillCls} />
+                              </svg>
+                              <span
+                                // The label inverts with the tab it sits on — the tab
+                                // is a dark surface in dark mode, so near-black type
+                                // has nothing left to hold there.
+                                className="absolute flex items-center justify-center text-[12.5px] font-normal leading-none text-neutral-900 [[data-theme=dark]_&]:text-[#F2F2F2]"
+                                style={{
+                                  left: tabLeft,
+                                  top: -T,
+                                  width: TAB_W,
+                                  height: T,
+                                }}
+                              >
+                                Template
+                              </span>
+                            </>
+                          );
+                        })()}
+                      </div>
+                      {carousel.map((t, i) => (
+                        <TemplateCard
+                          key={t.slug}
+                          template={t}
+                          index={i}
+                          href={templateSignupUrl(t)}
+                          onSelect={setSelectedIndex}
+                        />
+                      ))}
 
-                <a
-                  href="/templates"
-                  aria-label="See all templates"
-                  // The selector frame never wraps this tile, so unlike the
-                  // template cards it needs a ring of its own — inset, since the
-                  // row clips whatever sits outside the last tile's edge.
-                  className="group w-[212px] shrink-0 origin-center rounded-2xl outline-none transition-opacity duration-200 ease-out focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-foreground/40"
-                >
-                  <Card
-                    size="sm"
-                    // Flat and page-toned (no shadow, face = ground color) so
-                    // the empty tile recedes behind the real template cards.
-                    // No outline in dark — the tile's own face already separates
-                    // it from the page there, and the hairline was the brightest
-                    // edge in the row.
-                    className="gap-0 rounded-2xl py-0 pb-0! shadow-none ring-1 ring-black/[0.04] transition-transform duration-200 ease-out group-hover:-translate-y-0.5 [[data-theme=dark]_&]:ring-0"
-                  >
-                    <div data-slot="card-media" className="flex h-[212px] w-full items-center justify-center bg-[var(--card)]">
-                      {/* The bare glyph in both themes — the plus is the whole
+                      <a
+                        href="/templates"
+                        aria-label="See all templates"
+                        // The selector frame never wraps this tile, so unlike the
+                        // template cards it needs a ring of its own — inset, since the
+                        // row clips whatever sits outside the last tile's edge.
+                        className="group w-[212px] shrink-0 origin-center rounded-2xl outline-none transition-opacity duration-200 ease-out focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-foreground/40"
+                      >
+                        <Card
+                          size="sm"
+                          // Flat and page-toned (no shadow, face = ground color) so
+                          // the empty tile recedes behind the real template cards.
+                          // No outline in dark — the tile's own face already separates
+                          // it from the page there, and the hairline was the brightest
+                          // edge in the row.
+                          className="gap-0 rounded-2xl py-0 pb-0! shadow-none ring-1 ring-black/[0.04] transition-transform duration-200 ease-out group-hover:-translate-y-0.5 [[data-theme=dark]_&]:ring-0"
+                        >
+                          <div
+                            data-slot="card-media"
+                            className="flex h-[212px] w-full items-center justify-center bg-[var(--card)]"
+                          >
+                            {/* The bare glyph in both themes — the plus is the whole
                           affordance, and the chip that used to sit behind it in
                           dark was a second box inside an already-square tile.
                           Hover brightens the glyph itself instead of the chip. */}
-                      <span className="flex items-center justify-center text-neutral-400 transition-colors group-hover:text-neutral-600 [[data-theme=dark]_&]:text-white/70 [[data-theme=dark]_.group:hover_&]:text-white">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" aria-hidden>
-                          <path d="M12 5v14M5 12h14" />
-                        </svg>
-                      </span>
-                    </div>
-                  </Card>
-                  <p className="mt-4 inline-flex items-center gap-1.5 text-[13px] font-normal text-neutral-900 [[data-theme=dark]_&]:text-white">
-                    See all templates
-                    <IconArrow className="size-3.5 text-neutral-400 transition-transform group-hover:translate-x-0.5 [[data-theme=dark]_&]:text-white/50" />
-                  </p>
-                  {/* Only when there is a remainder. The strip now tops up from
+                            <span className="flex items-center justify-center text-neutral-400 transition-colors group-hover:text-neutral-600 [[data-theme=dark]_&]:text-white/70 [[data-theme=dark]_.group:hover_&]:text-white">
+                              <svg
+                                width="18"
+                                height="18"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="1.75"
+                                strokeLinecap="round"
+                                aria-hidden
+                              >
+                                <path d="M12 5v14M5 12h14" />
+                              </svg>
+                            </span>
+                          </div>
+                        </Card>
+                        <p className="mt-4 inline-flex items-center gap-1.5 text-[13px] font-normal text-neutral-900 [[data-theme=dark]_&]:text-white">
+                          See all templates
+                          <IconArrow className="size-3.5 text-neutral-400 transition-transform group-hover:translate-x-0.5 [[data-theme=dark]_&]:text-white/50" />
+                        </p>
+                        {/* Only when there is a remainder. The strip now tops up from
                       the catalogue, so when it holds all of it this counted to
                       zero and the tile read "0 more". */}
-                  {templates.length > carousel.length ? (
-                    <p className="mt-1 text-[11px] text-muted-foreground">{templates.length - carousel.length} more</p>
-                  ) : null}
-                </a>
-              </div>
-              {/* Progressive blur over the same edges the row's mask fades —
+                        {templates.length > carousel.length ? (
+                          <p className="mt-1 text-[11px] text-muted-foreground">
+                            {templates.length - carousel.length} more
+                          </p>
+                        ) : null}
+                      </a>
+                    </div>
+                    {/* Progressive blur over the same edges the row's mask fades —
                   the blur softens the card before the mask takes its alpha, so
                   the two together read as a dissolve rather than a crop. Kept
                   narrow and gentle, and dialed back further on small screens
                   where a wide mask reads as too heavy. Always mounted and
                   cross-faded, since mounting a blur on the first scroll pixel
                   popped. */}
-              <div
-                aria-hidden
-                className={`pointer-events-none absolute inset-y-0 left-0 w-20 transition-opacity duration-300 ease-out md:w-36 [-webkit-mask-image:linear-gradient(to_right,#000_0%,rgba(0,0,0,0.5)_40%,transparent_90%)] [mask-image:linear-gradient(to_right,#000_0%,rgba(0,0,0,0.5)_40%,transparent_90%)] [-webkit-backdrop-filter:blur(5px)] [backdrop-filter:blur(5px)] md:[-webkit-backdrop-filter:blur(8px)] md:[backdrop-filter:blur(8px)] motion-reduce:transition-none ${canLeft ? "opacity-100" : "opacity-0"}`}
-              />
-              <div
-                aria-hidden
-                className={`pointer-events-none absolute inset-y-0 right-0 w-20 transition-opacity duration-300 ease-out md:w-36 [-webkit-mask-image:linear-gradient(to_left,#000_0%,rgba(0,0,0,0.5)_40%,transparent_90%)] [mask-image:linear-gradient(to_left,#000_0%,rgba(0,0,0,0.5)_40%,transparent_90%)] [-webkit-backdrop-filter:blur(5px)] [backdrop-filter:blur(5px)] md:[-webkit-backdrop-filter:blur(8px)] md:[backdrop-filter:blur(8px)] motion-reduce:transition-none ${canRight ? "opacity-100" : "opacity-0"}`}
-              />
+                    <div
+                      aria-hidden
+                      className={`pointer-events-none absolute inset-y-0 left-0 w-20 transition-opacity duration-300 ease-out md:w-36 [-webkit-mask-image:linear-gradient(to_right,#000_0%,rgba(0,0,0,0.5)_40%,transparent_90%)] [mask-image:linear-gradient(to_right,#000_0%,rgba(0,0,0,0.5)_40%,transparent_90%)] [-webkit-backdrop-filter:blur(5px)] [backdrop-filter:blur(5px)] md:[-webkit-backdrop-filter:blur(8px)] md:[backdrop-filter:blur(8px)] motion-reduce:transition-none ${canLeft ? "opacity-100" : "opacity-0"}`}
+                    />
+                    <div
+                      aria-hidden
+                      className={`pointer-events-none absolute inset-y-0 right-0 w-20 transition-opacity duration-300 ease-out md:w-36 [-webkit-mask-image:linear-gradient(to_left,#000_0%,rgba(0,0,0,0.5)_40%,transparent_90%)] [mask-image:linear-gradient(to_left,#000_0%,rgba(0,0,0,0.5)_40%,transparent_90%)] [-webkit-backdrop-filter:blur(5px)] [backdrop-filter:blur(5px)] md:[-webkit-backdrop-filter:blur(8px)] md:[backdrop-filter:blur(8px)] motion-reduce:transition-none ${canRight ? "opacity-100" : "opacity-0"}`}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-      </>
+          </section>
+        </>
       )}
     </>
   );

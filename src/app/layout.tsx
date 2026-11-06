@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
-import { Inter, La_Belle_Aurore } from "next/font/google";
+import { La_Belle_Aurore } from "next/font/google";
 import { RootShell } from "@/components/layout/root-shell";
 import { FeaturedPostProvider } from "@/components/layout/featured-post";
 import { ThemeProvider } from "@/components/theme/theme-provider";
@@ -18,15 +18,6 @@ import { PUBLISHER } from "@/lib/blog-schema";
 import { serializeJsonLd } from "@/lib/json-ld";
 import { OG_IMAGE, PAGE_SEO } from "@/lib/seo";
 import "./globals.css";
-
-// Inter is used for the app-like UI rendered inside the template preview cards
-// (labels, values, chips) so they read as real product UI rather than the
-// marketing PP Mori face. Exposed as a CSS variable, applied only where needed.
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
 
 // The hand on a signed contract, used by the Contracts preview card and nowhere
 // else. A signature is the one thing on these cards that must not look typeset,
@@ -140,7 +131,7 @@ export default async function RootLayout({
   return (
     <html
       lang="en"
-      className={`h-full antialiased ${inter.variable} ${laBelleAurore.variable}`}
+      className={`h-full antialiased ${laBelleAurore.variable}`}
       // data-theme is set by the pre-paint script before hydration; data-authed
       // is set here server-side (the session cookie is HttpOnly). The demo
       // override script may change data-authed client-side, so both attributes

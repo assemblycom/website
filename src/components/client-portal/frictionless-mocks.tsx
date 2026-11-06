@@ -97,7 +97,7 @@ export function EmailReplyMock() {
       <div
         // Capped on a phone, where the tray runs the full width of the screen
         // and the letter otherwise stretched into a banner.
-        className={`mx-auto flex w-full min-w-0 max-w-[400px] flex-col overflow-hidden rounded-xl border bg-[var(--mock-window)] p-4 text-[color:var(--mock-ink)] sm:max-w-none sm:p-6 [font-family:var(--font-inter),system-ui,sans-serif] ${LINE}`}
+        className={`mx-auto flex w-full min-w-0 max-w-[400px] flex-col overflow-hidden rounded-xl border bg-[var(--mock-window)] p-4 text-[color:var(--mock-ink)] sm:max-w-none sm:p-6 font-sans ${LINE}`}
       >
         <div className="flex min-w-0 items-center gap-2">
           <p className={`truncate ${MOCK_TITLE}`}>

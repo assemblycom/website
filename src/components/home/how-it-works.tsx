@@ -1,6 +1,8 @@
 "use client";
 
 import { memo, useEffect, useRef, useState } from "react";
+import Image from "next/image";
+import { GRAIN } from "@/components/comparison/brand-panel";
 import {
   DescribeVisual,
   BuildAppVisual,
@@ -74,7 +76,93 @@ const STEPS: Step[] = [
 // than two things racing.
 const DWELL_MS = 7_000;
 
-export function HowItWorks() {
+export function HowItWorks({
+  /**
+   * The visual panel's height, as the whole responsive chain.
+   *
+   * The cards crop themselves at whatever this is (`max-h-full` on .mock-ui),
+   * so it is a crop, not a scale — lowering it shows less of the screen rather
+   * than shrinking it. The default is what the shipped page uses; a page that
+   * opens on its own tall hero wants less of the viewport spent here.
+   *
+   * It is one prop rather than a phone override because the default chain ends
+   * in `sm:h-auto`, which sizes to the content — fine for a panel with a screen
+   * in it, and a collapse to nothing for one without.
+   */
+  visualHeightClass = "h-[420px] sm:h-auto md:h-[560px]",
+  stepImages,
+  stepUi,
+  stepGrounds,
+  blurSteps,
+  blurStepsMobile,
+  manual = false,
+  frameRadiusClass = "rounded-[20px]",
+}: {
+  visualHeightClass?: string;
+  /**
+   * The frame's corner. A page whose neighbouring panel is squarer passes its
+   * radius so the two blocks read as one family.
+   */
+  frameRadiusClass?: string;
+  /**
+   * Steps change only when someone clicks one: no clock, and no progress rail
+   * filling along the active tab.
+   *
+   * The tour sells itself on a page where this section is the product demo.
+   * On a page that already opens with a hero carrying its own product shot,
+   * a second thing moving on its own competes for the same attention, and
+   * the rail reads as a loading bar rather than as a timer — it is a dark
+   * line creeping across the foot of a tab, directly over a photograph.
+   *
+   * Off by default, so the shipped homepage keeps its tour.
+   */
+  manual?: boolean;
+  /**
+   * A photograph per step, keyed by step id, shown INSTEAD of that step's
+   * built visual — the blue panel with a picture in it rather than a mock.
+   *
+   * For a page whose step screens are being redone: the section keeps its
+   * shape, its tour and its timing, and the panel holds something while the
+   * screens are away. Unset, every step renders its own visual as before.
+   */
+  stepImages?: Record<string, { src: string; alt: string }>;
+  /**
+   * A piece of product UI per step, drawn ON TOP of that step's photograph.
+   *
+   * The photograph says who the step is for; the UI says what the step
+   * actually is, which a picture of someone holding a phone cannot. The
+   * product pages already draw these screens, so this takes their scenes
+   * rather than redrawing them — see `portal-build-cards`.
+   */
+  stepUi?: Record<string, React.ReactNode>;
+  /**
+   * A flat ground for one step, drawn OVER its photograph, as class names.
+   *
+   * For a step whose screen is a document rather than an app — a white page
+   * on a photograph is a white page on a photograph, and the picture behind
+   * it does no work. A ground of its own gives it something to sit on. The
+   * step keeps its entry in `stepImages` so the panel's shape and timing are
+   * unchanged; this simply paints over it.
+   *
+   * The dark scrim is skipped for such a step: the scrim exists to settle a
+   * busy photograph under near-white UI, and a flat ground needs no settling.
+   */
+  stepGrounds?: Record<string, string>;
+  /**
+   * Step ids whose PHOTOGRAPH is blurred behind the screen laid on it.
+   *
+   * For a step whose screen is a full app — a sidebar, a list, a row of
+   * progress bars — where the picture's own detail competes with the
+   * screen's and both are in focus at once. The four-steps panel's other
+   * screens are a field or a document, small objects on a photograph that is
+   * still the picture, and softening those would only make the panel look
+   * out of focus. Named per step for that reason.
+   */
+  blurSteps?: string[];
+  /** As blurSteps, below sm only: where the overlay fills more of the
+      narrower photograph and the two compete there but not on desktop. */
+  blurStepsMobile?: string[];
+} = {}) {
   const [active, setActive] = useState(0);
 
   // Kept in refs so the rAF loop reads them without re-subscribing, and so the
@@ -108,7 +196,10 @@ export function HowItWorks() {
   };
 
   useEffect(() => {
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (manual) return; // click-only; no clock to run and no rail to paint
+    const reduce = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
     if (reduce) return; // no auto-advance; tabs still switch on click
 
     // Only run the clock while the section is on screen. Browsers throttle rAF
@@ -141,7 +232,8 @@ export function HowItWorks() {
         // Clamp the delta so one long throttled gap can never jump the bar.
         const dt = Math.min(ts - last, 64);
         last = ts;
-        progressRef.current += dt / (STEPS[activeRef.current].dwellMs ?? DWELL_MS);
+        progressRef.current +=
+          dt / (STEPS[activeRef.current].dwellMs ?? DWELL_MS);
         if (progressRef.current >= 1) {
           progressRef.current = 0;
           // Advance activeRef in the same frame as setActive. The [active] effect
@@ -161,14 +253,22 @@ export function HowItWorks() {
       cancelAnimationFrame(raf);
       io?.disconnect();
     };
-  }, []);
+  }, [manual]);
 
   return (
     <section
       ref={sectionRef}
       id="how-it-works"
-      className="pb-16 pt-16 md:pb-24 md:pt-24"
+      className="relative pb-16 pt-16 md:pb-24 md:pt-24"
     >
+      {/* Dark only: a film of the page ground over the column rails, so they
+          sit quieter behind this header. At a negative z it lands above the
+          rails' backdrop and below the copy; the mask hands the rails back
+          at full strength over the bottom padding instead of on one line. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -z-[5] hidden bg-background/50 [mask-image:linear-gradient(to_bottom,#000_calc(100%-96px),transparent)] [[data-theme=dark]_&]:block"
+      />
       <div className="mx-auto max-w-[1600px] px-6 md:px-10">
         {/* Header, aligned to the block below: eyebrow on top, then heading
             (left) and supporting copy (right) sharing a row so the copy lines
@@ -180,9 +280,9 @@ export function HowItWorks() {
               Go from idea to a working app in four steps
             </h2>
             <p className="type-lead max-w-lg text-pretty text-muted-foreground">
-              Describe what you want, approve the plan, and publish. Your app goes
-              live in your workspace with sign-in, permissions, and branding
-              already handled. Then keep refining it by chat.
+              Describe what you want, approve the plan, and publish. Your app
+              goes live in your workspace with sign-in, permissions, and
+              branding already handled. Then keep refining it by chat.
             </p>
           </div>
         </div>
@@ -197,7 +297,28 @@ export function HowItWorks() {
             legend. sm+ keeps tabs-then-visual, where they're one 4-across row. */}
         {/* 20px, so the blue panel inside it (12px, inset 8px) is concentric with
             it rather than a third unrelated curve. */}
-        <div className="mx-auto mt-10 flex max-w-[1100px] flex-col overflow-hidden rounded-[20px] border border-border [[data-theme=dark]_&]:border-white/15 [[data-theme=dark]_&]:bg-white/[0.04] md:mt-12">
+        <div // AN OPAQUE GROUND. The panel stated a fill for dark
+          // (`bg-white/[0.04]`) and none at all for light, so in light it was a
+          // bordered card with nothing in it. On a plain page that is
+          // invisible — the card and the page are the same colour — but on a
+          // page drawing a column grid behind its content the rails ran
+          // straight through the tab bar and the empty half of the panel, and
+          // the card read as tracing paper laid over the grid.
+          //
+          // `bg-background` rather than a hex in light, so it is the page's own
+          // ground in whichever theme is rendering.
+          //
+          // AND AN OPAQUE VALUE IN DARK, not `bg-white/[0.04]`. A later
+          // `bg-*` REPLACES background-color, it does not stack on the one
+          // before it — so the dark variant was not a film over the page
+          // ground, it was the panel's whole fill, at four percent. The rails
+          // ran straight through the tab bar and the empty half of the panel
+          // and the card read as tracing paper laid over the grid, which is
+          // the thing the light fill was added to stop. #151515 is what that
+          // film resolved to over the page, and the panel tone the rest of
+          // the page already uses.
+          className={`mx-auto mt-10 flex max-w-[1100px] flex-col overflow-hidden ${frameRadiusClass} border border-border bg-background [[data-theme=dark]_&]:border-white/15 [[data-theme=dark]_&]:bg-[#151515] md:mt-12`}
+        >
           {/* Tabs — divided by hairlines; each carries a progress track on its
               top edge that fills over the dwell on the active tab. */}
           <div
@@ -222,21 +343,45 @@ export function HowItWorks() {
                 // one strip, so a box around a single cell fights the dividers
                 // that define it and notches at the strip's rounded corner. A
                 // deeper version of the hover fill is the strip's own language.
-                className="group relative cursor-pointer px-5 py-4 text-left outline-none transition-colors hover:bg-foreground/[0.03] focus-visible:shadow-[inset_0_-2px_0_0_rgba(0,0,0,0.45)] sm:text-center [[data-theme=dark]_&]:focus-visible:shadow-[inset_0_-2px_0_0_rgba(255,255,255,0.45)]"
+                // On a phone the bottom bar went too: a tap left it under the
+                // stacked row, reading as a broken border. The fill does it there.
+                // THE ACTIVE TAB IS FILLED when there is no rail to mark it.
+                // With the tour running, the bar creeping along the active tab
+                // says which one is on; take it away and the only difference
+                // left is the label's tone, which is too quiet to find at a
+                // glance. The fill is the strip's own hover tint a step
+                // deeper, so it is the same language rather than a new one.
+                className={`group relative cursor-pointer px-5 py-4 text-left outline-none transition-colors hover:bg-foreground/[0.03] max-sm:focus-visible:bg-foreground/[0.05] sm:text-center sm:focus-visible:shadow-[inset_0_-2px_0_0_rgba(0,0,0,0.45)] sm:[[data-theme=dark]_&]:focus-visible:shadow-[inset_0_-2px_0_0_rgba(255,255,255,0.45)] ${
+                  manual && active === i
+                    ? "bg-foreground/[0.05] [[data-theme=dark]_&]:bg-white/[0.07]"
+                    : ""
+                }`}
               >
-                {/* Progress track (fills over the dwell on the active tab). */}
-                <span
-                  aria-hidden
-                  className="absolute inset-x-0 -bottom-px z-10 h-px overflow-hidden"
-                >
+                {/* Progress track (fills over the dwell on the active tab).
+                    Not drawn at all when the steps are click-only — there is
+                    no dwell for it to measure. */}
+                {!manual && (
                   <span
-                    ref={(el) => {
-                      fillRefs.current[i] = el;
-                    }}
-                    className="block h-full origin-left bg-foreground"
-                    style={{ transform: "scaleX(0)" }}
-                  />
-                </span>
+                    aria-hidden
+                    // INSIDE THE TAB, not straddling its edge. At -bottom-px the
+                    // bar sat ON the rule between the strip and the panel, so
+                    // over a photograph it had a dark edge immediately under it
+                    // and read as part of the picture rather than as a bar
+                    // filling. Held off that rule, it always has the strip's own
+                    // ground behind it and the rule as a line under it. Two
+                    // pixels rather than one for the same reason: a hairline is
+                    // a border, and this is the one thing here that moves.
+                    className="absolute inset-x-0 bottom-0 z-10 h-0.5 overflow-hidden"
+                  >
+                    <span
+                      ref={(el) => {
+                        fillRefs.current[i] = el;
+                      }}
+                      className="block h-full origin-left bg-foreground"
+                      style={{ transform: "scaleX(0)" }}
+                    />
+                  </span>
+                )}
 
                 <span className="flex items-center justify-start gap-2 sm:justify-center">
                   <span
@@ -276,7 +421,9 @@ export function HowItWorks() {
           {/* grid-rows-1 (1fr, not auto): with an auto row the cell still sized
               to the tallest card, so h-full/max-h-full below resolved against
               that instead of the capped panel. */}
-          <div className="relative order-1 grid h-[420px] grid-cols-1 grid-rows-1 overflow-hidden sm:order-none sm:h-auto md:h-[560px] [font-family:var(--font-inter),system-ui,sans-serif]">
+          <div
+            className={`relative order-1 grid ${visualHeightClass} grid-cols-1 grid-rows-1 overflow-hidden sm:order-none font-sans`}
+          >
             {STEPS.map((step, i) => (
               <div
                 key={step.id}
@@ -295,7 +442,82 @@ export function HowItWorks() {
                     : "pointer-events-none opacity-0 [&_*]:pointer-events-none!"
                 }`}
               >
-                <step.Visual />
+                {stepImages?.[step.id] ? (
+                  // FULL BLEED, AND NO BLUE. A step's own visual sits inside
+                  // BluePanel — a blue ground with the screen floating on it,
+                  // which is the right frame for a drawn mock and the wrong
+                  // one for a photograph: the blue becomes a mat around
+                  // someone else's picture. The photograph is the panel here,
+                  // filling the cell edge to edge. The section's own wrapper
+                  // is `overflow-hidden` and rounded, so the corners are
+                  // clipped for it and it needs no radius of its own.
+                  <div className="relative h-full w-full">
+                    <Image
+                      src={stepImages[step.id].src}
+                      alt={stepImages[step.id].alt}
+                      fill
+                      // `scale-105` with the blur: a blurred image samples
+                      // past its own edges and comes out with a soft band of
+                      // nothing down each side, so it is drawn slightly
+                      // larger than the cell and the band is cropped off.
+                      className={`object-cover object-center ${
+                        blurSteps?.includes(step.id)
+                          ? "scale-105 blur-[7px]"
+                          : blurStepsMobile?.includes(step.id)
+                            ? "max-sm:scale-105 max-sm:blur-[7px]"
+                            : ""
+                      }`}
+                      sizes="(max-width: 768px) 100vw, 60vw"
+                    />
+                    {/* Grain over a blurred photograph, so the soft picture
+                        reads as material rather than as an out-of-focus shot.
+                        The comparison panels' own grain, on the same widths
+                        the blur is. */}
+                    {blurSteps?.includes(step.id) ||
+                    blurStepsMobile?.includes(step.id) ? (
+                      <div
+                        aria-hidden
+                        className={`pointer-events-none absolute inset-0 opacity-70 mix-blend-overlay ${
+                          blurSteps?.includes(step.id) ? "" : "sm:hidden"
+                        }`}
+                        style={{ backgroundImage: GRAIN }}
+                      />
+                    ) : null}
+                    {stepGrounds?.[step.id] ? (
+                      <div
+                        aria-hidden
+                        className={`absolute inset-0 ${stepGrounds[step.id]}`}
+                      />
+                    ) : null}
+                    {stepUi?.[step.id] ? (
+                      <>
+                        {/* No wash over the photograph: it stays at full
+                            strength, and the screen's own edge and shadow hold
+                            it apart from the picture. */}
+                        {/* MockFit measures the frame it is given, so the UI
+                            gets its own inset box rather than the full cell:
+                            the inset is the air that makes the screen read as
+                            placed on the photograph rather than cropped by it. */}
+                        {/* KEYED ON WHETHER THIS STEP IS THE OPEN ONE, so the
+                            screen REMOUNTS when you tab to it and whatever it
+                            animates on entry plays then rather than on page
+                            load, behind three other steps. The scenes settle
+                            and stay — nothing here loops — so without this a
+                            visitor who tabs to a step arrives after its one
+                            performance is over. Only this branch: a step
+                            rendering its own built visual is untouched. */}
+                        <div
+                          key={`${step.id}-${active === i}`}
+                          className="absolute inset-4 sm:inset-6 md:inset-10"
+                        >
+                          {stepUi[step.id]}
+                        </div>
+                      </>
+                    ) : null}
+                  </div>
+                ) : (
+                  <step.Visual />
+                )}
               </div>
             ))}
           </div>

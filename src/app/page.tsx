@@ -1,33 +1,30 @@
 import type { Metadata } from "next";
 import { HomeContent } from "@/components/home/home-content";
+import { HomeVersion } from "@/components/home/home-version";
+import { armFromQuery, parseArm } from "@/lib/hero-variants";
 
-// Re-resolved against Contentful every few minutes rather than only at deploy.
-// Prerendered once, an editor hiding a template in the CMS had no effect until
-// somebody happened to ship — which is not what "the CMS is the catalogue" can
-// mean in practice. Five minutes is short enough that a change lands while the
-// person who made it is still looking, and long enough that crawlers aren't
-// re-running the query on every hit.
-// Only the canonical, deliberately: the layout already sets this page's title,
-// description and card, and routing home through pageMetadata() would push its
-// title through the "%s | Assembly" template and brand it twice.
-//
-// Written out rather than left to the layout's relative "./". Relative resolves
-// against the route, and for the root route that came out as /index — a URL that
-// does not exist, offered to crawlers as the canonical one.
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
 };
 
-export const revalidate = 300;
-
 /**
- * The homepage as served to anyone the hero test leaves out: logged-in
- * visitors, and everyone while the kill switch is on. Enrolled visitors are
- * rewritten to /hero-variant/<arm> by middleware and never reach this route,
- * though the URL in their address bar still reads "/".
+ * `/` as it renders when middleware does not enrol the visitor: logged in,
+ * the test switched off, or a preview deployment. They get today's homepage.
  *
- * No `variant`, so the hero renders exactly as it did before the test.
+ * On a preview, `?v=1|2|3` (or `?copy=&layout=`) shows a test version for
+ * review, since middleware only runs the test in production.
  */
-export default function HomePage() {
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | undefined>>;
+}) {
+  const params = new URLSearchParams(
+    Object.entries(await searchParams).filter(
+      (entry): entry is [string, string] => typeof entry[1] === "string",
+    ),
+  );
+  const parsed = parseArm(armFromQuery(params));
+  if (parsed) return <HomeVersion layout={parsed.layout} />;
   return <HomeContent />;
 }
