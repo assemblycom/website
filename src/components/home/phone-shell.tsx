@@ -16,7 +16,8 @@ export function PhoneShell({
   sideButtons = true,
   squareFoot = false,
   screenBg = "bg-background",
-  bezelBg = "bg-muted/50",
+  bezelBg = "bg-muted/50 [[data-theme=dark]_&]:bg-white/[0.04]",
+  outline = true,
 }: {
   children: React.ReactNode;
   /**
@@ -41,6 +42,9 @@ export function PhoneShell({
   /** The bezel's fill. Translucent by default; solid over a photograph,
       where the translucent one read as glass. */
   bezelBg?: string;
+  /** The hairlines around the bezel and the screen. Off for a solid device on
+      a photograph, where they read as a second, empty frame. */
+  outline?: boolean;
 }) {
   return (
     <div
@@ -58,11 +62,11 @@ export function PhoneShell({
 
       {/* Body — light, thin outline bezel (token-based so it adapts to dark). */}
       <div
-        className={`rounded-[44px] ${squareFoot ? "rounded-b-none" : ""} border border-border ${bezelBg} p-2 shadow-[0_20px_50px_-30px_rgba(16,24,40,0.22)] [[data-theme=dark]_&]:bg-white/[0.04]`}
+        className={`rounded-[44px] ${squareFoot ? "rounded-b-none" : ""} ${outline ? "border border-border" : ""} ${bezelBg} p-2 shadow-[0_20px_50px_-30px_rgba(16,24,40,0.22)]`}
       >
         {/* Screen */}
         <div
-          className={`relative flex aspect-[9/11] flex-col overflow-hidden rounded-[36px] ${squareFoot ? "rounded-b-none" : ""} ${screenBg} ring-1 ring-border`}
+          className={`relative flex aspect-[9/11] flex-col overflow-hidden rounded-[36px] ${squareFoot ? "rounded-b-none" : ""} ${screenBg} ${outline ? "ring-1 ring-border" : ""}`}
         >
           {/* Status bar carrying the dynamic island, so the mock's own header
               clears it. */}
