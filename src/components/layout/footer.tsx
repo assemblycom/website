@@ -27,6 +27,11 @@ export const BRAND_AURORA = [
   { offset: 1, color: "#d9ed9200" },
 ];
 
+// The bars peak at 80% of their box, not near its top: the blur spreads about
+// 15% above a bar, and a box with less headroom than that clipped the crest
+// flat. The boxes are taller and pulled up by the same amount, so the crest
+// lands where it did and the footer keeps its height.
+//
 // Always-visible brand aurora at the bottom of the footer — a mobile band (fills
 // more of its container) and a desktop band, each rising on mount. Exported so
 // the proposal page can end in the same aurora without inheriting the footer's
@@ -36,7 +41,7 @@ export function FooterAurora() {
     <>
       <div
         aria-hidden
-        className="pointer-events-none relative -mt-44 h-[42vh] md:hidden"
+        className="pointer-events-none relative -mt-[calc(11rem+8.5vh)] h-[50.5vh] md:hidden"
         style={{
           maskImage: "linear-gradient(to bottom, transparent 0%, #000 18%)",
           WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, #000 18%)",
@@ -48,19 +53,19 @@ export function FooterAurora() {
               on screen (vs ~100px on a desktop) and read as grain rather than as
               aurora texture. Fewer, wider bars keep the pitch closer to desktop's,
               and the extra horizontal blur softens what's left. */}
-          <DiaGradient stops={BRAND_AURORA} bars={9} blur={30} blurX={40} peak={0.96} valley={0.7} riseMs={1300} />
+          <DiaGradient stops={BRAND_AURORA} bars={9} blur={30} blurX={40} peak={0.8} valley={0.7} riseMs={1300} />
         </div>
       </div>
       <div
         aria-hidden
-        className="pointer-events-none relative -mt-40 hidden h-[38vh] md:block"
+        className="pointer-events-none relative -mt-[calc(10rem+8.5vh)] hidden h-[46.5vh] md:block"
         style={{
           maskImage: "linear-gradient(to bottom, transparent 0%, #000 8%)",
           WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, #000 8%)",
         }}
       >
         <div className="footer-aurora absolute inset-x-0 bottom-0 h-full">
-          <DiaGradient stops={BRAND_AURORA} bars={14} blur={30} peak={0.98} valley={0.45} riseMs={1300} />
+          <DiaGradient stops={BRAND_AURORA} bars={14} blur={30} peak={0.8} valley={0.45} riseMs={1300} />
         </div>
       </div>
     </>
@@ -180,55 +185,39 @@ function ThemeSwitch({
   // translucent, blurred chip so it stays legible on the gradient.
   frosted?: boolean;
 }) {
-  // Light mode fills the active thumb with a grey wash rather than white: on a
-  // near-white frosted bed a white thumb had only its shadow to separate it,
-  // and the selection was easy to miss. Dark mode is untouched.
+  // A pill on a flat tinted bed, with one thumb that slides to the selected
+  // option rather than each segment filling in on its own. No border or
+  // shadow: the tint alone separates it from the ground. The thumb's travel is
+  // the segment width, so the two must change together.
+  const activeIndex = Math.max(
+    0,
+    THEME_OPTIONS.findIndex((opt) => opt.value === toggle.preference),
+  );
   const seg = (active: boolean) =>
-    `flex size-7 items-center justify-center rounded-md transition-colors ${
+    `relative flex h-[26px] w-9 items-center justify-center rounded-full transition-colors ${
       active
         ? onDark
-          ? "bg-white/20 text-white"
-          : "bg-foreground/[0.10] text-foreground"
+          ? "text-white"
+          : "text-foreground"
         : onDark
-          ? "text-white/65 hover:text-white"
-          : "text-muted-foreground hover:text-foreground"
+          ? "text-white/55 hover:text-white"
+          : "text-foreground/55 hover:text-foreground"
     }`;
   return (
     <div
       role="group"
       aria-label="Appearance"
-      // Light mode drops the flat gray border: a hard outline over the colourful
-      // aurora read as a pasted-on box. A soft ring carries the edge instead.
-      //
-      // ACTUAL GLASS, not a white chip with a blur behind it. It was
-      // bg-white/85, which is near-opaque — the blur had almost nothing left
-      // to show, so the control read as a white pill laid on the gradient
-      // rather than as something you can see the gradient through. 55% lets
-      // the aurora come through and read as colour BEHIND glass; the heavier
-      // blur keeps it as diffuse light rather than a picture of the gradient,
-      // and the saturate lifts what does come through, which is the thing
-      // that reads as glass rather than as a translucent sheet.
-      //
-      // 55 is the floor, not a preference: the segments are dark ink and the
-      // active one is only foreground/10, so the fill has to stay light
-      // enough to carry both over whatever part of the aurora it lands on.
-      //
-      // NO LIFT SHADOW IN LIGHT. There was one — 0 4px 16px -8px — to float
-      // the chip off the gradient. On the flat white ground most of the site
-      // actually ends on, it was the only thing on the page casting a shadow,
-      // which made a 32px control read as the one raised object in the footer.
-      // The ring and the 85% white already separate it from both grounds.
-      // Dark is untouched: it has no shadow to remove and its border stays.
-      className={`inline-flex items-center gap-0.5 rounded-lg p-0.5 ${
-        onDark ? "border border-white/25" : "ring-1 ring-black/[0.05]"
-      } ${
-        frosted
-          ? onDark
-            ? "bg-black/30 backdrop-blur-md"
-            : "bg-white/55 backdrop-blur-xl backdrop-saturate-150"
-          : ""
-      }`}
+      className={`relative inline-flex items-center rounded-full p-0.5 ${
+        onDark ? "bg-white/10" : "bg-foreground/[0.06]"
+      } ${frosted ? "backdrop-blur-md" : ""}`}
     >
+      <span
+        aria-hidden
+        className={`absolute left-0.5 top-0.5 h-[26px] w-9 rounded-full transition-transform duration-150 ease-[cubic-bezier(0.25,1,0.5,1)] ${
+          onDark ? "bg-white/15" : "bg-foreground/[0.08]"
+        }`}
+        style={{ transform: `translateX(${activeIndex * 100}%)` }}
+      />
       {THEME_OPTIONS.map((opt) => (
         <button
           key={opt.value}
@@ -304,9 +293,9 @@ export function Footer({
 
         <div className="mx-auto max-w-[1600px] px-6 pb-12 md:px-10 md:pb-16">
           <div className="relative z-10 mt-10 md:mt-12">
-            {/* Six tracks, kept from when a video card held the last two: the
-                links now run the full width, and the switch keeps the far right
-                corner. */}
+            {/* Six tracks, kept from when a video card held the last two. The
+                switch starts on the first column's edge: the links stop short
+                of the right side, so a right-hand switch lined up with nothing. */}
             <div className="flex flex-col gap-10 lg:grid lg:grid-cols-6 lg:items-start lg:gap-x-10">
               {/* MULTICOL BELOW lg, not a two-column grid, and the Connect
                   shelf is why. In a grid every cell in a row is as tall as the
@@ -319,7 +308,9 @@ export function Footer({
                   only gap left is the one declared here. `break-inside-avoid`
                   keeps a shelf whole; `column-count` does not apply to a grid
                   container, so `lg:grid` turns this off on its own. */}
-              <div className="columns-2 gap-x-8 lg:col-span-6 lg:grid lg:grid-cols-5 lg:gap-x-6">
+              {/* Capped so five short columns don't spread across a wide
+                  screen. */}
+              <div className="columns-2 gap-x-8 lg:col-span-6 lg:grid lg:max-w-[1200px] lg:grid-cols-5 lg:gap-x-6">
                 {COLUMNS.map((column) => (
                   // A column can hold more than one group; the second sits under
                   // the first with its own label, the way a long shelf is split
@@ -328,17 +319,16 @@ export function Footer({
                     key={column[0].label}
                     // mb-10 is the old grid's gap-y-10, carried by the items
                     // now that the container no longer declares a row gap.
-                    className="mb-10 flex break-inside-avoid flex-col gap-8 sm:min-w-32 lg:mb-0"
+                    className="mb-10 flex break-inside-avoid flex-col gap-10 sm:min-w-32 lg:mb-0"
                   >
                     {column.map((group) => (
                       <div key={group.label}>
-                        {/* Set in PP Mori at link size, greyed back: the label
-                            reads as a quiet category marker above its items rather
-                            than a mono eyebrow competing with them. */}
-                        <p className={`text-[15px] ${light ? "text-muted-foreground" : "text-white/45"}`}>
+                        {/* A step smaller than the links and greyed back, so the
+                            label reads as a category marker above its items. */}
+                        <p className={`text-[13px] ${light ? "text-muted-foreground" : "text-white/45"}`}>
                           {group.label}
                         </p>
-                        <ul className="mt-4 flex flex-col gap-1.5">
+                        <ul className="mt-3 flex flex-col gap-0.5">
                           {group.links.map((link) => (
                             <li key={link.label}>
                               <FooterLink link={link} className={linkCls} />
@@ -351,7 +341,7 @@ export function Footer({
                 ))}
               </div>
               {themeToggle && (
-                <div className="flex shrink-0 items-center gap-4 lg:col-span-6 lg:justify-self-end">
+                <div className="flex shrink-0 items-center gap-4 lg:col-span-6 lg:justify-self-start">
                   <ThemeSwitch toggle={themeToggle} onDark={!light} frosted />
                 </div>
               )}
