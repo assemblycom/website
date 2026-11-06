@@ -13,7 +13,6 @@ import {
   IconApp,
   IconBook,
   IconClock,
-  IconPlus,
 } from "@/components/home/mock-icons";
 import { DescribeCard } from "@/components/client-portal/portal-build-cards";
 
@@ -30,7 +29,7 @@ import { DescribeCard } from "@/components/client-portal/portal-build-cards";
 // covers the moment between the panel laying out and the image decoding.
 //
 // A STAND-IN, chosen for what each one is OF rather than art-directed for this
-// section: the CRM shot for the foundation tab, two people working for the
+// section: the CRM shot for the foundation tab, someone on a tablet for the
 // ready-made apps, hands at a laptop for the builder, and the sign-in field
 // for security. No photograph is used twice on the page.
 // ─────────────────────────────────────────────────────────────────────────
@@ -42,8 +41,8 @@ const SHOTS: Record<RegionId, { src: string; alt: string }> = {
     alt: "Someone working at a laptop in a sunlit booth",
   },
   sidebar: {
-    src: "/images/mocks/support-desk.webp",
-    alt: "Two people working together at a desk",
+    src: "/images/mocks/ready-apps-tablet.webp",
+    alt: "Someone sketching on a tablet against a red wall",
   },
   builder: {
     src: "/images/mocks/hosted-mvp-bg.jpg",
@@ -94,51 +93,27 @@ const APP_PILLS = [
 ];
 
 /**
- * Three apps as squarish pills, and the row that says there are more.
- *
- * The claim is "30+ ready-made apps", and the honest picture of that is a few
- * of them named — not one of them opened, which is a picture of a helpdesk.
- *
- * SOLID, NOT GLASS. Frosted white over a photograph takes whatever is behind
- * it: on a busy shot each pill came out a different tone from the one above
- * it, the ink sat on a moving ground and the set read as four smudges rather
- * than as four apps. A full fill gives the type its own paper.
- *
- * `--mock-well`, not the window white: four white plates on a photograph read
- * as holes punched in it. A rung down is still a surface the type sits on and
- * still clearly lighter than anything in the picture.
- *
- * 172 WIDE, not 260. The labels are one word each, so the extra width was
- * empty plate running past the end of every name.
- *
- * AT THE MOCK SCALE, 12.5px. These were set at 15 — the site's reading size,
- * not a mock's — while the composer two panels down, drawn on a photograph
- * the same way and the same distance from the reader, is 12.5. Two product
- * drawings a screen apart at a fifth of a step from each other read as one
- * zoomed in and the other out. The plate and its padding came down with the
- * type, or the pills would be the old boxes with smaller names in them.
+ * Three of the apps, named, as solid plates on the photograph. The claim is
+ * "30+ ready-made apps", and a few of them named says that better than one of
+ * them opened. Mock scale (12.5px), matching the composer two panels down.
  */
 function AppPills() {
   return (
-    <div className="flex w-[172px] flex-col gap-2">
-      {APP_PILLS.map((app) => (
+    <div className="flex w-[156px] flex-col gap-2">
+      {APP_PILLS.map((app, i) => (
         <span
           key={app.label}
-          className="flex items-center gap-2.5 rounded-[10px] bg-[var(--mock-well)] px-3.5 py-2.5 text-[12.5px] text-[color:var(--mock-ink)] shadow-[0_10px_30px_-12px_rgba(16,24,40,0.45)]"
+          // Light in both themes: they sit on the photograph, not the page,
+          // and a dark plate on a dark wall disappeared into it. The first
+          // one is selected, so the set reads as a picker rather than a list.
+          className={`flex items-center gap-2.5 rounded-[9px] bg-[#f7f8fa] px-3 py-2 text-[12.5px] text-[#101114] shadow-[0_10px_30px_-12px_rgba(16,24,40,0.45)] ${
+            i === 0 ? "ring-2 ring-blue-500" : ""
+          }`}
         >
-          <span className="text-[color:var(--mock-ink-soft)]">{app.icon}</span>
+          <span className="text-[#6b7079]">{app.icon}</span>
           {app.label}
         </span>
       ))}
-      {/* THE SAME FILL AS THE THREE ABOVE IT, not a dashed outline. The
-          dashes said "placeholder" — the convention for a slot with nothing
-          in it yet — about the one row whose point is that there are 27 more
-          apps that do exist. It is the quietest of the four by its ink, not
-          by its edge. */}
-      <span className="flex items-center gap-2.5 rounded-[10px] bg-[var(--mock-well)] px-3.5 py-2.5 text-[12.5px] text-[color:var(--mock-ink-soft)] shadow-[0_10px_30px_-12px_rgba(16,24,40,0.45)]">
-        <IconPlus className="size-3.5" />
-        27 more
-      </span>
     </div>
   );
 }
@@ -196,6 +171,10 @@ interface TabScreen {
   node: ReactNode;
   /** Draws it in the cropped product window. Off = straight on the photo. */
   windowed?: boolean;
+  /** Where an unwindowed screen sits on the photo. Defaults to centred. */
+  placement?: string;
+  /** Leaves the photograph at full strength, with no scrim over it. */
+  noScrim?: boolean;
 }
 
 const SCREENS: Record<RegionId, TabScreen> = {
@@ -208,7 +187,12 @@ const SCREENS: Record<RegionId, TabScreen> = {
   // /ai-app-builder draws for its CRM claim.
   url: { node: <TeamCrmVisual moreRows />, windowed: true },
   // A few of the apps, named. See AppPills.
-  sidebar: { node: <AppPills /> },
+  // On the dark wall to the left, clear of his face.
+  sidebar: {
+    node: <AppPills />,
+    placement: "items-center justify-center sm:justify-start sm:pl-[8%]",
+    noScrim: true,
+  },
   // The composer, and nothing holding it. It is one field: a window around
   // it was a sheet of white with a text box in the middle of it.
   builder: {
@@ -256,12 +240,14 @@ function Screen({ active }: { active: RegionId }) {
           still the picture and softening it would only make the panel look
           out of focus. A backdrop filter rather than a blur on the image
           itself, so there is no soft edge where the picture meets the panel. */}
-      <div
-        aria-hidden
-        className={`absolute inset-0 bg-[linear-gradient(to_bottom,rgba(16,24,40,0.34),rgba(16,24,40,0.46))] ${
-          active === "url" ? "backdrop-blur-[6px]" : ""
-        }`}
-      />
+      {!screen.noScrim && (
+        <div
+          aria-hidden
+          className={`absolute inset-0 bg-[linear-gradient(to_bottom,rgba(16,24,40,0.34),rgba(16,24,40,0.46))] ${
+            active === "url" ? "backdrop-blur-[6px]" : ""
+          }`}
+        />
+      )}
       {screen.windowed ? (
         <>
           {/* A PHONE ON A PHONE. The window below is 520px wide and anchored
@@ -314,7 +300,11 @@ function Screen({ active }: { active: RegionId }) {
           />
         </>
       ) : (
-        <div className="absolute inset-0 flex items-center justify-center p-6 md:p-10">
+        <div
+          className={`absolute inset-0 flex p-6 md:p-10 ${
+            screen.placement ?? "items-center justify-center"
+          }`}
+        >
           {screen.node}
         </div>
       )}

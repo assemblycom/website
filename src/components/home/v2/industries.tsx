@@ -1,5 +1,6 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { CardRail } from "@/components/ui/card-rail";
@@ -58,7 +59,12 @@ interface Industry {
    */
   blurb: string;
   /** The card's picture. Absent for now, so the card draws its empty slot. */
-  image?: { src: string; alt: string };
+  /**
+   * `position` anchors the crop (object-position, and the zoom's origin) for a
+   * shot whose subject is off-centre; `zoom` enlarges a figure that sits small
+   * in its frame.
+   */
+  image?: { src: string; alt: string; position?: string; zoom?: number };
 }
 
 // Ordered by how much of the business each one represents, not alphabetically:
@@ -70,8 +76,11 @@ const INDUSTRIES: Industry[] = [
     slug: "accounting-client-portal",
     blurb: "Onboarding and billing",
     image: {
-      src: "/images/solutions/accounting-desk.webp",
-      alt: "An accountant at a desk",
+      src: "/images/mocks/accounting-glasses.jpg",
+      alt: "A smiling man in amber glasses and a grey sweater",
+      // A tall shot in a wide card: the crop starts just above his head and
+      // takes the wall above him, not his hair.
+      position: "50% 17%",
     },
   },
   {
@@ -79,8 +88,11 @@ const INDUSTRIES: Industry[] = [
     slug: "marketing-agency-client-portal",
     blurb: "Briefs and approvals",
     image: {
-      src: "/images/mocks/describe-sneakers.webp",
-      alt: "Someone talking in a sunlit sitting room",
+      src: "/images/mocks/marketing-pinboard.webp",
+      alt: "A woman in a blue sweater pointing at work pinned to a wall",
+      // Anchored near the top so her hair is not cut, and nudged right so the
+      // phone's tall crop keeps her and her pointing hand.
+      position: "60% 12%",
     },
   },
   {
@@ -88,8 +100,11 @@ const INDUSTRIES: Industry[] = [
     slug: "consulting-client-portal",
     blurb: "Scopes and invoices",
     image: {
-      src: "/images/mocks/describe-laptop.webp",
-      alt: "Someone reading at a laptop in afternoon light",
+      src: "/images/mocks/consulting-suit.webp",
+      alt: "A man in a grey suit and green tie",
+      // A tall portrait in a wide card: anchored near the top so the crop
+      // takes his jacket, not his head.
+      position: "50% 5%",
     },
   },
   {
@@ -97,8 +112,11 @@ const INDUSTRIES: Industry[] = [
     slug: "law-firm-client-portal-practice-management",
     blurb: "Intake and signatures",
     image: {
-      src: "/images/mocks/sign-in-bg.jpg",
-      alt: "Someone working at a desk",
+      src: "/images/mocks/law-portrait.webp",
+      alt: "A smiling woman in glasses and a lilac shirt",
+      // She stands small in a wide frame; zoomed from just above her head.
+      position: "50% 5%",
+      zoom: 1.35,
     },
   },
   {
@@ -106,8 +124,10 @@ const INDUSTRIES: Industry[] = [
     slug: "real-estate-property-management-rental-management-client-portal",
     blurb: "Paperwork and payments",
     image: {
-      src: "/images/mocks/hosted-mvp-bg.jpg",
-      alt: "A room in daylight",
+      src: "/images/mocks/real-estate-agent.webp",
+      alt: "A man in a navy shirt in a bright office",
+      // Anchored to the top so the crop takes his shirt, not his head.
+      position: "50% 0%",
     },
   },
   {
@@ -115,8 +135,11 @@ const INDUSTRIES: Industry[] = [
     slug: "designer-client-portal",
     blurb: "Proposals and reviews",
     image: {
-      src: "/images/mocks/crm-bg.webp",
-      alt: "A designer at work",
+      src: "/images/mocks/design-studio-painter.webp",
+      alt: "An artist in an orange top at her desk with paints",
+      // A tall shot in a wide card: the crop starts just above her head and
+      // takes the shelves above her, not her hair.
+      position: "50% 20%",
     },
   },
   {
@@ -124,8 +147,11 @@ const INDUSTRIES: Industry[] = [
     slug: "startups-client-portal",
     blurb: "Onboarding and support",
     image: {
-      src: "/images/mocks/public-store-bg.jpg",
-      alt: "Two people reviewing a screen together",
+      src: "/images/mocks/startups-meeting-close.webp",
+      alt: "A woman in a rust turtleneck listening at a meeting table",
+      // A tall shot in a wide card: the crop starts just above her head and
+      // takes the empty whiteboard, not her.
+      position: "50% 15%",
     },
   },
   {
@@ -133,8 +159,11 @@ const INDUSTRIES: Industry[] = [
     slug: "freelancer-client-portal",
     blurb: "Contracts and payments",
     image: {
-      src: "/images/mocks/describe-phone.webp",
-      alt: "Someone holding a phone on a sofa",
+      src: "/images/mocks/freelancer-portrait.jpg",
+      alt: "A man in clear glasses against a slatted wood wall",
+      // A tall portrait in a wide card: framed so his whole head, crown to
+      // chin, sits inside the crop.
+      position: "50% 35%",
     },
   },
   {
@@ -142,8 +171,11 @@ const INDUSTRIES: Industry[] = [
     slug: "small-business-smb-client-portal",
     blurb: "Documents and payments",
     image: {
-      src: "/images/mocks/support-desk.webp",
-      alt: "Someone at a support desk",
+      src: "/images/mocks/small-business-portrait.webp",
+      alt: "A woman in glasses and a blue sweater at her desk",
+      // A tall portrait in a wide card: anchored near the top so the crop
+      // takes her lap, not her hair.
+      position: "50% 5%",
     },
   },
 ];
@@ -198,58 +230,53 @@ export function Industries() {
               >
                 <Link
                   href={`/solutions/${industry.slug}`}
-                  // THE CARD IS THE PICTURE, with the name written across its
-                  // foot. It used to be a name in a bar with a picture hanging
-                  // under it, which made each card two stacked blocks in two
-                  // tones rather than one object — and in a grid of nine that
-                  // is eighteen things to look at. One frame, one subject, the
-                  // name on it.
+                  // THE PICTURE, THEN ITS NAME UNDER IT. The name used to sit on
+                  // the photo over a dark scrim, which darkened every shot to
+                  // keep white type legible; below the frame the pictures stay
+                  // at full strength and the name reads in the page's own ink.
                   //
-                  // A SOFT SHADOW ON HOVER, NOT A BRIGHTER BORDER. Lifting the
-                  // border to white on hover drew a hard ring around the card,
-                  // which in dark is the brightest thing in the section and
-                  // reads as a selection rather than as a pointer resting on
-                  // something. Depth says the same thing without a line: the
-                  // card lifts a little and its picture moves under the frame.
-                  className="group relative block aspect-[3/4] overflow-hidden rounded-xl border border-border shadow-[0_0_0_0_rgba(16,24,40,0)] transition-shadow duration-300 hover:shadow-[0_12px_32px_-14px_rgba(16,24,40,0.45)] sm:aspect-[4/3] [[data-theme=dark]_&]:border-transparent [[data-theme=dark]_&]:hover:shadow-[0_12px_32px_-14px_rgba(0,0,0,0.85)]"
+                  // Hover pushes the picture in rather than casting a shadow:
+                  // the rail clips its row, so a shadow was cut off at the
+                  // card's sides and foot.
+                  className="group block"
                 >
-                  {industry.image ? (
-                    <Image
-                      src={industry.image.src}
-                      alt={industry.image.alt}
-                      fill
-                      sizes="(min-width: 1024px) 272px, (min-width: 640px) 30vw, 45vw"
-                      // EAGER, NOT LAZY. Nine cards of 272px sit a screen into
-                      // the page, well inside the margin a browser loads lazy
-                      // images within — and most of them still did not load,
-                      // because the row is a nine-item grid whose cards are the
-                      // same size and the observer settles on a few of them.
-                      // The result was a section of empty slots with names on
-                      // them. Eager rather than `priority`: they should load
-                      // without being preloaded ahead of the hero.
-                      loading="eager"
-                      className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04] motion-reduce:transition-none"
-                    />
-                  ) : (
-                    // The slot keeps the card's shape while an industry is
-                    // still without a shot, so dropping real pictures in later
-                    // cannot move the grid.
-                    <span aria-hidden className="absolute inset-0 bg-muted" />
-                  )}
-                  {/* THE NAME'S OWN GROUND. The type is white in both themes —
-                    it is written on a photograph, not on the page — so it
-                    needs the foot of the picture settled under it whatever
-                    the shot turns out to be. It deepens slightly on hover,
-                    with the lift, rather than switching colour. */}
-                  <span
-                    aria-hidden
-                    className="absolute inset-0 bg-[linear-gradient(to_top,rgba(10,12,16,0.86)_0%,rgba(10,12,16,0.55)_30%,rgba(10,12,16,0.12)_62%,transparent_100%)] transition-opacity duration-300 group-hover:opacity-90 motion-reduce:transition-none"
-                  />
-                  <span className="absolute inset-x-0 bottom-0 p-3.5">
-                    <span className="block text-sm text-white">
+                  <span className="relative block aspect-[3/4] overflow-hidden rounded-xl border border-border sm:aspect-[4/3] [[data-theme=dark]_&]:border-transparent">
+                    {industry.image ? (
+                      <Image
+                        src={industry.image.src}
+                        alt={industry.image.alt}
+                        fill
+                        sizes="(min-width: 1024px) 272px, (min-width: 640px) 30vw, 45vw"
+                        // EAGER, NOT LAZY. Nine cards of 272px sit a screen into
+                        // the page, well inside the margin a browser loads lazy
+                        // images within — and most of them still did not load,
+                        // because the row is a nine-item grid whose cards are the
+                        // same size and the observer settles on a few of them.
+                        // The result was a section of empty slots with names on
+                        // them. Eager rather than `priority`: they should load
+                        // without being preloaded ahead of the hero.
+                        loading="eager"
+                        style={
+                          {
+                            objectPosition: industry.image.position,
+                            transformOrigin: industry.image.position,
+                            "--zoom": industry.image.zoom ?? 1,
+                          } as CSSProperties
+                        }
+                        className="object-cover transition-transform duration-500 ease-out scale-[var(--zoom)] group-hover:scale-[calc(var(--zoom)*1.04)] motion-reduce:transition-none"
+                      />
+                    ) : (
+                      // The slot keeps the card's shape while an industry is
+                      // still without a shot, so dropping real pictures in later
+                      // cannot move the grid.
+                      <span aria-hidden className="absolute inset-0 bg-muted" />
+                    )}
+                  </span>
+                  <span className="mt-3 block">
+                    <span className="block text-sm leading-tight text-foreground">
                       {industry.label}
                     </span>
-                    <span className="mt-0.5 block text-sm text-white/70">
+                    <span className="mt-1 block text-sm leading-tight text-muted-foreground">
                       {industry.blurb}
                     </span>
                   </span>
