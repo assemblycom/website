@@ -11,7 +11,9 @@ import { APP_URL, DEMO_URL, SIGNUP_URL } from "@/lib/constants";
 const PRIMARY_CTA =
   "inline-flex w-full shrink-0 items-center justify-center whitespace-nowrap rounded-lg bg-foreground px-4 py-3 text-center text-sm text-background transition-opacity hover:opacity-90 sm:w-auto sm:py-2 md:px-5 md:py-2.5 [[data-theme=dark]_&]:bg-white [[data-theme=dark]_&]:text-neutral-900";
 
-const SECONDARY_CTA =
+/** The outline action that partners PRIMARY_CTA. Exported for the same
+ * reason. */
+export const SECONDARY_CTA =
   "inline-flex w-full shrink-0 items-center justify-center whitespace-nowrap rounded-lg border border-foreground/20 bg-transparent px-4 py-3 text-center text-sm text-foreground transition-colors hover:bg-foreground/5 sm:w-auto sm:py-2 md:px-5 md:py-2.5 [[data-theme=dark]_&]:border-white/25 [[data-theme=dark]_&]:text-white";
 
 export function CTA({

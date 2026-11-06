@@ -71,7 +71,10 @@ function StatusPill({ status }: { status: Status }) {
 // around (no bleed), all corners rounded, no shadow. The 16/9 window aspect is a
 // desktop affordance only — on mobile the panel grows to fit its card so the
 // content never clips inside a too-short landscape frame.
-function BluePanel({ children }: { children: React.ReactNode }) {
+// Exported, and `children` optional, so a caller can render the panel with
+// nothing in it — the blue ground on its own, holding the section's shape
+// while the screens that go in it are being redone.
+export function BluePanel({ children }: { children?: React.ReactNode }) {
   // h-full (not a fixed aspect): the how-it-works grid stacks all four steps in
   // one cell, so the cell sizes to the tallest step's content. Every panel then
   // fills that height and centers its content — consistent height across steps,
@@ -85,7 +88,7 @@ function BluePanel({ children }: { children: React.ReactNode }) {
         // Top-anchored on phones, where the child is a screen that runs off the
         // bottom edge — centring it split the overflow and pushed it down. From
         // sm up the child is a floating card again and wants to be centred.
-        className="flex h-full w-full flex-col justify-start overflow-hidden rounded-xl p-5 sm:justify-center sm:p-7 lg:p-9 [font-family:var(--font-inter),system-ui,sans-serif]"
+        className="flex h-full w-full flex-col justify-start overflow-hidden rounded-xl p-5 sm:justify-center sm:p-7 lg:p-9 font-sans"
         style={{ backgroundColor: BLUE }}
       >
         {children}

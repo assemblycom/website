@@ -11,7 +11,8 @@ interface Standard {
   seal: string;
 }
 
-const STANDARDS: Standard[] = [
+/** The seals, for a caller drawing them outside this band. */
+export const SECURITY_STANDARDS: Standard[] = [
   { title: "SOC 2 Type II", seal: "SOC 2" },
   { title: "HIPAA", seal: "HIPAA" },
   { title: "GDPR", seal: "GDPR" },
@@ -32,7 +33,21 @@ const SEAL_LABEL =
 const STAR_COUNT = 8;
 const STAR_RADIUS_PCT = 36;
 
-function Seal({ label }: { label: string }) {
+/**
+ * Exported for the homepage's unified-platform panel, which lays the four
+ * seals straight onto its photograph with none of the band around them.
+ *
+ * `size` replaces the band's own step for a caller drawing them smaller. It
+ * is the only thing that changes: every detail inside a seal is placed as a
+ * percentage of the box, so the artwork holds at whatever size it is given.
+ */
+export function Seal({
+  label,
+  size = SEAL_SIZE,
+}: {
+  label: string;
+  size?: string;
+}) {
   const isLine = label !== "HIPAA" && label !== "GDPR";
 
   // Divider badges — the circle is split into two halves by a full-bleed line;
@@ -44,7 +59,7 @@ function Seal({ label }: { label: string }) {
     const bottomFill = label === "CCPA" ? fill : "";
     return (
       <span
-        className={`relative flex ${SEAL_SIZE} flex-col items-center overflow-hidden rounded-full border border-border text-muted-foreground [[data-theme=dark]_&]:border-[#4d4d4d]`}
+        className={`relative flex ${size} flex-col items-center overflow-hidden rounded-full border border-border text-muted-foreground [[data-theme=dark]_&]:border-[#4d4d4d]`}
       >
         <span
           className={`flex w-full flex-1 items-end justify-center pb-1 sm:pb-1.5 ${topFill}`}
@@ -71,7 +86,7 @@ function Seal({ label }: { label: string }) {
       : "";
   return (
     <span
-      className={`relative flex ${SEAL_SIZE} flex-col items-center justify-center overflow-hidden rounded-full border border-border text-muted-foreground [[data-theme=dark]_&]:border-[#4d4d4d] ${gdprFill}`}
+      className={`relative flex ${size} flex-col items-center justify-center overflow-hidden rounded-full border border-border text-muted-foreground [[data-theme=dark]_&]:border-[#4d4d4d] ${gdprFill}`}
     >
       {label === "HIPAA" && (
         // inset as a percentage, not fixed px, so the inner ring keeps the same
@@ -119,20 +134,67 @@ function Seal({ label }: { label: string }) {
 
 export function SecurityCompliance({
   omit,
+  railAligned = false,
+  framed = false,
+  lineClass,
 }: {
   /** Seal titles to leave out — a page may make a claim one of these outruns. */
   omit?: string[];
+  /**
+   * The band already has a rule under it, drawn by whatever frames it, so it
+   * should not add its own on a phone.
+   *
+   * Two-up on a phone the grid's last row ends on nothing — the hairline bed
+   * only shows BETWEEN cells — so the band normally closes itself there. A
+   * page that boxes the band instead (see `bandClassName` on PortalTrust)
+   * draws that rule one pixel lower, and the two together read as a doubled
+   * line under the last two seals.
+   */
+  framed?: boolean;
+  /**
+   * The hairline colour between the cells, as background utilities.
+   *
+   * For a page drawing guide rails behind its content: every line on such a
+   * page has to be the rails' own tone or the column a cell divider shares
+   * with a rail changes weight where one takes over from the other. Unset,
+   * the band keeps --border, which is what the pages without rails use.
+   */
+  lineClass?: string;
+  /**
+   * Lay the band out on SIXTHS of the measure rather than on its own equal
+   * share of it.
+   *
+   * For a page that draws column rails behind its content. The band's cells
+   * divide the measure by their own count, the rails divide it by six, and the
+   * two rhythms meet at the band's top and bottom edges — hairlines inside it
+   * at quarters, rails above and below it at sixths, out of step by enough to
+   * read as a rendering fault rather than as a grid.
+   *
+   * On here the four seals take the middle four sixths and an empty cell
+   * closes each end, so every vertical in the band stands on a rail and the
+   * grid runs through the section unbroken. Only a page with those rails
+   * passes it; /security and /client-portal have none and keep the band at
+   * full width.
+   */
+  railAligned?: boolean;
 } = {}) {
   const standards = omit?.length
-    ? STANDARDS.filter((s) => !omit.includes(s.title))
-    : STANDARDS;
+    ? SECURITY_STANDARDS.filter((s) => !omit.includes(s.title))
+    : SECURITY_STANDARDS;
+  // Only the four-seal band divides into sixths cleanly (one empty cell each
+  // end); a shorter list keeps its own equal share of the measure.
+  const onRails = railAligned && standards.length === 4;
   // Written out rather than interpolated so Tailwind sees the whole class name.
-  const columns = standards.length === 3 ? "sm:grid-cols-3" : "sm:grid-cols-4";
+  const columns = onRails
+    ? "sm:grid-cols-6"
+    : standards.length === 3
+      ? "sm:grid-cols-3"
+      : "sm:grid-cols-4";
   return (
     // px-0 once the rails are present (≥1200px) so the grid fills the full rail
     // width and the outer cells meet the guide rails — smaller viewports keep a
     // little edge padding.
-    <section className="mx-auto max-w-[1200px] px-6 md:max-[1199px]:px-10 min-[1200px]:px-0">
+    <section className="relative mx-auto max-w-[1200px] px-6 md:max-[1199px]:px-10 min-[1200px]:px-0">
       {/* gap-px over a border-colored bed draws a hairline between each cell;
           each cell repaints the page background over it. */}
       {/* Bleeds past the section's padding on a phone so the hairline between
@@ -147,8 +209,30 @@ export function SecurityCompliance({
         // there. A bottom border below sm closes it, bleeding to the screen
         // edges like the -mx-6 it sits in and like every other phone-only rule
         // on the site.
-        className={`-mx-6 grid grid-cols-2 gap-px bg-border max-sm:border-b max-sm:border-border sm:mx-0 ${columns} [[data-theme=dark]_&]:bg-[#383838] [[data-theme=dark]_&]:max-sm:border-[#383838]`}
+        className={`-mx-6 grid grid-cols-2 gap-px sm:mx-0 ${
+          // ON THE RAILS THE GAPS DRAW NOTHING. A `gap-px` hairline starts ON
+          // the column boundary and runs a pixel to its right, while the page's
+          // guide rails are `w-px -translate-x-1/2` spans CENTRED on it — so the
+          // two land half a pixel apart and paint about 1.4px of line between
+          // them, which is the doubled vertical down this band. The overlay
+          // below redraws them on the rails' own geometry instead. Under
+          // 1200px the bed stays: there are no rails there to line up with.
+          onRails ? "min-[1200px]:gap-0" : ""
+        } ${columns} ${
+          lineClass ?? "bg-border [[data-theme=dark]_&]:bg-[#383838]"
+        } ${
+          framed
+            ? ""
+            : "max-sm:border-b max-sm:border-border [[data-theme=dark]_&]:max-sm:border-[#383838]"
+        }`}
       >
+        {/* The end cells. Page ground, not the hairline bed, so each one reads
+            as the measure carrying on rather than as a fifth empty seal.
+            Hidden on a phone, where the band is two-up and has no rails to
+            stand on. */}
+        {onRails ? (
+          <div aria-hidden className="hidden bg-background sm:block" />
+        ) : null}
         {standards.map((s) => (
           <div
             key={s.title}
@@ -170,7 +254,41 @@ export function SecurityCompliance({
         {standards.length % 2 ? (
           <div aria-hidden className="bg-background sm:hidden" />
         ) : null}
+        {onRails ? (
+          <div aria-hidden className="hidden bg-background sm:block" />
+        ) : null}
       </div>
+      {/* THE BAND'S VERTICALS, DRAWN LIKE THE RAILS THEY SIT ON.
+          Seven spans — both edges and the five boundaries between the six
+          cells — each `w-px -translate-x-1/2` at a sixth of the measure, which
+          is exactly how the page's rails are placed. Each one lands on the
+          rail it continues, so a column is one line at one weight from the top
+          of the page to the bottom of it, instead of the band's own edge
+          sitting a half-pixel off the rail above and the pair reading as a
+          doubled rule. Over the cells rather than behind them: the cells are
+          opaque and would hide the rails otherwise. */}
+      {onRails ? (
+        <div
+          aria-hidden
+          // AT THE RAILS' OWN BREAKPOINT. The spans are sixths of this
+          // section's box, which is the 1200 measure exactly only from 1200up,
+          // where the section drops its padding. Below that the box is the
+          // viewport and a span at 100% would land on the window's edge rather
+          // than the band's — and there are no rails down there to line up
+          // with anyway, so the gap bed draws the verticals instead.
+          className="pointer-events-none absolute inset-y-0 left-0 right-0 hidden min-[1200px]:block"
+        >
+          {[0, 1, 2, 3, 4, 5, 6].map((i) => (
+            <span
+              key={i}
+              style={{ left: `${(i / 6) * 100}%` }}
+              className={`absolute inset-y-0 w-px -translate-x-1/2 ${
+                lineClass ?? "bg-border [[data-theme=dark]_&]:bg-[#383838]"
+              }`}
+            />
+          ))}
+        </div>
+      ) : null}
     </section>
   );
 }

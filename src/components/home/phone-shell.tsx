@@ -10,21 +10,60 @@
 // page (a soft "melt" rather than a quick cut).
 const MELT = "linear-gradient(to bottom, #000 40%, transparent 90%)";
 
-export function PhoneShell({ children }: { children: React.ReactNode }) {
+export function PhoneShell({
+  children,
+  melt = true,
+  sideButtons = true,
+  squareFoot = false,
+  screenBg = "bg-background",
+  bezelBg = "bg-muted/50",
+}: {
+  children: React.ReactNode;
+  /**
+   * Whether the device's lower half dissolves into the page.
+   *
+   * True is right where the phone stands on the page's own ground and the
+   * fade is what keeps it from ending on a hard edge. It is wrong over a
+   * PHOTOGRAPH: the mask takes the bezel AND the screen's own background with
+   * it, so the picture shows through the device's lower half and the mock
+   * reads as a broken, half-transparent phone rather than one lying on the
+   * shot. A caller laying the device on an image turns it off and lets the
+   * frame around it do the cropping instead.
+   */
+  melt?: boolean;
+  /** The bezel's edge buttons. Off where the phone sits in a framed panel. */
+  sideButtons?: boolean;
+  /** Square bottom corners, for a device the frame crops at its foot: the
+      curve otherwise starts just above the crop and reads as the phone's end. */
+  squareFoot?: boolean;
+  /** The screen's ground, for a mock whose own window tone isn't the page's. */
+  screenBg?: string;
+  /** The bezel's fill. Translucent by default; solid over a photograph,
+      where the translucent one read as glass. */
+  bezelBg?: string;
+}) {
   return (
     <div
       className="relative mx-auto w-full max-w-[380px]"
-      style={{ maskImage: MELT, WebkitMaskImage: MELT }}
+      style={melt ? { maskImage: MELT, WebkitMaskImage: MELT } : undefined}
     >
       {/* Side buttons — faint edge detail on the bezel. */}
-      <span className="absolute -left-px top-[122px] h-8 w-[2px] rounded-l-sm bg-foreground/10" />
-      <span className="absolute -left-px top-[168px] h-12 w-[2px] rounded-l-sm bg-foreground/10" />
-      <span className="absolute -right-px top-[146px] h-14 w-[2px] rounded-r-sm bg-foreground/10" />
+      {sideButtons && (
+        <>
+          <span className="absolute -left-px top-[122px] h-8 w-[2px] rounded-l-sm bg-foreground/10" />
+          <span className="absolute -left-px top-[168px] h-12 w-[2px] rounded-l-sm bg-foreground/10" />
+          <span className="absolute -right-px top-[146px] h-14 w-[2px] rounded-r-sm bg-foreground/10" />
+        </>
+      )}
 
       {/* Body — light, thin outline bezel (token-based so it adapts to dark). */}
-      <div className="rounded-[44px] border border-border bg-muted/50 p-2 shadow-[0_20px_50px_-30px_rgba(16,24,40,0.22)] [[data-theme=dark]_&]:bg-white/[0.04]">
+      <div
+        className={`rounded-[44px] ${squareFoot ? "rounded-b-none" : ""} border border-border ${bezelBg} p-2 shadow-[0_20px_50px_-30px_rgba(16,24,40,0.22)] [[data-theme=dark]_&]:bg-white/[0.04]`}
+      >
         {/* Screen */}
-        <div className="relative flex aspect-[9/11] flex-col overflow-hidden rounded-[36px] bg-background ring-1 ring-border">
+        <div
+          className={`relative flex aspect-[9/11] flex-col overflow-hidden rounded-[36px] ${squareFoot ? "rounded-b-none" : ""} ${screenBg} ring-1 ring-border`}
+        >
           {/* Status bar carrying the dynamic island, so the mock's own header
               clears it. */}
           <div className="relative z-20 flex h-7 shrink-0 items-center justify-center">

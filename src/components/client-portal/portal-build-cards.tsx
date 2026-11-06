@@ -14,7 +14,8 @@
 
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { CompanyMark, hasCompanyMark } from "@/components/home/team-crm-visual";
 import Image from "next/image";
 import { MockFit } from "@/components/templates/mock-fit";
 import { fadeMask } from "@/components/ui/fade-mask";
@@ -39,6 +40,7 @@ import {
   IconSearch,
   IconMegaphone,
   IconPenNib,
+  IconMenu,
 } from "@/components/home/mock-icons";
 
 // 3:4, the rail's card shape.
@@ -113,6 +115,23 @@ const LINE = "border-[var(--mock-line)]";
  * mark fades with its line under the foot ramp instead of staying lit after
  * the words around it have gone.
  */
+/** markedFlow for several phrases in one line, each underlined in place. */
+function markedText(text: string, marks: string[]): React.ReactNode {
+  const [first, ...rest] = marks;
+  if (!first) return text;
+  const at = text.indexOf(first);
+  if (at === -1) return markedText(text, rest);
+  return (
+    <>
+      {markedText(text.slice(0, at), rest)}
+      <span className="underline decoration-dotted decoration-1 underline-offset-[3px]">
+        {first}
+      </span>
+      {markedText(text.slice(at + first.length), rest)}
+    </>
+  );
+}
+
 function markedFlow(text: string, mark: string) {
   const at = text.indexOf(mark);
   if (at === -1) return text;
@@ -258,6 +277,7 @@ function Scene({
   boxClass,
   boxSizeClass,
   footFlush = false,
+  bleedFromTop = false,
 }: {
   children: React.ReactNode;
   /**
@@ -312,6 +332,18 @@ function Scene({
    * spare rather than as a page running off the bottom.
    */
   footFlush?: boolean;
+  /**
+   * Keeps a bleed scene pinned to its TOP at `lg`, where it otherwise flips to
+   * the foot.
+   *
+   * The foot is right for a scene whose box is shorter than the window it
+   * holds by a row or two — the board's rows run off the bottom and still read
+   * as a list carrying on. It is wrong for a scene drawn to fill a tall panel
+   * (see `tall`), where the overrun is large enough that pinning to the foot
+   * takes the window's own header — the workspace name and the search row —
+   * off the top of a screen that is the step's whole subject.
+   */
+  bleedFromTop?: boolean;
 }) {
   return (
     <MockFit
@@ -372,7 +404,9 @@ function Scene({
               // and name — off the top of a card whose subject is the firm's
               // portal. Pinned to the top instead, the same 113px comes off
               // the bottom, which is the end that was always meant to be cut.
-              "flex flex-col justify-start overflow-hidden pl-5 pt-5 lg:justify-end"
+              `flex flex-col justify-start overflow-hidden pl-5 pt-5 ${
+                bleedFromTop ? "" : "lg:justify-end"
+              }`
             : `flex flex-col gap-4 p-5 ${
                 // justify-center centres a short scene in the box; with the
                 // foot open the child is meant to FILL it and be cut, so it
@@ -553,6 +587,27 @@ const PANEL_SCENE_PHONE = {
  * between them must not resize it, so only the width is per-step — and width
  * is the axis with the slack, since all three slots run to the panel's foot.
  */
+/**
+ * The Iterate chat's design box.
+ *
+ * It was a flat 680x260 at every width, and on a phone that is what made the
+ * exchange unreadable: MockFit fits the box to the frame, so a 680 box in a
+ * ~310px frame is drawn at 0.45 and 13px type lands at under 6. The other
+ * steps on that panel already take a 360-wide phone box (PANEL_SCENE_PHONE),
+ * which resolves near 1:1 there — this follows them, so all four steps draw
+ * their type at one size on a phone. 200 rather than 300 tall because the
+ * chat is two bubbles and nothing else; at 300 it sat in a third of a box of
+ * empty ground.
+ */
+const ITERATE_SCENE = {
+  vars: "[--template-mock-w:360px] [--template-mock-h:200px] sm:[--template-mock-w:680px] sm:[--template-mock-h:260px]",
+  size: "w-[360px] h-[200px] sm:w-[680px] sm:h-[260px]",
+};
+const ITERATE_SCENE_PROPS = {
+  boxClass: ITERATE_SCENE.vars,
+  boxSizeClass: ITERATE_SCENE.size,
+};
+
 const PANEL_SCENE_WIDE = {
   // The phone step is the same one PANEL_SCENE_PHONE takes and for the
   // same reason — see there. Build's scene is a portal screen that bleeds off
@@ -562,12 +617,56 @@ const PANEL_SCENE_WIDE = {
   size: "w-[360px] h-[300px] sm:w-[620px] sm:h-[400px] lg:w-[900px] lgx:w-[1040px]",
 };
 
+/** How long each character of the typed prompt takes, and the pause first. */
+const TYPE_MS = 34;
+const TYPE_DELAY_MS = 450;
+
+/**
+ * Build's panel box, drawn to the FULL height of the slot it is given.
+ *
+ * Same widths as PANEL_SCENE_WIDE, taller box. For a panel where the screen
+ * runs from under the tab strip to the panel's own foot rather than sitting
+ * in the lower half of it with a band of photograph above and nothing below.
+ * Separate from PANEL_SCENE_WIDE so /ai-app-builder, whose slot is a fixed
+ * 400 tall, is untouched.
+ */
+const PANEL_SCENE_WIDE_TALL = {
+  vars: "[--template-mock-w:360px] [--template-mock-h:300px] sm:[--template-mock-w:620px] sm:[--template-mock-h:400px] md:[--template-mock-h:520px] lg:[--template-mock-w:900px] lgx:[--template-mock-w:1040px]",
+  size: "w-[360px] h-[300px] sm:w-[620px] sm:h-[400px] md:h-[520px] lg:w-[900px] lgx:w-[1040px]",
+};
+
 export function DescribeCard({
   plain = false,
   vertical = "default",
   prompt,
   photo,
+  typing = false,
+  ring = true,
 }: SceneProps & {
+  /**
+   * The lime-to-blue ring around the composer, and the band of ground inside
+   * it. On by default.
+   *
+   * Off where the composer is the only object on a bright photograph and has
+   * the whole panel to itself: there the lime-to-blue band is the first thing
+   * the eye lands on, and it is decoration on the one element the step is
+   * pointing at. The double outline itself stays either way — a hairline, the
+   * band of ground, the box's own border — because that is the composer's
+   * shape rather than its colour.
+   */
+  ring?: boolean;
+  /**
+   * Types the prompt out a character at a time instead of showing it whole.
+   *
+   * The step's claim is that you say what you want in plain language, and a
+   * finished sentence sitting in a box shows the result of that rather than
+   * the doing of it. Opt-in, so the rail and the product pages keep the
+   * still composer they were drawn with.
+   *
+   * It runs ONCE and stays, like the Iterate step's chat: the panel remounts
+   * a step when you tab to it, which is what replays this.
+   */
+  typing?: boolean;
   /**
    * The composer's text, for a page whose step is a CHANGE rather than a new
    * app: the template pages' "Describe your changes" asks for an edit to the
@@ -580,6 +679,50 @@ export function DescribeCard({
    */
   photo?: string;
 } = {}) {
+  const line =
+    prompt ??
+    (plain
+      ? "Add a shared calendar each client books their own time on."
+      : vertical === "accounting"
+        ? "Add a month-end close tracker each client sees for their own books."
+        : vertical === "agency"
+          ? "Add a project tracker each client sees for their own campaigns."
+          : "Add a project tracker each client sees for their own project.");
+
+  // WRITTEN STRAIGHT TO THE DOM, not held in state. The sentence is rendered
+  // whole on the server — so the box is its full size before any of this runs
+  // and there is nothing to hydrate around — and the two spans always hold
+  // the whole line between them, so the composer never changes height as the
+  // characters arrive.
+  const typedRef = useRef<HTMLSpanElement>(null);
+  const restRef = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    if (!typing) return;
+    const head = typedRef.current;
+    const tail = restRef.current;
+    if (!head || !tail) return;
+    // Reduced motion keeps the finished sentence, which is what the server
+    // already rendered — so there is nothing to do.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    let timer = 0;
+    let i = 0;
+    const tick = () => {
+      i += 1;
+      head.textContent = line.slice(0, i);
+      tail.textContent = line.slice(i);
+      if (i < line.length) timer = window.setTimeout(tick, TYPE_MS);
+    };
+    const start = window.setTimeout(() => {
+      head.textContent = "";
+      tail.textContent = line;
+      tick();
+    }, TYPE_DELAY_MS);
+    return () => {
+      window.clearTimeout(start);
+      window.clearTimeout(timer);
+    };
+  }, [typing, line]);
+
   return (
     <>
       {/* A photograph behind this card only, scrimmed hard.
@@ -719,7 +862,18 @@ export function DescribeCard({
             plain
               ? // Lifted 13px on a phone, where the panel's caption sits right
                 // above the slot and a centred composer read as sitting low.
-                "max-sm:-translate-y-[13px] rounded-[14px] bg-[linear-gradient(to_bottom,#d9ed92_0%,#9fd6c4_45%,#8ea2f4_100%)] bg-[length:100%_200%] bg-[position:0%_0%] p-px transition-[background-position] duration-700 ease-out group-hover/card:bg-[position:0%_100%] motion-reduce:transition-none sm:mb-auto sm:mt-[66px]"
+                // The placement classes stay whether or not the ring is drawn;
+                // only the paint is conditional (see `ring`).
+                `max-sm:-translate-y-[13px] rounded-[14px] p-px sm:mb-auto sm:mt-[66px] ${
+                  ring
+                    ? "bg-[linear-gradient(to_bottom,#d9ed92_0%,#9fd6c4_45%,#8ea2f4_100%)] bg-[length:100%_200%] bg-[position:0%_0%] transition-[background-position] duration-700 ease-out group-hover/card:bg-[position:0%_100%] motion-reduce:transition-none"
+                    : // The same ring as a plain hairline. `ring` decides
+                      // the PAINT, not the shape: the outer line, the band
+                      // of ground inside it and the box's own border are
+                      // what give this composer its double outline, and
+                      // that is the object, not the colour.
+                      "bg-[var(--mock-line)]"
+                }`
               : "contents"
           }
         >
@@ -873,15 +1027,7 @@ export function DescribeCard({
                 calendar; /client-portal's rail still runs the project tracker
                 through its own Plan and Build, and a prompt shared between them
                 would be wrong on one page whichever app it named. */}
-                {prompt
-                  ? prompt
-                  : plain
-                    ? "Add a shared calendar each client books their own time on."
-                    : vertical === "accounting"
-                      ? "Add a month-end close tracker each client sees for their own books."
-                      : vertical === "agency"
-                        ? "Add a project tracker each client sees for their own campaigns."
-                        : "Add a project tracker each client sees for their own project."}
+                <span ref={typedRef}>{line}</span>
                 {/* The site's own caret blink (--animate-caret, the one the
               hero typewriter uses). It BLINKS AT REST now rather than only
               while the card is hovered: a still caret parked after a finished
@@ -893,6 +1039,10 @@ export function DescribeCard({
                 <span
                   className={`ml-[1px] inline-block w-[1.5px] translate-y-[2px] bg-[var(--mock-ink)] motion-safe:animate-caret ${plain ? "h-[15px]" : "h-[14px]"}`}
                 />
+                {/* The part not yet typed, holding its own space. Without it
+                    the box would grow line by line under the caret as the
+                    sentence arrives, and the composer would jump. */}
+                <span ref={restRef} aria-hidden className="invisible" />
               </p>
 
               {/* The composer's control row, where the product puts it.
@@ -1204,7 +1354,29 @@ function ChecklistWindow({
 export function PlanCard({
   plain = false,
   vertical = "default",
-}: SceneProps = {}) {
+  doc = PLAN_DOC,
+  tall = false,
+}: SceneProps & {
+  /**
+   * Draws the `plain` document 500px tall from `md` instead of 400.
+   *
+   * The scene is cut by the panel's foot, so its height is what decides how
+   * far DOWN its top edge sits. At 400 in a 560 panel the document began a
+   * third of the way into the photograph, with a band of picture over it. A
+   * taller box starts higher and shows more of the page at the same 1:1 — it
+   * is not a scale. Off by default: the panel that runs it is 464 tall.
+   */
+  tall?: boolean;
+  /**
+   * The requirements the plan came back with.
+   *
+   * A prop because the three `plain` scenes are ONE SESSION — what you typed,
+   * what came back, what got built — so a page that asks for a different app
+   * in its Describe step has to get that app's plan here, or the sequence
+   * stops being a sequence. See TRACKER_PLAN_DOC.
+   */
+  doc?: typeof PLAN_DOC & { overviewMarks?: string[] };
+} = {}) {
   // The agency and accounting pages run the build-in-progress version.
   const building = vertical === "agency" || vertical === "accounting";
   return (
@@ -1271,13 +1443,15 @@ export function PlanCard({
         // there is no screen left to need a screen's width — two cards and a
         // measure of prose, which is what the shared 620 is for.
         <Scene
-          boxClass={PANEL_SCENE_PHONE.vars}
-          boxSizeClass={PANEL_SCENE_PHONE.size}
+          boxClass={`${PANEL_SCENE_PHONE.vars}${
+            tall ? " md:[--template-mock-h:460px]" : ""
+          }`}
+          boxSizeClass={`${PANEL_SCENE_PHONE.size}${tall ? " md:h-[460px]" : ""}`}
           // The card runs to the panel's bottom edge and is cut by it — see
           // footFlush, and the deeper foot ramp inside RequirementsPane.
           footFlush
         >
-          <RequirementsPane />
+          <RequirementsPane doc={doc} />
         </Scene>
       ) : (
         // The PHONE box, as Describe and Build take — see the note on
@@ -1333,8 +1507,8 @@ const BOARD = {
     // truncated project name in a mock is just a smaller mistake than a second
     // type size.
     {
-      who: "Lumen Analytics",
-      initials: "LA",
+      who: "Symphony Labs",
+      initials: "SL",
       title: "Series B Data Room",
       done: 1,
       of: 4,
@@ -1355,6 +1529,77 @@ const BOARD = {
     },
   ],
 };
+
+/**
+ * The homepage panel's board: the tracker at the panel's full width, where
+ * there is room for the board the product ships, so a lone "Active" lane no
+ * longer reads as a list that lost its neighbours.
+ */
+const WIDE_BOARD = [
+  {
+    name: "Planning",
+    count: 6,
+    cards: [
+      {
+        who: "Harbor Dental",
+        initials: "HD",
+        title: "Patient Portal",
+        done: 0,
+        of: 4,
+      },
+      {
+        who: "Northwind Coffee",
+        initials: "NC",
+        title: "Brand Refresh",
+        done: 0,
+        of: 5,
+      },
+    ],
+  },
+  BOARD,
+  {
+    name: "In review",
+    count: 5,
+    // Desktop only: four lanes in a tablet-width window were slivers.
+    desktopOnly: true,
+    cards: [
+      {
+        who: "Meridian Law",
+        initials: "ML",
+        title: "Client Intake",
+        done: 4,
+        of: 5,
+      },
+      {
+        who: "Atlas Partners",
+        initials: "AP",
+        title: "Pitch Deck",
+        done: 3,
+        of: 4,
+      },
+    ],
+  },
+  {
+    name: "Done",
+    count: 14,
+    cards: [
+      {
+        who: "Wave Studio",
+        initials: "WS",
+        title: "Website Launch",
+        done: 5,
+        of: 5,
+      },
+      {
+        who: "Godo Partners",
+        initials: "GP",
+        title: "Onboarding Kit",
+        done: 4,
+        of: 4,
+      },
+    ],
+  },
+];
 
 /** The agency page's board: client campaigns, the hero's book of work. */
 const BOARD_AGENCY = {
@@ -1466,6 +1711,27 @@ const PLAN_DOC = {
 };
 
 /**
+ * The same document for a client project tracker, which is the app the
+ * homepage's panel asks for in its Describe step.
+ *
+ * Written to the shape above rather than freely: one overview sentence, four
+ * flows in plain connectives, and one marked noun per flow. The marks name
+ * places in the product, not actions.
+ */
+export const TRACKER_PLAN_DOC = {
+  overview:
+    "A client-facing project tracker where your team runs every project and each client sees only their own.",
+  flows: [
+    "Internal user opens the app from the dashboard, sees every project across every client, and filters by company or stage.",
+    "Internal user clicks New project, picks a company, an owner and a due date, then publishes it to that client's tracker.",
+    "Client opens the tracker in the client experience and sees their own projects, each with its stage and what is due next.",
+    "Client comments on a project, gets a reply from your team, and a notification when the stage moves.",
+  ],
+  marks: ["dashboard", "New project", "client experience", "notification"],
+  overviewMarks: ["project tracker", "each client"],
+};
+
+/**
  * The plan, as the CONVERSATION it arrives in: what you asked for, what came
  * back, and the box you answer in.
  *
@@ -1485,7 +1751,9 @@ const PLAN_DOC = {
  * Still no sidebar and no window chrome. Where the plan LIVES is step three's
  * job; this step is only what the plan says and whether you accept it.
  */
-function RequirementsPane() {
+function RequirementsPane({
+  doc = PLAN_DOC,
+}: { doc?: typeof PLAN_DOC & { overviewMarks?: string[] } } = {}) {
   return (
     <div className="flex size-full flex-col gap-2.5">
       {/* NO PROMPT BUBBLE AND NO COMPOSER. The scene used to run the whole
@@ -1551,7 +1819,7 @@ function RequirementsPane() {
           // --mock-line hairline already reads against the card. The missing
           // bottom border is unaffected: the ramp is painted on the border box
           // and simply has no band to paint there.
-          className={`mock-edge relative flex h-full flex-col overflow-hidden ${R_PANEL} rounded-b-none border border-b-0 bg-[var(--mock-window)] max-sm:mx-6 ${LINE}`}
+          className={`mock-edge relative flex h-full cursor-default flex-col overflow-hidden ${R_PANEL} rounded-b-none border border-b-0 bg-[var(--mock-window)] max-sm:mx-6 ${LINE}`}
         >
           {/* The action, in the card's own top-right corner — the corner the
               product puts a document's controls in, and where the eye goes
@@ -1631,13 +1899,13 @@ function RequirementsPane() {
               Overview
             </span>
             <p className={`text-[color:var(--mock-ink-soft)] ${PLAN_PROSE}`}>
-              {PLAN_DOC.overview}
+              {markedText(doc.overview, doc.overviewMarks ?? [])}
             </p>
             <span className={`mt-1 text-[color:var(--mock-ink)] ${PLAN_HEAD}`}>
               Core Flows
             </span>
             <ul className="flex flex-col gap-1.5">
-              {PLAN_DOC.flows.map((f, i) => (
+              {doc.flows.map((f, i) => (
                 <li
                   key={f}
                   className={`flex gap-2 text-[color:var(--mock-ink-soft)] ${PLAN_PROSE}`}
@@ -1657,9 +1925,7 @@ function RequirementsPane() {
                   <span className="flex h-[22.4px] shrink-0 items-center sm:h-[20.8px]">
                     <span className="size-[3px] rounded-full bg-current" />
                   </span>
-                  <span className="min-w-0">
-                    {markedFlow(f, PLAN_DOC.marks[i])}
-                  </span>
+                  <span className="min-w-0">{markedFlow(f, doc.marks[i])}</span>
                 </li>
               ))}
             </ul>
@@ -2354,11 +2620,21 @@ function ProjectCard({
             The tints are their own family rather than the status pills reused
             — a green avatar would read as a finished project. See
             --mock-avatar-* in globals.css. */}
-        <span
-          className={`flex size-[18px] shrink-0 items-center justify-center ${R_CHROME} text-[9.5px] leading-none ${AVATAR_TINT[tint % AVATAR_TINT.length]}`}
-        >
-          {initials}
-        </span>
+        {/* A client with real artwork (the CRM's Symphony, Wave and Godo)
+            wears its logo, as the CRM does; the rest keep initials. */}
+        {hasCompanyMark(who.split(" ")[0]) ? (
+          <CompanyMark
+            company={who.split(" ")[0]}
+            className={`size-[18px]! ${R_CHROME}`}
+            markClassName="size-[10px]"
+          />
+        ) : (
+          <span
+            className={`flex size-[18px] shrink-0 items-center justify-center ${R_CHROME} text-[9.5px] leading-none ${AVATAR_TINT[tint % AVATAR_TINT.length]}`}
+          >
+            {initials}
+          </span>
+        )}
         <span
           className={`min-w-0 flex-1 truncate text-[color:var(--mock-ink-soft)] ${UI_SECONDARY}`}
         >
@@ -2389,7 +2665,46 @@ export function BuildCard({
   vertical = "default",
   sidebarOnly = false,
   appLabel,
+  tracker = false,
+  tall = false,
+  closedRight = false,
+  menuBar = false,
+  titleBar = false,
 }: SceneProps & {
+  /** The screen's name as a top bar from sm too, where the sidebar shows. */
+  titleBar?: boolean;
+  /**
+   * The phone bar as the homepage hero draws it: a bordered menu button
+   * beside the screen's name, for a board shown inside a phone frame.
+   */
+  menuBar?: boolean;
+  /**
+   * Closes the window's right edge on a phone as well as from sm.
+   *
+   * The window is drawn to run off its card's right edge, so below sm it has
+   * no border and no radius there — three of its four corners are crops. A
+   * panel that insets the scene instead (the homepage's four-steps section
+   * does on a phone) puts that edge back inside the picture, where a square
+   * corner beside three finished ones reads as the shot having been cut.
+   */
+  closedRight?: boolean;
+  /**
+   * Draws the `plain` scene to the full height of its slot — see
+   * PANEL_SCENE_WIDE_TALL. For a panel that gives this step the whole frame
+   * rather than a 400-tall band inside it.
+   */
+  tall?: boolean;
+  /**
+   * Shows the project-tracker board in a `plain` scene, where that scene
+   * otherwise draws the calendar.
+   *
+   * The board is what the rail's own Build step already draws; this only
+   * lets the wide scene reach it. For a page whose three steps describe,
+   * plan and build a tracker rather than a calendar — the Describe prompt
+   * and the plan document are the other two halves of that (see
+   * TRACKER_PLAN_DOC).
+   */
+  tracker?: boolean;
   /**
    * The portal's sidebar alone, the content area left empty: for a step whose
    * point is that the app has arrived in the client's portal (the template
@@ -2400,8 +2715,8 @@ export function BuildCard({
   /** The lit nav row's name, for a page showing its own app arriving. */
   appLabel?: string;
 } = {}) {
-  // Ledgerline only off the panel: the wide `plain` scene is the calendar,
-  // which no vertical changes.
+  // Ledgerline only off the panel: the wide `plain` scene is the calendar or
+  // the tracker, neither of which a vertical changes.
   const ledgerline = vertical === "accounting" && !plain;
   const bloomhouse = vertical === "agency" && !plain;
   const board = ledgerline
@@ -2409,6 +2724,16 @@ export function BuildCard({
     : bloomhouse
       ? BOARD_AGENCY
       : BOARD;
+  // The app the screen is showing, named once. The nav's lit row and the
+  // phone's title bar are the same label in two places, and the two have to
+  // say the same thing or the screen names itself twice over.
+  const screenName =
+    appLabel ??
+    (plain && !tracker
+      ? "Calendar"
+      : ledgerline
+        ? "Close tracker"
+        : "Project tracker");
   return (
     <>
       {/* The Build card's ground, the third of the set — the Describe card
@@ -2462,11 +2787,15 @@ export function BuildCard({
           spoil, dimming the only column on screen from 82% of its width on. */}
       <Scene
         bleed
+        // The tall scene's window overruns its box by more than a row, so the
+        // `lg` flip to the foot would cut the screen's own header off the top.
+        bleedFromTop={plain && tall}
         fadeFrom={100}
         {...(plain
           ? {
-              boxClass: PANEL_SCENE_WIDE.vars,
-              boxSizeClass: PANEL_SCENE_WIDE.size,
+              boxClass: (tall ? PANEL_SCENE_WIDE_TALL : PANEL_SCENE_WIDE).vars,
+              boxSizeClass: (tall ? PANEL_SCENE_WIDE_TALL : PANEL_SCENE_WIDE)
+                .size,
             }
           : // The phone box, like the other rail cards — see RAIL_SCENE_PHONE.
             // It matters more here than anywhere: this card's whole idea is a
@@ -2595,7 +2924,11 @@ export function BuildCard({
           // grey ground than the rule it replaced. Clipping the background to
           // the padding box leaves the border area genuinely empty, so the
           // card's own ground shows through and there is no line at all.
-          className={`flex shrink-0 ${plain ? "mock-edge" : "w-[340px] translate-x-[25px] translate-y-px max-lg:flex-1 min-[480px]:w-[380px] min-[480px]:translate-x-[20px]"} ${WINDOW} ${R_PANEL} rounded-b-none rounded-tr-none border-transparent [background-clip:padding-box] border-b-0 border-r-0 sm:rounded-tr-[10px] sm:border-r ${
+          className={`flex shrink-0 ${plain ? "mock-edge" : "w-[340px] translate-x-[25px] translate-y-px max-lg:flex-1 min-[480px]:w-[380px] min-[480px]:translate-x-[20px]"} ${WINDOW} ${R_PANEL} rounded-b-none border-transparent [background-clip:padding-box] border-b-0 ${
+            closedRight
+              ? "border-r rounded-tr-[10px]"
+              : "rounded-tr-none border-r-0 sm:rounded-tr-[10px] sm:border-r"
+          } ${
             // sidebarOnly runs off the card's right and foot at every width,
             // so its window has no right border (a transparent one showed the
             // ground as a 1px line where the window met the card flush) and
@@ -2630,7 +2963,22 @@ export function BuildCard({
                 // The PHONE step stays flush at 340 in its 360 box. It still
                 // bleeds off the right and ramps out into the panel, so there
                 // the left pad is doing its job and nothing answers it.
-                "h-[280px] w-[340px] sm:h-[380px] sm:w-[580px] lg:w-[860px] lgx:w-[1000px]"
+                `h-[280px] w-[340px] sm:h-[380px] sm:w-[580px] lg:w-[860px] lgx:w-[1000px] ${
+                  // TALLER IN A TALL BOX. The window's height was written for
+                  // the 400-tall scene; in the 520 box the homepage panel
+                  // gives it, the same 380 left 140px of slack that a bleed
+                  // scene puts above the window — a band of photograph over
+                  // the screen, and a screen that read as short for the panel
+                  // it is in. It keeps the bleed's own top pad and takes the
+                  // rest and then some: 540 in a 520 box, so after the bleed
+                  // frame's own 20px top pad the window runs 40px PAST the
+                  // box's floor and the panel crops it. Sized to land exactly
+                  // on the floor it still finished a few pixels short — the
+                  // scene is scaled to fit, so any rounding in that scale
+                  // shows as a strip of photograph under the screen. Cropping
+                  // cannot leave a strip.
+                  tall ? "md:h-[540px]" : ""
+                }`
               : ""
           }`}
         >
@@ -2712,7 +3060,7 @@ export function BuildCard({
                 whole reason neither pane carries a title bar. */}
             <ClientNavRow
               icon={
-                plain ? (
+                plain && !tracker ? (
                   <IconClock />
                 ) : bloomhouse ? (
                   <IconCalendarDays />
@@ -2720,14 +3068,7 @@ export function BuildCard({
                   <IconApp />
                 )
               }
-              label={
-                appLabel ??
-                (plain
-                  ? "Calendar"
-                  : ledgerline
-                    ? "Close tracker"
-                    : "Project tracker")
-              }
+              label={screenName}
               active
             />
           </div>
@@ -2743,12 +3084,50 @@ export function BuildCard({
                 : ""
             }`}
           >
-            {/* No title bar. It carried the app's name and nothing else, and the
-              lit row in the nav an inch to its left says the same words — so
-              the screen opened by naming itself twice and spent a bar's height
-              on the repeat. The same bar came off the hero's two screens for
-              the same reason. */}
-            {sidebarOnly ? null : plain ? (
+            {/* No title bar — FROM sm. It carried the app's name and nothing
+              else, and the lit row in the nav an inch to its left says the
+              same words, so the screen opened by naming itself twice and
+              spent a bar's height on the repeat.
+              
+              That argument is only true while the nav is there. Below sm it
+              is not: the sidebar is hidden, so the screen came up as a bare
+              search field with nothing naming what you were looking at, and
+              it read as a window whose top had been cut off. The bar comes
+              back at exactly the width the nav goes away, carrying the same
+              name the lit row would have. */}
+            {sidebarOnly ? null : menuBar ? (
+              <div
+                className={`flex shrink-0 items-center gap-2.5 border-b px-4 py-2 ${LINE} text-[color:var(--mock-ink)] sm:hidden`}
+              >
+                <span
+                  className={`flex size-[22px] shrink-0 items-center justify-center rounded-[4px] border ${LINE}`}
+                >
+                  <IconMenu className="size-[11px]" />
+                </span>
+                <span className="truncate text-[12.5px] leading-[1.4]">
+                  {screenName}
+                </span>
+              </div>
+            ) : (
+              <div
+                className={`flex shrink-0 items-center gap-1.5 border-b px-3 py-2 ${LINE} text-[color:var(--mock-ink)] ${UI_PRIMARY} sm:hidden`}
+              >
+                <IconApp className="size-[10px] shrink-0" />
+                <span className="truncate">{screenName}</span>
+              </div>
+            )}
+            {titleBar && !sidebarOnly ? (
+              <div
+                className={`hidden h-[37px] shrink-0 items-center gap-2 border-b px-3 ${LINE} text-[color:var(--mock-ink)] sm:flex`}
+              >
+                {/* The board's own primary size, as the workspace name and
+                    column heads: a larger title read as a second type scale. */}
+                <span className={`truncate ${UI_PRIMARY}`}>
+                  {screenName}
+                </span>
+              </div>
+            ) : null}
+            {sidebarOnly ? null : plain && !tracker ? (
               <CalendarPane />
             ) : (
               <>
@@ -2756,7 +3135,7 @@ export function BuildCard({
               crop took, so the row ended on half a control. */}
                 <div className="flex shrink-0 items-center px-3 pt-2.5">
                   <span
-                    className={`flex h-[22px] w-[120px] items-center gap-1.5 ${R_CHROME} border px-2 text-[color:var(--mock-ink-soft)] ${UI_SECONDARY} ${LINE}`}
+                    className={`flex h-[22px] ${menuBar ? "w-full" : "w-[120px]"} items-center gap-1.5 ${R_CHROME} border px-2 text-[color:var(--mock-ink-soft)] ${UI_SECONDARY} ${LINE}`}
                   >
                     <IconSearch className="size-[9px] shrink-0" />
                     Search
@@ -2772,28 +3151,41 @@ export function BuildCard({
                 reading as a lane. --mock-well-2 is #f2f3f6, double the step,
                 which is the scale's own next rung rather than a value invented
                 here. */}
-                  <div className="flex min-w-0 flex-1 flex-col gap-1.5 rounded-t-[4px] bg-[var(--mock-well-2)] p-1.5">
-                    <div className="flex items-center gap-1.5 px-0.5 pt-0.5">
-                      <span
-                        className={`text-[color:var(--mock-ink)] ${UI_PRIMARY}`}
-                      >
-                        {board.name}
-                      </span>
-                      <span
-                        className={`text-[color:var(--mock-ink-soft)] ${UI_SECONDARY}`}
-                      >
-                        {board.count}
-                      </span>
+                  {(plain && tracker ? WIDE_BOARD : [board]).map((lane) => (
+                    <div
+                      key={lane.name}
+                      // On a phone the Active lane alone, at the full width:
+                      // three lanes in that window were slivers.
+                      className={`min-w-0 flex-1 flex-col gap-1.5 rounded-t-[4px] bg-[var(--mock-well-2)] p-1.5 transition-colors duration-150 hover:bg-[var(--mock-well-3)] sm:[&+&]:ml-2 ${
+                        lane === board
+                          ? "flex"
+                          : "desktopOnly" in lane
+                            ? "hidden md:flex"
+                            : "hidden sm:flex"
+                      }`}
+                    >
+                      <div className="flex items-center gap-1.5 px-0.5 pt-0.5">
+                        <span
+                          className={`text-[color:var(--mock-ink)] ${UI_PRIMARY}`}
+                        >
+                          {lane.name}
+                        </span>
+                        <span
+                          className={`text-[color:var(--mock-ink-soft)] ${UI_SECONDARY}`}
+                        >
+                          {lane.count}
+                        </span>
+                      </div>
+                      {lane.cards.map((card, i) => (
+                        <ProjectCard
+                          key={card.title}
+                          {...card}
+                          lead={lane === board && i === 0}
+                          tint={i}
+                        />
+                      ))}
                     </div>
-                    {board.cards.map((card, i) => (
-                      <ProjectCard
-                        key={card.title}
-                        {...card}
-                        lead={i === 0}
-                        tint={i}
-                      />
-                    ))}
-                  </div>
+                  ))}
                 </div>
               </>
             )}
@@ -2912,60 +3304,193 @@ function BusyRing({ className = "" }: { className?: string }) {
 // ── 4. Iterate ───────────────────────────────────────────────────────────
 // Hover applies the change: the revision is sent and the column it asked for
 // appears in the table.
-export function IterateCard() {
-  return (
-    <Scene>
-      <div className={`flex flex-col ${WINDOW}`}>
-        <p
-          className={`shrink-0 bg-[var(--mock-well-2)] px-4 py-3 text-[color:var(--mock-ink)] ${CARD_BODY}`}
+export function IterateCard({
+  reply = false,
+}: {
+  /**
+   * Draws the request and the builder's answer as a CHAT above the card —
+   * two bubbles on whatever is behind the scene — rather than as one banded
+   * line of type inside it.
+   *
+   * Opt-in: the rail on /client-portal shows this card at a third of the
+   * measure, where a sent bubble and a reply are two things to read in a
+   * space with room for one, and the band is the right compression of them.
+   * A page giving the step a whole panel has the room, and the step's claim —
+   * that you keep changing the app by asking — is an exchange, so it should
+   * look like one rather than resting on a table quietly growing a column.
+   */
+  reply?: boolean;
+} = {}) {
+  const table = (
+    <div className="px-4 py-4">
+      <div className={`overflow-hidden ${R_CHROME} border ${LINE}`}>
+        <div
+          className={`flex items-center gap-2 border-b bg-[var(--mock-well)] px-3 py-2 text-[color:var(--mock-ink-soft)] ${UI_SECONDARY} ${LINE}`}
         >
-          Add a due date to every project.
-        </p>
-        <div className="px-4 py-4">
-          <div className={`overflow-hidden ${R_CHROME} border ${LINE}`}>
-            <div
-              className={`flex items-center gap-2 border-b bg-[var(--mock-well)] px-3 py-2 text-[color:var(--mock-ink-soft)] ${UI_SECONDARY} ${LINE}`}
-            >
-              <span className="flex-1">Client</span>
-              {/* The spinner leads the new column in and then retires, so the
+          <span className="flex-1">Client</span>
+          {/* The spinner leads the new column in and then retires, so the
                   card shows the builder DOING the change the line above it
                   asked for — at rest the table simply has no Due date, which
                   is the before. */}
-              <BusyRing />
-              <span
-                className={`${MOVE} w-0 overflow-hidden whitespace-nowrap text-right opacity-0 group-hover/card:w-[58px] group-hover/card:opacity-100`}
-              >
-                Due date
-              </span>
-            </div>
-            {[
-              ["Meridian Corp", "12 Nov"],
-              ["Oakwood LLC", "28 Nov"],
-              ["Bloom Studios", "4 Dec"],
-            ].map(([client, due], i) => (
-              <div
-                key={client}
-                className={`flex items-center gap-2 border-b px-3 py-[11px] last:border-b-0 ${ROW_HOVER} ${LINE}`}
-              >
-                <span
-                  className={`flex-1 truncate text-[color:var(--mock-ink)] ${UI_PRIMARY}`}
-                >
-                  {client}
-                </span>
-                <span
-                  className={`${MOVE} w-0 overflow-hidden whitespace-nowrap text-right text-[color:var(--mock-ink-soft)] ${UI_SECONDARY} opacity-0 group-hover/card:w-[58px] group-hover/card:opacity-100`}
-                  // Held back behind the spinner rather than starting with it.
-                  // The dates used to land in the same instant the column was
-                  // asked for, which read as a column that had been there all
-                  // along; arriving one at a time while the ring is still
-                  // turning, they read as values being written into it.
-                  style={{ transitionDelay: `${260 + i * 90}ms` }}
-                >
-                  {due}
-                </span>
-              </div>
-            ))}
+          <BusyRing />
+          <span
+            className={`${MOVE} w-0 overflow-hidden whitespace-nowrap text-right opacity-0 group-hover/card:w-[58px] group-hover/card:opacity-100`}
+          >
+            Due date
+          </span>
+        </div>
+        {[
+          ["Meridian Corp", "12 Nov"],
+          ["Oakwood LLC", "28 Nov"],
+          ["Bloom Studios", "4 Dec"],
+        ].map(([client, due], i) => (
+          <div
+            key={client}
+            className={`flex items-center gap-2 border-b px-3 py-[11px] last:border-b-0 ${ROW_HOVER} ${LINE}`}
+          >
+            <span
+              className={`flex-1 truncate text-[color:var(--mock-ink)] ${UI_PRIMARY}`}
+            >
+              {client}
+            </span>
+            <span
+              className={`${MOVE} w-0 overflow-hidden whitespace-nowrap text-right text-[color:var(--mock-ink-soft)] ${UI_SECONDARY} opacity-0 group-hover/card:w-[58px] group-hover/card:opacity-100`}
+              // Held back behind the spinner rather than starting with it.
+              // The dates used to land in the same instant the column was
+              // asked for, which read as a column that had been there all
+              // along; arriving one at a time while the ring is still
+              // turning, they read as values being written into it.
+              style={{ transitionDelay: `${260 + i * 90}ms` }}
+            >
+              {due}
+            </span>
           </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  if (!reply) {
+    return (
+      <Scene>
+        <div className={`flex flex-col ${WINDOW}`}>
+          <p
+            className={`shrink-0 bg-[var(--mock-well-2)] px-4 py-3 text-[color:var(--mock-ink)] ${CARD_BODY}`}
+          >
+            Add a due date to every project.
+          </p>
+          {table}
+        </div>
+      </Scene>
+    );
+  }
+
+  return (
+    // A LANDSCAPE BOX, not the rail's portrait one. The scene's design box is
+    // what MockFit fits, not the content inside it — so with the table gone
+    // the two bubbles were being fitted into a 340x453 portrait frame and
+    // drawn tiny against the top of it. Sized to what is actually here.
+    <Scene {...ITERATE_SCENE_PROPS}>
+      {/* THE CHAT IS THE WHOLE SCENE. The pair used to sit at the top of the
+          white window with the client table under it, which put a sheet of
+          white behind two messages and made them read as a header the card
+          carries. The table went with the window: the step's claim is that
+          you change the app by asking, and the asking is the part worth
+          showing — a table quietly growing a column is a detail you have to
+          hunt for, on a card big enough to bury the exchange above it. */}
+      <div className="flex flex-col">
+        {/* A THREAD, NOT TWO LABELS. The scene is 680 wide and the turns were
+            capped at a share of it, so the question sat at one end of the
+            panel and the answer at the other with half a metre of photograph
+            between them — two captions on a picture rather than an exchange.
+            Held to a column the width of a chat, one turn lands under the
+            other and the eye reads them in order, which is the whole thing
+            this step is showing. */}
+        <div className="mx-auto w-full max-w-[360px] px-1">
+          {/* Sent: pushed to the right and given the solid well, which is
+              what marks your own turn in every chat anyone reading this has
+              used. Capped short of the full measure so the side it is on is
+              legible as a side. */}
+          <p
+            // ROUNDED LIKE A MESSAGE, AND SHORT OF THE MEASURE. At the panel's
+            // 10px radius and 82% of the row the two turns read as a pair of
+            // tags rather than as a conversation: a shallow radius is what
+            // this mock uses for panels, and a bubble that nearly fills the
+            // row leaves no visible side for it to be on. A chat radius and a
+            // tighter cap put each turn on its own side with the photograph
+            // showing past it, which is what says these are messages.
+            //
+            // The ink is the soft one, as the reply's already is. At full
+            // strength, 12.5px of solid black on a white well read heavier
+            // than anything else in the panel.
+            className={`chat-turn relative ml-auto w-fit max-w-[72%] [animation:chat-turn-in_600ms_ease-out_both] rounded-[18px] bg-[var(--mock-window)] px-3.5 py-2 font-normal text-[color:var(--mock-ink-soft)] ${CARD_BODY}`}
+          >
+            {/* LONG ENOUGH TO WRAP. At one short line each turn was a single
+                word-length chip, and two chips stacked on a photograph read as
+                a pair of tags rather than as someone typing. A sentence that
+                runs to two or three lines is the shape of a message, and it
+                also shows the step's real claim — that the change you ask for
+                can be a specific one, not a one-word command. */}
+            {/* Shorter on a phone, where the full turns ran to three lines. */}
+            <span className="max-sm:hidden">
+              Add a due date to every project, and sort the list so the ones due
+              soonest are at the top.
+            </span>
+            <span className="sm:hidden">Add due dates, soonest first.</span>
+            {/* The iMessage tail, on the sender's side. It covers the
+                bubble's whole 18px corner, so the edge runs into it with no
+                notch, then flares out to the point. */}
+            <svg
+              aria-hidden
+              viewBox="0 0 23 18"
+              className="absolute -right-[5px] bottom-0 h-[18px] w-[23px] text-[var(--mock-window)]"
+            >
+              <path fill="currentColor" d="M0 0H18V5C18 11 20 15 23 18H0Z" />
+            </svg>
+          </p>
+          {/* The answer, as its own bubble on the left. OUTLINED, not filled:
+              the filled well is what marks your own turn above, so giving the
+              reply the same fill would make the two read as a pair of labels
+              instead of as question and answer. Both carry a solid ground
+              rather than a wash, because what is behind them is a photograph
+              and type on a photograph has to sit on something. */}
+          {/* The builder answers in two turns: it confirms what it heard,
+              then says it is on it. Same bubble, a tighter gap between the
+              two since they are one speaker. */}
+          <p
+            className={`chat-turn relative mt-5 w-fit max-w-[72%] [animation:chat-turn-in_600ms_ease-out_900ms_both] rounded-[18px] bg-[var(--mock-window)] px-3.5 py-2 font-normal text-[color:var(--mock-ink-soft)] ${CARD_BODY}`}
+          >
+            <span className="max-sm:hidden">
+              Got it. Adding due dates and sorting by the soonest.
+            </span>
+            <span className="sm:hidden">Got it.</span>
+          </p>
+          <p
+            // A second behind the request, so the two read as one exchange
+            // rather than as two labels that appeared together.
+            // mt-5, not 2.5. Two turns a few pixels apart read as one block
+            // of type with a rule through it; a chat leaves a clear gap
+            // between one person's turn and the next.
+            className={`chat-turn relative mt-1 flex w-fit max-w-[72%] items-center gap-2 [animation:chat-turn-in_600ms_ease-out_1600ms_both] rounded-[18px] bg-[var(--mock-window)] px-3.5 py-2 font-normal text-[color:var(--mock-ink-soft)] ${CARD_BODY}`}
+          >
+            <span
+              aria-hidden
+              // Turning on its own account, not on hover: this line is the
+              // card at rest saying the change is in progress, and a still
+              // ring beside "Applying" reads as a change that has stalled.
+              className="size-[13px] shrink-0 rounded-full border-2 border-[var(--mock-line)] border-t-[color:var(--mock-ink-soft)] motion-safe:animate-spin"
+            />
+            <span className="max-sm:hidden">Applying your change now.</span>
+            <span className="sm:hidden">Applying it now.</span>
+            {/* The builder's tail, on its last turn only, as a chat groups them. */}
+            <svg
+              aria-hidden
+              viewBox="0 0 23 18"
+              className="absolute -left-[5px] bottom-0 h-[18px] w-[23px] -scale-x-100 text-[var(--mock-window)]"
+            >
+              <path fill="currentColor" d="M0 0H18V5C18 11 20 15 23 18H0Z" />
+            </svg>
+          </p>
         </div>
       </div>
     </Scene>

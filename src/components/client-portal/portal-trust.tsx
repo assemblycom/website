@@ -43,13 +43,24 @@ const CLAIMS: FAQEntry[] = [
 
 /** Clears the safety-first buyer's objections. */
 export function PortalTrust({
+  eyebrow,
   heading = "Enterprise-grade security for your client data",
   body = "SOC 2 Type II certified, with HIPAA, GDPR, and CCPA support. Encrypted in transit and at rest, with client-level permissions and MFA on every plan.",
   claims = CLAIMS,
   link = { label: "Visit the Trust Center", href: TRUST_CENTER_URL },
   omitSeals,
   visual,
+  bandClassName,
+  bandOnRails,
+  bandFramed,
+  bandLineClass,
 }: {
+  /**
+   * The small label over the heading, for a page whose sections all carry
+   * one. Opt-in: /client-portal and the solution pages name this section
+   * with the heading alone.
+   */
+  eyebrow?: string;
   heading?: string;
   body?: string;
   claims?: FAQEntry[];
@@ -57,27 +68,93 @@ export function PortalTrust({
   /** Seal titles to leave out of the compliance band. */
   omitSeals?: string[];
   /**
+   * Extra classes for the certification band alone.
+   *
+   * For a page drawing a column grid behind its content. The band splits
+   * itself into four cells with its own hairlines, which land on QUARTERS of
+   * the measure where the grid's rails land on sixths — so the two sets of
+   * verticals cross at a rhythm neither of them has, which reads as a
+   * rendering fault. A ground here stops the rails at the band and leaves its
+   * own dividers as the only verticals in it. The rest of the section is
+   * ordinary type and the rails are welcome to run behind it.
+   */
+  bandClassName?: string;
+  /**
+   * Lays the band's cells on the column rails rather than on quarters of the
+   * measure — see `railAligned` in security-compliance. For the same page the
+   * ground above is for: the ground stops the rails crossing the band, this
+   * puts the band's own verticals where the rails would have been.
+   */
+  bandOnRails?: boolean;
+  /**
+   * The classes above close the band on all four sides, so the band must not
+   * draw its own phone-only foot as well — see `framed` in
+   * security-compliance.
+   */
+  bandFramed?: boolean;
+  /** The band's cell hairlines, for a page whose guide lines have a tone of
+   *  their own — see `lineClass` in security-compliance. */
+  bandLineClass?: string;
+  /**
    * Fills the right column when `claims` is empty — for a brief that makes the
    * security case in its paragraph rather than in rows a reader opens.
    */
   visual?: React.ReactNode;
 } = {}) {
   const external = link.href.startsWith("http");
+  // Nothing to put beside the claim: a caller that drops the rows and passes
+  // no visual would otherwise leave half a row of empty page above the band.
+  // The copy centres over the band instead, which is itself centred in the
+  // measure — ranged left it read as a two-column section with the right
+  // column missing.
+  const solo = !claims.length && !visual;
   return (
     <section className="mx-auto max-w-[1200px] px-6 pt-16 md:px-10 md:pt-24">
       <Reveal>
         {/* Same two-column shape as the stack section: claim and its way out on
             the left, the rows that answer it on the right. */}
-        <div className="grid gap-10 md:grid-cols-2 md:gap-16">
-          <div className="md:self-start">
+        <div
+          className={
+            solo
+              ? // `relative` holds the blur below. CENTRED FROM md, RANGED LEFT ON A PHONE. Centred type over
+                // a centred band is the right shape once the band is wide
+                // enough to read as the thing the copy sits on; on a phone
+                // the band is two seals stacked and every other section of
+                // the page opens on its left line, so this was the one block
+                // whose heading started somewhere else.
+                "relative mx-auto max-w-[52ch] md:text-center"
+              : "grid gap-10 md:grid-cols-2 md:gap-16"
+          }
+        >
+          {/* DARK ONLY, centred layout only (the homepage): the rails run
+              straight through the heading and in dark they are bright
+              enough to cross the type. A small backdrop blur behind the
+              copy takes them out of focus there, its edge eased out so the
+              blur has no boundary of its own. Light needs none of it. */}
+          {solo ? (
+            <span
+              aria-hidden
+              className="pointer-events-none absolute -inset-x-24 -inset-y-12 hidden [mask-image:radial-gradient(closest-side,#000_60%,transparent)] [[data-theme=dark]_&]:block [[data-theme=dark]_&]:backdrop-blur-[3px]"
+            />
+          ) : null}
+          <div className="relative md:self-start">
+            {eyebrow ? (
+              <p className="type-eyebrow mb-4 text-muted-foreground">
+                {eyebrow}
+              </p>
+            ) : null}
             <h2 className="type-h2 text-balance">{heading}</h2>
-            <p className="mt-5 max-w-md text-muted-foreground">{body}</p>
+            <p
+              className={`mt-5 text-muted-foreground ${solo ? "" : "max-w-md"}`}
+            >
+              {body}
+            </p>
             <a
               href={link.href}
               {...(external
                 ? { target: "_blank", rel: "noopener noreferrer" }
                 : {})}
-              className={`mt-6 ${QUIET_BUTTON}`}
+              className={`mt-6 bg-background ${QUIET_BUTTON}`}
             >
               {link.label}
             </a>
@@ -127,8 +204,15 @@ export function PortalTrust({
             rails, and opened by its own rule. It closes on the section divider
             instead of drawing a second one, so the section carries no bottom
             padding: the band runs to the end of it. */}
-        <div className={`-mx-6 mt-14 border-t md:-mx-10 ${GRID_LINE}`}>
-          <SecurityCompliance omit={omitSeals} />
+        <div
+          className={`-mx-6 mt-14 border-t md:-mx-10 ${GRID_LINE} ${bandClassName ?? ""}`}
+        >
+          <SecurityCompliance
+            omit={omitSeals}
+            railAligned={bandOnRails}
+            framed={bandFramed}
+            lineClass={bandLineClass}
+          />
         </div>
       </Reveal>
     </section>

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { HomeContent } from "@/components/home/home-content";
+import { HomeVersion } from "@/components/home/home-version";
+import { HeroExposure } from "@/components/home/hero-exposure";
+import { HeroArmLinks } from "@/components/home/hero-arm-links";
 import { ARMS, parseArm, type Arm } from "@/lib/hero-variants";
 
 /**
@@ -65,8 +67,16 @@ export default async function HeroVariantPage({
   if (!parsed) notFound();
 
   return (
-    <HomeContent
-      variant={{ arm: arm as Arm, copy: parsed.copy, layout: parsed.layout }}
-    />
+    <>
+      <HomeVersion layout={parsed.layout} />
+      {/* What the readout counts: the version seen, and the arm stamped onto
+          every signup link on the page. */}
+      <HeroExposure
+        arm={arm as Arm}
+        copy={parsed.copy}
+        layout={parsed.layout}
+      />
+      <HeroArmLinks arm={arm as Arm} />
+    </>
   );
 }
