@@ -132,11 +132,11 @@ function AssistantOrb() {
 // `short` is the phone's wording, where the full line wrapped to two.
 const SUGGESTIONS: { text: string; short?: string }[] = [
   {
-    text: "What forms or contracts do I have open?",
-    short: "What contracts do I have open?",
+    text: "What’s the status of my application?",
+    short: "What’s my application status?",
   },
-  { text: "Where can I find my latest files?" },
-  { text: "How do I get in touch with my team?" },
+  { text: "Do I have any open tasks?" },
+  { text: "What invoices have I paid year to date?" },
 ];
 
 /**

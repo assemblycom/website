@@ -1,6 +1,10 @@
 "use client";
 
-import { IconTemplateProjects } from "@/components/templates/template-icons";
+import {
+  IconTemplatePayments,
+  IconTemplateProjects,
+  IconTemplateProposals,
+} from "@/components/templates/template-icons";
 import type { ReactNode } from "react";
 import { ProductionGap, type RegionId } from "@/components/home/production-gap";
 import { PhoneShell } from "@/components/home/phone-shell";
@@ -13,7 +17,6 @@ import {
 import { DescribeCard } from "@/components/client-portal/portal-build-cards";
 import {
   MOCK_PRIMARY_STACKED,
-  MOCK_SECONDARY,
   MOCK_TITLE,
   MOCK_BODY,
 } from "@/components/ui/mock-type";
@@ -65,46 +68,67 @@ const UI_BOX = "h-[300px] w-[520px] md:h-[480px] md:w-[900px]";
  * its own border. The two tabs show the same kind of object on the same
  * ground, so they share one outline and one radius.
  */
+const READY_APPS: {
+  name: string;
+  body: string;
+  icon: ReactNode;
+}[] = [
+  {
+    name: "Project tracker",
+    body: "Every project, its stage, what’s due next.",
+    // Shifted so the dark document is centred rather than the whole mark: the
+    // pale pencil pulls the mark's box up and left.
+    icon: (
+      <IconTemplateProjects className="h-[34px] w-auto -translate-x-[3px] -translate-y-[2px] sm:h-[40px]" />
+    ),
+  },
+  {
+    name: "Proposals",
+    body: "Send proposals and get them signed.",
+    icon: <IconTemplateProposals className="h-[34px] w-auto sm:h-[40px]" />,
+  },
+  {
+    name: "Payments",
+    body: "Invoice clients and get paid online.",
+    icon: <IconTemplatePayments className="h-[30px] w-auto sm:h-[34px]" />,
+  },
+];
+
+/**
+ * Three of the ready-made apps as template cards, stacked: the name and what
+ * it does. Each wears the composer's frame (14px hairline ring, 3px band of
+ * ground, 10px window). A phone shows only the first.
+ */
 function AppNotification() {
   return (
-    // On a phone, drawn at 1.05: the step the other mobile mocks (Plan,
-    // the composers) land on, so its type matches theirs, not a new size.
-    <div className="w-[332px] max-w-full origin-center rounded-[14px] bg-[var(--mock-line)] p-px max-sm:scale-[1.05]">
-      <div className="rounded-[13px] bg-[var(--surface)] p-[3px]">
-        <div className="flex items-center gap-3 rounded-[10px] border border-[var(--mock-line)] bg-[var(--mock-window)] p-2 pr-3.5 sm:gap-4 sm:p-2.5 sm:pr-5">
-          {/* The template's own icon on the template-icons chip grey, since
-              there is no tile file for it. Its radius steps down inside the
-              window's 10px corner rather than out past it. The icon is
-              shifted so the dark document is centred, not the whole mark:
-              the pale pencil pulls the mark's box up and left, which left the
-              document visibly low and right (measured 21/15 and 28/20). */}
-          <span className="flex size-14 shrink-0 items-center justify-center rounded-[8px] bg-[#ECECEC] sm:size-[76px]">
-            <IconTemplateProjects className="h-[34px] w-auto -translate-x-[3px] -translate-y-[2px] sm:h-[46px] sm:-translate-x-[4px] sm:-translate-y-[3px]" />
-          </span>
-          <div className="min-w-0 flex-1">
-            <p
-              className={`${MOCK_TITLE} truncate text-[color:var(--mock-ink)]`}
-            >
-              Project tracker installed
-            </p>
-            <p
-              className={`mt-1.5 line-clamp-2 ${MOCK_PRIMARY_STACKED} text-[color:var(--mock-ink-soft)]`}
-            >
-              Ready for your clients.
-              <span className="max-sm:hidden">
-                {" "}
-                Remix it to fit how you work.
+    // On a phone, drawn at 1.05: the step the other mobile mocks land on.
+    <div className="flex w-[332px] max-w-full origin-center flex-col gap-3 max-sm:scale-[1.05]">
+      {READY_APPS.map((app, i) => (
+        <div
+          key={app.name}
+          className={`rounded-[14px] bg-[var(--mock-line)] p-px ${i > 0 ? "max-sm:hidden" : ""}`}
+        >
+          <div className="rounded-[13px] bg-[var(--surface)] p-[3px]">
+            <div className="flex items-center gap-3 rounded-[10px] border border-[var(--mock-line)] bg-[var(--mock-window)] p-2 pr-3.5 sm:gap-4">
+              <span className="flex size-14 shrink-0 items-center justify-center rounded-[8px] bg-[#ECECEC] sm:size-16">
+                {app.icon}
               </span>
-            </p>
-          </div>
-          <div className="flex shrink-0 flex-col items-center gap-1.5 self-center">
-            <span className="size-2 rounded-full bg-[#7DA4FF]" />
-            <span className={`${MOCK_SECONDARY} text-[color:var(--mock-ink)]`}>
-              5h
-            </span>
+              <div className="min-w-0 flex-1">
+                <p
+                  className={`${MOCK_TITLE} truncate text-[color:var(--mock-ink)]`}
+                >
+                  {app.name}
+                </p>
+                <p
+                  className={`mt-1 line-clamp-2 ${MOCK_PRIMARY_STACKED} text-[color:var(--mock-ink-soft)]`}
+                >
+                  {app.body}
+                </p>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      ))}
     </div>
   );
 }
