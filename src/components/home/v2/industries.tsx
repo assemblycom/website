@@ -273,7 +273,9 @@ export function Industries() {
                     )}
                   </span>
                   <span className="mt-3 block">
-                    <span className="block text-sm leading-tight text-foreground">
+                    {/* The site's eyebrow style (Diatype Mono, caps), so the
+                        name reads as a tag on the picture. */}
+                    <span className="type-eyebrow block text-foreground">
                       {industry.label}
                     </span>
                   </span>
