@@ -1,24 +1,34 @@
 import type { Metadata } from "next";
-import type { ReactNode } from "react";
 import { CTA } from "@/components/home/cta";
 import { FAQ, type FAQEntry } from "@/components/home/faq";
-import { HowItWorks } from "@/components/home/how-it-works";
-import { ProductionGap } from "@/components/home/production-gap";
-import { GridDivider, GridRails } from "@/components/ui/grid-lines";
+import { GridDivider } from "@/components/ui/grid-lines";
 import { Reveal } from "@/components/ui/reveal";
-import { PortalSocialProof } from "@/components/client-portal/portal-social-proof";
+import {
+  BUILDER_GRID_LINE,
+  BUILDER_GRID_LINE_BG,
+  BUILDER_RAIL_HALO_WIDE,
+  BuilderGridRails,
+} from "@/components/ai-app-builder/builder-grid-rails";
+import { HeroSplit } from "@/components/home/v2/hero-split";
+import { Industries } from "@/components/home/v2/industries";
+import { CustomerProof } from "@/components/home/v2/customer-proof";
+import { UnifiedPlatform } from "@/components/home/v2/platform-visuals";
+import {
+  HomeHowItWorks,
+  HomeProofBand,
+} from "@/components/home/home-content-v2";
 import { PortalCustomizations } from "@/components/client-portal/portal-customizations";
-import { PortalReadyMade } from "@/components/client-portal/portal-ready-made";
 import { PortalTrust } from "@/components/client-portal/portal-trust";
 import { PortalPricing } from "@/components/client-portal/portal-pricing";
-import { BuilderCustomerQuotes } from "@/components/ai-app-builder/builder-customer-quotes";
-import { LpHero, type LpHeroMessage } from "@/components/lp/lp-hero";
 import { DEMO_URL, SIGNUP_URL } from "@/lib/constants";
 import { PAGE_SEO, pageMetadata } from "@/lib/seo";
 
 /**
  * Paid-only landing page for the Google Ads "Portal" ad groups (US/CA, UK and
- * AU; exact, phrase and broad). Every ad group uses one final URL,
+ * AU; exact, phrase and broad), built on the Round 4 homepage: the split
+ * product hero (V2) with its G2 rating and logo reel, the industries row
+ * (unlinked here), the unified platform tour, the four-steps panel and the
+ * four-industry customer row, on the same column grid. Every ad group uses one final URL,
  * `/lp/portal?utm_term={keyword}`: Google fills in the matched keyword, and the page
  * sorts it into a group by the words it contains. ONLY THE H1 CHANGES. The
  * subhead, the sections, their order and the FAQ are the same for everyone.
@@ -67,42 +77,30 @@ type Group =
 
 // "Customer portal" breaks the house noun rule on purpose: J's call is that
 // on paid LPs the searcher's own words win.
-const HEADLINES: Record<Group, Omit<LpHeroMessage, "body">> = {
+const HEADLINES: Record<Group, { h1: string; lines: string[] }> = {
   default: {
     h1: "The client portal that grows with your firm",
     lines: ["The client portal that", "grows with your firm"],
-    iconAfter: "portal",
-    iconPair: true,
   },
   customer: {
     h1: "A customer portal with your name on it",
     lines: ["A customer portal", "with your name on it"],
-    iconAfter: "portal",
-    iconPair: true,
   },
   build: {
     h1: "Build your own client portal",
     lines: ["Build your own", "client portal"],
-    iconAfter: "Build",
-    iconPair: true,
   },
   whitelabel: {
     h1: "A white-label client portal for your firm",
     lines: ["A white-label client portal", "for your firm"],
-    iconAfter: "portal",
-    iconPair: true,
   },
   documents: {
     h1: "Collect client documents without the chasing",
     lines: ["Collect client documents", "without the chasing"],
-    iconAfter: "documents",
-    iconPair: true,
   },
   secure: {
     h1: "A secure client portal for sensitive work",
     lines: ["A secure client portal", "for sensitive work"],
-    iconAfter: "portal",
-    iconPair: true,
   },
 };
 
@@ -123,7 +121,10 @@ const GROUPS: { group: Group; pattern: RegExp }[] = [
 function groupFor(kw: string | string[] | undefined): Group {
   const raw = Array.isArray(kw) ? kw[0] : kw;
   if (!raw) return "default";
-  const text = raw.toLowerCase().replace(/[+_-]+/g, " ").trim();
+  const text = raw
+    .toLowerCase()
+    .replace(/[+_-]+/g, " ")
+    .trim();
   return GROUPS.find((g) => g.pattern.test(text))?.group ?? "default";
 }
 
@@ -198,151 +199,117 @@ export default async function LpPortalPage({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { utm_term, kw } = await searchParams;
-  const hero: LpHeroMessage = {
-    ...HEADLINES[groupFor(utm_term ?? kw)],
-    body: HERO_BODY,
-  };
+  const headline = HEADLINES[groupFor(utm_term ?? kw)];
 
-  // The same sections in the same order for every visitor.
-  const sections: Record<"tour" | "brand" | "builder" | "trust", ReactNode> = {
-    tour: (
-      <div className="section-follow">
+  return (
+    <>
+      {/* The homepage's V2 hero with this page's headline and lead, the paid
+          nav, and no homepage-test tracking. The G2 rating sits above the
+          headline and the product tile below the buttons, as on the homepage. */}
+      <HeroSplit
+        lines={headline.lines}
+        body={HERO_BODY}
+        paidNav
+        trackCtas={false}
+        note={HERO_NOTE}
+      />
+      <HomeProofBand rails tight />
+
+      {/* The homepage's content region: the /ai-app-builder column grid as a
+          backdrop. `isolate` + `bg-background` give it a ground to sit on
+          (see home-content-v2.tsx). */}
+      <div className="relative isolate bg-background">
+        <BuilderGridRails />
+        <GridDivider lineClass={BUILDER_GRID_LINE} />
+
+        {/* Industries without links: on a paid page every link is an exit. */}
         <Reveal variant="fade">
-          <ProductionGap
+          <Industries linked={false} />
+        </Reveal>
+        <GridDivider lineClass={BUILDER_GRID_LINE} />
+
+        <Reveal variant="fade">
+          <UnifiedPlatform
             eyebrow="Client portal + CRM"
             heading="One branded place for every client"
             body="Clients get one place to message you, share files, sign contracts, and pay invoices. Your team gets a built-in CRM behind it. Add any of 30+ ready-made apps, or build your own with Assembly's AI app builder."
           />
         </Reveal>
-      </div>
-    ),
-    brand: (
-      <PortalCustomizations
-        id="customizations"
-        heading="Your clients see your brand, not ours"
-        body="Your logo and colors on every plan, and every new app picks them up automatically. Your own domain and no Assembly badge from Professional up."
-      />
-    ),
-    builder: (
-      <Reveal variant="fade">
-        <HowItWorks
-          eyebrow="Client portal builder"
-          heading="Need something custom? Describe it."
-          body="Describe a project tracker, an intake form, or an approval flow. Assembly asks a few questions and shows you a one-page plan. Once you approve, it builds the app, hidden from clients until you make it visible."
+        <GridDivider lineClass={BUILDER_GRID_LINE} />
+
+        <PortalCustomizations
+          id="customizations"
+          heading="Your clients see your brand, not ours"
+          body="Your logo and colors on every plan, and every new app picks them up automatically. Your own domain and no Assembly badge from Professional up."
         />
-      </Reveal>
-    ),
-    trust: (
-      <PortalTrust
-        heading="Each client sees only what you allow"
-        body="SOC 2 Type II certified, encrypted in transit and at rest, with MFA on every plan. Sign-in and permissions are built and maintained by Assembly, not generated for each app."
-      />
-    ),
-  };
-  const order = ["tour", "brand", "builder", "templates", "trust"] as const;
+        <GridDivider lineClass={BUILDER_GRID_LINE} />
 
-  return (
-    <>
-      <LpHero message={hero} note={HERO_NOTE} />
+        <Reveal variant="fade">
+          <HomeHowItWorks
+            eyebrow="Client portal builder"
+            heading="Need something custom? Describe it."
+            body="Describe a project tracker, an intake form, or an approval flow. Assembly asks a few questions and shows you a one-page plan. Once you approve, it builds the app, hidden from clients until you make it visible."
+          />
+        </Reveal>
+        <GridDivider lineClass={BUILDER_GRID_LINE} />
 
-      {/* Logos straight under the fold, as on /client-portal. */}
-      <div className="mx-auto max-w-[1400px] px-6 pb-8 md:px-10">
-        <PortalSocialProof />
-      </div>
+        <Reveal variant="fade">
+          <CustomerProof />
+        </Reveal>
+        <GridDivider lineClass={BUILDER_GRID_LINE} />
 
-      <div className="relative">
-        <GridRails />
-        <GridDivider fullBleed />
-        {order.map((s) => (
-          <div key={s}>
-            {s === "templates" ? (
-              <PortalReadyMade
-                heading="Start with 30+ ready-made apps"
-                body="Onboarding wizards, document collectors, project trackers, and more. Each one is a working app: install it, use it as is, or describe what to change."
-              />
-            ) : (
-              sections[s]
-            )}
-            <GridDivider />
-          </div>
-        ))}
-      </div>
-
-      <div className="relative">
-        <GridRails />
-        <BuilderCustomerQuotes
-          heading="How firms run client work on Assembly"
-          body="Accounting, legal, and travel teams that gave clients one place to work with them."
-          quotes={[
-            {
-              quote:
-                "It let us flexibly build our own version of a client portal, uniting elements of their technology with existing external core applications.",
-              name: "Kyle Pearson",
-              firm: "Collective CPA",
-              image: "/images/customers/collective-cpa.jpg",
-              href: "/customers/collective-cpa",
-            },
-            {
-              quote:
-                "Every client said this was such an easy onboarding experience. The first step of working together feels effortless, and that creates a powerful first impression.",
-              name: "Leah McCool",
-              firm: "Orca Accounting",
-              image: "/images/customers/orca-accounting.jpg",
-              href: "/customers/orca-accounting",
-            },
-            {
-              quote:
-                "Our portal really improves our client satisfaction with our firm and definitely saves time. Having everything in one spot is huge.",
-              name: "Eliana Emery",
-              firm: "Heritage Law",
-              image: "/images/customers/heritage-law-partners.jpg",
-              href: "/customers/heritage-law-partners",
-            },
-            {
-              quote:
-                "What excites me is how our partner data collected in Assembly flows directly into our internal quality control processes.",
-              name: "Phillip LaRue",
-              firm: "Capital One",
-              image: "/images/customers/capital-one-hero.jpg",
-              href: "/customers/capital-one-luxury-travel",
-            },
-          ]}
+        {/* Security as the homepage runs it: framed band on the rails. */}
+        <PortalTrust
+          eyebrow="Security"
+          heading="Each client sees only what you allow"
+          body="SOC 2 Type II certified, encrypted in transit and at rest, with MFA on every plan. Sign-in and permissions are built and maintained by Assembly, not generated for each app."
+          claims={[]}
+          bandFramed
+          bandLineClass={BUILDER_GRID_LINE_BG}
+          bandClassName={`relative border-b max-[1199px]:border-x ${BUILDER_GRID_LINE} bg-background shadow-[0_0_0_2px_var(--background),0_0_96px_10px_var(--background)]`}
+          bandOnRails
         />
-        <GridDivider />
+
         <PortalPricing
           heading="Start free. The free plan never expires."
           body="The free plan includes the CRM, the client portal, the AI app builder, and 3 apps, and can publish real apps your clients use. Paid plans add more clients, more apps, and your own domain. Monthly prices shown are billed annually."
         />
-        <GridDivider />
-      </div>
+        <GridDivider lineClass={BUILDER_GRID_LINE} />
 
-      <div className="relative pb-10 md:pb-16">
-        <GridRails />
-        <FAQ
-          heading="Questions about Assembly's client portal"
-          items={FAQS}
-          variant="divided"
-          dottedRules
-          justifyAnswers
+        {/* The FAQ on an opaque ground with the measure's sides redrawn, as on
+            the homepage, so the rails do not run through the questions. */}
+        <div className={`relative bg-background ${BUILDER_RAIL_HALO_WIDE}`}>
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-y-0 left-1/2 w-full max-w-[1200px] -translate-x-1/2"
+          >
+            <span
+              className={`absolute inset-y-0 left-0 w-px -translate-x-1/2 ${BUILDER_GRID_LINE_BG}`}
+            />
+            <span
+              className={`absolute inset-y-0 right-0 w-px translate-x-1/2 ${BUILDER_GRID_LINE_BG}`}
+            />
+          </div>
+          <Reveal variant="fade">
+            <FAQ
+              heading="Questions about Assembly's client portal"
+              items={FAQS}
+              listClassName="-mx-3"
+            />
+          </Reveal>
+        </div>
+        <GridDivider fullBleed lineClass={BUILDER_GRID_LINE} />
+
+        <CTA
+          transparent
+          heading="Give clients one place to work with you"
+          planChips={false}
+          subheading="Start free. The free plan never expires."
+          composer={false}
+          primaryCta={{ label: "Get started", href: SIGNUP_URL }}
+          secondaryCta={{ label: "Book a demo", href: DEMO_URL }}
         />
       </div>
-
-      <div className="border-t border-border [[data-theme=dark]_&]:border-[#383838]" />
-
-      <CTA
-        heading={
-          <>
-            Give clients one place
-            <br />
-            to work with you
-          </>
-        }
-        planChips={false}
-        subheading="Start free. The free plan never expires."
-        composer={false}
-        primaryCta={{ label: "Get started", href: SIGNUP_URL }}
-        secondaryCta={{ label: "Book a demo", href: DEMO_URL }}
-      />
     </>
   );
 }
