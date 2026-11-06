@@ -276,9 +276,6 @@ export function Industries() {
                     <span className="block text-sm leading-tight text-foreground">
                       {industry.label}
                     </span>
-                    <span className="mt-1 block text-sm leading-tight text-muted-foreground">
-                      {industry.blurb}
-                    </span>
                   </span>
                 </Link>
               </div>
