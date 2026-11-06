@@ -274,8 +274,8 @@ export function Industries() {
                   </span>
                   <span className="mt-3 block">
                     {/* The site's eyebrow style (Diatype Mono, caps), so the
-                        name reads as a tag on the picture. */}
-                    <span className="type-eyebrow block text-foreground">
+                        name reads as a tag on the picture, on a gray tag ground. */}
+                    <span className="type-eyebrow inline-block rounded-[4px] bg-[var(--surface)] px-2 py-1 text-foreground">
                       {industry.label}
                     </span>
                   </span>
