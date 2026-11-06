@@ -303,8 +303,10 @@ export function HomeContentV2({
                   {/* The phone frame takes the scene's own 309:280 rather than a
                       fixed top. With a fixed top its shape changed with the
                       phone's width, MockFit centred the card in the slack, and
-                      a band of gradient showed under it. */}
-                  <div className="absolute sm:hidden inset-x-3 -bottom-4 aspect-[309/280] max-sm:[&_.template-mock-fit]:[--template-mock-w:309px]! max-sm:[&_.template-mock-fit]:[--template-mock-h:280px]! max-sm:[&_.template-mock-fit>div]:h-[280px]! max-sm:[&_.template-mock-fit>div]:w-[309px]! [&_.mock-edge]:rounded-t-[14px]! max-sm:[&_.template-mock-fit>div]:px-2! max-sm:[&_.template-mock-fit>div]:pt-3! max-sm:[&_.mock-edge]:mx-0! sm:left-1/2 sm:right-auto sm:top-auto sm:h-[400px] sm:w-[620px] sm:max-w-full sm:-translate-x-1/2 sm:bottom-0 sm:aspect-auto md:h-[460px] md:-bottom-10">
+                      a band of gradient showed under it. Capped at 331 wide
+                      (300 tall) so on a wide phone or narrow window the
+                      frame can't outgrow the 320px panel and lose its top. */}
+                  <div className="absolute sm:hidden inset-x-3 -bottom-4 mx-auto aspect-[309/280] max-w-[331px] max-sm:[&_.template-mock-fit]:[--template-mock-w:309px]! max-sm:[&_.template-mock-fit]:[--template-mock-h:280px]! max-sm:[&_.template-mock-fit>div]:h-[280px]! max-sm:[&_.template-mock-fit>div]:w-[309px]! [&_.mock-edge]:rounded-t-[14px]! max-sm:[&_.template-mock-fit>div]:px-2! max-sm:[&_.template-mock-fit>div]:pt-3! max-sm:[&_.mock-edge]:mx-0! sm:left-1/2 sm:right-auto sm:top-auto sm:h-[400px] sm:w-[620px] sm:max-w-full sm:-translate-x-1/2 sm:bottom-0 sm:aspect-auto md:h-[460px] md:-bottom-10">
                     <PlanCard plain tall doc={TRACKER_PLAN_DOC} />
                   </div>
                   {/* From sm, the builder's own plan view filling the panel:
