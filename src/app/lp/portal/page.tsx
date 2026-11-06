@@ -71,25 +71,27 @@ interface ThemeCopy {
 const THEMES: Record<Theme, ThemeCopy> = {
   default: {
     hero: {
-      h1: "A client portal you can set up today",
-      lines: ["A client portal", "you can set up today"],
+      h1: "The client portal that grows with your firm",
+      lines: ["The client portal that", "grows with your firm"],
       iconAfter: "portal",
       iconPair: true,
-      body: "Messages, files, forms, contracts, and invoices in one place under your brand. Clients sign in with a link and see only their own work. Need a project tracker too? Describe it and Assembly builds it in.",
+      body: "Assembly gives accountants, agencies, consultants, and law firms a branded client portal with a built-in CRM. Messages, files, contracts, and invoices are ready on day one. Need something else, like a project tracker? Describe it and Assembly builds it.",
     },
     lead: "tour",
-    faq: "What is a client portal?",
+    faq: "What is Assembly?",
   },
+  // "Customer portal" breaks the house noun rule on purpose: J's call is that
+  // on paid LPs the searcher's own words win.
   customer: {
     hero: {
       h1: "A customer portal with your name on it",
       lines: ["A customer portal", "with your name on it"],
       iconAfter: "portal",
       iconPair: true,
-      body: "Give every customer one place to message you, send files, sign, and pay. They sign in with a link, no password to forget, and see only their own account.",
+      body: "Assembly is customer portal software for service firms. Each customer signs in to one branded place to message you, share files, sign, and pay, and sees only their own account. Add 30+ ready-made apps, or describe one and Assembly builds it.",
     },
     lead: "tour",
-    faq: "What is a client portal?",
+    faq: "What is the best customer portal software?",
   },
   build: {
     hero: {
@@ -97,18 +99,18 @@ const THEMES: Record<Theme, ThemeCopy> = {
       lines: ["Build your own", "client portal"],
       iconAfter: "Build",
       iconPair: true,
-      body: "Start with messaging, files, forms, and billing. Then describe what else your firm needs, like an intake form or a project tracker. Assembly shows you the plan and builds it in.",
+      body: "Assembly starts you with a branded client portal, a built-in CRM, and 30+ ready-made apps. For anything else, describe what you need. Assembly asks a few questions, shows you a one-page plan, and builds it once you approve.",
     },
     lead: "builder",
     faq: "How do I build my own client portal?",
   },
   whitelabel: {
     hero: {
-      h1: "A white-label client portal under your brand",
-      lines: ["A white-label client portal", "under your brand"],
+      h1: "A white-label client portal for your firm",
+      lines: ["A white-label client portal", "for your firm"],
       iconAfter: "portal",
       iconPair: true,
-      body: "Your logo and colors on every plan. From Professional up, clients sign in on your own domain with no Assembly badge.",
+      body: "Assembly is a client portal and CRM that your clients see as yours. Your logo and colors on every plan, plus your own domain with no Assembly badge from Professional up. Messages, files, contracts, and invoices come ready on day one.",
     },
     lead: "brand",
     faq: "Can I white-label the client portal?",
@@ -119,7 +121,7 @@ const THEMES: Record<Theme, ThemeCopy> = {
       lines: ["Collect client documents", "without the chasing"],
       iconAfter: "documents",
       iconPair: true,
-      body: "Send a checklist, clients upload to one secure portal, and reminders go out on their own. Messages, contracts, and invoices sit right next to the files.",
+      body: "Assembly gives service firms a secure, branded client portal. Send a document checklist, clients upload to it, and automatic reminders follow up on overdue requests. Messages, contracts, and invoices sit in the same place.",
     },
     lead: "tour",
     faq: "Can clients upload documents to the portal?",
@@ -130,7 +132,7 @@ const THEMES: Record<Theme, ThemeCopy> = {
       lines: ["A secure client portal", "for sensitive work"],
       iconAfter: "portal",
       iconPair: true,
-      body: "SOC 2 Type II certified, encrypted in transit and at rest, with MFA on every plan. Each client sees only their own files. HIPAA with a BAA on Advanced.",
+      body: "Assembly is a branded client portal and CRM, SOC 2 Type II certified. Clients sign in with Google or a secure one-click email link, MFA is on every plan, and each client sees only what you allow. Data is encrypted in transit and at rest.",
     },
     lead: "trust",
     faq: "Is my client portal secure?",
@@ -154,7 +156,8 @@ function themeFor(kw: string | string[] | undefined): Theme {
   return key && Object.hasOwn(ALIASES, key) ? ALIASES[key] : "default";
 }
 
-const HERO_NOTE = "Free forever plan. No credit card required.";
+const HERO_NOTE =
+  "Start free. The free plan never expires. No credit card required.";
 
 /**
  * Answers built from the /client-portal FAQ, which is already fact-checked.
@@ -163,9 +166,19 @@ const HERO_NOTE = "Free forever plan. No credit card required.";
  */
 const FAQS: FAQEntry[] = [
   {
-    question: "What is a client portal?",
+    question: "What is Assembly?",
     answer:
-      "One secure, branded place where clients message you, share files, sign contracts, and pay invoices. Assembly gives you all of that on day one, plus a CRM for your team and an AI builder for anything else your firm needs.",
+      "Assembly is a client portal and CRM for service firms like accountants, agencies, consultants, and law firms. Clients get one branded place to message you, share files, sign, and pay. When you need more, Assembly's AI app builder adds custom apps to the same portal.",
+  },
+  {
+    question: "What is the best customer portal software?",
+    answer:
+      "The one your customers actually use. Assembly gives each one a branded place to message you, share files, sign, and pay, with a CRM for your team and 30+ ready-made apps. Need something else? Describe it and Assembly builds it.",
+  },
+  {
+    question: "Do my clients need to download anything?",
+    answer:
+      "No. Clients sign in from their browser with Google or a secure one-click email link, and each client sees only what you allow.",
   },
   {
     question: "Can I white-label the client portal?",
@@ -175,12 +188,12 @@ const FAQS: FAQEntry[] = [
   {
     question: "How do I build my own client portal?",
     answer:
-      "Sign up, add your logo, and invite a client. Messaging, files, forms, contracts, and billing are ready to go. For anything else, describe it: Assembly asks a few questions, shows you the plan, and builds it in once you approve. No code.",
+      "Sign up, add your logo, and invite a client. Messaging, files, forms, contracts, and billing are ready to go. For anything else, describe it: Assembly asks a few questions, shows you the plan, and builds it once you approve. No code.",
   },
   {
     question: "Can clients upload documents to the portal?",
     answer:
-      "Yes. Send a document checklist and clients upload straight to it. Automatic reminders follow up on anything missing, and each client only ever sees their own files.",
+      "Yes. Send a document checklist and clients upload straight to it. Automatic reminders follow up on overdue requests, and each client only ever sees their own files.",
   },
   {
     question: "Is my client portal secure?",
@@ -195,7 +208,7 @@ const FAQS: FAQEntry[] = [
   {
     question: "What does the client portal cost?",
     answer:
-      "There is a free forever plan with the CRM, the client portal, the app builder, and up to 3 apps. Paid plans add more clients, more apps, and your own domain. No credit card needed to start.",
+      "There is a free plan that never expires, with the CRM, the client portal, the AI app builder, and up to 3 apps. Paid plans add more clients, more apps, and your own domain. No credit card needed to start.",
   },
   {
     question: "What is the client portal not good for?",
@@ -227,7 +240,7 @@ export default async function LpPortalPage({
           <ProductionGap
             eyebrow="Client portal + CRM"
             heading="One branded place for every client"
-            body="Messages, files, forms, contracts, and invoices for your clients. A CRM for your team. 30+ ready-made apps, and an AI builder for anything else."
+            body="Clients get one place to message you, share files, sign contracts, and pay invoices. Your team gets a built-in CRM behind it. Add any of 30+ ready-made apps, or build your own with Assembly's AI app builder."
           />
         </Reveal>
       </div>
@@ -235,8 +248,8 @@ export default async function LpPortalPage({
     brand: (
       <PortalCustomizations
         id="customizations"
-        heading="Make it look like your firm built it"
-        body="Your logo and colors on every plan. Your own domain and no Assembly badge from Professional up. Every app you add picks up your brand."
+        heading="Your clients see your brand, not ours"
+        body="Your logo and colors on every plan, and every new app picks them up automatically. Your own domain and no Assembly badge from Professional up."
       />
     ),
     builder: (
@@ -244,11 +257,16 @@ export default async function LpPortalPage({
         <HowItWorks
           eyebrow="Client portal builder"
           heading="Need something custom? Describe it."
-          body="Describe a project tracker, an intake form, or an approval flow. Assembly asks a few questions, shows you the plan, and publishes it in your portal once you approve."
+          body="Describe a project tracker, an intake form, or an approval flow. Assembly asks a few questions and shows you a one-page plan. Once you approve, it builds the app, hidden from clients until you make it visible."
         />
       </Reveal>
     ),
-    trust: <PortalTrust />,
+    trust: (
+      <PortalTrust
+        heading="Each client sees only what you allow"
+        body="SOC 2 Type II certified, encrypted in transit and at rest, with MFA on every plan. Sign-in and permissions are built and maintained by Assembly, not generated for each app."
+      />
+    ),
   };
   const order: Lead[] = [
     theme.lead,
@@ -276,7 +294,10 @@ export default async function LpPortalPage({
         {withTemplates.map((s) => (
           <div key={s}>
             {s === "templates" ? (
-              <PortalReadyMade body="30+ ready-made apps, from onboarding wizards to document collectors. Install one as is, or tell the builder what to change." />
+              <PortalReadyMade
+                heading="Start with 30+ ready-made apps"
+                body="Onboarding wizards, document collectors, project trackers, and more. Each one is a working app: install it, use it as is, or describe what to change."
+              />
             ) : (
               sections[s]
             )}
@@ -288,8 +309,8 @@ export default async function LpPortalPage({
       <div className="relative">
         <GridRails />
         <BuilderCustomerQuotes
-          heading="Firms that stopped settling"
-          body="How firms gave their clients one place to work with them."
+          heading="How firms run client work on Assembly"
+          body="Accounting, legal, and travel teams that gave clients one place to work with them."
           quotes={[
             {
               quote:
@@ -326,14 +347,17 @@ export default async function LpPortalPage({
           ]}
         />
         <GridDivider />
-        <PortalPricing />
+        <PortalPricing
+          heading="Start free. The free plan never expires."
+          body="The free plan includes the CRM, the client portal, the AI app builder, and 3 apps, and can publish real apps your clients use. Paid plans add more clients, more apps, and your own domain."
+        />
         <GridDivider />
       </div>
 
       <div className="relative pb-10 md:pb-16">
         <GridRails />
         <FAQ
-          heading="Client portal questions, answered"
+          heading="Questions about Assembly's client portal"
           items={faqsFor(theme.faq)}
           variant="divided"
           dottedRules
@@ -352,7 +376,7 @@ export default async function LpPortalPage({
           </>
         }
         planChips={false}
-        subheading="Free forever plan. No credit card required."
+        subheading="Start free. The free plan never expires."
         composer={false}
         primaryCta={{ label: "Get started", href: SIGNUP_URL }}
         secondaryCta={{ label: "Book a demo", href: DEMO_URL }}

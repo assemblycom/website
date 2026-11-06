@@ -58,7 +58,7 @@ export const PAGE_SEO = {
   lpPortal: {
     title: "Client Portal Software You Can Build On",
     description:
-      "A white-label client portal with 30+ ready-made apps and an AI builder for the rest. Messaging, files, contracts, and billing. Free forever plan.",
+      "Assembly is a client portal and CRM for service firms: messages, files, contracts, and invoices in one branded place, plus an AI app builder for the rest. Free plan.",
     path: "/lp/portal",
   },
   // The vertical cut of /client-portal, on the slug the nine CMS solutions
