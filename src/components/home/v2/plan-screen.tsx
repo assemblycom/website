@@ -9,7 +9,7 @@ const LINE = "border-[var(--mock-line)]";
 const INK = "text-[color:var(--mock-ink)]";
 const SOFT = "text-[color:var(--mock-ink-soft)]";
 /** The thread's measure, centred in the window as the product centres it. */
-const COLUMN = "mx-auto w-full max-w-[480px]";
+const COLUMN = "mx-auto w-full max-w-[520px]";
 
 /**
  * The Plan step on a wide screen: the builder's own plan view, filling the
