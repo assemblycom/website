@@ -18,7 +18,7 @@ import Link from "next/link";
 /** PLACEHOLDER — swap for the real G2 figures before this goes anywhere live. */
 const G2 = {
   rating: 4.8,
-  reviews: 420,
+  reviews: 350,
   href: "https://www.g2.com/products/assemblysoftware/reviews",
 };
 
