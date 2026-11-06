@@ -2557,8 +2557,13 @@ function DetailPanel({
         aria-label={pillar.short}
         // overscroll-contain: without it, a flick that reaches the end of the
         // panel keeps going and scrolls the page underneath instead of stopping.
-        className={`absolute inset-y-0 right-0 flex w-full max-w-xl flex-col overflow-y-auto overscroll-contain border-l border-border bg-background transition-transform duration-[380ms] ease-[cubic-bezier(0.22,1,0.36,1)] md:duration-300 [[data-theme=dark]_&]:bg-[#151515] [[data-theme=dark]_&]:border-[#383838] [[data-theme=dark]_&]:shadow-[-32px_0_60px_-30px_rgba(0,0,0,0.8)] md:max-w-2xl ${
-          open ? "translate-x-0" : "translate-x-full"
+        className={`absolute inset-y-0 right-0 flex w-full max-w-xl flex-col overflow-y-auto overscroll-contain border-l border-border bg-background transition-transform duration-[380ms] ease-[cubic-bezier(0.22,1,0.36,1)] md:duration-300 [[data-theme=dark]_&]:bg-[#151515] [[data-theme=dark]_&]:border-[#383838] md:max-w-2xl ${
+          // The shadow only while open: parked off-screen, the panel's left
+          // edge is the viewport's right edge, and the shadow it casts leftward
+          // darkened a strip down the right of every section in dark mode.
+          open
+            ? "translate-x-0 [[data-theme=dark]_&]:shadow-[-32px_0_60px_-30px_rgba(0,0,0,0.8)]"
+            : "translate-x-full"
         }`}
       >
         {/* Header — the title travels WITH the close control. Split apart (an
