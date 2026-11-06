@@ -154,7 +154,7 @@ export function PortalTrust({
               {...(external
                 ? { target: "_blank", rel: "noopener noreferrer" }
                 : {})}
-              className={`mt-6 ${QUIET_BUTTON}`}
+              className={`mt-6 bg-background ${QUIET_BUTTON}`}
             >
               {link.label}
             </a>
