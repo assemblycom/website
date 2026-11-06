@@ -102,7 +102,9 @@ const READY_APPS: {
 function AppNotification() {
   return (
     // On a phone, drawn at 1.05: the step the other mobile mocks land on.
-    <div className="flex w-[332px] max-w-full origin-center flex-col gap-3 max-sm:scale-[1.05]">
+    // Capped at 264 there, so the card sits on the photograph with room either
+    // side instead of running nearly edge to edge.
+    <div className="flex w-[332px] max-w-full origin-center flex-col gap-3 max-sm:max-w-[264px] max-sm:scale-[1.05]">
       {READY_APPS.map((app, i) => (
         <div
           key={app.name}
