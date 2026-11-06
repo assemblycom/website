@@ -19,7 +19,7 @@ import { PAGE_SEO, pageMetadata } from "@/lib/seo";
 /**
  * Paid-only landing page for the Google Ads "Portal" ad groups (US/CA, UK and
  * AU; exact, phrase and broad). Every ad group uses one final URL,
- * `/lp/portal?kw={keyword}`: Google fills in the matched keyword, and the page
+ * `/lp/portal?utm_term={keyword}`: Google fills in the matched keyword, and the page
  * sorts it into a group by the words it contains. ONLY THE H1 CHANGES. The
  * subhead, the sections, their order and the FAQ are the same for everyone.
  *
@@ -43,7 +43,9 @@ import { PAGE_SEO, pageMetadata } from "@/lib/seo";
  *               client portal software, portal software, online / web portal,
  *               simple / easy client portal
  *
- * The first URLs used group names (`?kw=whitelabel`, `builder`, `best`); those
+ * `utm_term` doubles as campaign reporting and already rides along to signup
+ * (src/lib/signup-attribution.ts). The first URLs used `?kw=` with group names
+ * (`?kw=whitelabel`, `builder`, `best`); `kw` is still read as a fallback and those
  * still resolve, through the same patterns plus one alias for `best`.
  *
  * NOT INDEXED: noindex here AND listed in EXCLUDED in src/lib/sitemap-data.ts.
@@ -195,8 +197,11 @@ export default async function LpPortalPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const { kw } = await searchParams;
-  const hero: LpHeroMessage = { ...HEADLINES[groupFor(kw)], body: HERO_BODY };
+  const { utm_term, kw } = await searchParams;
+  const hero: LpHeroMessage = {
+    ...HEADLINES[groupFor(utm_term ?? kw)],
+    body: HERO_BODY,
+  };
 
   // The same sections in the same order for every visitor.
   const sections: Record<"tour" | "brand" | "builder" | "trust", ReactNode> = {
