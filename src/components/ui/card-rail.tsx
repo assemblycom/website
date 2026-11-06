@@ -523,6 +523,10 @@ export function CardRail({
     const root = rootRef.current;
     if (!autoAdvanceMs || !el || !root) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // Pointer and focus tracked apart, so leaving one never resumes the rail
+    // while the other is still inside it.
+    let hovered = false;
+    let focused = false;
     let held = false;
     let onScreen = false;
     const io = new IntersectionObserver(
@@ -533,15 +537,31 @@ export function CardRail({
     // Set once the slide below exists; a pointer arriving mid-slide stops it,
     // so the rail never moves under a hand that is about to grab it.
     let stopSlide = () => {};
-    const hold = () => {
-      held = true;
-      stopSlide();
+    const update = () => {
+      held = hovered || focused;
+      if (held) stopSlide();
     };
-    const release = () => (held = root.contains(document.activeElement));
-    root.addEventListener("pointerenter", hold);
-    root.addEventListener("pointerleave", release);
-    root.addEventListener("focusin", hold);
-    root.addEventListener("focusout", release);
+    const onPointerEnter = () => {
+      hovered = true;
+      update();
+    };
+    const onPointerLeave = () => {
+      hovered = false;
+      update();
+    };
+    const onFocusIn = () => {
+      focused = true;
+      update();
+    };
+    // focusout fires before focus lands elsewhere, so check where it went.
+    const onFocusOut = (e: FocusEvent) => {
+      focused = root.contains(e.relatedTarget as Node | null);
+      update();
+    };
+    root.addEventListener("pointerenter", onPointerEnter);
+    root.addEventListener("pointerleave", onPointerLeave);
+    root.addEventListener("focusin", onFocusIn);
+    root.addEventListener("focusout", onFocusOut);
     // OUR OWN EASED SLIDE, aimed at the next card's exact edge. A native
     // smooth scrollBy stepped by the card's rounded width, so the row drifted
     // a fraction of a pixel per step and snap then tugged it back at the end
@@ -599,10 +619,10 @@ export function CardRail({
       window.clearInterval(id);
       stopSlide();
       io.disconnect();
-      root.removeEventListener("pointerenter", hold);
-      root.removeEventListener("pointerleave", release);
-      root.removeEventListener("focusin", hold);
-      root.removeEventListener("focusout", release);
+      root.removeEventListener("pointerenter", onPointerEnter);
+      root.removeEventListener("pointerleave", onPointerLeave);
+      root.removeEventListener("focusin", onFocusIn);
+      root.removeEventListener("focusout", onFocusOut);
     };
   }, [autoAdvanceMs]);
 

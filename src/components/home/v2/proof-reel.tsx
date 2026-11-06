@@ -115,7 +115,9 @@ export function ProofReel({ items }: { items: ReelItem[] }) {
           would land on whatever happened to be under the finger. They are
           still links, and `motion-reduce` stops the row for anyone who has
           asked for less movement — which hands back a plain, readable line. */}
-      <div className="-mx-6 overflow-hidden sm:hidden">
+      {/* With reduced motion the row stops, so it scrolls by hand instead:
+          otherwise the marks past the edge would be unreachable on a phone. */}
+      <div className="-mx-6 overflow-hidden motion-reduce:overflow-x-auto sm:hidden">
         <div className="flex w-max animate-marquee items-center gap-2 motion-reduce:animate-none">
           {[0, 1].map((copy) =>
             items.map((item) => (

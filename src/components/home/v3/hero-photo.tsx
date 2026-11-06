@@ -15,6 +15,7 @@ import { APP_URL, DEMO_URL, SIGNUP_URL } from "@/lib/constants";
 import { COPY_VARIANTS, FALLBACK_COPY } from "@/lib/hero-variants";
 import { PRIMARY_CTA } from "@/components/home/hero-big";
 import { SECONDARY_CTA } from "@/components/home/cta";
+import { trackHeroCta } from "@/components/home/hero-experiment";
 import { STATS } from "@/components/home/trust-ticker";
 import { PROTO_HERO_BODY } from "@/components/proto/hero-copy";
 
@@ -283,13 +284,21 @@ export function HeroPhoto() {
                   gone: the row stacks and goes inline at `sm`, which is the
                   breakpoint the controls are written for. */}
               <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center">
-                <a href={SIGNUP_URL} className={`unauth-only ${PRIMARY_CTA}`}>
+                <a
+                  href={SIGNUP_URL}
+                  className={`unauth-only ${PRIMARY_CTA}`}
+                  onClick={() => trackHeroCta("photo-primary")}
+                >
                   Get started
                 </a>
                 <a href={APP_URL} className={`auth-only ${PRIMARY_CTA}`}>
                   Open Assembly
                 </a>
-                <Link href={DEMO_URL} className={SECONDARY_CTA}>
+                <Link
+                  href={DEMO_URL}
+                  className={SECONDARY_CTA}
+                  onClick={() => trackHeroCta("photo-demo")}
+                >
                   Book a demo
                 </Link>
               </div>

@@ -15,7 +15,7 @@ import Link from "next/link";
 // after it is a footnote to something you have already decided about.
 // ─────────────────────────────────────────────────────────────────────────
 
-/** PLACEHOLDER — swap for the real G2 figures before this goes anywhere live. */
+/** Assembly's G2 listing. The review count is the current figure (Nov 2026). */
 const G2 = {
   rating: 4.8,
   reviews: 350,
@@ -47,7 +47,12 @@ function Stars({ rating }: { rating: number }) {
 
 function Star({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 20 20" fill="currentColor" className={className} aria-hidden>
+    <svg
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      className={className}
+      aria-hidden
+    >
       <path d="M10 1.6l2.47 5.26 5.53.79-4 4.05.94 5.7L10 14.7l-4.94 2.7.94-5.7-4-4.05 5.53-.79z" />
     </svg>
   );

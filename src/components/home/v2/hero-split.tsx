@@ -11,6 +11,7 @@ import { APP_URL, DEMO_URL, SIGNUP_URL } from "@/lib/constants";
 import { COPY_VARIANTS, FALLBACK_COPY } from "@/lib/hero-variants";
 import { PRIMARY_CTA } from "@/components/home/hero-big";
 import { SECONDARY_CTA } from "@/components/home/cta";
+import { trackHeroCta } from "@/components/home/hero-experiment";
 import { HeroCredibility } from "@/components/home/v2/hero-credibility";
 import { PROTO_HERO_BODY } from "@/components/proto/hero-copy";
 import { BrandedPortalVisual } from "@/components/ai-app-builder/branded-portal-visual";
@@ -310,7 +311,11 @@ export function HeroSplit() {
               actually centres flex children; it hands back to the left at md,
               where the copy does too. */}
           <div className="mx-auto mt-9 flex w-full max-w-sm flex-col gap-3 sm:w-auto sm:max-w-none sm:flex-row sm:items-center sm:justify-center lg:mx-0 lg:justify-start">
-            <a href={SIGNUP_URL} className={`unauth-only ${PRIMARY_CTA}`}>
+            <a
+              href={SIGNUP_URL}
+              className={`unauth-only ${PRIMARY_CTA}`}
+              onClick={() => trackHeroCta("ui-primary")}
+            >
               Get started
             </a>
             {/* Both ship and `data-authed` picks one before paint, the same way
@@ -319,7 +324,11 @@ export function HeroSplit() {
             <a href={APP_URL} className={`auth-only ${PRIMARY_CTA}`}>
               Open Assembly
             </a>
-            <Link href={DEMO_URL} className={SECONDARY_CTA}>
+            <Link
+              href={DEMO_URL}
+              className={SECONDARY_CTA}
+              onClick={() => trackHeroCta("ui-demo")}
+            >
               Book a demo
             </Link>
           </div>
