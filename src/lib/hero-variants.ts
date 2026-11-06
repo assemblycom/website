@@ -30,14 +30,17 @@ export type CopyKey = (typeof COPY_KEYS)[number];
 
 /**
  * The page version. Round 4 tests three heroes over one shared page body:
- * `v3` is the shipped big-type hero (the prototype's V1; the key is kept so
- * the hero component that reads it is unchanged), `split` the split hero with
- * the client's assistant (V2), and `photo` the full-bleed photograph (V3).
+ * `type` the big-type hero, `ui` the product UI hero (the client's portal with
+ * the assistant), and `photo` the photography hero.
+ *
+ * New names, not `v3` or `bigtype`: the page below the hero changed in Round 4,
+ * so reusing an earlier arm's name would pool these signups with the old page's.
+ * No hyphen inside a key, since an arm splits on it.
  */
-export const LAYOUT_KEYS = ["v3", "split", "photo"] as const;
+export const LAYOUT_KEYS = ["type", "ui", "photo"] as const;
 export type LayoutKey = (typeof LAYOUT_KEYS)[number];
 
-/** `<copy>-<layout>`, e.g. "clients-v3". What the cookie and events carry. */
+/** `<copy>-<layout>`, e.g. "clients-ui". What the cookie and events carry. */
 export type Arm = `${CopyKey}-${LayoutKey}`;
 
 export const ARMS: Arm[] = COPY_KEYS.flatMap((copy) =>
@@ -50,7 +53,7 @@ export const ARMS: Arm[] = COPY_KEYS.flatMap((copy) =>
  * outside the arm sees the same page as everyone else.
  */
 export const FALLBACK_COPY: CopyKey = "clients";
-export const FALLBACK_LAYOUT: LayoutKey = "v3";
+export const FALLBACK_LAYOUT: LayoutKey = "type";
 
 export interface CopyVariant {
   key: CopyKey;
@@ -137,16 +140,16 @@ const COPY_ALIASES: Record<string, CopyKey> = {
 };
 const LAYOUT_ALIASES: Record<string, LayoutKey> = {
   // The prototype switcher's numbers, so `?v=2` style review links still work.
-  "1": "v3",
-  "2": "split",
+  "1": "type",
+  "2": "ui",
   "3": "photo",
   // Every retired layout and page version resolves to the shipped one, so old
   // review links still land on the homepage as it now reads.
-  b: "v3",
-  c: "v3",
-  control: "v3",
-  bigtype: "v3",
-  v2: "v3",
+  b: "type",
+  c: "type",
+  control: "type",
+  bigtype: "type",
+  v2: "type",
 };
 
 /**

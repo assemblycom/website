@@ -502,7 +502,7 @@ export function HeroV76({
           <HeroArmLinks arm={variant.arm} />
         </>
       )}
-      {layout === "v3" ? (
+      {layout === "type" ? (
         <HeroBig
           headline={message.h1}
           lines={message.big.lines}
