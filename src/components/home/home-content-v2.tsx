@@ -79,6 +79,240 @@ export function HomeProofBand({
   );
 }
 
+/**
+ * The four-steps panel as the homepage configures it (manual steps, a product
+ * screen per step on the plan ramp). Exported so the paid landing pages run
+ * the same panel under their own header copy; the homepage passes nothing.
+ */
+export function HomeHowItWorks({
+  eyebrow,
+  heading,
+  body,
+}: { eyebrow?: string; heading?: string; body?: string } = {}) {
+  return (
+    <HowItWorks
+      eyebrow={eyebrow}
+      heading={heading}
+      body={body}
+      // Click to change step. See `manual` — this page opens on a hero
+      // with its own product shot, and a second panel advancing by
+      // itself a screen below it competes with it.
+      manual
+      // Same corner as the platform panel above it.
+      frameRadiusClass="rounded-xl"
+      // 460 on desktop, not the shipped 560: the platform panel above
+      // draws its photograph about 450 tall and /ai-app-builder's step
+      // stage is 400, so at 560 this one read as the odd one out.
+      visualHeightClass="h-[320px] sm:h-[400px] md:h-[460px]"
+      // The site's own photography, one per step, standing in while the
+      // step screens are redone. Named for what they are of: the phone
+      // in hand for describing, the laptop for the plan, two people
+      // reviewing a screen for publish.
+      stepImages={{
+        describe: {
+          src: "/images/mocks/describe-phone.webp",
+          alt: "Someone holding a phone on a sofa",
+        },
+        plan: {
+          src: "/images/mocks/describe-laptop.webp",
+          alt: "Someone reading at a laptop in afternoon light",
+        },
+        build: {
+          src: "/images/mocks/public-store-bg.jpg",
+          alt: "Two people reviewing a screen together",
+        },
+        iterate: {
+          src: "/images/mocks/describe-sneakers.webp",
+          alt: "Someone talking in a sunlit sitting room",
+        },
+      }}
+      // The product pages' own step scenes, laid over the photographs:
+      // /ai-app-builder draws exactly these for Describe, Plan and
+      // Build, so the homepage shows the same screens rather than a
+      // second set that would drift from them. `plain` drops each
+      // scene's own ground — the photograph is the ground here.
+      // A CLIENT PROJECT TRACKER, not the booking calendar the product
+      // page's version of these scenes runs. The three steps are one
+      // session — what you typed, what came back, what got built — so
+      // the prompt, the plan document and the published app all have to
+      // name the same thing. /ai-app-builder keeps the calendar.
+      // THE PLAN STEP SITS ON A GRADIENT, not on its photograph. Its
+      // screen is a DOCUMENT — a white page — and a white page on a
+      // photograph is still a white page, with the picture behind it
+      // doing no work. The ramp is the builder's own lime-to-blue, read
+      // top to bottom, so the one step that is about what the AI came
+      // back with wears the AI's colours. The other three keep their
+      // pictures: each of those is a screen, and a screen on a desk is
+      // a thing someone is doing.
+      // THE PUBLISHED APP'S PHOTOGRAPH IS SOFTENED. That step lays a
+      // whole portal screen over its picture — a sidebar, a list and
+      // three progress bars against two people at a desk — and the two
+      // competed, both in focus. The others put one object on a shot
+      // that is still the picture.
+      blurSteps={["describe", "build", "iterate"]}
+      stepGrounds={{
+        plan: "bg-[linear-gradient(to_bottom,#c3cae7_0%,#bcc6e6_35%,#c6d6bd_65%,#d4e79f_85%,#dcee92_100%)]",
+      }}
+      stepUi={{
+        // CENTRED. The composer carries `sm:mt-[66px] sm:mb-auto`, which
+        // is the arithmetic that drops it clear of the "Describe" heading
+        // on /ai-app-builder's panel. There is no heading over it here,
+        // so that offset just sat it high in the picture.
+        describe: (
+          // 620 WIDE FROM sm, WHICH IS THE SCENE'S OWN DESIGN WIDTH.
+          // MockFit scales a scene to the frame it is given, and this
+          // frame was the whole 938px panel: a 620x400 scene drawn at
+          // 1.2, so the mock's 13.5px body landed at 16 and every rule
+          // and radius in it grew with the type. Every step on this
+          // panel is held to its design width now, so each one draws at
+          // 1:1 and the four read as one set of screens rather than as
+          // four zoom levels. The phone keeps the full width — the
+          // scene has its own 360px box there and is already near 1:1.
+          // ZOOMED 1.2 FROM md: with the panel at 460 the scene is held
+          // by its height, so a wider frame did not enlarge it; the
+          // composer read small on a desktop-wide photograph.
+          <div className="absolute inset-y-0 left-0 right-0 [&_.template-mock-fit>div>div]:my-auto! sm:left-1/2 sm:w-[620px] sm:max-w-full sm:-translate-x-1/2 md:scale-[1.2] max-sm:[&_.template-mock-fit]:[--template-mock-w:335px]! max-sm:[&_.template-mock-fit]:[--template-mock-h:246px]! max-sm:[&_.template-mock-fit>div]:h-[246px]! max-sm:[&_.template-mock-fit>div]:w-[335px]!">
+            {/* The short prompt on a phone, where the long one wrapped; the
+              full sentence from sm. `contents`, so the scene still measures
+              against this frame. */}
+            <div className="contents sm:hidden">
+              <DescribeCard
+                plain
+                typing
+                prompt="Add a project tracker for each client."
+              />
+            </div>
+            <div className="hidden sm:contents">
+              <DescribeCard
+                plain
+                typing
+                prompt="Add a project tracker each client sees for their own projects."
+              />
+            </div>
+          </div>
+        ),
+        // FLUSH TO THE FOOT. The plan is a document longer than the
+        // window it is read in, and it is drawn to be cut by its own
+        // bottom edge — so a band of photograph under it read as the
+        // document ending early rather than as a page running on. The
+        // frame drops to the panel's own foot, and the card with it.
+        plan: (
+          // NARROWED BY ITS HEIGHT, not by its sides. From sm the card
+          // is HEIGHT-bound in this frame: it fills the frame's height
+          // exactly and takes whatever width that leaves, which is what
+          // keeps it cut by the panel's foot rather than floating above
+          // it. So insetting the sides would only have left slack for
+          // MockFit to centre. Dropping the frame's top is what makes
+          // the card smaller, and the foot stays where it was.
+          //
+          // On a phone the frame is wider than the card's own shape, so
+          // MockFit sizes the card by the width and centres the slack —
+          // dropping the frame to the foot there just recentres it. The
+          // frame takes the card's 6:5 instead, which leaves no slack to
+          // centre, and sits on the panel's floor.
+          // ON A PHONE IT IS PLACED, NOT CROPPED. The phone panel is
+          // 320 tall against the photograph's own 340 wide, so a frame
+          // running the full width at the scene's 6:5 filled the cell
+          // edge to edge: the picture survived as two 16px slivers down
+          // the sides and the card was cut by the panel's floor at the
+          // same time. The frame keeps the scene's shape but gives up
+          // the width, so the card sits on the photograph with the
+          // picture around it — which is what the Describe step does
+          // and the one treatment on this panel that reads.
+          // AND HELD TO THE SCENE'S 620 FROM sm — see the Describe
+          // step above. The frame still runs past the panel's foot, so
+          // the card is still cut by it; it is only the WIDTH that is
+          // pinned, which is what takes the scale back to 1:1.
+          // AND ITS OWN 400 HEIGHT, anchored past the panel's floor.
+          // Pinning only the width left the 400-tall scene with slack
+          // in a 464-tall frame, and MockFit centres slack — so the
+          // document floated with a band of photograph under it, which
+          // is the exact thing this step is drawn not to do. Given its
+          // design height and hung off the bottom, it is cut by the
+          // panel again.
+          <>
+            {/* The phone frame takes the scene's own 309:280 rather than a
+              fixed top. With a fixed top its shape changed with the
+              phone's width, MockFit centred the card in the slack, and
+              a band of gradient showed under it. Capped at 331 wide
+              (300 tall) so on a wide phone or narrow window the
+              frame can't outgrow the 320px panel and lose its top. */}
+            <div className="absolute sm:hidden inset-x-3 -bottom-4 mx-auto aspect-[309/280] max-w-[331px] max-sm:[&_.template-mock-fit]:[--template-mock-w:309px]! max-sm:[&_.template-mock-fit]:[--template-mock-h:280px]! max-sm:[&_.template-mock-fit>div]:h-[280px]! max-sm:[&_.template-mock-fit>div]:w-[309px]! [&_.mock-edge]:rounded-t-[14px]! max-sm:[&_.template-mock-fit>div]:px-2! max-sm:[&_.template-mock-fit>div]:pt-3! max-sm:[&_.mock-edge]:mx-0! sm:left-1/2 sm:right-auto sm:top-auto sm:h-[400px] sm:w-[620px] sm:max-w-full sm:-translate-x-1/2 sm:bottom-0 sm:aspect-auto md:h-[460px] md:-bottom-10">
+              <PlanCard plain tall doc={TRACKER_PLAN_DOC} />
+            </div>
+            {/* From sm, the builder's own plan view filling the panel:
+              the thread, the requirements card, and the composer with
+              Approve, with no sidebar. A window on the gradient,
+              inside the stage's inset and open at the panel's foot. */}
+            <div className="absolute left-1/2 top-0 hidden w-[760px] max-w-full -translate-x-1/2 sm:-bottom-6 sm:block md:-bottom-10">
+              <PlanScreen />
+            </div>
+          </>
+        ),
+        // FLUSH TO THE FOOT. This scene is WIDTH-bound in the panel —
+        // it takes the full measure and whatever height that leaves —
+        // so pulling the frame's bottom past the floor did nothing but
+        // re-centre the card in a taller box, and it sat ~56px above
+        // the photograph's foot reading as a short card rather than as
+        // a screen the panel is cropping. The frame takes the scene's
+        // own aspect at each breakpoint instead, which leaves no slack
+        // for MockFit to centre, and sits on the floor.
+        //
+        // The negative bottom is how it reaches that floor: every step
+        // here is drawn inside an inset box (inset-4 / 6 / 10), so
+        // `bottom-0` is the inset's foot and still left the panel's own
+        // padding showing under the screen. These numbers cancel it.
+        build: (
+          <>
+            {/* ON A PHONE, A PHONE: the board in the same frame as the
+              hero and the CRM tab, drawn at the screen's own width
+              (scale 1) instead of a 360px box shrunk to 0.7. Anchored
+              48px under the panel's floor so the crop always lands on
+              the screen, with a solid bezel over the photograph. */}
+            <div className="absolute inset-x-0 -bottom-12 top-0 flex items-end justify-center px-8 sm:hidden">
+              <div className="w-full max-w-[260px]">
+                <PhoneShell
+                  melt={false}
+                  sideButtons={false}
+                  squareFoot
+                  screenBg="bg-[var(--mock-window)]"
+                  bezelBg="bg-[#f5f5f5] [[data-theme=dark]_&]:bg-[#191919]"
+                  outline={false}
+                >
+                  <div className="relative min-h-0 flex-1 [&_.mock-edge]:rounded-none [&_.mock-edge]:border-0 [&_.template-mock-fit]:[--template-mock-w:244px]! [&_.template-mock-fit]:[--template-mock-h:270px]! [&_.template-mock-fit>div]:h-[270px]! [&_.template-mock-fit>div]:w-[244px]! [&_.template-mock-fit>div]:p-0! [&_.template-mock-fit_.mock-edge]:w-full!">
+                    <BuildCard plain tracker tall closedRight menuBar />
+                  </div>
+                </PhoneShell>
+              </div>
+            </div>
+            <div className="absolute hidden sm:block sm:inset-x-0 sm:aspect-auto sm:-bottom-6 sm:top-0 md:-bottom-36">
+              <BuildCard plain tracker tall closedRight titleBar />
+            </div>
+          </>
+        ),
+        // The chat alone, on the photograph — no window and no table.
+        // Its scene is landscape like the others now, so it needs none
+        // of the taller frame the portrait rail card used to want.
+        iterate: (
+          // 680 WIDE FROM sm, the chat scene's own design width. Given
+          // the whole panel it was drawn at 1.5, which put a 13.5px
+          // message at 19 — larger than the section's own body copy, on
+          // the one step whose subject is a chat window.
+          <>
+            <div className="absolute inset-y-0 left-0 right-0 sm:hidden">
+              <IterateCard reply />
+            </div>
+            {/* From sm, the chat inside the builder window, as Plan. */}
+            <div className="absolute left-1/2 top-0 hidden w-[760px] max-w-full -translate-x-1/2 sm:-bottom-6 sm:block md:-bottom-10">
+              <IterateScreen />
+            </div>
+          </>
+        ),
+      }}
+    />
+  );
+}
+
 export function HomeContentV2({
   // True where the hero passed in carries the grid itself (V2's does), so the
   // content region picks the rails up at full strength instead of fading them
@@ -162,223 +396,7 @@ export function HomeContentV2({
               the platform section above is in. Shorter than the shipped 420 on
               a phone, and a real height at sm: the default chain ends in
               `sm:h-auto`, which collapses to nothing once the panel is empty. */}
-          <HowItWorks
-            // Click to change step. See `manual` — this page opens on a hero
-            // with its own product shot, and a second panel advancing by
-            // itself a screen below it competes with it.
-            manual
-            // Same corner as the platform panel above it.
-            frameRadiusClass="rounded-xl"
-            // 460 on desktop, not the shipped 560: the platform panel above
-            // draws its photograph about 450 tall and /ai-app-builder's step
-            // stage is 400, so at 560 this one read as the odd one out.
-            visualHeightClass="h-[320px] sm:h-[400px] md:h-[460px]"
-            // The site's own photography, one per step, standing in while the
-            // step screens are redone. Named for what they are of: the phone
-            // in hand for describing, the laptop for the plan, two people
-            // reviewing a screen for publish.
-            stepImages={{
-              describe: {
-                src: "/images/mocks/describe-phone.webp",
-                alt: "Someone holding a phone on a sofa",
-              },
-              plan: {
-                src: "/images/mocks/describe-laptop.webp",
-                alt: "Someone reading at a laptop in afternoon light",
-              },
-              build: {
-                src: "/images/mocks/public-store-bg.jpg",
-                alt: "Two people reviewing a screen together",
-              },
-              iterate: {
-                src: "/images/mocks/describe-sneakers.webp",
-                alt: "Someone talking in a sunlit sitting room",
-              },
-            }}
-            // The product pages' own step scenes, laid over the photographs:
-            // /ai-app-builder draws exactly these for Describe, Plan and
-            // Build, so the homepage shows the same screens rather than a
-            // second set that would drift from them. `plain` drops each
-            // scene's own ground — the photograph is the ground here.
-            // A CLIENT PROJECT TRACKER, not the booking calendar the product
-            // page's version of these scenes runs. The three steps are one
-            // session — what you typed, what came back, what got built — so
-            // the prompt, the plan document and the published app all have to
-            // name the same thing. /ai-app-builder keeps the calendar.
-            // THE PLAN STEP SITS ON A GRADIENT, not on its photograph. Its
-            // screen is a DOCUMENT — a white page — and a white page on a
-            // photograph is still a white page, with the picture behind it
-            // doing no work. The ramp is the builder's own lime-to-blue, read
-            // top to bottom, so the one step that is about what the AI came
-            // back with wears the AI's colours. The other three keep their
-            // pictures: each of those is a screen, and a screen on a desk is
-            // a thing someone is doing.
-            // THE PUBLISHED APP'S PHOTOGRAPH IS SOFTENED. That step lays a
-            // whole portal screen over its picture — a sidebar, a list and
-            // three progress bars against two people at a desk — and the two
-            // competed, both in focus. The others put one object on a shot
-            // that is still the picture.
-            blurSteps={["describe", "build", "iterate"]}
-            stepGrounds={{
-              plan: "bg-[linear-gradient(to_bottom,#c3cae7_0%,#bcc6e6_35%,#c6d6bd_65%,#d4e79f_85%,#dcee92_100%)]",
-            }}
-            stepUi={{
-              // CENTRED. The composer carries `sm:mt-[66px] sm:mb-auto`, which
-              // is the arithmetic that drops it clear of the "Describe" heading
-              // on /ai-app-builder's panel. There is no heading over it here,
-              // so that offset just sat it high in the picture.
-              describe: (
-                // 620 WIDE FROM sm, WHICH IS THE SCENE'S OWN DESIGN WIDTH.
-                // MockFit scales a scene to the frame it is given, and this
-                // frame was the whole 938px panel: a 620x400 scene drawn at
-                // 1.2, so the mock's 13.5px body landed at 16 and every rule
-                // and radius in it grew with the type. Every step on this
-                // panel is held to its design width now, so each one draws at
-                // 1:1 and the four read as one set of screens rather than as
-                // four zoom levels. The phone keeps the full width — the
-                // scene has its own 360px box there and is already near 1:1.
-                // ZOOMED 1.2 FROM md: with the panel at 460 the scene is held
-                // by its height, so a wider frame did not enlarge it; the
-                // composer read small on a desktop-wide photograph.
-                <div className="absolute inset-y-0 left-0 right-0 [&_.template-mock-fit>div>div]:my-auto! sm:left-1/2 sm:w-[620px] sm:max-w-full sm:-translate-x-1/2 md:scale-[1.2] max-sm:[&_.template-mock-fit]:[--template-mock-w:335px]! max-sm:[&_.template-mock-fit]:[--template-mock-h:246px]! max-sm:[&_.template-mock-fit>div]:h-[246px]! max-sm:[&_.template-mock-fit>div]:w-[335px]!">
-                  {/* The short prompt on a phone, where the long one wrapped; the
-                      full sentence from sm. `contents`, so the scene still measures
-                      against this frame. */}
-                  <div className="contents sm:hidden">
-                    <DescribeCard
-                      plain
-                      typing
-                      prompt="Add a project tracker for each client."
-                    />
-                  </div>
-                  <div className="hidden sm:contents">
-                    <DescribeCard
-                      plain
-                      typing
-                      prompt="Add a project tracker each client sees for their own projects."
-                    />
-                  </div>
-                </div>
-              ),
-              // FLUSH TO THE FOOT. The plan is a document longer than the
-              // window it is read in, and it is drawn to be cut by its own
-              // bottom edge — so a band of photograph under it read as the
-              // document ending early rather than as a page running on. The
-              // frame drops to the panel's own foot, and the card with it.
-              plan: (
-                // NARROWED BY ITS HEIGHT, not by its sides. From sm the card
-                // is HEIGHT-bound in this frame: it fills the frame's height
-                // exactly and takes whatever width that leaves, which is what
-                // keeps it cut by the panel's foot rather than floating above
-                // it. So insetting the sides would only have left slack for
-                // MockFit to centre. Dropping the frame's top is what makes
-                // the card smaller, and the foot stays where it was.
-                //
-                // On a phone the frame is wider than the card's own shape, so
-                // MockFit sizes the card by the width and centres the slack —
-                // dropping the frame to the foot there just recentres it. The
-                // frame takes the card's 6:5 instead, which leaves no slack to
-                // centre, and sits on the panel's floor.
-                // ON A PHONE IT IS PLACED, NOT CROPPED. The phone panel is
-                // 320 tall against the photograph's own 340 wide, so a frame
-                // running the full width at the scene's 6:5 filled the cell
-                // edge to edge: the picture survived as two 16px slivers down
-                // the sides and the card was cut by the panel's floor at the
-                // same time. The frame keeps the scene's shape but gives up
-                // the width, so the card sits on the photograph with the
-                // picture around it — which is what the Describe step does
-                // and the one treatment on this panel that reads.
-                // AND HELD TO THE SCENE'S 620 FROM sm — see the Describe
-                // step above. The frame still runs past the panel's foot, so
-                // the card is still cut by it; it is only the WIDTH that is
-                // pinned, which is what takes the scale back to 1:1.
-                // AND ITS OWN 400 HEIGHT, anchored past the panel's floor.
-                // Pinning only the width left the 400-tall scene with slack
-                // in a 464-tall frame, and MockFit centres slack — so the
-                // document floated with a band of photograph under it, which
-                // is the exact thing this step is drawn not to do. Given its
-                // design height and hung off the bottom, it is cut by the
-                // panel again.
-                <>
-                  {/* The phone frame takes the scene's own 309:280 rather than a
-                      fixed top. With a fixed top its shape changed with the
-                      phone's width, MockFit centred the card in the slack, and
-                      a band of gradient showed under it. Capped at 331 wide
-                      (300 tall) so on a wide phone or narrow window the
-                      frame can't outgrow the 320px panel and lose its top. */}
-                  <div className="absolute sm:hidden inset-x-3 -bottom-4 mx-auto aspect-[309/280] max-w-[331px] max-sm:[&_.template-mock-fit]:[--template-mock-w:309px]! max-sm:[&_.template-mock-fit]:[--template-mock-h:280px]! max-sm:[&_.template-mock-fit>div]:h-[280px]! max-sm:[&_.template-mock-fit>div]:w-[309px]! [&_.mock-edge]:rounded-t-[14px]! max-sm:[&_.template-mock-fit>div]:px-2! max-sm:[&_.template-mock-fit>div]:pt-3! max-sm:[&_.mock-edge]:mx-0! sm:left-1/2 sm:right-auto sm:top-auto sm:h-[400px] sm:w-[620px] sm:max-w-full sm:-translate-x-1/2 sm:bottom-0 sm:aspect-auto md:h-[460px] md:-bottom-10">
-                    <PlanCard plain tall doc={TRACKER_PLAN_DOC} />
-                  </div>
-                  {/* From sm, the builder's own plan view filling the panel:
-                      the thread, the requirements card, and the composer with
-                      Approve, with no sidebar. A window on the gradient,
-                      inside the stage's inset and open at the panel's foot. */}
-                  <div className="absolute left-1/2 top-0 hidden w-[760px] max-w-full -translate-x-1/2 sm:-bottom-6 sm:block md:-bottom-10">
-                    <PlanScreen />
-                  </div>
-                </>
-              ),
-              // FLUSH TO THE FOOT. This scene is WIDTH-bound in the panel —
-              // it takes the full measure and whatever height that leaves —
-              // so pulling the frame's bottom past the floor did nothing but
-              // re-centre the card in a taller box, and it sat ~56px above
-              // the photograph's foot reading as a short card rather than as
-              // a screen the panel is cropping. The frame takes the scene's
-              // own aspect at each breakpoint instead, which leaves no slack
-              // for MockFit to centre, and sits on the floor.
-              //
-              // The negative bottom is how it reaches that floor: every step
-              // here is drawn inside an inset box (inset-4 / 6 / 10), so
-              // `bottom-0` is the inset's foot and still left the panel's own
-              // padding showing under the screen. These numbers cancel it.
-              build: (
-                <>
-                  {/* ON A PHONE, A PHONE: the board in the same frame as the
-                      hero and the CRM tab, drawn at the screen's own width
-                      (scale 1) instead of a 360px box shrunk to 0.7. Anchored
-                      48px under the panel's floor so the crop always lands on
-                      the screen, with a solid bezel over the photograph. */}
-                  <div className="absolute inset-x-0 -bottom-12 top-0 flex items-end justify-center px-8 sm:hidden">
-                    <div className="w-full max-w-[260px]">
-                      <PhoneShell
-                        melt={false}
-                        sideButtons={false}
-                        squareFoot
-                        screenBg="bg-[var(--mock-window)]"
-                        bezelBg="bg-[#f5f5f5] [[data-theme=dark]_&]:bg-[#191919]"
-                        outline={false}
-                      >
-                        <div className="relative min-h-0 flex-1 [&_.mock-edge]:rounded-none [&_.mock-edge]:border-0 [&_.template-mock-fit]:[--template-mock-w:244px]! [&_.template-mock-fit]:[--template-mock-h:270px]! [&_.template-mock-fit>div]:h-[270px]! [&_.template-mock-fit>div]:w-[244px]! [&_.template-mock-fit>div]:p-0! [&_.template-mock-fit_.mock-edge]:w-full!">
-                          <BuildCard plain tracker tall closedRight menuBar />
-                        </div>
-                      </PhoneShell>
-                    </div>
-                  </div>
-                  <div className="absolute hidden sm:block sm:inset-x-0 sm:aspect-auto sm:-bottom-6 sm:top-0 md:-bottom-36">
-                    <BuildCard plain tracker tall closedRight titleBar />
-                  </div>
-                </>
-              ),
-              // The chat alone, on the photograph — no window and no table.
-              // Its scene is landscape like the others now, so it needs none
-              // of the taller frame the portrait rail card used to want.
-              iterate: (
-                // 680 WIDE FROM sm, the chat scene's own design width. Given
-                // the whole panel it was drawn at 1.5, which put a 13.5px
-                // message at 19 — larger than the section's own body copy, on
-                // the one step whose subject is a chat window.
-                <>
-                  <div className="absolute inset-y-0 left-0 right-0 sm:hidden">
-                    <IterateCard reply />
-                  </div>
-                  {/* From sm, the chat inside the builder window, as Plan. */}
-                  <div className="absolute left-1/2 top-0 hidden w-[760px] max-w-full -translate-x-1/2 sm:-bottom-6 sm:block md:-bottom-10">
-                    <IterateScreen />
-                  </div>
-                </>
-              ),
-            }}
-          />
+          <HomeHowItWorks />
         </Reveal>
 
         <GridDivider lineClass={BUILDER_GRID_LINE} />

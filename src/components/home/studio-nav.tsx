@@ -73,6 +73,7 @@ export function StudioNav({
   maxWidthClass,
   restPaddingClass,
   minimal = false,
+  paid = false,
   bordered = false,
   themeToggle,
 }: {
@@ -99,6 +100,11 @@ export function StudioNav({
   // and same sizes, but the marketing links and account actions collapse to a
   // single way back to the site. There's no menu to open, so no burger either.
   minimal?: boolean;
+  // Paid landing pages (/lp/*): the logo, Log in and Get started, and nothing
+  // else. Google counts the links on an ad's landing page as part of its
+  // landing page experience, and every menu is a way off the one action the
+  // page exists for. Get started stays visible on mobile in place of the menu.
+  paid?: boolean;
   // Closes the bar with the same hairline the page grid draws, for pages that
   // sit under it on a plain ground. Off for heroes, where the bar floats over
   // artwork and a rule would cut across it.
@@ -617,7 +623,24 @@ export function StudioNav({
               "Back to homepage" button was the loudest thing on the screen, and
               the logo beside it already goes home. It stays on desktop, where
               there's room for it. */}
-          {minimal ? null : (
+          {minimal ? null : paid ? (
+            // Both ship and `data-authed` picks one before paint, as on the
+            // desktop bar: a signed-in visitor gets their way back in.
+            <>
+              <a
+                href={SIGNUP_URL}
+                className={`pointer-events-auto unauth-only ${ctaCls}`}
+              >
+                Get started
+              </a>
+              <a
+                href={APP_URL}
+                className={`pointer-events-auto auth-only ${ctaCls}`}
+              >
+                Open Assembly
+              </a>
+            </>
+          ) : (
             <button
               ref={menuTriggerRef}
               onClick={() => setMobileMenuOpen(true)}
@@ -646,7 +669,7 @@ export function StudioNav({
             className={`pointer-events-none absolute inset-x-0 top-0 h-full transition-opacity ${ease} ${scrolled ? "opacity-100" : "opacity-0"}`}
             style={navStripStyle}
           />
-          {!minimal && <NavBarFill />}
+          {!minimal && !paid && <NavBarFill />}
           {/* Fades in with the strip behind it, on the same curve, so the bar
               and its closing rule arrive as one surface rather than the
               hairline landing first over a still-transparent bar. */}
@@ -669,7 +692,7 @@ export function StudioNav({
 
             {/* Primary nav — left, beside the logo */}
             <nav
-              className={`ml-6 flex shrink-0 justify-start ${minimal ? "hidden" : ""}`}
+              className={`ml-6 flex shrink-0 justify-start ${minimal || paid ? "hidden" : ""}`}
             >
               <ul className="flex items-center">
                 {NAV_ENTRIES.map((entry) =>
@@ -794,7 +817,7 @@ export function StudioNav({
                       isn't ready to sign up, so it carries button weight beside
                       Get started rather than sitting as a text link. Suppressed
                       only on the demo page itself. */}
-                    {pathname !== DEMO_URL && (
+                    {pathname !== DEMO_URL && !paid && (
                       <Link href={DEMO_URL} className={secondaryCtaCls}>
                         {DEMO_CTA_LABEL}
                       </Link>
@@ -811,7 +834,7 @@ export function StudioNav({
           {/* The grouped entries' panel. A child of the sticky header, so
             `inset-x-0 top-full` puts it flush under the bar at full viewport
             width with nothing to measure. */}
-          {!minimal && (
+          {!minimal && !paid && (
             <NavMegaPanel entries={NAV_ENTRIES} railClassName={contentRail} />
           )}
         </NavDropdownGroup>

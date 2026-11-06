@@ -1,6 +1,6 @@
 "use client";
 
-import type { CSSProperties } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { CardRail } from "@/components/ui/card-rail";
@@ -183,7 +183,32 @@ const INDUSTRIES: Industry[] = [
 /** Long enough to read a card's name and line before the next one arrives. */
 const AUTO_ADVANCE_MS = 3500;
 
-export function Industries() {
+// A link or a plain block with the same classes, so the card looks the same
+// either way.
+function Card({
+  slug,
+  linked,
+  children,
+}: {
+  slug: string;
+  linked: boolean;
+  children: ReactNode;
+}) {
+  return linked ? (
+    <Link href={`/solutions/${slug}`} className="group block">
+      {children}
+    </Link>
+  ) : (
+    <div className="group block">{children}</div>
+  );
+}
+
+/**
+ * `linked={false}` keeps the cards and drops the links, for the paid landing
+ * pages, where every link is a way off the one action the page is for. The
+ * homepage passes nothing and keeps its links.
+ */
+export function Industries({ linked = true }: { linked?: boolean } = {}) {
   return (
     <section className="relative mx-auto max-w-[1200px] px-6 py-14 md:px-10 md:py-20">
       {/* THE RAILS GO SOFT BEHIND THIS SECTION, IN DARK ONLY. The grid runs
@@ -228,18 +253,7 @@ export function Industries() {
                 key={industry.slug}
                 className="w-[200px] shrink-0 snap-start sm:w-[calc((100%-1rem)/2)] lg:w-[calc((100%-2rem)/3)]"
               >
-                <Link
-                  href={`/solutions/${industry.slug}`}
-                  // THE PICTURE, THEN ITS NAME UNDER IT. The name used to sit on
-                  // the photo over a dark scrim, which darkened every shot to
-                  // keep white type legible; below the frame the pictures stay
-                  // at full strength and the name reads in the page's own ink.
-                  //
-                  // Hover pushes the picture in rather than casting a shadow:
-                  // the rail clips its row, so a shadow was cut off at the
-                  // card's sides and foot.
-                  className="group block"
-                >
+                <Card slug={industry.slug} linked={linked}>
                   <span className="relative block aspect-[3/4] overflow-hidden rounded-xl sm:aspect-[4/3]">
                     {industry.image ? (
                       <Image
@@ -279,7 +293,7 @@ export function Industries() {
                       {industry.label}
                     </span>
                   </span>
-                </Link>
+                </Card>
               </div>
             ))}
           </CardRail>

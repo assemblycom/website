@@ -185,12 +185,35 @@ function ClientExperiencePanel() {
   );
 }
 
-export function HeroSplit() {
+/**
+ * Every prop is optional and the defaults are the homepage's own, so V2 renders
+ * exactly as shipped. The paid landing pages (/lp/*) pass their keyword's
+ * headline, their own lead, the pared-back nav, and switch off the homepage
+ * test's click tracking (a visitor who saw the homepage first still holds an
+ * arm cookie, and their clicks here would count as the arm's).
+ */
+export function HeroSplit({
+  lines: linesOverride,
+  body = PROTO_HERO_BODY,
+  paidNav = false,
+  trackCtas = true,
+  note,
+}: {
+  /** The headline as a hand-set lockup, one entry per line. */
+  lines?: string[];
+  body?: string;
+  /** StudioNav's `paid` mode: logo, Log in and Get started only. */
+  paidNav?: boolean;
+  /** Report button clicks to the homepage hero test. */
+  trackCtas?: boolean;
+  /** One short line under the buttons, e.g. the free plan terms. */
+  note?: string;
+} = {}) {
   const { theme } = useTheme();
   const message = COPY_VARIANTS[FALLBACK_COPY];
   // The hand-set lockup where the message carries one, the plain headline as
   // a single line where it does not — `big.lines` is optional on the record.
-  const lines = message.big?.lines ?? [message.h1];
+  const lines = linesOverride ?? message.big?.lines ?? [message.h1];
 
   return (
     <>
@@ -207,6 +230,7 @@ export function HeroSplit() {
           inside the hero's own left line below md's 40px — close enough to read
           as a mistake rather than as a difference. */}
       <StudioNav
+        paid={paidNav}
         darkTop={theme === "dark"}
         maxWidthClass="max-w-[1600px]"
         restPaddingClass="px-6 md:px-10"
@@ -296,7 +320,7 @@ export function HeroSplit() {
                 top of its own column, and this one starts on the headline's
                 line. */}
             <p className="type-lead mx-auto mt-8 max-w-[26rem] text-pretty text-muted-foreground lg:col-start-2 lg:row-start-2 lg:mx-0 lg:mt-0 lg:max-w-[34rem]">
-              {PROTO_HERO_BODY}
+              {body}
             </p>
           </div>
 
@@ -314,7 +338,7 @@ export function HeroSplit() {
             <a
               href={SIGNUP_URL}
               className={`unauth-only ${PRIMARY_CTA}`}
-              onClick={() => trackHeroCta("ui-primary")}
+              onClick={trackCtas ? () => trackHeroCta("ui-primary") : undefined}
             >
               Get started
             </a>
@@ -327,11 +351,16 @@ export function HeroSplit() {
             <Link
               href={DEMO_URL}
               className={SECONDARY_CTA}
-              onClick={() => trackHeroCta("ui-demo")}
+              onClick={trackCtas ? () => trackHeroCta("ui-demo") : undefined}
             >
               Book a demo
             </Link>
           </div>
+          {note && (
+            <p className="mt-5 text-pretty text-center text-sm text-muted-foreground lg:text-left">
+              {note}
+            </p>
+          )}
 
           {/* ── The tile ───────────────────────────────────────────────── */}
           {/* THE TILE KEEPS THE HERO RAIL. It was briefly capped at 1080 to

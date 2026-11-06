@@ -761,6 +761,11 @@ function ProductionGapExplorer({
 }
 
 export interface ProductionGapProps {
+  /** Header copy, overridable for the paid landing pages. Defaults to the
+      homepage strings above. */
+  eyebrow?: string;
+  heading?: string;
+  body?: string;
   /**
    * Draws the right-hand visual for the step the tour is on, in place of the
    * one client-portal mock this section ships with.
@@ -818,6 +823,9 @@ export interface ProductionGapProps {
 }
 
 export function ProductionGap({
+  eyebrow = EYEBROW,
+  heading = HEADING,
+  body = BODY,
   renderVisual,
   bleedBottom,
   framed,
@@ -830,15 +838,15 @@ export function ProductionGap({
         {/* Header — left-aligned: eyebrow on top, then heading (left) and body
             (right) sharing a row. */}
         <div className="mx-auto max-w-[1100px]">
-          <p className="type-eyebrow text-muted-foreground">{EYEBROW}</p>
+          <p className="type-eyebrow text-muted-foreground">{eyebrow}</p>
           <div className="mt-4 grid gap-y-5 md:grid-cols-2 md:items-start md:gap-x-12">
             {/* Balanced: unbalanced, this heading left "part" alone on a second
                 line at phone widths. No effect on desktop, where it fits one. */}
             <h2 className="type-h2 max-w-lg text-balance text-foreground">
-              {HEADING}
+              {heading}
             </h2>
             <p className="type-lead max-w-lg text-pretty text-muted-foreground">
-              {BODY}
+              {body}
             </p>
           </div>
         </div>
