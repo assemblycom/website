@@ -3,7 +3,6 @@ import { CTA } from "@/components/home/cta";
 import { FAQ, type FAQEntry } from "@/components/home/faq";
 import { GridDivider, GridRails } from "@/components/ui/grid-lines";
 import { PortalSocialProof } from "@/components/client-portal/portal-social-proof";
-import { PortalHeroCarousel } from "@/components/client-portal/portal-hero-carousel";
 import {
   IconTemplateApprovals,
   IconTemplateDocuments,
@@ -21,6 +20,7 @@ import {
 } from "@/components/client-portal/portal-build-cards";
 import { PortalTailor } from "@/components/client-portal/portal-tailor";
 import { AccountingLoginsVisual } from "@/components/solutions/accounting-logins-visual";
+import { AccountingHeroVisual } from "@/components/solutions/accounting-hero-visual";
 import { AccountingViewsVisual } from "@/components/solutions/accounting-views-visual";
 import { PortalStack } from "@/components/client-portal/portal-stack";
 import { PortalTrust } from "@/components/client-portal/portal-trust";
@@ -368,23 +368,11 @@ export default function AccountingClientPortalPage() {
             </div>
           </div>
 
-          {/* V1's slot, now filled by the portal carousel rather than held
-              open. It stood here once before and was taken out again, because
-              it runs a marketing firm's content — Brandmages in the sidebar, a
-              content approval flow among the four apps — which on an
-              accounting page is the wrong vertical rather than a neutral
-              stand-in. That is still true of one of its four screens, so this
-              wants either an accounting set or the real V1 art before the page
-              ships; a picture of the right SHAPE beats an empty panel in the
-              meantime, which is the call made here.
-
-              The V1 art direction is kept below so it is not lost with the
-              placeholder that carried it. */}
-          {/* No ramp at the foot of the shot. Every other screen on this page
-              ends on a straight crop against its card's edge; the hero was the
-              one that faded out, which read as the picture going soft rather
-              than as the frame ending. See footDissolve. */}
-          <PortalHeroCarousel footDissolve={false} />
+          {/* V1's slot. It held the portal carousel until the chat-input shot
+              was swapped for a photo (below); the V1 art direction is kept
+              further down so it is not lost with the placeholder. */}
+          {/* The hero visual: the Build with AI prompt the lead ends on. */}
+          <AccountingHeroVisual />
           {/* V1 — left 40%: the Assembly build panel headed "Build with AI",
               with the message "Build an estimated tax payment tracker. Clients
               see scheduled and paid amounts; send a reminder 7 days before each
