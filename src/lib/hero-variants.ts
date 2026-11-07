@@ -28,11 +28,19 @@
 export const COPY_KEYS = ["clients"] as const;
 export type CopyKey = (typeof COPY_KEYS)[number];
 
-/** The page version. `v3` is big type with the Round 3 body copy. */
-export const LAYOUT_KEYS = ["v3"] as const;
+/**
+ * The page version. Round 4 tests three heroes over one shared page body:
+ * `type` the big-type hero, `ui` the product UI hero (the client's portal with
+ * the assistant), and `photo` the photography hero.
+ *
+ * New names, not `v3` or `bigtype`: the page below the hero changed in Round 4,
+ * so reusing an earlier arm's name would pool these signups with the old page's.
+ * No hyphen inside a key, since an arm splits on it.
+ */
+export const LAYOUT_KEYS = ["type", "ui", "photo"] as const;
 export type LayoutKey = (typeof LAYOUT_KEYS)[number];
 
-/** `<copy>-<layout>`, e.g. "clients-v3". What the cookie and events carry. */
+/** `<copy>-<layout>`, e.g. "clients-ui". What the cookie and events carry. */
 export type Arm = `${CopyKey}-${LayoutKey}`;
 
 export const ARMS: Arm[] = COPY_KEYS.flatMap((copy) =>
@@ -45,7 +53,7 @@ export const ARMS: Arm[] = COPY_KEYS.flatMap((copy) =>
  * outside the arm sees the same page as everyone else.
  */
 export const FALLBACK_COPY: CopyKey = "clients";
-export const FALLBACK_LAYOUT: LayoutKey = "v3";
+export const FALLBACK_LAYOUT: LayoutKey = "type";
 
 export interface CopyVariant {
   key: CopyKey;
@@ -107,24 +115,14 @@ export function parseArm(
   return { copy, layout };
 }
 
-/** The one arm that ships. */
-const SHIPPED_ARM: Arm = `${FALLBACK_COPY}-${FALLBACK_LAYOUT}`;
-
-/** Every message and page version from Rounds 1 and 2, all retired. */
-const LEGACY_COPY = new Set(["firm", "builder", "clients"]);
-const LEGACY_LAYOUTS = new Set(["control", "bigtype", "v2"]);
-
 /**
- * The arm a held cookie should become. Any arm from Rounds 1 or 2 moves to the
- * shipped one, since its message or page no longer exists, and the rewritten
- * cookie means the visitor's next signup reports the hero they actually saw.
+ * The arm a held cookie should become: itself if it is a Round 4 arm, nothing
+ * otherwise. Round 4 is a new experiment under a new cookie, so nobody carries
+ * an earlier round's assignment into it; everyone is drawn fresh.
  */
 export function migrateArm(value: string | undefined | null): Arm | null {
   if (!value) return null;
-  if (parseArm(value)) return value as Arm;
-  const [copy, layout] = value.split("-");
-  if (LEGACY_COPY.has(copy) && LEGACY_LAYOUTS.has(layout)) return SHIPPED_ARM;
-  return null;
+  return parseArm(value) ? (value as Arm) : null;
 }
 
 /**
@@ -141,13 +139,17 @@ const COPY_ALIASES: Record<string, CopyKey> = {
   builder: "clients",
 };
 const LAYOUT_ALIASES: Record<string, LayoutKey> = {
+  // The prototype switcher's numbers, so `?v=2` style review links still work.
+  "1": "type",
+  "2": "ui",
+  "3": "photo",
   // Every retired layout and page version resolves to the shipped one, so old
   // review links still land on the homepage as it now reads.
-  b: "v3",
-  c: "v3",
-  control: "v3",
-  bigtype: "v3",
-  v2: "v3",
+  b: "type",
+  c: "type",
+  control: "type",
+  bigtype: "type",
+  v2: "type",
 };
 
 /**
@@ -157,6 +159,12 @@ const LAYOUT_ALIASES: Record<string, LayoutKey> = {
  * arm they did not ask for.
  */
 export function armFromQuery(params: URLSearchParams): Arm | null {
+  // `?v=1|2|3` alone, the prototype's review links, picks the layout on the
+  // one message there is.
+  const v = params.get("v");
+  if (v && LAYOUT_ALIASES[v] && !params.get("layout")) {
+    return `${FALLBACK_COPY}-${LAYOUT_ALIASES[v]}`;
+  }
   const rawCopy = params.get("copy");
   const rawLayout = params.get("layout");
   if (!rawCopy || !rawLayout) return null;
@@ -172,7 +180,8 @@ export function randomArm(): Arm {
 }
 
 /** Where the assignment is kept. Written by middleware, read by both sides. */
-export const HERO_COOKIE = "ab_hero";
+// A new name for Round 4, so no assignment from the earlier rounds carries over.
+export const HERO_COOKIE = "ab_hero_r4";
 
 /** The arm's name on the signup URL, where the product reads it. */
 export const HERO_ARM_PARAM = "heroArm";

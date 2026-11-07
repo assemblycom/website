@@ -31,7 +31,6 @@ import { PANEL_BG } from "@/components/comparison/brand-panel";
 import { serializeJsonLd } from "@/lib/json-ld";
 import { DEMO_URL, SIGNUP_URL } from "@/lib/constants";
 import { PAGE_SEO, pageMetadata } from "@/lib/seo";
-import { unbreakable } from "@/components/ui/unbreakable";
 
 /** Both hero leads, so the phone's and the desktop's cannot drift apart. */
 const HERO_LEAD =
@@ -200,14 +199,12 @@ export default function MarketingAgencyClientPortalPage() {
       <section className="pb-16 pt-24 md:pb-24 md:pt-32">
         <div className="mx-auto max-w-[1400px] px-6 md:px-10">
           <div className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-start lg:gap-x-16">
-            {/* unbreakable, so "know-how" and "AI-built" stay whole: balancing
-                was splitting the first at its hyphen and leaving the line on
-                "know-", which reads as a typo in a headline. The helper the
-                post titles and the comparison headings already use. */}
+            {/* The headline is client-experience first, per Marlon's pick.
+                Alternatives kept for a quick swap: "Your marketing agency,
+                rebuilt for the AI era" and "Run every client relationship
+                from one branded place". */}
             <h1 className="type-display max-w-[30ch] text-balance lg:col-start-1">
-              {unbreakable(
-                "Turn your agency\u2019s know-how into AI-built apps",
-              )}
+              Make working with your marketing agency feel effortless
             </h1>
             {/* Two leads, one measure — the pair the accounting page already
                 runs, for the same reason. The desktop sentence takes five

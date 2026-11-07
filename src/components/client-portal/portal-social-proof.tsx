@@ -142,6 +142,46 @@ export function PortalSocialProof({
 
 function LogoRow() {
   return (
+    <>
+      <LogoMarquee />
+      <LogoGrid />
+    </>
+  );
+}
+
+/**
+ * The phone's row moves on its own. As a hand-scrolled strip most readers saw
+ * the first three marks and never learned there were more; drifting, all six
+ * pass by without asking. It reuses the homepage's marquee: the list runs
+ * twice and the animation slides it by half, so the loop has no seam. The
+ * second copy is hidden from screen readers and the tab order.
+ */
+function LogoMarquee() {
+  return (
+    <div className="overflow-hidden pt-10 [mask-image:linear-gradient(to_right,transparent,black_12%,black_88%,transparent)] sm:hidden">
+      <div className="flex w-max animate-marquee items-center gap-x-10 motion-reduce:animate-none">
+        {[...LOGO_SLUGS, ...LOGO_SLUGS].map((slug, i) => {
+          const copy = i >= LOGO_SLUGS.length;
+          return (
+            <Link
+              key={`${slug}-${i}`}
+              href={`/customers/${slug}`}
+              aria-label={`Read the ${getCaseStudyBySlug(slug)?.company ?? ""} case study`}
+              aria-hidden={copy || undefined}
+              tabIndex={copy ? -1 : undefined}
+              className="flex h-8 w-[104px] shrink-0 items-center justify-center text-foreground/45"
+            >
+              <CustomerLogo slug={slug} fit />
+            </Link>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function LogoGrid() {
+  return (
     // The ends dissolve instead of cutting. On a phone the row scrolls and the
     // mark at the right edge was being sliced down its middle — on a wordmark
     // that reads as a broken asset rather than as a row continuing. From sm
@@ -153,7 +193,7 @@ function LogoRow() {
     // so the first logo began ~60px in from the hero card above it. No padding
     // below sm and marks set left in their cells puts the first one on the
     // card's edge; from sm the grid is centred cells as before.
-    <EdgeFadeScroller className="flex gap-x-6 overflow-x-auto overflow-y-hidden overscroll-x-contain pt-10 sm:px-6 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:grid sm:grid-cols-6 sm:overflow-visible md:px-10 md:pt-14 lg:grid-cols-5">
+    <EdgeFadeScroller className="hidden gap-x-6 overflow-x-auto overflow-y-hidden overscroll-x-contain pt-10 sm:px-6 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:grid sm:grid-cols-6 sm:overflow-visible md:px-10 md:pt-14 lg:grid-cols-5">
       {LOGO_SLUGS.map((slug, i) => (
         // Every mark has a story behind it, so the mark is the link to it. A
         // wordmark alone says nothing to a screen reader, hence the name.

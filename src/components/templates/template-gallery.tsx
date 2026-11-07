@@ -85,7 +85,7 @@ function CoverArt({ slug }: { slug: string }) {
           escaped this box's clip — the radius was set but never applied. */}
       <div className="relative aspect-square h-full overflow-hidden rounded-[32px] shadow-[0_1px_2px_rgba(16,24,40,0.06),0_12px_28px_-12px_rgba(16,24,40,0.28)] [[data-theme=dark]_&]:shadow-[0_1px_3px_rgba(0,0,0,0.4),0_14px_32px_-16px_rgba(0,0,0,0.6)] [[data-theme=dark]_&]:ring-1 [[data-theme=dark]_&]:ring-[rgba(255,255,255,0.09)]">
         <MockFit
-          className={`template-mock size-full [font-family:var(--font-inter),system-ui,sans-serif] ${
+          className={`template-mock size-full font-sans ${
             theme === "dark" ? "v72-mock-dark" : ""
           }`}
         >

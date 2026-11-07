@@ -22,6 +22,9 @@ const GAP_PX = 16;
 // A step can land a pixel or two off, and a trackpad can leave a fractional
 // scrollLeft, so the ends are judged with a little slack rather than exactly.
 const END_SLACK = 2;
+/** One auto-advance step, and the longer run back from the last card. */
+const SLIDE_MS = 900;
+const SLIDE_BACK_MS = 1400;
 
 // ── How a released drag is thrown ────────────────────────────────────────
 // How far back the release velocity is read. Short enough that the last
@@ -118,6 +121,54 @@ function Chevron({ direction }: { direction: "prev" | "next" }) {
 // own square controls use.
 const ARROW =
   "flex size-11 shrink-0 items-center justify-center rounded-xl border border-border text-foreground transition-[color,border-color,opacity] hover:border-foreground/30 disabled:pointer-events-none disabled:opacity-30 [[data-theme=dark]_&]:border-white/15 [[data-theme=dark]_&]:hover:border-white/30";
+
+/**
+ * The pair of step arrows, for any scroller on the site.
+ *
+ * Presentational on purpose: it takes the two handlers and the two end flags
+ * rather than a ref, because the thing that knows how far one step is differs
+ * per rail — this rail steps by a card plus the gap, a row of small cards
+ * steps by a screenful. What has to be the same everywhere is the control:
+ * the shape, the size, the disabled state and the chevron.
+ */
+export function RailArrows({
+  onPrev,
+  onNext,
+  atStart,
+  atEnd,
+  className = "",
+}: {
+  onPrev: () => void;
+  onNext: () => void;
+  /** Disables "previous" — the scroller is already at its start. */
+  atStart: boolean;
+  /** Disables "next". */
+  atEnd: boolean;
+  className?: string;
+}) {
+  return (
+    <div className={`flex shrink-0 items-center gap-2 ${className}`}>
+      <button
+        type="button"
+        onClick={onPrev}
+        disabled={atStart}
+        aria-label="Previous"
+        className={ARROW}
+      >
+        <Chevron direction="prev" />
+      </button>
+      <button
+        type="button"
+        onClick={onNext}
+        disabled={atEnd}
+        aria-label="Next"
+        className={ARROW}
+      >
+        <Chevron direction="next" />
+      </button>
+    </div>
+  );
+}
 
 /**
  * How wide one card is.
@@ -226,10 +277,18 @@ export function CardRail({
   label,
   children,
   lead,
+  autoAdvanceMs,
 }: {
   /** Names the rail for screen readers, e.g. "How building works". */
   label: string;
   children: React.ReactNode;
+  /**
+   * Steps one card every this many ms, back to the start after the last.
+   * Off by default. It holds still while a pointer or focus is on the rail,
+   * while it is off screen, and for anyone who has asked for reduced motion:
+   * a row that moves under the reader's hand is a row they cannot read.
+   */
+  autoAdvanceMs?: number;
   /** Sits at the foot opposite the arrows — usually the section's CTA. */
   lead?: React.ReactNode;
 }) {
@@ -458,6 +517,115 @@ export function CardRail({
     e.stopPropagation();
   };
 
+  const rootRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    const root = rootRef.current;
+    if (!autoAdvanceMs || !el || !root) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // Pointer and focus tracked apart, so leaving one never resumes the rail
+    // while the other is still inside it.
+    let hovered = false;
+    let focused = false;
+    let held = false;
+    let onScreen = false;
+    const io = new IntersectionObserver(
+      ([entry]) => (onScreen = entry.isIntersecting),
+      { threshold: 0.5 },
+    );
+    io.observe(el);
+    // Set once the slide below exists; a pointer arriving mid-slide stops it,
+    // so the rail never moves under a hand that is about to grab it.
+    let stopSlide = () => {};
+    const update = () => {
+      held = hovered || focused;
+      if (held) stopSlide();
+    };
+    const onPointerEnter = () => {
+      hovered = true;
+      update();
+    };
+    const onPointerLeave = () => {
+      hovered = false;
+      update();
+    };
+    const onFocusIn = () => {
+      focused = true;
+      update();
+    };
+    // focusout fires before focus lands elsewhere, so check where it went.
+    const onFocusOut = (e: FocusEvent) => {
+      focused = root.contains(e.relatedTarget as Node | null);
+      update();
+    };
+    root.addEventListener("pointerenter", onPointerEnter);
+    root.addEventListener("pointerleave", onPointerLeave);
+    root.addEventListener("focusin", onFocusIn);
+    root.addEventListener("focusout", onFocusOut);
+    // OUR OWN EASED SLIDE, aimed at the next card's exact edge. A native
+    // smooth scrollBy stepped by the card's rounded width, so the row drifted
+    // a fraction of a pixel per step and snap then tugged it back at the end
+    // of each slide: a second little jump that read as jitter. Snap is off
+    // while the slide runs, so nothing corrects a landing that is already on
+    // a card.
+    let raf = 0;
+    const slideTo = (target: number, ms: number) => {
+      const from = el.scrollLeft;
+      const distance = target - from;
+      const start = performance.now();
+      el.style.scrollBehavior = "auto";
+      el.style.scrollSnapType = "none";
+      const frame = (now: number) => {
+        const t = Math.min((now - start) / ms, 1);
+        const eased = t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
+        el.scrollLeft = from + distance * eased;
+        if (t < 1) {
+          raf = requestAnimationFrame(frame);
+        } else {
+          raf = 0;
+          el.style.scrollBehavior = "";
+          el.style.scrollSnapType = "";
+        }
+      };
+      raf = requestAnimationFrame(frame);
+    };
+    stopSlide = () => {
+      if (!raf) return;
+      cancelAnimationFrame(raf);
+      raf = 0;
+      el.style.scrollBehavior = "";
+      el.style.scrollSnapType = "";
+    };
+    const id = window.setInterval(() => {
+      if (held || !onScreen || drag.current || document.hidden) return;
+      const end = el.scrollWidth - el.clientWidth;
+      if (end <= END_SLACK) return;
+      if (el.scrollLeft >= end - END_SLACK) {
+        slideTo(0, SLIDE_BACK_MS);
+        return;
+      }
+      // Snap positions, not raw card edges: on a phone the track is padded
+      // and snaps a card to that inset (scroll-px-6), so aiming at the edge
+      // itself landed 24px off and the snap yanked it back when it came on.
+      const origin =
+        el.getBoundingClientRect().left +
+        (parseFloat(getComputedStyle(el).scrollPaddingLeft) || 0);
+      const next = Array.from(el.children)
+        .map((c) => c.getBoundingClientRect().left - origin + el.scrollLeft)
+        .find((left) => left > el.scrollLeft + END_SLACK);
+      slideTo(Math.min(next ?? end, end), SLIDE_MS);
+    }, autoAdvanceMs);
+    return () => {
+      window.clearInterval(id);
+      stopSlide();
+      io.disconnect();
+      root.removeEventListener("pointerenter", onPointerEnter);
+      root.removeEventListener("pointerleave", onPointerLeave);
+      root.removeEventListener("focusin", onFocusIn);
+      root.removeEventListener("focusout", onFocusOut);
+    };
+  }, [autoAdvanceMs]);
+
   // One card plus its gap, read off the DOM rather than recomputed from the
   // breakpoint, so the step stays right wherever the card widths are set.
   const step = (direction: 1 | -1) => {
@@ -469,7 +637,7 @@ export function CardRail({
   };
 
   return (
-    <div>
+    <div ref={rootRef}>
       {/* Clipped at the section's measure, not bled past it. The scroller used
           to run 40px wider on each side so a card's shadow and focus ring were
           not cut — but that also let the next card show in the gutter, where
@@ -568,26 +736,12 @@ export function CardRail({
         <div className="mt-10 flex items-center justify-end gap-4">
           {lead ? <div className="mr-auto">{lead}</div> : null}
           {steppable ? (
-            <div className="flex shrink-0 items-center gap-2">
-              <button
-                type="button"
-                onClick={() => step(-1)}
-                disabled={atStart}
-                aria-label="Previous"
-                className={ARROW}
-              >
-                <Chevron direction="prev" />
-              </button>
-              <button
-                type="button"
-                onClick={() => step(1)}
-                disabled={atEnd}
-                aria-label="Next"
-                className={ARROW}
-              >
-                <Chevron direction="next" />
-              </button>
-            </div>
+            <RailArrows
+              onPrev={() => step(-1)}
+              onNext={() => step(1)}
+              atStart={atStart}
+              atEnd={atEnd}
+            />
           ) : null}
         </div>
       ) : null}
