@@ -533,6 +533,7 @@ export function FAQ({
   dottedRules = true,
   justifyAnswers = false,
   blockClassName,
+  listClassName,
 }: {
   heading?: string;
   items?: FAQEntry[];
@@ -554,6 +555,19 @@ export function FAQ({
    * so the rails pass the gaps but not the text.
    */
   blockClassName?: string;
+  /**
+   * The divided layout only: classes for the QUESTION LIST alone, where
+   * `blockClassName` would also move the heading.
+   *
+   * The case it exists for is `-mx-3`. Accordion rows carry their own `px-3`
+   * so a hovered or open row has a fill with padding in it, and the cost is
+   * that the question text sits 12px inside the heading above it. Every other
+   * ruled list on the home page cancels that by pulling its container out by
+   * the same 12 (see whole-stack.tsx, "-mx-3 against px-3"), so the text lands
+   * on the measure and the fill bleeds past it. The FAQ was the one list that
+   * did not, which is why its rows read as pushed in.
+   */
+  listClassName?: string;
 } = {}) {
   // Vercel-style: heading sits in a left column, the divided question list runs
   // down the right. The heading sticks so it stays with the list on long scrolls.
@@ -596,7 +610,8 @@ export function FAQ({
                 justifyAnswers={justifyAnswers}
               />
             );
-            return blockClassName ? <div className={`min-w-0 ${blockClassName}`}>{list}</div> : list;
+            const wrap = `${blockClassName ?? ""} ${listClassName ?? ""}`.trim();
+            return wrap ? <div className={`min-w-0 ${wrap}`}>{list}</div> : list;
           })()}
         </div>
       </Section>
@@ -628,6 +643,6 @@ export function FAQ({
 // Homepage FAQ — the house treatment, like every other page: heading on the
 // left, the ruled question list on the right. The home page's own content
 // wrapper supplies the vertical guide rails, so this just renders inside them.
-export function HomeFAQ() {
-  return <FAQ items={FAQS} />;
+export function HomeFAQ({ listClassName }: { listClassName?: string } = {}) {
+  return <FAQ items={FAQS} listClassName={listClassName} />;
 }

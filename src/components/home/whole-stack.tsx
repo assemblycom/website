@@ -8,6 +8,7 @@
 // with a supporting visual).
 // ─────────────────────────────────────────────────────────────────────────
 
+import { DOTTED_RULE_AFTER } from "@/components/ui/dotted-rule";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTheme } from "@/components/theme/theme-provider";
@@ -83,7 +84,7 @@ type VisualSlug =
 // app, not of the marketing site. Sized to sit close up on the field: the mocks
 // are the argument, so they take the width rather than floating small in it.
 const MOCK_CARD_BASE =
-  "mock-ui overflow-hidden border-[var(--mk-border)] bg-[var(--mk-surface)] [font-family:var(--font-inter),system-ui,sans-serif]";
+  "mock-ui overflow-hidden border-[var(--mk-border)] bg-[var(--mk-surface)] font-sans";
 
 // The default: a card floating centred on the blue field.
 const MOCK_CARD = `${MOCK_CARD_BASE} w-full max-w-[380px] rounded-[8px] border`;
@@ -220,26 +221,14 @@ function useTint(tint: AvatarTint, prominence: "quiet" | "strong" = "quiet") {
   };
 }
 
-// The workspace's own mark. Square rather than round — a workspace isn't a
-// person — but coloured from the same palette as every other fallback.
+// The workspace's own mark: Brandmages' stacked bars on a dark tile, the same
+// logo the other product mocks on the site carry, rather than a "B" initial.
 function BrandMark({ className = "" }: { className?: string }) {
-  // Strong: this is a lone logo tile, not one of a column of avatars, and at
-  // the quiet strength it sank into the dark sidebar and the dark settings row.
-  const colors = useTint(MOCK_BRAND_TINT, "strong");
   return (
     <span
-      className={`flex shrink-0 items-center justify-center rounded-[4px] bg-[var(--mk-invert-bg)] leading-none text-[var(--mk-invert-fg)] ${className}`}
-      style={
-        colors
-          ? {
-              backgroundColor: colors.bg,
-              color: colors.fg,
-              boxShadow: `inset 0 0 0 1px ${colors.ring}`,
-            }
-          : undefined
-      }
+      className={`flex shrink-0 items-center justify-center rounded-[4px] bg-[#111111] text-white [[data-theme=dark]_&]:bg-white [[data-theme=dark]_&]:text-[#111111] ${className}`}
     >
-      B
+      <IconBrandMark className="size-[58%]" />
     </span>
   );
 }
@@ -548,9 +537,7 @@ function CrmCustomFieldsVisual() {
     <div className={MOCK_CARD_DRAWER}>
       <div className="flex h-full">
         <div className="min-w-0 flex-1">
-          <div className={CARD_HEADER_TEXT}>
-            Client Details
-          </div>
+          <div className={CARD_HEADER_TEXT}>Client Details</div>
 
           <div className="px-3.5 pb-3.5">
             <PanelSectionHead label="Company" />
@@ -633,7 +620,10 @@ function IconLinkGlyph({ className = "" }: { className?: string }) {
 // The glyph for each app row. These come from the shared mock-icon set the other
 // product mocks use — Home and Messages are the approved product marks, the rest
 // its hand-drawn strokes — rather than a second icon set invented in this file.
-const APP_GLYPHS: Record<AppGlyph, (props: { className?: string }) => React.ReactNode> = {
+const APP_GLYPHS: Record<
+  AppGlyph,
+  (props: { className?: string }) => React.ReactNode
+> = {
   clock: IconClock,
   doc: IconDocuments,
   chat: IconChat,
@@ -663,9 +653,7 @@ function AppIcon({
   className?: string;
 }) {
   const Glyph = APP_GLYPHS[glyph];
-  return (
-    <Glyph className={`[&[fill=none]]:[stroke-width:1.1] ${className}`} />
-  );
+  return <Glyph className={`[&[fill=none]]:[stroke-width:1.1] ${className}`} />;
 }
 
 // The supplied mark (plus-large), drawn as a filled path with its round caps in
@@ -725,26 +713,28 @@ function ClientSidebarVisual({ bleed = false }: { bleed?: boolean }) {
   const { theme } = useTheme();
   const isLight = theme !== "dark";
   const brand = AVATAR_TINTS[MOCK_BRAND_TINT];
-  const surfaceTint = isLight ? brand.bg : undefined;
-  const selected = isLight
-    ? {
-        backgroundColor: `color-mix(in oklab, ${brand.fg} 13%, ${brand.bg})`,
-        color: brand.fg,
-      }
-    : undefined;
+  void isLight;
+  void brand;
+  // Brandmages' own black, in both themes: the sidebar is the firm's branded
+  // area, so it takes the firm's colour and the mock's inks go light on it.
+  const surfaceTint = "#111111";
+  const selected = {
+    backgroundColor: "rgba(255,255,255,0.12)",
+    color: "#ffffff",
+  };
   return (
     <div className={bleed ? MOCK_CARD_BLEED : MOCK_CARD}>
       {/* Bleeding, the card owns the field's full height, so the columns
           stretch to it instead of stopping at the sidebar's natural height. */}
       <div className={bleed ? "flex h-full" : "flex min-h-[168px]"}>
         <div
-          className="w-[152px] shrink-0 border-r border-[var(--mk-hairline)] p-2"
-          style={surfaceTint ? { backgroundColor: surfaceTint } : undefined}
+          className="w-[152px] shrink-0 border-r border-[var(--mk-hairline)] p-2 [--mk-fg:rgba(255,255,255,0.92)] [--mk-muted:rgba(255,255,255,0.6)] [--mk-subtle:rgba(255,255,255,0.45)]"
+          style={{ backgroundColor: surfaceTint }}
         >
           <div className="mb-1.5 flex items-center gap-2 px-2 py-[6px]">
-            <BrandMark className="size-[16px] text-[9px]" />
+            <BrandMark className="size-[16px] bg-white! text-[#111111]!" />
             <span className="truncate pb-[3px] -mb-[3px] text-[12px] leading-none text-[var(--mk-fg)]">
-              Your brand
+              Brandmages
             </span>
           </div>
 
@@ -874,8 +864,8 @@ function BrandingVisual() {
         <span
           className="size-[28px] shrink-0 rounded-[6px] bg-[var(--mk-fill)] ring-1 ring-inset ring-[var(--mk-border)]"
           style={{
-            backgroundColor: AVATAR_TINTS[MOCK_BRAND_TINT].fg,
-            boxShadow: `inset 0 0 0 1px ${AVATAR_TINTS[MOCK_BRAND_TINT].fg}`,
+            backgroundColor: "#111111",
+            boxShadow: "inset 0 0 0 1px #111111",
           }}
         />
       </div>
@@ -888,7 +878,6 @@ function BrandingVisual() {
           hello@yourbrand.com
         </span>
       </div>
-
     </div>
   );
 }
@@ -933,7 +922,12 @@ function LoginField({
   );
 }
 
-function SignInMethodsVisual() {
+/**
+ * Exported for the homepage's unified-platform panel, whose Security tab
+ * shows the same screen. One drawing, two places, rather than a second login
+ * card that would drift from this one.
+ */
+export function SignInMethodsVisual() {
   return (
     <div className={LOGIN_CARD}>
       {/* The workspace's own mark and nothing else above the title — the real
@@ -1122,9 +1116,27 @@ type TeamMember = {
 // sidebar avatar in the production-gap mock), so she holds the Admin row —
 // listing her as staff with partial access contradicted that mock.
 const TEAM_MEMBERS: TeamMember[] = [
-  { initials: "LF", name: "Lena Frost", role: "Admin", access: "All clients", tint: "rose" },
-  { initials: "MV", name: "Margot Vale", role: "Staff", access: "6 clients", tint: "violet" },
-  { initials: "SO", name: "Sam Okafor", role: "Staff", access: "2 clients", tint: "cyan" },
+  {
+    initials: "LF",
+    name: "Lena Frost",
+    role: "Admin",
+    access: "All clients",
+    tint: "rose",
+  },
+  {
+    initials: "MV",
+    name: "Margot Vale",
+    role: "Staff",
+    access: "6 clients",
+    tint: "violet",
+  },
+  {
+    initials: "SO",
+    name: "Sam Okafor",
+    role: "Staff",
+    access: "2 clients",
+    tint: "cyan",
+  },
 ];
 
 const TEAM_COLS = "grid-cols-[1fr_58px_78px]";
@@ -1132,9 +1144,7 @@ const TEAM_COLS = "grid-cols-[1fr_58px_78px]";
 function TeamRolesVisual() {
   return (
     <div className={SETTINGS_CARD}>
-      <div className={CARD_HEADER_TEXT}>
-        Team
-      </div>
+      <div className={CARD_HEADER_TEXT}>Team</div>
 
       <div
         className={`grid ${TEAM_COLS} gap-x-3 border-b border-[var(--mk-hairline)] px-3.5 py-2.5 text-[11px] leading-none text-[var(--mk-muted)]`}
@@ -1191,7 +1201,11 @@ function TeamRolesVisual() {
 // the two panels describe one person.
 const CLIENT_SCOPE: { label: string; note: string; company?: string }[] = [
   { label: "Her own records", note: "Files, invoices, forms" },
-  { label: "Meridian Corp", note: "Shared with 3 contacts", company: "Meridian Corp" },
+  {
+    label: "Meridian Corp",
+    note: "Shared with 3 contacts",
+    company: "Meridian Corp",
+  },
 ];
 
 function ClientScopeVisual() {
@@ -1250,9 +1264,7 @@ const VISIBILITY_AUDIENCE = ["Meridian Corp", "Bloom Studios", "Ava Ellis"];
 function AppVisibilityVisual() {
   return (
     <div className={SETTINGS_CARD}>
-      <div className={CARD_HEADER_TEXT}>
-        Onboarding wizard
-      </div>
+      <div className={CARD_HEADER_TEXT}>Onboarding wizard</div>
 
       <div className="px-3.5 py-3.5">
         <span className="block text-[11px] leading-none text-[var(--mk-muted)]">
@@ -1303,7 +1315,6 @@ function BrandedEmailVisual() {
           Go to your portal
         </span>
       </div>
-
     </div>
   );
 }
@@ -1311,7 +1322,12 @@ function BrandedEmailVisual() {
 // The team's notification center: every app and every client in one list. The
 // unread dot only sits on the top two, so the list reads as a feed being worked
 // through rather than a set of identical rows.
-type FeedItem = { title: string; source: string; time: string; unread?: boolean };
+type FeedItem = {
+  title: string;
+  source: string;
+  time: string;
+  unread?: boolean;
+};
 
 const TEAM_FEED: FeedItem[] = [
   {
@@ -1497,9 +1513,7 @@ function AutomationStep({
 function AutomationVisual() {
   return (
     <div className={SETTINGS_CARD}>
-      <div className={CARD_HEADER_TEXT}>
-        New client onboarding
-      </div>
+      <div className={CARD_HEADER_TEXT}>New client onboarding</div>
 
       <div className="px-3.5 py-3">
         <span className="block text-[10px] leading-none text-[var(--mk-muted)]">
@@ -1543,9 +1557,7 @@ const TRIGGER_ROWS = [
 function AppEventsVisual() {
   return (
     <div className={SETTINGS_CARD}>
-      <div className={CARD_HEADER_TEXT}>
-        Select a trigger
-      </div>
+      <div className={CARD_HEADER_TEXT}>Select a trigger</div>
 
       <div className="flex flex-col gap-2 px-3.5 py-3">
         {TRIGGER_ROWS.map((label) => (
@@ -1583,9 +1595,7 @@ const INSTALLED_APPS: { name: string; glyph: AppGlyph; built?: boolean }[] = [
 function SameFoundationVisual() {
   return (
     <div className={SETTINGS_CARD}>
-      <div className={CARD_HEADER_TEXT}>
-        Apps
-      </div>
+      <div className={CARD_HEADER_TEXT}>Apps</div>
 
       {INSTALLED_APPS.map((app, i) => (
         <div
@@ -1613,7 +1623,6 @@ function SameFoundationVisual() {
           </span>
         </div>
       ))}
-
     </div>
   );
 }
@@ -1626,9 +1635,7 @@ const EMBED_SUGGESTIONS = ["Calendly", "Airtable", "Looker Studio", "Typeform"];
 function EmbedToolsVisual() {
   return (
     <div className={SETTINGS_CARD}>
-      <div className={CARD_HEADER_TEXT}>
-        Add an embed
-      </div>
+      <div className={CARD_HEADER_TEXT}>Add an embed</div>
 
       <div className="px-3.5 py-3">
         <span className="block text-[10px] leading-none text-[var(--mk-muted)]">
@@ -1642,16 +1649,12 @@ function EmbedToolsVisual() {
             "Works with" read as a second instruction rather than as examples. */}
         <div className="mt-3 flex flex-wrap gap-1.5">
           {EMBED_SUGGESTIONS.map((tool) => (
-            <span
-              key={tool}
-              className={MOCK_TAG}
-            >
+            <span key={tool} className={MOCK_TAG}>
               {tool}
             </span>
           ))}
         </div>
       </div>
-
     </div>
   );
 }
@@ -1668,9 +1671,7 @@ const WORKFLOW_TEMPLATES: { name: string; job: string }[] = [
 function TemplatePickerVisual() {
   return (
     <div className={SETTINGS_CARD}>
-      <div className={CARD_HEADER_TEXT}>
-        Start from a template
-      </div>
+      <div className={CARD_HEADER_TEXT}>Start from a template</div>
 
       <div className="flex flex-col gap-2 px-3.5 py-3">
         {WORKFLOW_TEMPLATES.map((template) => (
@@ -1750,56 +1751,56 @@ const MCP_BRIEFING = [
 // No bottom padding and no bottom border: the screen has to run clean off the
 // field's edge, and 6px of bezel or a ring underneath it read as a grey seam.
 const PHONE_BEZEL =
-  "mock-ui h-full w-full max-w-[268px] overflow-hidden rounded-t-[30px] border border-b-0 border-[var(--mk-border)] bg-[var(--mk-fill)] px-[6px] pt-[6px] [font-family:var(--font-inter),system-ui,sans-serif]";
+  "mock-ui h-full w-full max-w-[268px] overflow-hidden rounded-t-[30px] border border-b-0 border-[var(--mk-border)] bg-[var(--mk-fill)] px-[6px] pt-[6px] font-sans";
 
 function McpChatVisual() {
   return (
     <div className={PHONE_BEZEL}>
       <div className="h-full overflow-hidden rounded-t-[24px] border-l border-r border-t border-[var(--mk-hairline)] bg-[var(--mk-surface)]">
-      {/* Status bar carrying the island, in the mock's palest grey — at full
+        {/* Status bar carrying the island, in the mock's palest grey — at full
           black it was the heaviest mark on the card. */}
-      <div className="flex items-center justify-center px-4 pb-1 pt-2.5">
-        <span className="h-[12px] w-[52px] rounded-full bg-[var(--mk-dots)]" />
-      </div>
-
-      <div className="px-3 py-3">
-        {/* The prompt sits right, the way a sent message does. */}
-        <div className="flex justify-end">
-          <span className="max-w-[88%] rounded-[12px] bg-[var(--mk-fill)] px-2.5 py-2 text-[12px] leading-[1.4] text-[var(--mk-fg)]">
-            <span className="text-[var(--mk-muted)]">@Assembly</span> Brief me on
-            Meridian Corp, recent activity and notes
-          </span>
+        <div className="flex items-center justify-center px-4 pb-1 pt-2.5">
+          <span className="h-[12px] w-[52px] rounded-full bg-[var(--mk-dots)]" />
         </div>
 
-        <div className="mt-3.5 flex items-center gap-1.5">
-          <span className="flex size-[16px] shrink-0 items-center justify-center rounded-[4px] bg-[var(--mk-invert-bg)] text-[var(--mk-invert-fg)]">
-            <IconBrandMark className="h-[7px] w-[8px]" />
-          </span>
-          <span className="text-[12px] leading-none text-[var(--mk-muted)]">
-            Assembly
-          </span>
-        </div>
-
-        <p className="mt-2.5 text-[12px] leading-[1.4] text-[var(--mk-fg)]">
-          Here&apos;s a briefing on Meridian Corp from your workspace.
-        </p>
-
-        <p className="mt-3.5 text-[12px] leading-none text-[var(--mk-fg)]">
-          Company snapshot
-        </p>
-        {/* gap-1.5 between mark and text, not gap-2: at 3px the bullet sat so far
-            from its line that the two read as separate columns. */}
-        <div className="mt-2.5 flex flex-col gap-2">
-          {MCP_BRIEFING.map((line) => (
-            <span key={line} className="flex items-center gap-1.5">
-              <span className="size-[3px] shrink-0 rounded-full bg-[var(--mk-subtle)]" />
-              <span className="min-w-0 truncate pb-[3px] -mb-[3px] text-[12px] leading-none text-[var(--mk-muted)]">
-                {line}
-              </span>
+        <div className="px-3 py-3">
+          {/* The prompt sits right, the way a sent message does. */}
+          <div className="flex justify-end">
+            <span className="max-w-[88%] rounded-[12px] bg-[var(--mk-fill)] px-2.5 py-2 text-[12px] leading-[1.4] text-[var(--mk-fg)]">
+              <span className="text-[var(--mk-muted)]">@Assembly</span> Brief me
+              on Meridian Corp, recent activity and notes
             </span>
-          ))}
+          </div>
+
+          <div className="mt-3.5 flex items-center gap-1.5">
+            <span className="flex size-[16px] shrink-0 items-center justify-center rounded-[4px] bg-[var(--mk-invert-bg)] text-[var(--mk-invert-fg)]">
+              <IconBrandMark className="h-[7px] w-[8px]" />
+            </span>
+            <span className="text-[12px] leading-none text-[var(--mk-muted)]">
+              Assembly
+            </span>
+          </div>
+
+          <p className="mt-2.5 text-[12px] leading-[1.4] text-[var(--mk-fg)]">
+            Here&apos;s a briefing on Meridian Corp from your workspace.
+          </p>
+
+          <p className="mt-3.5 text-[12px] leading-none text-[var(--mk-fg)]">
+            Company snapshot
+          </p>
+          {/* gap-1.5 between mark and text, not gap-2: at 3px the bullet sat so far
+            from its line that the two read as separate columns. */}
+          <div className="mt-2.5 flex flex-col gap-2">
+            {MCP_BRIEFING.map((line) => (
+              <span key={line} className="flex items-center gap-1.5">
+                <span className="size-[3px] shrink-0 rounded-full bg-[var(--mk-subtle)]" />
+                <span className="min-w-0 truncate pb-[3px] -mb-[3px] text-[12px] leading-none text-[var(--mk-muted)]">
+                  {line}
+                </span>
+              </span>
+            ))}
+          </div>
         </div>
-      </div>
       </div>
     </div>
   );
@@ -1886,7 +1887,9 @@ function ApiRequestVisual() {
               : line.map((token, j) => (
                   <span
                     key={j}
-                    style={token.tone ? { color: CODE_TONES[token.tone] } : undefined}
+                    style={
+                      token.tone ? { color: CODE_TONES[token.tone] } : undefined
+                    }
                   >
                     {token.text}
                   </span>
@@ -1917,9 +1920,7 @@ const BILLING_MODES: { name: string; detail: string; short?: string }[] = [
 function BillingModesVisual() {
   return (
     <div className={SETTINGS_CARD}>
-      <div className={CARD_HEADER_TEXT}>
-        New charge
-      </div>
+      <div className={CARD_HEADER_TEXT}>New charge</div>
 
       {BILLING_MODES.map((mode, i) => (
         <div
@@ -1958,8 +1959,18 @@ function BillingModesVisual() {
 // entries the time-tracker mocks log for this firm.
 const CLIENT_INVOICES = [
   { label: "Q1 advisory", num: "1042", meta: "$2,400", status: "Due Apr 18" },
-  { label: "March bookkeeping", num: "1038", meta: "$1,150", status: "Paid Apr 2" },
-  { label: "Year-end tax filing", num: "1031", meta: "$980", status: "Paid Mar 4" },
+  {
+    label: "March bookkeeping",
+    num: "1038",
+    meta: "$1,150",
+    status: "Paid Apr 2",
+  },
+  {
+    label: "Year-end tax filing",
+    num: "1031",
+    meta: "$980",
+    status: "Paid Mar 4",
+  },
 ];
 
 function ClientBillingVisual() {
@@ -2082,11 +2093,7 @@ function IsolationVisual() {
           <span className="min-w-0 flex-1 truncate pb-[3px] -mb-[3px] text-[12px] leading-none text-[var(--mk-fg)]">
             {app.name}
           </span>
-          <span
-            className={`shrink-0 font-mono ${MOCK_TAG}`}
-          >
-            {app.store}
-          </span>
+          <span className={`shrink-0 font-mono ${MOCK_TAG}`}>{app.store}</span>
         </div>
       ))}
     </div>
@@ -2106,9 +2113,7 @@ const COMPLIANCE_ROWS = [
 function ComplianceVisual() {
   return (
     <div className={SETTINGS_CARD}>
-      <div className={CARD_HEADER_TEXT}>
-        Trust Center
-      </div>
+      <div className={CARD_HEADER_TEXT}>Trust Center</div>
 
       {COMPLIANCE_ROWS.map((row, i) => (
         <div
@@ -2449,10 +2454,12 @@ function DetailPanel({
   pillar,
   open,
   onClose,
+  fieldClass = PANEL_FIELD,
 }: {
   pillar: Pillar;
   open: boolean;
   onClose: () => void;
+  fieldClass?: string;
 }) {
   // Portal the overlay to <body>: the section sits under a transform (Reveal
   // animation), and position:fixed anchors to a transformed ancestor rather
@@ -2550,8 +2557,13 @@ function DetailPanel({
         aria-label={pillar.short}
         // overscroll-contain: without it, a flick that reaches the end of the
         // panel keeps going and scrolls the page underneath instead of stopping.
-        className={`absolute inset-y-0 right-0 flex w-full max-w-xl flex-col overflow-y-auto overscroll-contain border-l border-border bg-background transition-transform duration-[380ms] ease-[cubic-bezier(0.22,1,0.36,1)] md:duration-300 [[data-theme=dark]_&]:bg-[#151515] [[data-theme=dark]_&]:border-[#383838] [[data-theme=dark]_&]:shadow-[-32px_0_60px_-30px_rgba(0,0,0,0.8)] md:max-w-2xl ${
-          open ? "translate-x-0" : "translate-x-full"
+        className={`absolute inset-y-0 right-0 flex w-full max-w-xl flex-col overflow-y-auto overscroll-contain border-l border-border bg-background transition-transform duration-[380ms] ease-[cubic-bezier(0.22,1,0.36,1)] md:duration-300 [[data-theme=dark]_&]:bg-[#151515] [[data-theme=dark]_&]:border-[#383838] md:max-w-2xl ${
+          // The shadow only while open: parked off-screen, the panel's left
+          // edge is the viewport's right edge, and the shadow it casts leftward
+          // darkened a strip down the right of every section in dark mode.
+          open
+            ? "translate-x-0 [[data-theme=dark]_&]:shadow-[-32px_0_60px_-30px_rgba(0,0,0,0.8)]"
+            : "translate-x-full"
         }`}
       >
         {/* Header — the title travels WITH the close control. Split apart (an
@@ -2631,13 +2643,12 @@ function DetailPanel({
                     : s.visual && BOTTOM_BLEED_VISUALS.has(s.visual)
                       ? "items-stretch justify-center px-4 pt-4 sm:px-6 sm:pt-6"
                       : "items-center justify-center p-4 sm:p-6"
-                } ${PANEL_FIELD}`}
+                } ${fieldClass}`}
               >
                 {s.visual && <SectionVisual slug={s.visual} />}
               </div>
             </div>
           ))}
-
         </div>
       </div>
     </div>,
@@ -2645,10 +2656,30 @@ function DetailPanel({
   );
 }
 
-export function WholeStack() {
+export function WholeStack({
+  /**
+   * Pillars to leave out, by their `short` label.
+   *
+   * For a page that makes one of these arguments somewhere else and would
+   * otherwise make it twice. The homepage's security section is the case:
+   * it states the claim, shows the certifications and links to /security, so
+   * a tenth row repeating it inside the index sends a reader who has already
+   * been answered back into a panel.
+   */
+  omit,
+  fieldClass,
+}: {
+  omit?: string[];
+  /** The ground the drawer's visuals sit on; the brand blue by default. */
+  fieldClass?: string;
+} = {}) {
   // One rest colour for both themes now. Light used to run the chevron at 40%,
   // which on white was a mark you had to look for — it read as an artefact of
   // the row rather than as the affordance saying the row opens.
+  const pillars = omit?.length
+    ? PILLARS.filter((p) => !omit.includes(p.short))
+    : PILLARS;
+
   const [openIdx, setOpenIdx] = useState<number | null>(null);
   // Keep the last-opened pillar mounted through the close animation so content
   // doesn't vanish before the panel finishes sliding out.
@@ -2664,16 +2695,20 @@ export function WholeStack() {
       <div className="mx-auto grid max-w-[1200px] gap-x-16 gap-y-10 px-6 md:grid-cols-[minmax(0,0.7fr)_minmax(0,1fr)] md:px-10">
         {/* Heading — left column (sticky on desktop), matching the FAQ layout. */}
         <div className="md:sticky md:top-28 md:self-start">
-          <h2 className="type-h2 text-foreground">
+          <p className="type-eyebrow text-muted-foreground">The platform</p>
+          <h2 className="type-h2 mt-4 text-foreground">
             Everything you need to run your business
           </h2>
           {/* The heading states the claim; this says why it matters before the
               reader has to open any of the ten rows to find out. */}
+          {/* The closing list went with the fourth sentence: "CRM, branded
+              client experience, and a secure app builder" names the same
+              three things the three sentences above it have just named, so
+              the paragraph made its point and then made it again. */}
           <p className="type-lead mt-5 max-w-md text-pretty text-muted-foreground">
             Practice management tools run your back office. Client portals
-            handle the front. Most app builders stop at prototypes. Assembly
-            does all three: CRM, branded client experience, and a secure app
-            builder.
+            handle the front. App builders stop at prototypes. Assembly does all
+            three.
           </p>
         </div>
 
@@ -2683,7 +2718,7 @@ export function WholeStack() {
             so a hovered row's fill breathes past the text on both sides while
             the labels still line up with the column at rest. */}
         <div className="-mx-3">
-          {PILLARS.map((p, i) => (
+          {pillars.map((p, i) => (
             <button
               key={p.short}
               type="button"
@@ -2698,11 +2733,12 @@ export function WholeStack() {
               // A dotted rule under every row but the last, the same treatment
               // the client portal's collapsible uses. Drawn as a pseudo-element
               // rather than a border: `border-dotted` at 1px sets its dots one
-              // pixel apart and reads as a broken hairline, where 1.5px marks
-              // on a 6px pitch read as dots. Inset to the row's own padding, so
+              // pixel apart and reads as a broken hairline. The site's shared
+              // dotted rule, so it is the FAQ's own dot and tone; the lighter
+              // --border dots it had were near invisible on a phone. Inset to the row's own padding, so
               // the rule starts where the label does and the hover fill still
               // breathes past it.
-              className="group relative flex w-full items-baseline gap-5 rounded-lg px-3 py-4 text-left transition-colors after:absolute after:inset-x-3 after:bottom-0 after:h-px after:bg-[repeating-linear-gradient(to_right,var(--border)_0_1.5px,transparent_1.5px_6px)] after:content-[''] last:after:hidden hover:bg-foreground/[0.04] [[data-theme=dark]_&]:hover:bg-white/[0.05]"
+              className={`group relative flex w-full items-baseline gap-5 px-3 py-4 text-left transition-colors after:absolute after:inset-x-3 after:bottom-0 after:h-px ${DOTTED_RULE_AFTER} after:content-[''] last:after:hidden hover:bg-foreground/[0.035] [[data-theme=dark]_&]:hover:bg-foreground/[0.06]`}
             >
               <span className="type-body flex-1 text-foreground">
                 {p.short}
@@ -2721,18 +2757,17 @@ export function WholeStack() {
                   their own bearing inside that. Two marks on the same edge of
                   the same screen have to agree, and the nav is the one the
                   reader sees on every page. */}
-              <IconRowPlus
-                className="size-3.5 shrink-0 text-muted-foreground transition-colors duration-200 group-hover:text-foreground max-sm:mr-1.5"
-              />
+              <IconRowPlus className="size-3.5 shrink-0 text-muted-foreground transition-colors duration-200 group-hover:text-foreground max-sm:mr-1.5" />
             </button>
           ))}
         </div>
       </div>
 
       <DetailPanel
-        pillar={PILLARS[current]}
+        pillar={pillars[current]}
         open={openIdx !== null}
         onClose={() => setOpenIdx(null)}
+        fieldClass={fieldClass}
       />
     </section>
   );
