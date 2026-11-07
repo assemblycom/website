@@ -3,7 +3,6 @@ import { CTA } from "@/components/home/cta";
 import { FAQ, type FAQEntry } from "@/components/home/faq";
 import { GridDivider, GridRails } from "@/components/ui/grid-lines";
 import { PortalSocialProof } from "@/components/client-portal/portal-social-proof";
-import Image from "next/image";
 import {
   IconTemplateApprovals,
   IconTemplateDocuments,
@@ -21,6 +20,7 @@ import {
 } from "@/components/client-portal/portal-build-cards";
 import { PortalTailor } from "@/components/client-portal/portal-tailor";
 import { AccountingLoginsVisual } from "@/components/solutions/accounting-logins-visual";
+import { AccountingHeroVisual } from "@/components/solutions/accounting-hero-visual";
 import { AccountingViewsVisual } from "@/components/solutions/accounting-views-visual";
 import { PortalStack } from "@/components/client-portal/portal-stack";
 import { PortalTrust } from "@/components/client-portal/portal-trust";
@@ -371,31 +371,8 @@ export default function AccountingClientPortalPage() {
           {/* V1's slot. It held the portal carousel until the chat-input shot
               was swapped for a photo (below); the V1 art direction is kept
               further down so it is not lost with the placeholder. */}
-          {/* PHOTO HERO, replacing the PortalHeroCarousel that stood here.
-              Marlon's note: the carousel opens on the custom chat input, which
-              puts the prompt box at the centre of the first screen of the
-              accounting page. Vivienne suggested a photo style instead, and
-              Ana is making the graphic.
-
-              PLACEHOLDER: /images/solutions/accounting-desk.webp is a photo
-              already in the repo (a hand opening a file drawer at a desk) that
-              nothing else used. It stands in so the slot is real and the page
-              builds; swap the file, or the src below, once Ana's final visual
-              lands. Same tray and heights as the marketing page's hero
-              (304px phone, 439px from md), so the two solution pages keep one
-              template. The photo is portrait, so it is anchored on the hand
-              and drawer rather than the wall above them. */}
-          <div className="relative mt-12 h-[304px] overflow-hidden rounded-3xl bg-[var(--surface)] md:mt-16 md:h-[439px]">
-            <Image
-              src="/images/solutions/accounting-desk.webp"
-              alt="Someone at a desk opening a file drawer"
-              fill
-              priority
-              sizes="(min-width: 1400px) 1320px, 100vw"
-              quality={90}
-              className="object-cover object-[50%_58%]"
-            />
-          </div>
+          {/* The hero visual: the Build with AI prompt the lead ends on. */}
+          <AccountingHeroVisual />
           {/* V1 — left 40%: the Assembly build panel headed "Build with AI",
               with the message "Build an estimated tax payment tracker. Clients
               see scheduled and paid amounts; send a reminder 7 days before each
