@@ -154,12 +154,14 @@ function LogoRow() {
  * the first three marks and never learned there were more; drifting, all six
  * pass by without asking. It reuses the homepage's marquee: the list runs
  * twice and the animation slides it by half, so the loop has no seam. The
- * second copy is hidden from screen readers and the tab order.
+ * second copy is hidden from screen readers and the tab order. Spacing is a
+ * trailing margin rather than a gap so both copies are the same width and the
+ * loop restarts without a jump; with reduced motion the row scrolls by hand.
  */
 function LogoMarquee() {
   return (
-    <div className="overflow-hidden pt-10 [mask-image:linear-gradient(to_right,transparent,black_12%,black_88%,transparent)] sm:hidden">
-      <div className="flex w-max animate-marquee items-center gap-x-10 motion-reduce:animate-none">
+    <div className="overflow-hidden pt-10 motion-reduce:overflow-x-auto [mask-image:linear-gradient(to_right,transparent,black_12%,black_88%,transparent)] sm:hidden">
+      <div className="flex w-max animate-marquee items-center motion-reduce:animate-none">
         {[...LOGO_SLUGS, ...LOGO_SLUGS].map((slug, i) => {
           const copy = i >= LOGO_SLUGS.length;
           return (
@@ -169,7 +171,7 @@ function LogoMarquee() {
               aria-label={`Read the ${getCaseStudyBySlug(slug)?.company ?? ""} case study`}
               aria-hidden={copy || undefined}
               tabIndex={copy ? -1 : undefined}
-              className="flex h-8 w-[104px] shrink-0 items-center justify-center text-foreground/45"
+              className="mr-10 flex h-8 w-[104px] shrink-0 items-center justify-center text-foreground/45"
             >
               <CustomerLogo slug={slug} fit />
             </Link>
