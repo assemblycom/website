@@ -3053,6 +3053,17 @@ html[data-theme="dark"] .v63-ring-solid::before {
   );
 }
 
+/* From sm up the gallery frame is 16:10 like the phone one, at three columns
+   on desktop, so the design box is 16:10 too. Drawn at 384 wide: the cards
+   are ~400px in a three-up row, so covers land near 1:1 and type keeps the
+   size it was drawn at. Unlayered for the same reason as the phone rule. */
+@media (width >= 40rem) {
+  .template-mock-fit:has(> .template-mock-gallery) {
+    --template-mock-w: 384px;
+    --template-mock-h: 240px;
+  }
+}
+
 @media (width < 40rem) {
   .template-mock-fit:has(> .template-mock-gallery) {
     /* 16:10, and DELIBERATELY larger than the frame it lands in. Everything in

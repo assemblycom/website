@@ -11,6 +11,37 @@ import {
 } from "@/lib/templates";
 import { IconArrow } from "./icons";
 import { V66Composer } from "./hero-v66";
+import {
+  APP_BOX,
+  APP_ICON,
+  APP_LINE,
+  AppSearch,
+  DesktopMock,
+  DesktopMockWhole,
+  GlassCover,
+} from "./app-window";
+import {
+  CardConditionalForms,
+  CardEvents,
+  CardInternalComms,
+  CardMarkup,
+  CardTeamGuides,
+} from "./covers/group-a";
+import {
+  CardCalendar,
+  CardFiles,
+  CardForms,
+  CardHome,
+  CardMessages,
+} from "./covers/group-b";
+import {
+  CardAutoresponder,
+  CardExport,
+  CardProfileManager,
+  CardQuickBooks,
+  CardXero,
+} from "./covers/group-c";
+
 import { TemplateMock } from "./template-preview";
 import { IconBrandMark } from "./mock-icons";
 
@@ -133,44 +164,164 @@ function useInViewReplay(onPlay: () => void) {
   return ref;
 }
 
-// The person the intake is for, as a contact record on a plotted ground: intake
-// is about capturing who you are about to work with, so the cover shows the one
-// thing it produces rather than the form that produced it. The row reuses the
-// onboarding cover's glass pane, so every raised surface in the gallery is the
-// same material.
-const INTAKE_CONTACT = {
-  initials: "AE",
-  name: "Alex Everett",
-  email: "alex@everett.co",
-};
+// New client intake — the Onboarding Wizard's dashboard as the team sees it on
+// desktop: four status counts, the filters, and the client list with each
+// client's status and how far through the steps they are. The assignees are
+// made-up names, so no colleague's name ships on the public site.
+const INTAKE_STATS = [
+  { label: "Not started", value: 6 },
+  { label: "In progress", value: 0 },
+  { label: "Stalled", value: 11 },
+  { label: "Completed", value: 6 },
+];
+const INTAKE_STEPS = 5;
+const INTAKE_STATUS = {
+  stalled: { label: "Stalled", cls: "bg-[#FDF3D7] text-[#8A5A00]" },
+  completed: { label: "Completed", cls: "bg-[#E3F6E9] text-[#1E7A44]" },
+  notStarted: { label: "Not started", cls: "bg-[#F1F2F4] text-[#374151]" },
+} as const;
+const INTAKE_ROWS: {
+  initials: string;
+  name: string;
+  sub: string;
+  status: keyof typeof INTAKE_STATUS;
+  done: number;
+  activity: string;
+  assignee: string;
+  tint: string;
+}[] = [
+  { initials: "MC", name: "Marcus Chen", sub: "Northwind Logistics", status: "stalled", done: 1, activity: "1 month ago", assignee: "Unassigned", tint: "bg-[#FBEDEC] text-[#A8453D]" },
+  { initials: "CM", name: "Charles Musail", sub: "BrandMages", status: "completed", done: 5, activity: "2 months ago", assignee: "Unassigned", tint: "bg-[#F3ECF8] text-[#7A3E9D]" },
+  { initials: "MW", name: "Marcus Webb", sub: "Okonkwo Consulting", status: "completed", done: 5, activity: "14 days ago", assignee: "Unassigned", tint: "bg-[#F3ECF8] text-[#7A3E9D]" },
+  { initials: "EG", name: "Edward Gonzalez", sub: "Edward Gonzalez", status: "notStarted", done: 0, activity: "2 months ago", assignee: "Unassigned", tint: "bg-[#E8F4F0] text-[#2F7A64]" },
+  { initials: "CC", name: "Cascade Outdoor Co.", sub: "Company", status: "stalled", done: 4, activity: "1 month ago", assignee: "Unassigned", tint: "bg-[#FBEDF6] text-[#A33D7A]" },
+  { initials: "MC", name: "Magna Company", sub: "Company", status: "completed", done: 5, activity: "3 months ago", assignee: "Priya Raman", tint: "bg-[#E6F1F8] text-[#2C6E99]" },
+  { initials: "LD", name: "Larkspur Design", sub: "Company", status: "stalled", done: 4, activity: "3 months ago", assignee: "Neil Foster", tint: "bg-[#E8F4F0] text-[#2F7A64]" },
+  { initials: "BF", name: "Brightwell Financial", sub: "Company", status: "stalled", done: 2, activity: "3 months ago", assignee: "Unassigned", tint: "bg-[#FBEDEC] text-[#A8453D]" },
+];
+const INTAKE_COLS =
+  "grid grid-cols-[1.7fr_1.1fr_0.9fr_1.4fr_1fr_1fr_32px] items-center gap-4";
+
+function SortMark() {
+  return (
+    <svg viewBox="0 0 24 24" className="size-3.5 text-[#9CA3AF]" {...APP_ICON} aria-hidden>
+      <path d="M8 5v14M5 8l3-3 3 3M16 19V5M13 16l3 3 3-3" />
+    </svg>
+  );
+}
 
 function CardIntake() {
-  const { initials, name, email } = INTAKE_CONTACT;
   return (
-    // The record is the panel rather than a card sitting inside one: for a
-    // single row, a white box on frosted glass on a photograph is three nested
-    // rectangles where the reference has two.
+    // Dark gradient in light mode, light in dark mode: every app-screen cover
+    // sits on a dark ground on the light page and a light one on the dark page.
     <GlassCover
-      photo="bg-[url(/images/mocks/describe-laptop.webp)]"
-      focus="bg-[position:46%_42%]"
-      panel="w-fit max-w-full flex-row items-center gap-3 self-center px-3.5"
+      photo="bg-[url(/images/mocks/intake-ambient.webp)] [[data-theme=dark]_&]:bg-[url(/images/mocks/intake-ambient-light.webp)]"
+      focus="bg-center"
+      dim=""
+      inset=""
+      panel={false}
     >
-      {/* Initials, not a photograph: there is already a real person behind the
-          glass, and a second face on top of them reads as two shots at once. */}
-      <span className={COVER_SLOT}>{initials}</span>
-      <span className="min-w-0 flex-1">
-        {/* pb/-mb on both: `truncate` clips at the line box, which at
-            leading-none is exactly the font size, so the g and y in the address
-            lost their tails. */}
-        <span className={`block truncate pb-[3px] -mb-[3px] ${COVER_ON_GLASS}`}>
-          {name}
-        </span>
-        <span
-          className={`mt-1.5 block truncate pb-[3px] -mb-[3px] ${COVER_ON_GLASS_QUIET}`}
-        >
-          {email}
-        </span>
-      </span>
+      <DesktopMock>
+        <div className="flex h-16 items-center gap-2 border-b border-[#E5E7EB] px-6">
+          <span className="text-[16px] leading-none">Onboarding Wizard</span>
+          <svg viewBox="0 0 24 24" className="size-4 text-[#6B7280]" {...APP_ICON} aria-hidden>
+            <path d="m6 9 6 6 6-6" />
+          </svg>
+          <span className="ml-auto flex h-9 items-center gap-1.5 rounded-lg bg-[#1F2329] px-3.5 text-[14px] leading-none text-[#FFFFFF]">
+            <svg viewBox="0 0 24 24" className="size-4" {...APP_ICON} aria-hidden>
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+            Start onboarding
+          </span>
+          <span className={`${APP_BOX} size-9 text-[16px] leading-none`}>···</span>
+        </div>
+        <div className="px-6 pt-6">
+          <div className="grid grid-cols-4 gap-3">
+            {INTAKE_STATS.map((stat) => (
+              <div key={stat.label} className={`rounded-xl border ${APP_LINE} px-5 py-5`}>
+                <div className="text-[14px] leading-none text-[#6B7280]">{stat.label}</div>
+                <div className="mt-3.5 text-[32px] font-medium leading-none tracking-tight">
+                  {stat.value}
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="mt-4 flex items-center gap-3">
+            <span className={`flex h-10 w-[200px] items-center justify-between rounded-lg border ${APP_LINE} px-3.5 text-[14px] leading-none`}>
+              All scopes
+              <svg viewBox="0 0 24 24" className="size-4 text-[#6B7280]" {...APP_ICON} aria-hidden>
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </span>
+            <span className={`flex h-10 w-[320px] items-center justify-between rounded-lg border ${APP_LINE} px-3.5 text-[14px] leading-none text-[#9CA3AF]`}>
+              Filter by contacts or companies…
+              <svg viewBox="0 0 24 24" className="size-4 text-[#6B7280]" {...APP_ICON} aria-hidden>
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </span>
+            <span className="ml-2 flex items-center gap-2.5 text-[14px] leading-none">
+              <span className="relative h-5 w-9 rounded-full bg-[#E5E7EB]">
+                <span className="absolute left-0.5 top-0.5 size-4 rounded-full bg-[#FFFFFF]" />
+              </span>
+              Show archived
+            </span>
+          </div>
+          <div className={`mt-4 overflow-hidden rounded-xl border ${APP_LINE}`}>
+            <div className={`${INTAKE_COLS} h-12 px-4 text-[14px] leading-none`}>
+              {["Contact", "Form", "Status", "Progress", "Last activity", "Assignee"].map((h) => (
+                <span key={h} className="flex items-center gap-1.5">
+                  {h}
+                  <SortMark />
+                </span>
+              ))}
+              <span />
+            </div>
+            {INTAKE_ROWS.map((row) => {
+              const status = INTAKE_STATUS[row.status];
+              return (
+                <div
+                  key={row.name}
+                  className={`${INTAKE_COLS} h-16 border-t border-[#E5E7EB] px-4 text-[14px] leading-none`}
+                >
+                  <span className="flex min-w-0 items-center gap-2.5">
+                    <span
+                      className={`flex size-8 shrink-0 items-center justify-center rounded-full text-[12px] leading-none ${row.tint}`}
+                    >
+                      {row.initials}
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block truncate">{row.name}</span>
+                      <span className="mt-1.5 block truncate text-[13px] text-[#6B7280]">
+                        {row.sub}
+                      </span>
+                    </span>
+                  </span>
+                  <span className="truncate">Onboarding Form</span>
+                  <span>
+                    <span className={`rounded-md px-2 py-1.5 text-[13px] leading-none ${status.cls}`}>
+                      {status.label}
+                    </span>
+                  </span>
+                  <span className="flex items-center gap-3 text-[13px] text-[#6B7280]">
+                    <span className="relative h-1 w-[110px] rounded-full bg-[#EEF0F2]">
+                      <span
+                        className="absolute inset-y-0 left-0 rounded-full bg-[#1F2329]"
+                        style={{ width: `${(row.done / INTAKE_STEPS) * 100}%` }}
+                      />
+                    </span>
+                    {row.done} of {INTAKE_STEPS} steps
+                  </span>
+                  <span className="text-[#6B7280]">{row.activity}</span>
+                  <span className={row.assignee === "Unassigned" ? "text-[#6B7280]" : ""}>
+                    {row.assignee}
+                  </span>
+                  <span className="text-center text-[#6B7280]">⋮</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </DesktopMock>
     </GlassCover>
   );
 }
@@ -196,11 +347,6 @@ const INK_SOLID = ink(70); // solid surfaces: checks, bubbles, CTAs, selected ra
 const MOCK_MONO = {
   fontFamily: "var(--font-diatype-mono), ui-monospace, monospace",
 } as const;
-// La Belle Aurore, loaded in the root layout. Only the contract cover uses it:
-// a signature is the one thing on these covers that must not look typeset.
-const MOCK_SIGNATURE = {
-  fontFamily: "var(--font-signature), cursive",
-} as const;
 // The unit tag beside a metric — the chip idiom the gallery's category tags use.
 // Layout (where it sits in its header) stays with the caller. The shared cool
 // grey all but disappeared on light mode's warm off-white face, so light takes a
@@ -219,11 +365,6 @@ const MOCK_SIGNATURE = {
 // figure it belongs to.
 const MOCK_UNIT_TAG =
   "shrink-0 whitespace-nowrap rounded-md bg-[var(--v69-inner)] px-2 py-1 text-[11px] uppercase leading-none tracking-wide text-muted-foreground [[data-theme=light]_&]:bg-[var(--v69-inner)] [[data-theme=light]_&]:text-[#4A4A4A] [[data-theme=light]_.template-mock_&]:bg-[#e2e2e2] [[data-theme=light]_.template-mock_&]:text-[#4d4d4d] [[data-theme=dark]_&]:bg-[rgba(255,255,255,0.11)] [[data-theme=dark]_&]:text-[#C9C9C9]";
-
-// The panel face the forms cover's field rows and their remove controls share,
-// so a row and the button beside it are cut from one material.
-const FORM_PANEL =
-  "rounded-xl border border-black/[0.08] bg-[#FFFFFF] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.09)] [[data-theme=dark]_&]:bg-[#303030]";
 
 // ─── Cover type ramp ────────────────────────────────────────────────────
 // Four steps for every piece of UI text on a cover, in the mocks' own design px.
@@ -262,55 +403,128 @@ const brandWash = (deg: number) =>
 // filled, document collected, form submitted) and stays neutral everywhere
 // else, so the rail reads as one set rather than a paintbox.
 
-// Onboarding progress widget — one client's run through the wizard: their
-// avatar, how far they've got, and the percentage, in a single soft tile. The
-// per-status breakdown it used to show read as a chart on a card that only
-// needed to answer "how far along is this person".
-const ONBOARDING_CLIENT = { initials: "NC", done: 15, total: 20 };
+// Client onboarding wizard — the form editor as the team sees it on desktop:
+// the wizard's steps down the side, the first one open, and the welcome text
+// the client sees on it.
+const WIZARD_STEPS = [
+  { name: "Welcome", fields: 1 },
+  { name: "Your business", fields: 4 },
+  { name: "Goals", fields: 4 },
+  { name: "Communication preferences", fields: 4 },
+  { name: "Documents", fields: 1 },
+];
+const WIZARD_FORMAT = ["B", "I", "U", "H1", "H2", "H3"];
 
 function CardOnboarding() {
-  const { initials, done, total } = ONBOARDING_CLIENT;
-  const pct = Math.round((done / total) * 100);
-
-  // No replay state to hold: the bar's grow-in is pure CSS off the card's hover
-  // and in-view classes, so there's nothing for React to drive here.
   return (
-    // Dark keeps the project tracker's gradient face; light takes a flat warm
-    // off-white instead.
-    <div className="flex h-full flex-col justify-center bg-[linear-gradient(160deg,#ffffff_0%,#f4f6f9_58%,#eceff3_100%)] p-3.5 [[data-theme=light]_&]:bg-none [[data-theme=light]_&]:bg-[var(--v69-card)] [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2] [[data-theme=dark]_&]:bg-none [[data-theme=dark]_&]:bg-[var(--v69-card)]">
-      {/* Avatar + bar + percentage on their own tile — the same glass surface the
-          help-desk rows use, so the row reads as a pane sitting on the card
-          rather than a filled block. */}
-      {/* The glass edge is a white hairline, which vanishes on a light face —
-          light mode borrows the ink hairline the widget mocks use instead. Dark's
-          8% is what the edge already measured before the tile's fill was clipped
-          off it (see .v69-glass-tile--soft), just carried by the border alone. */}
-      {/* The intake tile's radius exactly: side by side in the gallery the
-          tighter corner read as a different component, and matching it costs
-          nothing at this row height. */}
-      <div className="v69-glass-tile v69-glass-tile--soft flex items-center gap-2.5 rounded-xl border border-[rgba(255,255,255,0.6)] p-3 [[data-theme=light]_&]:border-black/[0.08] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.09)]">
-        {/* No ring — the fill alone carries the avatar; a hairline on a shape
-            this small only thickened its edge. */}
-        {/* Dark takes a brighter fill than the shared well token: at #2b2b2b on a
-            #262626 tile the disc was a step off nothing, so the initials floated
-            with no shape around them. Light's warm chip already reads. */}
-        <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-[var(--v69-well)] text-[11px] leading-none text-[var(--v69-ink)] [[data-theme=light]_&]:bg-[var(--v69-inner)] [[data-theme=light]_.template-mock_&]:bg-[#e6e6e6] [[data-theme=light]_&]:text-[#595959] [[data-theme=dark]_&]:bg-[color-mix(in_srgb,var(--v69-ink)_20%,transparent)]">
-          {initials}
-        </span>
-        {/* On the translucent tile the shared well tone lands within a step of
-            the surface, so the empty track needs its own darker value in dark
-            mode to stay readable. */}
-        <span className="relative h-[9px] flex-1 overflow-hidden rounded-full bg-[var(--v69-well)] [[data-theme=dark]_&]:bg-[rgba(255,255,255,0.16)]">
-          <span
-            className="absolute inset-y-0 left-0 rounded-full bg-[#7DA4FF] bg-[repeating-linear-gradient(115deg,rgba(255,255,255,0.18)_0_3.5px,rgba(255,255,255,0)_3.5px_8px)] [transform-origin:left] group-hover:[animation:v69GrowX_1.4s_cubic-bezier(0.22,1,0.36,1)_both] group-[.is-inview]:[animation:v69GrowX_1.4s_cubic-bezier(0.22,1,0.36,1)_both]"
-            style={{ width: `${pct}%` }}
-          />
-        </span>
-        <span className="w-[26px] shrink-0 text-right text-[11px] leading-none tabular-nums text-[var(--v69-ink)]">
-          {pct}%
-        </span>
-      </div>
-    </div>
+    // Dark gradient in light mode, light in dark mode: every app-screen cover
+    // sits on a dark ground on the light page and a light one on the dark page.
+    <GlassCover
+      photo="bg-[url(/images/mocks/onboarding-ambient-dark.webp)] [[data-theme=dark]_&]:bg-[url(/images/mocks/onboarding-ambient.webp)]"
+      focus="bg-center"
+      dim=""
+      inset=""
+      panel={false}
+    >
+      <DesktopMock>
+        <div className="flex h-14 items-center gap-3 border-b border-[#E5E7EB] px-6 text-[14px] leading-none">
+          <svg viewBox="0 0 24 24" className="size-5 text-[#4B5563]" {...APP_ICON} aria-hidden>
+            <rect x="3.5" y="5" width="17" height="14" rx="2" />
+            <path d="M10 5v14" />
+          </svg>
+          <span className="text-[#6B7280]">Onboarding Wizard</span>
+          <svg viewBox="0 0 24 24" className="size-3.5 text-[#9CA3AF]" {...APP_ICON} aria-hidden>
+            <path d="m9 6 6 6-6 6" />
+          </svg>
+          <span>Edit onboarding form</span>
+          <span className="ml-auto px-3 text-[#4B5563]">Cancel</span>
+          <span className="flex h-9 items-center gap-1.5 rounded-lg bg-[#1F2329] px-3.5 text-[#FFFFFF]">
+            <svg viewBox="0 0 24 24" className="size-4" {...APP_ICON} aria-hidden>
+              <path d="m5 12 5 5 9-10" />
+            </svg>
+            Save form
+          </span>
+        </div>
+        <div className="flex gap-10 px-6 pt-5">
+          <div className="w-[270px] shrink-0">
+            <div className={`flex h-12 items-center gap-2.5 rounded-xl border ${APP_LINE} px-3 text-[14px] leading-none`}>
+              <span className={`${APP_BOX} size-7`}>
+                <svg viewBox="0 0 24 24" className="size-4" {...APP_ICON} aria-hidden>
+                  <path d="m12 4 8 4-8 4-8-4 8-4ZM4 12l8 4 8-4M4 16l8 4 8-4" />
+                </svg>
+              </span>
+              Onboarding Form
+              <span className="rounded-md bg-[#EEF3FE] px-2 py-1 text-[12px] text-[#2F5BB7]">Default</span>
+            </div>
+            <div className="mt-6 flex justify-between px-1 text-[13px] leading-none text-[#6B7280]">
+              Steps
+              <span>{WIZARD_STEPS.length}</span>
+            </div>
+            <div className="mt-3 space-y-2">
+              {WIZARD_STEPS.map((step, i) => (
+                <div
+                  key={step.name}
+                  className={`flex items-center gap-3 rounded-xl px-3 py-3 ${
+                    i === 0 ? "border-2 border-[#1F2937]" : `border ${APP_LINE}`
+                  }`}
+                >
+                  <span
+                    className={`flex size-6 shrink-0 items-center justify-center rounded-md text-[12px] leading-none ${
+                      i === 0 ? "bg-[#1F2937] text-[#FFFFFF]" : "bg-[#F1F2F4] text-[#374151]"
+                    }`}
+                  >
+                    {i + 1}
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block truncate text-[14px] leading-none">{step.name}</span>
+                    <span className="mt-1.5 block text-[12px] leading-none text-[#6B7280]">
+                      {step.fields} {step.fields === 1 ? "field" : "fields"}
+                    </span>
+                  </span>
+                </div>
+              ))}
+              <div className="flex h-12 items-center justify-center rounded-xl border border-dashed border-[#D1D5DB] text-[14px] leading-none text-[#4B5563]">
+                + Add step
+              </div>
+            </div>
+          </div>
+          <div className="w-[560px] pt-1">
+            <div className="text-[14px] leading-none">Name</div>
+            <div className={`mt-2.5 flex h-10 items-center rounded-lg border ${APP_LINE} px-3 text-[14px] leading-none`}>
+              Welcome
+            </div>
+            <div className="mt-5 text-[14px] leading-none">
+              Description <span className="text-[#9CA3AF]">(optional)</span>
+            </div>
+            <div className={`mt-2.5 h-[64px] rounded-lg border ${APP_LINE} px-3 pt-3 text-[14px] leading-none`}>
+              A short intro so the client knows what to expect.
+            </div>
+            <div className="mt-5 text-[14px] leading-none">Fields</div>
+            <div className="mt-2 text-[13px] leading-none text-[#6B7280]">
+              Questions and content shown to the contact on this step.
+            </div>
+            <div className={`mt-4 rounded-xl border ${APP_LINE} p-3`}>
+              <span className={`${APP_BOX} inline-flex h-8 gap-1.5 px-2.5 text-[13px] leading-none text-[#1F2937]`}>
+                T Text
+              </span>
+              <div className={`mt-3 flex h-10 items-center rounded-lg border ${APP_LINE} px-3 text-[14px] leading-none`}>
+                Welcome aboard
+              </div>
+              <div className={`mt-3 rounded-lg border ${APP_LINE}`}>
+                <div className="flex gap-4 border-b border-[#E5E7EB] px-3 py-2.5 text-[13px] leading-none text-[#4B5563]">
+                  {WIZARD_FORMAT.map((f) => (
+                    <span key={f}>{f}</span>
+                  ))}
+                </div>
+                <div className="px-3 py-3 text-[14px] leading-snug">
+                  We&apos;re glad you&apos;re here. This short form collects everything we need to get your account set up. It takes about 10 minutes, and your progress saves as you go.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </DesktopMock>
+    </GlassCover>
   );
 }
 
@@ -527,61 +741,8 @@ export function CardDashboard({
     </div>
   );
 }
-
-// Client engagement dashboard — the portfolio's engagement score on a segmented
-// half gauge. A gauge says two things a bare figure cannot: what the range is,
-// and how far along it this number falls — which is the whole question a risk
-// score is asked.
-const ENGAGEMENT_SCORE = 68;
-
-const GAUGE_CX = 60;
-const GAUGE_CY = 60;
-const GAUGE_R = 48;
-const GAUGE_BAND = 9;
-const GAUGE_SEG_COUNT = 4;
-// Along the arc, in the viewBox's own units.
-const GAUGE_SEG_GAP = 5;
-// A nick off the corners, not a cap. strokeLinecap="round" was the obvious way
-// to soften these and it is the wrong tool: a round cap is a half-disc of the
-// band's full width, so each band spends its whole thickness on its two ends and
-// what is left reads as a lozenge. Each band is instead drawn as a filled sector
-// INSET by this radius and stroked back out with a round linejoin, which puts a
-// true radius on all four corners at whatever size is asked for.
-const GAUGE_CORNER = 2;
-const GAUGE_ARC_LEN = Math.PI * GAUGE_R;
-// The bands stop a little short of the baseline at both ends, so the scale's
-// ends sit just above the 0 and 100 under them.
-const GAUGE_END_INSET = 3;
-const GAUGE_BAND_SPAN = GAUGE_ARC_LEN - 2 * GAUGE_END_INSET;
-const GAUGE_SEG_VISIBLE =
-  (GAUGE_BAND_SPAN - (GAUGE_SEG_COUNT - 1) * GAUGE_SEG_GAP) / GAUGE_SEG_COUNT;
-const GAUGE_SEG_STEP = GAUGE_SEG_VISIBLE + GAUGE_SEG_GAP;
-
-// One flat blue, not a ramp. The shading already says how far the score has got,
-// and a ramp underneath it made the colour do two jobs at once — reading partly
-// as progress and partly as a scale of its own.
-const GAUGE_FILL = "#7DA4FF";
-// What a band looks like where the score has not reached it: a slot of plain
-// white on the frost. Opaque, since a see-through band drew its fill and its
-// rounding stroke as two visible layers.
-const GAUGE_UNFILLED = "#ffffff";
-// The progress clip reaches past the band on both sides; it only ever has to
-// cover it.
-const GAUGE_CLIP_R = 70;
-const GAUGE_CLIP_ID = "engagement-gauge-progress";
-
-function gaugePolar(radius: number, theta: number) {
-  return {
-    x: GAUGE_CX + radius * Math.cos(theta),
-    y: GAUGE_CY - radius * Math.sin(theta),
-  };
-}
 /** Angle at a fraction along the arc, swept left to right over the top. */
-const gaugeTheta = (fraction: number) => Math.PI * (1 - fraction);
-
 /** Distance along the arc, as a fraction of it, for a point on the band scale. */
-const gaugeFraction = (along: number) => (GAUGE_END_INSET + along) / GAUGE_ARC_LEN;
-
 /**
  * An arc segment of the given thickness, as a sector inset by the corner radius
  * (see GAUGE_CORNER). The track and the bands both come through here, so the
@@ -589,121 +750,112 @@ const gaugeFraction = (along: number) => (GAUGE_END_INSET + along) / GAUGE_ARC_L
  * a round cap is always half the thickness, so the wider track's ends carried a
  * 6.5 radius beside the bands' 2 and the two never agreed.
  */
-function gaugeSectorPath(theta0: number, theta1: number, width: number) {
-  const inset = GAUGE_CORNER / GAUGE_R;
-  const start = theta0 - inset;
-  const finish = theta1 + inset;
-  const outer = GAUGE_R + width / 2 - GAUGE_CORNER;
-  const inner = GAUGE_R - width / 2 + GAUGE_CORNER;
-  const a = gaugePolar(outer, start);
-  const b = gaugePolar(outer, finish);
-  const c = gaugePolar(inner, finish);
-  const d = gaugePolar(inner, start);
-  return `M ${a.x} ${a.y} A ${outer} ${outer} 0 0 1 ${b.x} ${b.y} L ${c.x} ${c.y} A ${inner} ${inner} 0 0 0 ${d.x} ${d.y} Z`;
-}
-
-function gaugeBandPath(index: number) {
-  return gaugeSectorPath(
-    gaugeTheta(gaugeFraction(index * GAUGE_SEG_STEP)),
-    gaugeTheta(gaugeFraction(index * GAUGE_SEG_STEP + GAUGE_SEG_VISIBLE)),
-    GAUGE_BAND,
-  );
-}
-
 /** The wedge the score has swept, used to clip the coloured bands. */
-function gaugeProgressPath(score: number) {
-  const from = gaugePolar(GAUGE_CLIP_R, gaugeTheta(0));
-  const to = gaugePolar(
-    GAUGE_CLIP_R,
-    gaugeTheta(gaugeFraction((score / 100) * GAUGE_BAND_SPAN)),
-  );
-  return `M ${GAUGE_CX} ${GAUGE_CY} L ${from.x} ${from.y} A ${GAUGE_CLIP_R} ${GAUGE_CLIP_R} 0 0 1 ${to.x} ${to.y} Z`;
-}
+// Engagement dashboard — the engagement view as the team sees it on desktop:
+// the four engagement levels, then each company with its level, a pulse line
+// of recent activity, and its risk.
+const ENGAGEMENT_LEVELS = [
+  { value: 0, label: "Engaged", note: "Active & stable", dot: "bg-[#30A46C]" },
+  { value: 19, label: "Cooling", note: "Declining, still active", dot: "bg-[#F2A33A]" },
+  { value: 21, label: "Quiet", note: "Inactive for 30+ days", dot: "bg-[#E5484D]" },
+  { value: 10, label: "Never active", note: "No person events yet", dot: "bg-[#C4C8CF]" },
+];
+const ENGAGEMENT_ROWS = [
+  { initial: "O", name: "Okafor Consulting", active: "56d ago", follow: "27d overdue", pulse: "M0 14 L8 14 L11 2 L14 14 L30 14", tint: "bg-[#F3ECF8] text-[#7A3E9D]" },
+  { initial: "V", name: "Vistula Trading", active: "49d ago", follow: "22d overdue", pulse: "M0 14 L6 14 L9 3 L13 14 L30 14", tint: "bg-[#ECEEF9] text-[#4B55A8]" },
+  { initial: "K", name: "Kestrel Holdings", active: "42d ago", follow: "", pulse: "M0 14 L12 14 L15 2 L18 14 L30 14", tint: "bg-[#FBF3E4] text-[#9A6B1F]" },
+  { initial: "T", name: "Thomas Ramirez", active: "42d ago", follow: "", pulse: "M0 14 L5 14 L8 4 L13 12 L30 14", tint: "bg-[#E8F4F0] text-[#2F7A64]" },
+  { initial: "L", name: "Lumen Analytics", active: "42d ago", follow: "", pulse: "M0 14 L6 14 L9 3 L14 13 L30 14", tint: "bg-[#F3ECF8] text-[#7A3E9D]" },
+  { initial: "T", name: "Triyama Software", active: "41d ago", follow: "", pulse: "M0 14 L10 14 L13 2 L17 14 L30 14", tint: "bg-[#ECEEF9] text-[#4B55A8]" },
+  { initial: "M", name: "Magna Company", active: "41d ago", follow: "", pulse: "M0 14 L12 14 L15 3 L19 14 L30 14", tint: "bg-[#E6F1F8] text-[#2C6E99]" },
+];
+const ENGAGEMENT_COLS =
+  "grid grid-cols-[1.6fr_0.8fr_1.2fr_0.9fr_1fr_0.7fr] items-center gap-4";
 
-const GAUGE_BANDS = Array.from({ length: GAUGE_SEG_COUNT }, (_, i) =>
-  gaugeBandPath(i),
-);
-
-// The gauge on a glass panel over the blue shapes artwork. The artwork is pale,
-// so unlike the dark covers the panel keeps dark type in both skins. No track
-// under the bands: on glass the frost is already the layer they sit on.
 function CardEngagement() {
   return (
+    // Dark gradient in light mode, light in dark mode: every app-screen cover
+    // sits on a dark ground on the light page and a light one on the dark page.
     <GlassCover
-      photo="bg-[url(/images/mocks/engagement-shapes.webp)]"
-      focus="bg-[position:50%_85%]"
-      dim="[[data-theme=dark]_&]:brightness-[0.8]"
-      panel="w-full flex-col items-center [--muted-foreground:#3F444C] [--v69-ink:#262626]"
+      photo="bg-[url(/images/mocks/engagement-ambient-dark.webp)] [[data-theme=dark]_&]:bg-[url(/images/mocks/engagement-ambient.webp)]"
+      focus="bg-center"
+      dim=""
+      inset=""
+      panel={false}
     >
-      {/* Sized from the frame rather than pinned in px: this cover is square in
-          the gallery, 16/10 on a phone and 212 square in the home rail, and a
-          fixed gauge either overflows the short axis or leaves the square half
-          empty. Everything inside scales off the container width. */}
-      <div className="relative w-full max-w-[232px] [container-type:inline-size]">
-        <svg viewBox="0 0 120 74" className="w-full" aria-hidden>
-          <defs>
-            <clipPath id={GAUGE_CLIP_ID}>
-              <path d={gaugeProgressPath(ENGAGEMENT_SCORE)} />
-            </clipPath>
-          </defs>
-          {/* Every band unfilled first, then the same shapes in colour clipped to
-              how far the score has got — so the band the score lands in is part
-              shaded rather than all or nothing. */}
-          {GAUGE_BANDS.map((d) => (
-            <path
-              key={d}
-              d={d}
-              fill={GAUGE_UNFILLED}
-              stroke={GAUGE_UNFILLED}
-              strokeWidth={GAUGE_CORNER * 2}
-              strokeLinejoin="round"
-            />
-          ))}
-          <g clipPath={`url(#${GAUGE_CLIP_ID})`}>
-            {GAUGE_BANDS.map((d) => (
-              <path
-                key={d}
-                d={d}
-                fill={GAUGE_FILL}
-                stroke={GAUGE_FILL}
-                strokeWidth={GAUGE_CORNER * 2}
-                strokeLinejoin="round"
-              />
-            ))}
-          </g>
-          <text
-            x={GAUGE_CX - GAUGE_R}
-            y="72"
-            textAnchor="middle"
-            fontSize="7"
-            fill="currentColor"
-            className="text-muted-foreground"
-            style={MOCK_MONO}
-          >
-            0
-          </text>
-          <text
-            x={GAUGE_CX + GAUGE_R}
-            y="72"
-            textAnchor="middle"
-            fontSize="7"
-            fill="currentColor"
-            className="text-muted-foreground"
-            style={MOCK_MONO}
-          >
-            100
-          </text>
-        </svg>
-        {/* Nested inside the arc, clear of the end labels. */}
-        <div className="absolute inset-x-0 bottom-0 flex flex-col items-center pb-[12cqw]">
-          <span className="text-[15cqw] font-normal leading-none tracking-tight tabular-nums text-[var(--v69-ink)]">
-            {ENGAGEMENT_SCORE}
+      <DesktopMock>
+        <div className="flex h-14 items-center gap-3 border-b border-[#E5E7EB] px-6 text-[15px] leading-none">
+          <svg viewBox="0 0 24 24" className="size-5 text-[#4B5563]" {...APP_ICON} aria-hidden>
+            <rect x="3.5" y="5" width="17" height="14" rx="2" />
+            <path d="M10 5v14" />
+          </svg>
+          <span>Client Engagement Dashboard</span>
+          <svg viewBox="0 0 24 24" className="size-4 text-[#6B7280]" {...APP_ICON} aria-hidden>
+            <path d="m6 9 6 6 6-6" />
+          </svg>
+          <span className={`${APP_BOX} ml-auto h-9 px-3.5 text-[14px] leading-none text-[#1F2937]`}>
+            Engagement rules
           </span>
-          <span className="mt-[3cqw] text-[4.5cqw] leading-none text-muted-foreground">
-            Engagement score
+          <span className="flex h-9 items-center rounded-lg bg-[#1F2329] px-3.5 text-[14px] leading-none text-[#FFFFFF]">
+            Refresh data
           </span>
         </div>
-      </div>
+        <div className="px-6 pt-5">
+          <div className="w-[300px]">
+            <AppSearch placeholder="Search companies…" />
+          </div>
+          <div className="mt-4 grid grid-cols-4 gap-3">
+            {ENGAGEMENT_LEVELS.map((l) => (
+              <div key={l.label} className={`rounded-xl border ${APP_LINE} px-4 py-4`}>
+                <div className="text-[24px] leading-none">{l.value}</div>
+                <div className="mt-2.5 flex items-center gap-1.5 text-[13px] leading-none">
+                  <span className={`size-1.5 rounded-full ${l.dot}`} />
+                  {l.label}
+                </div>
+                <div className="mt-2 text-[13px] leading-none text-[#6B7280]">{l.note}</div>
+              </div>
+            ))}
+          </div>
+          <div className="mt-5">
+            <div className={`${ENGAGEMENT_COLS} h-11 border-b border-[#E5E7EB] px-2 text-[14px] leading-none`}>
+              <span>Company</span>
+              <span>Level</span>
+              <span>Engagement pulse</span>
+              <span>Last active</span>
+              <span>Next follow-up</span>
+              <span>Risk</span>
+            </div>
+            {ENGAGEMENT_ROWS.map((r) => (
+              <div
+                key={r.name}
+                className={`${ENGAGEMENT_COLS} h-11 border-b border-[#E5E7EB] px-2 text-[14px] leading-none`}
+              >
+                <span className="flex min-w-0 items-center gap-2.5">
+                  <span className={`flex size-6 shrink-0 items-center justify-center rounded-md text-[12px] leading-none ${r.tint}`}>
+                    {r.initial}
+                  </span>
+                  <span className="truncate">{r.name}</span>
+                </span>
+                <span>
+                  <span className="rounded-full bg-[#FDECEC] px-2.5 py-1 text-[12px] leading-none text-[#B42318]">Quiet</span>
+                </span>
+                <span className="flex items-center gap-2 text-[12px] text-[#B42318]">
+                  <svg viewBox="0 0 30 16" className="h-4 w-[60px]" fill="none" stroke="#B42318" strokeWidth="1.3" aria-hidden>
+                    <path d={r.pulse} />
+                  </svg>
+                  -100%
+                </span>
+                <span className="text-[#6B7280]">{r.active}</span>
+                <span className={r.follow ? "text-[#B42318]" : "text-[#9CA3AF]"}>{r.follow || "–"}</span>
+                <span className="flex items-center gap-1.5 text-[#B42318]">
+                  <span className="size-1.5 rounded-full bg-[#B42318]" />
+                  High
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </DesktopMock>
     </GlassCover>
   );
 }
@@ -740,163 +892,126 @@ function CardDataViz() {
   );
 }
 
-// Steps toward `target` one minute per beat (matching the clock's colon
-// blink), instead of a smooth eased sweep — a real clock's digits jump once
-// per minute, they don't animate through the minutes in between.
-// The resting readout is the tick's FIRST minute, not its last: sitting on the
-// target meant the first hover snapped the display backwards three minutes
-// before counting forward again.
-const TICK_MINUTES = 3;
-
-function useMinuteTick(target: number, play: number, beatMs = 1000) {
-  const start = Math.max(0, target - TICK_MINUTES);
-  const [val, setVal] = useState(start);
-  useEffect(() => {
-    if (!play) {
-      setVal(start);
-      return;
-    }
-    let cur = start;
-    setVal(cur);
-    const id = setInterval(() => {
-      cur += 1;
-      setVal(Math.min(cur, target));
-      if (cur >= target) clearInterval(id);
-    }, beatMs);
-    return () => clearInterval(id);
-  }, [play, target, start, beatMs]);
-  return val;
-}
-
-// Time tracker — a day's logged time: a headline total over per-entry duration
-// bars, so it actually reads as time tracking (not a billable-rate roster).
-// Time tracker — a digital watch face with complications: date, calories, a big
-// LCD time readout, heart rate, and the weekday. Monochrome (the inspiration's
-// red accents drop to neutral); the LCD box uses the mono face for the numeric
-// display, framed by the shared hairline outline.
-// Dot-matrix glyphs for the LCD readout, one string per row, 1 = lit pixel.
-// 5×7 — the classic dot-matrix cell. Finer than a 3×5 grid, so the numerals
-// read as pixel type rather than as blocks, with round shoulders on 0/6/8/9.
-const LCD_GLYPHS: Record<string, string[]> = {
-  "0": ["01110", "10001", "10001", "10001", "10001", "10001", "01110"],
-  "1": ["00100", "01100", "00100", "00100", "00100", "00100", "01110"],
-  "2": ["01110", "10001", "00001", "00010", "00100", "01000", "11111"],
-  "3": ["11111", "00010", "00100", "00010", "00001", "10001", "01110"],
-  "4": ["00010", "00110", "01010", "10010", "11111", "00010", "00010"],
-  "5": ["11111", "10000", "11110", "00001", "00001", "10001", "01110"],
-  "6": ["00110", "01000", "10000", "11110", "10001", "10001", "01110"],
-  "7": ["11111", "00001", "00010", "00100", "01000", "01000", "01000"],
-  "8": ["01110", "10001", "10001", "01110", "10001", "10001", "01110"],
-  "9": ["01110", "10001", "10001", "01111", "00001", "00010", "01100"],
-  ":": ["0", "0", "1", "0", "1", "0", "0"],
-};
-
-// Unlit pixels stay faintly visible, the way the whole matrix ghosts on a real
-// LCD — without them the digits float and the display reads as type again.
-function LcdGlyph({
-  glyph,
-  className = "",
-}: {
-  glyph: string;
-  className?: string;
-}) {
-  const rows = LCD_GLYPHS[glyph];
-  const px = 4;
-  return (
-    <span
-      className={`inline-grid gap-px align-middle ${className}`}
-      style={{ gridTemplateColumns: `repeat(${rows[0].length}, ${px}px)` }}
-      aria-hidden
-    >
-      {rows.flatMap((row, y) =>
-        [...row].map((cell, x) => (
-          <span
-            key={`${x}-${y}`}
-            className={
-              cell === "1"
-                ? "bg-[var(--v69-ink)]"
-                : "bg-[var(--v69-ink)]/[0.09]"
-            }
-            style={{ height: px }}
-          />
-        )),
-      )}
-    </span>
-  );
-}
+// Time tracker — entries as the team sees them on desktop: views and
+// categories down the side, the week's totals, and each entry with its
+// category, hours and whether it is billable. Team names are made up.
+const TIME_CATEGORIES = [
+  { name: "Consulting", count: 8, dot: "bg-[#2F6FEB]" },
+  { name: "Development", count: 10, dot: "bg-[#8B5CF6]" },
+  { name: "Design", count: 5, dot: "bg-[#E5458A]" },
+  { name: "Meeting", count: 6, dot: "bg-[#F2B53A]" },
+  { name: "Research", count: 4, dot: "bg-[#14A38B]" },
+  { name: "Onboarding", count: 4, dot: "bg-[#30A46C]" },
+];
+const TIME_ENTRIES = [
+  { initials: "KH", who: "Kestrel Holdings", cat: "Development", dot: "bg-[#8B5CF6]", hours: "6.00", billable: true, by: "Leo Hart" },
+  { initials: "WG", who: "Wexford Group", cat: "Consulting", dot: "bg-[#2F6FEB]", hours: "3.00", billable: true, by: "Maya Lin" },
+  { initials: "LD", who: "Larkspur Design", cat: "Onboarding", dot: "bg-[#30A46C]", hours: "2.25", billable: true, by: "Sam Ortega" },
+  { initials: "BF", who: "Brightwell Financial", cat: "Design", dot: "bg-[#E5458A]", hours: "4.50", billable: true, by: "Tara Quinn" },
+  { initials: "RV", who: "Redwood Ventures", cat: "Administrative", dot: "bg-[#9CA3AF]", hours: "1.50", billable: false, by: "Ari Cole" },
+  { initials: "NL", who: "Northwind Logistics", cat: "Development", dot: "bg-[#8B5CF6]", hours: "5.50", billable: true, by: "Leo Hart" },
+  { initials: "MC", who: "Magna Company", cat: "Meeting", dot: "bg-[#F2B53A]", hours: "1.00", billable: false, by: "Maya Lin" },
+];
+const TIME_COLS = "grid grid-cols-[1.5fr_1.1fr_0.6fr_0.9fr_1fr] items-center gap-4";
 
 function CardTimeTracker() {
-  // Minutes advance one at a time on the same 1s beat as the colon's blink —
-  // a real clock ticks a single minute at a time, not a fast sweeping count —
-  // so each digit change lands on a blink instead of racing past several.
-  const [play, setPlay] = useState(0);
-  const minutes = useMinuteTick(31, play);
-  const inViewRef = useInViewReplay(() => setPlay((p) => p + 1));
   return (
-    <div
-      ref={inViewRef}
-      onMouseEnter={(e) => {
-        if (e.currentTarget.closest(".template-mock")) return;
-        setPlay((p) => p + 1);
-      }}
-      onMouseLeave={() => setPlay(0)}
-      className="v69-accent-drift flex h-full items-center justify-center p-4"
+    // Dark gradient in light mode, light in dark mode: every app-screen cover
+    // sits on a dark ground on the light page and a light one on the dark page.
+    <GlassCover
+      photo="bg-[url(/images/mocks/time-ambient-dark.webp)] [[data-theme=dark]_&]:bg-[url(/images/mocks/time-ambient.webp)]"
+      focus="bg-center"
+      dim=""
+      inset=""
+      panel={false}
     >
-      <div className="relative flex aspect-square h-full max-h-[230px] flex-col items-center justify-center gap-1.5 overflow-hidden rounded-full bg-[var(--v69-card)] px-3 [[data-theme=light]_&]:bg-[#FFFFFF] [[data-theme=light]_.template-mock_&]:bg-[#FFFFFF] [[data-theme=dark]_&]:bg-[#1B1B1B] [[data-theme=dark]_.template-mock_&]:bg-[var(--v69-well)]">
-        {/* Dark-only: the watch face is so close in value to the card ground
-            that it read as a flat cutout, so an inset ring carves it in — a
-            hairline highlight along the top edge, a darker lower edge, and a
-            soft falloff between. An overlay rather than a shadow utility so it
-            can be theme-scoped; light already separates by its own value step. */}
-        <span
-          aria-hidden
-          className="pointer-events-none absolute inset-0 rounded-full [[data-theme=light]_&]:hidden"
-          style={{
-            boxShadow:
-              "inset 0 1px 0 rgba(255,255,255,0.07), inset 0 -1px 0 rgba(0,0,0,0.5), inset 0 10px 18px -10px rgba(0,0,0,0.45), inset 0 -12px 20px -12px rgba(0,0,0,0.55)",
-          }}
-        />
-        {/* Light-only counterpart: the same carve, an order of magnitude softer.
-            Light's value step already separates the face, so this only has to
-            suggest a recess — a faint highlight where the rim catches light at
-            the top and a slightly deeper edge at the bottom. */}
-        <span
-          aria-hidden
-          className="pointer-events-none absolute inset-0 rounded-full [[data-theme=dark]_&]:hidden"
-          style={{
-            boxShadow:
-              "inset 0 1px 0 rgba(255,255,255,0.35), inset 0 -1px 0 rgba(16,24,40,0.03), inset 0 8px 14px -8px rgba(16,24,40,0.045), inset 0 -10px 16px -10px rgba(16,24,40,0.055)",
-          }}
-        />
-        <div
-          // Light mode steps the display box off the watch face, the way dark
-          // steps #2B2B2B off #1B1B1B, so the readout reads as a display. The
-          // readout was a cool grey (#ECEEF1) tuned against a pure-white face;
-          // now that the face itself is warm, it takes the same warm chip tone
-          // used elsewhere on this palette instead of clashing as a blue-grey.
-          // Padding trimmed from px-3.5 — the readout's intrinsic width (5 fixed-
-          // px LCD glyphs) plus the circle's own side padding was wider than the
-          // card's height, which forced the aspect-square box to widen past a
-          // true circle into an oval.
-          // Light drops the hairline: its fill is already a clear step off the
-          // face, so the outline only added a hard edge inside a soft recess.
-          className={`my-0.5 rounded-lg bg-[var(--v69-card)] px-2 py-1.5 [[data-theme=light]_&]:bg-[var(--v69-inner)] [[data-theme=light]_.template-mock_&]:bg-[#e6e6e6] [[data-theme=dark]_&]:bg-[#2B2B2B] [[data-theme=dark]_.template-mock_&]:bg-[var(--v69-card)] ${MOCK_OUTLINE} [[data-theme=light]_&]:border-transparent [[data-theme=light]_.template-mock_&]:border-transparent`}
-        >
-          <span className="flex items-center gap-[4px] py-0.5">
-            {[..."09"].map((d, i) => (
-              <LcdGlyph key={`h${i}`} glyph={d} />
-            ))}
-            <LcdGlyph
-              glyph=":"
-              className="mx-px group-hover:[animation:v69Blink_1s_step-end_infinite] group-[.is-inview]:[animation:v69Blink_1s_step-end_infinite] [.template-mock_&]:!animate-none"
-            />
-            {[...String(minutes).padStart(2, "0")].map((d, i) => (
-              <LcdGlyph key={`m${i}`} glyph={d} />
-            ))}
+      <DesktopMock>
+        <div className="flex h-14 items-center gap-3 border-b border-[#E5E7EB] px-6 text-[15px] leading-none">
+          <svg viewBox="0 0 24 24" className="size-5 text-[#4B5563]" {...APP_ICON} aria-hidden>
+            <rect x="3.5" y="5" width="17" height="14" rx="2" />
+            <path d="M10 5v14" />
+          </svg>
+          <span>Time Tracker</span>
+          <svg viewBox="0 0 24 24" className="size-4 text-[#6B7280]" {...APP_ICON} aria-hidden>
+            <path d="m6 9 6 6 6-6" />
+          </svg>
+          <span className="ml-auto px-3 text-[14px] text-[#374151]">Start timer</span>
+          <span className="flex h-9 items-center gap-1.5 rounded-lg bg-[#1F2329] px-3.5 text-[14px] leading-none text-[#FFFFFF]">
+            <svg viewBox="0 0 24 24" className="size-4" {...APP_ICON} aria-hidden>
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+            New time entry
           </span>
         </div>
-      </div>
-    </div>
+        <div className="flex gap-6 px-6 pt-5">
+          <div className="w-[190px] shrink-0">
+            <span className="inline-flex rounded-lg bg-[#F1F2F4] p-1 text-[14px] leading-none">
+              <span className="rounded-md bg-[#FFFFFF] px-3 py-2">Entries</span>
+              <span className="px-3 py-2 text-[#6B7280]">Reports</span>
+            </span>
+            <div className="mt-6 px-1 text-[13px] leading-none text-[#6B7280]">Views</div>
+            <div className="mt-2.5 flex items-center justify-between rounded-md bg-[#F1F2F4] px-2 py-2.5 text-[14px] leading-none">
+              All entries <span className="text-[#6B7280]">43</span>
+            </div>
+            <div className="mt-6 px-1 text-[13px] leading-none text-[#6B7280]">Categories</div>
+            <div className="mt-2.5 space-y-0.5">
+              {TIME_CATEGORIES.map((c) => (
+                <div key={c.name} className="flex items-center gap-2.5 px-2 py-2.5 text-[14px] leading-none text-[#374151]">
+                  <span className={`size-2.5 rounded-full ${c.dot}`} />
+                  {c.name}
+                  <span className="ml-auto text-[13px] text-[#6B7280]">{c.count}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="grid grid-cols-3 gap-3">
+              {[
+                { label: "Total hours", value: "113.75", note: "43 entries" },
+                { label: "Billable", value: "104.25", note: "9.50 non-billable" },
+                { label: "This week", value: "33.00", note: "+6.50 vs last week" },
+              ].map((c) => (
+                <div key={c.label} className={`rounded-xl border ${APP_LINE} px-4 py-4`}>
+                  <div className="text-[13px] leading-none text-[#6B7280]">{c.label}</div>
+                  <div className="mt-3 text-[24px] leading-none tracking-tight">{c.value}</div>
+                  <div className="mt-2.5 text-[12px] leading-none text-[#6B7280]">{c.note}</div>
+                </div>
+              ))}
+            </div>
+            <div className={`mt-4 overflow-hidden rounded-xl border ${APP_LINE}`}>
+              <div className={`${TIME_COLS} h-11 px-4 text-[13px] leading-none text-[#4B5563]`}>
+                <span>Contact / company</span>
+                <span>Category</span>
+                <span>Hours</span>
+                <span>Billable</span>
+                <span>Logged by</span>
+              </div>
+              {TIME_ENTRIES.map((e) => (
+                <div key={e.who} className={`${TIME_COLS} h-11 border-t border-[#E5E7EB] px-4 text-[14px] leading-none`}>
+                  <span className="flex min-w-0 items-center gap-2.5">
+                    <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-[#E8F4F0] text-[9px] leading-none text-[#2F7A64]">
+                      {e.initials}
+                    </span>
+                    <span className="truncate">{e.who}</span>
+                  </span>
+                  <span className="flex items-center gap-2 text-[13px]">
+                    <span className={`size-1.5 rounded-full ${e.dot}`} />
+                    {e.cat}
+                  </span>
+                  <span className="tabular-nums">{e.hours}</span>
+                  <span>
+                    <span className={`rounded px-2 py-1 text-[12px] leading-none ${e.billable ? "bg-[#E3F6E9] text-[#1E7A44]" : "border border-[#E5E7EB] text-[#4B5563]"}`}>
+                      {e.billable ? "Billable" : "Non-billable"}
+                    </span>
+                  </span>
+                  <span className="truncate text-[13px] text-[#4B5563]">{e.by}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </DesktopMock>
+    </GlassCover>
   );
 }
 
@@ -907,207 +1022,276 @@ function CardTimeTracker() {
  * on the target — the same effect the pricing page's billing toggle uses, minus
  * its dependence on the value actually changing.
  */
-function V69RollingDigit({ digit, index }: { digit: number; index: number }) {
-  const rest = `-${digit + 10}em`;
-  return (
-    <span
-      className="relative inline-flex h-[1em] overflow-hidden"
-      style={{ "--v69-roll": rest } as React.CSSProperties}
-    >
-      {/* Invisible copy of the target digit sizes the column to that digit's own
-          width, so a narrow "1" doesn't sit in a box as wide as an "8". */}
-      <span aria-hidden className="invisible">
-        {digit}
-      </span>
-      <span
-        className="absolute inset-0 flex flex-col group-hover:[animation:v69DigitRoll_1.5s_cubic-bezier(0.16,1,0.3,1)_both] group-[.is-inview]:[animation:v69DigitRoll_1.5s_cubic-bezier(0.16,1,0.3,1)_both] motion-reduce:[animation:none!important]"
-        style={{
-          transform: `translateY(${rest})`,
-          animationDelay: `${index * 85}ms`,
-        }}
-      >
-        {Array.from({ length: 20 }, (_, n) => (
-          <span
-            key={n}
-            className="flex h-[1em] items-center justify-center leading-none"
-          >
-            {n % 10}
-          </span>
-        ))}
-      </span>
-    </span>
-  );
-}
-
 /** Money figure whose digits roll into place; separators stay put. */
-function V69RollingTotal({ value }: { value: string }) {
-  let digitIndex = 0;
-  return (
-    <span className="inline-flex items-baseline tabular-nums">
-      {value.split("").map((char, i) => {
-        if (char < "0" || char > "9") return <span key={i}>{char}</span>;
-        return (
-          <V69RollingDigit key={i} digit={Number(char)} index={digitIndex++} />
-        );
-      })}
-    </span>
-  );
-}
+// Proposal builder — the proposal templates as the team sees them on desktop:
+// each one a card with the firm's mark, its cover photo and its page count.
+// The photos are the real covers from the template's own screenshot.
+const PROPOSAL_TEMPLATES = [
+  { name: "Business Proposal", pages: 10, src: "/images/mocks/proposal-cover-1.webp" },
+  { name: "Project Proposal", pages: 4, src: "/images/mocks/proposal-cover-2.webp" },
+  { name: "Creative Brief", pages: 9, src: "/images/mocks/proposal-cover-3.webp" },
+  { name: "Marketing Retainer", pages: 9, src: "/images/mocks/proposal-cover-4.webp" },
+  { name: "Partnership Proposal", pages: 9, src: "/images/mocks/proposal-cover-5.webp" },
+];
 
-// Goal tracker — visual removed for now (the donut read poorly at card size);
-// the card face stays blank until a better composition lands.
-// Static (non-animated) filling mocks for the remaining featured cards — rows
-// centered with even gaps so the card reads composed, not top-clustered.
-// Proposal builder — the proposal total and the sections that build it, on a
-// glass panel over the pink shapes artwork. Dark artwork, so it takes none of
-// the dimming the photographic covers need in either skin.
 function CardProposal() {
-  const rows = ["Pricing", "Terms & e-sign"];
   return (
-    // Its only motion is the total revealing itself once — see v69TotalIn —
-    // which restarts on its own each time the card is hovered.
+    // Dark gradient in light mode, light in dark mode: every app-screen cover
+    // sits on a dark ground on the light page and a light one on the dark page.
     <GlassCover
-      photo="bg-[url(/images/mocks/proposal-shapes.webp)]"
-      focus="bg-[position:50%_25%]"
+      photo="bg-[url(/images/mocks/proposal-ambient-dark.webp)] [[data-theme=dark]_&]:bg-[url(/images/mocks/proposal-ambient.webp)]"
+      focus="bg-center"
       dim=""
-      panel="w-full flex-col"
+      inset=""
+      panel={false}
     >
-      <div className={COVER_ON_GLASS_QUIET}>Proposal</div>
-      {/* A hair of vertical padding so descender room isn't shaved off the
-          digit columns, which clip themselves as they roll. */}
-      <div className="mt-2 -my-0.5 py-0.5">
-        <div className="text-[26px] font-normal leading-none tracking-tight text-white">
-          <V69RollingTotal value="$18,500" />
-        </div>
-      </div>
-      <div className="mt-4 flex flex-col">
-        {rows.map((title) => (
-          <div
-            key={title}
-            // A rule above each row rather than a filled tile: on glass a boxed
-            // row would be a second pane inside the first.
-            className="flex items-center justify-between border-t border-[rgba(255,255,255,0.18)] py-2.5 last:pb-0"
-          >
-            <div className={`truncate ${COVER_ON_GLASS}`}>{title}</div>
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden
-              className="size-3.5 shrink-0 text-[rgba(255,255,255,0.72)]"
-            >
-              <path d="M9 6l6 6-6 6" />
+      <DesktopMock>
+        <div className="flex h-14 items-center gap-3 border-b border-[#E5E7EB] px-6 text-[15px] leading-none">
+          <svg viewBox="0 0 24 24" className="size-5 text-[#4B5563]" {...APP_ICON} aria-hidden>
+            <rect x="3.5" y="5" width="17" height="14" rx="2" />
+            <path d="M10 5v14" />
+          </svg>
+          <span className="text-[#6B7280]">Proposals</span>
+          <svg viewBox="0 0 24 24" className="size-3.5 text-[#9CA3AF]" {...APP_ICON} aria-hidden>
+            <path d="m9 6 6 6-6 6" />
+          </svg>
+          <span>Templates</span>
+          <span className="ml-auto flex h-9 items-center gap-1.5 rounded-lg bg-[#1F2329] px-3.5 text-[14px] leading-none text-[#FFFFFF]">
+            <svg viewBox="0 0 24 24" className="size-4" {...APP_ICON} aria-hidden>
+              <path d="M12 5v14M5 12h14" />
             </svg>
-          </div>
-        ))}
-      </div>
+            Create template
+          </span>
+        </div>
+        <div className="grid grid-cols-3 gap-4 px-5 pt-5">
+          {PROPOSAL_TEMPLATES.map((t) => (
+            <div key={t.name} className={`rounded-xl border ${APP_LINE} px-4 pb-4 pt-5`}>
+              <div className="flex items-center gap-2.5">
+                <span className="flex size-5 items-center justify-center rounded bg-[#7DA4FF]">
+                  <span className="h-2.5 w-3 skew-x-[-20deg] rounded-[1px] bg-[#FFFFFF]" />
+                </span>
+                <span className="h-4 w-px bg-[#E5E7EB]" />
+                <span className="text-[11px] leading-none">Your firm</span>
+              </div>
+              {/* eslint-disable-next-line @next/next/no-img-element -- a fixed thumbnail inside a scaled mock */}
+              <img src={t.src} alt="" className="mt-4 block aspect-[614/244] w-full object-cover" />
+              <div className="mt-4 flex items-center justify-between text-[14px] leading-none">
+                {t.name}
+                <span className="text-[#6B7280]">···</span>
+              </div>
+              <div className="mt-2 text-[13px] leading-none text-[#6B7280]">{t.pages} pages</div>
+            </div>
+          ))}
+        </div>
+      </DesktopMock>
     </GlassCover>
   );
 }
 
-// Client AI assistant — the composer itself, the whole card: the empty field a
-// client types their question into, with the attach control and the send button
-// on its footer row.
-// It used to play out an exchange — a sent bubble, then a shimmering "Searching
-// the web…" — on a face that inverted to near-white in the dark gallery so the
-// rail wouldn't be four dark squares in a row. That inversion made it the one
-// card that got brighter as the page went dark. The card is neutral in both
-// themes now, and what it shows is the moment before the question is asked.
-const CHAT_PLACEHOLDER = "Ask any question";
+// Client AI assistant — the assistant as the client sees it on desktop: the
+// welcome, three starter questions, and the question field. A spark mark
+// stands in for the app's emoji, which the site keeps out of its UI.
+const ASSISTANT_STARTERS = [
+  "What forms or contracts do I have open?",
+  "Where can I find my latest files?",
+  "How do I get in touch with my team?",
+];
 
 function CardChat() {
   return (
-    <div className="v69-chat-cover flex h-full flex-col bg-[var(--v69-card)] p-2 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
-      {/* One panel, filling the card: a field lifted a step off the face behind
-          the shared hairline, its own contents pinned to the corners. Its radius
-          is the card's 16px less the 8px it is inset by, so the two sets of
-          corners run parallel instead of the inner one reading rounder. */}
-      <div className="v69-chat-field flex h-full flex-col rounded-lg bg-[var(--v69-inner)] p-2.5 [[data-theme=dark]_&]:bg-[#2E2E2E]">
-        <div className="flex items-center">
-          {/* No MOCK_UPSCALED_META: that 9px rung was drawn for a gallery box
-              that scales its cover up, and this one renders near 1:1, so the
-              placeholder came out a third smaller than the 13px every other
-              cover sets its own primary line at. */}
-          <span className="whitespace-nowrap text-[13px] leading-none text-muted-foreground max-sm:[.template-mock-gallery_&]:text-[12px]">
-            {CHAT_PLACEHOLDER}
-          </span>
-          {/* The caret sits after the placeholder rather than before it, so the
-              field reads as waiting at the end of the prompt. */}
-          <span
-            aria-hidden
-            className="ml-0.5 h-3 w-px shrink-0 bg-[var(--v69-ink)] opacity-0 group-hover:[animation:caret_1s_step-end_infinite]"
-          />
-        </div>
-        {/* Footer: attach on the left, send on the right, the way every composer
-            on the platform is laid out. */}
-        <div className="mt-auto flex items-end justify-between">
-          <svg
-            viewBox="0 0 16 16"
-            className="size-4 text-muted-foreground"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            aria-hidden
-          >
-            <path d="M8 3.5v9M3.5 8h9" />
+    // Dark gradient in light mode, light in dark mode: every app-screen cover
+    // sits on a dark ground on the light page and a light one on the dark page.
+    <GlassCover
+      photo="bg-[url(/images/mocks/assistant-ambient-dark.webp)] [[data-theme=dark]_&]:bg-[url(/images/mocks/assistant-ambient.webp)]"
+      focus="bg-center"
+      dim=""
+      inset=""
+      panel={false}
+    >
+      <DesktopMock>
+        <div className="flex h-14 items-center gap-3 border-b border-[#E5E7EB] px-6 text-[15px] leading-none">
+          <svg viewBox="0 0 24 24" className="size-5 text-[#4B5563]" {...APP_ICON} aria-hidden>
+            <rect x="3.5" y="5" width="17" height="14" rx="2" />
+            <path d="M10 5v14" />
           </svg>
-          {/* The send button is the card's one piece of colour. Haze in both
-              themes: the zest fill read as a status green here rather than as
-              the brand, and the siblings' ports and meters are already blue. */}
-          <span className="flex size-7 items-center justify-center rounded-full bg-[#7DA4FF]">
-            {/* Inter's own arrow rather than a drawn path — the mock is set in
-                Inter, so the glyph's weight and terminals match the type around
-                it instead of being a second arrow drawn to different rules. */}
-            <span
-              aria-hidden
-              className="text-[15px] leading-none text-[#262626]"
-            >
-              ↑
-            </span>
-          </span>
+          <span>AI Assistant</span>
         </div>
-      </div>
-    </div>
+        <div className="flex h-12 items-center justify-between border-b border-[#E5E7EB] px-6 text-[15px] leading-none">
+          Assistant
+          <svg viewBox="0 0 24 24" className="size-5 text-[#6B7280]" {...APP_ICON} aria-hidden>
+            <circle cx="12" cy="12" r="8" />
+            <path d="M12 8v4l3 2" />
+          </svg>
+        </div>
+        {/* The column sits where the crop leaves it in view, not at the
+            centre of a screen wider than the card shows. */}
+        <div className="flex w-[640px] flex-col items-center pb-16 pt-14 text-center">
+          <span className="flex size-11 items-center justify-center rounded-full bg-[#EEF3FE] text-[#2F5BB7]">
+            <svg viewBox="0 0 24 24" className="size-5" fill="currentColor" aria-hidden>
+              <path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z" />
+            </svg>
+          </span>
+          <div className="mt-5 text-[22px] leading-none">How can we help?</div>
+          <div className="mt-3 w-[340px] text-[14px] leading-snug text-[#6B7280]">
+            Ask about your account, projects, or anything your team has documented here.
+          </div>
+          <div className="mt-6 w-[420px] space-y-2.5 text-left">
+            {ASSISTANT_STARTERS.map((q) => (
+              <div key={q} className={`rounded-xl border ${APP_LINE} px-4 py-3.5 text-[14px] leading-none`}>
+                {q}
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="border-t border-[#E5E7EB] px-4 py-4">
+          <div className={`flex h-12 items-center justify-between rounded-xl border ${APP_LINE} px-4 text-[14px] leading-none text-[#9CA3AF]`}>
+            Ask a question…
+            <svg viewBox="0 0 24 24" className="size-5 text-[#4B5563]" {...APP_ICON} aria-hidden>
+              <path d="M4 12 20 4l-5 16-3-7-8-1Z" />
+            </svg>
+          </div>
+        </div>
+      </DesktopMock>
+    </GlassCover>
   );
 }
+// Document collector — the request list as the team sees it on desktop: each
+// requested document with the contact it is from, its owner, priority and due
+// date. Owners are made-up names, so no colleague's name ships on the public
+// site.
+const DOC_PRIORITY = {
+  high: { label: "High", dot: "bg-[#E5484D]" },
+  medium: { label: "Medium", dot: "bg-[#F2A33A]" },
+  low: { label: "Low", dot: "bg-[#A0A6B1]" },
+} as const;
+const DOC_REQUESTS: {
+  doc: string;
+  initials: string;
+  contact: string;
+  owner: string;
+  priority: keyof typeof DOC_PRIORITY;
+  due: string;
+  status: string;
+  tint: string;
+}[] = [
+  { doc: "Signed engagement letter, FY2026 audit", initials: "TA", contact: "Tunde Adeyemi", owner: "", priority: "high", due: "Jun 19, 2026", status: "bg-[#30A46C]", tint: "bg-[#FBEDEC] text-[#A8453D]" },
+  { doc: "Prior-year audit management letter response", initials: "BP", contact: "Beaumont Partners", owner: "", priority: "medium", due: "Jun 23, 2026", status: "bg-[#30A46C]", tint: "bg-[#F3ECF8] text-[#7A3E9D]" },
+  { doc: "Annual compliance attestation", initials: "PR", contact: "Priya Raman", owner: "Maya Lin", priority: "low", due: "Jun 28, 2026", status: "bg-[#30A46C]", tint: "bg-[#FBEDEC] text-[#A8453D]" },
+  { doc: "W-9 for new vendor onboarding", initials: "SM", contact: "Sofia Marchetti", owner: "Sam Ortega", priority: "low", due: "Jun 29, 2026", status: "bg-[#30A46C]", tint: "bg-[#F3ECF8] text-[#7A3E9D]" },
+  { doc: "Inventory count worksheets", initials: "CO", contact: "Cascade Outdoor Co.", owner: "Neil Foster", priority: "medium", due: "Jul 6, 2026", status: "bg-[#30A46C]", tint: "bg-[#FBEDF6] text-[#A33D7A]" },
+  { doc: "ADV Part 2B brochure supplement", initials: "PR", contact: "Priya Raman", owner: "Sam Ortega", priority: "high", due: "Jul 28, 2026", status: "bg-[#E5484D]", tint: "bg-[#FBEDEC] text-[#A8453D]" },
+  { doc: "Certificate of insurance", initials: "DO", contact: "David Okonkwo", owner: "Leo Hart", priority: "high", due: "Jul 30, 2026", status: "bg-[#E5484D]", tint: "bg-[#FBEDEC] text-[#A8453D]" },
+  { doc: "Depreciation schedule for fixed assets", initials: "EV", contact: "Elena Vasquez", owner: "Maya Lin", priority: "medium", due: "Aug 9, 2026", status: "bg-[#F2A33A]", tint: "bg-[#ECEEF9] text-[#4B55A8]" },
+  { doc: "Payroll register, June 2026", initials: "AB", contact: "Amelia Brooks", owner: "Tara Quinn", priority: "medium", due: "Aug 10, 2026", status: "bg-[#F2A33A]", tint: "bg-[#F3ECF8] text-[#7A3E9D]" },
+  { doc: "Commercial lease agreement", initials: "NL", contact: "Northwind Logistics", owner: "Leo Hart", priority: "medium", due: "Aug 12, 2026", status: "bg-[#F2A33A]", tint: "bg-[#E8F4F0] text-[#2F7A64]" },
+];
+// Drawn at a desktop width and shown whole, so the table needs only as many
+// rows as end inside the window rather than running off its foot.
+const DOC_APP_W = 1000;
+const DOC_ROWS_SHOWN = 6;
+const DOC_COLS =
+  "grid grid-cols-[2.6fr_1.5fr_1.1fr_0.9fr_1fr_0.5fr] items-center gap-4";
 
-// Document collection — an upload checklist where each requested doc checks off
-// with a staggered pop on hover.
-// Document collector — a folder card. An earlier version drew a tab and a body
-// as two separately-outlined rectangles, which read as two stacked cards
-// rather than one folder. A real folder needs three overlapping layers: a back
-// plate whose tab is continuous with it, a sheet of paper peeking out of the
-// top, and a front panel covering the lower two-thirds. That overlap is the
-// whole reason the silhouette reads as "folder" and not "card".
-//
-// Both themes run the same structure, so the fills are the only thing that
-// changes between them — hoisted into --fld-* on the root rather than repeated
-// as a `[[data-theme=…]]` variant on every layer. Dark inverts the ladder's
-// direction (its "paper" is the *lightest* grey rather than white) so the
-// sheet stays the brightest thing in the stack in both skins.
 function CardDocuments() {
   return (
-    // The face alone for now — the folder that sat on it is in the history if
-    // it is wanted back.
-    //
-    // Two gradient layers, because the band runs on two axes: the 135deg one
-    // cuts it across the face with a hard upper edge, and the 45deg one lays
-    // the mint along its lower-left end. A single gradient gave an even blue
-    // band, which is the part that did not look like the reference.
-    //
-    // Light leaves the artwork at its own values — dimming it turned the band
-    // to mud. Dark steps it down so the cover is not a lit square in a dark
-    // row.
+    // A flat black face in light mode, as Project tracker has; off-white in
+    // dark mode, so no card is ever a dark square on the dark page.
     <GlassCover
-      photo="bg-[linear-gradient(45deg,rgba(183,214,190,0.50)_0%,rgba(183,214,190,0.14)_38%,rgba(183,214,190,0)_62%),linear-gradient(135deg,#F1EDE7_0%,#F0ECE6_43%,#ACDBEE_47%,#C6E2E7_62%,#EDE9E3_80%,#F1EDE7_100%)]"
-      focus=""
-      dim="[[data-theme=dark]_&]:brightness-[0.5]"
+      photo="bg-[#101010] [[data-theme=dark]_&]:bg-[#F7F7F4]"
+      focus="bg-center"
+      dim=""
+      inset=""
       panel={false}
-    />
+    >
+      <DesktopMockWhole appWidth={DOC_APP_W}>
+        <div className="flex h-16 items-center gap-2 border-b border-[#E5E7EB] px-6">
+          <span className="text-[16px] leading-none">Document collection</span>
+          <svg viewBox="0 0 24 24" className="size-4 text-[#6B7280]" {...APP_ICON} aria-hidden>
+            <path d="m6 9 6 6 6-6" />
+          </svg>
+          <span className="ml-auto flex h-9 items-center gap-1.5 rounded-lg bg-[#1F2329] px-3.5 text-[14px] leading-none text-[#FFFFFF]">
+            <svg viewBox="0 0 24 24" className="size-4" {...APP_ICON} aria-hidden>
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+            New request
+          </span>
+        </div>
+        <div className="px-6 pt-6">
+          <AppSearch placeholder="Search requests…" />
+          <div className="mt-3 flex items-center gap-2 text-[14px] leading-none">
+            <span className={`${APP_BOX} h-10 gap-2 px-3.5`}>
+              <svg viewBox="0 0 24 24" className="size-4" {...APP_ICON} aria-hidden>
+                <path d="M4 7h10M18 7h2M4 17h4M12 17h8" />
+                <circle cx="16" cy="7" r="2" />
+                <circle cx="10" cy="17" r="2" />
+              </svg>
+              Filters
+            </span>
+            <span className={`${APP_BOX} ml-auto h-10 gap-2 px-3.5`}>
+              <svg viewBox="0 0 24 24" className="size-4" {...APP_ICON} aria-hidden>
+                <rect x="3.5" y="4.5" width="17" height="4" rx="1" />
+                <path d="M5 8.5v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-9M10 12.5h4" />
+              </svg>
+              Archived
+            </span>
+            <span className={`flex h-10 overflow-hidden rounded-lg border ${APP_LINE} text-[#6B7280]`}>
+              <span className="flex items-center gap-2 bg-[#F1F2F4] px-3.5 text-[#1F2937]">
+                <svg viewBox="0 0 24 24" className="size-4" {...APP_ICON} aria-hidden>
+                  <rect x="4" y="4" width="16" height="16" rx="2" />
+                  <path d="M4 10h16M10 10v10" />
+                </svg>
+                Table
+              </span>
+              <span className="flex items-center gap-2 px-3.5">
+                <svg viewBox="0 0 24 24" className="size-4" {...APP_ICON} aria-hidden>
+                  <rect x="4" y="5" width="5" height="5" rx="1" />
+                  <rect x="4" y="14" width="5" height="5" rx="1" />
+                  <path d="M13 6.5h7M13 9h5M13 15.5h7M13 18h5" />
+                </svg>
+                Groups
+              </span>
+            </span>
+          </div>
+          <div className={`mt-4 overflow-hidden rounded-xl border ${APP_LINE}`}>
+            <div className={`${DOC_COLS} h-12 bg-[#F7F8FA] px-5 text-[14px] leading-none`}>
+              <span>Document</span>
+              <span>Contact</span>
+              <span>Owner</span>
+              <span>Priority</span>
+              <span>Due date</span>
+              <span>Status</span>
+            </div>
+            {DOC_REQUESTS.slice(0, DOC_ROWS_SHOWN).map((r) => (
+              <div
+                key={r.doc}
+                className={`${DOC_COLS} h-12 border-t border-[#E5E7EB] px-5 text-[14px] leading-none`}
+              >
+                <span className="truncate">{r.doc}</span>
+                <span className="flex min-w-0 items-center gap-2.5">
+                  <span
+                    className={`flex size-7 shrink-0 items-center justify-center rounded-full text-[11px] leading-none ${r.tint}`}
+                  >
+                    {r.initials}
+                  </span>
+                  <span className="truncate">{r.contact}</span>
+                </span>
+                <span className="truncate text-[#4B5563]">{r.owner || "–"}</span>
+                <span>
+                  <span className={`inline-flex items-center gap-1.5 rounded-full border ${APP_LINE} px-2.5 py-1.5 text-[13px] leading-none`}>
+                    <span className={`size-1.5 rounded-full ${DOC_PRIORITY[r.priority].dot}`} />
+                    {DOC_PRIORITY[r.priority].label}
+                  </span>
+                </span>
+                <span className="text-[#4B5563]">{r.due}</span>
+                <span>
+                  <span className={`block size-2 rounded-full ${r.status}`} />
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </DesktopMockWhole>
+    </GlassCover>
   );
 }
 
@@ -1418,300 +1602,282 @@ function CardInfo() {
     </a>
   );
 }
+// Client project tracker — the Progress Tracker app as an internal user sees it
+// on desktop: views and stages down the side, the three summary cards, and the
+// client list with each client's stage and progress.
+const TRACKER_STATS = [
+  { label: "Total tracked", value: "242", note: "Active records being monitored" },
+  { label: "In progress", value: "242", note: "Actively moving through stages" },
+  { label: "Complete", value: "0", note: "Reached final stage" },
+];
+const TRACKER_VIEWS = [
+  { label: "All records", count: 242 },
+  { label: "Archived", count: 0 },
+];
+const TRACKER_STAGES = [
+  { label: "Onboarding", count: 242, dot: "bg-[#E5736B]" },
+  { label: "In progress", count: 0, dot: "bg-[#5B8DEF]" },
+  { label: "Review", count: 0, dot: "bg-[#F2B53A]" },
+  { label: "Complete", count: 0, dot: "bg-[#4CC27A]" },
+];
+// Initials tints, each a pale fill with its own darker ink, as the app draws them.
+const TRACKER_ROWS = [
+  { initials: "AD", name: "Aaron Davis", tint: "bg-[#FBF3E4] text-[#9A6B1F]" },
+  { initials: "AW", name: "Aaron Wright", tint: "bg-[#E8F4F0] text-[#2F7A64]" },
+  { initials: "AC", name: "Adam Castellano", tint: "bg-[#F3ECF8] text-[#7A3E9D]" },
+  { initials: "AD", name: "Adam Duarte", tint: "bg-[#ECEEF9] text-[#4B55A8]" },
+  { initials: "AM", name: "Alex Moreau", tint: "bg-[#E8F4F0] text-[#2F7A64]" },
+  { initials: "AC", name: "Alexander Cox", tint: "bg-[#FBEDEC] text-[#A8453D]" },
+  { initials: "AM", name: "Amanda Morgan", tint: "bg-[#E8F4F0] text-[#2F7A64]" },
+  { initials: "AO", name: "Amara Okafor", tint: "bg-[#F3ECF8] text-[#7A3E9D]" },
+  { initials: "AB", name: "Amelia Brooks", tint: "bg-[#F3ECF8] text-[#7A3E9D]" },
+];
+const TRACKER_PROGRESS = 25;
+const TRACKER_UPDATED = "Sep 1, 2026";
+const TRACKER_MESSAGE = "Welcome! We are getting your workspace ready";
+const TRACKER_COLS = "grid grid-cols-[1.6fr_1fr_0.8fr_0.8fr_1.5fr_40px] items-center gap-4";
 
-// The glass these covers' panels are cut from: a light frost blurred and
-// desaturated so the photograph behind it is a tone rather than a scene. The
-// pane stays light — it is the picture that goes down in value under it (see
-// GlassCover), which is what lets white type sit on a frost this pale without
-// the panel itself turning into a dark slab.
-const COVER_GLASS =
-  "mock-lit-edge bg-[rgba(214,214,214,0.42)] [backdrop-filter:blur(20px)_saturate(0.6)] [-webkit-backdrop-filter:blur(20px)_saturate(0.6)] [--lit-angle:145deg] [--lit-mid:38%] [--lit-fade:78%] [--mock-edge-lit:rgba(255,255,255,0.85)] [--mock-line:rgba(255,255,255,0.28)]";
-
-// Type on the frost. One ink for the primary line and one for the second, so
-// the covers in this family agree instead of each picking its own.
-const COVER_ON_GLASS = "text-[13px] font-normal leading-none text-white";
-const COVER_ON_GLASS_QUIET =
-  "text-[10px] leading-none text-[rgba(255,255,255,0.72)]";
-// The slot an avatar or a file glyph sits in — cut from the frost rather than
-// filled, the way the slots on the reference shots are.
-const COVER_SLOT =
-  "flex size-9 shrink-0 items-center justify-center rounded-full bg-[rgba(255,255,255,0.22)] text-[13px] leading-none text-white";
-
-// A cover drawn as a frosted panel floating on a photograph — the treatment the
-// brand's product shots use. `photo` and `focus` are written as literal Tailwind
-// classes at each call site rather than built here, because the scanner only
-// generates the classes it can see in the source.
-function GlassCover({
-  photo,
-  focus,
-  panel = "flex-col",
-  // How far the panel is held off the card's edges. A record row needs more
-  // width for its second line than the tracker's chart does, so it is a knob.
-  inset = "px-7 py-4 max-sm:[.template-mock-gallery_&]:px-14 max-sm:[.template-mock-gallery_&]:py-6",
-  dim = "brightness-[0.78] [[data-theme=dark]_&]:brightness-[0.55]",
-  children,
-}: {
-  photo: string;
-  focus: string;
-  dim?: string;
-  panel?: string | false;
-  inset?: string;
-  children?: React.ReactNode;
-}) {
+// A ring with a quarter lit, drawn on a 100-unit path so the dash is the percentage.
+function TrackerRing({ pct }: { pct: number }) {
   return (
-    // The gallery's phone card is near full-bleed, so the default inset holds
-    // the panel in further there — at the desktop figure it ran the width of
-    // the screen.
-    <div
-      className={`relative flex h-full flex-col justify-center overflow-hidden rounded-[14px] ${inset}`}
-    >
-      {/* The face is its own layer so its dimming lands on it alone — as a
-          filter on the card it took the panel and its text down with it. It is
-          held below full brightness in BOTH skins: white type on a pale frost
-          needs what is under the frost to be darker than the type, and that
-          darkening is what the panel itself must not do. Neither a photograph
-          nor this artwork inverts, so dark only goes a step further down. */}
-      <span
-        className={`absolute inset-0 bg-cover ${photo} ${focus} ${dim}`}
-        aria-hidden
+    <svg viewBox="0 0 24 24" className="size-5 -rotate-90" aria-hidden>
+      <circle cx="12" cy="12" r="9" fill="none" stroke="#E5E7EB" strokeWidth="2.5" />
+      <circle
+        cx="12"
+        cy="12"
+        r="9"
+        fill="none"
+        stroke="#E5736B"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        pathLength={100}
+        strokeDasharray={`${pct} 100`}
       />
-      {panel === false || !children ? (
-        children
-      ) : (
-        <div
-          className={`relative flex rounded-[10px] p-3 ${COVER_GLASS} ${panel}`}
-        >
-          {children}
-        </div>
-      )}
-    </div>
+    </svg>
   );
 }
 
-// Client project tracker — the engagement's progress as the figure, with the
-// week's activity as a bar per day under it. A count of tasks closed was the
-// figure before and did not say anything a project tracker is for; what the
-// template promises is milestones and progress, so the headline is the
-// progress and the bars are the week behind it.
-//
-// The bars carry the palette's light blue (#BFE3F3), spelled out at each use
-// because Tailwind only generates the classes it can see in the source.
-const TRACKER_COMPLETE = 72;
-const TRACKER_DAYS: { day: string; done: number }[] = [
-  { day: "S", done: 2 },
-  { day: "M", done: 5 },
-  { day: "T", done: 3 },
-  { day: "W", done: 2 },
-  { day: "T", done: 4 },
-  { day: "F", done: 1 },
-  { day: "S", done: 1 },
-];
-// The busiest day sets the plot's top, so the week always fills its height.
-const TRACKER_PEAK = Math.max(...TRACKER_DAYS.map((d) => d.done));
-const TRACKER_PLOT = "h-[58px]";
-
 function CardTracker() {
   return (
+    // The brand artwork in light mode, its rounded bands framing the window
+    // from the left, which keeps this card's dark square in the gallery's
+    // checkerboard; the generator's off-white in dark mode, so no card is ever
+    // a dark square on the dark page.
     <GlassCover
-      photo="bg-[url(/images/mocks/tracker-tablet.webp)]"
-      focus="bg-[position:66%_20%]"
-      panel="flex-col"
+      photo="bg-[url(/images/mocks/tracker-bands.webp)] [[data-theme=dark]_&]:bg-none [[data-theme=dark]_&]:bg-[#F7F7F4]"
+      focus="bg-[position:0%_50%]"
+      dim=""
+      inset=""
+      panel={false}
     >
-      {/* The figure with its unit beside it. The unit is a pill cut from the
-          frost, centred against the figure rather than sitting on its baseline
-          — on a round tag the baseline is the text's, not the tag's, and it
-          hung low. */}
-      <div className="flex items-center gap-2">
-        <span className="text-[20px] font-normal leading-none tracking-tight text-white">
-          {TRACKER_COMPLETE}%
-        </span>
-        <span className="shrink-0 whitespace-nowrap rounded-full bg-[rgba(255,255,255,0.22)] px-2.5 py-1 text-[10px] font-normal leading-none text-white">
-          complete
-        </span>
-      </div>
-      {/* No axis: two numbers down the side were the only thing on the panel
-          that was not either the figure or the week, and the reference does
-          without them. */}
-      <div className="mt-3.5 flex items-end gap-1">
-        {TRACKER_DAYS.map(({ day, done }, i) => (
-          <div
-            key={`${day}-${i}`}
-            className="flex min-w-0 flex-1 flex-col items-center gap-2"
-          >
-            <div className={`flex ${TRACKER_PLOT} items-end`}>
-              <span
-                className="w-[9px] rounded-full bg-[#BFE3F3]"
-                style={{ height: `${(done / TRACKER_PEAK) * 100}%` }}
-              />
+      <DesktopMock>
+        <div className="flex h-14 items-center gap-3 border-b border-[#E5E7EB] px-6">
+          <svg viewBox="0 0 24 24" className="size-5 text-[#4B5563]" {...APP_ICON} aria-hidden>
+            <rect x="3.5" y="5" width="17" height="14" rx="2" />
+            <path d="M10 5v14" />
+          </svg>
+          <span className="text-[15px] leading-none">Progress Tracker</span>
+          <svg viewBox="0 0 24 24" className="size-4 text-[#6B7280]" {...APP_ICON} aria-hidden>
+            <path d="m6 9 6 6 6-6" />
+          </svg>
+          <span className={`${APP_BOX} ml-auto h-9 px-3.5 text-[14px] leading-none text-[#1F2937]`}>
+            Settings
+          </span>
+        </div>
+        <div className="flex">
+          <aside className="w-[220px] shrink-0 border-r border-[#E5E7EB] bg-[#FAFAFB] px-3 pb-[400px] pt-6">
+            <div className="px-2 text-[13px] leading-none text-[#6B7280]">Views</div>
+            <div className="mt-3 space-y-1">
+              {TRACKER_VIEWS.map((v, i) => (
+                <div
+                  key={v.label}
+                  className={`flex items-center justify-between rounded-md px-2 py-2.5 text-[14px] leading-none ${
+                    i === 0 ? `border ${APP_LINE} bg-[#FFFFFF]` : "text-[#4B5563]"
+                  }`}
+                >
+                  {v.label}
+                  <span className="text-[13px] text-[#6B7280]">{v.count}</span>
+                </div>
+              ))}
             </div>
-            <span className={COVER_ON_GLASS_QUIET}>{day}</span>
+            <div className="mx-2 my-5 border-t border-[#E5E7EB]" />
+            <div className="px-2 text-[13px] leading-none text-[#6B7280]">Stages</div>
+            <div className="mt-3 space-y-1">
+              {TRACKER_STAGES.map((st) => (
+                <div
+                  key={st.label}
+                  className="flex items-center gap-2.5 px-2 py-2.5 text-[14px] leading-none text-[#4B5563]"
+                >
+                  <span className={`size-2 rounded-full ${st.dot}`} />
+                  {st.label}
+                  <span className="ml-auto text-[13px] text-[#6B7280]">{st.count}</span>
+                </div>
+              ))}
+            </div>
+          </aside>
+          <div className="min-w-0 flex-1 px-6 pt-10">
+            <div className="grid grid-cols-3 gap-4">
+              {TRACKER_STATS.map((stat) => (
+                <div key={stat.label} className={`rounded-xl border ${APP_LINE} px-5 py-6`}>
+                  <div className="text-[13px] leading-none text-[#6B7280]">{stat.label}</div>
+                  <div className="mt-3.5 text-[36px] font-medium leading-none tracking-tight">
+                    {stat.value}
+                  </div>
+                  <div className="mt-3.5 text-[14px] leading-none text-[#6B7280]">
+                    {stat.note}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="mt-5 w-[320px]">
+              <AppSearch placeholder="Filter by contact…" />
+            </div>
+            <div className={`mt-5 overflow-hidden rounded-xl border ${APP_LINE}`}>
+              <div className={`${TRACKER_COLS} h-12 bg-[#F7F8FA] px-4 text-[13px] leading-none text-[#6B7280]`}>
+                <span className="text-[#1F2937]">Name</span>
+                <span>Stage</span>
+                <span>Progress</span>
+                <span>Last updated</span>
+                <span>Current message</span>
+                <span />
+              </div>
+              {TRACKER_ROWS.map((row, i) => (
+                <div
+                  key={`${row.name}-${i}`}
+                  className={`${TRACKER_COLS} h-12 border-t border-[#E5E7EB] px-4 text-[14px] leading-none`}
+                >
+                  <span className="flex min-w-0 items-center gap-2.5">
+                    <span
+                      className={`flex size-7 shrink-0 items-center justify-center rounded-full text-[11px] leading-none ${row.tint}`}
+                    >
+                      {row.initials}
+                    </span>
+                    <span className="truncate">{row.name}</span>
+                  </span>
+                  <span>
+                    <span className="rounded-md border border-[#F5C2C0] bg-[#FDECEC] px-2 py-1.5 text-[12px] leading-none text-[#9B2C2C]">
+                      Onboarding
+                    </span>
+                  </span>
+                  <span className="flex items-center gap-1.5 text-[13px] text-[#6B7280]">
+                    <TrackerRing pct={TRACKER_PROGRESS} />
+                    {TRACKER_PROGRESS}%
+                  </span>
+                  <span className="text-[13px] text-[#6B7280]">{TRACKER_UPDATED}</span>
+                  <span className="truncate text-[13px]">{TRACKER_MESSAGE}</span>
+                  <span className="text-center text-[#6B7280]">···</span>
+                </div>
+              ))}
+            </div>
           </div>
-        ))}
-      </div>
+        </div>
+      </DesktopMock>
     </GlassCover>
   );
 }
 
-// Client help desk — three request rows, each a soft block carrying a status
-// glyph, the request, and its status. The block layout with real content, not
-// empty placeholders.
-const SUPPORT_REQUESTS: {
+// Client help desk — the support inbox as the client sees it on desktop: their
+// open requests down the side, one open, and the thread with the team. The
+// staff name is made up, so no colleague's name ships on the public site.
+const HELPDESK_STATUS = {
+  new: "bg-[#E6EEFC] text-[#2F5BB7]",
+  progress: "bg-[#FDF3D7] text-[#8A5A00]",
+} as const;
+const HELPDESK_REQUESTS: {
   title: string;
   meta: string;
-  state: "open" | "progress" | "done";
+  status: keyof typeof HELPDESK_STATUS;
+  dot: string;
+  open?: boolean;
 }[] = [
-  { title: "Can't access portal", meta: "Open", state: "open" },
-  { title: "Invoice question", meta: "In progress", state: "progress" },
-  { title: "Password reset", meta: "Resolved", state: "done" },
+  { title: "Transfer ownership of a shared workspace", meta: "Account · opened Aug 8", status: "new", dot: "bg-[#2F6FEB]" },
+  { title: "Uploads over 50MB time out before completing", meta: "Technical · opened Jul 31", status: "progress", dot: "bg-[#E5458A]", open: true },
+  { title: "Point of contact for contract renewal", meta: "General · opened Jul 31", status: "new", dot: "bg-[#9CA3AF]" },
+  { title: "Version history would help on shared files", meta: "Feedback · opened Jul 23", status: "progress", dot: "bg-[#30A46C]" },
+  { title: "Add a shared mailbox as a notification recipient", meta: "Account · opened Jul 19", status: "new", dot: "bg-[#2F6FEB]" },
 ];
-// The row whose status resolves on hover — the middle one, so the change happens
-// at the centre of the card rather than at an edge.
-const SUPPORT_RESOLVING_ROW = 1;
-// The three states cross-fade inside one grid cell: in progress leaves right away,
-// the spinner holds the middle of the sequence (see .v69-status-load in
-// globals.css), and the tick lands as the spinner clears. Transitions rather than
-// keyframes on the two ends, so they play backwards on their own when the pointer
-// leaves; the delays only exist in the hover state.
-// The transitioned properties are spelled out because scale-75 sets the `scale`
-// property, not `transform` — transitioning transform here animated nothing.
-// (The gallery zeroes every transition-duration under .template-mock, so the swap
-// is static there by design and only plays on the hero.)
-const STATUS_LAYER =
-  "col-start-1 row-start-1 duration-300 [transition-property:opacity,scale] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)]";
-const STATUS_LEAVING = `${STATUS_LAYER} group-hover:scale-75 group-hover:opacity-0 group-[.is-inview]:scale-75 group-[.is-inview]:opacity-0`;
-const STATUS_ARRIVING = `${STATUS_LAYER} scale-75 opacity-0 group-hover:scale-100 group-hover:opacity-100 group-hover:[transition-delay:1120ms] group-[.is-inview]:scale-100 group-[.is-inview]:opacity-100 group-[.is-inview]:[transition-delay:1120ms]`;
 
-const SUPPORT_ICON_CLS =
-  // The same warm ink every other glyph in these covers uses. The gallery used to
-  // override it with a periwinkle-derived blue, which belonged to the blue face
-  // this card once had; against the warm off-white it took instead, that blue was
-  // the only hue in a set of monotone covers.
-  // Dark takes a solid value rather than the muted token: that token is 50%
-  // white, and at 1.5px — with the spinner's arc dashed on top of that — the
-  // loading beat was too faint to read on the row's own #303030 face. Light has
-  // always used a solid grey here for the same reason.
-  "size-3.5 shrink-0 text-muted-foreground [[data-theme=light]_&]:text-[#5B5C53] [[data-theme=dark]_&]:text-[rgba(255,255,255,0.82)]";
-
-// The loading state: a ring with a gap, spun by v69-status-load. An arc rather
-// than a ring of dots so it reads at 14px, where dots close up into a solid ring.
-function SupportSpinnerIcon() {
-  return (
-    <svg viewBox="0 0 16 16" className={SUPPORT_ICON_CLS} aria-hidden>
-      <circle
-        cx="8"
-        cy="8"
-        r="6"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        pathLength={100}
-        strokeDasharray="72 28"
-      />
-    </svg>
-  );
-}
-
-function SupportStatusIcon({ state }: { state: "open" | "progress" | "done" }) {
-  const cls = SUPPORT_ICON_CLS;
-  if (state === "done") {
-    return (
-      <svg viewBox="0 0 16 16" className={cls} aria-hidden>
-        <circle cx="8" cy="8" r="6.5" fill="currentColor" />
-        <path
-          d="M5.4 8.2l1.7 1.7 3.4-3.7"
-          fill="none"
-          stroke="var(--v69-well)"
-          strokeWidth="1.6"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    );
-  }
-  if (state === "progress") {
-    return (
-      <svg viewBox="0 0 16 16" className={cls} aria-hidden>
-        <circle
-          cx="8"
-          cy="8"
-          r="6"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-        />
-        <path d="M8 3.75a4.25 4.25 0 0 1 0 8.5z" fill="currentColor" />
-      </svg>
-    );
-  }
-  return (
-    <svg viewBox="0 0 16 16" className={cls} aria-hidden>
-      <circle
-        cx="8"
-        cy="8"
-        r="6"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-      />
-    </svg>
-  );
-}
 function CardSupport() {
   return (
-    // The same warm beige face and inner step as the rest of the set, in every
-    // frame. The gallery used to flood this one with a brand hue — periwinkle in
-    // light, lime in dark — which made it the only saturated tile in the rail and
-    // pulled the eye off whatever cover you were actually looking at.
-    // v69-cover-support is a hook, not a style: the dotted ground it turns on is
-    // scoped to the templates gallery in globals.css, so the home hero's rail
-    // keeps this cover's plain face.
-    <div className="v69-cover-support flex h-full flex-col justify-center gap-2 bg-[var(--v69-card)] p-4 [[data-theme=light]_&]:bg-[var(--v69-card)] [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
-      {SUPPORT_REQUESTS.map((r, i) => (
-        <div
-          key={r.title}
-          // The rows are just there now. They used to drop in one after another
-          // like arriving notifications, which said the queue was filling up —
-          // but the app is about working a queue down, and three rows landing in
-          // sequence is a lot of motion for a thing that only illustrates a list.
-          // A hairline, the same one the onboarding tile carries: the fill alone
-          // is a small step off the card, so without an edge the rows read as
-          // patches of the face rather than as blocks sitting on it.
-          // In the gallery the rows take the same flat white block every other
-          // cover's inner piece uses; the warm inner step only reads as a step
-          // beside the hero's own face.
-          // Light drops the edge on the hero: against the hero's own warm face
-          // the fill is already a legible step, and the hairline read as an
-          // outline drawn round each row. The gallery keeps it — its rows sit on
-          // flat white, where the fill alone is not a step. Dark is untouched.
-          className="flex items-center gap-2.5 rounded-lg border border-black/[0.08] bg-[var(--v69-inner)] px-3 py-2.5 [[data-theme=light]_&]:border-transparent [[data-theme=light]_&]:bg-[var(--v69-inner)] [[data-theme=light]_.template-mock_&]:border-black/[0.08] [[data-theme=light]_.template-mock_&]:bg-[#FFFFFF] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.09)]"
-        >
-          {/* One request resolves instead: the middle row's status crosses from in
-              progress to done, which is the single thing this app does. It loads on
-              the way — the spinner is the beat that says work happened, rather than
-              the tick simply replacing the half-circle. All three states are stacked
-              in one grid cell so none of them moves the row. */}
-          {i === SUPPORT_RESOLVING_ROW ? (
-            <span className="grid size-3.5 shrink-0 place-items-center">
-              <span className={STATUS_LEAVING}>
-                <SupportStatusIcon state="progress" />
-              </span>
-              <span className={`${STATUS_LAYER} v69-status-load`}>
-                <SupportSpinnerIcon />
-              </span>
-              <span className={STATUS_ARRIVING}>
-                <SupportStatusIcon state="done" />
-              </span>
-            </span>
-          ) : (
-            <SupportStatusIcon state={r.state} />
-          )}
-          <p className="min-w-0 truncate text-[13px] leading-tight text-[var(--v69-ink)] [[data-theme=light]_&]:text-[#3a3a3a] [[data-theme=light]_.template-mock-gallery_&]:text-[#1B1B1B]">
-            {r.title}
-          </p>
+    // Dark gradient in light mode, light in dark mode: every app-screen cover
+    // sits on a dark ground on the light page and a light one on the dark page.
+    <GlassCover
+      photo="bg-[url(/images/mocks/helpdesk-ambient-dark.webp)] [[data-theme=dark]_&]:bg-[url(/images/mocks/helpdesk-ambient.webp)]"
+      focus="bg-center"
+      dim=""
+      inset=""
+      panel={false}
+    >
+      <DesktopMock>
+        <div className="flex h-14 items-center gap-3 border-b border-[#E5E7EB] px-6 text-[15px] leading-none">
+          <svg viewBox="0 0 24 24" className="size-5 text-[#4B5563]" {...APP_ICON} aria-hidden>
+            <rect x="3.5" y="5" width="17" height="14" rx="2" />
+            <path d="M10 5v14" />
+          </svg>
+          <span className="text-[#6B7280]">Client Support Requests</span>
+          <svg viewBox="0 0 24 24" className="size-3.5 text-[#9CA3AF]" {...APP_ICON} aria-hidden>
+            <path d="m9 6 6 6-6 6" />
+          </svg>
+          <span>Uploads over 50MB time out before completing</span>
         </div>
-      ))}
-    </div>
+        <div className="flex gap-5 px-6 pt-5">
+          <div className="w-[400px] shrink-0">
+            <div className="flex items-center gap-3">
+              <span className="flex size-9 items-center justify-center rounded-lg bg-[#E8F4F0] text-[13px] leading-none text-[#2F7A64]">LD</span>
+              <span>
+                <span className="block text-[15px] leading-none">Support</span>
+                <span className="mt-1.5 block text-[13px] leading-none text-[#6B7280]">Signed in as Larkspur Design</span>
+              </span>
+            </div>
+            <div className="mt-6 flex gap-6 border-b border-[#E5E7EB] text-[14px] leading-none">
+              <span className="border-b-2 border-[#1F2937] pb-3">Open 5</span>
+              <span className="pb-3 text-[#6B7280]">Resolved 1</span>
+              <span className="pb-3 text-[#6B7280]">All 6</span>
+            </div>
+            <div className={`mt-4 overflow-hidden rounded-xl border ${APP_LINE}`}>
+              {HELPDESK_REQUESTS.map((r, i) => (
+                <div
+                  key={r.title}
+                  className={`px-4 py-3.5 ${i > 0 ? "border-t border-[#E5E7EB]" : ""} ${r.open ? "bg-[#F7F8FA]" : ""}`}
+                >
+                  <div className="flex items-center gap-2.5 text-[14px] leading-none">
+                    <span className={`size-2 shrink-0 rounded-full ${r.dot}`} />
+                    <span className="min-w-0 flex-1 truncate">{r.title}</span>
+                    <span className={`shrink-0 rounded-md px-2 py-1 text-[12px] ${HELPDESK_STATUS[r.status]}`}>
+                      {r.status === "new" ? "New" : "In progress"}
+                    </span>
+                  </div>
+                  <div className="mt-2 pl-[18px] text-[13px] leading-none text-[#6B7280]">{r.meta}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className={`min-w-0 flex-1 rounded-xl border ${APP_LINE}`}>
+            <div className="border-b border-[#E5E7EB] px-5 py-4">
+              <div className="text-[15px] leading-none">Uploads over 50MB time out before completing</div>
+              <div className="mt-2.5 flex items-center gap-2 text-[13px] leading-none text-[#6B7280]">
+                <span className={`rounded-md px-2 py-1 ${HELPDESK_STATUS.progress}`}>In progress</span>
+                <span className="size-2 rounded-full bg-[#E5458A]" /> Technical · opened Jul 31
+              </div>
+            </div>
+            <div className="space-y-5 px-5 py-5 text-[14px] leading-snug">
+              <div className="ml-16">
+                <div className="mb-2 text-right text-[12px] leading-none text-[#6B7280]">Leo Hart · Staff · Jul 31</div>
+                <div className="rounded-xl bg-[#EEF3FE] px-4 py-3">
+                  Thanks, could you tell me roughly how long it runs before failing, and whether the tab stays active the whole time?
+                </div>
+              </div>
+              <div className="mr-16">
+                <div className="mb-2 text-[12px] leading-none text-[#6B7280]">Mila Petrov · Aug 1</div>
+                <div className="rounded-xl bg-[#F1F2F4] px-4 py-3">
+                  Around four minutes, and yes, the tab stays open the whole time.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </DesktopMock>
+    </GlassCover>
   );
 }
 
@@ -1724,78 +1890,148 @@ const MOCK_OUTLINE =
 // dark mode (the ink token inverts, so the label must invert with it).
 const ON_INK = "text-[var(--v69-well)]";
 
-// Content approval flow — one item under review, drawn the way the contract
-// cover draws its agreement: a white panel on the dotted ground, the item and
-// its status in the header, the Approve button on the foot. The app is a
-// table of these, but a table at cover size is five grey rows; one item with
-// its Approve button says what the app is for.
-//
-// On hover / in view the status crosses from Awaiting review to Approved — the
-// one thing the app does.
-const CONTENT_APPROVAL_ITEM = {
-  title: "Q3 client letter",
-  meta: "Brightwell · Due Nov 8",
-};
-
-// One geometry for both states, so the chip changes colour rather than size.
-const APPROVAL_CHIP =
-  "whitespace-nowrap rounded-md px-2 py-1 text-[10px] uppercase leading-none tracking-wide max-sm:[.template-mock-gallery_&]:text-[9px]";
-// No spinner beat here, so the arriving chip follows the leaving one closely
-// rather than on the support cover's 1120ms delay.
-const APPROVAL_LEAVING = `${STATUS_LAYER} group-hover:scale-75 group-hover:opacity-0 group-[.is-inview]:scale-75 group-[.is-inview]:opacity-0 group-hover:[transition-delay:500ms] group-[.is-inview]:[transition-delay:500ms]`;
-const APPROVAL_ARRIVING = `${STATUS_LAYER} scale-75 opacity-0 group-hover:scale-100 group-hover:opacity-100 group-hover:[transition-delay:700ms] group-[.is-inview]:scale-100 group-[.is-inview]:opacity-100 group-[.is-inview]:[transition-delay:700ms]`;
+// Content approval flow — the approvals list as the team sees it on desktop:
+// counts by status across the top, then each item with its client, owner, due
+// date and status. Owners are made-up names, so no colleague's name ships on
+// the public site.
+const CONTENT_COUNTS = [
+  { label: "All", value: 41 },
+  { label: "Draft", value: 5 },
+  { label: "Awaiting review", value: 13 },
+  { label: "Changes requested", value: 8 },
+  { label: "Approved", value: 10 },
+  { label: "Rejected", value: 5 },
+];
+const CONTENT_STATUS = {
+  awaiting: { label: "Awaiting review", cls: "bg-[#FDF3D7] text-[#8A5A00]" },
+  draft: { label: "Draft", cls: "bg-[#F1F2F4] text-[#374151]" },
+  changes: { label: "Changes requested", cls: "bg-[#E6EEFC] text-[#2F5BB7]" },
+} as const;
+const CONTENT_ROWS: {
+  title: string;
+  tag: string;
+  initial: string;
+  client: string;
+  company?: string;
+  owner: string;
+  due: string;
+  status: keyof typeof CONTENT_STATUS;
+  created: string;
+  tint: string;
+}[] = [
+  { title: "Studio capabilities deck redesign", tag: "Brand & Creative", initial: "M", client: "Mila Petrov", company: "Larkspur Design", owner: "Maya Lin", due: "Nov 26, 2026", status: "draft", created: "Oct 27, 2026", tint: "bg-[#E8F4F0] text-[#2F7A64]" },
+  { title: "Annual shareholder letter design", tag: "Financial Reporting", initial: "T", client: "Tunde Adeyemi", company: "Kestrel Holdings", owner: "Sam Ortega", due: "Nov 16, 2026", status: "awaiting", created: "Oct 26, 2026", tint: "bg-[#FBEDEC] text-[#A8453D]" },
+  { title: "Driver recruitment video storyboard", tag: "Campaign Assets", initial: "N", client: "Northwind Logistics", owner: "Leo Hart", due: "Nov 18, 2026", status: "draft", created: "Oct 25, 2026", tint: "bg-[#E8F4F0] text-[#2F7A64]" },
+  { title: "API documentation landing page", tag: "Web & Content", initial: "T", client: "Triyama Software", owner: "Ari Cole", due: "Nov 14, 2026", status: "awaiting", created: "Oct 21, 2026", tint: "bg-[#ECEEF9] text-[#4B55A8]" },
+  { title: "Lab safety compliance video script", tag: "Contracts & Legal", initial: "M", client: "Meridian Labs", owner: "Tara Quinn", due: "Nov 12, 2026", status: "awaiting", created: "Oct 20, 2026", tint: "bg-[#E8F4F0] text-[#2F7A64]" },
+  { title: "Portfolio impact report, 2026 edition", tag: "Financial Reporting", initial: "R", client: "Redwood Ventures", owner: "Leo Hart", due: "Nov 7, 2026", status: "changes", created: "Oct 17, 2026", tint: "bg-[#E8F4F0] text-[#2F7A64]" },
+];
+const CONTENT_COLS =
+  "grid grid-cols-[1.6fr_1.4fr_0.9fr_0.9fr_1.1fr_0.9fr] items-center gap-4";
 
 function CardContentApproval() {
   return (
-    // v69-cover-column is the phone treatment the data room and other
-    // single-record covers share, so this one's type lands at their size there.
-    // Ink and muted are pinned in dark for the same reason the data room pins
-    // them: the template detail page renders mocks without the dark skin.
-    <div className="v69-cover-column v69-plot-grid v69-plot-grid--dots flex h-full items-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2] [[data-theme=dark]_&]:[--muted-foreground:#8F8F8F] [[data-theme=dark]_&]:[--v69-ink:#F2F2F2]">
-      <div className="w-full overflow-hidden rounded-xl border border-black/[0.08] bg-[#FFFFFF] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.09)] [[data-theme=dark]_&]:bg-[#303030]">
-        <div className="flex flex-col items-start gap-2 px-3 py-2.5">
-          {/* The status on a row of its own: beside the title it took the
-              room the title needed, and at the hero rail's 212px both the item
-              and its client truncated to a few letters. Both chips share one
-              grid cell so the swap never moves anything. */}
-          <span className="grid">
-            {/* Waiting is neutral; only the approved state spends the covers' one
-                live colour — lime in light, periwinkle in dark, the same marker
-                the contract cover's Signed chip carries. */}
-            <span
-              className={`${APPROVAL_LEAVING} ${APPROVAL_CHIP} bg-[#EFEFEF] text-[#4d4d4d] [[data-theme=light]_.template-mock_&]:bg-[#e6e6e6] [[data-theme=dark]_&]:bg-[rgba(255,255,255,0.14)] [[data-theme=dark]_&]:text-[#EDEDED]`}
-              style={MOCK_MONO}
-            >
-              Awaiting review
-            </span>
-            <span
-              className={`${APPROVAL_ARRIVING} ${APPROVAL_CHIP} justify-self-start bg-[#D9ED92] text-[#1B1B1B] [[data-theme=dark]_&]:bg-[#7DA4FF]`}
-              style={MOCK_MONO}
-            >
-              Approved
-            </span>
-          </span>
-          {/* Real line heights, not leading-none: truncate clips to the line box,
-              and at leading-none that sheared the descenders off "Brightwell". */}
-          <span className="flex w-full min-w-0 flex-col gap-0.5">
-            <span className="truncate text-[13px] leading-[1.3] text-[var(--v69-ink)]">
-              {CONTENT_APPROVAL_ITEM.title}
-            </span>
-            <span className="truncate text-[11px] leading-[1.35] text-muted-foreground">
-              {CONTENT_APPROVAL_ITEM.meta}
-            </span>
+    // Dark gradient in light mode, light in dark mode: every app-screen cover
+    // sits on a dark ground on the light page and a light one on the dark page.
+    <GlassCover
+      photo="bg-[url(/images/mocks/content-approval-ambient-dark.webp)] [[data-theme=dark]_&]:bg-[url(/images/mocks/content-approval-ambient.webp)]"
+      focus="bg-center"
+      dim=""
+      inset=""
+      panel={false}
+    >
+      <DesktopMock>
+        <div className="flex h-14 items-center gap-3 border-b border-[#E5E7EB] px-6">
+          <svg viewBox="0 0 24 24" className="size-5 text-[#4B5563]" {...APP_ICON} aria-hidden>
+            <rect x="3.5" y="5" width="17" height="14" rx="2" />
+            <path d="M10 5v14" />
+          </svg>
+          <span className="text-[15px] leading-none">Content Approval</span>
+          <svg viewBox="0 0 24 24" className="size-4 text-[#6B7280]" {...APP_ICON} aria-hidden>
+            <path d="m6 9 6 6 6-6" />
+          </svg>
+          <span className="ml-auto flex h-9 items-center gap-1.5 rounded-lg bg-[#1F2329] px-3.5 text-[14px] leading-none text-[#FFFFFF]">
+            <svg viewBox="0 0 24 24" className="size-4" {...APP_ICON} aria-hidden>
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+            New approval item
           </span>
         </div>
-        {/* The one answer the flow exists to collect, full width on the foot. */}
-        <div className="border-t border-black/[0.07] px-3 py-2.5 [[data-theme=dark]_&]:border-[rgba(255,255,255,0.16)]">
-          <span
-            className={`flex h-7 w-full items-center justify-center rounded-lg bg-[var(--v69-ink)] text-[11px] leading-[1.3] ${ON_INK} [[data-theme=dark]_&]:text-[#1B1B1B]`}
-          >
-            Approve
-          </span>
+        <div className="px-6 pb-5 pt-6">
+          <div className="text-[26px] leading-none tracking-tight">Content approval</div>
+          <div className="mt-2.5 text-[14px] leading-none text-[#6B7280]">
+            All clients and companies
+          </div>
         </div>
-      </div>
-    </div>
+        <div className="grid grid-cols-6 border-y border-[#E5E7EB]">
+          {CONTENT_COUNTS.map((c, i) => (
+            <div
+              key={c.label}
+              className={`flex flex-col items-center gap-2 py-4 ${i === 0 ? "bg-[#F1F2F4]" : "border-l border-[#E5E7EB]"}`}
+            >
+              <span className="text-[20px] leading-none">{c.value}</span>
+              <span className="text-[13px] leading-none text-[#6B7280]">{c.label}</span>
+            </div>
+          ))}
+        </div>
+        <div className="px-6 pt-5">
+          <div className="flex items-center gap-5 text-[14px] leading-none text-[#4B5563]">
+            <div className="w-[200px]">
+              <AppSearch placeholder="Search…" />
+            </div>
+            <span>Client / company</span>
+            <span>Owner</span>
+            <span>Due date</span>
+          </div>
+          <div className={`mt-5 overflow-hidden rounded-xl border ${APP_LINE}`}>
+            <div className={`${CONTENT_COLS} h-11 px-4 text-[14px] leading-none`}>
+              <span>Title</span>
+              <span>Client / company</span>
+              <span>Owner</span>
+              <span>Due</span>
+              <span>Status</span>
+              <span>Created</span>
+            </div>
+            {CONTENT_ROWS.map((r) => (
+              <div
+                key={r.title}
+                className={`${CONTENT_COLS} h-[68px] border-t border-[#E5E7EB] px-4 text-[14px] leading-none`}
+              >
+                <span className="min-w-0">
+                  <span className="block truncate">{r.title}</span>
+                  <span className={`mt-2 inline-block rounded-full border ${APP_LINE} px-2 py-1 text-[12px] leading-none`}>
+                    {r.tag}
+                  </span>
+                </span>
+                <span className="flex min-w-0 items-center gap-2.5">
+                  <span
+                    className={`flex size-7 shrink-0 items-center justify-center rounded-full text-[12px] leading-none ${r.tint}`}
+                  >
+                    {r.initial}
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block truncate">{r.client}</span>
+                    {r.company && (
+                      <span className="mt-1.5 block truncate text-[13px] text-[#6B7280]">
+                        {r.company}
+                      </span>
+                    )}
+                  </span>
+                </span>
+                <span className="truncate">{r.owner}</span>
+                <span>{r.due}</span>
+                <span>
+                  <span className={`rounded-md px-2 py-1.5 text-[13px] leading-none ${CONTENT_STATUS[r.status].cls}`}>
+                    {CONTENT_STATUS[r.status].label}
+                  </span>
+                </span>
+                <span className="text-[#6B7280]">{r.created}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </DesktopMock>
+    </GlassCover>
   );
 }
 
@@ -1833,83 +2069,100 @@ function CardBooking() {
   );
 }
 
-// Client calendar — a today agenda widget: the weekday, the date, and the day's
-// events (here, none). Monochrome, outline-framed (the weekday takes the dark
-// accent that image 1 renders in red).
-function CardCalendar() {
-  return (
-    // Two zones, the way a calendar widget is built: a plotted strip standing in
-    // for the month grid above, and the day itself set on a clean surface below.
-    // The dots ran edge to edge before, which left the date floating in texture
-    // rather than sitting on a page.
-    <div className="flex h-full flex-col bg-[var(--v69-card)]">
-      {/* A hairline on the seam: the two zones are close in value, so without a
-          rule between them the strip read as a shadow falling on the surface
-          rather than as a band above it. */}
-      <div className="v69-plot-grid v69-plot-grid--dots h-[42%] w-full shrink-0 border-b border-black/[0.07] bg-[var(--v69-inner)] [[data-theme=light]_.template-mock_&]:bg-[#ebebeb] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.16)] [[data-theme=dark]_&]:bg-[rgba(255,255,255,0.04)]" />
-      {/* The surface the date is set on: a clear step lighter than the strip, so
-          the two zones read as texture over paper rather than as one field. */}
-      <div className="flex flex-1 flex-col justify-start bg-[#FFFFFF] px-4 pt-3.5 [[data-theme=light]_.template-mock_&]:bg-[#fafafa] [[data-theme=dark]_&]:bg-[#1F1F1F]">
-        {/* The weekday is set in the mono face the site uses for every date and
-            figure, and kept neutral: coloured, it read as a status rather than
-            as the label on the date under it. */}
-        <span
-          className="text-[11px] uppercase leading-none tracking-wide text-muted-foreground"
-          style={MOCK_MONO}
-        >
-          Tuesday
-        </span>
-        <span className="mt-2 text-[30px] font-normal leading-none tracking-tight text-[var(--v69-ink)] max-sm:[.template-mock-gallery_&]:text-[26px]">
-          Aug 12
-        </span>
-      </div>
-    </div>
-  );
-}
+// Case status page — the case board as the team sees it on desktop: a column
+// per stage, and a card per case with its client, the latest note and when
+// it last moved. Em dashes from the source notes are rewritten as commas.
+const CASE_STAGES: {
+  name: string;
+  cases: { title: string; initials: string; client: string; owner: string; note: string; updated: string }[];
+}[] = [
+  { name: "Discovery", cases: [
+    { title: "Independent contractor agreement", initials: "TA", client: "Tunde Adeyemi", owner: "JW", note: "Waiting on the scope of work and payment schedule from the client before drafting.", updated: "Updated 17d ago" },
+    { title: "Employment agreement review for new hire", initials: "UC", client: "Unknown client", owner: "KF", note: "Requested the offer letter and equity grant details so the terms line up.", updated: "Updated 17d ago" },
+    { title: "SEC filing review for new advisory product", initials: "BF", client: "Brightwell Financial", owner: "AR", note: "Still waiting on the updated fee schedule and risk disclosure draft.", updated: "Updated 18d ago" },
+  ] },
+  { name: "In Progress", cases: [
+    { title: "Vendor contract redline", initials: "PR", client: "Priya Raman", owner: "UO", note: "Redlining the payment terms and SLA penalty clauses, revised draft to you soon.", updated: "Updated 19d ago" },
+    { title: "DOT compliance audit ahead of Q3 fleet expansion", initials: "NL", client: "Northwind Logistics", owner: "KF", note: "Reviewed the last 12 months of driver logs, two vehicles need updated records.", updated: "Updated 19d ago" },
+    { title: "Lease agreement review for new office space", initials: "CA", client: "Clara Ashford", owner: "AR", note: "Flagged three concerns in the landlord's draft lease.", updated: "Updated 21d ago" },
+  ] },
+  { name: "Client Review", cases: [
+    { title: "SaaS terms of service redraft", initials: "TS", client: "Triyama Software", owner: "AU", note: "Sent over the redrafted terms with updated data processing sections.", updated: "Updated 17d ago" },
+    { title: "Employee handbook customization", initials: "NO", client: "Nadia Osei", owner: "AU", note: "Customized handbook draft is ready, including remote work and PTO updates.", updated: "Updated 17d ago" },
+    { title: "M&A due diligence for portfolio acquisition", initials: "WG", client: "Wexford Group", owner: "JW", note: "Diligence memo is over to you, two items flagged for a closer look.", updated: "Updated 17d ago" },
+  ] },
+  { name: "Final Approval", cases: [
+    { title: "Non-disclosure agreement drafting", initials: "DO", client: "David Okonkwo", owner: "AR", note: "Mutual NDA is finalized with a 3-year confidentiality term, just needs your sign-off.", updated: "Updated 17d ago" },
+    { title: "Trademark renewal for Cascade Outdoor branding", initials: "CC", client: "Cascade Outdoor Co.", owner: "JW", note: "USPTO renewal filing is drafted and ready for your sign-off.", updated: "Updated 21d ago" },
+  ] },
+];
 
-// Case status page — the status itself, pinned to the work like a marker on a
-// board. A client checking a case wants one word, and the folder this used to
-// draw spent the whole cover saying "there is a case" before it got to saying
-// anything about it.
 function CardCaseStatus() {
   return (
-    // v69-cover-column is the phone treatment: the marker keeps the size it was
-    // drawn at and the frame scales up around it.
-    // Dotted rather than ruled: the ruled field is a surface you plot a thing at
-    // a position ON, which is what the booking cover next to it is doing. A
-    // status isn't at a coordinate, and sharing that ground made the two covers
-    // read as one pair. The even dot field is the ground the set uses for a
-    // cover carrying a single object, which is what this one is.
-    //
-    // The field is held lighter here than on the other dotted covers. Those
-    // stand an opaque white panel on it, which cuts its own hole in the ground;
-    // this one stands a small marker on bare paper, and at the shared ink the
-    // dots ran right up to it.
-    <div className="v69-cover-column v69-plot-grid v69-plot-grid--dots v69-plot-grid--quiet flex h-full items-center justify-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
-      <span className="flex justify-center">
-        <span className="relative inline-flex flex-col items-center">
-          {/* Lime in light and periwinkle in dark, with the label on the dark ink
-              either way since both fills are light. The marker is the one live
-              thing on the cover, and lime is the hue the covers spend on that. */}
-          {/* Drawn for the square frame, where the marker is the only thing on
-              the cover and at caption size it read as a stray tag. The phone
-              frame scales the whole cover up, so there it steps back down. */}
-          <span className="rounded-[12px] bg-[#D9ED92] px-4 py-2.5 text-[15px] font-normal leading-none text-[#1B1B1B] [[data-theme=dark]_&]:bg-[#7DA4FF] max-sm:[.template-mock-gallery_&]:rounded-[10px] max-sm:[.template-mock-gallery_&]:px-3 max-sm:[.template-mock-gallery_&]:py-2 max-sm:[.template-mock-gallery_&]:text-[13px]">
-            In review
-          </span>
-          {/* The pointer, drawn as a shape rather than a rotated square: a square
-              corner under a 10px radius read as a glitch at cover size. */}
-          <svg
-            viewBox="0 0 14 8"
-            className="-mt-px h-2.5 w-[18px] text-[#D9ED92] [[data-theme=dark]_&]:text-[#7DA4FF] max-sm:[.template-mock-gallery_&]:h-2 max-sm:[.template-mock-gallery_&]:w-3.5"
-            fill="currentColor"
-            aria-hidden
-          >
-            <path d="M0 0h14c-4 0-5.6 8-7 8S4 0 0 0Z" />
+    // Dark gradient in light mode, light in dark mode: every app-screen cover
+    // sits on a dark ground on the light page and a light one on the dark page.
+    <GlassCover
+      photo="bg-[url(/images/mocks/case-status-ambient-dark.webp)] [[data-theme=dark]_&]:bg-[url(/images/mocks/case-status-ambient.webp)]"
+      focus="bg-center"
+      dim=""
+      inset=""
+      panel={false}
+    >
+      <DesktopMock>
+        <div className="flex h-14 items-center gap-3 border-b border-[#E5E7EB] px-6 text-[15px] leading-none">
+          <svg viewBox="0 0 24 24" className="size-5 text-[#4B5563]" {...APP_ICON} aria-hidden>
+            <rect x="3.5" y="5" width="17" height="14" rx="2" />
+            <path d="M10 5v14" />
           </svg>
-        </span>
-      </span>
-    </div>
+          <span>Case Status</span>
+          <svg viewBox="0 0 24 24" className="size-4 text-[#6B7280]" {...APP_ICON} aria-hidden>
+            <path d="m6 9 6 6 6-6" />
+          </svg>
+          <span className="ml-auto flex h-9 items-center gap-1.5 rounded-lg bg-[#1F2329] px-3.5 text-[14px] leading-none text-[#FFFFFF]">
+            <svg viewBox="0 0 24 24" className="size-4" {...APP_ICON} aria-hidden>
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+            Create case
+          </span>
+        </div>
+        <div className="flex items-center gap-2 px-6 py-4">
+          <div className="w-[200px]"><AppSearch placeholder="Search" /></div>
+          {["Contact or company", "Owner"].map((f) => (
+            <span key={f} className={`${APP_BOX} h-9 gap-1.5 px-3 text-[14px] leading-none text-[#374151]`}>
+              {f}
+              <svg viewBox="0 0 24 24" className="size-3.5" {...APP_ICON} aria-hidden><path d="m6 9 6 6 6-6" /></svg>
+            </span>
+          ))}
+        </div>
+        <div className="flex gap-3 px-6">
+          {CASE_STAGES.map((st) => (
+            <div key={st.name} className={`w-[290px] shrink-0 rounded-xl border ${APP_LINE} p-2`}>
+              <div className="flex items-center gap-2 px-2 py-2.5 text-[14px] leading-none">
+                {st.name}
+                <span className="rounded bg-[#F1F2F4] px-1.5 py-0.5 text-[12px] text-[#4B5563]">{st.cases.length}</span>
+              </div>
+              <div className="space-y-2">
+                {st.cases.map((c) => (
+                  <div key={c.title} className={`rounded-lg border ${APP_LINE} bg-[#FFFFFF] px-3 py-3`}>
+                    <div className="flex items-start justify-between gap-2 text-[14px] leading-snug">
+                      {c.title}
+                      <span className="text-[#9CA3AF]">⋮</span>
+                    </div>
+                    <div className="mt-2.5 flex items-center gap-2 text-[13px] leading-none text-[#4B5563]">
+                      <span className="rounded bg-[#FBEDEC] px-1 py-0.5 text-[10px] text-[#A8453D]">{c.initials}</span>
+                      {c.client}
+                      <span className="ml-auto flex size-6 items-center justify-center rounded-full bg-[#F3ECF8] text-[10px] text-[#7A3E9D]">{c.owner}</span>
+                    </div>
+                    <p className="mt-2.5 line-clamp-2 text-[12px] leading-snug text-[#6B7280]">{c.note}</p>
+                    <div className="mt-2.5 text-[12px] leading-none text-[#6B7280]">{c.updated}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </DesktopMock>
+    </GlassCover>
   );
 }
 
@@ -1966,92 +2219,139 @@ function CardDiscussion() {
   );
 }
 
-// Markup & comments — the file itself with a comment composer over it, rather
-// than the discussion card it used to borrow: the point of this app is that the
-// comment happens ON the work, so the widget shows the artwork, the pin dropped
-// on it, and the field you type into. The artwork keeps its hues in both themes,
-// the way the case-status cover keeps its gradient — it is content, not chrome,
-// so it doesn't invert.
-function CardMarkup() {
+// Client resource library — the library as the team sees it on desktop: search
+// and pinned items down the side, the categories with their counts, and the
+// resource cards. Owners are made-up names, so no colleague's name ships on the
+// public site.
+const LIBRARY_PINNED = [
+  "Onboarding docs for Jordan",
+  "Incident response playbook",
+  "Client onboarding checklist",
+  "Q3 2026 pricing sheet",
+  "Brand guidelines and logo pack",
+];
+const LIBRARY_CATEGORIES = [
+  { label: "All resources", count: 22 },
+  { label: "Onboarding", count: 4 },
+  { label: "Templates", count: 3 },
+  { label: "Brand assets", count: 2 },
+  { label: "Sales", count: 3 },
+  { label: "Engineering", count: 2 },
+  { label: "Policies", count: 3 },
+];
+const LIBRARY_RESOURCES = [
+  { tag: "Onboarding", title: "Onboarding docs for Jordan", desc: "Onboarding docs for Jordan", owner: "Priya Raman", initials: "PR", pinned: true },
+  { tag: "Policies", title: "Incident response playbook", desc: "Approved playbook for security and uptime incidents", owner: "Neil Foster", initials: "NF", pinned: true },
+  { tag: "Onboarding", title: "Client onboarding checklist", desc: "Step-by-step checklist for bringing a new client on", owner: "Maya Lin", initials: "ML", pinned: true },
+  { tag: "Sales", title: "Q3 2026 pricing sheet", desc: "Current list pricing across all three tiers", owner: "Sam Ortega", initials: "SO", pinned: true },
+  { tag: "Brand assets", title: "Brand guidelines and logo pack", desc: "Full logo set in SVG, PNG and EPS with usage notes", owner: "Tara Quinn", initials: "TQ", pinned: true },
+  { tag: "Engineering", title: "Deployment runbook", desc: "Pre-flight checks, migration ordering and rollback", owner: "Leo Hart", initials: "LH", pinned: false },
+  { tag: "Onboarding", title: "Northwind Logistics handover", desc: "Context for anyone picking up the account", owner: "Priya Raman", initials: "PR", pinned: false },
+  { tag: "Templates", title: "Statement of work template", desc: "Standard SOW with scope, deliverables and terms", owner: "Ari Cole", initials: "AC", pinned: false },
+  { tag: "Sales", title: "Case study: Cascade Outdoor Co.", desc: "Write-up of the Cascade Outdoor Co. rollout", owner: "Maya Lin", initials: "ML", pinned: false },
+];
+
+function PinMark({ className = "" }: { className?: string }) {
   return (
-    // The comment being written, on a hatched ground: markup is a conversation
-    // on top of work, and the composer is the moment that conversation starts.
-    // v69-cover-column is the phone treatment — the row is held to the width it
-    // was drawn at and centred rather than stretching across the wider frame.
-    <div className="v69-cover-column v69-hatch-ground flex h-full items-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
-      <div className="flex w-full items-center gap-2.5">
-        {/* The commenter, as the one coloured mark on the cover. Periwinkle in
-            light and lime in dark — whichever of the brand pair holds against
-            the ground — with the glyph on the dark ink either way. */}
-        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[#7DA4FF] [[data-theme=dark]_&]:bg-[#D9ED92]">
-          {/* On the lime disc the glyph takes a green off the same ramp rather
-              than the ink: near-black on lime was the hardest contrast anywhere
-              in the set and the bubble read as a hole punched in the disc. */}
-          <svg viewBox="0 0 24 24" className="size-[18px] text-[#FFFFFF] [[data-theme=dark]_&]:text-[#6F8F2E]" fill="currentColor" aria-hidden>
-            <path d="M12 3.5c-4.7 0-8.5 3.1-8.5 7 0 2.2 1.2 4.1 3.1 5.4v3.3l3.2-1.9c.7.1 1.4.2 2.2.2 4.7 0 8.5-3.1 8.5-7s-3.8-7-8.5-7Z" />
-          </svg>
-        </span>
-        {/* The field: opaque, so the hatch stops at its edge and it reads as a
-            control laid on the page rather than printed into it. */}
-        <span className="flex h-9 min-w-0 flex-1 items-center gap-px rounded-full border border-black/[0.06] bg-[#FFFFFF] px-3.5 [[data-theme=dark]_&]:border-[rgba(255,255,255,0.09)] [[data-theme=dark]_&]:bg-[#303030]">
-          {/* The caret, so the field reads as focused and waiting rather than
-              as an empty box. */}
-          <span aria-hidden className="h-[13px] w-px shrink-0 bg-[var(--v69-ink)]/55" />
-          <span className="ml-1.5 truncate text-[13px] leading-none text-muted-foreground">
-            Add a comment
-          </span>
-        </span>
-      </div>
-    </div>
+    <svg viewBox="0 0 24 24" className={className} fill="currentColor" aria-hidden>
+      <path d="M8 3h8v2l-1.5 1.5V11l3 3v1.5H13V21l-1 1-1-1v-5.5H5.5V14l3-3V6.5L7 5V3h1Z" />
+    </svg>
   );
 }
 
-// Client resource library — a resource collection: a title + item count, a
-// filmstrip of thumbnails (the last bleeding off the edge), and a footer with
-// the people who contributed and when it last changed. Monochrome — the cover
-// photos become neutral gray tiles carrying a faint image glyph.
 function CardResourceLibrary() {
-  // Short enough to survive the phone frame, where the row is held narrower and
-  // the longer name truncated away its own extension.
-  const file = { name: "Brand_guide.pdf", size: "754 KB" };
   return (
+    // Dark gradient in light mode, light in dark mode: every app-screen cover
+    // sits on a dark ground on the light page and a light one on the dark page.
     <GlassCover
-      photo="bg-[url(/images/mocks/support-desk.webp)]"
-      focus="bg-[position:52%_58%]"
-      panel="w-fit max-w-full flex-row items-center gap-3 self-center px-3.5"
+      photo="bg-[url(/images/mocks/library-ambient-dark.webp)] [[data-theme=dark]_&]:bg-[url(/images/mocks/library-ambient.webp)]"
+      focus="bg-center"
+      dim=""
+      inset=""
+      panel={false}
     >
-      {/* The file's thumbnail slot. A glyph rather than a preview: at cover size
-          a real thumbnail is a smudge, and the record is the point. */}
-      <span className={COVER_SLOT}>
-        <svg
-          viewBox="0 0 24 24"
-          className="size-[18px] opacity-55"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.6"
-          aria-hidden
-        >
-          <rect x="3" y="3" width="18" height="18" rx="3" />
-          <circle cx="8.5" cy="8.5" r="1.6" />
-          <path
-            d="M21 14l-4.5-4.5L6 20"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </span>
-      <span className="min-w-0 flex-1">
-        {/* pb/-mb pair, the same one the other mocks carry: `truncate` brings
-            overflow:hidden with it, and at leading-none the line box is exactly
-            the font size, so the descenders — here the g and the underscore in
-            Brand_guide — were being cut off the bottom. */}
-        <span className={`block truncate pb-[3px] -mb-[3px] ${COVER_ON_GLASS}`}>
-          {file.name}
-        </span>
-        <span className={`mt-1.5 block ${COVER_ON_GLASS_QUIET}`}>
-          {file.size}
-        </span>
-      </span>
+      <DesktopMock>
+        <div className="flex h-16 items-center gap-2 border-b border-[#E5E7EB] px-6">
+          <span className="text-[16px] leading-none">Client resource library</span>
+          <svg viewBox="0 0 24 24" className="size-4 text-[#6B7280]" {...APP_ICON} aria-hidden>
+            <path d="m6 9 6 6 6-6" />
+          </svg>
+          <span className="ml-auto flex h-9 items-center rounded-lg bg-[#1F2329] px-3.5 text-[14px] leading-none text-[#FFFFFF]">
+            Add resource
+          </span>
+        </div>
+        <div className="border-b border-[#E5E7EB] px-6 py-3">
+          <span className="inline-flex rounded-lg bg-[#F1F2F4] p-1 text-[14px] leading-none">
+            <span className="rounded-md bg-[#FFFFFF] px-3 py-2">Library</span>
+            <span className="px-3 py-2 text-[#6B7280]">Manage</span>
+          </span>
+        </div>
+        <div className="flex">
+          <aside className="w-[220px] shrink-0 border-r border-[#E5E7EB] px-3 pb-[400px] pt-5">
+            <AppSearch placeholder="Search…" />
+            <div className="mt-6 px-2 text-[13px] leading-none text-[#6B7280]">Pinned</div>
+            <div className="mt-2">
+              {LIBRARY_PINNED.map((item) => (
+                <div
+                  key={item}
+                  className="flex items-center gap-2 px-2 py-2.5 text-[14px] leading-none text-[#4B5563]"
+                >
+                  <PinMark className="size-3.5 shrink-0 text-[#9CA3AF]" />
+                  <span className="truncate">{item}</span>
+                </div>
+              ))}
+            </div>
+            <div className="mx-2 my-4 border-t border-[#E5E7EB]" />
+            <div className="px-2 text-[13px] leading-none text-[#6B7280]">Browse</div>
+            <div className="mt-2 space-y-0.5">
+              {LIBRARY_CATEGORIES.map((c, i) => (
+                <div
+                  key={c.label}
+                  className={`flex items-center justify-between rounded-md px-2 py-2.5 text-[14px] leading-none ${
+                    i === 0 ? "bg-[#F1F2F4] text-[#1F2937]" : "text-[#4B5563]"
+                  }`}
+                >
+                  {c.label}
+                  <span className="text-[13px] text-[#9CA3AF]">{c.count}</span>
+                </div>
+              ))}
+            </div>
+          </aside>
+          <div className="min-w-0 flex-1 px-6 pt-5">
+            <span className={`flex h-11 w-[280px] items-center justify-between rounded-lg border ${APP_LINE} px-3.5 text-[14px] leading-none text-[#9CA3AF]`}>
+              Filter by owner…
+              <svg viewBox="0 0 24 24" className="size-4 text-[#6B7280]" {...APP_ICON} aria-hidden>
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </span>
+            <div className="mt-6 text-[14px] leading-none text-[#4B5563]">
+              All resources <span className="text-[#9CA3AF]">(22)</span>
+            </div>
+            <div className="mt-4 grid grid-cols-3 gap-4">
+              {LIBRARY_RESOURCES.map((r) => (
+                <div key={r.title} className={`rounded-xl border ${APP_LINE} px-5 py-5`}>
+                  <div className="flex items-center justify-between">
+                    <span className="rounded-full border border-[#E5E7EB] bg-[#F7F8FA] px-2.5 py-1.5 text-[12px] leading-none text-[#374151]">
+                      {r.tag}
+                    </span>
+                    {r.pinned && <PinMark className="size-4 text-[#4B5563]" />}
+                  </div>
+                  <div className="mt-3.5 truncate text-[15px] leading-tight">{r.title}</div>
+                  <div className="mt-2 truncate text-[13px] leading-tight text-[#6B7280]">
+                    {r.desc}
+                  </div>
+                  <div className="mt-6 flex items-center gap-2 text-[13px] leading-none text-[#4B5563]">
+                    <span className="flex size-6 items-center justify-center rounded-full bg-[#ECEEF9] text-[10px] leading-none text-[#4B55A8]">
+                      {r.initials}
+                    </span>
+                    {r.owner}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </DesktopMock>
     </GlassCover>
   );
 }
@@ -2414,162 +2714,6 @@ function CardDeliverable({
   );
 }
 
-// Team guides — one record laid on a plotted ground, rather than a filled panel:
-// the library reads as a place things are filed, and the single row says what a
-// filed thing looks like. The row reuses the onboarding cover's glass pane, so
-// the two raised surfaces in the gallery are the same material.
-// Exporter — a job in flight. The app is a single action with a wait attached,
-// so the cover draws the wait: a named file, a meter, and how far along it is.
-function CardExport() {
-  const pct = 68;
-  return (
-    <div className="v69-plot-grid v69-plot-grid--lines flex h-full items-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
-      <span className="block w-full rounded-xl border border-black/[0.08] bg-[#FFFFFF] px-3 py-2.5 [[data-theme=dark]_&]:border-[rgba(255,255,255,0.09)] [[data-theme=dark]_&]:bg-[#303030]">
-        <span className="block truncate text-[13px] leading-none text-[var(--v69-ink)] max-sm:[.template-mock-gallery_&]:text-[12px]">
-          Clients.csv
-        </span>
-        {/* The meter takes the periwinkle every other meter in the set runs in,
-            rather than a green of its own. */}
-        <span className="mt-2.5 block h-[5px] w-full overflow-hidden rounded-full bg-[var(--v69-well)] [[data-theme=light]_.template-mock_&]:bg-[#e6e6e6] [[data-theme=dark]_&]:bg-[rgba(255,255,255,0.16)]">
-          <span
-            className="block h-full rounded-full bg-[#7DA4FF]"
-            style={{ width: `${pct}%` }}
-          />
-        </span>
-        <span className="mt-2.5 flex items-baseline justify-between text-[11px] leading-none text-muted-foreground max-sm:[.template-mock-gallery_&]:text-[10px]">
-          <span>Exporting…</span>
-          <span className="tabular-nums">{pct}%</span>
-        </span>
-      </span>
-    </div>
-  );
-}
-
-// The folder mark the two folder-view covers share. Files and design approvals
-// are drawn as the same object — a band naming the folder over rows that fill the
-// card — so they carry the same glyph rather than one outline and one solid.
-// Outline is the pair's: filled, at 16px on a coloured band, it read as a dark
-// chip sitting beside the label instead of as a folder.
-function FolderGlyph({ className }: { className: string }) {
-  return (
-    <svg
-      viewBox="0 0 16 16"
-      className={className}
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.4"
-      strokeLinejoin="round"
-      aria-hidden
-    >
-      <path d="M2 4.5A1.5 1.5 0 0 1 3.5 3h2.2l1.3 1.6h5.5A1.5 1.5 0 0 1 14 6.1v5.4A1.5 1.5 0 0 1 12.5 13h-9A1.5 1.5 0 0 1 2 11.5z" />
-    </svg>
-  );
-}
-
-// Files — a folder and what is in it, set as the design-approvals folder view
-// is: a band naming the folder over rows that fill the card. It was a thin
-// coloured strip over two rows and a half-empty pane, which read as a card with
-// something missing rather than as a place things are kept.
-const FILE_ROWS = [
-  { name: "Brand_Handoff.svg", meta: "2.4 MB" },
-  { name: "Receipts_Jun_2026.pdf", meta: "1.1 MB" },
-  { name: "Statement_of_Work.pdf", meta: "860 KB" },
-];
-
-function CardFiles() {
-  return (
-    <div className="flex h-full flex-col bg-[var(--v69-card)]">
-      {/* The band is the folder, and it runs on the approvals band's metrics so
-          the two folder views are the same object. Coloured only in light — the
-          lime-in-light, periwinkle-in-dark pair every accent in the set runs —
-          with the type on ink, since both fills are light. */}
-      <div className="flex shrink-0 items-center gap-2 px-5 py-4 [[data-theme=light]_&]:bg-[#D9ED92] [[data-theme=dark]_&]:bg-[#7DA4FF]">
-        <FolderGlyph className="size-4 shrink-0 text-[#1B1B1B]" />
-        <span className="truncate text-[13px] leading-none text-[#1B1B1B] max-sm:[.template-mock-gallery_&]:text-[12px]">
-          Important
-        </span>
-      </div>
-      {/* Rails on the rows, last one included, so the list stops on a line
-          rather than in mid-air — the approvals list's own rule. */}
-      <div className="pt-2">
-        {FILE_ROWS.map((file) => (
-          <div
-            key={file.name}
-            className="border-b px-5 py-3 [[data-theme=light]_&]:border-black/[0.07] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.14)]"
-          >
-            <div className="truncate text-[13px] leading-none text-[var(--v69-ink)] max-sm:[.template-mock-gallery_&]:text-[12px]">
-              {file.name}
-            </div>
-            <div className="mt-1.5 truncate text-[11px] leading-none tabular-nums text-muted-foreground">
-              {file.meta}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// Forms — the form being built, not the form being filled in. The app's own
-// screen is a field list on a plotted canvas: a row per question with its answer
-// type on the left, which says the app makes forms rather than merely holding
-// one.
-const FORM_FIELDS = [
-  {
-    label: "Phone number",
-    // Handset, drawn to the same 24-box the other cover glyphs use.
-    path: "M6.5 3h3l1.5 4-2 1.5a11 11 0 0 0 6.5 6.5L17 13l4 1.5v3a2.5 2.5 0 0 1-2.8 2.5A16.5 16.5 0 0 1 3.5 5.8A2.5 2.5 0 0 1 6 3Z",
-  },
-  {
-    label: "Date",
-    path: "M4.5 6.5h15v13h-15zM8 3.5v3M16 3.5v3M4.5 10.5h15",
-  },
-];
-
-function CardForms() {
-  return (
-    // v69-cover-column is the phone treatment: the rows are held to the width
-    // they were drawn at rather than stretching across the wider frame.
-    <div className="v69-cover-column v69-plot-grid v69-plot-grid--dots flex h-full items-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
-      {/* Opaque rows, like every other panel in the set: through a translucent
-          one the dot field ran straight across the row. */}
-      <span className="block w-full space-y-2">
-        {FORM_FIELDS.map((field) => (
-          <span
-            key={field.label}
-            className={`flex w-full items-center gap-2.5 ${FORM_PANEL} px-2.5 py-2`}
-          >
-            {/* The type tile carries the covers' one live colour, lime in light
-                and periwinkle in dark — the one coloured mark here, since what
-                the row says is which kind of answer it collects. */}
-            <span
-              className="flex size-[22px] shrink-0 items-center justify-center rounded-[7px] bg-[#D9ED92] [[data-theme=dark]_&]:bg-[#7DA4FF]"
-              aria-hidden
-            >
-              {/* Ink on the fill, the way every lime mark in the set is set —
-                  white on a tile this light had almost no separation left. */}
-              <svg
-                viewBox="0 0 24 24"
-                className="size-[13px] text-[#1B1B1B]"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d={field.path} />
-              </svg>
-            </span>
-            <span className="min-w-0 flex-1 truncate text-[13px] leading-none text-[var(--v69-ink)] max-sm:[.template-mock-gallery_&]:text-[12px]">
-              {field.label}
-            </span>
-          </span>
-        ))}
-      </span>
-    </div>
-  );
-}
-
 // Helpdesk — an article being written, not a list of them. The app's own screen
 // is an editor, and the empty body under a filled title is what it looks like.
 function CardHelpdesk() {
@@ -2592,425 +2736,430 @@ function CardHelpdesk() {
   );
 }
 
-// Home — the client's own landing row in the sidebar, with what is waiting for
-// them on it. The count is the point: Home is where a client is told there is
-// something to do.
-function CardHome() {
-  return (
-    <div className="flex h-full items-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
-      {/* The selected state of a nav row — a well rather than a panel, because a
-          sidebar row is recessed into its rail, not floated above it. */}
-      <span className="flex w-full items-center gap-2.5 rounded-xl bg-[var(--v69-well)] px-3 py-2.5 [[data-theme=light]_.template-mock_&]:bg-[#e6e6e6] [[data-theme=dark]_&]:bg-[rgba(255,255,255,0.1)]">
-        <svg
-          viewBox="0 0 24 24"
-          className="size-4 shrink-0 text-muted-foreground"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.6"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden
-        >
-          <path d="M4 10.5 12 4l8 6.5V19a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1Z" />
-          <path d="M9.5 20v-5h5v5" />
-        </svg>
-        <span className="min-w-0 flex-1 truncate text-[13px] leading-none text-[var(--v69-ink)] max-sm:[.template-mock-gallery_&]:text-[12px]">
-          Home
-        </span>
-        <span className="shrink-0 rounded-md bg-[#7DA4FF] px-1.5 py-1 text-[11px] leading-none tabular-nums text-[#1B1B1B] max-sm:[.template-mock-gallery_&]:text-[10px]">
-          3
-        </span>
-      </span>
-    </div>
-  );
-}
-
-// Tasks — one column off the board, with what is in it. The app is a board of
-// named columns, so the cover shows a column head and the tasks under it: the
-// unticked circles say these are waiting, and the date says when for.
-const TASKS_ROWS = [
-  { title: "Update email", due: "Apr 4" },
-  { title: "Share design files", due: "Apr 4" },
+// Tasks — the task list as the team sees it on desktop: tasks grouped by
+// status, with due dates and who owns each. Initials stand in for the
+// people's photos.
+const TASK_GROUPS: {
+  name: string;
+  tint: string;
+  rows: { title: string; due?: string; who: string; sub?: boolean; state: "todo" | "progress" | "done" }[];
+}[] = [
+  {
+    name: "Todo",
+    tint: "bg-[#F7F8FA]",
+    rows: [
+      { title: "Organize onboarding checklist", due: "Apr 15", who: "ML", state: "todo" },
+      { title: "Share design files", due: "Apr 22", who: "SO", state: "todo" },
+      { title: "Attach the payment details to the project", who: "SO", sub: true, state: "todo" },
+      { title: "Distribute the findings from the market analysis", who: "SO", sub: true, state: "done" },
+      { title: "Create client intake form", due: "Apr 5", who: "TQ", state: "todo" },
+      { title: "Upload past case studies", due: "Apr 12", who: "LH", state: "todo" },
+    ],
+  },
+  {
+    name: "In progress",
+    tint: "bg-[#FBF6F1]",
+    rows: [
+      { title: "Set up design system folder", due: "Apr 4", who: "ML", state: "progress" },
+      { title: "Share market research", due: "Apr 4", who: "AC", state: "progress" },
+    ],
+  },
 ];
+
+function TaskMark({ state }: { state: "todo" | "progress" | "done" }) {
+  if (state === "done")
+    return (
+      <span className="flex size-[18px] shrink-0 items-center justify-center rounded-full bg-[#1E7A44] text-[#FFFFFF]">
+        <svg viewBox="0 0 24 24" className="size-3" {...APP_ICON} strokeWidth={3} aria-hidden>
+          <path d="m5 12 5 5 9-10" />
+        </svg>
+      </span>
+    );
+  if (state === "progress")
+    return (
+      <svg viewBox="0 0 20 20" className="size-[18px] shrink-0" aria-hidden>
+        <circle cx="10" cy="10" r="8.25" fill="none" stroke="#9B2C2C" strokeWidth="1.5" />
+        <path d="M10 4.5a5.5 5.5 0 0 0 0 11z" fill="#9B2C2C" />
+      </svg>
+    );
+  return <span className="size-[18px] shrink-0 rounded-full border-[1.5px] border-[#9CA3AF]" />;
+}
 
 function CardTasks() {
   return (
-    <div className="v69-cover-column flex h-full items-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
-      <span className="block w-full overflow-hidden rounded-xl border border-black/[0.08] bg-[#FFFFFF] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.09)] [[data-theme=dark]_&]:bg-[#303030]">
-        {/* The column head takes the covers' periwinkle in both themes, the way
-            the Home row's count does — a column's colour is what identifies it on
-            a board, so it is the one thing here that carries hue. */}
-        <span className="block bg-[#7DA4FF] px-3 py-2.5">
-          <span className="block truncate text-[13px] leading-none text-[#1B1B1B] max-sm:[.template-mock-gallery_&]:text-[12px]">
-            Todo
-          </span>
-        </span>
-        {TASKS_ROWS.map((row, i) => (
-          <span
-            key={row.title}
-            className={`flex items-center gap-2.5 px-3 py-2.5 ${
-              i > 0
-                ? "border-t border-black/[0.07] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.16)]"
-                : ""
-            }`}
-          >
-            {/* An outline, not a tick: an open circle is the whole reason a task
-                is on this column rather than in a done one. */}
-            <span
-              className="size-[14px] shrink-0 rounded-full border border-black/[0.18] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.45)]"
-              aria-hidden
-            />
-            <span className="min-w-0 flex-1 truncate text-[13px] leading-none text-[var(--v69-ink)] max-sm:[.template-mock-gallery_&]:text-[12px]">
-              {row.title}
-            </span>
-            {/* The set's unit tag rather than loose type: a due date is a piece
-                of metadata on the row, which is the job that chip already does
-                across the covers. */}
-            <span className={`${MOCK_UNIT_TAG} tabular-nums`} style={MOCK_MONO}>
-              {row.due}
-            </span>
-          </span>
-        ))}
-      </span>
-    </div>
-  );
-}
-
-// Profile manager — the client records the app keeps, one row each: who they
-// are and which company they belong to. Initials rather than photographs, the
-// way the intake cover does it: the gallery is drawn art throughout, and a face
-// is the one thing on it that would read as a real person.
-const PROFILE_ROWS = [
-  { initials: "CW", name: "Chuck Wilford", company: "GoDo" },
-  { initials: "BS", name: "Brooklyn Simmons", company: "Service Symphony" },
-  { initials: "KT", name: "Kenny Tse", company: "Service Symphony" },
-];
-
-function CardProfileManager() {
-  return (
-    <div className="flex h-full items-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
-      <span className="block w-full overflow-hidden rounded-xl border border-black/[0.08] bg-[#FFFFFF] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.09)] [[data-theme=dark]_&]:bg-[#303030]">
-        {PROFILE_ROWS.map((person, i) => (
-          <span
-            key={person.name}
-            className={`flex items-center gap-2.5 px-3 py-2.5 ${
-              i > 0
-                ? "border-t border-black/[0.07] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.16)]"
-                : ""
-            }`}
-          >
-            <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[var(--v69-well)] text-[11px] leading-none text-[var(--v69-ink)] [[data-theme=light]_&]:bg-[var(--v69-inner)] [[data-theme=light]_&]:text-[#595959] [[data-theme=light]_.template-mock_&]:bg-[#e6e6e6] [[data-theme=dark]_&]:bg-[rgba(255,255,255,0.12)]">
-              {person.initials}
-            </span>
-            <span className="min-w-0 flex-1">
-              <span className="block truncate text-[13px] leading-none text-[var(--v69-ink)] max-sm:[.template-mock-gallery_&]:text-[12px]">
-                {person.name}
-              </span>
-              <span className="mt-1.5 block truncate text-[10px] leading-none text-muted-foreground">
-                {person.company}
-              </span>
-            </span>
-          </span>
-        ))}
-      </span>
-    </div>
-  );
-}
-
-// Messages — one message arriving, with who sent it. The app is a thread, and a
-// single incoming bubble is the smallest true picture of one; the neutral fill
-// and left-hand tail are the discussion cover's incoming bubble, so a message
-// looks the same wherever the set draws one.
-function CardMessages() {
-  return (
-    <div className="v69-cover-column flex h-full items-center bg-[var(--v69-card)] p-4">
-      <span className="flex w-full items-end gap-2">
-        <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[var(--v69-well)] text-[11px] leading-none text-[var(--v69-ink)] [[data-theme=light]_&]:bg-[var(--v69-inner)] [[data-theme=light]_&]:text-[#595959] [[data-theme=light]_.template-mock_&]:bg-[#e6e6e6] [[data-theme=dark]_&]:bg-[rgba(255,255,255,0.12)]">
-          GK
-        </span>
-        <span className="min-w-0 flex-1">
-          <span className="mb-1.5 block truncate pl-1 text-[11px] leading-none text-muted-foreground">
-            Gus Kelly
-          </span>
-          <span className="relative block rounded-[16px] bg-[var(--v69-inner)] px-3.5 py-2.5 [[data-theme=light]_.template-mock_&]:bg-[#e6e6e6] [[data-theme=dark]_&]:bg-[#343434]">
-            <span className="block text-[13px] leading-snug text-[var(--v69-ink)] max-sm:[.template-mock-gallery_&]:text-[12px]">
-              I&rsquo;ve reviewed the proposal. Everything looks good!
-            </span>
-            <svg
-              viewBox="0 0 14 14"
-              className="absolute -bottom-px left-2 size-3.5 -translate-x-1/2 scale-x-[-1] text-[var(--v69-inner)] [[data-theme=light]_.template-mock_&]:text-[#e6e6e6] [[data-theme=dark]_&]:text-[#343434]"
-              fill="currentColor"
-              aria-hidden
-            >
-              <path d="M0 0h6c0 6 3 10.5 8 12.5C7.5 14.5 2 11 0 5Z" />
+    // Dark gradient in light mode, light in dark mode: every app-screen cover
+    // sits on a dark ground on the light page and a light one on the dark page.
+    <GlassCover
+      photo="bg-[url(/images/mocks/tasks-ambient-dark.webp)] [[data-theme=dark]_&]:bg-[url(/images/mocks/tasks-ambient.webp)]"
+      focus="bg-center"
+      dim=""
+      inset=""
+      panel={false}
+    >
+      <DesktopMock>
+        <div className="flex h-14 items-center gap-3 border-b border-[#E5E7EB] px-6 text-[15px] leading-none">
+          <span>Tasks</span>
+          <span className={`${APP_BOX} ml-auto size-9 text-[16px] leading-none`}>···</span>
+          <span className="flex h-9 items-center gap-1.5 rounded-lg bg-[#1F2329] px-3.5 text-[14px] leading-none text-[#FFFFFF]">
+            <svg viewBox="0 0 24 24" className="size-4" {...APP_ICON} aria-hidden>
+              <path d="M12 5v14M5 12h14" />
             </svg>
+            Create task
           </span>
-        </span>
-      </span>
-    </div>
+        </div>
+        <div className="flex gap-6 border-b border-[#E5E7EB] px-6 text-[14px] leading-none">
+          {["My tasks", "Team tasks", "All tasks"].map((t) => (
+            <span
+              key={t}
+              className={`py-4 ${t === "All tasks" ? "border-b-2 border-[#1F2937]" : "text-[#6B7280]"}`}
+            >
+              {t}
+            </span>
+          ))}
+        </div>
+        <div className="px-6 py-3">
+          <span className={`${APP_BOX} w-fit h-9 gap-1.5 px-3 text-[14px] leading-none text-[#374151]`}>
+              <svg viewBox="0 0 24 24" className="size-3.5" {...APP_ICON} aria-hidden><path d="M4 7h16M7 12h10M10 17h4" /></svg>
+              Filters
+            </span>
+        </div>
+        {TASK_GROUPS.map((g) => (
+          <div key={g.name}>
+            <div className={`flex h-10 items-center gap-2 px-6 text-[14px] leading-none ${g.tint}`}>
+              {g.name}
+              <span className="text-[#6B7280]">{g.rows.length}</span>
+            </div>
+            {g.rows.map((r) => (
+              <div key={r.title} className={`flex h-12 items-center gap-3 pr-6 text-[14px] leading-none ${r.sub ? "pl-14" : "pl-6"}`}>
+                <TaskMark state={r.state} />
+                <span className="min-w-0 flex-1 truncate">{r.title}</span>
+                {r.due && <span className="text-[13px] text-[#6B7280]">{r.due}</span>}
+                <span className="flex size-7 items-center justify-center rounded-full bg-[#ECEEF9] text-[10px] leading-none text-[#4B55A8]">
+                  {r.who}
+                </span>
+              </div>
+            ))}
+          </div>
+        ))}
+      </DesktopMock>
+    </GlassCover>
   );
 }
 
-// Payments — the moment the app exists for: an invoice that has been paid. The
-// amount is the figure the card is built around, with the status chip saying it
-// landed, which is the one fact either side checks.
-const PAYMENT = {
-  invoice: "Invoice 1042",
-  amount: "$2,400",
-  cents: ".00",
-};
+// Payments — billing as the team sees it on desktop: what is paid and unpaid,
+// the balance, and the ways to collect from a contact.
+const PAYMENT_TABS = ["Overview", "Invoices", "Subscriptions", "Store", "Payment links", "Services"];
 
-// Plain face, no plotted ground: the amount is the whole cover, and a field
-// behind it was competing with the one thing it has to say.
 function CardPayments() {
   return (
-    <div className="flex h-full items-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
-      <span className="block w-full overflow-hidden rounded-xl border border-black/[0.08] bg-[#FFFFFF] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.09)] [[data-theme=dark]_&]:bg-[#303030]">
-        <span className="flex items-center gap-2 px-3 py-2.5">
-          <span
-            className="min-w-0 flex-1 truncate text-[13px] leading-none text-[var(--v69-ink)] max-sm:[.template-mock-gallery_&]:text-[12px]"
-          >
-            {PAYMENT.invoice}
-          </span>
-          {/* Same status chip the contract cover uses — the covers' one live
-              colour, lime in light and periwinkle in dark. A green of its own
-              would be the only hue in the rail. */}
-          <span
-            className="shrink-0 rounded-md bg-[#D9ED92] px-2 py-1 text-[10px] uppercase leading-none tracking-wide text-[#1B1B1B] [[data-theme=dark]_&]:bg-[#7DA4FF] max-sm:[.template-mock-gallery_&]:text-[9px]"
-            style={MOCK_MONO}
-          >
-            Paid
-          </span>
-        </span>
-        {/* The amount sits below the rule, the way the contract's signature does:
-            the row above names the record, the panel below carries the thing that
-            settled it. */}
-        <span className="block border-t border-black/[0.07] px-3 pb-3 pt-2 [[data-theme=dark]_&]:border-[rgba(255,255,255,0.16)]">
-          <span
-            className="flex items-baseline text-[26px] leading-none tracking-tight text-[var(--v69-ink)] max-sm:[.template-mock-gallery_&]:text-[22px]"
-            style={MOCK_MONO}
-          >
-            {PAYMENT.amount}
-            {/* The cents held a step down and off full ink, so the figure reads
-                as one amount rather than as two numbers. */}
-            <span className="text-[0.62em] text-[var(--v69-ink)]/55">
-              {PAYMENT.cents}
-            </span>
-          </span>
-        </span>
-      </span>
-    </div>
-  );
-}
-
-// Xero — the one screen the integration is: picking which Xero account an
-// Assembly line maps to. A searchable list says "this connects two systems" in
-// a way a logo cannot.
-const XERO_OPTIONS = ["Exclude from mapping", "Logo Design", "Marketing Overhaul"];
-
-function CardXero() {
-  return (
-    <div className="v69-cover-column v69-plot-grid v69-plot-grid--dots flex h-full items-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
-      <span className="block w-full overflow-hidden rounded-xl border border-black/[0.08] bg-[#FFFFFF] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.09)] [[data-theme=dark]_&]:bg-[#303030]">
-        {/* The caret in the empty field is the one mark that makes this a list
-            being searched rather than a menu sitting open. */}
-        <span className="flex items-center border-b border-black/[0.07] px-3 py-2.5 [[data-theme=dark]_&]:border-[rgba(255,255,255,0.16)]">
-          <span className="mr-px block h-3.5 w-px shrink-0 bg-[var(--v69-ink)]" aria-hidden />
-          <span className="min-w-0 flex-1 truncate text-[13px] leading-none text-muted-foreground max-sm:[.template-mock-gallery_&]:text-[12px]">
-            Search
-          </span>
-        </span>
-        {XERO_OPTIONS.map((option, i) => (
-          <span
-            key={option}
-            className={`block truncate px-3 py-2.5 text-[13px] leading-none text-[var(--v69-ink)] max-sm:[.template-mock-gallery_&]:text-[12px] ${
-              i > 0
-                ? "border-t border-black/[0.07] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.16)]"
-                : ""
-            }`}
-          >
-            {option}
-          </span>
-        ))}
-      </span>
-    </div>
-  );
-}
-
-// QuickBooks — the integration's own mark on a tile, which is what an
-// integration is: the other product, brought in. Drawn in the covers' neutral
-// ink rather than Intuit's green, so it sits in the set with everything else.
-function CardQuickBooks() {
-  return (
-    <div className="flex h-full items-center justify-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
-      <span className="flex size-[104px] items-center justify-center rounded-[26px] bg-[var(--v69-well)] [[data-theme=light]_&]:bg-[var(--v69-inner)] [[data-theme=light]_.template-mock_&]:bg-[#e6e6e6] [[data-theme=dark]_&]:bg-[rgba(255,255,255,0.09)]">
-        {/* The approved mark, path for path, filled from one currentColor so it
-            tracks the theme instead of carrying the file's own grey. Held back on
-            the templates page, where the mark should name the integration rather
-            than announce it: in light the warm covers put it on a lighter tile
-            than the hero does and full muted ink read as the darkest thing in the
-            rail; on the dark face the mark is the only lit shape in an otherwise
-            empty square, which does the same job from the other direction. */}
-        <svg
-          viewBox="0 0 34 34"
-          className="size-[50px] text-muted-foreground [[data-theme=light]_.template-mock_&]:text-muted-foreground/45 [[data-theme=dark]_.template-mock_&]:text-muted-foreground/55"
-          fill="currentColor"
-          aria-hidden
-        >
-          <path d="M23.6245 11.7004V14.3502C24.9838 14.3502 26.2743 15.7095 26.2743 17.6538C26.2743 19.5982 24.9838 20.9575 23.6245 20.9575H20.9747V7.72571H18.3249V23.6073H23.6245C26.6528 23.6073 28.9241 20.8198 28.9241 17.6538C28.9241 14.4879 26.6528 11.7004 23.6245 11.7004Z" />
-          <path d="M10.3755 10.3755C7.34717 10.3755 5.07591 13.163 5.07591 16.3289C5.07591 19.4949 7.34717 22.2824 10.3755 22.2824V19.6326C9.0162 19.6326 7.72571 18.2733 7.72571 16.3289C7.72571 14.3846 9.0162 13.0253 10.3755 13.0253H13.0253V26.2571H15.6751V10.3755H10.3755Z" />
-          <path d="M17 0C7.62247 0 0 7.62247 0 17C0 26.3775 7.62247 34 17 34C26.3775 34 34 26.3775 34 17C34 7.62247 26.3603 0 17 0ZM17 30.9545C9.2915 30.9717 3.02834 24.6913 3.02834 17C3.02834 9.30871 9.2915 3.01113 17 3.01113C24.7085 3.01113 30.9717 9.2915 30.9717 16.9828C30.9717 24.6741 24.6913 30.9545 17 30.9545Z" />
-        </svg>
-      </span>
-    </div>
-  );
-}
-
-// Autoresponder — the one setting the app exists for: when the automatic reply
-// fires. A select showing its current value says what the app does in a way a
-// list of features does not.
-function CardAutoresponder() {
-  return (
-    // Hatched rather than ruled or plotted: the object here is a setting, not a
-    // record at a position, which is what the plotted ground is for.
-    <div className="v69-hatch-ground flex h-full items-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
-      {/* Held short of the frame rather than run to it: at full width the select
-          was the widest control in the set and the hatch was left as two thin
-          margins beside it. */}
-      <span className="mx-auto block w-[86%]">
-        <span className="block text-[11px] leading-none text-muted-foreground max-sm:[.template-mock-gallery_&]:text-[10px]">
-          Enable auto responses
-        </span>
-        {/* Opaque like every other panel in the set — through a translucent one
-            the hatch ran straight across the control. */}
-        <span className="mt-2 flex items-center gap-2 rounded-xl border border-black/[0.08] bg-[#FFFFFF] px-3 py-2.5 [[data-theme=dark]_&]:border-[rgba(255,255,255,0.09)] [[data-theme=dark]_&]:bg-[#303030]">
-          <span className="min-w-0 flex-1 truncate text-[13px] leading-none text-[var(--v69-ink)] max-sm:[.template-mock-gallery_&]:text-[12px]">
-            Outside working hours
-          </span>
-          <svg
-            viewBox="0 0 24 24"
-            className="size-3.5 shrink-0 text-muted-foreground"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden
-          >
+    // Dark gradient in light mode, light in dark mode: every app-screen cover
+    // sits on a dark ground on the light page and a light one on the dark page.
+    <GlassCover
+      photo="bg-[url(/images/mocks/payments-ambient-dark.webp)] [[data-theme=dark]_&]:bg-[url(/images/mocks/payments-ambient.webp)]"
+      focus="bg-center"
+      dim=""
+      inset=""
+      panel={false}
+    >
+      <DesktopMock>
+        <div className="flex h-14 items-center gap-2 border-b border-[#E5E7EB] px-6 text-[15px] leading-none">
+          Billing
+          <svg viewBox="0 0 24 24" className="size-4 text-[#6B7280]" {...APP_ICON} aria-hidden>
             <path d="m6 9 6 6 6-6" />
           </svg>
-        </span>
-      </span>
-    </div>
+        </div>
+        <div className="flex gap-7 border-b border-[#E5E7EB] px-6 text-[14px] leading-none">
+          {PAYMENT_TABS.map((t, i) => (
+            <span
+              key={t}
+              className={`py-4 ${i === 0 ? "border-b-2 border-[#1F2937]" : "text-[#6B7280]"}`}
+            >
+              {t}
+            </span>
+          ))}
+        </div>
+        <div className="w-[760px] px-6 pt-5">
+          <span className={`${APP_BOX} w-fit h-9 gap-2 px-3 text-[14px] leading-none text-[#1F2937]`}>
+            <svg viewBox="0 0 24 24" className="size-4" {...APP_ICON} aria-hidden>
+              <rect x="4" y="5" width="16" height="15" rx="2" />
+              <path d="M4 10h16M9 3v4M15 3v4" />
+            </svg>
+            Last 30 days
+          </span>
+          <div className="mt-3 grid grid-cols-2 gap-3">
+            {[
+              { label: "Not paid", value: "$3,250.00", tag: "1 open invoice", cls: "bg-[#E6EEFC] text-[#2F5BB7]" },
+              { label: "Paid", value: "$5,750.00", tag: "1 paid invoice", cls: "bg-[#E3F6E9] text-[#1E7A44]" },
+            ].map((c) => (
+              <div key={c.label} className={`rounded-xl border ${APP_LINE} px-5 py-5`}>
+                <div className="text-[14px] leading-none">{c.label}</div>
+                <div className="mt-3 text-[24px] leading-none tracking-tight">{c.value}</div>
+                <span className={`mt-4 inline-block rounded-full px-3 py-1.5 text-[13px] leading-none ${c.cls}`}>
+                  {c.tag}
+                </span>
+              </div>
+            ))}
+          </div>
+          <div className={`mt-3 rounded-xl border ${APP_LINE} px-5 py-5`}>
+            <div className="text-[14px] leading-none">Total balance</div>
+            <div className="mt-3 text-[24px] leading-none tracking-tight">$0.00</div>
+            <div className="mt-4 text-[14px] leading-none text-[#2F5BB7]">Open Stripe Dashboard ↗</div>
+          </div>
+          <div className={`mt-3 rounded-xl border ${APP_LINE} px-5 py-5`}>
+            <div className="text-[15px] leading-none">Collect payments from specific contacts</div>
+            <div className="mt-2.5 text-[13px] leading-none text-[#6B7280]">
+              Bill a contact or company via invoice or recurring subscriptions.
+            </div>
+            <div className="mt-4 grid grid-cols-2 gap-3">
+              {[
+                { t: "Send invoices for one-off services", a: "Create invoice →" },
+                { t: "Set up recurring payments", a: "Create subscription →" },
+              ].map((c) => (
+                <div key={c.t} className={`flex items-center gap-3 rounded-xl border ${APP_LINE} px-3 py-3`}>
+                  <span className={`${APP_BOX} size-10 text-[#374151]`}>
+                    <svg viewBox="0 0 24 24" className="size-[18px]" {...APP_ICON} aria-hidden>
+                      <path d="M7 3h7l4 4v14H7z" />
+                      <path d="M14 3v4h4M12 11v6M10 13h3.5a1.5 1.5 0 0 1 0 3H10" />
+                    </svg>
+                  </span>
+                  <span className="text-[13px] leading-none">
+                    <span className="block">{c.t}</span>
+                    <span className="mt-2 block text-[#2F5BB7]">{c.a}</span>
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </DesktopMock>
+    </GlassCover>
   );
 }
 
-// Contracts — the finished state: a named agreement, signed. The signature is
-// the whole point of the app, so it is the thing the cover draws.
+// Contracts — the signed agreement as the client sees it on desktop: the
+// document itself on a page, with the firm's header and the opening clauses.
+// The firm and client are made-up names.
+const CONTRACT_CLAUSES = [
+  { title: "1. Services", body: "Company shall provide Client with accounting, bookkeeping, and advisory services as described in the scope of work attached hereto or otherwise agreed in writing by the Parties." },
+  { title: "2. Term", body: "This Agreement shall commence on the Effective Date and shall continue for a period of one year, unless terminated earlier in accordance with Section 5." },
+  { title: "3. Fees and Payment", body: "Client shall pay Company a fee of $400 for the Services, payable net 30. Invoices are due within thirty days of receipt." },
+];
+
 function CardContract() {
   return (
-    <div className="v69-plot-grid v69-plot-grid--lines flex h-full items-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
-      <span className="block w-full overflow-hidden rounded-xl border border-black/[0.08] bg-[#FFFFFF] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.09)] [[data-theme=dark]_&]:bg-[#303030]">
-        <span className="flex items-center gap-2 px-3 py-2.5">
-          <span className="min-w-0 flex-1 truncate text-[13px] leading-none text-[var(--v69-ink)] max-sm:[.template-mock-gallery_&]:text-[12px]">
-            Service Agreement
-          </span>
-          {/* The status chip takes the covers' one live colour — lime in light,
-              periwinkle in dark — rather than a green of its own, so it reads as
-              the same marker the case-status cover uses. */}
-          <span
-            className="shrink-0 rounded-md bg-[#D9ED92] px-2 py-1 text-[10px] uppercase leading-none tracking-wide text-[#1B1B1B] [[data-theme=dark]_&]:bg-[#7DA4FF] max-sm:[.template-mock-gallery_&]:text-[9px]"
-            style={MOCK_MONO}
-          >
-            Signed
-          </span>
-        </span>
-        {/* The signing line, ruled the way the paper one is: the hand sits ON a
-            rule rather than in a second box, which is what makes it read as a
-            signature rather than as another field. The well is taller than the
-            header row above it so the hand sits low in its own field instead of
-            crowding the divider. */}
-        <span className="block border-t border-black/[0.07] px-3 pb-2.5 pt-3.5 [[data-theme=dark]_&]:border-[rgba(255,255,255,0.16)]">
-          {/* Not `truncate`: the script face's loops overshoot its em box, and
-              the overflow clip that comes with the ellipsis sheared the tops and
-              tails off the hand. The name is fixed copy that fits, and the card
-              clips its own edge, so nowrap alone is enough. */}
-          <span
-            className="block whitespace-nowrap border-b border-black/[0.16] text-[26px] leading-[1.15] text-[var(--v69-ink)] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.25)] max-sm:[.template-mock-gallery_&]:text-[22px]"
-            style={MOCK_SIGNATURE}
-          >
-            Adrian Chen
-          </span>
-        </span>
-      </span>
-    </div>
-  );
-}
-
-function CardTeamGuides() {
-  const file = { name: "Team handbook.pdf", meta: "18 guides", size: "12MB" };
-  const readPct = 76;
-  return (
-    <div className="v69-plot-grid flex h-full items-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
-      {/* Opaque, like every other record card in the set: through a translucent
-          pane the ruled ground ran straight across the row. */}
-      {/* Tighter gaps than the client library's row: this one carries a size and
-          a meter on the right as well, and at the larger type the filename ran
-          out of track and truncated. */}
-      <div className="flex w-full items-center gap-2 rounded-xl border border-black/[0.08] bg-[#FFFFFF] p-2.5 [[data-theme=dark]_&]:border-[rgba(255,255,255,0.09)] [[data-theme=dark]_&]:bg-[#303030]">
-        {/* The file's own thumbnail slot. A glyph rather than a preview: at this
-            size a real thumbnail is a smudge, and the point is the record, not
-            the artwork. */}
-        <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-[var(--v69-well)] text-muted-foreground [[data-theme=light]_.template-mock_&]:bg-[#e6e6e6] [[data-theme=dark]_&]:bg-[rgba(255,255,255,0.1)]">
-          <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden>
-            <rect x="4" y="4" width="16" height="16" rx="3" />
-            <path d="m5 16 4-4 4 4 2-2 4 4" strokeLinecap="round" strokeLinejoin="round" />
-            <circle cx="14.5" cy="9" r="1.2" />
+    // Dark gradient in light mode, light in dark mode: every app-screen cover
+    // sits on a dark ground on the light page and a light one on the dark page.
+    <GlassCover
+      photo="bg-[url(/images/mocks/contracts-ambient-dark.webp)] [[data-theme=dark]_&]:bg-[url(/images/mocks/contracts-ambient.webp)]"
+      focus="bg-center"
+      dim=""
+      inset=""
+      panel={false}
+    >
+      <DesktopMock>
+        <div className="flex h-14 items-center gap-3 border-b border-[#E5E7EB] px-6 text-[15px] leading-none">
+          <svg viewBox="0 0 24 24" className="size-5 text-[#4B5563]" {...APP_ICON} aria-hidden>
+            <rect x="3.5" y="5" width="17" height="14" rx="2" />
+            <path d="M10 5v14" />
           </svg>
-        </span>
-        <span className="min-w-0 flex-1">
-          <span className="block truncate text-[13px] leading-none text-[var(--v69-ink)]">
-            {file.name}
+          <span className="text-[#6B7280]">Contracts</span>
+          <svg viewBox="0 0 24 24" className="size-3.5 text-[#9CA3AF]" {...APP_ICON} aria-hidden>
+            <path d="m9 6 6 6-6 6" />
+          </svg>
+          <span>Service Agreement</span>
+          <span className={`${APP_BOX} ml-auto h-9 gap-2 px-3.5 text-[14px] leading-none text-[#1F2937]`}>
+            <svg viewBox="0 0 24 24" className="size-4" {...APP_ICON} aria-hidden>
+              <path d="M12 4v11M7 10l5 5 5-5M5 20h14" />
+            </svg>
+            Download
           </span>
-          <span className="mt-1.5 block text-[10px] leading-none text-muted-foreground">
-            {file.meta}
-          </span>
-        </span>
-        {/* Size over a read-through meter — the two things a shared guide is
-            judged on. The meter takes the brand periwinkle in both skins: on the
-            warm off-white face the lime it ran in light sat almost on top of the
-            face's own value, so the filled part barely read as filled. Dark was
-            already periwinkle, so it is unchanged. */}
-        <span className="flex shrink-0 flex-col items-end gap-2">
-          <span className="text-[11px] leading-none tabular-nums text-muted-foreground">
-            {file.size}
-          </span>
-          <span className="block h-[5px] w-8 overflow-hidden rounded-full bg-[var(--v69-well)] [[data-theme=dark]_&]:bg-[rgba(255,255,255,0.16)]">
-            <span
-              className="block h-full rounded-full bg-[#7DA4FF]"
-              style={{ width: `${readPct}%` }}
-            />
-          </span>
-        </span>
-      </div>
-    </div>
+        </div>
+        <div className="bg-[#F7F8FA] px-10 pt-8">
+          <div className="w-[620px] rounded-t-md bg-[#FFFFFF] px-14 pb-10 pt-12 shadow-[0_1px_3px_rgba(16,24,40,0.08)]">
+            <div className="bg-[#EFEBE5] py-2 text-center text-[20px] font-medium leading-none tracking-tight">
+              The Walsh Group
+            </div>
+            <div className="mt-2 text-center text-[10px] leading-none text-[#6B7280]">
+              Accounting &amp; advisory services
+            </div>
+            <div className="mt-3 border-t border-[#1F2937]" />
+            <div className="mt-6 text-center text-[15px] font-medium leading-none">
+              Professional services agreement
+            </div>
+            <p className="mt-5 text-[12px] leading-[1.6] text-[#374151]">
+              This Professional Services Agreement is entered into as of{" "}
+              <span className="border-b border-[#1F2937] px-1">07/14/2026</span> by and between{" "}
+              <span className="font-medium">The Walsh Group</span> and{" "}
+              <span className="border-b border-[#1F2937] px-1">Adrian Chen</span>, together the
+              Parties.
+            </p>
+            {CONTRACT_CLAUSES.map((c) => (
+              <div key={c.title} className="mt-5">
+                <div className="text-[13px] font-medium leading-none">{c.title}</div>
+                <p className="mt-2 text-[12px] leading-[1.6] text-[#374151]">{c.body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </DesktopMock>
+    </GlassCover>
   );
 }
+// Data room — the shares list as the team sees it on desktop: the two counts,
+// the filters, and the shares grouped by folder with each one's status.
+const DATA_ROOM_STATUS = {
+  active: "bg-[#E3F6E9] text-[#1E7A44]",
+  revoked: "bg-[#FDECEC] text-[#B42318]",
+  archived: "bg-[#FDF3D7] text-[#8A5A00]",
+} as const;
+const DATA_ROOM_GROUPS: {
+  name: string;
+  rows: {
+    initials: string;
+    name: string;
+    file: string;
+    status: keyof typeof DATA_ROOM_STATUS;
+    by: string;
+    date: string;
+    tint: string;
+  }[];
+}[] = [
+  {
+    name: "Financials",
+    rows: [
+      { initials: "TA", name: "Tunde Adeyemi", file: "FY26 budget model", status: "revoked", by: "Sarah Cadet", date: "Aug 11, 2026", tint: "bg-[#FBEDEC] text-[#A8453D]" },
+      { initials: "MC", name: "Marcus Chen", file: "Q2 2026 financial statements", status: "active", by: "Sarah Cadet", date: "Aug 9, 2026", tint: "bg-[#FBEDEC] text-[#A8453D]" },
+      { initials: "SL", name: "Sarah Lindqvist", file: "Q3 financial statements", status: "active", by: "Sarah Cadet", date: "Aug 9, 2026", tint: "bg-[#F3ECF8] text-[#7A3E9D]" },
+      { initials: "NL", name: "Northwind Logistics", file: "Q2 2026 financial statements", status: "active", by: "Sarah Cadet", date: "Aug 9, 2026", tint: "bg-[#E8F4F0] text-[#2F7A64]" },
+      { initials: "DO", name: "David Okonkwo", file: "October invoice", status: "active", by: "Sarah Cadet", date: "Aug 8, 2026", tint: "bg-[#FBEDEC] text-[#A8453D]" },
+      { initials: "WG", name: "Wexford Group", file: "Q3 financial statements", status: "revoked", by: "Sarah Cadet", date: "Aug 2, 2026", tint: "bg-[#E8F4F0] text-[#2F7A64]" },
+    ],
+  },
+  {
+    name: "Legal",
+    rows: [
+      { initials: "TS", name: "Triyama Software", file: "SOC 2 Type II report", status: "active", by: "Sean Walsh", date: "Aug 10, 2026", tint: "bg-[#ECEEF9] text-[#4B55A8]" },
+      { initials: "RR", name: "Rocket Rides", file: "Mutual NDA", status: "active", by: "Vivienne Chen", date: "Jul 29, 2026", tint: "bg-[#FBEDEC] text-[#A8453D]" },
+    ],
+  },
+];
+const DATA_ROOM_COLS =
+  "grid grid-cols-[18px_1.5fr_1.7fr_0.8fr_1fr_0.9fr] items-center gap-4";
 
-// Data room — an activity timeline: a headline metric over a weekday gantt of
-// document workstreams, with a legend. Monochrome — the inspiration's colored
-// tracks separate by brightness instead of hue.
 function CardDataRoom() {
   return (
-    // The face alone — the record list that sat on it is in the history if it
-    // is wanted back. Already a dark artwork, so it takes none of the dimming
-    // the photographic covers need in either skin.
+    // Dark gradient in light mode, light in dark mode: every app-screen cover
+    // sits on a dark ground on the light page and a light one on the dark page.
     <GlassCover
-      photo="bg-[url(/images/mocks/data-room-shelves.webp)]"
-      focus="bg-[position:62%_70%]"
+      photo="bg-[url(/images/mocks/data-room-ambient-dark.webp)] [[data-theme=dark]_&]:bg-[url(/images/mocks/data-room-ambient.webp)]"
+      focus="bg-center"
       dim=""
+      inset=""
       panel={false}
-    />
+    >
+      <DesktopMock>
+        <div className="flex h-16 items-center gap-2 border-b border-[#E5E7EB] px-6">
+          <span className="text-[16px] leading-none">Data Room</span>
+          <svg viewBox="0 0 24 24" className="size-4 text-[#6B7280]" {...APP_ICON} aria-hidden>
+            <path d="m6 9 6 6 6-6" />
+          </svg>
+          <span className="ml-auto flex h-9 items-center gap-1.5 rounded-lg bg-[#1F2329] px-3.5 text-[14px] leading-none text-[#FFFFFF]">
+            <svg viewBox="0 0 24 24" className="size-4" {...APP_ICON} aria-hidden>
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+            Share files
+          </span>
+          <span className={`${APP_BOX} size-9 text-[16px] leading-none`}>···</span>
+        </div>
+        <div className="px-6 pt-5">
+          <div className="grid grid-cols-2 gap-3">
+            {[
+              { label: "Active shares", value: 12 },
+              { label: "Revoked shares", value: 11 },
+            ].map((stat) => (
+              <div key={stat.label} className={`rounded-xl border ${APP_LINE} px-5 py-4`}>
+                <div className="text-[14px] leading-none text-[#6B7280]">{stat.label}</div>
+                <div className="mt-3 text-[30px] font-medium leading-none tracking-tight">
+                  {stat.value}
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="mt-4 flex items-center gap-2.5 text-[14px] leading-none">
+            <span className={`flex h-10 w-[250px] items-center justify-between gap-2 rounded-lg border ${APP_LINE} px-3.5 text-[#9CA3AF]`}>
+              <span className="truncate">Filter by contact or company…</span>
+              <svg viewBox="0 0 24 24" className="size-4 text-[#6B7280]" {...APP_ICON} aria-hidden>
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </span>
+            <span className={`flex h-10 w-[140px] items-center justify-between rounded-lg border ${APP_LINE} px-3.5`}>
+              All statuses
+              <svg viewBox="0 0 24 24" className="size-4 text-[#6B7280]" {...APP_ICON} aria-hidden>
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </span>
+            <span className={`flex h-10 flex-1 items-center rounded-lg border ${APP_LINE} px-3.5 text-[#9CA3AF]`}>
+              Search file titles…
+            </span>
+            <span className={`${APP_BOX} h-10 gap-2 px-3.5 text-[#1F2937]`}>
+              <svg viewBox="0 0 24 24" className="size-4" {...APP_ICON} aria-hidden>
+                <rect x="4" y="5" width="16" height="15" rx="2" />
+                <path d="M4 10h16M9 3v4M15 3v4" />
+              </svg>
+              Shared date
+            </span>
+          </div>
+          <span className="mt-4 inline-flex rounded-lg bg-[#F1F2F4] p-1 text-[14px] leading-none">
+            <span className="rounded-md bg-[#FFFFFF] px-3 py-2">Shares</span>
+            <span className="px-3 py-2 text-[#6B7280]">Recent activity</span>
+          </span>
+          <div className={`mt-4 overflow-hidden rounded-xl border ${APP_LINE}`}>
+            <div className={`${DATA_ROOM_COLS} h-11 px-4 text-[14px] leading-none`}>
+              <span className={`size-[18px] rounded border ${APP_LINE}`} />
+              <span>Recipient</span>
+              <span>File</span>
+              <span>Status</span>
+              <span>Shared by</span>
+              <span>Shared</span>
+            </div>
+            {DATA_ROOM_GROUPS.map((group) => (
+              <div key={group.name}>
+                <div className="flex h-10 items-center gap-2 border-t border-[#E5E7EB] bg-[#F7F8FA] px-4 text-[13px] leading-none text-[#6B7280]">
+                  {group.name}
+                  <span>{group.rows.length}</span>
+                </div>
+                {group.rows.map((row) => (
+                  <div
+                    key={`${row.name}-${row.file}`}
+                    className={`${DATA_ROOM_COLS} h-12 border-t border-[#E5E7EB] px-4 text-[14px] leading-none`}
+                  >
+                    <span className={`size-[18px] rounded border ${APP_LINE}`} />
+                    <span className="flex min-w-0 items-center gap-2.5">
+                      <span
+                        className={`flex size-7 shrink-0 items-center justify-center rounded-full text-[11px] leading-none ${row.tint}`}
+                      >
+                        {row.initials}
+                      </span>
+                      <span className="truncate">{row.name}</span>
+                    </span>
+                    <span className="truncate">{row.file}</span>
+                    <span>
+                      <span
+                        className={`rounded-full px-2.5 py-1.5 text-[12px] capitalize leading-none ${DATA_ROOM_STATUS[row.status]}`}
+                      >
+                        {row.status}
+                      </span>
+                    </span>
+                    <span className="truncate text-[#6B7280]">{row.by}</span>
+                    <span className="text-[#6B7280]">{row.date}</span>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      </DesktopMock>
+    </GlassCover>
   );
 }
 
@@ -3196,144 +3345,112 @@ function CardMassMessenger() {
   );
 }
 
-// Deals pipeline — the pipeline's value as a trend rather than as a funnel: the
-// figure set large at the head of the card over a rising line that bleeds to the
-// card's edges, after the stock-app reference. The four labelled stage bars it
-// replaced spent the whole card explaining the split, when what the cover has to
-// carry is that the number is going up.
-// Sampled monthly, y measured downward from the top of the plot. Three or four
-// months climbing, then one month that gives back most of the run, then the next
-// climb from a higher floor. The drawdowns are deliberately bigger than any single
-// up-month (about 5 against 3 to 4): a chart is read by its corrections, and many
-// small pullbacks instead of a few large ones just made the line look jagged.
-// A pipeline filling up over a quarter: y is measured from the top of the plot,
-// so falling numbers are a rising line. It climbs steadily, flattens twice where
-// deals sat in a stage, and accelerates through the last third.
-//
-// It used to run 36→33→30→27 then jump back to 32, four times over — a sawtooth.
-// Every leg fell by the same amount and every recovery spiked by the same amount,
-// which is what made the line read as scribbled by hand rather than plotted: real
-// series don't repeat an interval that exactly, and the eye picks the repetition
-// up immediately. The two pullbacks here are small and unequal, and nothing else
-// reverses.
-// Sampled densely and left jagged — the reference plots a real series, where
-// every sample is its own vertex, rather than a smoothed contour. y runs down
-// the plot, so falling numbers are a rising line.
-// Structure first, noise second. Uneven step sizes alone still read as a saw
-// riding a ramp, because the line had no shape ABOVE the sample level: it climbed
-// at one rate from end to end. This runs in phases the way the reference does —
-// a climb, a pullback that gives some of it back, a hard run to the peak, a
-// plateau, a dip, then a recovery that lands on the baseline — with the sample
-// noise carried on top. The swings are also much bigger: the series spans about
-// two-fifths of the plot's height, where before it wandered inside a narrow band.
-const PIPELINE_SERIES = [
-  // climb
-  27, 25.5, 26.2, 23, 24.1, 21.5, 21.8, 19,
-  // pullback
-  20.6, 22, 21.4,
-  // run to the peak
-  18.5, 16, 16.6, 13.5, 12, 12.4,
-  // plateau
-  12.1, 12.6, 12.2,
-  // dip
-  14.5, 15.8, 15.2,
-  // recovery onto the baseline
-  13, 11.5, 11.9, 10.5,
+// Deals pipeline — the board as the team sees it on desktop: a column per
+// stage with its count and value, and a card per deal.
+const DEAL_STAGES: {
+  name: string;
+  count: number;
+  value: string;
+  dot: string;
+  deals: { title: string; company: string; initials: string; value: string; owner: string }[];
+}[] = [
+  { name: "Lead", count: 8, value: "$243,000", dot: "bg-[#5BA4E5]", deals: [
+    { title: "Website redesign discovery", company: "Nimbus Works", initials: "NW", value: "$24,000", owner: "AE" },
+    { title: "Portfolio reporting dashboard", company: "Kestrel Holdings", initials: "KH", value: "$46,000", owner: "KF" },
+    { title: "Content strategy retainer", company: "Brookline Media", initials: "BM", value: "$18,000", owner: "VC" },
+    { title: "Brand identity refresh", company: "Aspen Ridge", initials: "AR", value: "$32,000", owner: "JW" },
+  ] },
+  { name: "Qualified", count: 7, value: "$471,000", dot: "bg-[#2BB5A0]", deals: [
+    { title: "Lab data platform integration", company: "Meridian Labs", initials: "ML", value: "$88,000", owner: "KF" },
+    { title: "Fund reporting portal", company: "Redwood Ventures", initials: "RV", value: "$64,000", owner: "AE" },
+    { title: "E-commerce replatform", company: "Cascade Outdoor Co.", initials: "CC", value: "$115,000", owner: "JW" },
+    { title: "Client portal rollout", company: "Rao Advisory", initials: "RA", value: "$42,000", owner: "VC" },
+  ] },
+  { name: "Proposal", count: 6, value: "$574,500", dot: "bg-[#9B7BE5]", deals: [
+    { title: "Fleet analytics platform", company: "Northwind Logistics", initials: "NL", value: "$178,000", owner: "KF" },
+    { title: "Platform security review", company: "Triyama Software", initials: "TS", value: "$72,000", owner: "DB" },
+    { title: "Advisory retainer, FY27", company: "Whitfield Partners", initials: "WP", value: "$120,000", owner: "JW" },
+    { title: "Investor reporting redesign", company: "Fairhaven Group", initials: "FG", value: "$54,000", owner: "AE" },
+  ] },
+  { name: "Negotiation", count: 5, value: "$871,000", dot: "bg-[#F2A33A]", deals: [
+    { title: "Enterprise data migration", company: "Bridgepoint Advisory", initials: "BA", value: "$245,000", owner: "KF" },
+    { title: "Multi-year managed services", company: "Wexford Group", initials: "WG", value: "$310,000", owner: "JW" },
+    { title: "Grid reporting suite", company: "Redwood Energy Partners", initials: "RP", value: "$142,000", owner: "TS" },
+    { title: "M&A diligence workspace", company: "Beaumont Partners", initials: "BP", value: "$98,000", owner: "AE" },
+  ] },
 ];
-const PIPELINE_PLOT_W = 100;
-const PIPELINE_PLOT_H = 40;
-// The series occupies the left of the plot and the tinted floor carries its last
-// value out to the edge on its own: the period is only part run.
-const PIPELINE_DATA_W = 52;
-const PIPELINE_LAST_Y = PIPELINE_SERIES[PIPELINE_SERIES.length - 1];
-// Ruled verticals behind the line. Evenly pitched across the full width, so they
-// carry on past where the data stops.
-const PIPELINE_GRID_X = [12.5, 25, 37.5, 50, 62.5, 75, 87.5];
-
-// Straight legs between every sample — no corner radiusing. The plot is a record
-// of what happened, and rounding the vertices turns it into an illustration of a
-// trend.
-const PIPELINE_LINE_D = PIPELINE_SERIES.map((y, i) => {
-  const x = (i * PIPELINE_DATA_W) / (PIPELINE_SERIES.length - 1);
-  return `${i === 0 ? "M" : "L"} ${x.toFixed(2)} ${y}`;
-}).join(" ");
-// One hue per theme, both from the brand pair and neither of them stepped: the
-// lime carries on the near-black card, the periwinkle on the off-white one, where
-// lime has almost nothing to hold against the face.
-const PIPELINE_HUE =
-  "[--pipe-line:#7DA4FF] [[data-theme=dark]_&]:[--pipe-line:#D9ED92]";
 
 function CardDealsPipeline() {
   return (
-    <div
-      className={`relative flex h-full flex-col overflow-hidden bg-[var(--v69-card)] ${PIPELINE_HUE}`}
+    // Dark gradient in light mode, light in dark mode: every app-screen cover
+    // sits on a dark ground on the light page and a light one on the dark page.
+    <GlassCover
+      photo="bg-[url(/images/mocks/pipeline-ambient-dark.webp)] [[data-theme=dark]_&]:bg-[url(/images/mocks/pipeline-ambient.webp)]"
+      focus="bg-center"
+      dim=""
+      inset=""
+      panel={false}
     >
-      {/* Label over figure over plot, in that order — the reference's reading
-          path. The figure carries its cents at a smaller size, so the round part
-          of the number is what the eye lands on. */}
-      <div className="px-5 pt-5">
-        {/* No MOCK_UPSCALED_META here: that rung is for the covers drawn in the
-            smaller design box, and this one is drawn at the shared size. */}
-        <span
-          className="block text-[10px] uppercase leading-none tracking-wide text-muted-foreground"
-          style={MOCK_MONO}
-        >
-          Pipeline
-        </span>
-        <div className="mt-2.5 flex items-baseline text-[var(--v69-ink)] max-sm:[.template-mock-gallery_&]:mt-2">
-          <span className="text-[34px] font-normal leading-none tracking-tight tabular-nums max-sm:[.template-mock-gallery_&]:text-[28px]">
-            $248,500
-          </span>
-          <span className="text-[17px] font-normal leading-none tracking-tight tabular-nums max-sm:[.template-mock-gallery_&]:text-[14px]">
-            .00
+      <DesktopMock>
+        <div className="flex h-14 items-center gap-3 border-b border-[#E5E7EB] px-6 text-[15px] leading-none">
+          <svg viewBox="0 0 24 24" className="size-5 text-[#4B5563]" {...APP_ICON} aria-hidden>
+            <rect x="3.5" y="5" width="17" height="14" rx="2" />
+            <path d="M10 5v14" />
+          </svg>
+          <span>Deals Pipeline</span>
+          <svg viewBox="0 0 24 24" className="size-4 text-[#6B7280]" {...APP_ICON} aria-hidden>
+            <path d="m6 9 6 6 6-6" />
+          </svg>
+          <span className="ml-auto flex h-9 items-center gap-1.5 rounded-lg bg-[#1F2329] px-3.5 text-[14px] leading-none text-[#FFFFFF]">
+            <svg viewBox="0 0 24 24" className="size-4" {...APP_ICON} aria-hidden>
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+            Create deal
           </span>
         </div>
-      </div>
-      {/* The plot bleeds to the card's edges and past its foot — a chart cropped
-          by the card reads as a window onto a longer series, where one inset into
-          a panel reads as a diagram of it. preserveAspectRatio is off so the line
-          fills whatever box the cover gives it; every stroke opts out of that
-          scaling so weights and dashes hold at any card size. */}
-      <svg
-        viewBox={`0 0 ${PIPELINE_PLOT_W} ${PIPELINE_PLOT_H}`}
-        preserveAspectRatio="none"
-        className="mt-auto h-[58%] w-full"
-        aria-hidden
-      >
-        {/* Everything under the baseline takes a faint tint, so the plot has a
-            floor rather than floating in the card. Drawn first, under the rules
-            and the series both. */}
-        <rect
-          x="0"
-          y={PIPELINE_LAST_Y}
-          width={PIPELINE_PLOT_W}
-          height={PIPELINE_PLOT_H - PIPELINE_LAST_Y}
-          fill={ink(5)}
-        />
-        {/* Ruled verticals, drawn first so the series sits over them. */}
-        {PIPELINE_GRID_X.map((x) => (
-          <line
-            key={x}
-            x1={x}
-            y1="0"
-            x2={x}
-            y2={PIPELINE_PLOT_H}
-            stroke={INK_FAINT}
-            strokeWidth="1"
-            vectorEffect="non-scaling-stroke"
-          />
-        ))}
-        <path
-          d={PIPELINE_LINE_D}
-          fill="none"
-          stroke="var(--pipe-line)"
-          strokeWidth="3"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          vectorEffect="non-scaling-stroke"
-        />
-      </svg>
-    </div>
+        <div className="flex gap-6 px-6 pt-4 text-[14px] leading-none">
+          <span className="border-b-2 border-[#1F2937] pb-3">Pipeline</span>
+          <span className="pb-3 text-[#6B7280]">Table</span>
+          <span className="pb-3 text-[#6B7280]">Chart</span>
+        </div>
+        <div className="flex items-center gap-2 border-t border-[#E5E7EB] px-6 py-3">
+          <div className="w-[200px]"><AppSearch placeholder="Search" /></div>
+          {["Owner", "Company", "Stage", "Value"].map((f) => (
+            <span key={f} className={`${APP_BOX} h-9 gap-1.5 px-3 text-[14px] leading-none text-[#374151]`}>
+              {f}
+              <svg viewBox="0 0 24 24" className="size-3.5" {...APP_ICON} aria-hidden><path d="m6 9 6 6 6-6" /></svg>
+            </span>
+          ))}
+        </div>
+        <div className="flex gap-3 px-6 pt-2">
+          {DEAL_STAGES.map((st) => (
+            <div key={st.name} className={`w-[270px] shrink-0 rounded-xl border ${APP_LINE} bg-[#F7F8FA] p-2`}>
+              <div className="flex items-center gap-2 px-2 py-2.5 text-[13px] leading-none">
+                <span className={`size-2 rounded-full ${st.dot}`} />
+                {st.name}
+                <span className="rounded bg-[#E5E7EB] px-1.5 py-0.5 text-[12px] text-[#4B5563]">{st.count}</span>
+                <span className="ml-auto text-[#6B7280]">{st.value}</span>
+              </div>
+              <div className="space-y-2">
+                {st.deals.map((d) => (
+                  <div key={d.title} className={`rounded-lg border ${APP_LINE} bg-[#FFFFFF] px-3 py-3`}>
+                    <div className="truncate text-[14px] leading-none">{d.title}</div>
+                    <div className="mt-2.5 flex items-center gap-1.5 text-[12px] leading-none text-[#6B7280]">
+                      <span className="rounded bg-[#ECEEF9] px-1 py-0.5 text-[9px] text-[#4B55A8]">{d.initials}</span>
+                      {d.company}
+                    </div>
+                    <div className="mt-3 flex items-center justify-between text-[14px] leading-none">
+                      {d.value}
+                      <span className="flex size-5 items-center justify-center rounded-full bg-[#E8F4F0] text-[8px] text-[#2F7A64]">{d.owner}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </DesktopMock>
+    </GlassCover>
   );
 }
 
@@ -3370,81 +3487,6 @@ function CardTicketing() {
         <span className={`mb-1 ${MOCK_UNIT_TAG}`} style={MOCK_MONO}>
           Tickets
         </span>
-      </div>
-    </div>
-  );
-}
-
-// Internal communications app — the announcement as the message it actually is:
-// one bubble with a tail, a reaction stuck to its corner, and a read receipt
-// under it. A thread is what the app is, and a single message says that faster
-// than a panel with a "Pinned" chip on it did.
-function CardCommsApp() {
-  return (
-    // v69-cover-column is the phone treatment: the bubble is held to the width it
-    // was drawn at and centred, rather than stretching across the wider frame.
-    <div className="v69-cover-column flex h-full flex-col items-center justify-center bg-[var(--v69-card)] p-4 pt-6">
-      {/* The bubble hugs its text and the receipt sits under that same width, so
-          the pair reads as one message rather than as two stacked rows. Centred
-          as a block: left-aligned, the message sat off to one side of a cover
-          that has nothing else on it.
-          Capped short of the frame rather than filled to it: on one line the
-          bubble ran the full width and left the tapback and the tail with a few
-          pixels of air, which read as a message crammed into the cover. Wrapped
-          to two lines they each clear the edge. */}
-      <div className="flex w-fit max-w-[78%] flex-col gap-1.5">
-      <div className="relative">
-        {/* The reaction, hung off the bubble's top-left the way a tapback sits on
-            the message it belongs to. Two trailing dots carry it back to the
-            corner, so it reads as attached rather than as a second element. */}
-        {/* The chip is filled a clear step off the card face and carries a
-            hairline, rather than borrowing the face's own token: at --v69-card on
-            a --v69-card cover it was the same colour as what it sat on, and only
-            its shadow gave it an edge — on the hero rail that read as nothing at
-            all. */}
-        <span className="absolute -left-2 -top-4 z-10 flex size-7 items-center justify-center rounded-full bg-[#FFFFFF] ring-1 ring-[rgba(16,24,40,0.04)] shadow-[0_1px_2px_rgba(16,24,40,0.05)] [[data-theme=dark]_&]:bg-[#D9ED92] [[data-theme=dark]_&]:shadow-none [[data-theme=dark]_&]:ring-transparent">
-          {/* The heart takes the accent rather than a literal red — it is the one
-              coloured mark on the cover besides the bubble, and a second hue
-              would be the only one in the whole gallery. */}
-          <svg viewBox="0 0 24 24" className="size-3.5 text-[#6F8F2E] [[data-theme=light]_&]:text-[#A8C64A]" fill="currentColor" aria-hidden>
-            <path d="M12 20.4 4.2 12.9a4.6 4.6 0 0 1 0-6.6 4.8 4.8 0 0 1 6.7 0l1.1 1 1.1-1a4.8 4.8 0 0 1 6.7 0 4.6 4.6 0 0 1 0 6.6Z" />
-          </svg>
-        </span>
-        <span className="absolute -left-[11px] top-[11px] z-10 size-[7px] rounded-full bg-[#FFFFFF] ring-1 ring-[rgba(16,24,40,0.04)] [[data-theme=dark]_&]:bg-[#D9ED92] [[data-theme=dark]_&]:ring-transparent" />
-        {/* Light spends the brand lime. Dark goes neutral — a clear step off the
-            card face — rather than a second saturated fill: with the tapback
-            already carrying the accent, a coloured bubble made the cover two
-            competing colours.
-            No hairline on it, deliberately. The bubble is two shapes — a rounded
-            rect plus the tail — and every way of outlining that union at this
-            size showed the joint: a ring stops where the tail starts, and
-            offset drop-shadows kink at the tail's concave hook. It separates by
-            value instead, which at #383838 on a #262626 face is a clear step. */}
-        <div className="relative rounded-[18px] px-4 py-3 [[data-theme=light]_&]:bg-[#D9ED92] [[data-theme=dark]_&]:bg-[#383838]">
-          <span className={`block text-[13px] font-normal leading-snug text-[#1B1B1B] [[data-theme=dark]_&]:text-[var(--v69-ink)] ${MOCK_UPSCALED_BODY}`}>
-            Assembly is live for the whole team
-          </span>
-          {/* The tail, drawn as a shape rather than a rotated square: a square
-              corner poking out of an 18px radius read as a glitch at cover size. */}
-          <svg
-            viewBox="0 0 14 14"
-            className="absolute bottom-0 right-2 size-3.5 translate-x-1/2 overflow-visible [[data-theme=light]_&]:text-[#D9ED92] [[data-theme=dark]_&]:text-[#383838]"
-            aria-hidden
-          >
-            {/* The path starts above the viewBox so the tail overlaps the bubble
-                rather than butting against it. Same fill, so the overlap is
-                invisible — but it makes the two one contiguous silhouette, which
-                is what the outline traces. Butted, a hairline gap ran between
-                them and the outline drew down into it. */}
-            <path d="M0 -3h6c0 6 3 10.5 8 12.5C7.5 14.5 2 11 0 5Z" fill="currentColor" />
-          </svg>
-        </div>
-      </div>
-      {/* Read receipt, right-aligned under the bubble — the quietest thing on the
-          cover, in the same caption step the other covers use for metadata. */}
-      <span className={`self-end pr-1 text-[11px] font-normal leading-none text-muted-foreground ${MOCK_UPSCALED_META}`}>
-        Read 10:30
-      </span>
       </div>
     </div>
   );
@@ -3489,124 +3531,6 @@ function CardAIAssistant() {
     </div>
   );
 }
-
-// Conditional forms — the branch drawn as a node graph, after the flow-builder
-// references: the question node on the left with a port per answer, and the field
-// each answer leads to on the right. The segmented control it replaced showed one
-// answer and one follow-up; a graph shows the rule itself, which is what the
-// template actually builds.
-// Geometry lives in one place: the ports below are stated as percentages of the
-// card, and both the nodes and the SVG edges read from them, so an edge always
-// lands dead centre on the port it belongs to.
-const NODE_PORT_X = 40; // right edge of the question node
-const NODE_TARGET_X = 64; // left edge of the field node
-// Row height in design px rather than a share of the card. The type on these
-// nodes is a fixed size, so a percentage height set the row from the card and
-// left the label swimming in it; a real editor sizes a node from its own row.
-const NODE_ROW_H = 34;
-// Only the taken branch is drawn. The unanswered one used to run to an empty
-// dashed node, which read as a placeholder someone had forgotten to fill in.
-// Dropped from 40/31 when the second branch came out: with one pair left, the
-// old coordinates hung the whole graph in the top-left corner of the card.
-const NODE_ROW_Y = 48; // the Business row, and the edge that leaves it
-const NODE_TARGET_Y = 39; // the field that row reveals
-// The canvas the nodes sit on: the reference's dot grid, at an alpha where it
-// reads as paper rather than as pattern. Literal rgba — the mock's dark skin
-// remaps --color-white.
-const NODE_CANVAS =
-  "[background-image:radial-gradient(rgba(16,24,40,0.10)_1px,transparent_1px)] [background-size:12px_12px] [[data-theme=dark]_&]:[background-image:radial-gradient(rgba(255,255,255,0.10)_1px,transparent_1px)]";
-// One skin for every node: a surface lifted off the canvas behind a hairline.
-// The hairline takes MOCK_OUTLINE's alphas so these nodes are framed as firmly
-// as the other widget mocks — at 7%/10% the node edge disappeared into the
-// canvas and the pieces read as bare fills.
-// The gallery draws these nodes at half the hero's scale, so the hero's 12px
-// corner reads as a pill there — a tighter radius keeps them reading as editor
-// nodes rather than chips, and the cast shadow comes off entirely: scaled up it
-// read as a dark halo around each node rather than as lift.
-const NODE_SURFACE =
-  "rounded-xl [.template-mock_&]:rounded-md bg-[#fafafa] shadow-[0_1px_2px_rgba(16,24,40,0.08),0_6px_14px_-8px_rgba(16,24,40,0.18)] [.template-mock_&]:shadow-none ring-1 ring-[rgba(16,24,40,0.08)] [.template-mock_&]:ring-[rgba(16,24,40,0.15)] [[data-theme=dark]_&]:bg-[#323232] [[data-theme=dark]_&]:shadow-[0_1px_3px_rgba(0,0,0,0.5)] [[data-theme=dark]_&]:ring-[rgba(255,255,255,0.12)] [[data-theme=dark]_.template-mock_&]:ring-[rgba(255,255,255,0.20)]";
-const NODE_ACCENT = "#7DA4FF";
-
-function CardConditionalForms() {
-  return (
-    <div className={`relative h-full bg-[var(--v69-card)] ${NODE_CANVAS}`}>
-      {/* Edges first, so the nodes sit on top of where the curves terminate. The
-          taken branch runs at full strength in the accent; the other is the same
-          curve held back, which is what makes one of the two read as live. */}
-      <svg
-        viewBox="0 0 100 100"
-        preserveAspectRatio="none"
-        className="absolute inset-0 size-full"
-        fill="none"
-        aria-hidden
-      >
-        <path
-          d={`M ${NODE_PORT_X} ${NODE_ROW_Y} C ${NODE_PORT_X + 7} ${NODE_ROW_Y} ${NODE_TARGET_X - 7} ${NODE_TARGET_Y} ${NODE_TARGET_X} ${NODE_TARGET_Y}`}
-          stroke={NODE_ACCENT}
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          opacity="0.9"
-          vectorEffect="non-scaling-stroke"
-        />
-      </svg>
-
-      {/* The question node: one row per answer, the chosen one carrying the ink
-          and a lit port, the other left muted. */}
-      {/* Anchored on the row the edge leaves, not on the node's own middle: the
-          port sits at the centre of the Business row, so the node is offset up by
-          half a row from that line. */}
-      <div
-        className={`absolute left-[6%] flex w-[34%] flex-col ${NODE_SURFACE}`}
-        style={{ top: `calc(${NODE_ROW_Y}% - ${NODE_ROW_H / 2}px)` }}
-      >
-        {["Business", "Individual"].map((answer, i) => (
-          <span
-            key={answer}
-            style={{ height: NODE_ROW_H }}
-            className={`flex items-center truncate px-3 text-[13px] font-normal ${
-              i === 0 ? "text-[var(--v69-ink)]" : "text-muted-foreground"
-            } ${i === 1 ? "border-t border-[rgba(16,24,40,0.08)] [.template-mock_&]:border-[rgba(16,24,40,0.15)] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.12)] [[data-theme=dark]_.template-mock_&]:border-[rgba(255,255,255,0.20)]" : ""}`}
-          >
-            {answer}
-          </span>
-        ))}
-      </div>
-
-      {/* The field the taken branch reveals. */}
-      <div
-        className={`absolute right-[6%] flex w-[30%] items-center truncate whitespace-nowrap px-3 text-[13px] font-normal text-[var(--v69-ink)] ${NODE_SURFACE}`}
-        style={{
-          top: `calc(${NODE_TARGET_Y}% - ${NODE_ROW_H / 2}px)`,
-          height: NODE_ROW_H,
-        }}
-      >
-        Oakwood
-      </div>
-
-      {/* Ports last: they cap the edge where it meets each node. No knockout ring
-          on them: each port straddles a node's edge, so a ring in the canvas
-          colour paints a disc of canvas over the node it is sitting on. In light
-          the two surfaces are eight levels apart and it passes; on the dark face
-          they are twelve levels apart at a quarter the luminance, and the ring
-          read as a dark blot interrupting the edge. */}
-      {[
-        { x: NODE_PORT_X, y: NODE_ROW_Y },
-        { x: NODE_TARGET_X, y: NODE_TARGET_Y },
-      ].map((port) => (
-        <span
-          key={`${port.x}-${port.y}`}
-          className="absolute size-[7px] -translate-x-1/2 -translate-y-1/2 rounded-full"
-          style={{
-            left: `${port.x}%`,
-            top: `${port.y}%`,
-            background: NODE_ACCENT,
-          }}
-        />
-      ))}
-    </div>
-  );
-}
-
 // Course player — a "now playing" lesson row (thumbnail, title, course, play)
 // like a music player, adapted with a completion bar since a course tracks
 // progress through lessons. Monochrome.
@@ -3800,104 +3724,103 @@ function CardServiceRequest() {
   );
 }
 
-// Events & RSVPs — one event drawn as the invite it is: a coloured header band
-// carrying the time, then a white body with what it is and where. Modelled on the
-// system calendar's event card, in the site's own materials — the brand lime for
-// the band (the hue every other card uses for its one live thing), the periwinkle
-// as the marker beside the title, and the time in the mono face the site sets all
-// its figures and data labels in.
-//
-// It was a day-rail of hour ticks and pills before. That said "a day filling up",
-// but at cover size it was five grey lines and three lozenges, and nothing on it
-// named the event or told you when it was.
-function CardEvents() {
-  return (
-    <div className="flex h-full items-center justify-center bg-[var(--v69-card)] p-5">
-      {/* A hairline in both themes, no drop in either: the shadow it used to carry
-          lifted it off the face like a sticker, but with nothing at all the white
-          body ran into the near-white card. Light takes 5% black, dark 8% white. */}
-      {/* Literal rgba in dark, not ring-white/x: the dark mock skin remaps
-          --color-white to a near-black, so the hairline was painting darker than
-          the card it sat on and the invite had no edge at all. Same weight as
-          the intake block's. */}
-      {/* rounded-xl, the same corner the record rows take (intake, the two
-          libraries): at rounded-2xl the invite was the roundest object in the set,
-          and on a frame this size that reads as a different family. */}
-      <div className="w-full overflow-hidden rounded-xl ring-1 ring-black/[0.05] [[data-theme=dark]_&]:ring-[rgba(255,255,255,0.11)]">
-        {/* The band. Ink on lime in both themes: it is the event's own colour,
-            not a surface that inverts with the skin. */}
-        <div
-          className="bg-[#D9ED92] px-3.5 py-2.5 text-[13px] leading-none tabular-nums text-[#262626]"
-          style={MOCK_MONO}
-        >
-          {/* The meridiem is set as its own span rather than after a space: in a
-              monospace face a word space carries a full digit's advance, which
-              left "AM" reading as a separate label instead of part of the time. */}
-          11–11:30<span className="ml-1">AM</span>
-        </div>
-        {/* Dark takes an explicit fill rather than --v69-well: on the gallery's
-            dark skin that token lands within a step of the card face, so the
-            body of the card disappeared and only the lime band read. */}
-        <div className="flex gap-2.5 bg-[var(--v69-well)] px-3.5 py-3 [[data-theme=light]_&]:bg-[#fafafa] [[data-theme=dark]_&]:bg-[#343434]">
-          {/* The marker the reference runs down the left of the title — the other
-              brand hue, so the card carries both and neither has to shout. */}
-          <span
-            aria-hidden
-            className="w-[3px] shrink-0 rounded-full bg-[#7DA4FF]"
-          />
-          <div className="min-w-0">
-            {/* 13 over 11, the record-row step the rest of the covers use. This
-                card was drawn a size up on both lines and read as a different
-                set beside them. */}
-            <p className="truncate text-[13px] font-normal leading-tight text-[var(--v69-ink)]">
-              Client workshop
-            </p>
-            <p className="mt-1 truncate text-[11px] font-normal leading-tight text-muted-foreground">
-              Studio, San Francisco
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// The round is the whole story of this card; the comment count and the state
-// after it were a second sentence the row didn't need at cover size.
-const APPROVAL_ROWS = [
-  { title: "Homepage hero", meta: "Round 2" },
-  { title: "Brand palette", meta: "Round 1" },
-  { title: "Social kit", meta: "Round 1" },
+// Design approvals — one round as the client reviews it on desktop: the two
+// designs shared this round, the one already picked outlined and ticked, and
+// the round's note above them.
+const DESIGN_OPTIONS = [
+  { label: "Pricing page, campaign styling", src: "/images/mocks/design-approval-pricing.webp", picked: true },
+  { label: "Customers page, campaign styling", src: "/images/mocks/design-approval-customers.webp", picked: false },
 ];
 
-// Design approvals — what is out for review and the round each piece is on,
-// on a glass panel over the aurora artwork. Dark artwork, so it takes none of
-// the dimming the photographic covers need in either skin.
 function CardDesignApprovals() {
   return (
+    // Dark gradient in light mode, light in dark mode: every app-screen cover
+    // sits on a dark ground on the light page and a light one on the dark page.
     <GlassCover
-      photo="bg-[url(/images/mocks/approvals-aurora.webp)]"
-      focus="bg-[position:62%_50%]"
+      photo="bg-[url(/images/mocks/design-approvals-ambient-dark.webp)] [[data-theme=dark]_&]:bg-[url(/images/mocks/design-approvals-ambient.webp)]"
+      focus="bg-center"
       dim=""
-      panel="w-full flex-col gap-2.5"
+      inset=""
+      panel={false}
     >
-      {APPROVAL_ROWS.map((row, i) => (
-        <div
-          key={row.title}
-          // A rule between the rows rather than round each: on glass a boxed
-          // row would be a second pane inside the first.
-          className={
-            i > 0
-              ? "border-t border-[rgba(255,255,255,0.18)] pt-2.5"
-              : undefined
-          }
-        >
-          <div className={`truncate ${COVER_ON_GLASS}`}>{row.title}</div>
-          <div className={`mt-1.5 truncate ${COVER_ON_GLASS_QUIET}`}>
-            {row.meta}
+      <DesktopMock>
+        <div className="flex h-14 items-center gap-3 border-b border-[#E5E7EB] px-6 text-[15px] leading-none">
+          <svg viewBox="0 0 24 24" className="size-5 text-[#4B5563]" {...APP_ICON} aria-hidden>
+            <rect x="3.5" y="5" width="17" height="14" rx="2" />
+            <path d="M10 5v14" />
+          </svg>
+          <span className="text-[#6B7280]">Approvals</span>
+          <svg viewBox="0 0 24 24" className="size-3.5 text-[#9CA3AF]" {...APP_ICON} aria-hidden>
+            <path d="m9 6 6 6-6 6" />
+          </svg>
+          <span>Product launch campaign: landing pages</span>
+          <span className="ml-auto flex h-9 items-center gap-1.5 rounded-lg bg-[#7DA4FF] px-3.5 text-[14px] leading-none text-[#FFFFFF]">
+            <svg viewBox="0 0 24 24" className="size-4" {...APP_ICON} aria-hidden>
+              <path d="m5 12 5 5 9-10" />
+            </svg>
+            Approve design
+          </span>
+        </div>
+        <div className="px-6 pt-6">
+          <div className="flex items-center gap-2 text-[14px] leading-none text-[#4B5563]">
+            <svg viewBox="0 0 24 24" className="size-4" {...APP_ICON} aria-hidden>
+              <path d="M19 12H5M11 6l-6 6 6 6" />
+            </svg>
+            All approvals
+          </div>
+          <div className="mt-5 flex items-center gap-3">
+            <span className="text-[22px] leading-none tracking-tight">
+              Product launch campaign: landing pages
+            </span>
+            <span className="flex items-center gap-1.5 rounded-full bg-[#EEF3FE] px-3 py-1.5 text-[13px] leading-none text-[#2F5BB7]">
+              <span className="size-1.5 rounded-full bg-[#2F5BB7]" />
+              New designs, your decision needed
+            </span>
           </div>
         </div>
-      ))}
+        <div className="mt-6 flex gap-6 border-b border-[#E5E7EB] px-6 text-[14px] leading-none">
+          <span className="border-b-2 border-[#1F2937] pb-3">Current round</span>
+          <span className="pb-3 text-[#6B7280]">
+            Previous rounds <span className="ml-1 rounded bg-[#F1F2F4] px-1.5 py-0.5">1</span>
+          </span>
+        </div>
+        <div className="px-6 pt-5">
+          <div className={`overflow-hidden rounded-xl border ${APP_LINE}`}>
+            <div className="flex items-center justify-between border-b border-[#E5E7EB] px-5 py-4 text-[14px] leading-none">
+              Round 2
+              <span className="text-[#6B7280]">Shared Aug 23, 2026</span>
+            </div>
+            <div className="px-5 pb-6 pt-5">
+              <div className="text-[14px] leading-snug text-[#4B5563]">
+                Supporting pages for the campaign: pricing and customers, updated to match the launch hero.
+              </div>
+              <div className="mt-5 flex gap-4">
+                {/* The real designs from the template's own screenshot, with
+                    their selection marks: the pricing page picked, the
+                    customers page not. */}
+                {DESIGN_OPTIONS.map((opt) => (
+                  <div
+                    key={opt.label}
+                    className={`w-[320px] overflow-hidden rounded-xl ${
+                      opt.picked ? "border-2 border-[#1F2937]" : `border ${APP_LINE}`
+                    }`}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element -- a fixed thumbnail inside a scaled mock; next/image would re-size it for the scaled box */}
+                    <img
+                      src={opt.src}
+                      alt=""
+                      className="block aspect-[630/350] w-full object-cover"
+                    />
+                    <div className="border-t border-[#E5E7EB] px-4 py-3 text-[14px] leading-none">
+                      {opt.label}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </DesktopMock>
     </GlassCover>
   );
 }
@@ -3928,7 +3851,7 @@ export function V69CardMock({ slug }: { slug: string }) {
   if (slug === "goal-tracker") return <CardMetrics />;
   if (slug === "client-support-requests") return <CardSupport />;
   if (slug === "internal-ticketing") return <CardTicketing />;
-  if (slug === "internal-communications-app") return <CardCommsApp />;
+  if (slug === "internal-communications-app") return <CardInternalComms />;
   if (slug === "internal-ai-assistant") return <CardAIAssistant />;
   if (slug === "conditional-forms") return <CardConditionalForms />;
   if (slug === "course-player") return <CardCourse />;

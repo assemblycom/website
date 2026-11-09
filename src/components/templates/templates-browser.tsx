@@ -439,7 +439,7 @@ export function TemplatesBrowser({ templates }: Props) {
           two very wide cards and then jumped straight to five. */}
       <div ref={resultsRef}>
         {filtered.length > 0 ? (
-          <div className="mt-10 grid gap-x-6 gap-y-12 min-[560px]:grid-cols-2 min-[760px]:grid-cols-3 min-[1100px]:grid-cols-4 lg:gap-x-8 lg:gap-y-[72px] min-[1280px]:grid-cols-5">
+          <div className="mt-10 grid gap-x-6 gap-y-10 min-[560px]:grid-cols-2 min-[1000px]:grid-cols-3 lg:gap-y-8">
             {filtered.map((template) => (
               <TemplateCard key={template.slug} template={template} />
             ))}

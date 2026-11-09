@@ -38,9 +38,8 @@ export const MOCK_DESIGN_SIZE: Record<string, string> = {
   // full box, so a smaller box narrows it, and at 240 the filename truncated.
   "internal-resource-library":
     "[--template-mock-w:264px] [--template-mock-h:264px]",
-  // The wizard is a single narrow bar in an otherwise empty square, so it takes
-  // the largest step. The request queue's segmented control is the same case.
-  "client-onboarding-wizard": "[--template-mock-w:224px] [--template-mock-h:224px]",
+  // The request queue's segmented control is a single small object in an
+  // otherwise empty square, so it takes the largest step.
   "service-request-intake": "[--template-mock-w:224px] [--template-mock-h:224px]",
 };
 

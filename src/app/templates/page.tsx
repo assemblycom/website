@@ -20,13 +20,13 @@ export default async function TemplatesPage() {
   const templates = await getVisibleTemplates();
   return (
     <>
-      {/* Left-aligned header (à la Linear's customers index) — the title,
-          lede, and filters all share one left edge. */}
+      {/* Centered header: the title and its button sit over the middle of the
+          grid at every width. */}
       {/* Site content rail (max-w-[1600px], px-6 md:px-10) so the title and card
           grid line up with the nav logo/actions, not the narrower Section rail. */}
       <section className="px-6 pb-16 pt-24 md:px-10 md:pb-24 md:pt-32">
         <div className="mx-auto max-w-[1600px]">
-          <div className="max-w-2xl text-center sm:text-left">
+          <div className="mx-auto max-w-2xl text-center">
             <h1 className="type-display text-balance">
               Start from an app template
             </h1>
@@ -38,7 +38,7 @@ export default async function TemplatesPage() {
               authedLabel="Open Assembly"
               href={SIGNUP_URL}
               label="Get started"
-              className="mx-auto mt-8 block w-full max-w-xs rounded-lg bg-foreground px-5 py-2.5 text-center text-sm text-background transition-opacity hover:opacity-90 sm:mx-0 sm:inline-block sm:w-auto"
+              className="mx-auto mt-8 block w-full max-w-xs rounded-lg bg-foreground px-5 py-2.5 text-center text-sm text-background transition-opacity hover:opacity-90 sm:inline-block sm:w-auto"
             />
           </div>
           {/* A full section step under the header, not a paragraph's worth: the
