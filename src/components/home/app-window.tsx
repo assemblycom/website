@@ -1,10 +1,8 @@
 "use client";
 
 // Shared pieces of the app-screen template covers: the cover face a window sits
-// on, and the desktop window itself (cropped off the card's edge, or whole).
+// on, and the desktop window itself, cropped off the card's edge.
 // Each cover draws its own app inside one of these.
-import { useEffect, useRef, useState } from "react";
-
 // Shared by the app-screen covers: the app is drawn at a real screen width
 // inside a device frame and scaled down, so it keeps its own proportions
 // instead of being redrawn at cover size.
@@ -110,41 +108,6 @@ export const DESKTOP_BAR = (
     ))}
   </div>
 );
-
-// The same window shown whole: held inside the card with even padding and all
-// four corners rounded. The design box changes shape between phone and
-// desktop, so the app is scaled to the width the window actually gets.
-export function DesktopMockWhole({
-  appWidth,
-  children,
-}: {
-  appWidth: number;
-  children: React.ReactNode;
-}) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [zoom, setZoom] = useState(0);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const ro = new ResizeObserver(() => setZoom(el.clientWidth / appWidth));
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, [appWidth]);
-  return (
-    <div
-      ref={ref}
-      className="absolute inset-[7%] overflow-hidden rounded-[6px] border border-[rgba(0,0,0,0.08)] bg-[#FFFFFF] bg-clip-padding"
-    >
-      <div
-        className="text-[#1F2937]"
-        style={{ width: appWidth, zoom: zoom || undefined, visibility: zoom ? "visible" : "hidden" }}
-      >
-        {DESKTOP_BAR}
-        {children}
-      </div>
-    </div>
-  );
-}
 
 // The window's white stops inside its edge (bg-clip-padding), so the edge reads
 // as a faint dark line on the cover rather than a white rim around the app.

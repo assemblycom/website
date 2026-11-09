@@ -73,7 +73,7 @@ const CAL_GRID = "grid grid-cols-[64px_repeat(7,1fr)]";
 export function CardCalendar() {
   return (
     <GlassCover
-      photo="bg-[url(/images/mocks/client-calendar-ambient-dark.webp)] [[data-theme=dark]_&]:bg-[url(/images/mocks/client-calendar-ambient.webp)]"
+      photo="bg-[#101010] [[data-theme=dark]_&]:bg-[#F7F7F4]"
       focus="bg-center"
       dim=""
       inset=""
@@ -186,7 +186,7 @@ const HOME_GUIDE = [
 export function CardHome() {
   return (
     <GlassCover
-      photo="bg-[url(/images/mocks/client-home-ambient-dark.webp)] [[data-theme=dark]_&]:bg-[url(/images/mocks/client-home-ambient.webp)]"
+      photo="bg-[#101010] [[data-theme=dark]_&]:bg-[#F7F7F4]"
       focus="bg-center"
       dim=""
       inset=""
@@ -292,7 +292,7 @@ const MSG_RAIL_ICONS = [
 export function CardMessages() {
   return (
     <GlassCover
-      photo="bg-[url(/images/mocks/messaging-app-ambient-dark.webp)] [[data-theme=dark]_&]:bg-[url(/images/mocks/messaging-app-ambient.webp)]"
+      photo="bg-[#101010] [[data-theme=dark]_&]:bg-[#F7F7F4]"
       focus="bg-center"
       dim=""
       inset=""
@@ -388,7 +388,7 @@ const FILE_COLS = "grid grid-cols-[1fr_230px_190px_40px] items-center gap-4";
 export function CardFiles() {
   return (
     <GlassCover
-      photo="bg-[url(/images/mocks/files-app-ambient-dark.webp)] [[data-theme=dark]_&]:bg-[url(/images/mocks/files-app-ambient.webp)]"
+      photo="bg-[#101010] [[data-theme=dark]_&]:bg-[#F7F7F4]"
       focus="bg-center"
       dim=""
       inset=""
@@ -499,7 +499,7 @@ const FORM_CARD = `rounded-xl border ${APP_LINE} bg-[#FFFFFF] px-5 py-5`;
 export function CardForms() {
   return (
     <GlassCover
-      photo="bg-[url(/images/mocks/forms-app-ambient-dark.webp)] [[data-theme=dark]_&]:bg-[url(/images/mocks/forms-app-ambient.webp)]"
+      photo="bg-[#101010] [[data-theme=dark]_&]:bg-[#F7F7F4]"
       focus="bg-center"
       dim=""
       inset=""

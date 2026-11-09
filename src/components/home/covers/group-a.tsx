@@ -43,7 +43,7 @@ const FORM_FIELDS = [
 function CardConditionalForms() {
   return (
     <GlassCover
-      photo="bg-[url(/images/mocks/conditional-forms-ambient-dark.webp)] [[data-theme=dark]_&]:bg-[url(/images/mocks/conditional-forms-ambient.webp)]"
+      photo="bg-[#101010] [[data-theme=dark]_&]:bg-[#F7F7F4]"
       focus="bg-center"
       dim=""
       inset=""
@@ -225,7 +225,7 @@ const EVENTS: {
 
 function CardEvents() {
   return (
-    <GlassCover photo="bg-[url(/images/mocks/events-rsvps-ambient-dark.webp)] [[data-theme=dark]_&]:bg-[url(/images/mocks/events-rsvps-ambient.webp)]" focus="bg-center" dim="" inset="" panel={false}>
+    <GlassCover photo="bg-[#101010] [[data-theme=dark]_&]:bg-[#F7F7F4]" focus="bg-center" dim="" inset="" panel={false}>
       <DesktopMock>
         <div className={BAR}>
           <PanelIcon />
@@ -323,7 +323,7 @@ const MARKUP_PAGE_LINES = [92, 100, 88, 100, 96, 70, 100, 90, 100, 84, 60];
 function CardMarkup() {
   return (
     <GlassCover
-      photo="bg-[url(/images/mocks/markup-comments-ambient-dark.webp)] [[data-theme=dark]_&]:bg-[url(/images/mocks/markup-comments-ambient.webp)]"
+      photo="bg-[#101010] [[data-theme=dark]_&]:bg-[#F7F7F4]"
       focus="bg-center"
       dim=""
       inset=""
@@ -458,7 +458,7 @@ const CHAT_MESSAGES: { initials: string; tint: string; who: string; time: string
 
 function CardInternalComms() {
   return (
-    <GlassCover photo="bg-[url(/images/mocks/internal-communications-app-ambient-dark.webp)] [[data-theme=dark]_&]:bg-[url(/images/mocks/internal-communications-app-ambient.webp)]" focus="bg-center" dim="" inset="" panel={false}>
+    <GlassCover photo="bg-[#101010] [[data-theme=dark]_&]:bg-[#F7F7F4]" focus="bg-center" dim="" inset="" panel={false}>
       <DesktopMock>
         <div className={BAR}>
           <PanelIcon />
@@ -584,7 +584,7 @@ const GUIDE_CARDS: { tag: string; title: string; blurb: string; owner: string; i
 function CardTeamGuides() {
   return (
     <GlassCover
-      photo="bg-[url(/images/mocks/internal-resource-library-ambient-dark.webp)] [[data-theme=dark]_&]:bg-[url(/images/mocks/internal-resource-library-ambient.webp)]"
+      photo="bg-[#101010] [[data-theme=dark]_&]:bg-[#F7F7F4]"
       focus="bg-center"
       dim=""
       inset=""

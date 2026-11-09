@@ -17,7 +17,6 @@ import {
   APP_LINE,
   AppSearch,
   DesktopMock,
-  DesktopMockWhole,
   GlassCover,
 } from "./app-window";
 import {
@@ -212,10 +211,9 @@ function SortMark() {
 
 function CardIntake() {
   return (
-    // Dark gradient in light mode, light in dark mode: every app-screen cover
-    // sits on a dark ground on the light page and a light one on the dark page.
+    // A plain face: near-black on the light page, off-white on the dark page.
     <GlassCover
-      photo="bg-[url(/images/mocks/intake-ambient.webp)] [[data-theme=dark]_&]:bg-[url(/images/mocks/intake-ambient-light.webp)]"
+      photo="bg-[#101010] [[data-theme=dark]_&]:bg-[#F7F7F4]"
       focus="bg-center"
       dim=""
       inset=""
@@ -417,10 +415,9 @@ const WIZARD_FORMAT = ["B", "I", "U", "H1", "H2", "H3"];
 
 function CardOnboarding() {
   return (
-    // Dark gradient in light mode, light in dark mode: every app-screen cover
-    // sits on a dark ground on the light page and a light one on the dark page.
+    // A plain face: near-black on the light page, off-white on the dark page.
     <GlassCover
-      photo="bg-[url(/images/mocks/onboarding-ambient-dark.webp)] [[data-theme=dark]_&]:bg-[url(/images/mocks/onboarding-ambient.webp)]"
+      photo="bg-[#101010] [[data-theme=dark]_&]:bg-[#F7F7F4]"
       focus="bg-center"
       dim=""
       inset=""
@@ -774,10 +771,9 @@ const ENGAGEMENT_COLS =
 
 function CardEngagement() {
   return (
-    // Dark gradient in light mode, light in dark mode: every app-screen cover
-    // sits on a dark ground on the light page and a light one on the dark page.
+    // A plain face: near-black on the light page, off-white on the dark page.
     <GlassCover
-      photo="bg-[url(/images/mocks/engagement-ambient-dark.webp)] [[data-theme=dark]_&]:bg-[url(/images/mocks/engagement-ambient.webp)]"
+      photo="bg-[#101010] [[data-theme=dark]_&]:bg-[#F7F7F4]"
       focus="bg-center"
       dim=""
       inset=""
@@ -916,10 +912,9 @@ const TIME_COLS = "grid grid-cols-[1.5fr_1.1fr_0.6fr_0.9fr_1fr] items-center gap
 
 function CardTimeTracker() {
   return (
-    // Dark gradient in light mode, light in dark mode: every app-screen cover
-    // sits on a dark ground on the light page and a light one on the dark page.
+    // A plain face: near-black on the light page, off-white on the dark page.
     <GlassCover
-      photo="bg-[url(/images/mocks/time-ambient-dark.webp)] [[data-theme=dark]_&]:bg-[url(/images/mocks/time-ambient.webp)]"
+      photo="bg-[#101010] [[data-theme=dark]_&]:bg-[#F7F7F4]"
       focus="bg-center"
       dim=""
       inset=""
@@ -1036,10 +1031,9 @@ const PROPOSAL_TEMPLATES = [
 
 function CardProposal() {
   return (
-    // Dark gradient in light mode, light in dark mode: every app-screen cover
-    // sits on a dark ground on the light page and a light one on the dark page.
+    // A plain face: near-black on the light page, off-white on the dark page.
     <GlassCover
-      photo="bg-[url(/images/mocks/proposal-ambient-dark.webp)] [[data-theme=dark]_&]:bg-[url(/images/mocks/proposal-ambient.webp)]"
+      photo="bg-[#101010] [[data-theme=dark]_&]:bg-[#F7F7F4]"
       focus="bg-center"
       dim=""
       inset=""
@@ -1099,10 +1093,9 @@ const ASSISTANT_STARTERS = [
 
 function CardChat() {
   return (
-    // Dark gradient in light mode, light in dark mode: every app-screen cover
-    // sits on a dark ground on the light page and a light one on the dark page.
+    // A plain face: near-black on the light page, off-white on the dark page.
     <GlassCover
-      photo="bg-[url(/images/mocks/assistant-ambient-dark.webp)] [[data-theme=dark]_&]:bg-[url(/images/mocks/assistant-ambient.webp)]"
+      photo="bg-[#101010] [[data-theme=dark]_&]:bg-[#F7F7F4]"
       focus="bg-center"
       dim=""
       inset=""
@@ -1185,10 +1178,6 @@ const DOC_REQUESTS: {
   { doc: "Payroll register, June 2026", initials: "AB", contact: "Amelia Brooks", owner: "Tara Quinn", priority: "medium", due: "Aug 10, 2026", status: "bg-[#F2A33A]", tint: "bg-[#F3ECF8] text-[#7A3E9D]" },
   { doc: "Commercial lease agreement", initials: "NL", contact: "Northwind Logistics", owner: "Leo Hart", priority: "medium", due: "Aug 12, 2026", status: "bg-[#F2A33A]", tint: "bg-[#E8F4F0] text-[#2F7A64]" },
 ];
-// Drawn at a desktop width and shown whole, so the table needs only as many
-// rows as end inside the window rather than running off its foot.
-const DOC_APP_W = 1000;
-const DOC_ROWS_SHOWN = 6;
 const DOC_COLS =
   "grid grid-cols-[2.6fr_1.5fr_1.1fr_0.9fr_1fr_0.5fr] items-center gap-4";
 
@@ -1203,7 +1192,7 @@ function CardDocuments() {
       inset=""
       panel={false}
     >
-      <DesktopMockWhole appWidth={DOC_APP_W}>
+      <DesktopMock>
         <div className="flex h-16 items-center gap-2 border-b border-[#E5E7EB] px-6">
           <span className="text-[16px] leading-none">Document collection</span>
           <svg viewBox="0 0 24 24" className="size-4 text-[#6B7280]" {...APP_ICON} aria-hidden>
@@ -1261,7 +1250,7 @@ function CardDocuments() {
               <span>Due date</span>
               <span>Status</span>
             </div>
-            {DOC_REQUESTS.slice(0, DOC_ROWS_SHOWN).map((r) => (
+            {DOC_REQUESTS.map((r) => (
               <div
                 key={r.doc}
                 className={`${DOC_COLS} h-12 border-t border-[#E5E7EB] px-5 text-[14px] leading-none`}
@@ -1290,7 +1279,7 @@ function CardDocuments() {
             ))}
           </div>
         </div>
-      </DesktopMockWhole>
+      </DesktopMock>
     </GlassCover>
   );
 }
@@ -1659,12 +1648,9 @@ function TrackerRing({ pct }: { pct: number }) {
 
 function CardTracker() {
   return (
-    // The brand artwork in light mode, its rounded bands framing the window
-    // from the left, which keeps this card's dark square in the gallery's
-    // checkerboard; the generator's off-white in dark mode, so no card is ever
-    // a dark square on the dark page.
+    // A plain face: near-black on the light page, off-white on the dark page.
     <GlassCover
-      photo="bg-[url(/images/mocks/tracker-bands.webp)] [[data-theme=dark]_&]:bg-none [[data-theme=dark]_&]:bg-[#F7F7F4]"
+      photo="bg-[#101010] [[data-theme=dark]_&]:bg-[#F7F7F4]"
       focus="bg-[position:0%_50%]"
       dim=""
       inset=""
@@ -1799,10 +1785,9 @@ const HELPDESK_REQUESTS: {
 
 function CardSupport() {
   return (
-    // Dark gradient in light mode, light in dark mode: every app-screen cover
-    // sits on a dark ground on the light page and a light one on the dark page.
+    // A plain face: near-black on the light page, off-white on the dark page.
     <GlassCover
-      photo="bg-[url(/images/mocks/helpdesk-ambient-dark.webp)] [[data-theme=dark]_&]:bg-[url(/images/mocks/helpdesk-ambient.webp)]"
+      photo="bg-[#101010] [[data-theme=dark]_&]:bg-[#F7F7F4]"
       focus="bg-center"
       dim=""
       inset=""
@@ -1931,10 +1916,9 @@ const CONTENT_COLS =
 
 function CardContentApproval() {
   return (
-    // Dark gradient in light mode, light in dark mode: every app-screen cover
-    // sits on a dark ground on the light page and a light one on the dark page.
+    // A plain face: near-black on the light page, off-white on the dark page.
     <GlassCover
-      photo="bg-[url(/images/mocks/content-approval-ambient-dark.webp)] [[data-theme=dark]_&]:bg-[url(/images/mocks/content-approval-ambient.webp)]"
+      photo="bg-[#101010] [[data-theme=dark]_&]:bg-[#F7F7F4]"
       focus="bg-center"
       dim=""
       inset=""
@@ -2099,10 +2083,9 @@ const CASE_STAGES: {
 
 function CardCaseStatus() {
   return (
-    // Dark gradient in light mode, light in dark mode: every app-screen cover
-    // sits on a dark ground on the light page and a light one on the dark page.
+    // A plain face: near-black on the light page, off-white on the dark page.
     <GlassCover
-      photo="bg-[url(/images/mocks/case-status-ambient-dark.webp)] [[data-theme=dark]_&]:bg-[url(/images/mocks/case-status-ambient.webp)]"
+      photo="bg-[#101010] [[data-theme=dark]_&]:bg-[#F7F7F4]"
       focus="bg-center"
       dim=""
       inset=""
@@ -2261,10 +2244,9 @@ function PinMark({ className = "" }: { className?: string }) {
 
 function CardResourceLibrary() {
   return (
-    // Dark gradient in light mode, light in dark mode: every app-screen cover
-    // sits on a dark ground on the light page and a light one on the dark page.
+    // A plain face: near-black on the light page, off-white on the dark page.
     <GlassCover
-      photo="bg-[url(/images/mocks/library-ambient-dark.webp)] [[data-theme=dark]_&]:bg-[url(/images/mocks/library-ambient.webp)]"
+      photo="bg-[#101010] [[data-theme=dark]_&]:bg-[#F7F7F4]"
       focus="bg-center"
       dim=""
       inset=""
@@ -2787,10 +2769,9 @@ function TaskMark({ state }: { state: "todo" | "progress" | "done" }) {
 
 function CardTasks() {
   return (
-    // Dark gradient in light mode, light in dark mode: every app-screen cover
-    // sits on a dark ground on the light page and a light one on the dark page.
+    // A plain face: near-black on the light page, off-white on the dark page.
     <GlassCover
-      photo="bg-[url(/images/mocks/tasks-ambient-dark.webp)] [[data-theme=dark]_&]:bg-[url(/images/mocks/tasks-ambient.webp)]"
+      photo="bg-[#101010] [[data-theme=dark]_&]:bg-[#F7F7F4]"
       focus="bg-center"
       dim=""
       inset=""
@@ -2852,10 +2833,9 @@ const PAYMENT_TABS = ["Overview", "Invoices", "Subscriptions", "Store", "Payment
 
 function CardPayments() {
   return (
-    // Dark gradient in light mode, light in dark mode: every app-screen cover
-    // sits on a dark ground on the light page and a light one on the dark page.
+    // A plain face: near-black on the light page, off-white on the dark page.
     <GlassCover
-      photo="bg-[url(/images/mocks/payments-ambient-dark.webp)] [[data-theme=dark]_&]:bg-[url(/images/mocks/payments-ambient.webp)]"
+      photo="bg-[#101010] [[data-theme=dark]_&]:bg-[#F7F7F4]"
       focus="bg-center"
       dim=""
       inset=""
@@ -2947,10 +2927,9 @@ const CONTRACT_CLAUSES = [
 
 function CardContract() {
   return (
-    // Dark gradient in light mode, light in dark mode: every app-screen cover
-    // sits on a dark ground on the light page and a light one on the dark page.
+    // A plain face: near-black on the light page, off-white on the dark page.
     <GlassCover
-      photo="bg-[url(/images/mocks/contracts-ambient-dark.webp)] [[data-theme=dark]_&]:bg-[url(/images/mocks/contracts-ambient.webp)]"
+      photo="bg-[#101010] [[data-theme=dark]_&]:bg-[#F7F7F4]"
       focus="bg-center"
       dim=""
       inset=""
@@ -3048,10 +3027,9 @@ const DATA_ROOM_COLS =
 
 function CardDataRoom() {
   return (
-    // Dark gradient in light mode, light in dark mode: every app-screen cover
-    // sits on a dark ground on the light page and a light one on the dark page.
+    // A plain face: near-black on the light page, off-white on the dark page.
     <GlassCover
-      photo="bg-[url(/images/mocks/data-room-ambient-dark.webp)] [[data-theme=dark]_&]:bg-[url(/images/mocks/data-room-ambient.webp)]"
+      photo="bg-[#101010] [[data-theme=dark]_&]:bg-[#F7F7F4]"
       focus="bg-center"
       dim=""
       inset=""
@@ -3382,10 +3360,9 @@ const DEAL_STAGES: {
 
 function CardDealsPipeline() {
   return (
-    // Dark gradient in light mode, light in dark mode: every app-screen cover
-    // sits on a dark ground on the light page and a light one on the dark page.
+    // A plain face: near-black on the light page, off-white on the dark page.
     <GlassCover
-      photo="bg-[url(/images/mocks/pipeline-ambient-dark.webp)] [[data-theme=dark]_&]:bg-[url(/images/mocks/pipeline-ambient.webp)]"
+      photo="bg-[#101010] [[data-theme=dark]_&]:bg-[#F7F7F4]"
       focus="bg-center"
       dim=""
       inset=""
@@ -3734,10 +3711,9 @@ const DESIGN_OPTIONS = [
 
 function CardDesignApprovals() {
   return (
-    // Dark gradient in light mode, light in dark mode: every app-screen cover
-    // sits on a dark ground on the light page and a light one on the dark page.
+    // A plain face: near-black on the light page, off-white on the dark page.
     <GlassCover
-      photo="bg-[url(/images/mocks/design-approvals-ambient-dark.webp)] [[data-theme=dark]_&]:bg-[url(/images/mocks/design-approvals-ambient.webp)]"
+      photo="bg-[#101010] [[data-theme=dark]_&]:bg-[#F7F7F4]"
       focus="bg-center"
       dim=""
       inset=""

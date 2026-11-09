@@ -48,7 +48,7 @@ const AR_WEEKDAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 export function CardAutoresponder() {
   return (
     <GlassCover
-      photo="bg-[url(/images/mocks/message-autoresponder-ambient-dark.webp)] [[data-theme=dark]_&]:bg-[url(/images/mocks/message-autoresponder-ambient.webp)]"
+      photo="bg-[#101010] [[data-theme=dark]_&]:bg-[#F7F7F4]"
       focus="bg-center"
       dim=""
       inset=""
@@ -144,7 +144,7 @@ const PM_FIELD_ICON: Record<string, string> = {
 export function CardProfileManager() {
   return (
     <GlassCover
-      photo="bg-[url(/images/mocks/profile-manager-ambient-dark.webp)] [[data-theme=dark]_&]:bg-[url(/images/mocks/profile-manager-ambient.webp)]"
+      photo="bg-[#101010] [[data-theme=dark]_&]:bg-[#F7F7F4]"
       focus="bg-center"
       dim=""
       inset=""
@@ -243,7 +243,7 @@ const EXPORT_FIELDS = [
 export function CardExport() {
   return (
     <GlassCover
-      photo="bg-[url(/images/mocks/exporter-ambient-dark.webp)] [[data-theme=dark]_&]:bg-[url(/images/mocks/exporter-ambient.webp)]"
+      photo="bg-[#101010] [[data-theme=dark]_&]:bg-[#F7F7F4]"
       focus="bg-center"
       dim=""
       inset=""
@@ -364,7 +364,7 @@ function ProductMapping({ tool }: { tool: string }) {
 export function CardQuickBooks() {
   return (
     <GlassCover
-      photo="bg-[url(/images/mocks/quickbooks-ambient-dark.webp)] [[data-theme=dark]_&]:bg-[url(/images/mocks/quickbooks-ambient.webp)]"
+      photo="bg-[#101010] [[data-theme=dark]_&]:bg-[#F7F7F4]"
       focus="bg-center"
       dim=""
       inset=""
@@ -383,7 +383,7 @@ export function CardQuickBooks() {
 export function CardXero() {
   return (
     <GlassCover
-      photo="bg-[url(/images/mocks/xero-ambient-dark.webp)] [[data-theme=dark]_&]:bg-[url(/images/mocks/xero-ambient.webp)]"
+      photo="bg-[#101010] [[data-theme=dark]_&]:bg-[#F7F7F4]"
       focus="bg-center"
       dim=""
       inset=""
