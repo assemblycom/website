@@ -90,10 +90,32 @@ RSS feed, which needs no credentials but which this instance caps at the newest
 | --- | --- | --- |
 | `GHOST_CONTENT_API_KEY` | All posts rather than the newest 15 | Ghost admin → **Settings → Integrations → Custom** → the integration's **Content API key**. 26 characters. Read-only, so it is safe to hand around; the **Admin API key** on the same screen (the one with a colon in it) is not, and is not what this wants. |
 | `GHOST_API_URL` | Pointing at a different Ghost | Defaults to `https://copilot-blog.ghost.io`. Leave unset. |
+| `GHOST_REVALIDATE_SECRET` | publish refresh | Shared with the Ghost webhooks below. Unset → `/api/revalidate-ghost` refuses every call and posts wait for the hourly refresh |
 
 Set it in `.env.local` for local work, and in the Vercel project's environment
 variables for staging and production. Read server-side only; it never reaches
 the browser.
+
+### Publishing refreshes the blog (no rebuild)
+
+Posts are cached and refreshed hourly. To show a publish within seconds instead:
+
+1. Generate a long random secret and set it as `GHOST_REVALIDATE_SECRET` on all
+   three Vercel scopes.
+2. Ghost admin → **Settings → Integrations → Custom** → the integration that
+   holds the Content API key → **Add webhook**, with **Target URL**
+   `https://assembly.com/api/revalidate-ghost` and **Secret** set to the same
+   secret. Add one webhook per event: **Post published**, **Published post
+   updated**, and **Post unpublished** (and **Post deleted**, if offered).
+
+Ghost can't send a custom header, which is how the Contentful webhook
+authenticates. It signs each request with the webhook's secret instead
+(`X-Ghost-Signature`), and the route checks that signature. A webhook saved
+without a secret sends no signature, and every call it makes is refused with a
+401.
+
+Each call marks every page stale, since the nav's featured post reads Ghost on
+every page. Pages refetch on their next visit, served the old copy meanwhile.
 
 ## Ghost, once more — the `/updates` importer only
 

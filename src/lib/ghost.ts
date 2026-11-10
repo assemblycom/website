@@ -18,6 +18,8 @@
  * instance, or which of the two transports, produced it.
  */
 
+import { cache } from "react";
+
 /** One Ghost instance: where it lives, and the read-only key for it if we have one. */
 interface GhostSource {
   url: string;
@@ -40,8 +42,15 @@ const API_PAGE_SIZE = 30;
 const MAX_PAGES = 40;
 
 // Posts change when someone publishes, not when someone deploys, so pages
-// revalidate hourly rather than being frozen into the build.
+// revalidate hourly rather than being frozen into the build. The hour is the
+// backstop: the Ghost publish webhook (src/app/api/revalidate-ghost)
+// revalidates GHOST_CACHE_TAG, so a new post normally shows within seconds.
 const REVALIDATE_SECONDS = 3600;
+
+/** Tag on every cached Ghost read, revalidated by the publish webhook. */
+export const GHOST_CACHE_TAG = "ghost";
+
+const GHOST_CACHE = { revalidate: REVALIDATE_SECONDS, tags: [GHOST_CACHE_TAG] };
 
 export interface GhostPost {
   /** Ghost's own "featured" flag, which decides what the index leads with. */
@@ -486,7 +495,7 @@ async function fetchFromRss(source: GhostSource): Promise<GhostPost[]> {
     const url =
       page === 1 ? `${source.url}/rss/` : `${source.url}/rss/${page}/`;
     const response = await fetch(url, {
-      next: { revalidate: REVALIDATE_SECONDS },
+      next: GHOST_CACHE,
     });
     // Ghost 404s the page after the last one, which is how the feed ends.
     if (!response.ok) break;
@@ -565,7 +574,7 @@ async function fetchFromContentApi(
       `&include=tags,authors&order=published_at%20desc%2Cid%20desc`;
 
     const response = await fetch(url, {
-      next: { revalidate: REVALIDATE_SECONDS },
+      next: GHOST_CACHE,
     });
     if (!response.ok) {
       // A bad key shouldn't take the page down: fall back to the public feed
@@ -610,8 +619,17 @@ async function fetchFromContentApi(
   return posts;
 }
 
-// One fetch per instance per render pass, however many pages ask for the list.
-const cached = new Map<string, Promise<GhostPost[]>>();
+// `next build` renders every page on the site, and every page asks for the post
+// list (the nav's featured post), so the build keeps one list for the whole run
+// rather than re-reading and re-parsing the archive per page.
+//
+// A running server must not: a module-level copy outlives the request, so a
+// warm instance would hand a regenerated page the list it read hours ago and
+// neither the hourly refresh nor the publish webhook would reach it. There,
+// React's cache() shares one list per request, and Next's data cache (which the
+// webhook revalidates) decides how fresh it is.
+const IS_BUILD = process.env.NEXT_PHASE === "phase-production-build";
+const buildCache = new Map<string, Promise<GhostPost[]>>();
 
 /**
  * One post per slug, keeping the first.
@@ -629,15 +647,20 @@ function bySlug(posts: GhostPost[]): GhostPost[] {
   });
 }
 
+function fetchFrom(source: GhostSource): Promise<GhostPost[]> {
+  return (
+    source.key ? fetchFromContentApi(source, source.key) : fetchFromRss(source)
+  ).then(bySlug);
+}
+
+const fetchPerRequest = cache(fetchFrom);
+
 function getFrom(source: GhostSource): Promise<GhostPost[]> {
-  let pending = cached.get(source.url);
+  if (!IS_BUILD) return fetchPerRequest(source);
+  let pending = buildCache.get(source.url);
   if (!pending) {
-    pending = (
-      source.key
-        ? fetchFromContentApi(source, source.key)
-        : fetchFromRss(source)
-    ).then(bySlug);
-    cached.set(source.url, pending);
+    pending = fetchFrom(source);
+    buildCache.set(source.url, pending);
   }
   return pending;
 }
@@ -726,7 +749,7 @@ async function fetchAuthors(): Promise<GhostAuthor[]> {
   const response = await fetch(
     `${BLOG.url}/ghost/api/content/authors/` +
       `?key=${BLOG.key}&limit=all&include=count.posts`,
-    { next: { revalidate: REVALIDATE_SECONDS } },
+    { next: GHOST_CACHE },
   );
   if (!response.ok) {
     console.error(`Ghost authors request returned ${response.status}`);
@@ -751,11 +774,14 @@ async function fetchAuthors(): Promise<GhostAuthor[]> {
   );
 }
 
-let cachedAuthors: Promise<GhostAuthor[]> | undefined;
+// Kept for the whole build, per request at runtime, for the reason getFrom is.
+let buildAuthors: Promise<GhostAuthor[]> | undefined;
+const authorsPerRequest = cache(fetchAuthors);
 
 export function getAuthors(): Promise<GhostAuthor[]> {
-  cachedAuthors ??= fetchAuthors();
-  return cachedAuthors;
+  if (!IS_BUILD) return authorsPerRequest();
+  buildAuthors ??= fetchAuthors();
+  return buildAuthors;
 }
 
 export async function getAuthor(
