@@ -82,12 +82,12 @@ export default async function BlogPostPage({
   // centred page instead of an article pushed off to one side.
   const showRail = showToc || Boolean(post.cta);
   // What the page actually gives an image, so the browser picks the right file
-  // off Ghost's srcset: the reading measure beside a rail, the wider breakout on
-  // the announcements.
+  // off Ghost's srcset: the reading measure beside a rail, or the announcements'
+  // 40.5rem column (only their cover runs wider).
   const darkThemeCover = DARK_THEME_COVERS[post.slug];
   const imageSizes = showRail
     ? "(min-width: 1440px) 688px, (min-width: 1024px) 648px, calc(100vw - 3rem)"
-    : "(min-width: 1088px) 1024px, calc(100vw - 3rem)";
+    : "(min-width: 696px) 648px, calc(100vw - 3rem)";
 
   return (
     // Two tracks on desktop: a rail holding the way back and the contents, and
@@ -286,7 +286,10 @@ export default async function BlogPostPage({
                     alt=""
                     width={2000}
                     height={1125}
-                    priority
+                    // The theme is only known in the browser, so with two
+                    // covers neither is preloaded: lazy loading skips the
+                    // hidden one and fetches the visible one as it lays out.
+                    priority={!darkThemeCover}
                     sizes={COVER_SIZES}
                     className={cn(
                       "block h-auto w-full",

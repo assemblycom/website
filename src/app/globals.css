@@ -3457,8 +3457,7 @@ html[data-theme="dark"] .v63-ring-solid::before {
     .post-body-wide > h3 + * {
       margin-top: 0.75rem;
     }
-    .post-body-wide :is(figure, img),
-    .post-body :is(.composer-mock, .apps-mock, .settings-mock, .referrals-mock) {
+    .post-body-wide :is(figure, img) {
       border-radius: 0.625rem;
     }
   }
@@ -3767,9 +3766,12 @@ html[data-theme="dark"] .v63-ring-solid::before {
      edge to edge with no room around it. */
   @media (width < 40rem) {
     /* One shape for every picture on a phone, so the column keeps a rhythm. */
+    /* Here rather than with the phone image corners above: the shared rule
+       for these figures sets 1rem later at the same specificity. */
     .post-body :is(.composer-mock, .apps-mock, .settings-mock, .referrals-mock) {
       aspect-ratio: 1;
       padding: 1rem;
+      border-radius: 0.625rem;
     }
   }
   /* Dark's raised surface: a step off the ground, so the white UI is what
