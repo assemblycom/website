@@ -1572,6 +1572,13 @@ html[data-theme="dark"] body {
     --v63-angle: 360deg;
   }
 }
+
+/* The blog's coded prompt box: a resting caret, the way an empty field waits. */
+@keyframes composerCaret {
+  50% {
+    opacity: 0;
+  }
+}
 .v63-gradient-border::before {
   content: "";
   position: absolute;
@@ -3393,31 +3400,78 @@ html[data-theme="dark"] .v63-ring-solid::before {
     max-width: 100%;
     height: auto;
   }
-  /* On the announcements, which run as a centred column with no rail beside
-     them, the visuals carry the story and a 40.5rem measure is too narrow to
-     read them at. They break out of the column to the width of the page's rail,
-     staying centred on it. */
-  .post-body-wide :is(figure, img) {
-    width: min(100vw - 3rem, 64rem);
-    max-width: none;
-    margin-left: 50%;
-    transform: translateX(-50%);
+  /* Announcements are a run of sections that each pair a heading, a visual and
+     a few lines of copy. Their visuals used to break out to 64rem, which made
+     every section mostly picture and left the text looking indented against
+     them; held to the measure, the copy and the visuals share one left edge. */
+  /* Set to the rhythm of Cursor's blog: a 24px line, one 24px gap
+     between every block (visuals included, so a picture reads as part of the
+     copy rather than a break in it), and the section break carried above the
+     heading, which sits tight to what it introduces. */
+  /* The body keeps the blog's softer ink: PP Mori at full black reads heavy. */
+  .post-body-wide {
+    line-height: 1.5;
   }
-  /* A figure has already been widened, so its own image just fills it. */
+  .post-body-wide > h3 {
+    margin-top: 3rem;
+    font-size: 1.375rem; /* 22px */
+  }
+  .post-body-wide > :is(ul, ol),
+  .post-body-wide > :is(ul, ol) + * {
+    margin-top: 1.5rem;
+  }
+  /* A long run of fixes needs more air than prose, the way OpenAI sets theirs:
+     the blog's open leading back on the items and a clear gap between them. */
+  .post-body-wide li {
+    line-height: 1.65;
+  }
+  .post-body-wide li + li {
+    margin-top: 0.5rem;
+  }
+  .post-body-wide figure,
+  .post-body-wide img {
+    margin-top: 1.5rem;
+  }
   .post-body-wide figure img {
-    width: 100%;
-    margin-left: 0;
-    transform: none;
+    margin-top: 0;
   }
-  /* Except the poll, which is a figure only because it is a labelled block of
-     data. The break-out is for pictures — set on the measure, the poll's rows
-     line up with the sentences that introduce them; set at 64rem, its labels sit
-     a hand's width from their own numbers. */
-  .post-body-wide figure.poll {
-    width: auto;
-    max-width: 100%;
-    margin-left: 0;
-    transform: none;
+  /* After the figure rule, which matches with the same specificity. */
+  .post-body-wide > h3 + * {
+    margin-top: 0.75rem;
+  }
+  /* On a phone the way Cursor sets it: a picture gets twice a paragraph's air,
+     so it reads as its own beat in a narrow column instead of crowding the
+     lines either side; the head steps down so it doesn't wrap to three lines;
+     and the corners come in so a 16px radius doesn't eat a 340px image. */
+  @media (width < 40rem) {
+    .post-body-wide > h3 {
+      margin-top: 2.5rem;
+      font-size: 1.25rem; /* 20px */
+    }
+    .post-body-wide > :is(figure, img) {
+      margin-top: 2.5rem;
+    }
+    .post-body-wide > :is(figure, img) + * {
+      margin-top: 2.5rem;
+    }
+    .post-body-wide > h3 + * {
+      margin-top: 0.75rem;
+    }
+    .post-body-wide :is(figure, img),
+    .post-body :is(.composer-mock, .apps-mock, .settings-mock, .referrals-mock) {
+      border-radius: 0.625rem;
+    }
+  }
+  /* A quiet rule that breaks around descenders, and a hover that firms the rule
+     up rather than greying the words out. */
+  .post-body-wide a {
+    text-underline-offset: 3px;
+    text-decoration-skip-ink: auto;
+    text-decoration-color: color-mix(in srgb, var(--foreground) 35%, transparent);
+  }
+  .post-body-wide a:hover {
+    color: var(--foreground);
+    text-decoration-color: var(--foreground);
   }
 
   /* A changelog entry is one of many stacked down a page, and the rule and the
@@ -3693,6 +3747,559 @@ html[data-theme="dark"] .v63-ring-solid::before {
   }
   [data-theme="dark"] .post-body .poll {
     border-color: #383838;
+  }
+
+  /* Product moments set as markup rather than screenshots, so they stay sharp
+     at any width and their stage follows the theme. Authored in Ghost as HTML
+     cards: figure.composer-mock (the app builder's prompt box) and
+     figure.apps-mock (two app cards, one stacked over the other). */
+  .post-body :is(.composer-mock, .apps-mock, .settings-mock, .referrals-mock) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 2 / 1;
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    background: #111111;
+  }
+  /* A phone's column is too narrow for a 2:1 stage: the UI ends up filling it
+     edge to edge with no room around it. */
+  @media (width < 40rem) {
+    /* One shape for every picture on a phone, so the column keeps a rhythm. */
+    .post-body :is(.composer-mock, .apps-mock, .settings-mock, .referrals-mock) {
+      aspect-ratio: 1;
+      padding: 1rem;
+    }
+  }
+  /* Dark's raised surface: a step off the ground, so the white UI is what
+     stands out rather than the stage around it. */
+  [data-theme="dark"] .post-body :is(.composer-mock, .apps-mock, .settings-mock, .referrals-mock) {
+    border-color: rgba(255, 255, 255, 0.08);
+    background: var(--surface-2);
+  }
+  .post-body .composer-mock-box {
+    width: min(100%, 25rem);
+    padding: 0.875rem 0.875rem 0.625rem;
+    border: 1px solid #e5e5e5;
+    border-radius: 0.5rem;
+    background: #ffffff;
+    color: #101114;
+    font-size: 0.8125rem; /* 13px */
+    line-height: 1.4;
+    letter-spacing: normal;
+  }
+  /* An empty field: the placeholder in grey and the caret in front of it,
+     centred on the line rather than sitting on its baseline. */
+  .post-body .composer-mock-prompt {
+    display: flex;
+    align-items: center;
+    margin: 0;
+    color: #8a8f98;
+  }
+  .post-body .composer-mock-caret {
+    flex: none;
+    width: 1px;
+    height: 1.15em;
+    margin-right: 1px;
+    background: #101114;
+    animation: composerCaret 1.1s steps(1) infinite;
+  }
+  .post-body .composer-mock-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+  }
+  .post-body .composer-mock-add {
+    display: flex;
+    margin-right: auto;
+    color: #101114;
+  }
+  .post-body .composer-mock-send {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.375rem;
+    height: 1.375rem;
+    border-radius: 0.3125rem;
+    background: #f0f0f2;
+    color: #b4b8bf;
+  }
+  .post-body .composer-mock svg {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+  .post-body .apps-mock-stack {
+    display: grid;
+    width: min(100%, 22.5rem);
+  }
+  .post-body .apps-mock-card {
+    grid-area: 1 / 1;
+    display: flex;
+    align-items: flex-start;
+    gap: 1.125rem;
+    padding: 0.875rem;
+    border-radius: 1rem;
+    background: #ffffff;
+    color: #101114;
+    font-size: 0.8125rem; /* 13px */
+    line-height: 1.4;
+    letter-spacing: normal;
+  }
+  /* The card behind shows only its top: the one in front sits over the rest
+     and shades the edge it covers. */
+  .post-body .apps-mock-card + .apps-mock-card {
+    margin-top: 3.875rem;
+    box-shadow: 0 -10px 24px -8px rgba(16, 17, 20, 0.14);
+  }
+  .post-body .apps-mock-card svg {
+    flex: none;
+    width: 4.875rem;
+    height: 4.875rem;
+  }
+  .post-body .apps-mock-card > div {
+    min-width: 0;
+  }
+  .post-body .apps-mock-name {
+    margin-top: 0.375rem;
+  }
+  /* One line, so the card behind never shows a second line cut off by the
+     card in front of it. */
+  .post-body .apps-mock-blurb {
+    overflow: hidden;
+    color: #8a8f98;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .post-body .apps-mock-publish {
+    display: inline-block;
+    margin-top: 0.75rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    background: #101114;
+    color: #ffffff;
+    font-size: 0.75rem;
+  }
+
+  /* These two are pictures of a whole screen and of a headline, so unlike the
+     prompt box and the cards they scale with the stage as one piece, the way
+     the screenshots they replace did: every size inside is in em, and the em
+     is a fixed share of the stage's width. */
+  .post-body :is(.settings-mock, .referrals-mock) {
+    container-type: inline-size;
+    overflow: hidden;
+  }
+  .post-body .settings-mock {
+    position: relative;
+    display: block;
+    padding: 0;
+  }
+  /* Pinned to the stage's bottom edge, so the window runs off the bottom at
+     any stage shape (2:1 here, 4:3 on a phone) instead of ending short. */
+  .post-body .settings-mock-window {
+    position: absolute;
+    top: 4cqw;
+    bottom: -1px;
+    left: 5.5cqw;
+    display: flex;
+    flex-direction: column;
+    width: 100cqw;
+    font-size: 1.08cqw;
+    line-height: 1.5;
+    letter-spacing: normal;
+    color: #3a3d44;
+    border-radius: 1.4em 0 0 0;
+    overflow: hidden;
+  }
+  .post-body .settings-mock svg {
+    flex: none;
+    width: 1.4em;
+    height: 1.4em;
+  }
+  /* The browser frame is dark artwork on a dark stage, told apart by tone
+     alone: in light the stage is the deeper of the two, in dark the stage is
+     lifted, so the frame drops below it instead of matching it. */
+  .post-body .settings-mock-chrome {
+    padding: 0.9em 1em 0.2em;
+    background: #1f1f1f;
+    color: #e8e8e8;
+  }
+  [data-theme="dark"] .post-body .settings-mock-chrome {
+    background: #141414;
+  }
+  /* The design system's close glyph is drawn edge to edge in its box, so it
+     sits a size under the stroked icons beside it. */
+  .post-body .settings-mock-iconbox svg[viewBox="0 0 20 20"] {
+    width: 1em;
+    height: 1em;
+  }
+  .post-body .settings-mock-tabs,
+  .post-body .settings-mock-url,
+  .post-body .settings-mock-tab,
+  .post-body .settings-mock-row {
+    display: flex;
+    align-items: center;
+  }
+  .post-body .settings-mock-tabs {
+    gap: 0.6em;
+  }
+  .post-body .settings-mock-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 4.6em;
+    height: 4.6em;
+    border-radius: 1.1em;
+    background: #333333;
+    color: #e8e8e8;
+  }
+  .post-body .settings-mock-tab {
+    gap: 0.7em;
+    padding: 0 0.6em;
+    color: #cfcfcf;
+    font-size: 1.55em;
+  }
+  .post-body .settings-mock-favicon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2em;
+    height: 2em;
+    border-radius: 0.3em;
+    background: #ffffff;
+    color: #111111;
+  }
+  .post-body .settings-mock-favicon svg {
+    width: 1.15em;
+    height: 1.15em;
+  }
+  .post-body .settings-mock-url {
+    gap: 1.4em;
+    padding: 1.3em 0.4em 1em;
+    color: #b8b8b8;
+  }
+  .post-body .settings-mock-url svg {
+    width: 2em;
+    height: 2em;
+  }
+  .post-body .settings-mock-url svg:nth-child(2) {
+    opacity: 0.5;
+  }
+  .post-body .settings-mock-url span {
+    margin-left: 1.2em;
+    color: #7c7c7c;
+    font-size: 1.45em;
+  }
+  /* The white is the page inside the browser, not the window: on the window
+     it bled through the antialiased edge of the frame's rounded corner. */
+  .post-body .settings-mock-body {
+    display: grid;
+    flex: 1;
+    grid-template-columns: 34em 1fr;
+    background: #ffffff;
+    /* The app's own UI reads a step larger than the browser frame around it. */
+    font-size: 1.12em;
+  }
+  .post-body .settings-mock-chat {
+    padding: 1.2em 1.8em;
+    border-right: 1px solid #e8e9ec;
+  }
+  .post-body .settings-mock-row {
+    gap: 0.9em;
+    color: #101114;
+  }
+  .post-body .settings-mock-iconbox {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.2em;
+    height: 2.2em;
+    border: 1px solid #e8e9ec;
+    border-radius: 0.4em;
+  }
+  .post-body .settings-mock-chat p {
+    margin: 1.4em 0 0;
+  }
+  .post-body .settings-mock-chat .settings-mock-strong {
+    margin-top: 0.8em;
+    color: #101114;
+    font-size: 1.1em;
+  }
+  .post-body .settings-mock-steps {
+    margin: 0.9em 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .post-body .settings-mock-steps li {
+    position: relative;
+    margin: 0;
+    padding: 0 0 0.85em 2.4em;
+    color: #101114;
+  }
+  .post-body .settings-mock-steps li::before {
+    content: "";
+    position: absolute;
+    top: 0.55em;
+    left: 0.75em;
+    width: 0.5em;
+    height: 0.5em;
+    border-radius: 50%;
+    background: #5f8f78;
+  }
+  .post-body .settings-mock-steps li:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: 1.25em;
+    bottom: 0.05em;
+    left: 0.97em;
+    width: 1px;
+    background: #9db8aa;
+  }
+  .post-body .settings-mock-panel {
+    display: flex;
+    flex-direction: column;
+    background: #f7f7f8;
+  }
+  .post-body .settings-mock-panel > .settings-mock-row {
+    padding: 1.1em 1.4em;
+    font-size: 1.1em;
+  }
+  .post-body .settings-mock-card {
+    display: grid;
+    grid-template-columns: 17em 1fr;
+    align-items: start;
+    gap: 3em;
+    margin: 0.4em 0 0 1.4em;
+    padding: 2.4em 2.6em;
+    border: 1px solid #e8e9ec;
+    border-right: 0;
+    border-bottom: 0;
+    border-radius: 0.8em 0 0 0;
+    background: #ffffff;
+    flex: 1;
+  }
+  .post-body .settings-mock-nav {
+    display: grid;
+    align-content: start;
+    gap: 0.4em;
+    color: #6b7079;
+    font-size: 1.15em;
+  }
+  .post-body .settings-mock-nav > span {
+    display: flex;
+    align-items: center;
+    gap: 0.7em;
+    padding: 0.45em 0.7em;
+    border-radius: 0.4em;
+  }
+  .post-body .settings-mock-nav > span:first-child {
+    background: #efeff1;
+    color: #101114;
+  }
+  .post-body .settings-mock-title {
+    color: #101114;
+    font-size: 1.6em;
+  }
+  .post-body .settings-mock-label {
+    margin-top: 1.8em;
+    color: #101114;
+    font-size: 1.15em;
+  }
+  .post-body .settings-mock-hint {
+    color: #8a8f98;
+  }
+  .post-body .settings-mock-fields {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.6em 1em;
+    margin-top: 1.4em;
+    color: #101114;
+  }
+  .post-body .settings-mock-fields .settings-mock-iconbox {
+    width: 3em;
+    height: 3em;
+  }
+  .post-body .settings-mock-input {
+    display: flex;
+    align-items: center;
+    height: 3em;
+    padding: 0 1em;
+    border: 1px solid #e8e9ec;
+    border-right: 0;
+    border-radius: 0.5em 0 0 0.5em;
+    font-size: 1.1em;
+  }
+  .post-body .settings-mock-fields + .settings-mock-label {
+    margin-top: 5em;
+  }
+
+  /* On a phone the desktop window shrinks past reading, so the figure shows
+     the same pane the way the app shows it there, as a sheet on its own. */
+  .post-body .settings-mock-phone {
+    display: none;
+  }
+  @media (width < 40rem) {
+    .post-body .settings-mock-window {
+      display: none;
+    }
+    .post-body .settings-mock-phone {
+      position: absolute;
+      top: 7cqw;
+      bottom: -1px;
+      left: 50%;
+      display: flex;
+      flex-direction: column;
+      width: 84cqw;
+      transform: translateX(-50%);
+      overflow: hidden;
+      border-radius: 1.1em 1.1em 0 0;
+      color: #101114;
+      font-size: 3.5cqw;
+      line-height: 1.4;
+      /* Fades out over its last stretch, so the crop reads as the sheet
+         carrying on below rather than as a hard cut. */
+      -webkit-mask-image: linear-gradient(
+        to bottom,
+        #000 66%,
+        rgba(0, 0, 0, 0.9) 76%,
+        rgba(0, 0, 0, 0.62) 86%,
+        rgba(0, 0, 0, 0.28) 94%,
+        rgba(0, 0, 0, 0.08) 100%
+      );
+      mask-image: linear-gradient(
+        to bottom,
+        #000 66%,
+        rgba(0, 0, 0, 0.9) 76%,
+        rgba(0, 0, 0, 0.62) 86%,
+        rgba(0, 0, 0, 0.28) 94%,
+        rgba(0, 0, 0, 0.08) 100%
+      );
+      letter-spacing: normal;
+    }
+  }
+  .post-body .settings-mock-sheet {
+    flex: 1;
+    background: #ffffff;
+  }
+  .post-body .settings-mock-sheet-head {
+    display: flex;
+    align-items: center;
+    gap: 0.8em;
+    padding: 1.1em 1.1em 0.6em;
+    font-size: 1.15em;
+  }
+  .post-body .settings-mock-sheet-head .settings-mock-iconbox {
+    width: 1.9em;
+    height: 1.9em;
+  }
+  .post-body .settings-mock-save {
+    margin-left: auto;
+    padding: 0.35em 0.8em;
+    border: 1px solid #e3e4e8;
+    border-radius: 0.35em;
+    background: #f1f2f4;
+    color: #b4b8bf;
+    font-size: 0.9em;
+  }
+  .post-body .settings-mock-tabbar {
+    display: flex;
+    gap: 1.7em;
+    padding: 0 1.3em;
+    border-bottom: 1px solid #e8e9ec;
+    color: #6b7079;
+  }
+  .post-body .settings-mock-tabbar > span {
+    padding: 0.6em 0;
+  }
+  .post-body .settings-mock-tabbar > span:first-child {
+    border-bottom: 1px solid #101114;
+    color: #101114;
+  }
+  .post-body .settings-mock-sheet-body {
+    padding: 1.3em 1.3em 0.9em;
+  }
+  /* The tab already names the page, so the sheet opens on its first section. */
+  .post-body .settings-mock-sheet-body .settings-mock-label:first-child {
+    margin-top: 0;
+  }
+  .post-body .settings-mock-select {
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+    height: 2.6em;
+    margin-top: 1em;
+    padding: 0 0.9em;
+    border: 1px solid #e8e9ec;
+    border-radius: 0.45em;
+  }
+  .post-body .settings-mock-select svg:last-child {
+    margin-left: auto;
+  }
+  /* One scale for the whole sheet: body text, section labels, tabs and
+     controls share the base size, the hints and field labels sit a step under
+     it, and only the page title steps over. The desktop pane's mix of sizes
+     read as uneven at a phone's scale. */
+  .post-body .settings-mock-phone :is(
+      .settings-mock-sheet-head,
+      .settings-mock-label,
+      .settings-mock-input,
+      .settings-mock-select
+    ) {
+    font-size: 1em;
+  }
+  .post-body .settings-mock-phone :is(.settings-mock-hint, .settings-mock-fields > span:not([class])) {
+    font-size: 0.88em;
+  }
+  .post-body .settings-mock-phone .settings-mock-save {
+    font-size: 0.85em;
+  }
+  .post-body .settings-mock-sheet-body .settings-mock-fields + .settings-mock-label {
+    margin-top: 2.2em;
+  }
+  .post-body .settings-mock-sheet-body .settings-mock-input {
+    border-right: 1px solid #e8e9ec;
+    border-radius: 0.45em;
+  }
+
+  /* The referrals headline: words and glyph tiles set inline as one line of
+     type, so the tiles sit on the words' own baseline at any width. */
+  .post-body .referrals-mock {
+    flex-direction: column;
+    color: #ffffff;
+  }
+  /* Sized on the lines, not the figure: a container's own size can't be read
+     from the container itself, only from inside it. */
+  .post-body .referrals-mock-line {
+    display: flex;
+    align-items: center;
+    gap: 0.27em;
+    margin: 0;
+    /* 8% of the artwork's width; the stage's padding sits outside the
+       container, so the share of what's left is a little larger. */
+    font-size: 8.6cqw;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+  }
+  .post-body .referrals-mock-line + .referrals-mock-line {
+    margin-top: 0.02em;
+  }
+  .post-body .referrals-mock-tile {
+    display: flex;
+    flex: none;
+    width: 1.28em;
+    height: 1.28em;
+    border-radius: 0.34em;
+  }
+  .post-body .referrals-mock-tile svg {
+    width: 100%;
+    height: 100%;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .post-body .composer-mock-caret {
+      animation: none;
+    }
   }
   /* The question is a figcaption, which the body sets at the small register — it
      is the heading of this block, so it takes the body's own size back. */

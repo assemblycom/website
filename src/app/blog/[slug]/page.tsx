@@ -25,6 +25,14 @@ import { TocMobile } from "@/components/ui/toc-mobile";
 import { PostToc } from "@/components/blog/post-toc";
 import { unbreakable } from "@/components/ui/unbreakable";
 
+// Ghost holds one cover per post. An announcement whose artwork comes in a
+// second colourway for the dark theme lists it here, so each theme gets the
+// version that stands apart from the page instead of melting into it.
+const DARK_THEME_COVERS: Record<string, string> = {
+  "fall-2026-updates": "/images/blog/fall-2026-updates-cover-dark-theme.jpg",
+};
+const COVER_SIZES = "(min-width: 1088px) 1024px, calc(100vw - 3rem)";
+
 export async function generateStaticParams() {
   return (await getPosts()).map((post) => ({ slug: post.slug }));
 }
@@ -76,6 +84,7 @@ export default async function BlogPostPage({
   // What the page actually gives an image, so the browser picks the right file
   // off Ghost's srcset: the reading measure beside a rail, the wider breakout on
   // the announcements.
+  const darkThemeCover = DARK_THEME_COVERS[post.slug];
   const imageSizes = showRail
     ? "(min-width: 1440px) 688px, (min-width: 1024px) 648px, calc(100vw - 3rem)"
     : "(min-width: 1088px) 1024px, calc(100vw - 3rem)";
@@ -244,7 +253,8 @@ export default async function BlogPostPage({
           {post.image && (
             <div
               className={cn(
-                "relative mt-8 aspect-[16/9] w-full overflow-hidden rounded-2xl border border-border bg-muted [[data-theme=dark]_&]:border-[#383838]",
+                "relative mt-8 w-full overflow-hidden rounded-2xl border border-border bg-muted [[data-theme=dark]_&]:border-[#383838]",
+                showRail && "aspect-[16/9]",
                 // Capped against the WINDOW, not given a shorter ratio of its
                 // own: 16:9 at the reading measure is 365px, which put the first
                 // line of the article below the fold on a laptop — you landed on
@@ -263,7 +273,41 @@ export default async function BlogPostPage({
                   "ml-[50%] w-[min(100vw-3rem,64rem)] max-w-none -translate-x-1/2",
               )}
             >
-              {isOptimizedHost(post.image) ? (
+              {/* An announcement cover is artwork with the wordmark near its
+                  edges, so it takes its own shape instead of being cropped
+                  into a fixed frame. */}
+              {!showRail && isOptimizedHost(post.image) ? (
+                <>
+                  {/* Ghost doesn't report the file's dimensions; these only
+                      seed the layout, and h-auto lets the image's own ratio
+                      win. */}
+                  <Image
+                    src={post.image}
+                    alt=""
+                    width={2000}
+                    height={1125}
+                    priority
+                    sizes={COVER_SIZES}
+                    className={cn(
+                      "block h-auto w-full",
+                      darkThemeCover && "[[data-theme=dark]_&]:hidden",
+                    )}
+                  />
+                  {darkThemeCover && (
+                    <Image
+                      src={darkThemeCover}
+                      alt=""
+                      width={2400}
+                      height={1200}
+                      sizes={COVER_SIZES}
+                      className="hidden h-auto w-full [[data-theme=dark]_&]:block"
+                    />
+                  )}
+                </>
+              ) : !showRail ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={post.image} alt="" className="block h-auto w-full" />
+              ) : isOptimizedHost(post.image) ? (
                 <Image
                   src={post.image}
                   alt=""
