@@ -416,7 +416,7 @@ export default function MarketingAgencyClientPortalPage() {
             no plan set of its own, and pricing is one object across the site. */}
         <PortalPricing
           heading="Start free. No per-client charges."
-          body="The free plan includes 5 active contacts and 3 apps. Your own domain and badge removal start on Professional. Monthly prices shown are billed annually."
+          body="The free plan includes 5 active contacts and 3 apps. Your own domain starts on Professional, and badge removal on Advanced. Monthly prices shown are billed annually."
           link={{ label: "See pricing", href: "/pricing" }}
         />
         <GridDivider />

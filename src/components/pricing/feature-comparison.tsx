@@ -49,7 +49,7 @@ const GROUPS: FeatureGroup[] = [
       {
         label: "Cost per additional internal user",
         plain: true,
-        values: [false, false, "+$29 yr / $39 mo", "+$59 yr / $79 mo", false],
+        values: [false, false, "+$39 yr / $49 mo", "+$59 yr / $79 mo", false],
       },
     ],
   },
@@ -59,24 +59,25 @@ const GROUPS: FeatureGroup[] = [
       {
         label: "Build credits / month",
         tooltip: "Credits used when the builder creates or edits an app. Using your live apps never consumes credits.",
-        values: ["75", "200", "200", "200", "Custom"],
+        values: ["50", "200", "500", "500", "Custom"],
+      },
+      {
+        label: "Unlimited build credits on yearly",
+        tooltip: "Advanced billed yearly builds without a monthly credit limit, subject to fair use.",
+        values: [false, false, false, true, "Custom"],
       },
       {
         label: "Apps included",
-        values: ["3", "5", "5", "5", "Unlimited"],
+        values: ["3", "5", "10", "Unlimited", "Unlimited"],
       },
       {
         label: "Extra apps",
         plain: true,
-        values: [false, "$5/mo each", "$5/mo each", "$5/mo each", "Unlimited"],
+        values: [false, "$8/mo each", "$8/mo each", "Unlimited", "Unlimited"],
       },
       {
-        label: "Add-on build credits",
+        label: "Build credit packs",
         values: [false, true, true, true, true],
-      },
-      {
-        label: "AI model selection",
-        values: [false, false, true, true, true],
       },
     ],
   },
@@ -85,7 +86,6 @@ const GROUPS: FeatureGroup[] = [
     rows: [
       { label: "CRM", values: [true, true, true, true, true] },
       { label: "Client experience", values: [true, true, true, true, true] },
-      { label: "MCP connector", values: [true, true, true, true, true] },
       {
         label: "Install apps from app library",
         values: [true, true, true, true, true],
@@ -107,7 +107,14 @@ const GROUPS: FeatureGroup[] = [
         label: "File-sharing, intake forms, and tasks",
         values: [true, true, true, true, true],
       },
-      { label: "API, Zapier & Make", values: [false, false, true, true, true] },
+      {
+        label: "API, MCP, Zapier & Make",
+        values: [false, true, true, true, true],
+      },
+      {
+        label: "ChatGPT and Claude apps",
+        values: [false, true, true, true, true],
+      },
       {
         label: "Custom domain for client experience",
         tooltip: "Serve the client experience from your own domain.",
@@ -118,8 +125,8 @@ const GROUPS: FeatureGroup[] = [
         values: [false, false, true, true, true],
       },
       {
-        label: "Remove Assembly badge",
-        values: [false, false, true, true, true],
+        label: "Full white-labeling (remove Assembly badge)",
+        values: [false, false, false, true, true],
       },
       {
         label: "App visibility settings",
@@ -208,8 +215,9 @@ const GROUPS: FeatureGroup[] = [
         values: [false, false, false, true, true],
       },
       {
-        label: "Personalized onboarding",
-        values: [false, false, false, true, true],
+        label: "Onboarding",
+        tooltip: "Included on yearly billing.",
+        values: [false, false, "Personalized", "White-glove", "Implementation service"],
       },
       {
         label: "Shared Slack channel",
@@ -217,10 +225,6 @@ const GROUPS: FeatureGroup[] = [
       },
       {
         label: "Dedicated success manager",
-        values: [false, false, false, false, true],
-      },
-      {
-        label: "Implementation service",
         values: [false, false, false, false, true],
       },
       {

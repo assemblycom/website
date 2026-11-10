@@ -15,9 +15,14 @@ import {
   PLAN_WASH_NEUTRAL_LG,
 } from "@/components/pricing/plan-wash";
 
+// Some lines follow the billing toggle: seat prices differ, and the best
+// extras (unlimited building, onboarding) are yearly-only, so a null side
+// drops the line on that toggle.
+type PlanItem = string | { yearly: string | null; monthly: string | null };
+
 interface PlanFeatureGroup {
   label: string;
-  items: string[];
+  items: PlanItem[];
   // This group lists what the plan adds on top of the tier below it. Its
   // heading is worked out at render time ("Everything in Starter, plus") so it
   // can fall back to plain "Features" when that tier's card isn't on screen —
@@ -54,7 +59,8 @@ const PLANS: Plan[] = [
         items: [
           "5 active contacts",
           "1 internal user",
-          "75 build credits / month",
+          "3 apps",
+          "50 build credits / month",
         ],
       },
       {
@@ -79,8 +85,8 @@ const PLANS: Plan[] = [
   },
   {
     name: "Starter",
-    priceMonthly: 49,
-    priceYearly: 29,
+    priceMonthly: 69,
+    priceYearly: 39,
     description: "For solo entrepreneurs",
     featureGroups: [
       {
@@ -88,6 +94,7 @@ const PLANS: Plan[] = [
         items: [
           "50 active contacts",
           "1 internal user",
+          "5 apps, +$8/app",
           "200 build credits / month",
         ],
       },
@@ -95,9 +102,10 @@ const PLANS: Plan[] = [
         label: "Features",
         extendsPrevious: true,
         items: [
-          "MCP connector",
-          "More included credits",
-          "Add-on build credits",
+          "ChatGPT and Claude apps",
+          "API and MCP access",
+          "Reduced payment fees",
+          "Build credit packs",
         ],
       },
       {
@@ -111,33 +119,39 @@ const PLANS: Plan[] = [
   },
   {
     name: "Professional",
-    priceMonthly: 139,
-    priceYearly: 99,
+    priceMonthly: 199,
+    priceYearly: 149,
     description: "For small teams",
     featureGroups: [
       {
         label: "Fundamentals",
         items: [
           "500 active contacts",
-          "3 internal users included",
-          "200 build credits / month",
+          {
+            yearly: "3 internal users, +$39/user",
+            monthly: "3 internal users, +$49/user",
+          },
+          "10 apps, +$8/app",
+          "500 build credits / month",
         ],
       },
       {
         label: "Features",
         extendsPrevious: true,
         items: [
-          "Custom domains",
-          "API access",
-          "Remove Assembly badge",
-          "App visibility",
+          "Custom domain and email domain",
           "Automation builder",
-          "AI model selection",
+          "Lower payment fees",
+          "Multi-company clients",
+          "App visibility",
         ],
       },
       {
         label: "Support",
-        items: ["Priority email support"],
+        items: [
+          "Priority email support",
+          { yearly: "Personalized onboarding", monthly: null },
+        ],
       },
     ],
     cta: "Get started",
@@ -148,33 +162,41 @@ const PLANS: Plan[] = [
   {
     name: "Advanced",
     priceMonthly: 599,
-    priceYearly: 499,
+    priceYearly: 399,
     description: "For scaling businesses",
     featureGroups: [
       {
         label: "Fundamentals",
         items: [
           "Unlimited active contacts",
-          "5 internal users included",
-          "200 build credits / month",
+          {
+            yearly: "5 internal users, +$59/user",
+            monthly: "5 internal users, +$79/user",
+          },
+          "Unlimited apps",
+          {
+            yearly: "Unlimited build credits",
+            monthly: "500 build credits / month",
+          },
         ],
       },
       {
         label: "Features",
         extendsPrevious: true,
         items: [
+          "Full white-labeling",
           "Audit log",
           "Client access permissions",
           "Enforced MFA",
           "HIPAA compliance (BAA)",
+          "Lowest payment fees",
         ],
       },
       {
         label: "Support",
         items: [
-          "Priority email support",
-          "Priority call support",
-          "Personalized onboarding",
+          "Priority email and call support",
+          { yearly: "White-glove onboarding", monthly: null },
         ],
       },
     ],
@@ -194,6 +216,7 @@ const PLANS: Plan[] = [
         items: [
           "Unlimited active contacts",
           "Unlimited internal users",
+          "Unlimited apps",
           "Custom build credits",
         ],
       },
@@ -224,10 +247,21 @@ const PAID_PLANS = PLANS.filter((plan) => plan.priceMonthly > 0);
 
 type Billing = "monthly" | "yearly";
 
+function itemText(item: PlanItem, billing: Billing): string | null {
+  return typeof item === "string" ? item : item[billing];
+}
+
+// The yearly saving is shown in dollars, not percent: a figure the buyer can
+// weigh against the monthly price is what moves them to yearly.
+function yearlySaving(plan: Plan) {
+  return (plan.priceMonthly - plan.priceYearly) * 12;
+}
+
 function planSubtitle(plan: Plan, billing: Billing) {
   if (plan.priceMonthly === 0) return "Free forever";
   if (plan.startingPrice) return "Starting price";
-  return billing === "yearly" ? "Billed annually" : "Billed monthly";
+  if (billing === "monthly") return "Billed monthly";
+  return `Billed annually, save $${yearlySaving(plan).toLocaleString("en-US")} a year`;
 }
 
 /**
@@ -440,7 +474,10 @@ function PlanGrid({
                         : group.label}
                     </p>
                     <ul className="mt-3 flex flex-col gap-2.5">
-                      {group.items.map((item) => (
+                      {group.items
+                        .map((item) => itemText(item, billing))
+                        .filter((item): item is string => item !== null)
+                        .map((item) => (
                         <li
                           key={item}
                           className="flex items-start gap-2 text-sm text-muted-foreground"
