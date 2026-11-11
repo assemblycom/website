@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { QUIET_BUTTON } from "@/components/ui/quiet-button";
 import { CheckIcon } from "@/components/ui/check-icon";
+import { DOTTED_RULE } from "@/components/ui/dotted-rule";
 import { Reveal } from "@/components/ui/reveal";
 import { SIGNUP_URL, DEMO_URL, DEMO_CTA_LABEL } from "@/lib/constants";
 
@@ -199,6 +200,9 @@ export function PortalPricing({
                   as separation — four cards of it is a lot of scrolling past
                   nothing. The steps still rank the same way, they are just
                   one notch down until there are columns to breathe into. */}
+              {/* The /pricing cards' dotted rule, parting name and price
+                  from the list. */}
+              <div aria-hidden className={`mt-5 h-px sm:mt-6 ${DOTTED_RULE}`} />
               <p className="mt-5 text-sm text-muted-foreground sm:mt-6">
                 {tier.perksLabel}
               </p>

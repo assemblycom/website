@@ -23,7 +23,8 @@ export default function PricingPage() {
             transparent pricing
           </h1>
           <p className="type-lead mx-auto mt-6 max-w-2xl text-pretty text-muted-foreground">
-            Start on the free forever plan. Upgrade when you’re ready.
+            Every account starts with a 14-day Pro trial. No card needed.
+            After that, pick a plan or keep going on Free.
           </p>
           {/* CTAs now live on each plan block below (Get started + Book a demo),
               so the hero stays a clean title + subtitle. */}

@@ -18,7 +18,11 @@ import {
 // Some lines follow the billing toggle: seat prices differ, and the best
 // extras (unlimited building, onboarding) are yearly-only, so a null side
 // drops the line on that toggle.
-type PlanItem = string | { yearly: string | null; monthly: string | null };
+// `yearlyOnly` marks the yearly side as an extra that comes only with yearly
+// billing; it gets a dotted underline and a tooltip saying so.
+type PlanItem =
+  | string
+  | { yearly: string | null; monthly: string | null; yearlyOnly?: boolean };
 
 interface PlanFeatureGroup {
   label: string;
@@ -60,18 +64,20 @@ const PLANS: Plan[] = [
           "5 active contacts",
           "1 internal user",
           "3 apps",
-          "50 build credits / month",
+          "50 build credits/mo",
         ],
       },
       {
         label: "Includes",
         items: [
           "CRM",
-          "Client experience",
+          "Client portal",
+          "Messaging and team inbox",
+          "Invoices and payment links",
+          "Proposals and contracts",
+          "File sharing and forms",
           "App builder",
           "30+ pre-made apps",
-          "Messaging and team inbox",
-          "Billing and payments",
         ],
       },
       {
@@ -87,7 +93,7 @@ const PLANS: Plan[] = [
     name: "Starter",
     priceMonthly: 69,
     priceYearly: 39,
-    description: "For solo entrepreneurs",
+    description: "For solo operators",
     featureGroups: [
       {
         label: "Fundamentals",
@@ -95,7 +101,7 @@ const PLANS: Plan[] = [
           "50 active contacts",
           "1 internal user",
           "5 apps, +$8/app",
-          "200 build credits / month",
+          "200 build credits/mo",
         ],
       },
       {
@@ -132,7 +138,8 @@ const PLANS: Plan[] = [
             monthly: "3 internal users, +$49/user",
           },
           "10 apps, +$8/app",
-          "500 build credits / month",
+          "500 build credits/mo",
+          { yearly: "Personalized onboarding", monthly: null, yearlyOnly: true },
         ],
       },
       {
@@ -150,7 +157,6 @@ const PLANS: Plan[] = [
         label: "Support",
         items: [
           "Priority email support",
-          { yearly: "Personalized onboarding", monthly: null },
         ],
       },
     ],
@@ -175,9 +181,11 @@ const PLANS: Plan[] = [
           },
           "Unlimited apps",
           {
-            yearly: "Unlimited build credits",
-            monthly: "500 build credits / month",
+            yearly: "Unlimited building",
+            yearlyOnly: true,
+            monthly: "500 build credits/mo",
           },
+          { yearly: "White-glove onboarding", monthly: null, yearlyOnly: true },
         ],
       },
       {
@@ -195,8 +203,8 @@ const PLANS: Plan[] = [
       {
         label: "Support",
         items: [
-          "Priority email and call support",
-          { yearly: "White-glove onboarding", monthly: null },
+          "Priority email support",
+          "Priority call support",
         ],
       },
     ],
@@ -217,7 +225,7 @@ const PLANS: Plan[] = [
           "Unlimited active contacts",
           "Unlimited internal users",
           "Unlimited apps",
-          "Custom build credits",
+          "Unlimited building",
         ],
       },
       {
@@ -247,21 +255,51 @@ const PAID_PLANS = PLANS.filter((plan) => plan.priceMonthly > 0);
 
 type Billing = "monthly" | "yearly";
 
+// The "Popular" chip: the site's tag style, on the hairline grey as a fill
+// (--muted was too faint to read as a chip).
+const TAG_CHIP =
+  "inline-flex items-center whitespace-nowrap rounded-md bg-border px-1.5 py-1 font-mono text-xs uppercase tracking-wide text-foreground [[data-theme=dark]_&]:bg-white/[0.1]";
+
+// From xl the plan table reaches into the page margin: whatever lies beyond a
+// 24px gutter, up to 80px a side. Shared with the comparison table so the two
+// tables keep the same edges.
+export const PLAN_TABLE_BLEED =
+  "xl:mx-[calc(-1*clamp(0px,(100vw_-_1328px)/2,5rem))]";
+
+// Every tooltip on the pricing page: small corners, tight padding and the
+// site's faintest shadow, so it reads as a label rather than a floating card.
+// In dark it steps UP to the raised surface: the page black sat below the card
+// it floats over and read as a hole.
+export const TOOLTIP =
+  "pointer-events-none absolute left-0 top-full z-30 mt-1 hidden rounded border border-border bg-background px-2 py-1 text-xs leading-4 text-muted-foreground shadow-[0_1px_2px_rgba(16,24,40,0.04)] group-hover:block group-focus-within:block [[data-theme=dark]_&]:border-white/[0.06] [[data-theme=dark]_&]:bg-[var(--surface-2)]";
+
+// The yearly-only extras, marked the quiet way: a dotted underline with a
+// tooltip, in the comparison table's tooltip style.
+function YearlyExtra({ text }: { text: string }) {
+  return (
+    <span className="group relative">
+      <span
+        tabIndex={0}
+        className="cursor-help underline decoration-muted-foreground/60 decoration-dotted underline-offset-4 outline-none"
+      >
+        {text}
+      </span>
+      <span
+        role="tooltip"
+        className={`${TOOLTIP} w-max`}
+      >
+        Included with yearly billing
+      </span>
+    </span>
+  );
+}
+
+function isYearlyExtra(item: PlanItem, billing: Billing) {
+  return typeof item !== "string" && !!item.yearlyOnly && billing === "yearly";
+}
+
 function itemText(item: PlanItem, billing: Billing): string | null {
   return typeof item === "string" ? item : item[billing];
-}
-
-// The yearly saving is shown in dollars, not percent: a figure the buyer can
-// weigh against the monthly price is what moves them to yearly.
-function yearlySaving(plan: Plan) {
-  return (plan.priceMonthly - plan.priceYearly) * 12;
-}
-
-function planSubtitle(plan: Plan, billing: Billing) {
-  if (plan.priceMonthly === 0) return "Free forever";
-  if (plan.startingPrice) return "Starting price";
-  if (billing === "monthly") return "Billed monthly";
-  return `Billed annually, save $${yearlySaving(plan).toLocaleString("en-US")} a year`;
 }
 
 /**
@@ -398,10 +436,10 @@ function PlanGrid({
                   {/* The recommended plan's marker: the site's tag chip (as on
                       the customers page), beside the name rather than an
                       outline round the card. */}
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center justify-between gap-2">
                     <h3 className="text-lg font-medium">{plan.name}</h3>
                     {plan.highlighted && (
-                      <span className="inline-flex items-center rounded-md bg-muted px-2.5 py-1 font-mono text-[11px] uppercase tracking-wide text-muted-foreground [[data-theme=dark]_&]:bg-white/[0.06]">
+                      <span className={TAG_CHIP}>
                         Popular
                       </span>
                     )}
@@ -410,23 +448,23 @@ function PlanGrid({
                     {plan.description}
                   </p>
                 </div>
-                <div className="mt-6">
-                  <div className="flex items-baseline gap-1.5">
-                    <AnimatedPrice value={price} />
-                    {/* The rate's unit rides the price, as in the product
-                        dashboard ("$29 /month"). Without it the yearly
-                        figures read as one annual charge, but they are the
-                        per-month rate; the line below says how it is billed.
-                        Free is not a rate and Enterprise is a floor, so
-                        neither carries it. */}
-                    {plan.priceMonthly > 0 && !plan.startingPrice && (
-                      <span className="text-sm text-muted-foreground">
-                        /month
-                      </span>
-                    )}
-                  </div>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    {planSubtitle(plan, billing)}
+                {/* Relume's header rule: edge to edge, so the name block reads
+                    as the card's title bar and the price starts a new part.
+                    -25px clears the card's padding and the panel's 1px
+                    transparent border. On the tablet row it stops at the
+                    left column. */}
+                <div
+                  aria-hidden
+                  className="-mx-[25px] mt-5 border-t border-border sm:max-xl:mr-0"
+                />
+                <div className="mt-5">
+                  <AnimatedPrice value={price} />
+                  {/* Its own line under the price, as on Relume. Without it
+                      the yearly figure reads as one annual charge, but it's
+                      the per-month rate. */}
+                  {/* Enterprise's figure is a floor, not a set price. */}
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {plan.startingPrice ? "per month, starting price" : "per month"}
                   </p>
                 </div>
               </div>
@@ -475,17 +513,23 @@ function PlanGrid({
                     </p>
                     <ul className="mt-3 flex flex-col gap-2.5">
                       {group.items
-                        .map((item) => itemText(item, billing))
-                        .filter((item): item is string => item !== null)
-                        .map((item) => (
+                        .map((item) => ({
+                          text: itemText(item, billing),
+                          extra: isYearlyExtra(item, billing),
+                        }))
+                        .filter(
+                          (line): line is { text: string; extra: boolean } =>
+                            line.text !== null,
+                        )
+                        .map(({ text, extra }) => (
                         <li
-                          key={item}
+                          key={text}
                           className="flex items-start gap-2 text-sm text-muted-foreground"
                         >
                           <span className="mt-0.5">
                             <CheckIcon />
                           </span>
-                          {item}
+                          {extra ? <YearlyExtra text={text} /> : text}
                         </li>
                       ))}
                     </ul>
@@ -531,10 +575,10 @@ export function PricingPlans() {
               }`}
             >
               <span className="flex items-center justify-center">
-                <span className="hidden md:inline">Pay&nbsp;</span>Monthly
+                <span className="md:hidden">Monthly</span><span className="hidden md:inline">Pay monthly</span>
               </span>
               <span className="flex items-center justify-center">
-                <span className="hidden md:inline">Pay&nbsp;</span>Yearly
+                <span className="md:hidden">Yearly</span><span className="hidden md:inline">Pay yearly</span>
               </span>
             </span>
           </span>
@@ -542,17 +586,17 @@ export function PricingPlans() {
             role="radio"
             aria-checked={billing === "monthly"}
             onClick={() => setBilling("monthly")}
-            className="relative rounded-md px-5 py-2 text-center text-muted-foreground transition-colors hover:text-foreground md:px-4 md:py-1.5"
+            className="relative rounded-md px-5 py-1.5 text-center text-muted-foreground transition-colors hover:text-foreground md:px-3 md:py-1"
           >
-            <span className="hidden md:inline">Pay&nbsp;</span>Monthly
+            <span className="md:hidden">Monthly</span><span className="hidden md:inline">Pay monthly</span>
           </button>
           <button
             role="radio"
             aria-checked={billing === "yearly"}
             onClick={() => setBilling("yearly")}
-            className="relative rounded-md px-5 py-2 text-center text-muted-foreground transition-colors hover:text-foreground md:px-4 md:py-1.5"
+            className="relative rounded-md px-5 py-1.5 text-center text-muted-foreground transition-colors hover:text-foreground md:px-3 md:py-1"
           >
-            <span className="hidden md:inline">Pay&nbsp;</span>Yearly
+            <span className="md:hidden">Yearly</span><span className="hidden md:inline">Pay yearly</span>
           </button>
         </div>
       </div>
@@ -564,7 +608,7 @@ export function PricingPlans() {
           margin to spare: whatever lies beyond a 24px gutter, up to 80px a
           side, so the columns gain width on wide screens while the page
           keeps its gutter. Nothing changes at 1280, where there is none. */}
-      <div className="mt-5 md:mt-12 xl:mx-[calc(-1*clamp(0px,(100vw_-_1328px)/2,5rem))] xl:overflow-hidden xl:rounded-xl">
+      <div className={`mt-5 md:mt-12 ${PLAN_TABLE_BLEED} xl:overflow-hidden xl:rounded-xl`}>
         {/* Both variants ship and `data-authed` on <html> hides one before
             first paint (see globals.css). Choosing in an effect meant a
             signed-in visitor watched five cards render and then reflow to

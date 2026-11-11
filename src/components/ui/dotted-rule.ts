@@ -56,3 +56,10 @@ export const DOTTED_RULE_TOP_UPRIGHT =
     each card's groups sit directly in the table's subgrid. */
 export const DOTTED_RULE_TOP_TABLE =
   "xl:first:before:bg-[repeating-linear-gradient(to_right,color-mix(in_oklab,var(--foreground)_32%,transparent)_0_2px,transparent_2px_5px)]";
+
+/** The rule as an element of its own (give it h-px), for a card that parts
+    its name and price from its list with a line rather than a pseudo-element
+    on either side — the four-plan block on /client-portal and the solution
+    pages. */
+export const DOTTED_RULE =
+  "bg-[repeating-linear-gradient(to_right,color-mix(in_oklab,var(--foreground)_32%,transparent)_0_2px,transparent_2px_5px)]";
