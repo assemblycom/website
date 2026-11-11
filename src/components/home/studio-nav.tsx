@@ -28,9 +28,6 @@ import { useTheme } from "@/components/theme/theme-provider";
 // Past this scroll distance the sticky header swaps from transparent to a
 // frosted surface.
 const SCROLL_THRESHOLD = 40;
-// How close below the bar the footer's own top rule can be before the bar
-// drops its rule, so the two never sit as a pair.
-const FOOTER_RULE_GAP = 24;
 
 // The mobile nav glyph, one 3x3 dot grid in both states. Open, the four
 // edge-centre dots drop out and the five on the diagonals are left standing as
@@ -115,10 +112,6 @@ export function StudioNav({
   // that opens, and nothing here has to close to make room.
   const [openGroups, setOpenGroups] = useState<string[]>([]);
   const [scrolled, setScrolled] = useState(false);
-  // True once the footer's top edge has scrolled up to the bar. The footer
-  // draws its own hairline there, and the bar's rule on top of it read as a
-  // double line, so the bar drops its rule over the footer.
-  const [overFooter, setOverFooter] = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
   const [pastGlass, setPastGlass] = useState(false);
   // Signed-in visitors get a single "Open Assembly" action instead of the
@@ -567,28 +560,10 @@ export function StudioNav({
           : window.scrollY > SCROLL_THRESHOLD + MARGIN,
       );
       if (glassUntil !== undefined) setPastGlass(window.scrollY > glassUntil);
-      const footer = document.querySelector("footer.footer-reveal");
-      // The mobile and desktop bars are both <header>s; measure the one shown.
-      const header = Array.from(document.querySelectorAll("header")).find(
-        (h) => h.offsetHeight > 0,
-      );
-      setOverFooter(
-        Boolean(
-          footer &&
-            header &&
-            footer.getBoundingClientRect().top <=
-              header.getBoundingClientRect().bottom + FOOTER_RULE_GAP,
-        ),
-      );
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
-    // A resize can rewrap the page and move the footer without a scroll.
-    window.addEventListener("resize", onScroll, { passive: true });
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-    };
+    return () => window.removeEventListener("scroll", onScroll);
   }, [glassUntil]);
 
   return (
@@ -675,7 +650,7 @@ export function StudioNav({
           {/* Fades in with the strip behind it, on the same curve, so the bar
               and its closing rule arrive as one surface rather than the
               hairline landing first over a still-transparent bar. */}
-          <NavBarBorder visible={(bordered || scrolled) && !overFooter} easeClassName={ease} />
+          <NavBarBorder visible={bordered || scrolled} easeClassName={ease} />
           <div
             className={`relative z-10 mx-auto flex items-center ${contentRail} ${scrolled ? "h-14" : "h-16"}`}
             style={{ transition: rowTransition }}

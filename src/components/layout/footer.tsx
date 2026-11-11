@@ -10,7 +10,7 @@ import {
   type NavLink,
 } from "@/lib/constants";
 import { GRID_LINE } from "@/components/ui/grid-lines";
-import { AmbientBackground } from "@/components/layout/ambient-background";
+import { DiaGradient } from "@/components/ui/dia-gradient";
 import type { ThemePreference } from "@/components/theme/theme-provider";
 
 // V71's brand aurora (from hero-iterations) — green + blue on a near-black
@@ -37,23 +37,38 @@ export const BRAND_AURORA = [
 // the proposal page can end in the same aurora without inheriting the footer's
 // link columns (that page carries no navigation).
 export function FooterAurora() {
-  // Brand ambient background, drawn live so it sits on the theme's own ground.
-  // The band's height follows the page width (the drawing's own 18:7 shape),
-  // so resizing scales the bars smoothly instead of re-cropping them; phones
-  // get a floor and very wide screens a cap. On desktop it is pulled up under
-  // the links by a share of its own height. Below lg the link shelves stack
-  // into narrow columns, and bars crossing them looked messy, so there it
-  // starts just under the theme switch and has the bottom of the footer to
-  // itself.
-  const fade = "linear-gradient(to bottom, transparent 0%, #000 var(--ambient-fade))";
   return (
-    <div
-      aria-hidden
-      className="pointer-events-none relative h-[var(--ambient-h)] [--ambient-h:clamp(30rem,38.9vw,44rem)] mt-[calc(var(--ambient-h)*-0.22)] [--ambient-fade:30%] lg:mt-[calc(var(--ambient-h)*-0.35)] lg:[--ambient-fade:22%]"
-      style={{ maskImage: fade, WebkitMaskImage: fade }}
-    >
-      <AmbientBackground />
-    </div>
+    <>
+      <div
+        aria-hidden
+        className="pointer-events-none relative -mt-[calc(11rem+8.5vh)] h-[50.5vh] md:hidden"
+        style={{
+          maskImage: "linear-gradient(to bottom, transparent 0%, #000 18%)",
+          WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, #000 18%)",
+        }}
+      >
+        <div className="footer-aurora absolute inset-x-0 bottom-0 h-full">
+          {/* Half the bars of the desktop band, because the viewBox is squashed to
+              a quarter of its width here: at 14 the striations landed ~27px apart
+              on screen (vs ~100px on a desktop) and read as grain rather than as
+              aurora texture. Fewer, wider bars keep the pitch closer to desktop's,
+              and the extra horizontal blur softens what's left. */}
+          <DiaGradient stops={BRAND_AURORA} bars={9} blur={30} blurX={40} peak={0.8} valley={0.7} riseMs={1300} />
+        </div>
+      </div>
+      <div
+        aria-hidden
+        className="pointer-events-none relative -mt-[calc(10rem+8.5vh)] hidden h-[46.5vh] md:block"
+        style={{
+          maskImage: "linear-gradient(to bottom, transparent 0%, #000 8%)",
+          WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, #000 8%)",
+        }}
+      >
+        <div className="footer-aurora absolute inset-x-0 bottom-0 h-full">
+          <DiaGradient stops={BRAND_AURORA} bars={14} blur={30} peak={0.8} valley={0.45} riseMs={1300} />
+        </div>
+      </div>
+    </>
   );
 }
 
