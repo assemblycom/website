@@ -1760,8 +1760,6 @@ html[data-theme="dark"] .v63-ring-solid::before {
   --v69-inner: #e6e6e6;
   --v69-well: #dbdbdb;
   --v69-well-2: #cfcfcf;
-  /* The heatmap's empty cell reads a touch more neutral than the shared well. */
-  --v69-tracker-empty: #e3e3e3;
   --v69-chip: #ffffff;
   --v69-chip-border: rgba(20, 20, 20, 0.09);
   --v69-ink: #262626;
@@ -1796,7 +1794,6 @@ html[data-theme="dark"] .v63-ring-solid::before {
   --v69-inner: #242424;
   --v69-well: #2b2b2b;
   --v69-well-2: #333333;
-  --v69-tracker-empty: #242424;
   --v69-chip: #2e2e2e;
   --v69-chip-border: rgba(255, 255, 255, 0.12);
   --v69-ink: #f2f3f5;
@@ -2799,12 +2796,6 @@ html[data-theme="dark"] .v63-ring-solid::before {
   transition-delay: 0s !important;
 }
 
-/* Templates gallery stays monochrome: the hero's green (activity tracker) and
-   blue hues resolve to ink here, while the home hero keeps its accent colors. */
-.template-mock {
-  --v69-tracker-hit: color-mix(in srgb, var(--v69-ink) 72%, transparent);
-}
-
 /* One dark across all template widgets: the neutral ink #262626 (matches the
    onboarding avatar), not the hero's cooler navy ink. Light mode only so dark
    mode's inverted (white) ink is left untouched. */
@@ -3067,6 +3058,17 @@ html[data-theme="dark"] .v63-ring-solid::before {
     var(--dot-cols, var(--dot-cols-base, 8)),
     minmax(0, 1fr)
   );
+}
+
+/* From sm up the gallery frame is 16:10 like the phone one, at three columns
+   on desktop, so the design box is 16:10 too. Drawn at 384 wide: the cards
+   are ~400px in a three-up row, so covers land near 1:1 and type keeps the
+   size it was drawn at. Unlayered for the same reason as the phone rule. */
+@media (width >= 40rem) {
+  .template-mock-fit:has(> .template-mock-gallery) {
+    --template-mock-w: 384px;
+    --template-mock-h: 240px;
+  }
 }
 
 @media (width < 40rem) {

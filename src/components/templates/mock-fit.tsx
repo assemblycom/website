@@ -21,11 +21,12 @@ const DEFAULT_DESIGN_SIZE = 288;
 // Per-template design size. A few covers carry no large focal element, so at the
 // shared 288px size every part of them lands at the small end of the type scale
 // and the frame reads as mostly empty; drawing them smaller scales them up in
-// the same frame. Shared by every surface that frames a cover at size (the
+// the same frame. A cover that fills its square — the photographic ones — has no
+// such problem and belongs at the shared size, or its type reads a size up from
+// every cover beside it. Shared by every surface that frames a cover at size (the
 // gallery cards and the proposal page) — the home hero sizes these itself.
 export const MOCK_DESIGN_SIZE: Record<string, string> = {
   "client-ai-assistant": "[--template-mock-w:240px] [--template-mock-h:240px]",
-  "new-client-intake": "[--template-mock-w:240px] [--template-mock-h:240px]",
   "client-discussion-forum":
     "[--template-mock-w:240px] [--template-mock-h:240px]",
   "internal-communications-app":
@@ -37,9 +38,8 @@ export const MOCK_DESIGN_SIZE: Record<string, string> = {
   // full box, so a smaller box narrows it, and at 240 the filename truncated.
   "internal-resource-library":
     "[--template-mock-w:264px] [--template-mock-h:264px]",
-  // The wizard is a single narrow bar in an otherwise empty square, so it takes
-  // the largest step. The request queue's segmented control is the same case.
-  "client-onboarding-wizard": "[--template-mock-w:224px] [--template-mock-h:224px]",
+  // The request queue's segmented control is a single small object in an
+  // otherwise empty square, so it takes the largest step.
   "service-request-intake": "[--template-mock-w:224px] [--template-mock-h:224px]",
 };
 
