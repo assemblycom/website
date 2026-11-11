@@ -189,15 +189,20 @@ async function rasterize(svg: string) {
 // neighbouring points. The first stays fully shown underneath: two half-faded
 // layers alone let the ground through and the glow dipped mid-fade.
 const FADE_STEP = 100 / PHASES;
-// Desktop keeps the glow inside the nav's rail (max 1600px, 2.5rem gutters):
-// it fades in from each rail edge, so on a wide screen it reads as part of the
-// footer rather than a full-bleed strip. Phones keep it edge to edge.
-const RAIL_EDGE = "max(2.5rem, (100% - 1600px) / 2 + 2.5rem)";
-const RAIL_FADE_W = "8rem";
-const RAIL_FADE_W_LIGHT = "6rem";
+// On a wide screen the glow stays inside the nav's rail (max 1600px, 2.5rem
+// gutters) and fades out toward each rail edge, so it reads as part of the
+// footer rather than a full-bleed strip. Up to that width the fade runs out
+// to the screen edge instead: ending at the 2.5rem gutter read as extra
+// padding on a standard desktop. Phones keep it edge to edge.
+const RAIL_EDGE = "max(0px, (100% - 1600px) / 2 + 2.5rem)";
+const RAIL_FADE_W = "10rem";
 // Eased rather than linear: a straight ramp ended in a visible line where it
 // met full strength, which read as a cut-off instead of a fade.
-const EASE_STOPS = [0, 0.08, 0.25, 0.5, 0.75, 0.92, 1];
+// Smoothstep sampled at 13 points: no visible step where it starts or ends.
+const EASE_STOPS = Array.from({ length: 13 }, (_, i) => {
+  const t = i / 12;
+  return Math.round(t * t * (3 - 2 * t) * 1000) / 1000;
+});
 const railFade = (w: string) => {
   const left = EASE_STOPS.map(
     (a, i) =>
@@ -212,9 +217,6 @@ const railFade = (w: string) => {
   return `linear-gradient(to right, ${[...left, ...right].join(", ")})`;
 };
 const RAIL_FADE = railFade(RAIL_FADE_W);
-// On white the dark-mode width read as fading too early, so light mode
-// gets a slightly shorter one; the eased curve keeps it from looking cut off.
-const RAIL_FADE_LIGHT = railFade(RAIL_FADE_W_LIGHT);
 
 const FADE_KEYFRAMES = `@keyframes ambient-fade {
   0%, 100% { opacity: 1; }
@@ -222,12 +224,11 @@ const FADE_KEYFRAMES = `@keyframes ambient-fade {
 }
 @media (min-width: 1024px) {
   .ambient-rail { mask-image: ${RAIL_FADE}; -webkit-mask-image: ${RAIL_FADE}; }
-  [data-theme="light"] .ambient-rail { mask-image: ${RAIL_FADE_LIGHT}; -webkit-mask-image: ${RAIL_FADE_LIGHT}; }
 }`;
 
-const TOP_BLUR_PX = 10;
+const TOP_BLUR_PX = 6;
 const TOP_BLUR_MASK =
-  "linear-gradient(to bottom, #000 0%, #000 42%, transparent 58%)";
+  "linear-gradient(to bottom, #000 0%, #000 30%, transparent 44%)";
 
 export function AmbientBackground({ className = "" }: { className?: string }) {
   const [frames, setFrames] = useState<string[] | null>(null);
@@ -248,9 +249,7 @@ export function AmbientBackground({ className = "" }: { className?: string }) {
     let cancelled = false;
     let urls: string[] = [];
     Promise.all(
-      statesFor(DESKTOP_MOTION).map((st) =>
-        rasterize(stateSvg(st, DESKTOP)),
-      ),
+      statesFor(DESKTOP_MOTION).map((st) => rasterize(stateSvg(st, DESKTOP))),
     )
       .then((result) => {
         urls = result.filter((u): u is string => Boolean(u));

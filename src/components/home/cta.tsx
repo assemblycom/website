@@ -129,8 +129,8 @@ export function CTA({
         <p className="type-lead mx-auto mt-5 max-w-[34rem] text-balance text-muted-foreground">
           {subheading ?? (
             <>
-              Stop stitching together tools that were never meant to work
-              together. Run everything and build anything in one place.
+              Stop stitching together tools never meant to work together. Run
+              and build everything in one place.
             </>
           )}
         </p>
