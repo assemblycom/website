@@ -124,15 +124,13 @@ export function CTA({
             own. It used to render only when a page passed one, which left the
             default close as a heading and a control with nothing between
             them. */}
-        <p className="type-lead mx-auto mt-5 max-w-2xl text-pretty text-muted-foreground">
+        {/* A narrow, balanced column: the lead breaks into even lines rather
+            than one long first sentence over a short second one. */}
+        <p className="type-lead mx-auto mt-5 max-w-[34rem] text-balance text-muted-foreground">
           {subheading ?? (
             <>
               Stop stitching together tools that were never meant to work
-              together.
-              {/* Each sentence on its own line from md up; narrower screens
-                  wrap naturally. */}
-              <br className="hidden md:inline" />
-              Run everything and build anything in one place.
+              together. Run everything and build anything in one place.
             </>
           )}
         </p>
