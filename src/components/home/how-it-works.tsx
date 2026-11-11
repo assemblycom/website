@@ -77,6 +77,11 @@ const STEPS: Step[] = [
 const DWELL_MS = 7_000;
 
 export function HowItWorks({
+  // Header copy is overridable for the paid landing pages; the homepage
+  // passes nothing and keeps these defaults.
+  eyebrow = "App builder",
+  heading = "Go from idea to a working app in four steps",
+  body = "Describe what you want, approve the plan, and publish. Your app goes live in your workspace with sign-in, permissions, and branding already handled. Then keep refining it by chat.",
   /**
    * The visual panel's height, as the whole responsive chain.
    *
@@ -98,6 +103,9 @@ export function HowItWorks({
   manual = false,
   frameRadiusClass = "rounded-[20px]",
 }: {
+  eyebrow?: string;
+  heading?: string;
+  body?: string;
   visualHeightClass?: string;
   /**
    * The frame's corner. A page whose neighbouring panel is squarer passes its
@@ -274,15 +282,13 @@ export function HowItWorks({
             (left) and supporting copy (right) sharing a row so the copy lines
             up with the heading, not the eyebrow. */}
         <div className="mx-auto max-w-[1100px]">
-          <p className="type-eyebrow text-muted-foreground">App builder</p>
+          <p className="type-eyebrow text-muted-foreground">{eyebrow}</p>
           <div className="mt-4 grid gap-y-5 md:grid-cols-2 md:items-start md:gap-x-12">
             <h2 className="type-h2 max-w-lg text-balance text-foreground">
-              Go from idea to a working app in four steps
+              {heading}
             </h2>
             <p className="type-lead max-w-lg text-pretty text-muted-foreground">
-              Describe what you want, approve the plan, and publish. Your app
-              goes live in your workspace with sign-in, permissions, and
-              branding already handled. Then keep refining it by chat.
+              {body}
             </p>
           </div>
         </div>

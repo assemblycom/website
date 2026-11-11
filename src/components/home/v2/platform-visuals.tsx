@@ -364,9 +364,17 @@ function Shot({ active }: { active: RegionId }) {
   );
 }
 
-export function UnifiedPlatform() {
+/** Header copy passes through to ProductionGap; the homepage passes none. */
+export function UnifiedPlatform({
+  eyebrow,
+  heading,
+  body,
+}: { eyebrow?: string; heading?: string; body?: string } = {}) {
   return (
     <ProductionGap
+      eyebrow={eyebrow}
+      heading={heading}
+      body={body}
       bleedBottom
       framed
       flushVisual

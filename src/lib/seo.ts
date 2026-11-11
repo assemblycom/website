@@ -53,6 +53,14 @@ export const PAGE_SEO = {
       "Assembly is the client portal with ready-made apps for messaging, billing, files, and contracts, plus an AI app builder to customize your own.",
     path: "/client-portal",
   },
+  // Paid-only (Google Ads) landing page for the client portal keywords. Noindex
+  // and out of the sitemap; this record only feeds its tab title and card.
+  lpPortal: {
+    title: "Client Portal Software You Can Build On",
+    description:
+      "Assembly is a client portal and CRM for service firms: messages, files, contracts, and invoices in one branded place, plus an AI app builder for the rest. Free plan.",
+    path: "/lp/portal",
+  },
   // The vertical cut of /client-portal, on the slug the nine CMS solutions
   // pages used to serve. The title names the audience rather than the product,
   // because the search this page answers is "client portal for accountants"
