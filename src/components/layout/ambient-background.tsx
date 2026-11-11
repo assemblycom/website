@@ -244,8 +244,9 @@ export function AmbientBackground({ className = "" }: { className?: string }) {
     return () => mq.removeEventListener("change", sync);
   }, []);
 
+  // Drawn once per mount: every screen size uses the same drawing, and the
+  // breakpoint only changes the loop speed.
   useEffect(() => {
-    if (desktop === null) return;
     let cancelled = false;
     let urls: string[] = [];
     Promise.all(
@@ -261,7 +262,7 @@ export function AmbientBackground({ className = "" }: { className?: string }) {
       cancelled = true;
       urls.forEach((u) => URL.revokeObjectURL(u));
     };
-  }, [desktop]);
+  }, []);
 
   return (
     <div

@@ -583,7 +583,12 @@ export function StudioNav({
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    // A resize can rewrap the page and move the footer without a scroll.
+    window.addEventListener("resize", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
   }, [glassUntil]);
 
   return (
