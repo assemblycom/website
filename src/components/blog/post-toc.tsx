@@ -12,8 +12,9 @@ import { useActiveHeading } from "@/components/ui/use-active-heading";
  * the map stops being enough: two thousand words in, the thing you want from it
  * is where you are, and the phone bar has named the current section all along.
  *
- * The active entry takes the same ink and rule the hover state already uses, so
- * the rail speaks one language — no new colour for "current".
+ * The active entry takes the brand blue (Haze) for its rule over a faint tint of
+ * it, so "where you are" stands apart from "where you're pointing" (hover keeps
+ * the plain ink rule).
  */
 export function PostToc({
   headings,
@@ -47,7 +48,7 @@ export function PostToc({
                 className={cn(
                   "-ml-px block border-l py-1 pl-4 text-sm leading-6 transition-colors",
                   active
-                    ? "border-foreground text-foreground"
+                    ? "rounded-r-md border-l-2 border-[var(--guide-haze)] bg-[var(--guide-toc-active-bg)] pl-[calc(1rem-1px)] text-foreground"
                     : "border-transparent text-muted-foreground hover:border-foreground hover:text-foreground",
                 )}
               >

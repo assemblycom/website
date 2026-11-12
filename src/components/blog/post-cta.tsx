@@ -1,23 +1,39 @@
-import { SIGNUP_URL } from "@/lib/constants";
+import { G2Logo } from "@/components/customers/review-marks";
+import { PostCtaDemo } from "@/components/blog/post-cta-demo";
+import { G2_URL, SIGNUP_URL } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import type { PostCta as PostCtaContent } from "@/lib/ghost";
+
+/**
+ * The G2 score quoted under the guide card. Same figures as the /customers
+ * review strip (4.7) plus the review count Masse took off the G2 listing on
+ * 2026-11-11 — update both together when G2 moves.
+ */
+const G2_SCORE = "4.7";
+const G2_REVIEWS = 352;
 
 /**
  * The call to action a post's writer authored in Ghost, drawn as a card rather
  * than as a run of body text. It sits in the rail beside the article on a wide
  * screen and at the end of the post where there is no rail.
+ *
+ * `guide` is the SEO guides' version: a short product demo on top, a slightly
+ * larger title, tighter padding, and the G2 score under the button as proof.
  */
 export function PostCta({
   cta,
+  guide = false,
   className,
 }: {
   cta: PostCtaContent;
+  guide?: boolean;
   className?: string;
 }) {
   return (
     <aside
       className={cn(
-        "rounded-2xl bg-muted p-5",
+        "rounded-2xl bg-muted",
+        guide ? "p-3.5" : "p-5",
         // The description is the writer's, so its length varies; the card holds
         // its shape by letting the text set the height and keeping the action
         // pinned to the full width beneath it.
@@ -25,8 +41,20 @@ export function PostCta({
         className,
       )}
     >
+      {guide && (
+        <div className="mb-4">
+          <PostCtaDemo />
+        </div>
+      )}
       {cta.title && (
-        <p className="text-[1.0625rem] leading-[1.35] tracking-[-0.006em] text-foreground">
+        <p
+          className={cn(
+            "text-foreground",
+            guide
+              ? "text-lg font-medium leading-[1.3] tracking-[-0.01em]"
+              : "text-[1.0625rem] leading-[1.35] tracking-[-0.006em]",
+          )}
+        >
           {cta.title}
         </p>
       )}
@@ -43,6 +71,19 @@ export function PostCta({
       >
         Try for free
       </a>
+
+      {guide && (
+        <a
+          href={G2_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`Assembly on G2: ${G2_SCORE} out of 5 from ${G2_REVIEWS} reviews`}
+          className="mt-3 flex items-center justify-center gap-1.5 whitespace-nowrap text-xs text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <G2Logo className="size-3.5 shrink-0" />
+          {G2_SCORE} out of 5 · {G2_REVIEWS} reviews
+        </a>
+      )}
     </aside>
   );
 }
