@@ -219,7 +219,9 @@ function dropPastedColours(html: string): string {
       if (kept === declarations) return match;
       // A style attribute holding nothing but colours goes with them, rather
       // than staying behind as style="" on every span in the table.
-      return kept.replace(/^[\s;]+|[\s;]+$/g, "") ? `${space}style="${kept}"` : "";
+      return kept.replace(/^[\s;]+|[\s;]+$/g, "")
+        ? `${space}style="${kept}"`
+        : "";
     },
   );
 }
@@ -669,7 +671,6 @@ export function getPosts(): Promise<GhostPost[]> {
   return getFrom(BLOG);
 }
 
-
 export async function getPost(slug: string): Promise<GhostPost | undefined> {
   return (await getPosts()).find((post) => post.slug === slug);
 }
@@ -1065,7 +1066,9 @@ function dropQuestion(label: string): string {
     const second = m[2] ? gerund(m[2]) : null;
     if (first) return capitalize(first) + (second ? ` and ${second}` : "");
   }
-  if ((m = /^(?:which|what) (.+?) should you (?:choose|pick|use)$/i.exec(label))) {
+  if (
+    (m = /^(?:which|what) (.+?) should you (?:choose|pick|use)$/i.exec(label))
+  ) {
     return capitalize(m[1]);
   }
   if ((m = /^why (.+)$/i.exec(label))) return capitalize(m[1]);
@@ -1129,7 +1132,8 @@ function headingLabel(text: string, title: string): string {
     // Either half can be the throwaway one: the pitch and the summary marker
     // follow the colon, but "TL;DR: Which alternative should you choose?" opens
     // with it.
-    if (rest && (BEST_FOR.test(rest) || SUMMARY_MARKER.test(rest))) label = lead;
+    if (rest && (BEST_FOR.test(rest) || SUMMARY_MARKER.test(rest)))
+      label = lead;
     else if (SUMMARY_MARKER.test(lead)) label = rest;
     else if (framesPost(label, title)) label = capitalize(rest);
   }
@@ -1265,5 +1269,94 @@ export function markLeadInParagraphs(html: string): string {
     ALL_BOLD_PARAGRAPH,
     (_match, attrs: string, _tag: string, inner: string) =>
       `<p${attrs} class="lead-in"><strong>${inner}</strong></p>`,
+  );
+}
+
+// A listicle's "top picks" arrive from Ghost as a bare numbered list of names,
+// which reads as an afterthought above a long guide. When every item names one
+// of the post's own sections, it is a ranking with a destination per row, so it
+// renders as a table whose names jump to their review. Any other list is left
+// alone: a list that doesn't map onto the headings is prose, not a ranking.
+const MIN_PICKS = 3;
+const LEADING_RANK = /^\d+\.\s+/;
+
+function pickKey(text: string): string {
+  return text.replace(LEADING_RANK, "").trim().toLowerCase();
+}
+
+export function picksAsTable(html: string, headings: PostHeading[]): string {
+  const sections = headings.map((h) => ({ id: h.id, key: pickKey(h.text) }));
+
+  return html.replace(/<ol>([\s\S]*?)<\/ol>/g, (match, inner: string) => {
+    // The cell keeps Ghost's own (already escaped) markup; only the match
+    // against the headings needs the plain text.
+    const items = [...inner.matchAll(/<li>([\s\S]*?)<\/li>/g)].map((m) => ({
+      html: m[1].replace(/<[^>]+>/g, "").trim(),
+      text: decodeEntities(m[1].replace(/<[^>]+>/g, ""))
+        .replace(/\s+/g, " ")
+        .trim(),
+    }));
+    // Only a flat list of plain names qualifies; nested lists or extra markup
+    // mean the author wrote something richer than a ranking.
+    if (items.length < MIN_PICKS) return match;
+    if (inner.replace(/<li>[\s\S]*?<\/li>/g, "").trim()) return match;
+
+    // "OneDrive" in the list, "OneDrive for Business" as the heading.
+    const rows = items.map((item) => ({
+      html: item.html,
+      section: item.text
+        ? sections.find((s) => s.key.startsWith(pickKey(item.text)))
+        : undefined,
+    }));
+    if (rows.some((r) => !r.section)) return match;
+
+    const body = rows
+      .map(
+        (r, i) =>
+          `<tr><td>${i + 1}</td><td><a href="#${r.section!.id}">${r.html}</a></td></tr>`,
+      )
+      .join("");
+    return `<table class="picks-table"><thead><tr><th>#</th><th>Tool</th></tr></thead><tbody>${body}</tbody></table>`;
+  });
+}
+
+// Splits a section heading's rank ("2. Zendesk") into its own span so the guide
+// layout can set the number back from the name. Text-only: the contents rail
+// reads the heading's text, which is unchanged.
+export function withHeadingRanks(html: string): string {
+  return html.replace(
+    /(<h[234][^>]*>)(\s*)(\d{1,2}\.)\s+/g,
+    '$1$2<span class="heading-rank">$3</span> ',
+  );
+}
+
+// Writers set a table's disclaimer ("*Pricing correct as of …") as an italic
+// paragraph of its own after the table's note, which reads as a stray line of
+// body copy in a different voice. Directly after a table note, a starred
+// paragraph that is all emphasis folds into that note as one footnote line.
+// The star goes: no cell in these tables carries one for it to point at.
+export function footnotesAsTableNotes(html: string): string {
+  return html.replace(
+    /<p class="table-note">([\s\S]*?)<\/p>(\s*(?:<!--[\s\S]*?-->\s*)*)<p>\s*(\*?)\s*<em>\s*(\*?)([\s\S]*?)<\/em>\s*<\/p>/g,
+    (
+      match,
+      note: string,
+      between: string,
+      before: string,
+      inside: string,
+      text: string,
+    ) =>
+      before || inside
+        ? `<p class="table-note">${note.trim()} · ${text.trim()}</p>${between}`
+        : match,
+  );
+}
+
+// Marks the bold label a paragraph opens with ("Pro:", "Best for:") so the guide
+// layout can keep its weight while quieting bold elsewhere in running prose.
+export function markParagraphLabels(html: string): string {
+  return html.replace(
+    /<p>(\s*)<strong>([^<]{1,40}?)(:\s*<\/strong>|<\/strong>\s*:)/g,
+    '<p>$1<strong class="label">$2$3',
   );
 }

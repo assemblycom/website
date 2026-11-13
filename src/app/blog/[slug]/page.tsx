@@ -4,11 +4,16 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { articleSchema } from "@/lib/blog-schema";
 import { serializeJsonLd } from "@/lib/json-ld";
+import { reviewsAsCards } from "@/lib/blog-reviews";
 import {
   formatPostDate,
   postContents,
   getPost,
   getPosts,
+  picksAsTable,
+  withHeadingRanks,
+  footnotesAsTableNotes,
+  markParagraphLabels,
   quotesAboveFigures,
   splitFaq,
   withHeadingIds,
@@ -20,6 +25,8 @@ import { cn } from "@/lib/utils";
 import { CustomersCta } from "@/components/customers/customers-cta";
 import { AuthorAvatar } from "@/components/blog/post-byline";
 import { PostCta } from "@/components/blog/post-cta";
+import { PostHero } from "@/components/blog/post-hero";
+import { PostMobileCta } from "@/components/blog/post-mobile-cta";
 import { PostLightbox } from "@/components/blog/post-lightbox";
 import { TocMobile } from "@/components/ui/toc-mobile";
 import { PostToc } from "@/components/blog/post-toc";
@@ -55,7 +62,6 @@ export async function generateMetadata({
   });
 }
 
-
 export default async function BlogPostPage({
   params,
 }: {
@@ -67,7 +73,19 @@ export default async function BlogPostPage({
 
   // Quotes lifted before the ids are assigned, so heading order is read off the
   // markup the page actually renders.
-  const { html, headings } = withHeadingIds(quotesAboveFigures(post.html));
+  const { html: withIds, headings } = withHeadingIds(
+    quotesAboveFigures(post.html),
+  );
+  // Only the guides (posts with a contents rail) carry a ranked picks list.
+  const html = post.showToc
+    ? reviewsAsCards(
+        markParagraphLabels(
+          footnotesAsTableNotes(
+            withHeadingRanks(picksAsTable(withIds, headings)),
+          ),
+        ),
+      )
+    : withIds;
   // Both rails list the same sections under the same labels.
   const contents = postContents(headings, post.title);
   // The trailing FAQ is rendered as the site's accordion rather than as a run
@@ -86,7 +104,7 @@ export default async function BlogPostPage({
   // 40.5rem column (only their cover runs wider).
   const darkThemeCover = DARK_THEME_COVERS[post.slug];
   const imageSizes = showRail
-    ? "(min-width: 1440px) 688px, (min-width: 1024px) 648px, calc(100vw - 3rem)"
+    ? "(min-width: 1024px) 688px, calc(100vw - 3rem)"
     : "(min-width: 696px) 648px, calc(100vw - 3rem)";
 
   return (
@@ -94,7 +112,14 @@ export default async function BlogPostPage({
     // the article itself on a fixed reading measure. The rail is dropped below
     // lg — a contents list is a desktop affordance, and stacked above a post on
     // a phone it is just a second thing to scroll past.
-    <article className="mx-auto max-w-[1600px] px-6 pb-24 pt-12 md:px-10 md:pb-32 md:pt-16">
+    <article
+      className={cn(
+        "mx-auto max-w-[1600px] px-6 pb-24 md:px-10 md:pb-32",
+        // The guides open on a grey hero box, which wants to sit close under
+        // the nav; the announcements open on their headline and keep the air.
+        showRail ? "pt-4 md:pt-6" : "pt-12 md:pt-16",
+      )}
+    >
       {/* Article schema. Next exposes no metadata field for JSON-LD, so it is a
           script in the body, which Google reads as readily as one in the head.
           Serialized through serializeJsonLd, not JSON.stringify: these values
@@ -102,8 +127,15 @@ export default async function BlogPostPage({
           this element and have the rest of itself parsed as markup. */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: serializeJsonLd(articleSchema(post)) }}
+        dangerouslySetInnerHTML={{
+          __html: serializeJsonLd(articleSchema(post)),
+        }}
       />
+      {/* The guides (SEO posts with a rail) open on their own hero box, spanning
+          the full layout above the rails so the contents list and the card
+          start level with the article. The breadcrumb in it is the way back. */}
+      {showRail && <PostHero post={post} />}
+
       <div
         className={
           showRail
@@ -113,148 +145,120 @@ export default async function BlogPostPage({
               // inside whatever the card left over. The `wide` breakpoint is
               // where the third column fits without taking a pixel off the
               // reading measure; below it the two stack in the
-              // left rail as before. The middle column is 43rem rather than the
-              // 40.5rem it takes on a narrow desktop: the widest comparison
-              // table runs to 662px, and at 40.5rem it was clipped and carrying
-              // a scroll shadow. Spread rather than centred: it puts the
-              // contents on the container's own left edge, in line with the
-              // wordmark above them, and leaves the spare width in the gaps.
-              "lg:grid lg:grid-cols-[16rem_minmax(0,40.5rem)] lg:gap-x-[10.5rem] wide:grid-cols-[16rem_43rem_16rem] wide:justify-between wide:gap-x-[4.5rem]"
+              // left rail as before. The article is 43rem at both: the widest
+              // comparison table runs to 662px, and the measure stays one
+              // width as the window grows instead of jumping at `wide`. On a
+              // narrow desktop it sits 6rem off the rail, so the spare width
+              // falls to the right rather than as an empty band between the
+              // contents and the text. Spread at `wide`: the contents on the
+              // container's own left edge, in line with the wordmark above.
+              // Below lg the column takes the same 43rem measure the hero box
+              // does on a tablet, centred, instead of running the full width.
+              "mt-8 md:mx-auto md:max-w-[43rem] lg:mx-0 lg:mt-10 lg:max-w-none lg:grid lg:grid-cols-[16rem_minmax(0,43rem)] lg:gap-x-24 wide:grid-cols-[16rem_43rem_16rem] wide:justify-between wide:gap-x-[4.5rem]"
             : "mx-auto max-w-[40.5rem]"
         }
       >
-        {/* Only the way back rides with the page. The card and the contents
-            list pin together under the header, so the post's own CTA is still
-            on screen at the foot of a long read rather than scrolled off above
-            it. The column is the grid's, so it stands as tall as the article —
-            which is the distance the pair has to stick over. */}
+        {/* The left rail. The column is the grid's, so it stands as tall as the
+            article — which is the distance the contents list sticks over. */}
         <div className={showRail ? "hidden lg:block" : "hidden"}>
-          {/* The way back, at the top of the rail where the reader starts. The
-              header used to carry a Blog breadcrumb; the tag and date replaced
-              it, which left a post with a rail no way back on a wide screen. */}
-          <Link
-            href="/blog"
-            className="type-body -mt-1 inline-flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
-          >
-            {/* The font's own arrow rather than a drawn chevron: it sits on the
-                same baseline and stroke weight as the words beside it, which a
-                16px icon next to 16px type never quite does. */}
-            <span aria-hidden>&larr;</span>
-            All posts
-          </Link>
-
-          {/* Capped to the viewport, and the one thing that scrolls. A card that
-              scrolled its own overflow could cut off the button it exists for,
-              and a list squeezed by a tall card had nowhere to go — so neither
-              is clipped and the rail moves as a whole when it has to. */}
-          <div className="sticky top-28 mt-10 flex max-h-[calc(100vh-9rem)] flex-col gap-10 overflow-y-auto">
+          {/* Between lg and wide the card and the contents share this rail. The
+              card (with its demo) is too tall to pin alongside a long list, so
+              it sits at the top and scrolls away, and only the contents stay
+              pinned while reading. Past wide the card has its own column. */}
+          <div className="flex h-full flex-col gap-10">
             {/* The card the post's own writer authored in Ghost. It says
                 something about THIS post, which the site's closing CTA can't.
                 Only while the two share this rail: past `wide` it has a column
                 of its own on the other side and this copy stands down. Never
                 compressed and never clipped, so its button is always whole. */}
             {post.cta && (
-              <PostCta cta={post.cta} className="shrink-0 wide:hidden" />
+              <PostCta cta={post.cta} guide className="shrink-0 wide:hidden" />
             )}
 
             {showToc && (
               <PostToc
                 headings={contents}
-                className="min-h-24 flex-1 overflow-y-auto"
+                className="sticky top-28 max-h-[calc(100vh-9rem)] overflow-y-auto"
               />
             )}
           </div>
         </div>
 
         <div className="wide:col-start-2 wide:row-start-1">
-          {/* Only where a rail exists: the rail carries the way back on a wide
-              screen and this stands in for it below one. The announcements are a
-              centred column with nothing to hang a link off, so they lean on the
-              nav for the way out. */}
-          {showRail && (
-            <div className="mb-8 lg:hidden">
-              <Link
-                href="/blog"
-                className="type-body inline-flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
-              >
-                <span aria-hidden>&larr;</span>
-                All posts
-              </Link>
-            </div>
-          )}
-
           {/* Without a rail the page has no left edge to hang off, so the
               announcements set their opening block on the column's centre line
               instead. The body below stays ranged left — centred paragraphs are
               hard to read at any length. */}
-          <header className={cn(!showRail && "text-center")}>
-            {/* The date, then the section as one of the site's mono tags — the
+          {!showRail && (
+            <header className="text-center">
+              {/* The date, then the section as one of the site's mono tags — the
                 same chip the proposal pages draw. No
                 breadcrumb: the way back to the blog is in the nav and at the
                 foot of the page, and there is no per-section archive to link a
                 name to. */}
-            <div
-              className={cn(
-                "flex flex-wrap items-center gap-3",
-                !showRail && "justify-center",
-              )}
-            >
-              {post.category && (
-                <span className="rounded-sm bg-muted px-2.5 py-1 text-xs uppercase leading-none tracking-[0.06em] text-muted-foreground [font-family:var(--font-diatype-mono),ui-monospace,monospace] [[data-theme=dark]_&]:bg-white/[0.06]">
-                  {post.category}
-                </span>
-              )}
-              <p className="type-body text-muted-foreground">
-                Published {formatPostDate(post.date)}
-              </p>
-            </div>
-            {/* Leading and tracking set here rather than on type-display, which
+              <div
+                className={cn(
+                  "flex flex-wrap items-center gap-3",
+                  !showRail && "justify-center",
+                )}
+              >
+                {post.category && (
+                  <span className="rounded-sm bg-muted px-2.5 py-1 text-xs uppercase leading-none tracking-[0.06em] text-muted-foreground [font-family:var(--font-diatype-mono),ui-monospace,monospace] [[data-theme=dark]_&]:bg-white/[0.06]">
+                    {post.category}
+                  </span>
+                )}
+                <p className="type-body text-muted-foreground">
+                  Published {formatPostDate(post.date)}
+                </p>
+              </div>
+              {/* Leading and tracking set here rather than on type-display, which
                 nine other pages share: at 48px the token's 1.08 leaves a
                 two-line headline looking loose, where every reference blog sets
                 its post title at about 1.0. */}
-            <h1 className="type-display mt-3 text-balance leading-[1.02] tracking-[-0.03em] text-foreground">
-              {unbreakable(post.title)}
-            </h1>
-            {/* The centred announcements go straight from the headline to the
+              <h1 className="type-display mt-3 text-balance leading-[1.02] tracking-[-0.03em] text-foreground">
+                {unbreakable(post.title)}
+              </h1>
+              {/* The centred announcements go straight from the headline to the
                 byline: their titles already carry the news, and a centred deck
                 under a centred title read as a second, competing headline. The
                 excerpt still does its work in the listing and the meta
                 description. */}
-            {showRail && (
-              <p className="type-lead mt-4 text-pretty text-muted-foreground">
-                {post.excerpt}
-              </p>
-            )}
-            <div
-              className={cn(
-                "flex items-center gap-2.5",
-                showRail ? "mt-5" : "mt-6 justify-center",
+              {showRail && (
+                <p className="type-lead mt-4 text-pretty text-muted-foreground">
+                  {post.excerpt}
+                </p>
               )}
-            >
-              {post.authorImage && <AuthorAvatar image={post.authorImage} />}
-              <p className="type-body text-muted-foreground">
-                {/* Only the Content API knows an author's slug, so on the RSS
-                    fallback the byline is plain text rather than a dead link. */}
-                By{" "}
-                {post.authorSlug ? (
-                  <Link
-                    href={`/blog/author/${post.authorSlug}`}
-                    className="transition-colors hover:text-foreground"
-                  >
-                    {post.author}
-                  </Link>
-                ) : (
-                  post.author
+              <div
+                className={cn(
+                  "flex items-center gap-2.5",
+                  showRail ? "mt-5" : "mt-6 justify-center",
                 )}
-              </p>
-            </div>
-          </header>
+              >
+                {post.authorImage && <AuthorAvatar image={post.authorImage} />}
+                <p className="type-body text-muted-foreground">
+                  {/* Only the Content API knows an author's slug, so on the RSS
+                    fallback the byline is plain text rather than a dead link. */}
+                  By{" "}
+                  {post.authorSlug ? (
+                    <Link
+                      href={`/blog/author/${post.authorSlug}`}
+                      className="transition-colors hover:text-foreground"
+                    >
+                      {post.author}
+                    </Link>
+                  ) : (
+                    post.author
+                  )}
+                </p>
+              </div>
+            </header>
+          )}
 
           {post.image && (
             <div
               className={cn(
-                "relative mt-8 w-full overflow-hidden rounded-2xl border border-border bg-muted [[data-theme=dark]_&]:border-[#383838]",
-                showRail && "aspect-[16/9]",
+                "relative w-full overflow-hidden rounded-2xl border border-border bg-muted [[data-theme=dark]_&]:border-[#383838]",
+                showRail ? "aspect-[16/9]" : "mt-8",
                 // Capped against the WINDOW, not given a shorter ratio of its
                 // own: 16:9 at the reading measure is 365px, which put the first
                 // line of the article below the fold on a laptop — you landed on
@@ -333,7 +337,11 @@ export default async function BlogPostPage({
           {/* Ghost's own markup, restyled by .post-body in globals.css. The
               source is our CMS, not user input. */}
           <div
-            className={cn("post-body mt-10", !showRail && "post-body-wide")}
+            className={cn(
+              "post-body",
+              post.image || !showRail ? "mt-10" : "mt-0",
+              showRail ? "post-body-guide" : "post-body-wide",
+            )}
             dangerouslySetInnerHTML={{
               __html: withImageSizes(body, imageSizes),
             }}
@@ -364,7 +372,6 @@ export default async function BlogPostPage({
               </div>
             </section>
           )}
-
         </div>
 
         {/* The writer's card in the margin the article was leaving empty, pinned
@@ -373,7 +380,7 @@ export default async function BlogPostPage({
             is contents, then post, then the offer. */}
         {post.cta && (
           <div className="hidden wide:col-start-3 wide:row-start-1 wide:block">
-            <PostCta cta={post.cta} className="sticky top-28" />
+            <PostCta cta={post.cta} guide className="sticky top-28" />
           </div>
         )}
       </div>
@@ -386,13 +393,26 @@ export default async function BlogPostPage({
       {/* Out of the page's gutters, so the rule runs edge to edge — and out of
           its bottom padding too, which would otherwise sit under the CTA's own
           and leave the button stranded in half a screen of white. */}
-      <div className="-mx-6 -mb-24 mt-20 md:-mx-10 md:-mb-32 md:mt-28">
+      <div
+        data-post-end
+        className="-mx-6 -mb-24 mt-20 md:-mx-10 md:-mb-32 md:mt-28"
+      >
         <div className="border-t border-border [[data-theme=dark]_&]:border-[#383838]" />
         <CustomersCta />
       </div>
 
       {showToc && (
-        <TocMobile headings={contents} bodySelector=".post-body" id="post-toc-mobile" />
+        <TocMobile
+          headings={contents}
+          bodySelector=".post-body"
+          id="post-toc-mobile"
+        />
+      )}
+      {showRail && (
+        <PostMobileCta
+          heroSelector="[data-post-hero]"
+          endSelector="[data-post-end]"
+        />
       )}
       <PostLightbox />
     </article>

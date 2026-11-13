@@ -5464,3 +5464,322 @@ html:not([data-authed]) .auth-only {
     transform: none !important;
   }
 }
+
+/* ── Guide posts (the SEO articles with a contents rail) ─────────────────────
+   Masse's 2026-11 blog proposal, applied to the posts that carry a contents
+   rail. The announcements are a different page — centred, no rail — and keep
+   their own look; nothing here reaches them, because every rule hangs off
+   .post-body-guide or a component only the guide layout renders. */
+@layer components {
+  /* One pixel over the regular post body at each step: 17px on a phone, 18px
+     from md. Requested by Masse for readability on the long guides. */
+  .post-body-guide {
+    font-size: 1.0625rem; /* 17px */
+  }
+  @media (min-width: 48rem) {
+    .post-body-guide {
+      font-size: 1.125rem; /* 18px */
+    }
+  }
+  /* Emphasis that reads as emphasis: the site's medium weight (500, the
+     heaviest it uses) in full ink. Scoped to the guides — the writers lean on
+     <strong> to make a skimmed listicle scannable. */
+  .post-body-guide strong,
+  .post-body-guide b {
+    font-weight: 500;
+    color: var(--foreground);
+  }
+  /* Inside running prose, bold drops to a lift in ink only. A half-sentence
+     in medium weight beside a link and the softer body read as three voices in
+     one line; weight stays on the lead-in labels of list items ("Best for:"),
+     and on a label a paragraph opens with ("Pro:"), where it is what makes the
+     page scannable. */
+  .post-body-guide p:not(.lead-in) :is(strong, b):not(.label) {
+    font-weight: 400;
+  }
+  /* Subheads that read as subheads by size alone, since the site keeps headings
+     at 400. The h4 the guides use for "Pricing" / "Special features" sat at body
+     size, so only its ink told it from the paragraph under it. A subhead needs
+     a clear step over the body to register at a skim, and a clear step under
+     the section title to read as inside it: 32 / 22 over an 18px body. */
+  .post-body-guide h3 {
+    font-size: 1.375rem; /* 22px */
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+  }
+  .post-body-guide h4 {
+    font-size: 1.375rem; /* 22px */
+    line-height: 1.3;
+    letter-spacing: -0.015em;
+  }
+  /* A link keeps the paragraph's own ink and is marked by a soft rule alone: a
+     guide carries a link every few lines, and at full ink against the softer
+     body they read as highlights, loudest in dark where the gap is widest. Both
+     come up to full ink on hover, so the link still answers. */
+  .post-body-guide a {
+    color: inherit;
+    text-decoration-color: color-mix(in srgb, var(--foreground) 40%, transparent);
+    transition:
+      color 150ms ease,
+      text-decoration-color 150ms ease;
+  }
+  .post-body-guide a:hover {
+    color: var(--foreground);
+    text-decoration-color: var(--foreground);
+  }
+  /* Every screenshot in a guide sits in the same 16:9 frame, which is what the
+     tool shots are captured at; a taller one (a whole landing page) otherwise
+     runs to most of a screen and breaks the rhythm of the list. Cropped from
+     the top, where a page's nav and headline are. Review cards are left whole,
+     since cropping one cuts the quote. */
+  /* The guides' block rhythm, taken from what Notion, Linear, Cursor and
+     OpenAI share: one paragraph gap (24px) between blocks of text, a list
+     treated as a block with that same gap around it and its items closed up
+     inside, more air around a picture than around text, and whatever follows a
+     heading pinned close under it. Items a paragraph apart read as separate
+     paragraphs, which is what made the long lists hard to scan. */
+  .post-body-guide > :is(ul, ol),
+  .post-body-guide > :is(ul, ol) + * {
+    margin-top: 1.5rem;
+  }
+  .post-body-guide li + li {
+    margin-top: 0.5rem;
+  }
+  /* List text one em in from the paragraph edge rather than two: deep enough
+     to read as a list, shallow enough that the bullets stay with the copy. */
+  .post-body-guide ul {
+    padding-left: 0;
+  }
+  .post-body-guide ul > li {
+    padding-left: 1.5rem;
+  }
+  .post-body-guide ol {
+    padding-left: 1.5rem;
+  }
+  .post-body-guide ol > li::marker {
+    font-variant-numeric: tabular-nums;
+  }
+  .post-body-guide > figure,
+  .post-body-guide > figure + * {
+    margin-top: 2.5rem;
+  }
+  .post-body-guide > :is(h2, h3, h4) + * {
+    margin-top: 1rem;
+  }
+  /* Comparison tables, set as a dense reference rather than as prose in boxes:
+     a step smaller with tighter rows, the first column (the tool) in full ink
+     on one line so each row is named at a glance, and the column labels quieter
+     than the data. Links in a cell drop their rule until hovered; a price
+     underlined in every row striped the table without telling the reader
+     anything the column name doesn't. */
+  .post-body-guide table:not(.picks-table) {
+    font-size: 0.875rem; /* 14px */
+    line-height: 1.5;
+  }
+  .post-body-guide table:not(.picks-table) :is(th, td) {
+    padding: 0.75rem 0.75rem;
+  }
+  .post-body-guide table:not(.picks-table) thead + tbody tr:first-child :is(th, td) {
+    padding-top: 0.875rem;
+  }
+  .post-body-guide table:not(.picks-table) thead th {
+    color: var(--muted-foreground);
+    font-size: 0.8125rem; /* 13px */
+  }
+  .post-body-guide table:not(.picks-table) td:first-child:has(> :is(a, strong, b):only-child) {
+    color: var(--foreground);
+  }
+  /* Rules between rows only: the table's end closes the last one, and a rule
+     under it read as a divider with nothing after it. */
+  .post-body-guide table tbody tr:last-child {
+    border-bottom: 0;
+  }
+  /* A cell that is only a name (a link or bold run, nothing else) holds one
+     line; a pros-and-cons table puts whole sentences in this column, which
+     must wrap. */
+  .post-body-guide table:not(.picks-table) td:first-child > :is(a, strong, b):only-child {
+    white-space: nowrap;
+  }
+  .post-body-guide table:not(.picks-table) td a {
+    text-decoration-color: transparent;
+  }
+  .post-body-guide table:not(.picks-table) td a:hover {
+    text-decoration-color: var(--foreground);
+  }
+  /* Except the tool's name: the agency set each one as a bold link to the
+     vendor, so it keeps the body's soft link rule and the writer's weight. */
+  .post-body-guide table:not(.picks-table) td:first-child a {
+    color: var(--foreground);
+    text-decoration-color: color-mix(in srgb, var(--foreground) 40%, transparent);
+  }
+  .post-body-guide table:not(.picks-table) td:first-child a:hover {
+    text-decoration-color: var(--foreground);
+  }
+
+  /* A review set as the site's own card (see components/blog/review-card):
+     the page's type and tokens, an outline and no shadow, the stars in ink. */
+  .post-body .review-card {
+    padding: 1.25rem 1.5rem 1.25rem;
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    font-size: 0.9375rem; /* 15px */
+    line-height: 1.6;
+  }
+  .post-body .review-card p {
+    margin: 0;
+  }
+  .review-card-head {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .review-card-avatar {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 9999px;
+    background: var(--muted);
+    color: var(--muted-foreground);
+    font-size: 0.8125rem;
+  }
+  .review-card-who {
+    min-width: 0;
+    flex: 1;
+    line-height: 1.35;
+  }
+  .post-body .review-card .review-card-name {
+    color: var(--foreground);
+  }
+  .post-body .review-card .review-card-meta {
+    color: var(--muted-foreground);
+    font-size: 0.8125rem;
+  }
+  .post-body .review-card .review-card-rating {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 1px;
+    align-self: flex-start;
+    color: var(--foreground);
+    font-size: 0.8125rem;
+  }
+  .review-card-rating svg {
+    fill: color-mix(in srgb, var(--foreground) 18%, transparent);
+  }
+  .review-card-rating svg[data-on="true"] {
+    fill: var(--foreground);
+  }
+  .review-card-rating span {
+    margin-left: 0.375rem;
+    color: var(--muted-foreground);
+  }
+  /* The review's headline leads the card; who wrote it is attribution, and the
+     Pros and Cons labels step back so the reviewer's words carry the weight. */
+  .post-body .review-card .review-card-title {
+    margin-top: 1.25rem;
+    color: var(--foreground);
+    font-size: 1.1875rem; /* 19px */
+    line-height: 1.35;
+    letter-spacing: -0.01em;
+  }
+  .post-body .review-card .review-card-summary {
+    margin-top: 0.375rem;
+  }
+  .post-body .review-card .review-card-section {
+    margin-top: 0.875rem;
+  }
+  /* A tool's reviews stack as one group rather than as separate blocks. */
+  .post-body-guide > .review-card + .review-card {
+    margin-top: 1rem;
+  }
+  /* Where the reviewer started a new paragraph. */
+  .post-body .review-card p:not(.review-card-label) + p {
+    margin-top: 0.5rem;
+  }
+  .post-body .review-card .review-card-label {
+    color: var(--muted-foreground);
+    font-size: 0.8125rem;
+  }
+  /* The phrases that carry the review: ink on the grey copy, on a dashed line
+     so they read as marked rather than as links. */
+  .post-body .review-card .review-card-mark {
+    color: var(--foreground);
+    text-decoration-line: underline;
+    text-decoration-style: dashed;
+    text-decoration-color: color-mix(in srgb, var(--foreground) 45%, transparent);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
+  }
+  .post-body .review-card .review-card-foot {
+    margin-top: 1rem;
+    padding-top: 0.875rem;
+    border-top: 1px solid var(--border);
+    color: var(--muted-foreground);
+    font-size: 0.8125rem;
+  }
+
+  /* A tool's section and the subheads inside it ("Key features") sat 30px over
+     26px, close enough that one tool ran into the next. The section title steps
+     up and a ranked one (a tool in the list) opens on a hairline, so the place
+     where 5 ends and 6 begins is drawn rather than inferred from spacing; the
+     subheads step down to a size that reads as inside it. */
+  .post-body-guide > h2 {
+    font-size: 2rem; /* 32px */
+  }
+  .post-body-guide > h2:has(> .heading-rank) {
+    margin-top: 4rem;
+    padding-top: 3rem;
+    border-top: 1px solid var(--border);
+  }
+
+  /* The rank on a listicle's section ("2. Zendesk") steps back, so the eye
+     lands on the tool's name; the number still orders the list. */
+  /* The table's footnote at the size of its column labels, so it reads as part
+     of the table rather than as a line of copy under it. */
+  .post-body-guide .table-note {
+    font-size: 0.8125rem; /* 13px */
+  }
+  .post-body-guide .heading-rank {
+    color: var(--muted-foreground);
+  }
+
+  /* The G2 review captures include the soft shadow G2 draws under its cards,
+     a few pixels of it on every side. The page uses no shadows, so the image is
+     clipped to just inside it, on the card's own rounded edge. The captures
+     share one width, so the shadow is the same few pixels on every one. */
+  .post-body-guide img[alt*="review" i] {
+    clip-path: inset(3px 3px 4px 3px round 7px);
+  }
+  .post-body-guide .kg-image-card img:not([alt*="review" i]) {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    object-position: top;
+  }
+
+}
+
+@layer components {
+  /* The guides' top-picks table (see picksAsTable in lib/ghost): a rank and a
+     name, so the rank column hugs its digit and the names take the rest. */
+  .post-body .picks-table th:first-child,
+  .post-body .picks-table td:first-child {
+    min-width: 0;
+    width: 3rem;
+    color: var(--muted-foreground);
+    font-variant-numeric: tabular-nums;
+  }
+  .post-body .picks-table td:last-child {
+    width: 100%;
+  }
+  .post-body .picks-table a {
+    color: var(--foreground);
+    text-decoration: none;
+  }
+  .post-body .picks-table a:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+}
