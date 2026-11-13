@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { QUIET_BUTTON } from "@/components/ui/quiet-button";
 import { CheckIcon } from "@/components/ui/check-icon";
+import { DOTTED_RULE } from "@/components/ui/dotted-rule";
 import { Reveal } from "@/components/ui/reveal";
 import { SIGNUP_URL, DEMO_URL, DEMO_CTA_LABEL } from "@/lib/constants";
 
@@ -42,29 +43,29 @@ const TIERS: Tier[] = [
   },
   {
     name: "Starter",
-    price: "$29",
+    price: "$39",
     cadence: "per month",
     perksLabel: "Everything in Free, plus:",
-    perks: ["50 active contacts", "API and MCP connector"],
+    perks: ["50 active contacts", "API and MCP access"],
     cta: "Get started",
     href: SIGNUP_URL,
   },
   {
     name: "Professional",
-    price: "$99",
+    price: "$149",
     cadence: "per month",
     perksLabel: "Everything in Starter, plus:",
-    perks: ["Custom domain", "Assembly badge removed", "Automation builder"],
+    perks: ["Custom domain", "Automation builder", "3 internal users"],
     cta: "Get started",
     href: SIGNUP_URL,
     recommended: true,
   },
   {
     name: "Advanced",
-    price: "$499",
+    price: "$399",
     cadence: "per month",
     perksLabel: "Everything in Professional, plus:",
-    perks: ["Unlimited contacts", "HIPAA BAA", "Enforced MFA"],
+    perks: ["Unlimited contacts", "Full white-labeling", "HIPAA BAA"],
     cta: DEMO_CTA_LABEL,
     href: DEMO_URL,
   },
@@ -199,6 +200,9 @@ export function PortalPricing({
                   as separation — four cards of it is a lot of scrolling past
                   nothing. The steps still rank the same way, they are just
                   one notch down until there are columns to breathe into. */}
+              {/* The /pricing cards' dotted rule, parting name and price
+                  from the list. */}
+              <div aria-hidden className={`mt-5 h-px sm:mt-6 ${DOTTED_RULE}`} />
               <p className="mt-5 text-sm text-muted-foreground sm:mt-6">
                 {tier.perksLabel}
               </p>

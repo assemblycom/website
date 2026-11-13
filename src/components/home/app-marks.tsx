@@ -183,6 +183,18 @@ const SHEET_OPACITY = 0.8;
  */
 const BLUR_TO_DEVIATION = 0.5;
 
+/** A mark's drawing: what APP_MARKS holds per mark, and what other sets (the
+    pricing plan marks) supply in the same shape to share this renderer. */
+export type MarkGlyphDef = {
+  viewBox: string;
+  scale?: number;
+  flipX?: boolean;
+  // `fill` pins one solid layer to its own colour instead of the tint — the
+  // plan marks keep their dots off-black on the glass so they hold contrast
+  // while the square behind takes the tint.
+  layers: readonly { role: "solid" | "sheet"; blur: number; d: string; fill?: string }[];
+};
+
 export function AppMarkGlyph({
   mark,
   tint,
@@ -192,7 +204,19 @@ export function AppMarkGlyph({
   tint: MarkTint;
   className?: string;
 }) {
-  const glyph = APP_MARKS[mark];
+  return <MarkGlyph glyph={APP_MARKS[mark]} tint={tint} className={className} />;
+}
+
+/** The renderer behind AppMarkGlyph, for any glyph built on the same layers. */
+export function MarkGlyph({
+  glyph,
+  tint,
+  className,
+}: {
+  glyph: MarkGlyphDef;
+  tint: MarkTint;
+  className?: string;
+}) {
   const uid = useId().replace(/:/g, "");
   const color = MARK_TINTS[tint];
   const [vx, vy, vw, vh] = glyph.viewBox.split(" ").map(Number);
@@ -242,7 +266,8 @@ export function AppMarkGlyph({
       <g transform={fit}>
         {glyph.layers.map((layer, i) => {
           if (layer.role === "solid") {
-            return <path key={i} d={layer.d} style={{ fill: color }} />;
+            const fill = "fill" in layer && layer.fill ? layer.fill : color;
+            return <path key={i} d={layer.d} style={{ fill }} />;
           }
           // What the sheet frosts is whatever was painted under it.
           const behind = glyph.layers

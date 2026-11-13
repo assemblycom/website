@@ -2,6 +2,8 @@
 
 import { Fragment, useState } from "react";
 import { useAuthState } from "@/lib/use-auth";
+import { SIGNUP_URL, DEMO_URL, DEMO_CTA_LABEL } from "@/lib/constants";
+import { InfoIcon, PLAN_TABLE_BLEED, TOOLTIP } from "@/components/pricing/pricing-plans";
 
 const PLAN_NAMES = [
   "Free",
@@ -49,7 +51,7 @@ const GROUPS: FeatureGroup[] = [
       {
         label: "Cost per additional internal user",
         plain: true,
-        values: [false, false, "+$29 yr / $39 mo", "+$59 yr / $79 mo", false],
+        values: [false, false, "+$39 yr / $49 mo", "+$59 yr / $79 mo", false],
       },
     ],
   },
@@ -59,24 +61,25 @@ const GROUPS: FeatureGroup[] = [
       {
         label: "Build credits / month",
         tooltip: "Credits used when the builder creates or edits an app. Using your live apps never consumes credits.",
-        values: ["75", "200", "200", "200", "Custom"],
+        values: ["50", "200", "500", "500", "Unlimited"],
+      },
+      {
+        label: "Unlimited build credits on yearly",
+        tooltip: "Advanced billed yearly builds without a monthly credit limit, subject to fair use.",
+        values: [false, false, false, true, true],
       },
       {
         label: "Apps included",
-        values: ["3", "5", "5", "5", "Unlimited"],
+        values: ["3", "5", "10", "Unlimited", "Unlimited"],
       },
       {
         label: "Extra apps",
         plain: true,
-        values: [false, "$5/mo each", "$5/mo each", "$5/mo each", "Unlimited"],
+        values: [false, "$8/mo each", "$8/mo each", "Unlimited", "Unlimited"],
       },
       {
-        label: "Add-on build credits",
+        label: "Build credit packs",
         values: [false, true, true, true, true],
-      },
-      {
-        label: "AI model selection",
-        values: [false, false, true, true, true],
       },
     ],
   },
@@ -84,8 +87,7 @@ const GROUPS: FeatureGroup[] = [
     label: "Core Features",
     rows: [
       { label: "CRM", values: [true, true, true, true, true] },
-      { label: "Client experience", values: [true, true, true, true, true] },
-      { label: "MCP connector", values: [true, true, true, true, true] },
+      { label: "Client portal", values: [true, true, true, true, true] },
       {
         label: "Install apps from app library",
         values: [true, true, true, true, true],
@@ -107,7 +109,14 @@ const GROUPS: FeatureGroup[] = [
         label: "File-sharing, intake forms, and tasks",
         values: [true, true, true, true, true],
       },
-      { label: "API, Zapier & Make", values: [false, false, true, true, true] },
+      {
+        label: "API, MCP, Zapier & Make",
+        values: [false, true, true, true, true],
+      },
+      {
+        label: "ChatGPT and Claude apps",
+        values: [false, true, true, true, true],
+      },
       {
         label: "Custom domain for client experience",
         tooltip: "Serve the client experience from your own domain.",
@@ -118,8 +127,8 @@ const GROUPS: FeatureGroup[] = [
         values: [false, false, true, true, true],
       },
       {
-        label: "Remove Assembly badge",
-        values: [false, false, true, true, true],
+        label: "Full white-labeling (remove Assembly badge)",
+        values: [false, false, false, true, true],
       },
       {
         label: "App visibility settings",
@@ -208,8 +217,9 @@ const GROUPS: FeatureGroup[] = [
         values: [false, false, false, true, true],
       },
       {
-        label: "Personalized onboarding",
-        values: [false, false, false, true, true],
+        label: "Onboarding",
+        tooltip: "Included on yearly billing.",
+        values: [false, false, "Personalized", "White-glove", "Implementation service"],
       },
       {
         label: "Shared Slack channel",
@@ -220,16 +230,40 @@ const GROUPS: FeatureGroup[] = [
         values: [false, false, false, false, true],
       },
       {
-        label: "Implementation service",
-        values: [false, false, false, false, true],
-      },
-      {
         label: "Technical advisor",
         values: [false, false, false, false, true],
       },
     ],
   },
 ];
+
+// Each column's call to action, as on the plan cards above, so a reader who
+// decides partway down the table can act without scrolling back up.
+const PLAN_CTAS: { label: string; href: string }[] = [
+  { label: "Get started", href: SIGNUP_URL },
+  { label: "Get started", href: SIGNUP_URL },
+  { label: "Get started", href: SIGNUP_URL },
+  { label: "Get started", href: SIGNUP_URL },
+  { label: DEMO_CTA_LABEL, href: DEMO_URL },
+];
+// The recommended plan takes the filled button, matching its Popular tag.
+const RECOMMENDED_INDEX = 2;
+
+function PlanCta({ i, className = "" }: { i: number; className?: string }) {
+  const cta = PLAN_CTAS[i];
+  return (
+    <a
+      href={cta.href}
+      className={`block rounded-lg border px-3 py-2 text-center text-sm transition-colors ${
+        i === RECOMMENDED_INDEX
+          ? "border-transparent bg-foreground text-background hover:opacity-90"
+          : "border-foreground/20 text-foreground hover:bg-foreground/5"
+      } ${className}`}
+    >
+      {cta.label}
+    </a>
+  );
+}
 
 // Column index of the Free plan — hidden for signed-in visitors, mirroring the
 // pricing cards.
@@ -272,21 +306,6 @@ function CheckIcon() {
   );
 }
 
-function InfoIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
-      <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.25" />
-      <path
-        d="M8 7.25v3.25"
-        stroke="currentColor"
-        strokeWidth="1.25"
-        strokeLinecap="round"
-      />
-      <circle cx="8" cy="5.25" r="0.85" fill="currentColor" />
-    </svg>
-  );
-}
-
 // Feature name with an optional tap/hover tooltip — shared by both layouts.
 function RowLabel({ label, tooltip }: { label: string; tooltip?: string }) {
   return (
@@ -312,7 +331,7 @@ function RowLabel({ label, tooltip }: { label: string; tooltip?: string }) {
       {tooltip && (
         <span
           role="tooltip"
-          className="pointer-events-none absolute left-0 top-full z-30 mt-2 hidden w-60 rounded-lg border border-border bg-background p-3 text-xs leading-relaxed text-muted-foreground shadow-md group-hover:block group-focus-within:block"
+          className={`${TOOLTIP} w-max max-w-60`}
         >
           {tooltip}
         </span>
@@ -414,7 +433,7 @@ export function FeatureComparison() {
 
       {expanded && (
         <>
-          <h2 className="type-h3 mt-14">Compare plans</h2>
+          <h2 className={`type-h3 mt-14 ${PLAN_TABLE_BLEED}`}>Compare plans</h2>
           {/* Filled in dark, like the plan cards above it: on the page's own
               near-black the table was a field of hairlines with nothing behind
               them, and the rows were hard to hold onto while reading across.
@@ -423,7 +442,7 @@ export function FeatureComparison() {
           {/* pb-2, not pb-8: every row carries its own 14px, so a large pad under
               the last one left a band of empty card below "Technical advisor"
               nearly twice the gap between any two rows. */}
-          <div className="mt-8 overflow-clip rounded-2xl border border-border px-6 pb-2 md:px-8 [[data-theme=dark]_&]:border-[#383838] [[data-theme=dark]_&]:bg-card">
+          <div className={`mt-8 ${PLAN_TABLE_BLEED} overflow-clip rounded-2xl border border-border px-6 pb-2 md:px-8 lg:pb-0 [[data-theme=dark]_&]:border-[#383838] [[data-theme=dark]_&]:bg-card`}>
       {/* Mobile: plan tabs + a single-column feature list for the chosen plan. */}
       <div className="lg:hidden">
         {/* Scrollable plan tabs, pinned under the nav so they stay reachable as
@@ -473,7 +492,11 @@ export function FeatureComparison() {
 
       {/* Desktop: full side-by-side table. */}
       <div className="hidden lg:block">
-        <div className="min-w-0">
+        {/* -mb-px with the card's lg:pb-0: the pinned header stops at the
+            bottom of this box, so when it comes to rest at the end of the
+            table its rule lands on the card's own border (and is clipped
+            there) instead of doubling it 8px above. */}
+        <div className="-mb-px min-w-0">
           {/* Sticky plan header, inside the bordered card. Sticks just below the
               floating nav; an opaque bg masks rows scrolling behind it. Negative
               margins cancel the card's padding so the bottom divider runs
@@ -490,10 +513,13 @@ export function FeatureComparison() {
               aria-hidden
               className="pointer-events-none absolute inset-x-0 bottom-full h-20 bg-background [[data-theme=dark]_&]:bg-card"
             />
-            <div className="text-lg font-normal">Features</div>
-            {columns.map(({ name, cls }) => (
-              <div key={name} className={`text-lg font-normal ${cls ?? ""}`}>
-                {name}
+            {/* A quiet column label, a step below the plan names so it
+                doesn't compete with them. */}
+            <div className="pb-2 text-sm text-muted-foreground">Features</div>
+            {columns.map(({ name, i, cls }) => (
+              <div key={name} className={cls}>
+                <div className="text-lg font-normal">{name}</div>
+                <PlanCta i={i} className="mt-3" />
               </div>
             ))}
           </div>
