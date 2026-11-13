@@ -23,11 +23,11 @@ export function PostHero({ post }: { post: GhostPost }) {
     >
       <div className="wide:col-start-2">
         {/* Breadcrumbs, the same "Blog / …" trail the author pages use, with a
-            small Haze mark in front. */}
+            small mark in front in the trail's own grey. */}
         <nav aria-label="Breadcrumb" className="text-sm leading-normal text-muted-foreground">
           <span
             aria-hidden
-            className="mr-2.5 inline-block size-2 rounded-[2px] bg-[var(--guide-haze)]"
+            className="mr-2.5 inline-block size-2 rounded-[2px] bg-muted-foreground"
           />
           <Link href="/blog" className="transition-colors hover:text-foreground">
             Blog
@@ -51,7 +51,7 @@ export function PostHero({ post }: { post: GhostPost }) {
           )}
         </nav>
 
-        <h1 className="type-display mt-4 max-w-[44rem] text-balance font-medium leading-[1.14] tracking-[-0.02em] text-foreground">
+        <h1 className="type-display mt-4 max-w-[44rem] text-balance font-medium leading-[1.04] tracking-[-0.03em] text-foreground lg:text-[3.5rem]">
           {unbreakable(post.title)}
         </h1>
 

@@ -1,5 +1,4 @@
 import { G2Logo } from "@/components/customers/review-marks";
-import { PostCtaDemo } from "@/components/blog/post-cta-demo";
 import { G2_URL, SIGNUP_URL } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import type { PostCta as PostCtaContent } from "@/lib/ghost";
@@ -17,7 +16,7 @@ const G2_REVIEWS = 352;
  * than as a run of body text. It sits in the rail beside the article on a wide
  * screen and at the end of the post where there is no rail.
  *
- * `guide` is the SEO guides' version: a short product demo on top, a slightly
+ * `guide` is the SEO guides' version: an image slot on top, a slightly
  * larger title, tighter padding, and the G2 score under the button as proof.
  */
 export function PostCta({
@@ -42,9 +41,9 @@ export function PostCta({
       )}
     >
       {guide && (
-        <div className="mb-4">
-          <PostCtaDemo />
-        </div>
+        // Holds the place of the product image the card will carry; a moving
+        // demo here pulled the eye off the article it sits beside.
+        <div aria-hidden className="mb-4 aspect-[16/10] rounded-xl bg-border" />
       )}
       {cta.title && (
         <p
@@ -59,7 +58,15 @@ export function PostCta({
         </p>
       )}
       {cta.description && (
-        <p className="mt-2 text-sm leading-6 text-muted-foreground">
+        <p
+          className={cn(
+            "mt-2 text-sm leading-6 text-muted-foreground",
+            // The writer's text runs to any length, and under the demo a long one
+            // pushes the button out of a sticky card's reach; three lines is the
+            // pitch, the post itself is the detail.
+            guide && "line-clamp-3",
+          )}
+        >
           {cta.description}
         </p>
       )}

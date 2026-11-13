@@ -4,11 +4,16 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { articleSchema } from "@/lib/blog-schema";
 import { serializeJsonLd } from "@/lib/json-ld";
+import { reviewsAsCards } from "@/lib/blog-reviews";
 import {
   formatPostDate,
   postContents,
   getPost,
   getPosts,
+  picksAsTable,
+  withHeadingRanks,
+  footnotesAsTableNotes,
+  markParagraphLabels,
   quotesAboveFigures,
   splitFaq,
   withHeadingIds,
@@ -57,7 +62,6 @@ export async function generateMetadata({
   });
 }
 
-
 export default async function BlogPostPage({
   params,
 }: {
@@ -69,7 +73,19 @@ export default async function BlogPostPage({
 
   // Quotes lifted before the ids are assigned, so heading order is read off the
   // markup the page actually renders.
-  const { html, headings } = withHeadingIds(quotesAboveFigures(post.html));
+  const { html: withIds, headings } = withHeadingIds(
+    quotesAboveFigures(post.html),
+  );
+  // Only the guides (posts with a contents rail) carry a ranked picks list.
+  const html = post.showToc
+    ? reviewsAsCards(
+        markParagraphLabels(
+          footnotesAsTableNotes(
+            withHeadingRanks(picksAsTable(withIds, headings)),
+          ),
+        ),
+      )
+    : withIds;
   // Both rails list the same sections under the same labels.
   const contents = postContents(headings, post.title);
   // The trailing FAQ is rendered as the site's accordion rather than as a run
@@ -88,7 +104,7 @@ export default async function BlogPostPage({
   // 40.5rem column (only their cover runs wider).
   const darkThemeCover = DARK_THEME_COVERS[post.slug];
   const imageSizes = showRail
-    ? "(min-width: 1440px) 688px, (min-width: 1024px) 648px, calc(100vw - 3rem)"
+    ? "(min-width: 1024px) 688px, calc(100vw - 3rem)"
     : "(min-width: 696px) 648px, calc(100vw - 3rem)";
 
   return (
@@ -111,7 +127,9 @@ export default async function BlogPostPage({
           this element and have the rest of itself parsed as markup. */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: serializeJsonLd(articleSchema(post)) }}
+        dangerouslySetInnerHTML={{
+          __html: serializeJsonLd(articleSchema(post)),
+        }}
       />
       {/* The guides (SEO posts with a rail) open on their own hero box, spanning
           the full layout above the rails so the contents list and the card
@@ -127,15 +145,16 @@ export default async function BlogPostPage({
               // inside whatever the card left over. The `wide` breakpoint is
               // where the third column fits without taking a pixel off the
               // reading measure; below it the two stack in the
-              // left rail as before. The middle column is 43rem rather than the
-              // 40.5rem it takes on a narrow desktop: the widest comparison
-              // table runs to 662px, and at 40.5rem it was clipped and carrying
-              // a scroll shadow. Spread rather than centred: it puts the
-              // contents on the container's own left edge, in line with the
-              // wordmark above them, and leaves the spare width in the gaps.
+              // left rail as before. The article is 43rem at both: the widest
+              // comparison table runs to 662px, and the measure stays one
+              // width as the window grows instead of jumping at `wide`. On a
+              // narrow desktop it sits 6rem off the rail, so the spare width
+              // falls to the right rather than as an empty band between the
+              // contents and the text. Spread at `wide`: the contents on the
+              // container's own left edge, in line with the wordmark above.
               // Below lg the column takes the same 43rem measure the hero box
               // does on a tablet, centred, instead of running the full width.
-              "mt-8 md:mx-auto md:max-w-[43rem] lg:mx-0 lg:mt-10 lg:max-w-none lg:grid lg:grid-cols-[16rem_minmax(0,40.5rem)] lg:gap-x-[10.5rem] wide:grid-cols-[16rem_43rem_16rem] wide:justify-between wide:gap-x-[4.5rem]"
+              "mt-8 md:mx-auto md:max-w-[43rem] lg:mx-0 lg:mt-10 lg:max-w-none lg:grid lg:grid-cols-[16rem_minmax(0,43rem)] lg:gap-x-24 wide:grid-cols-[16rem_43rem_16rem] wide:justify-between wide:gap-x-[4.5rem]"
             : "mx-auto max-w-[40.5rem]"
         }
       >
@@ -171,68 +190,68 @@ export default async function BlogPostPage({
               instead. The body below stays ranged left — centred paragraphs are
               hard to read at any length. */}
           {!showRail && (
-          <header className="text-center">
-            {/* The date, then the section as one of the site's mono tags — the
+            <header className="text-center">
+              {/* The date, then the section as one of the site's mono tags — the
                 same chip the proposal pages draw. No
                 breadcrumb: the way back to the blog is in the nav and at the
                 foot of the page, and there is no per-section archive to link a
                 name to. */}
-            <div
-              className={cn(
-                "flex flex-wrap items-center gap-3",
-                !showRail && "justify-center",
-              )}
-            >
-              {post.category && (
-                <span className="rounded-sm bg-muted px-2.5 py-1 text-xs uppercase leading-none tracking-[0.06em] text-muted-foreground [font-family:var(--font-diatype-mono),ui-monospace,monospace] [[data-theme=dark]_&]:bg-white/[0.06]">
-                  {post.category}
-                </span>
-              )}
-              <p className="type-body text-muted-foreground">
-                Published {formatPostDate(post.date)}
-              </p>
-            </div>
-            {/* Leading and tracking set here rather than on type-display, which
+              <div
+                className={cn(
+                  "flex flex-wrap items-center gap-3",
+                  !showRail && "justify-center",
+                )}
+              >
+                {post.category && (
+                  <span className="rounded-sm bg-muted px-2.5 py-1 text-xs uppercase leading-none tracking-[0.06em] text-muted-foreground [font-family:var(--font-diatype-mono),ui-monospace,monospace] [[data-theme=dark]_&]:bg-white/[0.06]">
+                    {post.category}
+                  </span>
+                )}
+                <p className="type-body text-muted-foreground">
+                  Published {formatPostDate(post.date)}
+                </p>
+              </div>
+              {/* Leading and tracking set here rather than on type-display, which
                 nine other pages share: at 48px the token's 1.08 leaves a
                 two-line headline looking loose, where every reference blog sets
                 its post title at about 1.0. */}
-            <h1 className="type-display mt-3 text-balance leading-[1.02] tracking-[-0.03em] text-foreground">
-              {unbreakable(post.title)}
-            </h1>
-            {/* The centred announcements go straight from the headline to the
+              <h1 className="type-display mt-3 text-balance leading-[1.02] tracking-[-0.03em] text-foreground">
+                {unbreakable(post.title)}
+              </h1>
+              {/* The centred announcements go straight from the headline to the
                 byline: their titles already carry the news, and a centred deck
                 under a centred title read as a second, competing headline. The
                 excerpt still does its work in the listing and the meta
                 description. */}
-            {showRail && (
-              <p className="type-lead mt-4 text-pretty text-muted-foreground">
-                {post.excerpt}
-              </p>
-            )}
-            <div
-              className={cn(
-                "flex items-center gap-2.5",
-                showRail ? "mt-5" : "mt-6 justify-center",
+              {showRail && (
+                <p className="type-lead mt-4 text-pretty text-muted-foreground">
+                  {post.excerpt}
+                </p>
               )}
-            >
-              {post.authorImage && <AuthorAvatar image={post.authorImage} />}
-              <p className="type-body text-muted-foreground">
-                {/* Only the Content API knows an author's slug, so on the RSS
-                    fallback the byline is plain text rather than a dead link. */}
-                By{" "}
-                {post.authorSlug ? (
-                  <Link
-                    href={`/blog/author/${post.authorSlug}`}
-                    className="transition-colors hover:text-foreground"
-                  >
-                    {post.author}
-                  </Link>
-                ) : (
-                  post.author
+              <div
+                className={cn(
+                  "flex items-center gap-2.5",
+                  showRail ? "mt-5" : "mt-6 justify-center",
                 )}
-              </p>
-            </div>
-          </header>
+              >
+                {post.authorImage && <AuthorAvatar image={post.authorImage} />}
+                <p className="type-body text-muted-foreground">
+                  {/* Only the Content API knows an author's slug, so on the RSS
+                    fallback the byline is plain text rather than a dead link. */}
+                  By{" "}
+                  {post.authorSlug ? (
+                    <Link
+                      href={`/blog/author/${post.authorSlug}`}
+                      className="transition-colors hover:text-foreground"
+                    >
+                      {post.author}
+                    </Link>
+                  ) : (
+                    post.author
+                  )}
+                </p>
+              </div>
+            </header>
           )}
 
           {post.image && (
@@ -353,7 +372,6 @@ export default async function BlogPostPage({
               </div>
             </section>
           )}
-
         </div>
 
         {/* The writer's card in the margin the article was leaving empty, pinned
@@ -384,10 +402,17 @@ export default async function BlogPostPage({
       </div>
 
       {showToc && (
-        <TocMobile headings={contents} bodySelector=".post-body" id="post-toc-mobile" />
+        <TocMobile
+          headings={contents}
+          bodySelector=".post-body"
+          id="post-toc-mobile"
+        />
       )}
       {showRail && (
-        <PostMobileCta heroSelector="[data-post-hero]" endSelector="[data-post-end]" />
+        <PostMobileCta
+          heroSelector="[data-post-hero]"
+          endSelector="[data-post-end]"
+        />
       )}
       <PostLightbox />
     </article>
