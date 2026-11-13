@@ -5673,12 +5673,16 @@ html:not([data-authed]) .auth-only {
   }
   .review-card-rating span {
     margin-left: 0.375rem;
+    color: var(--muted-foreground);
   }
+  /* The review's headline leads the card; who wrote it is attribution, and the
+     Pros and Cons labels step back so the reviewer's words carry the weight. */
   .post-body .review-card .review-card-title {
-    margin-top: 1rem;
+    margin-top: 1.25rem;
     color: var(--foreground);
-    font-size: 1.0625rem; /* 17px */
-    line-height: 1.4;
+    font-size: 1.1875rem; /* 19px */
+    line-height: 1.35;
+    letter-spacing: -0.01em;
   }
   .post-body .review-card .review-card-summary {
     margin-top: 0.375rem;
@@ -5686,9 +5690,27 @@ html:not([data-authed]) .auth-only {
   .post-body .review-card .review-card-section {
     margin-top: 0.875rem;
   }
+  /* A tool's reviews stack as one group rather than as separate blocks. */
+  .post-body-guide > .review-card + .review-card {
+    margin-top: 1rem;
+  }
+  /* Where the reviewer started a new paragraph. */
+  .post-body .review-card p:not(.review-card-label) + p {
+    margin-top: 0.5rem;
+  }
   .post-body .review-card .review-card-label {
-    color: var(--foreground);
+    color: var(--muted-foreground);
     font-size: 0.8125rem;
+  }
+  /* The phrases that carry the review: ink on the grey copy, on a dashed line
+     so they read as marked rather than as links. */
+  .post-body .review-card .review-card-mark {
+    color: var(--foreground);
+    text-decoration-line: underline;
+    text-decoration-style: dashed;
+    text-decoration-color: color-mix(in srgb, var(--foreground) 45%, transparent);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
   }
   .post-body .review-card .review-card-foot {
     margin-top: 1rem;

@@ -10,7 +10,7 @@
  * `.post-body > *` would stop reaching the pieces.
  */
 
-export type ReviewSource = "Capterra" | "G2";
+export type ReviewSource = "Capterra" | "G2" | "Gartner";
 
 export interface Review {
   name: string;
@@ -24,6 +24,12 @@ export interface Review {
   summary?: string;
   pros?: string;
   cons?: string;
+  /**
+   * Phrases in the summary, pros or cons that carry the review's point. Each is
+   * matched as written and underlined, so a reader skimming the card still
+   * picks up what the reviewer liked and what they didn't.
+   */
+  highlights?: string[];
   source: ReviewSource;
 }
 
@@ -38,8 +44,11 @@ function escapeHtml(text: string): string {
 }
 
 function initials(name: string): string {
+  // Lowercase words are skipped so an anonymous reviewer named by role
+  // ("Director of Marketing") gets DM rather than DO.
   return name
     .split(/\s+/)
+    .filter((part) => /^[A-Z]/.test(part))
     .map((part) => part[0])
     .join("")
     .replace(/[^A-Za-z]/g, "")
@@ -48,7 +57,9 @@ function initials(name: string): string {
 }
 
 function stars(rating: number): string {
-  const filled = Math.round(rating);
+  // A half point (4.5) shows as the lower whole star; the number beside the
+  // stars carries the exact rating.
+  const filled = Math.floor(rating);
   return Array.from(
     { length: MAX_RATING },
     (_, i) =>
@@ -56,9 +67,25 @@ function stars(rating: number): string {
   ).join("");
 }
 
-function section(label: string, text?: string): string {
+function withHighlights(text: string, highlights: string[] = []): string {
+  return highlights.reduce((html, phrase) => {
+    const escaped = escapeHtml(phrase);
+    return html.replace(escaped, `<span class="review-card-mark">${escaped}</span>`);
+  }, escapeHtml(text));
+}
+
+/** One `<p>` per paragraph the reviewer wrote, separated by line breaks. */
+function paragraphs(text: string, highlights?: string[], className?: string): string {
+  const attr = className ? ` class="${className}"` : "";
+  return text
+    .split("\n")
+    .map((part) => `<p${attr}>${withHighlights(part, highlights)}</p>`)
+    .join("");
+}
+
+function section(label: string, text?: string, highlights?: string[]): string {
   if (!text) return "";
-  return `<div class="review-card-section"><p class="review-card-label">${label}</p><p>${escapeHtml(text)}</p></div>`;
+  return `<div class="review-card-section"><p class="review-card-label">${label}</p>${paragraphs(text, highlights)}</div>`;
 }
 
 export function reviewCardHtml(review: Review): string {
@@ -68,15 +95,18 @@ export function reviewCardHtml(review: Review): string {
     `<div class="review-card-head">`,
     `<span class="review-card-avatar" aria-hidden="true">${escapeHtml(initials(review.name))}</span>`,
     `<div class="review-card-who"><p class="review-card-name">${escapeHtml(review.name)}</p>`,
-    `<p class="review-card-meta">${review.meta.map(escapeHtml).join(" · ")}</p></div>`,
+    review.meta.length
+      ? `<p class="review-card-meta">${review.meta.map(escapeHtml).join(" · ")}</p>`
+      : "",
+    `</div>`,
     `<p class="review-card-rating" aria-label="${rating} out of ${MAX_RATING}">${stars(review.rating)}<span>${rating}</span></p>`,
     `</div>`,
     `<p class="review-card-title">${escapeHtml(review.title)}</p>`,
     review.summary
-      ? `<p class="review-card-summary">${escapeHtml(review.summary)}</p>`
+      ? paragraphs(review.summary, review.highlights, "review-card-summary")
       : "",
-    section("Pros", review.pros),
-    section("Cons", review.cons),
+    section("Pros", review.pros, review.highlights),
+    section("Cons", review.cons, review.highlights),
     `<figcaption class="review-card-foot">${review.source} review · ${escapeHtml(review.date)}</figcaption>`,
     `</figure>`,
   ].join("");
