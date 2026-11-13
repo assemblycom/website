@@ -212,6 +212,12 @@
   --mock-accent-bg-3: #c4d6ff;
   --mock-accent-bg-4: #dfe8ff;
 
+  /* /pricing: the recommended plan's solid button. Off-black, the foundation
+     of the palette — Haze read as purple there and was taken out.
+     --pricing-brand-on is the text laid on a solid --pricing-brand fill. */
+  --pricing-brand: #101114;
+  --pricing-brand-on: #ffffff;
+
   /* The project tracker's bar colours, taken from the template itself.
      
      Categorical, not a scale: they distinguish one engagement from the next and
@@ -593,6 +599,11 @@
   --mock-accent-bg-2: rgba(125, 164, 255, 0.72);
   --mock-accent-bg-3: rgba(125, 164, 255, 0.46);
   --mock-accent-bg-4: rgba(125, 164, 255, 0.28);
+
+  /* See --pricing-brand in :root. Dark: the light ink, matching --foreground,
+     with the page black laid on it. */
+  --pricing-brand: #d9d9d9;
+  --pricing-brand-on: #0a0a0a;
 
   /* See --mock-gantt-1 in :root. Lifted about eight percent, because a mid-tone
      tuned against a near-white card sits heavy on #212121 — the bar stops

@@ -3,7 +3,7 @@
 import { Fragment, useState } from "react";
 import { useAuthState } from "@/lib/use-auth";
 import { SIGNUP_URL, DEMO_URL, DEMO_CTA_LABEL } from "@/lib/constants";
-import { PLAN_TABLE_BLEED, TOOLTIP } from "@/components/pricing/pricing-plans";
+import { InfoIcon, PLAN_TABLE_BLEED, TOOLTIP } from "@/components/pricing/pricing-plans";
 
 const PLAN_NAMES = [
   "Free",
@@ -302,21 +302,6 @@ function CheckIcon() {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-    </svg>
-  );
-}
-
-function InfoIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
-      <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.25" />
-      <path
-        d="M8 7.25v3.25"
-        stroke="currentColor"
-        strokeWidth="1.25"
-        strokeLinecap="round"
-      />
-      <circle cx="8" cy="5.25" r="0.85" fill="currentColor" />
     </svg>
   );
 }
