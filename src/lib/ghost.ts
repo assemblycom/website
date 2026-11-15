@@ -327,8 +327,14 @@ function promotePastedTableHeaders(html: string): string {
  * table. In a column about 150px wide the parenthetical is what forces the name
  * onto a second line, and it qualifies every figure in the column rather than
  * the name of it. The note carries the writer's own words, so the prices keep
- * the context that they are annual-billing rates.
+ * the context that they are annual-billing rates, and a star on the column's
+ * name points at it, so the line under the table reads as that column's
+ * footnote rather than a stray caption.
  */
+function noteMark(index: number): string {
+  return "*".repeat(index + 1);
+}
+
 function liftHeaderNotes(html: string): string {
   return html.replace(/<table[\s\S]*?<\/table>/gi, (table) => {
     const notes: string[] = [];
@@ -342,14 +348,18 @@ function liftHeaderNotes(html: string): string {
         if (!name.trim()) return match;
         const text = note.trim();
         if (!notes.includes(text)) notes.push(text);
-        return `${open}${name.trim()}${close}`;
+        const mark = noteMark(notes.indexOf(text));
+        return `${open}${name.trim()}<span class="table-note-mark">${mark}</span>${close}`;
       },
     );
 
     if (!notes.length) return table;
     const note = notes
-      .map((text) => text[0].toUpperCase() + text.slice(1))
-      .join(". ");
+      .map(
+        (text, index) =>
+          `<span class="table-note-mark">${noteMark(index)}</span>${text[0].toUpperCase()}${text.slice(1)}`,
+      )
+      .join(" ");
     return `${lifted}<p class="table-note">${note}</p>`;
   });
 }
@@ -963,6 +973,8 @@ export function withImageSizes(html: string, sizes: string): string {
 export interface PostHeading {
   id: string;
   text: string;
+  /** The section's h3s, which the contents rail opens under the current one. */
+  children?: PostHeading[];
 }
 
 // Headings that only announce a summary. Dropping the marker leaves the half
@@ -1175,10 +1187,66 @@ export function postContents(
   });
 }
 
+const TLDR = /\btl;?\s?dr\b/i;
+// What the rail calls a TL;DR once the picks carry the list's own name: the
+// plain word for it, rather than shorthand a reader has to decode.
+const SUMMARY_LABEL = "Summary";
+const RANKED = /^\d+\.\s/;
+// The unranked runners-up a listicle closes its picks on ("Special mentions",
+// "Honorable mentions"), which belong to the list as much as the numbered ones.
+const MENTIONS = /\bmentions\b/i;
+
+/**
+ * The desktop rail's version of a listicle's contents: the ranked picks nested
+ * under the heading that opens them (the "Quick comparison" in front of the
+ * first pick), in page order, instead of standing as siblings of the sections
+ * around them. The picks become that entry's subsections, so their own h3s stay
+ * out of the rail and it keeps to two levels.
+ *
+ * The opening heading and the TL;DR name the same list ("11 best AI app
+ * builders"), so once the group carries that name the TL;DR entry is named
+ * "Summary" instead. Posts
+ * without a ranked run, or with nothing in front of it, come back unchanged.
+ */
+export function groupRankedSections(
+  contents: PostHeading[],
+  headings: PostHeading[],
+  title: string,
+): PostHeading[] {
+  const raw = new Map(headings.map((heading) => [heading.id, heading.text]));
+  const isRanked = (entry: PostHeading) => RANKED.test(raw.get(entry.id) ?? "");
+
+  const firstRaw = headings.findIndex(isRanked);
+  const opener = headings[firstRaw - 1];
+  const first = contents.findIndex(isRanked);
+  if (firstRaw < 1 || first === -1) return contents;
+
+  let end = first;
+  while (end < contents.length && isRanked(contents[end])) end++;
+  if (end < contents.length && MENTIONS.test(raw.get(contents[end].id) ?? ""))
+    end++;
+
+  const group: PostHeading = {
+    id: opener.id,
+    text: headingLabel(opener.text, title),
+    children: contents.slice(first, end).map(({ id, text }) => ({ id, text })),
+  };
+  return [...contents.slice(0, first), group, ...contents.slice(end)].flatMap(
+    (entry) => {
+      if (entry === group) return [entry];
+      if (entry.id === opener.id) return [];
+      if (TLDR.test(raw.get(entry.id) ?? ""))
+        return [{ ...entry, text: SUMMARY_LABEL }];
+      return [entry];
+    },
+  );
+}
+
 /**
  * Ghost's HTML has no ids on its headings, so the contents rail has nothing to
- * point at. This adds one per h2 and returns the list, in one pass so the ids
- * the page renders and the ids the rail links to cannot drift.
+ * point at. This adds one per h2 and h3 and returns the h2s with their h3s
+ * nested, in one pass so the ids the page renders and the ids the rail links
+ * to cannot drift.
  */
 export function withHeadingIds(html: string): {
   html: string;
@@ -1188,8 +1256,8 @@ export function withHeadingIds(html: string): {
   const used = new Set<string>();
 
   const out = html.replace(
-    /<h2([^>]*)>([\s\S]*?)<\/h2>/g,
-    (match, attrs: string, inner: string) => {
+    /<(h[23])([^>]*)>([\s\S]*?)<\/\1>/g,
+    (match, tag: string, attrs: string, inner: string) => {
       // Entities have to be decoded here: the body renders this markup as HTML,
       // but the contents list renders the same text as a plain string, where an
       // undecoded `&#x27;` or `&amp;nbsp;` shows up verbatim.
@@ -1198,22 +1266,29 @@ export function withHeadingIds(html: string): {
         .trim();
       if (!text) return match;
 
-      const base =
+      // A subsection title repeats across sections ("Pricing" under every
+      // tool), so its id carries its section's to stay readable and unique.
+      const parent = tag === "h3" ? headings.at(-1) : undefined;
+      if (tag === "h3" && !parent) return match;
+
+      const slug =
         text
           .toLowerCase()
           .replace(/[^a-z0-9]+/g, "-")
           .replace(/^-|-$/g, "") || "section";
+      const base = parent ? `${parent.id}-${slug}` : slug;
       // Two headings can share a title; the suffix keeps the anchors distinct.
       let id = base;
       for (let n = 2; used.has(id); n++) id = `${base}-${n}`;
       used.add(id);
 
-      headings.push({ id, text });
+      if (parent) (parent.children ??= []).push({ id, text });
+      else headings.push({ id, text });
       // Ghost sometimes ships its own id on a heading. Keeping both would emit
       // two id attributes, and the browser honours the first — so the contents
       // link, which points at ours, would jump nowhere.
       const kept = attrs.replace(/\s*id\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, "");
-      return `<h2 id="${id}"${kept}>${inner}</h2>`;
+      return `<${tag} id="${id}"${kept}>${inner}</${tag}>`;
     },
   );
 
@@ -1225,8 +1300,11 @@ export function withHeadingIds(html: string): {
 // whitespace and Ghost's &nbsp; are allowed inside the closing tag; anything
 // else after the strong means the bold is a lead-in to a sentence and the
 // paragraph is ordinary copy.
+// The bold run may not cross its own closing tag or the paragraph's end:
+// unbounded, a "Pro:" label at the head of one paragraph matched through to the
+// next all-bold line pages later and marked everything between as a lead-in.
 const ALL_BOLD_PARAGRAPH =
-  /<p\b([^>]*)>\s*<(strong|b)\b[^>]*>([\s\S]*?)<\/\2>(?:&nbsp;|\s)*<\/p>/gi;
+  /<p\b([^>]*)>\s*<(strong|b)\b[^>]*>((?:(?!<\/(?:strong|b)>|<\/p>)[\s\S])*)<\/\2>(?:&nbsp;|\s)*<\/p>/gi;
 
 // A spec line — "Framework: Golang/Gin", "Libraries: AmplifyJS, … Deprecating:
 // MaterialUI". A bold label ending in a colon and then the value, which may run
@@ -1352,6 +1430,60 @@ export function footnotesAsTableNotes(html: string): string {
   );
 }
 
+// The detail sections inside a listicle's tool that a reader opens on demand.
+// What the tool does, its price and the verdict stay open; these are the
+// supporting evidence.
+const FOLDED_DETAIL =
+  /^\s*(key features|features|pros (and|&amp;|&) cons|what users say)\s*$/i;
+
+/**
+ * Inside each ranked tool section of a guide, folds the supporting detail
+ * (key features, pros and cons, what users say) into rows a reader opens, the
+ * way OpenAI's posts tuck secondary material behind a disclosure. A tool's
+ * section otherwise ran near 3,000px, with the summary and the verdict buried
+ * between a table and two reviews. The heading moves into the row's summary
+ * with its id, so a link to the section still lands on it.
+ */
+export function foldToolDetails(html: string): string {
+  const h2 = /<h2\b[^>]*>[\s\S]*?<\/h2>/g;
+  const starts: number[] = [];
+  let found: RegExpExecArray | null;
+  while ((found = h2.exec(html))) starts.push(found.index);
+  if (!starts.length) return html;
+
+  let out = html.slice(0, starts[0]);
+  starts.forEach((start, index) => {
+    const section = html.slice(start, starts[index + 1] ?? html.length);
+    const ranked = /^<h2\b[^>]*>\s*<span class="heading-rank">/.test(section);
+    out += ranked ? foldSection(section) : section;
+  });
+  return out;
+}
+
+function foldSection(section: string): string {
+  const h3 = /<h3\b[^>]*>([\s\S]*?)<\/h3>/g;
+  const heads: { index: number; end: number; text: string }[] = [];
+  let found: RegExpExecArray | null;
+  while ((found = h3.exec(section)))
+    heads.push({
+      index: found.index,
+      end: found.index + found[0].length,
+      text: found[1].replace(/<[^>]+>/g, ""),
+    });
+  if (!heads.length) return section;
+
+  let out = section.slice(0, heads[0].index);
+  heads.forEach((head, index) => {
+    const next = heads[index + 1]?.index ?? section.length;
+    const heading = section.slice(head.index, head.end);
+    const body = section.slice(head.end, next);
+    out += FOLDED_DETAIL.test(head.text)
+      ? `<details class="tool-detail"><summary>${heading}</summary><div class="tool-detail-body">${body}</div></details>`
+      : heading + body;
+  });
+  return out;
+}
+
 // Marks the bold label a paragraph opens with ("Pro:", "Best for:") so the guide
 // layout can keep its weight while quieting bold elsewhere in running prose.
 export function markParagraphLabels(html: string): string {
@@ -1361,23 +1493,38 @@ export function markParagraphLabels(html: string): string {
   );
 }
 
-/**
- * A "#" link at the start of each section heading in a guide, so a reader can
- * copy a link to the section they are on. It is drawn in the margin and shown
- * on hover (see .heading-anchor in globals.css). Run after the transforms that
- * read a heading's leading text, since this puts the link in front of it.
- */
-export function withHeadingAnchors(html: string): string {
-  return html.replace(
-    /<(h[23])\b([^>]*\bid="([^"]+)"[^>]*)>/g,
-    (_match, tag: string, attrs: string, id: string) =>
-      `<${tag}${attrs}><a class="heading-anchor" href="#${id}" aria-label="Link to this section">#</a>`,
-  );
-}
-
 // Past this the opening is a real argument in several steps, which keeps its
 // paragraph breaks; under it, the breaks just chop one short opening into lines.
 const LEAD_MERGE_MAX_CHARS = 700;
+
+// A paragraph short enough to be one or two sentences: what the writers split
+// a thought into, rather than a step in an argument.
+const SHORT_PARAGRAPH_CHARS = 240;
+const PLAIN_PARAGRAPH = /<p>(?!\s*<(?:strong|b)\b)((?:(?!<\/p>)[\s\S])*)<\/p>/;
+
+/**
+ * The same join as the opening's, anywhere in a guide: two or more plain
+ * paragraphs in a row, each a sentence or two, become one paragraph while the
+ * result stays short. The writers break after nearly every sentence, which
+ * set a section out as a column of one-liners. Paragraphs that open on a bold
+ * label ("Pro:") or carry a class (a lead-in over a list) are left as they are.
+ */
+export function mergeShortParagraphs(html: string): string {
+  const run = new RegExp(`(?:${PLAIN_PARAGRAPH.source}\\s*){2,}`, "g");
+  return html.replace(run, (block) => {
+    const parts = [...block.matchAll(new RegExp(PLAIN_PARAGRAPH, "g"))].map(
+      (m) => m[1].trim(),
+    );
+    const plain = (part: string) => part.replace(/<[^>]+>/g, "");
+    const short = parts.every(
+      (part) => plain(part).length <= SHORT_PARAGRAPH_CHARS,
+    );
+    const total = plain(parts.join(" ")).length;
+    if (!short || total > LEAD_MERGE_MAX_CHARS) return block;
+    const trailing = /\s*$/.exec(block)?.[0] ?? "";
+    return `<p>${parts.join(" ")}</p>${trailing}`;
+  });
+}
 
 /**
  * The writers open a guide with two or three one-sentence paragraphs (what it
@@ -1387,11 +1534,18 @@ const LEAD_MERGE_MAX_CHARS = 700;
  * the result stays short.
  */
 export function mergeLeadParagraphs(html: string): string {
-  const lead = html.match(/^(\s*(?:<!--[\s\S]*?-->\s*)*)((?:<p>[\s\S]*?<\/p>\s*)+)/);
+  const lead = html.match(
+    /^(\s*(?:<!--[\s\S]*?-->\s*)*)((?:<p>[\s\S]*?<\/p>\s*)+)/,
+  );
   if (!lead) return html;
-  const paragraphs = [...lead[2].matchAll(/<p>([\s\S]*?)<\/p>/g)].map((m) => m[1].trim());
+  const paragraphs = [...lead[2].matchAll(/<p>([\s\S]*?)<\/p>/g)].map((m) =>
+    m[1].trim(),
+  );
   const text = paragraphs.join(" ");
-  if (paragraphs.length < 2 || text.replace(/<[^>]+>/g, "").length > LEAD_MERGE_MAX_CHARS) {
+  if (
+    paragraphs.length < 2 ||
+    text.replace(/<[^>]+>/g, "").length > LEAD_MERGE_MAX_CHARS
+  ) {
     return html;
   }
   return lead[1] + `<p>${text}</p>` + html.slice(lead[0].length);

@@ -5,81 +5,108 @@ import { isOptimizedHost } from "@/lib/image-hosts";
 import { unbreakable } from "@/components/ui/unbreakable";
 
 /**
- * The opening block of a guide post (the SEO articles with a contents rail):
- * breadcrumbs, title, standfirst, and a byline with the date and read time, set
- * in one grey box so the start of the article is easy to find.
- *
- * On a wide screen the box spans the whole layout — contents edge to card edge —
- * on the same three tracks as the grid below, so the text lines up with the
- * article column. Between lg and wide the text starts at the box's left edge;
- * on a phone it drops the grey and closes on a dashed rule instead, so the
- * opening still reads as its own block before the article starts.
+ * The columns a guide post is laid out on from lg: the contents rail, the
+ * article, and the card's rail. Below xl the rails narrow and the article takes
+ * what is left, so the card keeps its place on the right on a laptop. The hero
+ * and the body share them so the title and the article text start on the same
+ * edge, and the breadcrumb sits over the contents list.
  */
-export function PostHero({ post }: { post: GhostPost }) {
+export const GUIDE_COLUMNS =
+  "md:mx-auto md:max-w-[43rem] lg:mx-0 lg:max-w-none lg:grid lg:grid-cols-[12rem_minmax(0,43rem)_13rem] lg:justify-between lg:gap-x-8 xl:grid-cols-[13rem_minmax(0,43rem)_14rem] xl:justify-between xl:gap-x-10 wide:grid-cols-[16rem_43rem_16rem] wide:gap-x-[4.5rem]";
+
+/**
+ * The opening block of a guide post (the SEO articles with a contents rail),
+ * set the way Cursor opens its posts: the breadcrumb alone in the margin
+ * column, and in the article's column the date, the title, the standfirst in
+ * full ink, the byline under it, and the post's cover below that. No box and
+ * no rules, so the start of the article is marked by the type and the image.
+ */
+export function PostHero({
+  post,
+  imageSizes,
+}: {
+  post: GhostPost;
+  /** What the article column gives an image, so the cover picks its file. */
+  imageSizes: string;
+}) {
   const avatar = post.authorImage;
   return (
-    <header
-      data-post-hero
-      className="-mx-6 border-b border-dashed border-border px-6 pb-8 pt-6 md:mx-auto md:border-0 md:bg-[var(--surface)] md:max-w-[43rem] md:rounded-3xl md:px-8 md:pb-9 md:pt-8 lg:max-w-none lg:px-10 wide:grid wide:grid-cols-[16rem_43rem_16rem] wide:justify-between wide:gap-x-[4.5rem] wide:px-8"
-    >
-      <div className="wide:col-start-2">
-        {/* Breadcrumbs, the same "Blog / …" trail the author pages use, with a
-            small mark in front in the trail's own grey. */}
-        <nav aria-label="Breadcrumb" className="text-sm leading-normal text-muted-foreground">
-          <span
-            aria-hidden
-            className="mr-2.5 inline-block size-2 rounded-[2px] bg-muted-foreground"
-          />
-          <Link href="/blog" className="transition-colors hover:text-foreground">
+    <header data-post-hero className="pt-14 md:pt-16 lg:pt-12">
+      <div className={GUIDE_COLUMNS}>
+        {/* Breadcrumbs, the way back to the blog. On a desktop the sans "Blog
+            / …" trail hangs in the contents rail's column, so the title column
+            opens on the date. On a phone there is no margin, so it sits over
+            the title, with the category in ink as the place the post lives. */}
+        <nav
+          aria-label="Breadcrumb"
+          className="mb-4 text-sm leading-6 text-muted-foreground lg:col-start-1 lg:row-start-1 lg:mb-0"
+        >
+          <Link
+            href="/blog"
+            className="transition-colors hover:text-foreground"
+          >
             Blog
           </Link>
           {post.category && (
             <>
               <span aria-hidden className="px-2 text-foreground/30">
-                /
+                <span className="lg:hidden">›</span>
+                <span className="hidden lg:inline">/</span>
               </span>
               {post.categorySlug ? (
                 <Link
                   href={`/blog/tag/${post.categorySlug}`}
-                  className="transition-colors hover:text-foreground"
+                  className="text-foreground transition-colors hover:text-muted-foreground lg:text-muted-foreground lg:hover:text-foreground"
                 >
                   {post.category}
                 </Link>
               ) : (
-                post.category
+                <span className="text-foreground lg:text-muted-foreground">
+                  {post.category}
+                </span>
               )}
             </>
           )}
         </nav>
 
-        <h1 className="type-display mt-4 max-w-[44rem] text-balance font-medium leading-[1.04] tracking-[-0.03em] text-foreground lg:text-[3.5rem]">
-          {unbreakable(post.title)}
-        </h1>
+        <div className="lg:col-start-2 lg:row-start-1">
+          {/* The date leads the title column on a desktop; a phone opens on
+              the breadcrumb and the title instead, to keep the hero short. */}
+          <p className="hidden text-[0.9375rem] leading-6 text-muted-foreground lg:block">
+            <time dateTime={post.date}>{formatPostDate(post.date)}</time>
+          </p>
 
-        <p className="mt-5 max-w-[44rem] text-pretty text-lg leading-[1.55] text-[color-mix(in_srgb,var(--foreground)_78%,var(--background))] md:text-xl md:leading-normal">
-          {post.excerpt}
-        </p>
+          <h1 className="max-w-[44rem] lg:mt-2 text-balance text-[2rem] font-medium leading-[1.15] tracking-[-0.02em] text-foreground md:text-[2.25rem]">
+            {unbreakable(post.title)}
+          </h1>
 
-        <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-3.5">
-          <div className="flex items-center gap-3">
+          <p className="mt-4 max-w-[44rem] text-pretty text-[1.0625rem] leading-[1.55] text-foreground md:text-[1.1875rem]">
+            {post.excerpt}
+          </p>
+
+          <div className="mt-6 flex items-center gap-2.5">
             {avatar &&
               (isOptimizedHost(avatar) ? (
                 <Image
                   src={avatar}
                   alt=""
-                  width={36}
-                  height={36}
-                  className="size-9 shrink-0 rounded-full object-cover"
+                  width={28}
+                  height={28}
+                  className="size-7 shrink-0 rounded-full object-cover"
                 />
               ) : (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={avatar} alt="" className="size-9 shrink-0 rounded-full object-cover" />
+                <img
+                  src={avatar}
+                  alt=""
+                  className="size-7 shrink-0 rounded-full object-cover"
+                />
               ))}
-            <p className="text-[0.9375rem] leading-[1.4] text-foreground">
+            <p className="text-[0.9375rem] leading-[1.4] text-muted-foreground">
               {post.authorSlug ? (
                 <Link
                   href={`/blog/author/${post.authorSlug}`}
-                  className="transition-colors hover:text-muted-foreground"
+                  className="transition-colors hover:text-foreground"
                 >
                   {post.author}
                 </Link>
@@ -87,14 +114,48 @@ export function PostHero({ post }: { post: GhostPost }) {
                 post.author
               )}
             </p>
-          </div>
-          <p className="text-[0.9375rem] leading-[1.4] text-muted-foreground md:border-l md:border-foreground/15 md:pl-6">
-            Published {formatPostDate(post.date)}
-            <span aria-hidden className="px-2">
+            {/* The read time on the byline's own line, after a dot, the way
+                Cursor sets it. */}
+            <span aria-hidden className="-mx-1 text-muted-foreground">
               ·
             </span>
-            {readingTime(post)} min read
-          </p>
+            <p className="text-[0.9375rem] leading-[1.4] text-muted-foreground">
+              {readingTime(post)} min read
+            </p>
+          </div>
+
+          {post.image && (
+            // The writer's cover at the article's width, framed like the
+            // site's other image cards. Its share of the screen is capped so
+            // the first lines of the post still clear the fold on a laptop.
+            <div className="relative mt-10 aspect-[16/9] max-h-[40vh] w-full overflow-hidden rounded-lg border border-border bg-muted [[data-theme=dark]_&]:border-[#262626]">
+              {isOptimizedHost(post.image) ? (
+                <Image
+                  src={post.image}
+                  alt=""
+                  fill
+                  priority
+                  sizes={imageSizes}
+                  className="object-cover"
+                />
+              ) : (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={post.image}
+                  alt=""
+                  className="absolute inset-0 size-full object-cover"
+                />
+              )}
+            </div>
+          )}
+
+          {/* On a phone the hero and the article share one column with no
+              rails to frame them, so a dashed rule marks where the post
+              itself begins. */}
+          <div
+            aria-hidden
+            className="mt-10 border-t border-dashed border-border lg:hidden [[data-theme=dark]_&]:border-[#262626]"
+          />
         </div>
       </div>
     </header>

@@ -7,13 +7,15 @@ import { serializeJsonLd } from "@/lib/json-ld";
 import { reviewsAsCards } from "@/lib/blog-reviews";
 import {
   formatPostDate,
+  groupRankedSections,
   postContents,
   getPost,
   getPosts,
   picksAsTable,
   withHeadingRanks,
-  withHeadingAnchors,
   mergeLeadParagraphs,
+  mergeShortParagraphs,
+  foldToolDetails,
   footnotesAsTableNotes,
   markParagraphLabels,
   quotesAboveFigures,
@@ -27,7 +29,8 @@ import { cn } from "@/lib/utils";
 import { CustomersCta } from "@/components/customers/customers-cta";
 import { AuthorAvatar } from "@/components/blog/post-byline";
 import { PostCta } from "@/components/blog/post-cta";
-import { PostHero } from "@/components/blog/post-hero";
+import { PostFooter } from "@/components/blog/post-footer";
+import { GUIDE_COLUMNS, PostHero } from "@/components/blog/post-hero";
 import { PostMobileCta } from "@/components/blog/post-mobile-cta";
 import { PostLightbox } from "@/components/blog/post-lightbox";
 import { TocMobile } from "@/components/ui/toc-mobile";
@@ -64,14 +67,23 @@ export async function generateMetadata({
   });
 }
 
+const RELATED_POSTS = 4;
+
 export default async function BlogPostPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const post = await getPost(slug);
+  const [post, allPosts] = await Promise.all([getPost(slug), getPosts()]);
   if (!post) notFound();
+  // Four more from the post's own shelf, newest first, topped up from the
+  // newest overall when the shelf is short.
+  const others = allPosts.filter((other) => other.slug !== post.slug);
+  const related = [
+    ...others.filter((other) => other.categorySlug === post.categorySlug),
+    ...others.filter((other) => other.categorySlug !== post.categorySlug),
+  ].slice(0, RELATED_POSTS);
 
   // Quotes lifted before the ids are assigned, so heading order is read off the
   // markup the page actually renders.
@@ -80,21 +92,34 @@ export default async function BlogPostPage({
   );
   // Only the guides (posts with a contents rail) carry a ranked picks list.
   const html = post.showToc
-    ? withHeadingAnchors(
+    ? foldToolDetails(
         reviewsAsCards(
           markParagraphLabels(
             footnotesAsTableNotes(
-              withHeadingRanks(picksAsTable(mergeLeadParagraphs(withIds), headings)),
+              withHeadingRanks(
+                picksAsTable(
+                  mergeShortParagraphs(mergeLeadParagraphs(withIds)),
+                  headings,
+                ),
+              ),
             ),
           ),
         ),
       )
     : withIds;
-  // Both rails list the same sections under the same labels.
-  const contents = postContents(headings, post.title);
   // The trailing FAQ is rendered as the site's accordion rather than as a run
   // of headings; the contents list still points at the heading the page draws.
   const { body, faqs, headingId } = splitFaq(html);
+  // Both rails list the same sections under the same labels. The FAQ's
+  // questions become accordion rows with no headings left to jump to, so it
+  // lists no subsections.
+  const contents = postContents(headings, post.title).map((heading) =>
+    heading.id === headingId ? { ...heading, children: undefined } : heading,
+  );
+  // The desktop rail nests a listicle's picks under the heading that opens
+  // them; the phone's
+  // contents bar keeps the flat list, where a dropdown has no room for levels.
+  const railContents = groupRankedSections(contents, headings, post.title);
   // Ghost sets a no-TOC template on posts whose author didn't want a contents
   // rail — the announcements, in practice; short posts have nothing to list
   // either way.
@@ -119,9 +144,9 @@ export default async function BlogPostPage({
     <article
       className={cn(
         "mx-auto max-w-[1600px] px-6 pb-24 md:px-10 md:pb-32",
-        // The guides open on a grey hero box, which wants to sit close under
-        // the nav; the announcements open on their headline and keep the air.
-        showRail ? "pt-4 md:pt-6" : "pt-12 md:pt-16",
+        // The guides' hero sets its own top space; the announcements open on
+        // their headline and keep the air.
+        showRail ? "" : "pt-12 md:pt-16",
       )}
     >
       {/* Article schema. Next exposes no metadata field for JSON-LD, so it is a
@@ -135,10 +160,10 @@ export default async function BlogPostPage({
           __html: serializeJsonLd(articleSchema(post)),
         }}
       />
-      {/* The guides (SEO posts with a rail) open on their own hero box, spanning
-          the full layout above the rails so the contents list and the card
-          start level with the article. The breadcrumb in it is the way back. */}
-      {showRail && <PostHero post={post} />}
+      {/* The guides (SEO posts with a rail) open on their own hero, on the same
+          columns as the body so the title starts on the article's edge. The
+          breadcrumb in it is the way back. */}
+      {showRail && <PostHero post={post} imageSizes={imageSizes} />}
 
       <div
         className={
@@ -158,37 +183,24 @@ export default async function BlogPostPage({
               // container's own left edge, in line with the wordmark above.
               // Below lg the column takes the same 43rem measure the hero box
               // does on a tablet, centred, instead of running the full width.
-              "mt-8 md:mx-auto md:max-w-[43rem] lg:mx-0 lg:mt-10 lg:max-w-none lg:grid lg:grid-cols-[16rem_minmax(0,43rem)] lg:gap-x-24 wide:grid-cols-[16rem_43rem_16rem] wide:justify-between wide:gap-x-[4.5rem]"
+              `mt-10 md:mt-14 lg:mt-16 ${GUIDE_COLUMNS}`
             : "mx-auto max-w-[40.5rem]"
         }
       >
         {/* The left rail. The column is the grid's, so it stands as tall as the
             article — which is the distance the contents list sticks over. */}
         <div className={showRail ? "hidden lg:block" : "hidden"}>
-          {/* Between lg and wide the card and the contents share this rail. The
-              card (with its demo) is too tall to pin alongside a long list, so
-              it sits at the top and scrolls away, and only the contents stay
-              pinned while reading. Past wide the card has its own column. */}
-          <div className="flex h-full flex-col gap-10">
-            {/* The card the post's own writer authored in Ghost. It says
-                something about THIS post, which the site's closing CTA can't.
-                Only while the two share this rail: past `wide` it has a column
-                of its own on the other side and this copy stands down. Never
-                compressed and never clipped, so its button is always whole. */}
-            {post.cta && (
-              <PostCta cta={post.cta} guide className="shrink-0 wide:hidden" />
-            )}
-
+          <div className="flex h-full flex-col">
             {showToc && (
               <PostToc
-                headings={contents}
+                headings={railContents}
                 className="sticky top-28 max-h-[calc(100vh-9rem)] overflow-y-auto"
               />
             )}
           </div>
         </div>
 
-        <div className="wide:col-start-2 wide:row-start-1">
+        <div className="lg:col-start-2 lg:row-start-1">
           {/* Without a rail the page has no left edge to hang off, so the
               announcements set their opening block on the column's centre line
               instead. The body below stays ranged left — centred paragraphs are
@@ -261,7 +273,7 @@ export default async function BlogPostPage({
           {post.image && !showRail && (
             <div
               className={cn(
-                "relative w-full overflow-hidden rounded-2xl border border-border bg-muted [[data-theme=dark]_&]:border-[#383838]",
+                "relative w-full overflow-hidden rounded-lg border border-border bg-muted [[data-theme=dark]_&]:border-[#383838]",
                 showRail ? "aspect-[16/9]" : "mt-8",
                 // Capped against the WINDOW, not given a shorter ratio of its
                 // own: 16:9 at the reading measure is 365px, which put the first
@@ -383,7 +395,7 @@ export default async function BlogPostPage({
             it. Last in the markup and placed by the grid, so the reading order
             is contents, then post, then the offer. */}
         {post.cta && (
-          <div className="hidden wide:col-start-3 wide:row-start-1 wide:block">
+          <div className="hidden lg:col-start-3 lg:row-start-1 lg:block">
             <PostCta cta={post.cta} guide className="sticky top-28" />
           </div>
         )}
@@ -397,6 +409,8 @@ export default async function BlogPostPage({
       {/* Out of the page's gutters, so the rule runs edge to edge — and out of
           its bottom padding too, which would otherwise sit under the CTA's own
           and leave the button stranded in half a screen of white. */}
+      {showRail && <PostFooter related={related} />}
+
       <div
         data-post-end
         className="-mx-6 -mb-24 mt-20 md:-mx-10 md:-mb-32 md:mt-28"

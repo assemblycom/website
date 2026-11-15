@@ -3245,11 +3245,13 @@ html[data-theme="dark"] .v63-ring-solid::before {
   .post-body > :is(ul, ol) + * {
     margin-top: 2rem;
   }
+  /* Clears the sticky header, and on a phone the contents bar under it, so a
+     jump from the contents list doesn't land the heading behind them. */
+  .post-body :is(h2, h3) {
+    scroll-margin-top: 7rem;
+  }
   .post-body h2 {
     margin-top: 3.5rem;
-    /* Clears the sticky header, and on a phone the contents bar under it, so a
-       jump from the contents list doesn't land the heading behind them. */
-    scroll-margin-top: 7rem;
     color: var(--foreground);
     /* 24px, stepping to 30 at md. It sat at 22 while h3 sat at 18, and pulling
        h3 up to 20 left the two ranks two pixels apart on a phone — the head of
@@ -3396,7 +3398,7 @@ html[data-theme="dark"] .v63-ring-solid::before {
   .post-body figure,
   .post-body img {
     margin-top: 2rem;
-    border-radius: 1rem;
+    border-radius: 0.5rem;
     max-width: 100%;
     height: auto;
   }
@@ -3660,7 +3662,7 @@ html[data-theme="dark"] .v63-ring-solid::before {
     width: 100%;
     aspect-ratio: 16 / 9;
     height: auto;
-    border-radius: 1rem;
+    border-radius: 0.5rem;
     display: block;
   }
   /* Video is sized from its own dimensions instead, and that is load-bearing.
@@ -3671,7 +3673,7 @@ html[data-theme="dark"] .v63-ring-solid::before {
   .post-body video {
     width: 100%;
     height: auto;
-    border-radius: 1rem;
+    border-radius: 0.5rem;
     display: block;
   }
   /* The same outline every image carries. Without it, video and embeds were the
@@ -5471,14 +5473,15 @@ html:not([data-authed]) .auth-only {
    their own look; nothing here reaches them, because every rule hangs off
    .post-body-guide or a component only the guide layout renders. */
 @layer components {
-  /* One pixel over the regular post body at each step: 17px on a phone, 18px
-     from md. Requested by Masse for readability on the long guides. */
+  /* 16px on a phone, 17 from md: between Cursor's 16 and Antimetal's 18,
+     the reading blogs these guides are set against. PP Mori runs large for its
+     size, so 18 read a step bigger than either. */
   .post-body-guide {
-    font-size: 1.0625rem; /* 17px */
+    font-size: 1rem; /* 16px */
   }
   @media (min-width: 48rem) {
     .post-body-guide {
-      font-size: 1.125rem; /* 18px */
+      font-size: 1.0625rem; /* 17px */
     }
   }
   /* Emphasis that reads as emphasis: the site's medium weight (500, the
@@ -5501,14 +5504,14 @@ html:not([data-authed]) .auth-only {
      at 400. The h4 the guides use for "Pricing" / "Special features" sat at body
      size, so only its ink told it from the paragraph under it. A subhead needs
      a clear step over the body to register at a skim, and a clear step under
-     the section title to read as inside it: 32 / 22 over an 18px body. */
+     the section title to read as inside it: 24 / 19 over a 17px body. */
   .post-body-guide h3 {
-    font-size: 1.375rem; /* 22px */
+    font-size: 1.1875rem; /* 19px */
     line-height: 1.25;
     letter-spacing: -0.015em;
   }
   .post-body-guide h4 {
-    font-size: 1.375rem; /* 22px */
+    font-size: 1.1875rem; /* 19px */
     line-height: 1.3;
     letter-spacing: -0.015em;
   }
@@ -5542,6 +5545,12 @@ html:not([data-authed]) .auth-only {
   .post-body-guide > :is(ul, ol) + * {
     margin-top: 1.5rem;
   }
+  /* Paragraphs in a run sit half a gap apart, so a stretch of the writers'
+     one-sentence paragraphs reads as one passage rather than as separate
+     notes; a list keeps the full gap around it as a block of its own. */
+  .post-body-guide > p + p {
+    margin-top: 0.75rem;
+  }
   .post-body-guide li + li {
     margin-top: 0.5rem;
   }
@@ -5556,11 +5565,23 @@ html:not([data-authed]) .auth-only {
   .post-body-guide ol {
     padding-left: 1.5rem;
   }
+  /* A guide's numbers are the ranking itself, so they carry the item's own ink
+     rather than the faded marker the essays use. */
   .post-body-guide ol > li::marker {
+    color: inherit;
     font-variant-numeric: tabular-nums;
   }
   .post-body-guide > figure,
   .post-body-guide > figure + * {
+    margin-top: 2.5rem;
+  }
+  /* A heading keeps its own section break after a list or a picture. The
+     "space after a block" rules above reached it too, so a section opening
+     under a list sat 24px off the copy and read as a line of it, not a title. */
+  .post-body-guide > * + h2 {
+    margin-top: 3.5rem;
+  }
+  .post-body-guide > * + :is(h3, h4) {
     margin-top: 2.5rem;
   }
   /* A heading stands a clear step off its text, the way xAI's posts set it:
@@ -5588,13 +5609,11 @@ html:not([data-authed]) .auth-only {
   .post-body-guide table thead + tbody tr:first-child :is(th, td) {
     padding-top: 0.75rem;
   }
-  /* The column names sit on the page with no band behind them, in ink at the
-     cells' own size: the grey band read as chrome bolted onto the copy, and the
-     small grey labels were lighter than the data under them. The rule beneath
-     is the same hairline every row carries. */
+  /* The column names in ink at the cells' own size, on the site's subtle fill
+     (the shared header band) so the header reads as the table's first row at a
+     glance; the small grey labels used to be lighter than the data under them. */
   .post-body-guide table thead th,
   .post-body-guide table tbody:first-child tr:first-child th {
-    background: transparent;
     color: var(--foreground);
     font-size: inherit;
     vertical-align: bottom;
@@ -5626,14 +5645,100 @@ html:not([data-authed]) .auth-only {
     text-decoration-color: var(--foreground);
   }
 
+  /* A tool's supporting detail, folded (see foldToolDetails in lib/ghost): a
+     run of quiet rows the reader opens, the subhead on the left and a chevron
+     on the right, ruled between so the run reads as one group. Opened, the
+     content keeps the article's own rhythm. */
+  .post-body-guide > .tool-detail {
+    margin-top: 2rem;
+    border-top: 1px solid var(--border);
+  }
+  .post-body-guide > .tool-detail + .tool-detail {
+    margin-top: 0;
+  }
+  .post-body-guide > .tool-detail:not(:has(+ .tool-detail)) {
+    border-bottom: 1px solid var(--border);
+  }
+  [data-theme="dark"] .post-body-guide > .tool-detail {
+    border-color: #262626;
+  }
+  .tool-detail > summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-block: 1rem;
+    cursor: pointer;
+    list-style: none;
+  }
+  .tool-detail > summary::-webkit-details-marker {
+    display: none;
+  }
+  .post-body-guide .tool-detail > summary h3 {
+    margin: 0;
+  }
+  .tool-detail > summary::after {
+    content: "";
+    flex: none;
+    width: 0.5rem;
+    height: 0.5rem;
+    margin-right: 0.25rem;
+    border-right: 1.5px solid var(--muted-foreground);
+    border-bottom: 1.5px solid var(--muted-foreground);
+    transform: translateY(-25%) rotate(45deg);
+    transition: transform 150ms;
+  }
+  .tool-detail[open] > summary::after {
+    transform: translateY(25%) rotate(-135deg);
+  }
+  .tool-detail > summary:hover::after {
+    border-color: var(--foreground);
+  }
+  .tool-detail > summary:focus-visible {
+    outline: 2px solid var(--foreground);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+  /* One rhythm for every row whatever it holds: the table and the review
+     cards carry their own article margins, which opened one row 40px under its
+     title and closed it 64px over the next, so the outer margins drop here. */
+  .tool-detail-body {
+    padding-top: 0.25rem;
+    padding-bottom: 1.5rem;
+  }
+  .post-body .tool-detail-body > :first-child {
+    margin-top: 0;
+  }
+  .post-body .tool-detail-body > :last-child {
+    margin-bottom: 0;
+  }
+  .tool-detail-body > * + * {
+    margin-top: 1.5rem;
+  }
+  .tool-detail-body > .review-card + .review-card {
+    margin-top: 1rem;
+  }
+
   /* A review set as the site's own card (see components/blog/review-card):
-     the page's type and tokens, an outline and no shadow, the stars in ink. */
+     the page's type and tokens, an outline and no shadow, the stars in ink.
+     Sizes sit on the site's ladder (17 title, 16 copy, 14 attribution) and
+     the Pros / Cons labels are the mono kicker the breadcrumb and tags use. */
   .post-body .review-card {
-    padding: 1.25rem 1.5rem 1.25rem;
+    padding: 1.5rem 1.75rem;
     border: 1px solid var(--border);
-    border-radius: 1rem;
-    font-size: 0.9375rem; /* 15px */
+    border-radius: 0.75rem;
+    font-size: 1rem; /* 16px */
     line-height: 1.6;
+  }
+  [data-theme="dark"] .post-body .review-card {
+    border-color: #262626;
+  }
+  /* A phone's column is narrow enough that the desktop inset wrapped the
+     reviewer's role onto three lines. */
+  @media (max-width: 47.99rem) {
+    .post-body .review-card {
+      padding: 1.25rem;
+    }
   }
   .post-body .review-card p {
     margin: 0;
@@ -5652,28 +5757,29 @@ html:not([data-authed]) .auth-only {
     border-radius: 9999px;
     background: var(--muted);
     color: var(--muted-foreground);
-    font-size: 0.8125rem;
+    font-size: 0.875rem;
   }
   .review-card-who {
     min-width: 0;
     flex: 1;
-    line-height: 1.35;
+    line-height: 1.4;
   }
   .post-body .review-card .review-card-name {
     color: var(--foreground);
+    font-size: 0.9375rem;
   }
   .post-body .review-card .review-card-meta {
     color: var(--muted-foreground);
-    font-size: 0.8125rem;
+    font-size: 0.875rem;
   }
   .post-body .review-card .review-card-rating {
     display: flex;
     flex: none;
     align-items: center;
-    gap: 1px;
+    gap: 2px;
     align-self: flex-start;
     color: var(--foreground);
-    font-size: 0.8125rem;
+    font-size: 0.875rem;
   }
   .review-card-rating svg {
     fill: color-mix(in srgb, var(--foreground) 18%, transparent);
@@ -5685,11 +5791,8 @@ html:not([data-authed]) .auth-only {
     margin-left: 0.375rem;
     color: var(--muted-foreground);
   }
-  /* The review's headline leads the card; who wrote it is attribution, and the
-     Pros and Cons labels step back so the reviewer's words carry the weight.
-     The guide sets everything on five sizes (32 section, 22 subhead, 17 body,
-     15 small, 13 label); the headline takes the body size in ink, so it leads
-     on colour against the grey 15px review text rather than on a sixth size. */
+  /* The review's headline leads the card at the body size in ink, so it leads
+     on colour against the grey review text rather than on a size of its own. */
   .post-body .review-card .review-card-title {
     margin-top: 1.25rem;
     color: var(--foreground);
@@ -5697,50 +5800,96 @@ html:not([data-authed]) .auth-only {
     line-height: 1.4;
   }
   .post-body .review-card .review-card-summary {
-    margin-top: 0.375rem;
+    margin-top: 0.5rem;
   }
   .post-body .review-card .review-card-section {
-    margin-top: 0.875rem;
+    margin-top: 1.25rem;
   }
   /* A tool's reviews stack as one group rather than as separate blocks. */
   .post-body-guide > .review-card + .review-card {
     margin-top: 1rem;
   }
   /* Where the reviewer started a new paragraph. */
-  .post-body .review-card p:not(.review-card-label) + p {
+  .post-body .review-card .review-card-text > p + p {
     margin-top: 0.5rem;
   }
   .post-body .review-card .review-card-label {
+    margin-bottom: 0.375rem;
     color: var(--muted-foreground);
-    font-size: 0.8125rem;
+    font-family: var(--font-diatype-mono), ui-monospace, monospace;
+    font-size: 0.75rem;
+    line-height: 1.25rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
   }
-  /* The phrases that carry the review: ink on the grey copy, on a dashed line
-     so they read as marked rather than as links. */
+  /* The phrases that carry the review, in ink on the grey copy. */
   .post-body .review-card .review-card-mark {
     color: var(--foreground);
-    text-decoration-line: underline;
-    text-decoration-style: dashed;
-    text-decoration-color: color-mix(in srgb, var(--foreground) 45%, transparent);
-    text-decoration-thickness: 1px;
-    text-underline-offset: 4px;
+  }
+  /* A long Pros or Cons shows its first three lines, ending on an ellipsis,
+     until the card is opened; the toggle is a checkbox the card reads with
+     :has(). A clean cut rather than a fade, which read as the text washing out. */
+  .post-body .review-card .review-card-text-clamped {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    overflow: hidden;
+  }
+  .post-body .review-card:has(.review-card-toggle:checked) .review-card-text-clamped {
+    display: block;
+    -webkit-line-clamp: unset;
+    line-clamp: none;
   }
   .post-body .review-card .review-card-foot {
-    margin-top: 1rem;
-    padding-top: 0.875rem;
-    border-top: 1px solid var(--border);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem 1rem;
+    margin-top: 1.25rem;
     color: var(--muted-foreground);
-    font-size: 0.8125rem;
+    font-size: 0.875rem;
+  }
+  .post-body .review-card .review-card-more {
+    color: var(--foreground);
+    text-decoration-line: underline;
+    text-decoration-color: color-mix(in srgb, var(--foreground) 30%, transparent);
+    text-underline-offset: 4px;
+    cursor: pointer;
+  }
+  .post-body .review-card .review-card-more:hover {
+    text-decoration-color: var(--foreground);
+  }
+  .post-body .review-card .review-card-more:has(:focus-visible) {
+    outline: 2px solid var(--foreground);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+  .review-card-toggle {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+  .review-card-more-close,
+  .review-card:has(.review-card-toggle:checked) .review-card-more-open {
+    display: none;
+  }
+  .review-card:has(.review-card-toggle:checked) .review-card-more-close {
+    display: inline;
   }
 
   /* A tool's section and the subheads inside it ("Key features") sat 30px over
-     26px, close enough that one tool ran into the next. The section title steps
-     up to a tight 32px and a ranked one (a tool in the list) opens on a wide
+     26px, close enough that one tool ran into the next. The section title sits
+     at 24px, Antimetal's size (32 out-shouted the reading blogs these follow),
+     and a ranked one (a tool in the list) opens on a wide
      band of space, so where 5 ends and 6 begins reads from the page's rhythm
      rather than from a rule; the subheads step down to read as inside it. */
   .post-body-guide > h2 {
-    font-size: 2rem; /* 32px */
-    line-height: 1.12;
-    letter-spacing: -0.03em;
+    font-size: 1.5rem; /* 24px */
+    line-height: 1.2;
+    letter-spacing: -0.02em;
   }
   .post-body-guide > h2:has(> .heading-rank) {
     margin-top: 6rem;
@@ -5752,6 +5901,11 @@ html:not([data-authed]) .auth-only {
   .post-body-guide .table-note {
     padding-inline: 0.75rem;
     font-size: 0.8125rem; /* 13px */
+  }
+  /* The footnote star on a column's name and at the head of its note, in the
+     note's grey so it reads as a pointer rather than part of the name. */
+  .post-body .table-note-mark {
+    color: var(--muted-foreground);
   }
   /* On a phone a comparison table keeps its shape and scrolls sideways (the
      table already runs to the screen's edges and scrolls; see .post-body
@@ -5784,39 +5938,6 @@ html:not([data-authed]) .auth-only {
       padding-inline: 0;
     }
   }
-  /* The rank on a listicle's section ("2. Zendesk") steps back, so the eye
-     lands on the tool's name; the number still orders the list. */
-  .post-body-guide .heading-rank {
-    color: var(--muted-foreground);
-  }
-  /* A link to the section, hung in the margin left of its heading and shown
-     while the heading is pointed at (or the link has focus), so the column's
-     left edge stays the heading's own. */
-  .post-body-guide :is(h2, h3) {
-    position: relative;
-  }
-  .post-body-guide .heading-anchor {
-    position: absolute;
-    left: -1.75rem;
-    color: var(--muted-foreground);
-    text-decoration: none;
-    opacity: 0;
-    transition: opacity 150ms;
-  }
-  .post-body-guide :is(h2, h3):hover .heading-anchor,
-  .post-body-guide .heading-anchor:focus-visible {
-    opacity: 1;
-  }
-  .post-body-guide .heading-anchor:hover {
-    color: var(--foreground);
-  }
-  /* No margin to hang it in on a phone, and no pointer to reveal it. */
-  @media (max-width: 47.99rem) {
-    .post-body-guide .heading-anchor {
-      display: none;
-    }
-  }
-
   /* The G2 review captures include the soft shadow G2 draws under its cards,
      a few pixels of it on every side. The page uses no shadows, so the image is
      clipped to just inside it, on the card's own rounded edge. The captures

@@ -57,7 +57,8 @@ const REVIEWS: Record<string, Review> = {
   "e1c41deb-0f7a-4bae-afea-d3334626fee8": {
     name: "Jake M.",
     meta: ["Gameplay Programmer", "Small-Business (50 or fewer emp.)"],
-    title: "Zendesk Streamlines High-Volume Support with Powerful Automation and Reporting",
+    title:
+      "Zendesk Streamlines High-Volume Support with Powerful Automation and Reporting",
     rating: 5,
     date: "September 12, 2026",
     pros: "Zendesk makes it straightforward to manage a high volume of player support tickets. Its automation, organization tools, and reporting features help our team respond more quickly, stay on top of requests, and ultimately keep players happy.",
@@ -73,7 +74,8 @@ const REVIEWS: Record<string, Review> = {
   "a55e8a86-3ce9-4d38-b0da-3f205c575afb": {
     name: "Michael P.",
     meta: ["Software Development Engineer", "Mid-Market (51-1000 emp.)"],
-    title: "Powerful, Data-Driven Collaboration with Structured Incident Management",
+    title:
+      "Powerful, Data-Driven Collaboration with Structured Incident Management",
     rating: 5,
     date: "September 6, 2026",
     pros: "The collaboration capabilities are useful, and I really like the data-driven approach. It has a structured incident management system, and we can easily track tickets. It offers a practical way to view all tickets in one place, and it's a truly powerful tool with excellent features.",
@@ -88,7 +90,8 @@ const REVIEWS: Record<string, Review> = {
   "4abdd72a-7ab4-4590-a2ad-a3b06aee6482": {
     name: "Rajesh A.",
     meta: ["Project Manager", "Mid-Market (51-1000 emp.)"],
-    title: "Freshdesk Delivers an Easy, Effective Support Experience with Great Value",
+    title:
+      "Freshdesk Delivers an Easy, Effective Support Experience with Great Value",
     rating: 5,
     date: "September 4, 2026",
     pros: "Freshdesk is an excellent customer support and ticketing platform that is both easy to use and highly effective. It offers a great user experience, outstanding customer support, and delivers strong value for money, making it a reliable choice for support teams.",
@@ -104,18 +107,22 @@ const REVIEWS: Record<string, Review> = {
   "038fc1d9-c287-4fdb-84ea-2ea6cd6c50ab": {
     name: "Director of IT Services",
     meta: [],
-    title: "Flexible Integration Options Offered With Support Across Multiple Products",
+    title:
+      "Flexible Integration Options Offered With Support Across Multiple Products",
     rating: 5,
     date: "December 9, 2025",
     summary:
       "Excellent overall, great support and flexibility to integrate with multiple products",
-    highlights: ["great support and flexibility to integrate with multiple products"],
+    highlights: [
+      "great support and flexibility to integrate with multiple products",
+    ],
     source: "Gartner",
   },
   "09386ac3-3f47-4334-a293-83f5fa0ebe22": {
     name: "Director of Marketing",
     meta: [],
-    title: "There Is Strong Potential With Intercom, But Old Fashioned Execution.",
+    title:
+      "There Is Strong Potential With Intercom, But Old Fashioned Execution.",
     rating: 3,
     date: "April 9, 2026",
     summary:
@@ -148,7 +155,8 @@ const REVIEWS: Record<string, Review> = {
   "7af76063-d127-47f7-bd70-fe475ca8566e": {
     name: "Manogna C.",
     meta: ["Software Engineer", "Mid-Market (51-1000 emp.)"],
-    title: "Zoho Desk Streamlines Ticket Management with Powerful Automation and Customization",
+    title:
+      "Zoho Desk Streamlines Ticket Management with Powerful Automation and Customization",
     rating: 5,
     date: "August 25, 2026",
     pros: "I like how easy it is to manage customer support tickets and keep all customer interactions organized in one place. Zoho Desk's customization options, automation features, and integration capabilities also help streamline the support process, making it simpler to stay on top of requests and improve overall team efficiency.",
@@ -210,7 +218,8 @@ const REVIEWS: Record<string, Review> = {
   "38702508-aa47-484a-8da3-5fa7c38042b8": {
     name: "Viviana G.",
     meta: ["CX Manager", "Small-Business (50 or fewer emp.)"],
-    title: "Gorgias Keeps Our Customer Support Organized and Highly Customizable",
+    title:
+      "Gorgias Keeps Our Customer Support Organized and Highly Customizable",
     rating: 5,
     date: "August 19, 2026",
     pros: "I use Gorgias daily to manage our customer experience, and my favorite part is having everything in one place. We handle a high volume of customer questions across email, social media, SMS, and other channels, so being able to see the customer's history and order information directly within the ticket makes a huge difference.\nI also really like how customizable it is. I use macros, tags, rules, reporting, and automations constantly, and we've been able to build workflows around the specific needs of our business instead of having to work around the platform. The reporting is especially helpful for me as a CX manager because I can track things like ticket volume, response times, CSAT, channels, and contact reasons.",
@@ -224,7 +233,8 @@ const REVIEWS: Record<string, Review> = {
   "8c775fc4-0689-4d21-90f8-6b1285d0967a": {
     name: "Kristen M.",
     meta: ["Customer service manager", "Small-Business (50 or fewer emp.)"],
-    title: "Flexible, AI-Powered Support That Streamlines Multichannel Customer Care",
+    title:
+      "Flexible, AI-Powered Support That Streamlines Multichannel Customer Care",
     rating: 5,
     date: "August 17, 2026",
     pros: "What I like best about Gorgias is how much flexibility it gives us to customize the platform around our specific Customer Care needs. We can manage multiple communication channels in one place, create efficient workflows and automations, and use AI Agent to provide customers with faster, more consistent support. It has helped our team work more efficiently while still delivering a personalized customer experience.",
@@ -278,7 +288,8 @@ const REVIEWS: Record<string, Review> = {
       "Information Technology and Services",
       "Small-Business (50 or fewer emp.)",
     ],
-    title: "Ada's Seamless Onboarding, Powerful Playbooks, and Rock-Solid Reliability",
+    title:
+      "Ada's Seamless Onboarding, Powerful Playbooks, and Rock-Solid Reliability",
     rating: 5,
     date: "May 29, 2026",
     pros: "Their team has been great. They have a dedicated onboarding team, the process was very clear, and the drag-and-drop interface saved me hours of setup. They walk you through every step, so you stay in control while still having their support.\nMy favourite feature is the playbooks. You can write out what you want, and the Ada system takes your thoughts and turns them into an effective protocol for your chatbot to use. The Ada software also integrates seamlessly with our support ticketing platform. The UI is clean and simple.\nI look forward to interacting with the Ada system daily, and the reporting helps me objectively review our processes and see what's working. The Ada system has never failed us, and in the two years I've been using it, we've never had any noticeable downtime.\nOur support team has seen an decrease in overall volume year over year despite our business increasing dramatically. This system is worth the cost as it has improved our support teams output.",
@@ -304,6 +315,190 @@ const REVIEWS: Record<string, Review> = {
     ],
     source: "G2",
   },
+  // best-ai-app-builder, 1. Lovable
+  "f72533df-577e-4b68-846e-114dd8cb7bbb": {
+    name: "Ephrem S.",
+    meta: ["Founder & CEO of YEMR", "Small-Business (50 or fewer emp.)"],
+    title: "From Idea to Live Brand With Lovable",
+    rating: 5,
+    date: "May 20, 2026",
+    pros: "Lovable made it possible for me to transform YEMR from an idea into a fully live and visually polished travel platform much faster than I expected. The platform stood out immediately because of how intuitive the UI and overall building experience felt, especially as someone focused heavily on branding, storytelling, and user experience.\nWhat impressed me most was the speed of iteration. I was able to refine layouts, improve mobile responsiveness, adjust luxury design details, and continuously evolve the emotional atmosphere of the site without getting stuck in technical complexity.\nThe AI assistance also helped streamline creativity and decision-making throughout the process. From onboarding to publishing, the experience felt smooth and approachable while still giving enough flexibility to create something that felt truly custom and founder-led.\nSeeing real visitors interact with yemr.ai shortly after launch was an exciting milestone and showed me how quickly ideas can become real products with the right tools.\nLovable helped me focus more on creativity, hospitality, and building a meaningful brand experience instead of spending all my energy on development obstacles.",
+    cons: "Some advanced design refinements and responsive behavior still required iteration and manual tweaking, especially when aiming for a very polished luxury-style user experience.\nCertain UI details like dropdown layering and mobile responsiveness took additional adjustments, but overall the platform made it much faster and easier to bring the vision to life compared to building from scratch.",
+    highlights: [
+      "What impressed me most was the speed of iteration",
+      "still required iteration and manual tweaking",
+    ],
+    source: "G2",
+  },
+  "fbe456a5-9df0-4454-b03d-1e0b52f232e9": {
+    name: "Stanley R.",
+    meta: [
+      "Business Owner",
+      "Computer Software",
+      "Small-Business (50 or fewer emp.)",
+    ],
+    title:
+      "Polished, Intuitive Platform That Makes Modern App Development Fast",
+    rating: 5,
+    date: "March 26, 2026",
+    pros: "What I like best about Lovable is how easy it makes modern app development. The interface is polished, intuitive, and genuinely pleasant to use. It offers a lot of powerful features without feeling overwhelming, and the overall workflow is smooth and efficient. I also like the built-in cloud services, the analytics, and how quickly you can go from idea to working product. It makes development feel accessible, fast, and motivating.",
+    cons: "What I dislike is the cost of intensive use. Lovable is excellent, and I understand that powerful AI development has a real cost behind it, but credits go quickly. For a solo developer, it can become a significant monthly expense if you want to keep building without interruption.",
+    highlights: [
+      "how quickly you can go from idea to working product",
+      "credits go quickly",
+    ],
+    source: "G2",
+  },
+  // 2. Replit
+  "f7188b9e-3817-4dd4-8b29-1c6457a830d3": {
+    name: "Divyarajsinh C.",
+    meta: [
+      "Software Engineer",
+      "Information Technology and Services",
+      "Mid-Market (51-1000 emp.)",
+    ],
+    title:
+      "Simple Browser-Based Coding with AI Chat and Stable Small-Scale App Performance",
+    rating: 4.5,
+    date: "May 11, 2026",
+    pros: "The best thing I like about Replit is its browser-based development environment, where you have the simple AI chat option. You just need to write your prompt in simple human language, and it will work for you! The user interface is very simple for a non-tech guy as well. I created a simple application earlier where I integrated the payment flow using Stripe, and overall, the experience was good. Now, initially, I was using the free version, then the client purchased the paid version, where we have the options for multiple model selection, and if we use it for creating a small-scale application, it would be great. Overall, small-scale app performance was very stable.",
+    cons: "When we’re trying to build a large-scale, enterprise-level application, it can feel stressful. Even when I’m working on a small feature, it sometimes ends up affecting other parts of the app unexpectedly, including functionality we didn’t intend to touch.\nAnother issue I’ve faced is that if there’s a heavy or overly long conversation, it can sometimes crash. When that happens, I have to wait for a while before things start working again.",
+    highlights: [
+      "write your prompt in simple human language",
+      "it can sometimes crash",
+    ],
+    source: "G2",
+  },
+  "fa73a973-f224-481f-b53e-1d88f20db03e": {
+    name: "Ashish J.",
+    meta: [
+      "Associate Systems Analyst",
+      "Information Technology and Services",
+      "Mid-Market (51-1000 emp.)",
+    ],
+    title: "Faster, Beginner-Friendly Development and Deployment in One Place",
+    rating: 4,
+    date: "June 17, 2026",
+    pros: "What I like best about Replit is how quickly it lets me go from an idea to a working app. I don’t have to spend a lot of time setting up a local environment, installing dependencies, configuring hosting, or switching between multiple tools. I can code, preview, debug, use AI assistance, and deploy from one place, which makes the whole workflow feel much smoother.\nThe AI features are also a big plus. Replit usually understands my prompts well, even when I’m asking for multi-step changes like updating the backend, changing the UI, or fixing a bug. It gives useful code suggestions that are relevant to the current project, and it often helps me catch issues faster than I would on my own. The code it generates is not always perfect, but it gives a strong starting point and saves a lot of time.\nI also like the interface. It is clean, easy to navigate, and beginner-friendly, but still powerful enough for real projects. The file structure, preview window, console, secrets, database, and deployment options are all accessible without feeling too complicated.\nAnother thing I appreciate is how Replit supports integrations like GitHub, databases, APIs, environment variables, and deployment workflows. That makes it easier to build apps that are not just demos, but actually functional. The onboarding is also simple, and the docs, community, and AI support help when I get stuck. Overall, Replit makes development faster, more practical, and less intimidating.",
+    cons: "One thing I dislike about Replit is that performance can sometimes feel inconsistent, especially on larger projects or when the workspace has been running for a while. The preview, console, or AI agent can occasionally feel slow, which interrupts the flow when I’m trying to build quickly.\nThe AI is useful, but it still needs review. Sometimes it misunderstands the full context of the app, makes changes in the wrong place, or generates code that works for the immediate task but may not be the cleanest or most scalable long-term solution. For simple fixes it is usually very fast, but for complex backend logic, database workflows, or multi-step UI changes, I still have to carefully check the output.\nDebugging and deployment could also be clearer. When something breaks, the error messages are not always easy to understand, especially for someone who is not deeply technical. More proactive error detection and clearer guidance would make the experience better.\nI also feel pricing can become a concern if you are using AI features, deployments, and larger projects regularly. Replit is very useful overall, but I would like to see more predictable performance, clearer troubleshooting, stronger context awareness from the AI, and better guidance around scaling applications.",
+    highlights: [
+      "code, preview, debug, use AI assistance, and deploy from one place",
+      "performance can sometimes feel inconsistent",
+    ],
+    source: "G2",
+  },
+  // 4. Glide
+  "e4c4a337-f69e-4e1e-a774-28d7e0872aff": {
+    name: "Verified User in Information Technology and Services",
+    meta: ["Small-Business (50 or fewer emp.)"],
+    title:
+      "Build Real Business Apps Fast with Glide—Flexible, No-Code, and Always Improving",
+    rating: 5,
+    date: "May 29, 2026",
+    pros: "What I like best about Glide is that I can build real business applications without traditional coding. I have built my platform TipTrust with Glide and can quickly create pages, workflows, forms, dashboards and user experiences. The platform is flexible, fast to develop with, and constantly improving. For entrepreneurs and small businesses, Glide makes it possible to turn ideas into working applications much faster than traditional software development.",
+    cons: "Glide is a very powerful platform, but some advanced features still require workarounds. Complex relationships, permissions and large data structures can sometimes become difficult to manage. Pricing can also become expensive as an application grows. I would also like to see more native features and fewer situations where external tools are needed. However, the platform continues to improve and new features are added regularly.",
+    highlights: [
+      "build real business applications without traditional coding",
+      "Pricing can also become expensive as an application grows",
+    ],
+    source: "G2",
+  },
+  "48277eda-ae34-4a6d-a7c7-cb1a10deb3fb": {
+    name: "heths f.",
+    meta: ["Supervisor", "Mid-Market (51-1000 emp.)"],
+    title: "Glide: Your Data, Instantly an App",
+    rating: 5,
+    date: "September 29, 2025",
+    pros: "Glide brilliantly removes the single biggest barrier to app creation: writing code. It works like a powerful translator, turning your structured data from Google Sheets, Airtable, or Excel into a fully functional, native-feeling mobile and web app in minutes rather than months.",
+    cons: "Glide’s greatest strength is also its primary constraint: you are building on Glide's architecture, not your own. This \"walled garden\" approach means you can only build what Glide's pre-built components and logic allow, leading to a fundamental lack of flexibility for complex or unique needs.",
+    highlights: [
+      "in minutes rather than months",
+      "a fundamental lack of flexibility for complex or unique needs",
+    ],
+    source: "G2",
+  },
+  // 5. Cursor
+  "175281e1-e6a7-4993-a622-deda92219222": {
+    name: "Harsh D.",
+    meta: [
+      "full-stack software developer",
+      "Small-Business (50 or fewer emp.)",
+    ],
+    title: "Easy to Use, Flexible AI Models That Boost Productivity",
+    rating: 3.5,
+    date: "June 10, 2026",
+    pros: "Cursor has been great to work with. It’s easy to use, and I especially like that it offers different AI models I can switch between depending on what I need in the moment. That flexibility makes it far more useful across different types of tasks. Overall, it feels like a powerful tool that helps me get work done faster and more efficiently.",
+    cons: "One thing I dislike about Cursor is that when using Frontier models, it's not always clear how quickly API limits are being consumed. For larger or more complex tasks, the usage can add up faster than expected, which sometimes interrupts my workflow. I would appreciate more transparency and control over API usage so it's easier to manage limits and avoid unexpected restrictions.",
+    highlights: [
+      "different AI models I can switch between",
+      "it's not always clear how quickly API limits are being consumed",
+    ],
+    source: "G2",
+  },
+  "32b753c3-8b83-49c9-8690-16f41e3330d7": {
+    name: "Anatolii D.",
+    meta: [
+      "AI System Architect & Founder",
+      "Small-Business (50 or fewer emp.)",
+    ],
+    title: "From Vibe Coding to a Real Development Workflow",
+    rating: 5,
+    date: "June 3, 2026",
+    pros: "What I like best about Cursor is that it lets me work with different AI models for different types of tasks instead of relying on one model for everything.\nFor example, I can use stronger models for architecture, backend logic, or complex product decisions, and faster/cheaper models for smaller UI changes, documentation, or simple fixes. This makes the workflow feel much more flexible and practical.\nThe multi-agent style workflow is also very useful. I can separate tasks like implementation, review, testing, and documentation, which helps me move faster while still keeping control over the quality of the project.",
+    cons: "The main downside for me is that heavy users can run into limits quite quickly, especially when working on larger projects with many files, long context, and multiple AI-assisted workflows.\nI would like to see more generous usage limits or clearer options for power users who rely on Cursor every day. For example, larger context windows, more included model usage, and better visibility into remaining usage would make the experience even better.\nOverall, Cursor is very useful, but for intensive development work the limits can sometimes become the main friction point.",
+    highlights: [
+      "The multi-agent style workflow is also very useful",
+      "heavy users can run into limits quite quickly",
+    ],
+    source: "G2",
+  },
+  // 6. Bubble
+  "bd2548a6-2916-4baa-a00b-2343702a74c0": {
+    name: "Murugappan v.",
+    meta: [
+      "Certified Bubble Architect",
+      "Information Technology and Services",
+      "Small-Business (50 or fewer emp.)",
+    ],
+    title: "Build Apps Without Coding Like a Pro",
+    rating: 5,
+    date: "October 7, 2025",
+    pros: "Strong community & resources: templates, tutorials, forums, plugin marketplace help you accelerate development",
+    cons: "Reliability and uptime sometimes arise as concerns in community discussions, although for most everyday projects, these hiccups are manageable.",
+    highlights: [
+      "help you accelerate development",
+      "Reliability and uptime sometimes arise as concerns",
+    ],
+    source: "G2",
+  },
+  "a52874c6-14a5-40a5-8f88-d286ac3eb26a": {
+    name: "David S.",
+    meta: ["President", "Retail"],
+    title: "Once it clicks, it clicks!",
+    rating: 5,
+    date: "November 30, 2025",
+    summary:
+      "My overall experience has been enjoyable and productive. I will continue using for both internal and external applications.",
+    pros: "I came from a programming background and it took a while to wrap my head around some of the conventions used in Bubble. At first glance it seemed like it would have been easier to just code from scratch. HOWEVER, once comfortable with teh interface and logic, it is VERY easy to use. Errors are clearly explained and highlighted. The support documents are very detailed and explain well. The community is very helpful and there are plenty of Bubble employees in the forums to answer questions",
+    cons: "The learning curve at the beginning was fairly steep. The pricing structure is dificult to explain. They use a Work Unit structure to charge and you can be surprised. With that said, the tiers availabel are easy to manage and you can place limits to keep expenses in check.",
+    highlights: [
+      "once comfortable with teh interface and logic, it is VERY easy to use",
+      "The learning curve at the beginning was fairly steep",
+    ],
+    source: "Capterra",
+  },
+};
+
+/**
+ * Captures pasted again in another post under a new filename, pointing at the
+ * review already transcribed rather than a second copy of its text.
+ */
+const SAME_REVIEW: Record<string, string> = {
+  // best-ai-app-builder, 3. Assembly
+  "71ab524e-440d-4b7a-9dcb-2068e7c6090a":
+    "088af774-383b-4ff2-9e51-8421e61e4763",
+  "7ca608ba-b7de-437e-98d1-70a330513448":
+    "103c802c-9963-4419-860f-6b8602e80e12",
 };
 
 const REVIEW_FIGURE =
@@ -325,14 +520,18 @@ export function reviewsAsCards(html: string): string {
   REVIEW_FIGURE.lastIndex = 0;
   while ((found = REVIEW_FIGURE.exec(rest))) {
     const [match, id] = found;
-    const review = REVIEWS[id];
-    out += rest.slice(0, found.index) + (review ? reviewCardHtml(review) : match);
+    const review = REVIEWS[id] ?? REVIEWS[SAME_REVIEW[id]];
+    out +=
+      rest.slice(0, found.index) + (review ? reviewCardHtml(review) : match);
     rest = rest.slice(found.index + match.length);
     REVIEW_FIGURE.lastIndex = 0;
     if (!review) continue;
     // A card can be followed by both its Pro and its Con.
     let quote: RegExpExecArray | null;
-    while ((quote = QUOTE_AFTER.exec(rest)) && quote[0].includes(review.name)) {
+    while (
+      (quote = QUOTE_AFTER.exec(rest)) &&
+      quote[0].toLowerCase().includes(review.name.toLowerCase())
+    ) {
       rest = rest.slice(quote[0].length);
     }
   }

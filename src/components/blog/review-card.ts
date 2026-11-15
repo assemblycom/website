@@ -70,12 +70,19 @@ function stars(rating: number): string {
 function withHighlights(text: string, highlights: string[] = []): string {
   return highlights.reduce((html, phrase) => {
     const escaped = escapeHtml(phrase);
-    return html.replace(escaped, `<span class="review-card-mark">${escaped}</span>`);
+    return html.replace(
+      escaped,
+      `<span class="review-card-mark">${escaped}</span>`,
+    );
   }, escapeHtml(text));
 }
 
 /** One `<p>` per paragraph the reviewer wrote, separated by line breaks. */
-function paragraphs(text: string, highlights?: string[], className?: string): string {
+function paragraphs(
+  text: string,
+  highlights?: string[],
+  className?: string,
+): string {
   const attr = className ? ` class="${className}"` : "";
   return text
     .split("\n")
@@ -83,10 +90,28 @@ function paragraphs(text: string, highlights?: string[], className?: string): st
     .join("");
 }
 
+/**
+ * About three lines of the card's 15px text at the article's width. A Pros or
+ * Cons longer than that is cut to three lines until the reader opens the card,
+ * so a tool's two reviews can be scanned without reading two essays.
+ */
+const CLAMP_CHARS = 280;
+
+function isLong(text?: string): boolean {
+  return Boolean(text && (text.length > CLAMP_CHARS || text.includes("\n")));
+}
+
 function section(label: string, text?: string, highlights?: string[]): string {
   if (!text) return "";
-  return `<div class="review-card-section"><p class="review-card-label">${label}</p>${paragraphs(text, highlights)}</div>`;
+  const clamp = isLong(text) ? " review-card-text-clamped" : "";
+  return `<div class="review-card-section"><p class="review-card-label">${label}</p><div class="review-card-text${clamp}">${paragraphs(text, highlights)}</div></div>`;
 }
+
+// A checkbox in the label holds the open state, so the card opens with no
+// script; the card styles read it with :has().
+const MORE_TOGGLE =
+  `<label class="review-card-more"><input type="checkbox" class="review-card-toggle">` +
+  `<span class="review-card-more-open">Read full review</span><span class="review-card-more-close">Show less</span></label>`;
 
 /**
  * The review site's company-size band ("Mid-Market (51-1000 emp.)") is its own
@@ -116,7 +141,11 @@ export function reviewCardHtml(review: Review): string {
       : "",
     section("Pros", review.pros, review.highlights),
     section("Cons", review.cons, review.highlights),
-    `<figcaption class="review-card-foot">${review.source} review · ${escapeHtml(review.date)}</figcaption>`,
+    // Where it came from on the left and the way to open it on the right, one
+    // row, so the card closes on a single quiet line rather than a rule.
+    `<figcaption class="review-card-foot"><span>${review.source} review · ${escapeHtml(review.date)}</span>`,
+    isLong(review.pros) || isLong(review.cons) ? MORE_TOGGLE : "",
+    `</figcaption>`,
     `</figure>`,
   ].join("");
 }

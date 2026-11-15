@@ -8,6 +8,7 @@ import { useActiveHeading } from "@/components/ui/use-active-heading";
 export interface TocHeading {
   id: string;
   text: string;
+  children?: TocHeading[];
 }
 
 // The nav is 56px tall at rest but settles to 48px once scrolled, and the bar

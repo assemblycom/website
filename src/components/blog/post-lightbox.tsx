@@ -142,7 +142,7 @@ export function PostLightbox() {
           src={shot.src}
           alt={shot.alt}
           onClick={(event) => event.stopPropagation()}
-          className="max-h-full max-w-full rounded-2xl border border-border object-contain [[data-theme=dark]_&]:border-[#383838]"
+          className="max-h-full max-w-full rounded-lg border border-border object-contain [[data-theme=dark]_&]:border-[#383838]"
         />
       </div>
 
