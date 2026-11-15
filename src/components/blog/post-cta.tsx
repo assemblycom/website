@@ -14,9 +14,8 @@ const G2_SCORE = "4.7";
  * than as a run of body text. It sits in the rail beside the article on a wide
  * screen and at the end of the post where there is no rail.
  *
- * `guide` is the SEO guides' version: a bordered card with the image flush to
- * its edges, the button in a strip of its own and the G2 score beneath, sized
- * to sit in the side column.
+ * `guide` is the SEO guides' version: a bordered text card, the button in a
+ * strip of its own and the G2 score beneath, sized to sit in the side column.
  */
 export function PostCta({
   cta,
@@ -57,22 +56,19 @@ export function PostCta({
     );
   }
 
-  // The guides' card is built like a product shot with a button under it: the
-  // image runs to the card's edges and the action follows the pitch on its inset, so the
-  // card reads as "this is the product" before it reads as an ad. The G2 score
-  // sits right under the button as proof for the click it asks for.
+  // The G2 score sits right under the button as proof for the click it asks for.
+  // In dark mode the card lifts onto the surface gray: an outline alone on the
+  // near-black page read as a hole rather than a card, so the fill replaces
+  // the border there.
   return (
     <aside
       className={cn(
-        "flex flex-col overflow-hidden rounded-xl border border-border bg-background [[data-theme=dark]_&]:border-[#262626]",
+        "flex flex-col overflow-hidden rounded-xl border border-border bg-background [[data-theme=dark]_&]:border-transparent [[data-theme=dark]_&]:bg-[var(--surface)]",
         className,
       )}
     >
-      {/* Holds the place of the product image the card will carry; a moving
-          demo here pulled the eye off the article it sits beside. */}
-      <div aria-hidden className="aspect-[4/3] bg-[var(--surface)]" />
       {(cta.title || cta.description) && (
-        <div className="px-4 pb-4 pt-3.5">
+        <div className="px-4 pb-4 pt-4">
           {cta.title && (
             <p className="text-base leading-[1.35] tracking-[-0.006em] text-foreground">
               {cta.title}

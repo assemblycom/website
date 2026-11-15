@@ -5,9 +5,7 @@ import { PostByline } from "./post-byline";
 
 /**
  * The blog's card grid: one outlined block with every post a cell in it, ruled
- * between, title, excerpt and byline. The index and a post's related posts
- * both draw it, so a reader meets the same card at the end of a post as on
- * the shelf it came from.
+ * between, title, excerpt and byline.
  *
  * The rules are the cells' own right and bottom borders, and the outside edge
  * is the container's inset ring. A border on the container would be cut off
@@ -20,7 +18,7 @@ export function PostGrid({
   className,
 }: {
   posts: PostCard[];
-  /** The column count, which differs between the index and a post's end. */
+  /** The column count. */
   className?: string;
 }) {
   return (

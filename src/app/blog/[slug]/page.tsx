@@ -12,6 +12,9 @@ import {
   getPost,
   getPosts,
   picksAsTable,
+  logosInToolTables,
+  markProsAndCons,
+  tldrAsCard,
   withHeadingRanks,
   mergeLeadParagraphs,
   mergeShortParagraphs,
@@ -29,8 +32,8 @@ import { cn } from "@/lib/utils";
 import { CustomersCta } from "@/components/customers/customers-cta";
 import { AuthorAvatar } from "@/components/blog/post-byline";
 import { PostCta } from "@/components/blog/post-cta";
-import { PostFooter } from "@/components/blog/post-footer";
 import { GUIDE_COLUMNS, PostHero } from "@/components/blog/post-hero";
+import { PostCopyLink } from "@/components/blog/post-copy-link";
 import { PostMobileCta } from "@/components/blog/post-mobile-cta";
 import { PostLightbox } from "@/components/blog/post-lightbox";
 import { TocMobile } from "@/components/ui/toc-mobile";
@@ -67,23 +70,14 @@ export async function generateMetadata({
   });
 }
 
-const RELATED_POSTS = 4;
-
 export default async function BlogPostPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const [post, allPosts] = await Promise.all([getPost(slug), getPosts()]);
+  const post = await getPost(slug);
   if (!post) notFound();
-  // Four more from the post's own shelf, newest first, topped up from the
-  // newest overall when the shelf is short.
-  const others = allPosts.filter((other) => other.slug !== post.slug);
-  const related = [
-    ...others.filter((other) => other.categorySlug === post.categorySlug),
-    ...others.filter((other) => other.categorySlug !== post.categorySlug),
-  ].slice(0, RELATED_POSTS);
 
   // Quotes lifted before the ids are assigned, so heading order is read off the
   // markup the page actually renders.
@@ -92,14 +86,20 @@ export default async function BlogPostPage({
   );
   // Only the guides (posts with a contents rail) carry a ranked picks list.
   const html = post.showToc
-    ? foldToolDetails(
-        reviewsAsCards(
-          markParagraphLabels(
-            footnotesAsTableNotes(
-              withHeadingRanks(
-                picksAsTable(
-                  mergeShortParagraphs(mergeLeadParagraphs(withIds)),
-                  headings,
+    ? tldrAsCard(
+        foldToolDetails(
+          reviewsAsCards(
+            markParagraphLabels(
+              footnotesAsTableNotes(
+                markProsAndCons(
+                  logosInToolTables(
+                    withHeadingRanks(
+                      picksAsTable(
+                        mergeShortParagraphs(mergeLeadParagraphs(withIds)),
+                        headings,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -117,9 +117,16 @@ export default async function BlogPostPage({
     heading.id === headingId ? { ...heading, children: undefined } : heading,
   );
   // The desktop rail nests a listicle's picks under the heading that opens
-  // them; the phone's
-  // contents bar keeps the flat list, where a dropdown has no room for levels.
+  // them.
   const railContents = groupRankedSections(contents, headings, post.title);
+  // The phone's bar takes the rail's names (the TL;DR as "Summary", the picks'
+  // opener under its own title) with the picks pulled back out to one level,
+  // so the two never call the same section by different names.
+  const barContents = railContents.flatMap((entry) =>
+    entry.children?.some((child) => contents.some((c) => c.id === child.id))
+      ? [{ id: entry.id, text: entry.text }, ...entry.children]
+      : [entry],
+  );
   // Ghost sets a no-TOC template on posts whose author didn't want a contents
   // rail — the announcements, in practice; short posts have nothing to list
   // either way.
@@ -409,8 +416,6 @@ export default async function BlogPostPage({
       {/* Out of the page's gutters, so the rule runs edge to edge — and out of
           its bottom padding too, which would otherwise sit under the CTA's own
           and leave the button stranded in half a screen of white. */}
-      {showRail && <PostFooter related={related} />}
-
       <div
         data-post-end
         className="-mx-6 -mb-24 mt-20 md:-mx-10 md:-mb-32 md:mt-28"
@@ -421,7 +426,7 @@ export default async function BlogPostPage({
 
       {showToc && (
         <TocMobile
-          headings={contents}
+          headings={barContents}
           bodySelector=".post-body"
           id="post-toc-mobile"
         />
@@ -432,6 +437,7 @@ export default async function BlogPostPage({
           endSelector="[data-post-end]"
         />
       )}
+      <PostCopyLink />
       <PostLightbox />
     </article>
   );

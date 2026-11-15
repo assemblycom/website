@@ -5641,6 +5641,136 @@ html:not([data-authed]) .auth-only {
     color: var(--foreground);
     text-decoration-color: color-mix(in srgb, var(--foreground) 40%, transparent);
   }
+  /* Pros and cons marks (see markProsAndCons in lib/ghost): a check or cross
+     in a small grey rounded square ahead of each point, in the site's neutrals rather
+     than green and red. The check carries ink and the cross the muted grey,
+     so the for column reads a shade stronger without either shouting. */
+  .post-body-guide .pros-cons-point {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.625rem;
+  }
+  .post-body-guide .pros-cons-mark {
+    position: relative;
+    flex: none;
+    width: 1.25rem;
+    height: 1.25rem;
+    /* Centres the square on the first line of a 15px / 1.55 cell. */
+    margin-top: 0.1rem;
+    border-radius: 0.3125rem;
+    background: var(--surface);
+  }
+  .post-body-guide .pros-cons-mark::after {
+    content: "";
+    position: absolute;
+    inset: 0.3125rem;
+    -webkit-mask: var(--pros-cons-glyph) center / contain no-repeat;
+    mask: var(--pros-cons-glyph) center / contain no-repeat;
+  }
+  .post-body-guide .pros-cons-mark[data-side="pro"]::after {
+    --pros-cons-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1.5 5.25 4 7.5l4.5-5'/%3E%3C/svg%3E");
+    background: var(--foreground);
+  }
+  .post-body-guide .pros-cons-mark[data-side="con"]::after {
+    --pros-cons-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round'%3E%3Cpath d='M2.5 2.5l5 5M7.5 2.5l-5 5'/%3E%3C/svg%3E");
+    background: var(--muted-foreground);
+  }
+  /* A guide's TL;DR as one tinted card (see tldrAsCard in lib/ghost), the
+     at-a-glance answer set apart from the prose that follows it. */
+  .post-body-guide .tldr-card {
+    margin-top: 2.5rem;
+    padding: 2rem 2rem 2.25rem;
+    border-radius: 1rem;
+    /* neutral-50, a step lighter than --surface, so the card tints the page
+       rather than blocking it. Dark keeps --surface. */
+    background: #fafafa;
+  }
+  [data-theme="dark"] .post-body-guide .tldr-card {
+    background: var(--surface);
+  }
+  .post-body-guide .tldr-card > :first-child {
+    margin-top: 0;
+  }
+  /* The card's title a step below a section heading, since the card itself
+     already marks the break. */
+  .post-body-guide .tldr-card > h2 {
+    font-size: 1.375rem;
+    line-height: 1.3;
+  }
+  .post-body-guide .tldr-card > ol {
+    margin-top: 1rem;
+  }
+  .post-body-guide .tldr-card > :last-child {
+    margin-bottom: 0;
+  }
+  @media (max-width: 47.99rem) {
+    .post-body-guide .tldr-card {
+      padding: 1.5rem 1.25rem 1.75rem;
+    }
+  }
+  /* Guide tables sit in a rounded outline at every width, so the comparison
+     reads as one object rather than rules floating in the column. The box
+     scrolls, so the radius clips the header fill at the corners, and the
+     outline closes the table, so its last row drops its own hairline. On a
+     phone the table stays inside the gutters instead of running to the
+     screen's edges, scrolling sideways within its outline. */
+  .post-body-guide table:not(.picks-table) {
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    /* No scroll shadow: the outline already shows where the table is cut off,
+       and the shadow read as a smudge against its edge. */
+    background: none;
+  }
+  /* Dark's row rule (#383838) is too bright for an edge; the outline takes
+     the softer gray the dark cards use. */
+  [data-theme="dark"] .post-body-guide table:not(.picks-table) {
+    border-color: #262626;
+  }
+  /* The header band in the same gray as the TL;DR card (#fafafa, neutral-50)
+     in light, and as the guide's cards (--surface) in dark, so each theme has
+     one raised gray on the page. */
+  .post-body-guide table thead th,
+  .post-body-guide table tbody:first-child tr:first-child th {
+    background: #fafafa;
+  }
+  [data-theme="dark"] .post-body-guide table thead th,
+  [data-theme="dark"] .post-body-guide table tbody:first-child tr:first-child th {
+    background: var(--surface);
+  }
+  .post-body-guide table:not(.picks-table) tbody tr:last-child {
+    border-bottom: 0;
+  }
+  @media (max-width: 47.99rem) {
+    .post-body-guide table:not(.picks-table) {
+      width: 100%;
+      margin-left: 0;
+    }
+    .post-body-guide table:not(.picks-table) :is(th, td):first-child {
+      padding-left: 0.75rem;
+    }
+    .post-body-guide table:not(.picks-table) :is(th, td):last-child {
+      padding-right: 0.75rem;
+    }
+  }
+  /* The vendor's mark ahead of its name, inside the link so it clicks through
+     with it. Favicons arrive at every shape, some full-bleed and some on their
+     own tile, so each sits inset in one outlined square and none touch the edge. */
+  .post-body-guide table .tool-logo {
+    display: inline-block;
+    box-sizing: border-box;
+    width: 1.375rem;
+    height: 1.375rem;
+    margin: 0 0.5rem 0 0;
+    padding: 0.25rem;
+    border: 1px solid var(--border);
+    border-radius: 0.375rem;
+    background: #fff;
+    object-fit: contain;
+    vertical-align: -0.375rem;
+    /* The reset's max-width: 100% drops an image out of its cell's minimum
+       width, so the name ran into the next column. */
+    max-width: none;
+  }
   .post-body-guide table:not(.picks-table) td:first-child a:hover {
     text-decoration-color: var(--foreground);
   }
@@ -5711,6 +5841,11 @@ html:not([data-authed]) .auth-only {
   }
   .post-body .tool-detail-body > :last-child {
     margin-bottom: 0;
+  }
+  /* Inside a fold the next row's rule already closes the table, so its own
+     last hairline would draw a second line just above it. */
+  .post-body .tool-detail-body table tbody tr:last-child {
+    border-bottom: 0;
   }
   .tool-detail-body > * + * {
     margin-top: 1.5rem;

@@ -50,8 +50,11 @@ export function PostLightbox() {
     // Nothing to bind on a phone.
     if (!wide) return;
 
+    // Tool logos in the comparison tables are links to the vendor, not shots.
     const found = [
-      ...document.querySelectorAll<HTMLImageElement>(".post-body img"),
+      ...document.querySelectorAll<HTMLImageElement>(
+        ".post-body img:not(.tool-logo)",
+      ),
     ];
 
     const show = (event: MouseEvent) => {

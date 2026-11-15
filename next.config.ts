@@ -24,7 +24,7 @@ const cspDirectives = [
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   // The workspace logo hosts are /powered-by's firm logos, listed so switching
   // this header to enforcing doesn't blank every one. See WORKSPACE_LOGO_HOSTS.
-  `img-src 'self' data: blob: https://images.ctfassets.net https://storage.ghost.io https://images.unsplash.com https://www.googletagmanager.com https://*.google-analytics.com ${WORKSPACE_LOGO_HOSTS.map((host) => `https://${host}`).join(" ")}`,
+  `img-src 'self' data: blob: https://images.ctfassets.net https://storage.ghost.io https://images.unsplash.com https://www.google.com https://*.gstatic.com https://www.googletagmanager.com https://*.google-analytics.com ${WORKSPACE_LOGO_HOSTS.map((host) => `https://${host}`).join(" ")}`,
   "font-src 'self' data: https://fonts.gstatic.com",
   "connect-src 'self' https://*.google-analytics.com https://*.googletagmanager.com https://cdn.segment.com https://api.segment.io https://*.customer.io https://copilotplatforms.chilipiper.com https://graphql.contentful.com https://storage.ghost.io",
   "frame-src 'self' https://www.youtube.com https://copilotplatforms.chilipiper.com",

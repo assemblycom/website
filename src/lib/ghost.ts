@@ -1398,6 +1398,71 @@ export function picksAsTable(html: string, headings: PostHeading[]): string {
   });
 }
 
+// A comparison table names each tool as a link to its homepage, so the row's
+// own link says whose logo to show. Google's favicon service serves any
+// vendor's mark at a known size, where a hand-kept set would miss the next
+// guide's tools.
+const TOOL_LOGO_SIZE = 64;
+const TOOL_NAME_CELL =
+  /<td>(\s*)<a href="(https?:\/\/[^"]+)">([\s\S]*?)<\/a>(\s*)<\/td>/;
+
+function toolLogo(href: string): string {
+  const domain = new URL(href).hostname.replace(/^www\./, "");
+  return `<img class="tool-logo" src="https://www.google.com/s2/favicons?domain=${domain}&amp;sz=${TOOL_LOGO_SIZE}" alt="" width="20" height="20" loading="lazy">`;
+}
+
+export function logosInToolTables(html: string): string {
+  return html.replace(/<table>[\s\S]*?<\/table>/g, (table) =>
+    table.replace(
+      /<tr>(\s*)(<td>[\s\S]*?<\/td>)/g,
+      (row, space: string, cell: string) => {
+        const m = cell.match(TOOL_NAME_CELL);
+        if (!m) return row;
+        const [, before, href, name, after] = m;
+        return `<tr>${space}<td>${before}<a href="${href}">${toolLogo(href)}${name}</a>${after}</td>`;
+      },
+    ),
+  );
+}
+
+// A pros-and-cons table marks each point with a small check or cross, so the
+// two columns read as for and against at a glance rather than as two runs of
+// grey text. The marks are decoration: the column headers already say which
+// side a point is on.
+const PROS_CONS_TABLE =
+  /<table>(\s*<thead>\s*<tr>\s*<th>\s*Pros\s*<\/th>\s*<th>\s*Cons\s*<\/th>[\s\S]*?)<\/table>/gi;
+
+export function markProsAndCons(html: string): string {
+  return html.replace(PROS_CONS_TABLE, (_, inner: string) => {
+    const body = inner.replace(
+      /<tr>(\s*)<td>([\s\S]*?)<\/td>(\s*)<td>([\s\S]*?)<\/td>/g,
+      (_row, a: string, pro: string, b: string, con: string) =>
+        `<tr>${a}${point(pro, "pro")}${b}${point(con, "con")}`,
+    );
+    return `<table class="pros-cons">${body}</table>`;
+  });
+}
+
+function point(content: string, side: "pro" | "con"): string {
+  if (!content.trim()) return "<td></td>";
+  return `<td><div class="pros-cons-point"><span class="pros-cons-mark" data-side="${side}" aria-hidden="true"></span><span>${content.trim()}</span></div></td>`;
+}
+
+// A guide's TL;DR (its heading, the line under it and the ranked list) is set
+// as one tinted card, so the at-a-glance answer reads as a unit apart from the
+// prose around it. Only the first <ol> after the heading joins, and only when
+// no other section starts first.
+const TLDR_SECTION =
+  /(<h2[^>]*>(?:(?!<\/h2>)[\s\S])*?TL;?DR(?:(?!<\/h2>)[\s\S])*<\/h2>)([\s\S]*?<\/ol>)/i;
+
+export function tldrAsCard(html: string): string {
+  return html.replace(TLDR_SECTION, (match, heading: string, body: string) =>
+    /<h[23][\s>]/.test(body)
+      ? match
+      : `<div class="tldr-card">${heading}${body}</div>`,
+  );
+}
+
 // Splits a section heading's rank ("2. Zendesk") into its own span so the guide
 // layout can set the number back from the name. Text-only: the contents rail
 // reads the heading's text, which is unchanged.
