@@ -1360,3 +1360,39 @@ export function markParagraphLabels(html: string): string {
     '<p>$1<strong class="label">$2$3',
   );
 }
+
+/**
+ * A "#" link at the start of each section heading in a guide, so a reader can
+ * copy a link to the section they are on. It is drawn in the margin and shown
+ * on hover (see .heading-anchor in globals.css). Run after the transforms that
+ * read a heading's leading text, since this puts the link in front of it.
+ */
+export function withHeadingAnchors(html: string): string {
+  return html.replace(
+    /<(h[23])\b([^>]*\bid="([^"]+)"[^>]*)>/g,
+    (_match, tag: string, attrs: string, id: string) =>
+      `<${tag}${attrs}><a class="heading-anchor" href="#${id}" aria-label="Link to this section">#</a>`,
+  );
+}
+
+// Past this the opening is a real argument in several steps, which keeps its
+// paragraph breaks; under it, the breaks just chop one short opening into lines.
+const LEAD_MERGE_MAX_CHARS = 700;
+
+/**
+ * The writers open a guide with two or three one-sentence paragraphs (what it
+ * is, how I tested, what follows). Set apart they read as separate notes before
+ * the piece starts; run together they are the one opening paragraph they are.
+ * Only plain paragraphs before the first heading are joined, and only while
+ * the result stays short.
+ */
+export function mergeLeadParagraphs(html: string): string {
+  const lead = html.match(/^(\s*(?:<!--[\s\S]*?-->\s*)*)((?:<p>[\s\S]*?<\/p>\s*)+)/);
+  if (!lead) return html;
+  const paragraphs = [...lead[2].matchAll(/<p>([\s\S]*?)<\/p>/g)].map((m) => m[1].trim());
+  const text = paragraphs.join(" ");
+  if (paragraphs.length < 2 || text.replace(/<[^>]+>/g, "").length > LEAD_MERGE_MAX_CHARS) {
+    return html;
+  }
+  return lead[1] + `<p>${text}</p>` + html.slice(lead[0].length);
+}

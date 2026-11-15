@@ -12,14 +12,15 @@ import { unbreakable } from "@/components/ui/unbreakable";
  * On a wide screen the box spans the whole layout — contents edge to card edge —
  * on the same three tracks as the grid below, so the text lines up with the
  * article column. Between lg and wide the text starts at the box's left edge;
- * on a phone the grey runs full-bleed under the nav.
+ * on a phone it drops the grey and closes on a dashed rule instead, so the
+ * opening still reads as its own block before the article starts.
  */
 export function PostHero({ post }: { post: GhostPost }) {
   const avatar = post.authorImage;
   return (
     <header
       data-post-hero
-      className="-mx-6 bg-[var(--surface)] px-6 pb-7 pt-6 md:mx-auto md:max-w-[43rem] md:rounded-3xl md:px-8 md:pb-9 md:pt-8 lg:max-w-none lg:px-10 wide:grid wide:grid-cols-[16rem_43rem_16rem] wide:justify-between wide:gap-x-[4.5rem] wide:px-8"
+      className="-mx-6 border-b border-dashed border-border px-6 pb-8 pt-6 md:mx-auto md:border-0 md:bg-[var(--surface)] md:max-w-[43rem] md:rounded-3xl md:px-8 md:pb-9 md:pt-8 lg:max-w-none lg:px-10 wide:grid wide:grid-cols-[16rem_43rem_16rem] wide:justify-between wide:gap-x-[4.5rem] wide:px-8"
     >
       <div className="wide:col-start-2">
         {/* Breadcrumbs, the same "Blog / …" trail the author pages use, with a
@@ -66,13 +67,13 @@ export function PostHero({ post }: { post: GhostPost }) {
                 <Image
                   src={avatar}
                   alt=""
-                  width={44}
-                  height={44}
-                  className="size-11 shrink-0 rounded-full object-cover"
+                  width={36}
+                  height={36}
+                  className="size-9 shrink-0 rounded-full object-cover"
                 />
               ) : (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={avatar} alt="" className="size-11 shrink-0 rounded-full object-cover" />
+                <img src={avatar} alt="" className="size-9 shrink-0 rounded-full object-cover" />
               ))}
             <p className="text-[0.9375rem] leading-[1.4] text-foreground">
               {post.authorSlug ? (
@@ -87,9 +88,12 @@ export function PostHero({ post }: { post: GhostPost }) {
               )}
             </p>
           </div>
-          <p className="flex flex-col text-[0.9375rem] leading-[1.4] text-muted-foreground md:border-l md:border-foreground/15 md:pl-6">
-            <span>Published {formatPostDate(post.date)}</span>
-            <span className="text-sm">{readingTime(post)} min read</span>
+          <p className="text-[0.9375rem] leading-[1.4] text-muted-foreground md:border-l md:border-foreground/15 md:pl-6">
+            Published {formatPostDate(post.date)}
+            <span aria-hidden className="px-2">
+              ·
+            </span>
+            {readingTime(post)} min read
           </p>
         </div>
       </div>

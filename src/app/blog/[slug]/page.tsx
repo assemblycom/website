@@ -12,6 +12,8 @@ import {
   getPosts,
   picksAsTable,
   withHeadingRanks,
+  withHeadingAnchors,
+  mergeLeadParagraphs,
   footnotesAsTableNotes,
   markParagraphLabels,
   quotesAboveFigures,
@@ -78,10 +80,12 @@ export default async function BlogPostPage({
   );
   // Only the guides (posts with a contents rail) carry a ranked picks list.
   const html = post.showToc
-    ? reviewsAsCards(
-        markParagraphLabels(
-          footnotesAsTableNotes(
-            withHeadingRanks(picksAsTable(withIds, headings)),
+    ? withHeadingAnchors(
+        reviewsAsCards(
+          markParagraphLabels(
+            footnotesAsTableNotes(
+              withHeadingRanks(picksAsTable(mergeLeadParagraphs(withIds), headings)),
+            ),
           ),
         ),
       )
@@ -254,7 +258,7 @@ export default async function BlogPostPage({
             </header>
           )}
 
-          {post.image && (
+          {post.image && !showRail && (
             <div
               className={cn(
                 "relative w-full overflow-hidden rounded-2xl border border-border bg-muted [[data-theme=dark]_&]:border-[#383838]",
@@ -339,7 +343,7 @@ export default async function BlogPostPage({
           <div
             className={cn(
               "post-body",
-              post.image || !showRail ? "mt-10" : "mt-0",
+              showRail ? "mt-0" : "mt-10",
               showRail ? "post-body-guide" : "post-body-wide",
             )}
             dangerouslySetInnerHTML={{

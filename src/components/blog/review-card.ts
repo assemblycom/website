@@ -88,15 +88,24 @@ function section(label: string, text?: string, highlights?: string[]): string {
   return `<div class="review-card-section"><p class="review-card-label">${label}</p>${paragraphs(text, highlights)}</div>`;
 }
 
+/**
+ * The review site's company-size band ("Mid-Market (51-1000 emp.)") is its own
+ * filter jargon, and the industry turned the header into a run of labels. The
+ * job title alone says who wrote it, so the card opens on the review instead.
+ */
+const COMPANY_SIZE = /\bemp\.\)$/;
+
 export function reviewCardHtml(review: Review): string {
   const rating = review.rating.toFixed(1);
+  const role = review.meta.find((item) => !COMPANY_SIZE.test(item));
+  const meta = role ? [role] : [];
   return [
     `<figure class="review-card">`,
     `<div class="review-card-head">`,
     `<span class="review-card-avatar" aria-hidden="true">${escapeHtml(initials(review.name))}</span>`,
     `<div class="review-card-who"><p class="review-card-name">${escapeHtml(review.name)}</p>`,
-    review.meta.length
-      ? `<p class="review-card-meta">${review.meta.map(escapeHtml).join(" · ")}</p>`
+    meta.length
+      ? `<p class="review-card-meta">${meta.map(escapeHtml).join(" · ")}</p>`
       : "",
     `</div>`,
     `<p class="review-card-rating" aria-label="${rating} out of ${MAX_RATING}">${stars(review.rating)}<span>${rating}</span></p>`,
