@@ -6030,5 +6030,17 @@ html:not([data-authed]) .auth-only {
   .post-body .picks-table a:hover {
     text-decoration: underline;
     text-underline-offset: 0.2em;
+  }  /* The same rounded outline as the guide's other tables, so the picks and the
+     comparisons below them read as one family; the outline closes the table,
+     so its last row drops its hairline. */
+  .post-body-guide .picks-table {
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+  }
+  [data-theme="dark"] .post-body-guide .picks-table {
+    border-color: #262626;
+  }
+  .post-body-guide .picks-table tbody tr:last-child {
+    border-bottom: 0;
   }
 }

@@ -87,9 +87,9 @@ export function PostCta({
             </p>
           )}
           {cta.description && (
-            // Shown whole, never clipped: the pitch is written to run about
-            // two lines (roughly 60 characters) in Ghost.
-            <p className="mt-1.5 text-sm leading-6 text-muted-foreground">
+            // Two lines at most: the pitches in blog-cta-copy are written to
+            // fit, and the cap holds a new post's longer Ghost copy to the same.
+            <p className="mt-1.5 line-clamp-2 text-sm leading-6 text-muted-foreground">
               {cta.description}
             </p>
           )}

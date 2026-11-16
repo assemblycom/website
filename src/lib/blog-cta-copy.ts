@@ -44,6 +44,31 @@ const CTA_DESCRIPTIONS: Record<string, string> = {
   "ai-workflow-automation-tools": "A branded home for your automations.",
   "best-knowledge-base-software":
     "A resource library or AI assistant for clients.",
+  "best-client-portal-software": "Portal, invoicing, messaging, and files.",
+  "caspio-alternatives": "A ready-built portal, billing included.",
+  "client-database-software": "Records, files, and billing in one portal.",
+  "client-reporting-tools": "Embed your reporting tools in one portal.",
+  "coordinatehq-alternatives": "A branded portal with CRM and billing.",
+  "client-relationship-management-software-for-small-business":
+    "CRM, contracts, and billing in one portal.",
+  "custom-dashboard-software": "Custom dashboards in your clients' portal.",
+  "dubsado-alternatives": "Manage every client in one place.",
+  "honeybook-alternatives": "Start, run, and grow your client business.",
+  "agency-management-software": "Start, run, and grow your client business.",
+  "client-dashboard-software": "Start, run, and grow your client business.",
+  "best-client-management-software":
+    "Start, run, and grow your client business.",
+  "quickbooks-online-customer-portal":
+    "Start, run, and grow your client business.",
+  "honeybook-pricing": "Clients, billing, and contracts together.",
+  "dubsado-vs-honeybook": "Clients, billing, and contracts together.",
+  "insurance-agency-software": "Policies, renewals, and invoices together.",
+  "invoicing-software-for-freelancers":
+    "Invoicing, contracts, and a client portal.",
+  "notion-client-portal": "Create and run your own client portal.",
+  "webflow-client-portal": "Create and run your own client portal.",
+  "seo-agency-software": "Clients, SEO reports, and billing together.",
+  "seo-reporting-dashboard": "Your SEO dashboards in a client portal.",
 };
 
 /** The post's card with its two-line pitch, when one is written here. */

@@ -487,6 +487,452 @@ const REVIEWS: Record<string, Review> = {
     ],
     source: "Capterra",
   },
+  // ai-contract-management-software, 1. Workday CLM
+  "86d963e2-3710-475b-8705-5bfc53832e13": {
+    name: "Ellie N.",
+    meta: ["IT professional", "Small-Business (50 or fewer emp.)"],
+    title: "Manages Application Process",
+    rating: 4.5,
+    date: "May 1, 2026",
+    pros: "I find Workday CLM, powered by Evisort, easy to use and appreciate that it's easy to access the application process in one place. I'm also able to see and trace the progress of my application, which is really helpful. The initial setup is very easy since you just follow what you see.",
+    cons: "At the moment I don't have issues with it.",
+    highlights: ["easy to access the application process in one place"],
+    source: "G2",
+  },
+  "c18cccd4-71ac-4c45-b409-924496aa8b8e": {
+    name: "Pratik kadam K.",
+    meta: [
+      "Clinical Data Specialist",
+      "Biotechnology",
+      "Mid-Market (51-1000 emp.)",
+    ],
+    title: "Powerful Dashboards and Clear Contract Status Tracking",
+    rating: 5,
+    date: "May 29, 2026",
+    pros: "The best thing i like about Workday CLM Powered by Evisort is it's dashboard capabilities and contract status and cycle",
+    cons: "One thing I dislike about Workday CLM powered by Evisort is that it can feel complex for new users. Some tasks require multiple clicks, and customizing dashboards or workflows may take time to learn",
+    highlights: [
+      "it's dashboard capabilities and contract status and cycle",
+      "it can feel complex for new users",
+    ],
+    source: "G2",
+  },
+  // 2. Conga CLM
+  "35adba49-f3b1-4cff-9c22-259e9e8e46d1": {
+    name: "Eric C.",
+    meta: [
+      "VP and Customer Success Officer",
+      "Small-Business (50 or fewer emp.)",
+    ],
+    title:
+      "Flexible Templates and Seamless Salesforce Integration with Helpful Support",
+    rating: 4.5,
+    date: "July 21, 2026",
+    pros: "Conga offers a great deal of flexibility and this allows us to build many document templates that may be used by the team in a variety of quoting scenarios and proposal situations. This makes life much easier to work in Salesforce. The integration with Salesforce was straightforward and Conga support has always been responsive and helpful.",
+    cons: "There is still a mix of the old and new interfaces.",
+    highlights: [
+      "The integration with Salesforce was straightforward",
+      "There is still a mix of the old and new interfaces.",
+    ],
+    source: "G2",
+  },
+  "44f774ae-91de-4839-b056-809b9240c37d": {
+    name: "Jenil V.",
+    meta: [
+      "Employee",
+      "Information Technology and Services",
+      "Small-Business (50 or fewer emp.)",
+    ],
+    title: "Great Tool for Contract Management",
+    rating: 3.5,
+    date: "June 19, 2026",
+    pros: "it is seamless Salesforce integration and easy contract management process",
+    cons: "some features can feel complex for new users and take more time to learn",
+    highlights: [
+      "seamless Salesforce integration and easy contract management process",
+      "some features can feel complex for new users",
+    ],
+    source: "G2",
+  },
+  // 3. Ironclad
+  "da169548-8c1c-4ae9-afc1-ee3de308a08c": {
+    name: "Brittney E.",
+    meta: [
+      "Founder",
+      "Recreational Facilities and Services",
+      "Small-Business (50 or fewer emp.)",
+    ],
+    title:
+      "Ironclad Makes Contract Management Easy, Organized, and Time-Saving",
+    rating: 4,
+    date: "August 25, 2026",
+    pros: "I like that Ironclad saves me time and money without requiring me to be a contract expert. The platform is easy to use, and I can quickly track contracts, make changes, and keep up with different parts of agreements with clients or vendors. It makes the contract process feel much more manageable and organized.",
+    cons: "Honestly, I don’t have anything I dislike about Ironclad so far. I’ve been using it for about a month, and it has done exactly what I need it to do. It’s been easy to use, straightforward to navigate, and I haven’t run into any issues that have negatively impacted my experience.",
+    highlights: [
+      "saves me time and money without requiring me to be a contract expert",
+    ],
+    source: "G2",
+  },
+  "f441b25d-b4b1-4d86-8c0a-c791115c08d2": {
+    name: "Matt P.",
+    meta: ["BDR", "Mid-Market (51-1000 emp.)"],
+    title: "Ironclad Makes End-to-End Contract Management Easy and Centralized",
+    rating: 4.5,
+    date: "August 27, 2026",
+    pros: "What I like best about Ironclad is how easy it makes managing contracts from start to finish. The workflows are intuitive, approvals are straightforward, and having everything centralized makes it much easier to track contract status and keep deals moving.",
+    cons: "The biggest downside is that there can be a bit of a learning curve when first getting familiar with the platform and its workflows. Some processes can also feel like they require more clicks than necessary, but overall it hasn’t been a major issue.",
+    highlights: [
+      "how easy it makes managing contracts from start to finish",
+      "there can be a bit of a learning curve",
+    ],
+    source: "G2",
+  },
+  // 4. Icertis
+  "de3d8386-aed2-4f0b-b02f-20e894e2cd41": {
+    name: "Manager",
+    meta: [],
+    title: "Working Through Our Maturity Path With Icertis",
+    rating: 4,
+    date: "August 24, 2026",
+    summary:
+      "We are expanding our implementation of Icertis to better utilize the product's capabilities, through this we have really appreciated Icertis support from our account manager to the IROS support product we have subscribed too. We are getting excellent value from our Icertis support as we work on expanding our utilization of the product to solve contracting needs across our enterprise. As an organization we still have a long ways to go along our own maturity curve but the product is helping with our direction taken. We do struggle at times with certain limitations in how contracts, clauses, and templates are set up being rigid and difficult to reverse course if we have interest in revising previous decisions. Issues like the rigidity around the use of a descriptive name for a contract type, template or clause can sometimes lead to our finding we have painted ourselves into a corner.",
+    highlights: [
+      "We are getting excellent value from our Icertis support",
+      "being rigid and difficult to reverse course",
+    ],
+    source: "Gartner",
+  },
+  "e36bf076-daba-4335-95f9-800b362fb82e": {
+    name: "Legal and Compliance Associate",
+    meta: [],
+    title:
+      "Powerful Enterprise CLM That Requires Strong Legal Ops Ownership To Succeed",
+    rating: 4,
+    date: "February 25, 2026",
+    summary:
+      'Icertis is a highly configurable, enterprise-grade CLM platform that supports complex contract workflows and cross-functional collaboration. When owned and governed effectively, it provides strong value across contract creation, review, execution, and reporting. The platform is particularly well-suited for organizations with mature Legal Operations functions, defined processes, and clear system ownership. Icertis offers deep flexibility, but that flexibility comes with implementation and adoption complexity that should not be underestimated. Our experience improved significantly once workflows were optimized, stakeholders were aligned on intake and review models, and ongoing system administration and training were optimized. Organizations considering Icertis should plan for sustained operational ownership rather than a "set it and forget it" deployment.',
+    highlights: [
+      "it provides strong value across contract creation, review, execution, and reporting",
+      "implementation and adoption complexity that should not be underestimated",
+    ],
+    source: "Gartner",
+  },
+  // 5. Juro
+  "3495c19d-de30-4f99-ba9d-d498de284f1e": {
+    name: "Vira A.",
+    meta: ["Client Services Director", "Small-Business (50 or fewer emp.)"],
+    title: "A Modern Solution for Contract Automation",
+    rating: 5,
+    date: "July 27, 2026",
+    pros: "Juro has become an indispensable part of our daily work with both clients and employees. I really appreciate how efficient and intuitive it is. It allows us to store contract templates, collaborate through internal comments with our team, and communicate externally by responding to questions from our clients and partners.\nUsing templates with smart fields significantly streamlines the contract creation process. The fields are populated automatically, and require very small to no adjustments, making the preparation of new contracts faster and more efficient than ever before.",
+    cons: "The only downside of the application is its relatively high price. However, considering the wide range of built-in features and the efficiency it brings to our daily work, I believe it provides excellent value and is well worth the investment.",
+    highlights: [
+      "smart fields significantly streamlines the contract creation process",
+      "its relatively high price",
+    ],
+    source: "G2",
+  },
+  "4f683561-a8fa-45d2-8cbb-0952fc4ec6bd": {
+    name: "Celeste .",
+    meta: ["Paralegal", "Mid-Market (51-1000 emp.)"],
+    title:
+      "End-to-End Contracting in One Place with Helpful Templates and Smartfields",
+    rating: 4,
+    date: "July 8, 2026",
+    pros: "Having the entire contract process in one place has been really helpful. We can draft, get approvals, send documents for signature, and store the final version without constantly switching between Word, email, and a separate signing tool.\nThe templates and smartfields are useful as well. The commercial team can manage standard agreements on their own, so the Legal Team only gets pulled in when something genuinely needs legal input.",
+    cons: "A few things could be better:\n- You can't upload a signed PDF over a template once it's been through negotiation, which is frustrating when a deal gets signed outside the platform and you just want the executed copy on file.\n- Formatting sometimes breaks, so documents need tidying up more often than they should.\n- The Word integration isn't quite there yet - it works, but not seamlessly.\n- I've found the AI assistant (Operator) unreliable, so I don't really trust it for anything I can't double-check myself.",
+    highlights: [
+      "Having the entire contract process in one place has been really helpful.",
+      "Formatting sometimes breaks",
+    ],
+    source: "G2",
+  },
+  // ai-contract-review-software, 1. LegalOn
+  "5ca98a6b-e244-4cd5-aa72-231295720d02": {
+    name: "Christopher M.",
+    meta: ["Member", "Small-Business (50 or fewer emp.)"],
+    title:
+      "An ethical government aligned regulatory strategic force multiplier for businesses.",
+    rating: 5,
+    date: "April 24, 2026",
+    pros: "LegalOn has been a game-changer for Magnus Diagnostics Laboratories. As a small business operating in government contracting and life sciences diagnostics, LegalOn gave us enterprise-grade contract intelligence that allowed us to compete and win at the highest levels. Leveraging the platform, we secured milestone strategic partnerships with publicly traded large prime contractors, gained positioning within a global Special Procurement vehicle, and successfully supported critical systems positioning briefings. The AI-driven contract review, precise redlining, and risk flagging capabilities leveled the playing field for us in ways that would have otherwise required a full in-house legal team. We are deeply grateful for what LegalOn has enabled for our organization.",
+    cons: "Minimal dislikes to report. Broader native integrations with federal procurement and contract management systems would further enhance an already exceptional platform. Overall, LegalOn consistently exceeds expectations.",
+    highlights: [
+      "precise redlining, and risk flagging capabilities leveled the playing field",
+      "Broader native integrations with federal procurement",
+    ],
+    source: "G2",
+  },
+  "c6e65f61-fb2c-4f24-b15e-ef84ebca075a": {
+    name: "Ash B.",
+    meta: ["Compliance & Risk Manager", "Mid-Market (51-1000 emp.)"],
+    title: "Reliable Legal Tool with Continuous Improvements",
+    rating: 5,
+    date: "March 12, 2026",
+    pros: "I trust LegalOn's AI model and appreciate that they're always improving the base product as technology evolves. I like that they have inhouse attorneys writing and reviewing content for the AI software, which makes a big difference since our Compliance Director oversees contract reviews and is not an attorney. Implementation was straightforward, allowing us to start using the platform quickly. After launching, we even got to schedule time with an inhouse attorney to fine-tune our processes. The customer support is also very responsive and always available when we need it. They've upgraded the platform several times in less than a year, and most of the new features were automatically included in our base plan, sparing us from higher subscription fees.",
+    cons: "Most of the time, a customer contract is comprised of more than one document, but there currently is not a way to have the AI reference more than one document. Also, I'd like to have a way for the AI to determine if a customer's contract documents conflict with our original proposal's terms. Another point is the new translation tool being an added cost, which as a small company, we usually can't justify increasing administrative costs.",
+    highlights: [
+      "inhouse attorneys writing and reviewing content for the AI software",
+      "Implementation was straightforward",
+      "not a way to have the AI reference more than one document",
+    ],
+    source: "G2",
+  },
+  // 2. LEGALFLY
+  "2f12e74f-6008-4fe3-9b95-7d82852d81a2": {
+    name: "Verified User in Banking",
+    meta: ["Enterprise (> 1000 emp.)"],
+    title: "Very good legal tool",
+    rating: 4.5,
+    date: "April 11, 2025",
+    pros: "I use Legalfly to summarise legal articles, give specific legal examples or ask general legal questions to get me started. Overall, I am very satisfied with how it works and with the output.",
+    cons: "References to articles in the legislation are not always correct (e.g. sometimes answers refer to the old version of a regulation, whereby the wrong article is quoted). The tool also sometimes gets stuck when you ask several questions, forcing you to refresh the page. Also, general questions often refer to secondary sources rather than primary sources.",
+    highlights: [
+      "I am very satisfied with how it works and with the output",
+      "References to articles in the legislation are not always correct",
+    ],
+    source: "G2",
+  },
+  "4567735f-2cd1-4a10-a5a1-a8ddd3e50652": {
+    name: "Verified User in Legal Services",
+    meta: ["Small-Business (50 or fewer emp.)"],
+    title: "A powerful tool for support in studies, but not always accurate.",
+    rating: 3.5,
+    date: "March 19, 2025",
+    pros: "LEGALFLY was tailored to Swiss law, which is noticeable compared to other GenAI. I use the tool several times a month, especially for interactive exam learning. The tool is great for inventing new questions and answering them.",
+    cons: "The tool is sometimes not entirely accurate or provides incorrect information. It is important not to blindly trust the output, but to always critically question the correctness of the answer.",
+    highlights: [
+      "LEGALFLY was tailored to Swiss law",
+      "The tool is sometimes not entirely accurate",
+    ],
+    source: "G2",
+  },
+  // 3. Spellbook
+  "7708d319-7063-42a8-aea4-4e8220c9cea8": {
+    name: "Jan D.",
+    meta: ["Small-Business (50 or fewer emp.)"],
+    title: "Efficient Contract Review with Easy Setup",
+    rating: 4.5,
+    date: "May 13, 2026",
+    pros: "I use Spellbook primarily for contract reviews and clause reviews and suggestions, and it really enhances efficiency in issue spotting. I like its ease of use and how it suggests edits in documents while taking instructions and prompts well, which really gives me back my time. The initial setup was very easy.",
+    cons: "Occasional glitches and accuracy as to cases and legislation could be improved.",
+    highlights: [
+      "it really enhances efficiency in issue spotting",
+      "which really gives me back my time",
+      "Occasional glitches and accuracy as to cases and legislation",
+    ],
+    source: "G2",
+  },
+  "a04beea5-81fc-46f2-ac01-4eae47bd25be": {
+    name: "Verified User in Legal Services",
+    meta: ["Small-Business (50 or fewer emp.)"],
+    title: "Organizes Ideas into Polished Outlines and Cover Letters",
+    rating: 5,
+    date: "June 23, 2026",
+    pros: "It helps me organize my thoughts into a cognizable outline or cover letter that I could send to a client. It also takes my thoughts and provides additional input on improving upon my thoughts and recommendations. It also is good at reviewing documents for the benefit and protection of my clients.",
+    cons: "It is somewhat glitchy at times and on occasion the formatting does not allow for easy editing into documents or in creating new documents.",
+    highlights: [
+      "good at reviewing documents for the benefit and protection of my clients",
+      "It is somewhat glitchy at times",
+    ],
+    source: "G2",
+  },
+  // 4. Luminance
+  "4e241884-24ca-4427-af3a-003cb706d007": {
+    name: "ROHAN H.",
+    meta: ["Junior Tranie", "Small-Business (50 or fewer emp.)"],
+    title: "Luminance Makes Everything Feel Simple and Smooth",
+    rating: 5,
+    date: "August 17, 2026",
+    pros: "I like how Luminance makes the whole experience feel simple and easy. The design looks nice, and I especially appreciated how smoothly everything worked without adding unnecessary complexity.",
+    cons: "The main thing I disliked about Luminance is that some features could be easier to find and understand at first. It took me a bit of time to get familiar with everything and figure out where things were. Aside from that initial learning curve, I didn’t run into any major issues with it.",
+    highlights: [
+      "makes the whole experience feel simple and easy",
+      "some features could be easier to find and understand",
+    ],
+    source: "G2",
+  },
+  "d60d7aea-9c42-41cb-aa71-9c5c8c917b2f": {
+    name: "Jeni J.",
+    meta: [
+      "Software Dev , Ai Agents Builder",
+      "Information Technology and Services",
+      "Mid-Market (51-1000 emp.)",
+    ],
+    title:
+      "Speeds Up Contract Review with Powerful AI , Legal-Grade agents to automate",
+    rating: 4.5,
+    date: "July 22, 2026",
+    pros: "I use Luminance to review, analyze, and negotiate contracts more efficiently, especially when dealing with large volumes of legal documents. Its AI does a great job of identifying non-standard clauses, summarizing agreements, and suggesting compliant revisions, which speeds up the entire contract lifecycle while keeping the workflow intuitive. Luminance solves the challenge of reviewing and managing contracts at scale by quickly identifying key clauses, potential risks, and inconsistencies. The AI accelerates due diligence, contract negotiation, and document analysis while presenting the information in a clear, easy-to-navigate interface. What I like most about Luminance is how effectively its AI surfaces important clauses, highlights potential risks, and summarizes lengthy contracts without overwhelming the user. The platform is well-designed and makes navigating large document sets straightforward, saving a significant amount of time during reviews. One thing that stands out is how quickly Luminance can process large volumes of documents without sacrificing usability. The search, comparison, and collaboration features make it easy for teams to stay aligned, and the AI learns from feedback over time, so the suggestions become more relevant to your organization's workflows. The initial setup of Luminance was very easy.",
+    cons: "One area where Luminance could improve is offering more flexibility when configuring custom review workflows and reporting for organizations with highly specialized legal processes. While the AI is very effective at identifying clauses and potential risks, it can occasionally flag language that still requires manual interpretation in more complex or heavily negotiated agreements. I'd like to see more no-code customization options for review rules, dashboards, and reports so legal teams can tailor the platform without relying on technical support.",
+    highlights: [
+      "identifying non-standard clauses, summarizing agreements, and suggesting compliant revisions",
+      "saving a significant amount of time during reviews",
+      "more flexibility when configuring custom review workflows",
+    ],
+    source: "G2",
+  },
+  // 5. Leah
+  "d2891cf1-6e82-4672-8225-ac2f3c6e1b7d": {
+    name: "Verified User in Legal Services",
+    meta: ["Enterprise (> 1000 emp.)"],
+    title: "Regular User of the Standalone LeahAI tool from ContractPodAI",
+    rating: 4,
+    date: "August 7, 2025",
+    pros: "I'm currently using the LeahAI tool every day.\nPart of my job is to review templates and executed contracts, and generate playbooks. LeahAI has been a gamechanger in (1) how quickly we can generate a first draft and (2) how much less lawyer time we need to get there. I can give lawyers on the team a genAI first draft playbook rather than a blank sheet of paper. You need human review, of course, but it's such a lift.",
+    cons: "I think it could be easier to navigate the tool - although getting better with each release.",
+    highlights: [
+      "how much less lawyer time we need to get there",
+      "it could be easier to navigate the tool",
+    ],
+    source: "G2",
+  },
+  "573f3b00-2c52-4998-bb69-4c0238079a34": {
+    name: "Joseph W.",
+    meta: ["Owner", "Small-Business (50 or fewer emp.)"],
+    title:
+      "Helpful for Simple Contracts, But AI Mistakes and Missed Nuance Need Work",
+    rating: 2.5,
+    date: "March 13, 2026",
+    pros: "It’s really helpful when I need to write or review contracts, and it saves me the hassle of hiring a lawyer for simple business agreements.",
+    cons: "Because it’s an AI, it can make mistakes and may also fail to understand nuances that a human lawyer would be capable of.",
+    highlights: [
+      "saves me the hassle of hiring a lawyer for simple business agreements",
+      "it can make mistakes and may also fail to understand nuances",
+    ],
+    source: "G2",
+  },
+  // ai-tools-for-consulting-firms, 1. ChatGPT
+  "a8ecf8b4-8685-4d8a-8c85-4795fe5ce95a": {
+    name: "Ravi T.",
+    meta: ["Associate Software Engineer", "Enterprise (> 1000 emp.)"],
+    title: "Saves me alot of time on everyday writing and ideas",
+    rating: 5,
+    date: "July 24, 2026",
+    pros: "I mostly use ChatGPT for my daily work. Whenever I need to write a professional email, fix grammar, summarize long content, or organize my ideas, it gives me a good starting point in just a few seconds. I don't have to think too much about how to begin, and I can quickly edit the response to fit my needs. It saves me a lot of time every day.",
+    cons: "Most of the time ChatGPT works really well, but sometimes the answers aren't 100% accurate, so I always double-check anything important. On the free plan, I've also noticed that responses can be slow during peak hours. When I upload photos or screenshots, it can take around 2–3 minutes to process and reply, which can be a little frustrating.",
+    highlights: [
+      "it gives me a good starting point in just a few seconds",
+      "It saves me a lot of time every day.",
+      "sometimes the answers aren't 100% accurate",
+    ],
+    source: "G2",
+  },
+  "f2a57077-eb90-4be4-aae0-a5184e2ef713": {
+    name: "Vansh D.",
+    meta: [
+      "Investment Banking Analyst",
+      "Fund-Raising",
+      "Small-Business (50 or fewer emp.)",
+    ],
+    title: "Fast, Clear Answers for Studying, Writing, and Problem-Solving",
+    rating: 4.5,
+    date: "July 23, 2026",
+    pros: "What I like most about ChatGPT is how quickly it understands what I'm asking and gives clear, easy-to-follow answers. It helps me with a wide range of tasks, whether it's studying, writing, brainstorming ideas, or solving technical problems, all in one place. I also appreciate that I can ask follow-up questions naturally, almost like having a conversation with someone who's always available to help.",
+    cons: "One thing I don't like is that it can sometimes give incorrect or outdated information, especially for recent events or very specific topics. Occasionally, the responses are longer than necessary when I just need a simple answer. It also sometimes misunderstands what I mean, so I have to rephrase my question to get the response I was looking for.",
+    highlights: [
+      "gives clear, easy-to-follow answers",
+      "it can sometimes give incorrect or outdated information",
+    ],
+    source: "G2",
+  },
+  // 2. Claude
+  "e138e2f8-f78b-4f01-b8df-4bf2748b7ef5": {
+    name: "Supriya S.",
+    meta: ["SDET", "Mid-Market (51-1000 emp.)"],
+    title: "Exceptional Long-Context Reasoning That Boosts Productivity",
+    rating: 5,
+    date: "July 6, 2026",
+    pros: "What stands out most about Claude is its ability to understand complex context and produce thoughtful, well-structured responses. Whether I'm working on technical documentation, code reviews, or research, it consistently delivers detailed and coherent answers. Excellent long-context understanding for lengthy conversations and documents.\nClear, natural, and well-organized writing. Strong reasoning capabilities for technical and analytical tasks. Helpful assistance with coding, documentation, and brainstorming. Ability to summarize complex topics without losing important context. The overall benefit is increased productivity. It helps me complete research, documentation, coding, and problem-solving tasks more efficiently while producing responses that often require minimal refinement. The biggest advantage is how well it handles complex requests. I can provide detailed requirements or large amounts of information, and Claude is able to maintain context throughout the conversation, which reduces the need to repeat instructions and results in higher-quality outputs.",
+    cons: "The biggest limitation is that it sometimes prioritizes safety and completeness over directness. While the responses are usually well-reasoned, there are situations where a shorter and more decisive answer would be more practical. Also, there are times when I want a straightforward, actionable answer, but Claude responds with extra caveats or asks for additional clarification, which can slow down the workflow.",
+    highlights: [
+      "Excellent long-context understanding for lengthy conversations and documents.",
+      "it sometimes prioritizes safety and completeness over directness",
+    ],
+    source: "G2",
+  },
+  "c94ed7d7-1cac-4418-aec4-cf54737d5786": {
+    name: "Asmit B.",
+    meta: ["PR Core Member", "Mid-Market (51-1000 emp.)"],
+    title:
+      "Step-by-Step Coding Help That Catches Bugs and Speeds Up Content Drafting",
+    rating: 5,
+    date: "July 6, 2026",
+    pros: "Claude's really good at explaining code step-by-step and catching bugs I miss. For CTF stuff and DSA prep it breaks down logic clearly instead of just dumping an answer. Also solid for drafting hackathon posters and content fast — saves me a ton of back-and-forth compared to other tools.",
+    cons: "Sometimes it loses track of earlier context in long threads, so I end up re-explaining stuff I already gave it a few messages back — annoying when I'm mid-debug on something like a Vercel build error. Also wish it could directly push code/fixes instead of me copy-pasting into other tools. And on longer coding tasks it can be a bit conservative/cautious when I just want the fix, not the disclaimers.",
+    highlights: [
+      "explaining code step-by-step and catching bugs I miss",
+      "Sometimes it loses track of earlier context in long threads",
+    ],
+    source: "G2",
+  },
+  // 3. Perplexity
+  "310cbaa9-2e0f-4ea0-a4bc-6a7eee099751": {
+    name: "Sukirti K.",
+    meta: ["student", "Enterprise (> 1000 emp.)"],
+    title: "Concise, Cited Answers That Make Research Faster",
+    rating: 5,
+    date: "July 6, 2026",
+    pros: "What I like best about Perplexity is its ability to provide concise, well-structured answers with cited sources, making it easy to verify information without opening multiple websites. The follow-up question feature keeps research conversational, while the focus modes help narrow down searches to academic papers, web results, or specific sources. It saves me significant time when researching technical topics and comparing information across multiple references.",
+    cons: "While Perplexity is excellent for research, it occasionally provides outdated or less relevant sources for rapidly changing topics. Some responses are overly concise and require additional follow-up question prompts to get deeper explanations. I’d also like more control over source filtering, improved citation quality for niche topics, and stronger personalization so it can remember my preferred research style across sessions.",
+    highlights: [
+      "concise, well-structured answers with cited sources",
+      "occasionally provides outdated or less relevant sources",
+    ],
+    source: "G2",
+  },
+  "1ad1b08b-b3cb-4906-92b5-7ca55c43889f": {
+    name: "Shivam J.",
+    meta: [
+      "Data Analyst",
+      "Information Technology and Services",
+      "Small-Business (50 or fewer emp.)",
+    ],
+    title: "Clean Interface, Fast Answers, and Reliable Sources for Research",
+    rating: 4.5,
+    date: "June 22, 2026",
+    pros: "What I like best about Perplexity is its simple and clean interface, which makes finding information quick and easy. The AI provides direct answers and includes sources, so I can verify information without searching through multiple websites. It performs well for research, study, and learning new topics, and the responses are usually fast. I also got access through my Airtel subscription, which made it a cost-effective way to use advanced AI features. Getting started was easy, and I was able to use it effectively without much learning.",
+    cons: "One thing I dislike about Perplexity is that some AI-generated answers can be too brief or occasionally miss important details, so I still need to verify information from the cited sources. The free version also has limitations on advanced features. I would like to see more detailed explanations for complex topics and better integration with productivity tools to make research workflows smoother.",
+    highlights: [
+      "provides direct answers and includes sources",
+      "can be too brief or occasionally miss important details",
+    ],
+    source: "G2",
+  },
+  // 4. Microsoft 365 Copilot
+  "e7356dd7-76f3-4268-8f0a-6112ede87460": {
+    name: "Ravindra N.",
+    meta: ["SDET - 2", "Oil & Energy", "Enterprise (> 1000 emp.)"],
+    title:
+      "Seamless Microsoft Integration That Boosts Productivity Across Word, Excel, Outlook, and Teams",
+    rating: 4,
+    date: "June 12, 2026",
+    pros: "What I find most useful is its integration with the Microsoft ecosystem, which allows users to access AI assistance directly within tools they already use every day. Works seamlessly within Word, Excel, Outlook, and Teams. Helps summarize large amounts of information quickly.\nGenerates drafts and content suggestions that save time.\nImproves productivity by reducing repetitive tasks.\nProvides contextual assistance without switching between applications. The biggest benefit is that it brings AI capabilities directly into existing workflows, making adoption much easier for teams.",
+    cons: "The biggest limitation is consistency. While Copilot can save a significant amount of time when drafting content, analyzing data, or summarizing information, there are occasions when the output requires further editing or fact-checking to ensure accuracy. It may not always fully understand organization-specific terminology or business processes without additional context.",
+    highlights: [
+      "Works seamlessly within Word, Excel, Outlook, and Teams.",
+      "The biggest limitation is consistency.",
+    ],
+    source: "G2",
+  },
+  "1551bc4f-ed51-4a24-88b5-dfdee8edbe6b": {
+    name: "priyanka p.",
+    meta: [
+      "Packaged Application Development Analyst",
+      "Enterprise (> 1000 emp.)",
+    ],
+    title:
+      "Microsoft Copilot Saves Time with Fast Summaries, Drafting, and Research Help",
+    rating: 5,
+    date: "June 23, 2026",
+    pros: "Microsoft Copilot helps save time by quickly generating content, summarizing information, and answering questions within the tools I use every day. I like that it can assist with drafting emails, summarizing meetings, and helping with research without having to switch between multiple applications.\nFor example, when I need to understand a lengthy document or meeting notes, Copilot can provide a quick summary, helping me focus on the key points instead of reading everything in detail.",
+    cons: "The responses are not always accurate, especially for technical or project-specific topics. It sometimes provides generic answers that need further validation.\nIn my experience, when asking about implementation details or project-specific requirements, I still need to verify the information because the suggestions may not fully match the actual context.",
+    highlights: [
+      "without having to switch between multiple applications",
+      "The responses are not always accurate",
+    ],
+    source: "G2",
+  },
 };
 
 /**
@@ -498,6 +944,12 @@ const SAME_REVIEW: Record<string, string> = {
   "71ab524e-440d-4b7a-9dcb-2068e7c6090a":
     "088af774-383b-4ff2-9e51-8421e61e4763",
   "7ca608ba-b7de-437e-98d1-70a330513448":
+    "103c802c-9963-4419-860f-6b8602e80e12",
+  // ai-tools-for-consulting-firms, Assembly
+  "456db558-ce18-43eb-8e28-5fcdf7a3704f":
+    "088af774-383b-4ff2-9e51-8421e61e4763",
+  // ai-tools-for-consulting-firms, Assembly
+  "64c0d79d-a6dd-44d2-895a-d8fd011cbc8c":
     "103c802c-9963-4419-860f-6b8602e80e12",
 };
 
