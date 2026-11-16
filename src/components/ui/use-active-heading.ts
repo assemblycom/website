@@ -30,21 +30,29 @@ export const HEADING_PASSED_AT = 112;
  * of waiting for the jump to land and scroll to catch up.
  */
 export function useActiveHeading(headings: TocHeading[]) {
-  const [activeId, setActiveId] = useState(headings[0]?.id);
+  const first = headings[0]?.id;
+  const [activeId, setActiveId] = useState(first);
 
   useEffect(() => {
     const update = () => {
-      const passed = headings.filter((heading) => {
+      // The passed heading nearest the line, rather than the last in the
+      // list: a nested list isn't in page order (a listicle's picks sit under
+      // its TL;DR but come after the sections that follow it).
+      let current: string | undefined;
+      let nearest = -Infinity;
+      for (const heading of headings) {
         const element = document.getElementById(heading.id);
-        return element
-          ? // Floored: a heading jumped to lands on a fractional pixel
-            // (112.1875 where the line is 112), and comparing the raw value
-            // leaves it one thousandth short of counting.
-            Math.floor(element.getBoundingClientRect().top) <=
-              HEADING_PASSED_AT
-          : false;
-      });
-      setActiveId(passed.at(-1)?.id ?? headings[0]?.id);
+        if (!element) continue;
+        // Floored: a heading jumped to lands on a fractional pixel (112.1875
+        // where the line is 112), and comparing the raw value leaves it one
+        // thousandth short of counting.
+        const top = Math.floor(element.getBoundingClientRect().top);
+        if (top <= HEADING_PASSED_AT && top > nearest) {
+          nearest = top;
+          current = heading.id;
+        }
+      }
+      setActiveId(current ?? first);
     };
 
     update();
@@ -54,7 +62,7 @@ export function useActiveHeading(headings: TocHeading[]) {
       window.removeEventListener("scroll", update);
       window.removeEventListener("resize", update);
     };
-  }, [headings]);
+  }, [headings, first]);
 
   return [activeId, setActiveId] as const;
 }

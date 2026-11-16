@@ -2,11 +2,11 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { formatPostDate, type Category, type PostCard } from "@/lib/ghost";
+import type { Category, PostCard } from "@/lib/ghost";
 import { FIELD_CLS } from "@/components/ui/select-menu";
 import { Pager } from "@/components/ui/pager";
 import { POSTS_PER_PAGE, pageCount, pagePath, tagPath } from "@/lib/blog";
-import { PostByline } from "./post-byline";
+import { PostGrid } from "./post-grid";
 
 /**
  * The card grid, with tag filters where there is more than one shelf to choose
@@ -165,36 +165,7 @@ export function BlogBrowser({
           No posts match {query.trim() ? `“${query.trim()}”` : "that filter"}.
         </p>
       ) : (
-        // Ruled cells rather than separate tiles: each card draws the lines
-        // below and to its right, and the frame around them all is a ring on
-        // the container — a border there would have been cut off at the corners
-        // by the radius, since the clip that rounds the cells also crops the
-        // lines they draw. No
-        // cover art here — at three across the covers repeated the same few
-        // stock photographs down the page and said nothing the titles didn't.
-        <div className="grid overflow-hidden rounded-2xl ring-1 ring-inset ring-border sm:grid-cols-2 lg:grid-cols-3 [[data-theme=dark]_&]:ring-[#383838]">
-          {shown.map((post) => (
-            <Link
-              key={post.slug}
-              href={`/blog/${post.slug}`}
-              className="group flex flex-col border-b border-r border-border p-6 transition-colors hover:bg-muted/50 lg:p-8 [[data-theme=dark]_&]:border-[#383838]"
-            >
-              <h3 className="type-h4 line-clamp-2 text-balance text-foreground">
-                {post.title}
-              </h3>
-              <p className="type-body mt-3 line-clamp-3 text-pretty text-muted-foreground">
-                {post.excerpt}
-              </p>
-              <div className="mt-8 pt-2 md:mt-auto md:pt-10">
-                <PostByline
-                  author={post.author}
-                  image={post.authorImage}
-                  date={formatPostDate(post.date)}
-                />
-              </div>
-            </Link>
-          ))}
-        </div>
+        <PostGrid posts={shown} className="sm:grid-cols-2 lg:grid-cols-3" />
       )}
 
       {!searching && (

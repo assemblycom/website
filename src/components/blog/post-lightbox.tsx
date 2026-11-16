@@ -50,8 +50,11 @@ export function PostLightbox() {
     // Nothing to bind on a phone.
     if (!wide) return;
 
+    // Tool logos in the comparison tables are links to the vendor, not shots.
     const found = [
-      ...document.querySelectorAll<HTMLImageElement>(".post-body img"),
+      ...document.querySelectorAll<HTMLImageElement>(
+        ".post-body img:not(.tool-logo)",
+      ),
     ];
 
     const show = (event: MouseEvent) => {
@@ -142,7 +145,7 @@ export function PostLightbox() {
           src={shot.src}
           alt={shot.alt}
           onClick={(event) => event.stopPropagation()}
-          className="max-h-full max-w-full rounded-2xl border border-border object-contain [[data-theme=dark]_&]:border-[#383838]"
+          className="max-h-full max-w-full rounded-lg border border-border object-contain [[data-theme=dark]_&]:border-[#383838]"
         />
       </div>
 
