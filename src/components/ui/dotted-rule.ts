@@ -25,41 +25,41 @@
 
 /** Rules the top of a row. For a list whose rows carry their own rule. */
 export const DOTTED_RULE_BEFORE =
-  "before:bg-[repeating-linear-gradient(to_right,color-mix(in_oklab,var(--foreground)_32%,transparent)_0_2px,transparent_2px_5px)]";
+  "before:bg-[repeating-linear-gradient(to_right,var(--dotted-rule,color-mix(in_oklab,var(--foreground)_32%,transparent))_0_2px,transparent_2px_5px)]";
 
 /** Closes the list under its last row. */
 export const DOTTED_RULE_AFTER =
-  "after:bg-[repeating-linear-gradient(to_right,color-mix(in_oklab,var(--foreground)_32%,transparent)_0_2px,transparent_2px_5px)]";
+  "after:bg-[repeating-linear-gradient(to_right,var(--dotted-rule,color-mix(in_oklab,var(--foreground)_32%,transparent))_0_2px,transparent_2px_5px)]";
 
 /** As above, but only below `md` — for a block that is a list on a phone and
     a column on a desktop, where the rules would be drawing boxes around
     something the grid already separates. */
 export const DOTTED_RULE_BEFORE_MOBILE =
-  "max-md:before:bg-[repeating-linear-gradient(to_right,color-mix(in_oklab,var(--foreground)_32%,transparent)_0_2px,transparent_2px_5px)]";
+  "max-md:before:bg-[repeating-linear-gradient(to_right,var(--dotted-rule,color-mix(in_oklab,var(--foreground)_32%,transparent))_0_2px,transparent_2px_5px)]";
 
 export const DOTTED_RULE_AFTER_MOBILE =
-  "max-md:after:bg-[repeating-linear-gradient(to_right,color-mix(in_oklab,var(--foreground)_32%,transparent)_0_2px,transparent_2px_5px)]";
+  "max-md:after:bg-[repeating-linear-gradient(to_right,var(--dotted-rule,color-mix(in_oklab,var(--foreground)_32%,transparent))_0_2px,transparent_2px_5px)]";
 
 /** The same rule stood upright, on the left edge, only from `sm` to `xl` —
     for the pricing plans' rows, where it parts each card's features from its
     name and price. Same dot, pitch and colour as the FAQ's rules above; only
     the direction changes. */
 export const DOTTED_RULE_LEFT_ROW =
-  "sm:max-xl:before:bg-[repeating-linear-gradient(to_bottom,color-mix(in_oklab,var(--foreground)_32%,transparent)_0_2px,transparent_2px_5px)]";
+  "sm:max-xl:before:bg-[repeating-linear-gradient(to_bottom,var(--dotted-rule,color-mix(in_oklab,var(--foreground)_32%,transparent))_0_2px,transparent_2px_5px)]";
 
 /** Rules the top of a block, below `sm` only — the pricing cards while they
     are upright on a phone, parting the features from the name and price. */
 export const DOTTED_RULE_TOP_UPRIGHT =
-  "max-sm:before:bg-[repeating-linear-gradient(to_right,color-mix(in_oklab,var(--foreground)_32%,transparent)_0_2px,transparent_2px_5px)]";
+  "max-sm:before:bg-[repeating-linear-gradient(to_right,var(--dotted-rule,color-mix(in_oklab,var(--foreground)_32%,transparent))_0_2px,transparent_2px_5px)]";
 
 /** Rules the top of the first feature group on the `xl` pricing table, where
     each card's groups sit directly in the table's subgrid. */
 export const DOTTED_RULE_TOP_TABLE =
-  "xl:first:before:bg-[repeating-linear-gradient(to_right,color-mix(in_oklab,var(--foreground)_32%,transparent)_0_2px,transparent_2px_5px)]";
+  "xl:first:before:bg-[repeating-linear-gradient(to_right,var(--dotted-rule,color-mix(in_oklab,var(--foreground)_32%,transparent))_0_2px,transparent_2px_5px)]";
 
 /** The rule as an element of its own (give it h-px), for a card that parts
     its name and price from its list with a line rather than a pseudo-element
     on either side — the four-plan block on /client-portal and the solution
     pages. */
 export const DOTTED_RULE =
-  "bg-[repeating-linear-gradient(to_right,color-mix(in_oklab,var(--foreground)_32%,transparent)_0_2px,transparent_2px_5px)]";
+  "bg-[repeating-linear-gradient(to_right,var(--dotted-rule,color-mix(in_oklab,var(--foreground)_32%,transparent))_0_2px,transparent_2px_5px)]";

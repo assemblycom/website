@@ -15,9 +15,14 @@ import {
   PLAN_WASH_NEUTRAL_LG,
 } from "@/components/pricing/plan-wash";
 
-// Some lines follow the billing toggle: seat prices differ, and Advanced's
-// credits become unlimited building on yearly.
-type PlanItem = string | { yearly: string; monthly: string };
+// Some lines follow the billing toggle: Advanced's credits become unlimited
+// building on yearly. A line with an extra fee reads "X included" and carries
+// the fee in a tooltip, which can itself follow the toggle (seat prices).
+type BillingText = string | { yearly: string; monthly: string };
+type PlanItem =
+  | string
+  | { yearly: string; monthly: string }
+  | { text: string; fee: BillingText };
 
 interface PlanFeatureGroup {
   label: string;
@@ -98,7 +103,7 @@ const PLANS: Plan[] = [
         items: [
           "50 active contacts",
           "1 internal user",
-          "5 apps, +$8/app",
+          { text: "5 apps included", fee: "Extra apps: +$8/app" },
           "200 build credits/mo",
         ],
       },
@@ -132,10 +137,13 @@ const PLANS: Plan[] = [
         items: [
           "500 active contacts",
           {
-            yearly: "3 internal users, +$39/user",
-            monthly: "3 internal users, +$49/user",
+            text: "3 internal users included",
+            fee: {
+              yearly: "Extra users: +$39/user",
+              monthly: "Extra users: +$49/user",
+            },
           },
-          "10 apps, +$8/app",
+          { text: "10 apps included", fee: "Extra apps: +$8/app" },
           "500 build credits/mo",
         ],
       },
@@ -174,8 +182,11 @@ const PLANS: Plan[] = [
         items: [
           "Unlimited active contacts",
           {
-            yearly: "5 internal users, +$59/user",
-            monthly: "5 internal users, +$79/user",
+            text: "5 internal users included",
+            fee: {
+              yearly: "Extra users: +$59/user",
+              monthly: "Extra users: +$79/user",
+            },
           },
           "Unlimited apps",
           {
@@ -270,7 +281,7 @@ export const TOOLTIP =
 const BUTTON_SOLID =
   "border-transparent bg-[var(--pricing-brand)] text-[var(--pricing-brand-on)] hover:opacity-90";
 const BUTTON_OUTLINE =
-  "border-foreground/15 bg-background text-foreground hover:bg-foreground/5 [[data-theme=dark]_&]:border-white/10 [[data-theme=dark]_&]:bg-transparent";
+  "border-foreground/15 bg-transparent text-foreground hover:bg-foreground/5 [[data-theme=dark]_&]:border-white/10";
 
 // The info mark beside a line that has a tooltip — shared with the compare
 // table (feature-comparison.tsx), which used it first.
@@ -289,9 +300,44 @@ export function InfoIcon() {
   );
 }
 
-function itemText(item: PlanItem, billing: Billing): string {
-  return typeof item === "string" ? item : item[billing];
+function pick(text: BillingText, billing: Billing): string {
+  return typeof text === "string" ? text : text[billing];
 }
+
+function itemText(item: PlanItem, billing: Billing): string {
+  if (typeof item === "string") return item;
+  return "text" in item ? item.text : item[billing];
+}
+
+/**
+ * A plan line. One with an extra fee ("3 internal users included") wears the
+ * site's dotted underline and shows the fee on hover or focus, so the card
+ * reads as what you get and the price of more is one hover away.
+ */
+function PlanLine({ item, billing }: { item: PlanItem; billing: Billing }) {
+  if (typeof item === "string" || !("fee" in item)) {
+    return <span>{itemText(item, billing)}</span>;
+  }
+  return (
+    <span className="group relative">
+      <span
+        tabIndex={0}
+        className="cursor-help underline decoration-muted-foreground/60 decoration-dotted underline-offset-4 outline-none"
+      >
+        {item.text}
+      </span>
+      <span role="tooltip" className={`${TOOLTIP} w-max`}>
+        {pick(item.fee, billing)}
+      </span>
+    </span>
+  );
+}
+
+// The soft callout under each paid price, squared off (rounded-md) like the
+// site's tags. Tinted from the ink so it reads on the white columns,
+// Professional's gray and dark mode alike.
+const PRICE_CALLOUT =
+  "inline-flex items-center whitespace-nowrap text-sm text-foreground underline decoration-dashed decoration-foreground/40 underline-offset-4";
 
 /** Dollars a year saved by paying yearly, for a plan with two prices. */
 function yearlySaving(plan: Plan) {
@@ -359,10 +405,12 @@ function AnimatedPrice({ value }: { value: number }) {
 function PlanGrid({
   plans,
   billing,
+  onYearly,
   className,
 }: {
   plans: Plan[];
   billing: Billing;
+  onYearly: () => void;
   className: string;
 }) {
   return (
@@ -374,7 +422,9 @@ function PlanGrid({
           // sm each card turns into a row — name, price and buttons on the
           // left, features on the right — so the width is used without any
           // card reading differently from the rest.
-          className={`grid gap-6 xl:gap-0 xl:grid-rows-[auto_auto_auto_auto_auto_auto] ${
+          // Dark mode: solid lines and dotted rules step down, since the
+          // light-mode weights read as bright stripes on near-black.
+          className={`grid gap-6 xl:gap-0 xl:grid-rows-[auto_auto_auto_auto_auto_auto] [[data-theme=dark]_&]:[--border:rgba(255,255,255,0.07)] [[data-theme=dark]_&]:[--dotted-rule:rgba(255,255,255,0.16)] ${
             plans.length === 4 ? "xl:grid-cols-4" : "xl:grid-cols-5"
           } ${className}`}
         >
@@ -385,35 +435,80 @@ function PlanGrid({
           // Starter has no card to build on and the heading is just "Features".
           const prevName = plans[idx - 1]?.name;
           // What paying yearly gets: the saving, then any yearly-only extras.
-          // Free and Enterprise have no saving, so they get nothing.
-          const yearlyList =
-            billing === "yearly" && plan.priceMonthly > 0 && !plan.startingPrice ? (
-          <ul className="flex flex-col gap-2.5">
-            <li className="flex items-start gap-2 text-sm text-foreground">
-              <span className="mt-0.5">
-                <CheckIcon />
-              </span>
-              <span>Save {money(yearlySaving(plan))} a year</span>
-            </li>
-            {plan.yearlyPerks?.length ? (
-              <>
-                {plan.yearlyPerks.map((perk) => (
-                  <li
-                    key={perk}
-                    className="flex items-start gap-2 text-sm text-foreground"
+          // Shown on BOTH toggles: on yearly it confirms what the choice
+          // includes, on monthly it is what you're leaving on the table, with
+          // a button that flips the toggle. Free and Enterprise
+          // have no saving, so they get nothing.
+          const hasSaving = plan.priceMonthly > plan.priceYearly;
+          // Only plans with yearly-only perks pitch yearly billing; Starter's
+          // saving alone isn't worth a callout, so it just states the bill.
+          const hasYearlyOffer = hasSaving && (plan.yearlyPerks?.length ?? 0) > 0;
+          // How the plan is billed, as a pill: what the year costs on yearly;
+          // on monthly, the yearly saving, as a button that flips the toggle.
+          // Under the price at every width.
+          const billingPill = !hasSaving || (billing === "monthly" && !hasYearlyOffer) ? null : billing === "yearly" ? (
+            <span className="cursor-default text-sm text-muted-foreground">
+              Billed yearly at {money(plan.priceYearly * 12)}
+            </span>
+          ) : (
+            <button
+              type="button"
+              onClick={onYearly}
+              className={`${PRICE_CALLOUT} cursor-pointer transition-colors hover:decoration-foreground`}
+            >
+              Save {money(yearlySaving(plan))} with yearly
+            </button>
+          );
+          // Plain line for the cards with no callout, so every price has a
+          // line under it; only clickable callouts carry the dashed underline.
+          const billingNote = billingPill ?? (
+            <span className="cursor-default text-sm text-muted-foreground">
+              {plan.priceMonthly === 0
+                ? "Free forever"
+                : plan.startingPrice
+                  ? "Starting price"
+                  : billing === "yearly"
+                    ? `Billed yearly at ${money(plan.priceYearly * 12)}`
+                    : "Billed monthly"}
+            </span>
+          );
+          const yearlyList = hasYearlyOffer ? (
+            <div className="flex flex-1 flex-col">
+              <p className="text-sm font-medium">
+                {billing === "yearly"
+                  ? "Included with yearly billing"
+                  : "With yearly billing"}
+              </p>
+              <ul className="mt-3 flex flex-col gap-2.5">
+                {[`Save ${money(yearlySaving(plan))} a year`, ...(plan.yearlyPerks ?? [])].map(
+                  (perk) => (
+                    <li
+                      key={perk}
+                      className="flex items-start gap-2 text-sm text-foreground"
+                    >
+                      <span className="mt-0.5">
+                        <CheckIcon />
+                      </span>
+                      {/* One line: the perks are short, and a wrapped
+                          perk read as two items. */}
+                      <span className="whitespace-nowrap">{perk}</span>
+                    </li>
+                  ),
+                )}
+              </ul>
+              {billing === "monthly" && (
+                <div className="mt-auto pt-4">
+                  <button
+                    type="button"
+                    onClick={onYearly}
+                    className={`w-full rounded-lg border px-5 py-2 text-center text-sm transition ${BUTTON_OUTLINE}`}
                   >
-                    <span className="mt-0.5">
-                      <CheckIcon />
-                    </span>
-                    {/* One line: the perks are short, and a wrapped
-                        perk read as two items. */}
-                    <span className="whitespace-nowrap">{perk}</span>
-                  </li>
-                ))}
-              </>
-            ) : null}
-          </ul>
-            ) : null;
+                    Switch to yearly
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : null;
           // Original structure kept: filled header panel (price set 24px under
           // the description) → detached button → features. The only addition is an
           // outline around the WHOLE card (outer wrapper); the header panel no
@@ -454,22 +549,43 @@ function PlanGrid({
                 }`}
               />
 
-              {/* Name and description: the table's first row. */}
-              <div className="sm:max-xl:col-start-1 sm:max-xl:row-start-1">
-                <h3 className="text-lg font-medium">{plan.name}</h3>
+              {/* Below xl each plan is its own card, so the recommended one
+                  is a single color; the darker header only reads in the table. */}
+              {/* Name and description: the table's first row. On the
+                  recommended plan it sits on a slightly darker fill than the
+                  column's gray, full bleed to the column edges. -mb-6 lets the fill
+                  run down through the price row's mt-6 to the rule without
+                  changing the row height, so the columns stay level. */}
+              <div
+                className={`sm:max-xl:col-start-1 sm:max-xl:row-start-1 ${
+                  plan.highlighted
+                    ? "-mx-6 -mb-6 -mt-6 bg-foreground/[0.04] px-6 pb-6 pt-6 sm:max-xl:-mr-6 max-xl:bg-transparent [[data-theme=dark]_&]:bg-transparent"
+                    : ""
+                }`}
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <h3 className="text-lg font-medium">{plan.name}</h3>
+                </div>
                 <p className="mt-2 text-sm text-muted-foreground">{plan.description}</p>
               </div>
 
               {/* Price and buttons: the second row, ruled off from the name the
                   full width of the column (-mx-6 undoes the card padding), so
                   the rules join across columns into one table line. */}
-              <div className="-mx-6 mt-6 flex flex-col border-t border-border px-6 pt-6 xl:pb-6 sm:max-xl:col-start-1 sm:max-xl:row-start-2 sm:max-xl:mr-0 sm:max-xl:self-start sm:max-xl:pr-0">
-                {/* "/month" sits on the price's baseline so the figure reads as
-                    a monthly rate at a glance. */}
+              <div className={`-mx-6 mt-6 flex flex-col border-t border-border px-6 pt-6 xl:pb-6 sm:max-xl:col-start-1 sm:max-xl:row-start-2 sm:max-xl:-mr-6 sm:max-xl:self-start sm:max-xl:pr-6`}>
+                {/* Price, then one pill saying how it's billed.
+                    Yearly: what the year costs. Monthly: what the same plan
+                    costs on yearly, as a callout pill that flips the toggle, so a
+                    monthly buyer sees the cheaper price in plain words. Free
+                    and Enterprise keep the line empty on desktop so every
+                    card's buttons start on one line. */}
                 <p className="flex items-baseline gap-1">
                   <AnimatedPrice value={price} />
-                  <span className="text-sm text-muted-foreground">/month</span>
+                  <span className="cursor-default text-sm text-muted-foreground">/month</span>
                 </p>
+                <div className="mt-2 flex h-6 items-center text-sm">
+                  {billingNote}
+                </div>
                 <div className="mt-6 flex flex-col gap-2">
                   <a
                     href={plan.ctaHref}
@@ -497,7 +613,7 @@ function PlanGrid({
                   the top on a phone, where the features sit below), parts the features from the name and
                   price, in place of the aurora wash, which the row drops. */}
               <div
-                className={`mt-6 flex flex-1 cursor-default flex-col px-2 pb-2 ${DOTTED_RULE_LEFT_ROW} ${DOTTED_RULE_TOP_UPRIGHT} max-sm:relative max-sm:before:absolute max-sm:before:inset-x-0 max-sm:before:top-0 max-sm:before:h-px max-sm:before:content-[''] sm:max-xl:col-start-2 sm:max-xl:row-span-2 sm:max-xl:row-start-1 sm:max-xl:mt-0 max-xl:px-0 sm:max-xl:relative sm:max-xl:pl-6 sm:max-xl:before:absolute sm:max-xl:before:inset-y-0 sm:max-xl:before:left-0 sm:max-xl:before:w-px sm:max-xl:before:content-[''] sm:max-xl:pt-0 lg:max-xl:grid lg:max-xl:grid-cols-3 lg:max-xl:items-start lg:max-xl:gap-x-8 xl:contents`}
+                className={`mt-6 flex flex-1 cursor-default flex-col px-2 pb-2 ${DOTTED_RULE_LEFT_ROW} ${DOTTED_RULE_TOP_UPRIGHT} max-sm:relative max-sm:before:absolute max-sm:before:inset-x-0 max-sm:before:top-0 max-sm:before:h-px max-sm:before:content-[''] sm:max-xl:col-start-2 sm:max-xl:row-span-2 sm:max-xl:row-start-1 sm:max-xl:mt-0 max-xl:px-0 sm:max-xl:relative sm:max-xl:pl-6 sm:max-xl:before:absolute sm:max-xl:before:-inset-y-6 sm:max-xl:before:left-0 sm:max-xl:before:w-px sm:max-xl:before:content-[''] sm:max-xl:pt-0 lg:max-xl:grid lg:max-xl:grid-cols-3 lg:max-xl:items-start lg:max-xl:gap-x-8 xl:contents`}
               >
                 {plan.featureGroups.map((group, gi) => (
                   <div
@@ -522,7 +638,7 @@ function PlanGrid({
                             <span className="mt-0.5">
                               <CheckIcon />
                             </span>
-                            <span>{text}</span>
+                            <PlanLine item={item} billing={billing} />
                           </li>
                         );
                       })}
@@ -530,24 +646,27 @@ function PlanGrid({
                   </div>
                 ))}
                 {/* Under Support on phone and tablet; from lg, where the groups
-                    sit three across, in Support's column. */}
+                    sit three across, in Support's column. On a phone it's a
+                    tinted footer, ruled full width, like the desktop row. */}
                 {yearlyList && (
-                  <div className="mt-5 border-t border-border pt-5 lg:max-xl:col-start-3 xl:hidden">
+                  <div className="mt-5 border-t border-border pt-5 max-sm:-mx-6 max-sm:-mb-8 max-sm:bg-foreground/[0.04] max-sm:px-6 max-sm:pb-6 lg:max-xl:col-start-3 xl:hidden max-sm:[[data-theme=dark]_&]:bg-[var(--surface-2)]">
                     {yearlyList}
                   </div>
                 )}
               </div>
 
               {/* Yearly footer (desktop): the table's last row, ruled off like
-                  the price row. Monthly drops the row entirely. Free and
-                  Enterprise keep an empty cell so the row's top rule still
-                  runs across every column. Below xl the same list sits under
-                  Support instead, inside the features. */}
-              {billing === "yearly" && (
-                <div className="-mx-6 mt-6 hidden border-t border-border px-6 pt-5 text-sm xl:block">
-                  {yearlyList}
-                </div>
-              )}
+                  the price row, on both toggles. Free and Enterprise keep an
+                  empty cell so the row's top rule still runs across every
+                  column. Below xl the same panel sits under Support instead,
+                  inside the features. */}
+              {/* Tinted edge to edge on the plans that pitch yearly, so the
+                  offer reads as its own row rather than another feature group.
+                  In dark it's one solid surface a step above every column,
+                  so it reads the same on the recommended column and beside it. */}
+              <div className={`-mx-6 -mb-6 mt-6 hidden border-t border-border px-6 pb-6 pt-5 text-sm xl:flex xl:flex-col ${hasYearlyOffer ? `bg-foreground/[0.04] [[data-theme=dark]_&]:bg-[var(--surface-2)]` : ""}`}>
+                {yearlyList}
+              </div>
             </div>
           );
         })}
@@ -555,26 +674,24 @@ function PlanGrid({
   );
 }
 
-// The Yearly option's label, carrying the saving in brackets after it. Used
-// in both copies of the label (the base buttons and the thumb's mirror strip),
-// so the two stay the same width and the thumb's reveal lines up. One color
-// with the rest of the label: a dimmed bracket read as grey-on-white on the
-// inverted thumb.
+// The Yearly option's label: "Yearly" and the saving in a small pill. Used in
+// both copies of the label (the base buttons and the thumb's mirror strip), so
+// the two stay the same width and the thumb's reveal lines up. The pill is
+// tinted from the text colour, so it reads on the plain track and on the
+// inverted thumb alike.
 function YearlyLabel() {
   return (
-    <>
-      <span className="md:hidden">
-        Yearly (-{BEST_YEARLY_PCT}%)
+    <span className="inline-flex items-center gap-1.5">
+      Yearly
+      <span className="rounded-full bg-[color-mix(in_srgb,currentColor_15%,transparent)] px-1.5 text-xs leading-5">
+        -{YEARLY_PCT_FLOOR}%
       </span>
-      <span className="hidden md:inline">
-        Yearly (-{BEST_YEARLY_PCT}% off)
-      </span>
-    </>
+    </span>
   );
 }
 
 export function PricingPlans() {
-  const [billing, setBilling] = useState<Billing>("monthly");
+  const [billing, setBilling] = useState<Billing>("yearly");
 
   return (
     // No width cap: upright on a phone (<sm) a card fills the column, and
@@ -643,8 +760,18 @@ export function PricingPlans() {
             first paint (see globals.css). Choosing in an effect meant a
             signed-in visitor watched five cards render and then reflow to
             four. */}
-        <PlanGrid plans={PLANS} billing={billing} className="unauth-only" />
-        <PlanGrid plans={PAID_PLANS} billing={billing} className="auth-only" />
+        <PlanGrid
+          plans={PLANS}
+          billing={billing}
+          onYearly={() => setBilling("yearly")}
+          className="unauth-only"
+        />
+        <PlanGrid
+          plans={PAID_PLANS}
+          billing={billing}
+          onYearly={() => setBilling("yearly")}
+          className="auth-only"
+        />
       </div>
 
     </div>
@@ -657,3 +784,6 @@ const YEARLY_PLANS = PLANS.filter((p) => p.priceMonthly > p.priceYearly);
 const BEST_YEARLY_PCT = Math.max(
   ...YEARLY_PLANS.map((p) => Math.round((1 - p.priceYearly / p.priceMonthly) * 100)),
 );
+
+// The toggle's "-40%": the best saving rounded down to a ten.
+const YEARLY_PCT_FLOOR = Math.floor(BEST_YEARLY_PCT / 10) * 10;
