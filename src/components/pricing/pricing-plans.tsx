@@ -384,6 +384,36 @@ function PlanGrid({
           // card is actually on the page. Signed-in visitors don't see Free, so
           // Starter has no card to build on and the heading is just "Features".
           const prevName = plans[idx - 1]?.name;
+          // What paying yearly gets: the saving, then any yearly-only extras.
+          // Free and Enterprise have no saving, so they get nothing.
+          const yearlyList =
+            billing === "yearly" && plan.priceMonthly > 0 && !plan.startingPrice ? (
+          <ul className="flex flex-col gap-2.5">
+            <li className="flex items-start gap-2 text-sm text-foreground">
+              <span className="mt-0.5">
+                <CheckIcon />
+              </span>
+              <span>Save {money(yearlySaving(plan))} a year</span>
+            </li>
+            {plan.yearlyPerks?.length ? (
+              <>
+                {plan.yearlyPerks.map((perk) => (
+                  <li
+                    key={perk}
+                    className="flex items-start gap-2 text-sm text-foreground"
+                  >
+                    <span className="mt-0.5">
+                      <CheckIcon />
+                    </span>
+                    {/* One line: the perks are short, and a wrapped
+                        perk read as two items. */}
+                    <span className="whitespace-nowrap">{perk}</span>
+                  </li>
+                ))}
+              </>
+            ) : null}
+          </ul>
+            ) : null;
           // Original structure kept: filled header panel (price set 24px under
           // the description) → detached button → features. The only addition is an
           // outline around the WHOLE card (outer wrapper); the header panel no
@@ -401,7 +431,7 @@ function PlanGrid({
               // so there the fill stays on at every width.
               // sm–xl, the row: a two-column grid, the header panel and buttons
               // down the left, the features filling the right.
-              className={`relative isolate sm:max-xl:grid sm:max-xl:grid-cols-[minmax(0,17rem)_minmax(0,1fr)] sm:max-xl:grid-rows-[auto_1fr_auto] sm:max-xl:gap-x-6 flex min-w-0 flex-col overflow-hidden rounded-2xl border border-border p-6 xl:grid xl:grid-cols-[minmax(0,1fr)] xl:grid-rows-subgrid xl:row-span-6 xl:rounded-none xl:border-y xl:border-l xl:border-r-0 xl:border-solid xl:border-border xl:p-6 ${plan.highlighted ? "bg-muted" : "bg-card xl:bg-transparent xl:[[data-theme=dark]_&]:bg-card"} xl:first:!rounded-l-xl xl:last:!rounded-r-xl xl:[&:last-child]:border-r`}
+              className={`relative isolate sm:max-xl:grid sm:max-xl:grid-cols-[minmax(0,17rem)_minmax(0,1fr)] sm:max-xl:grid-rows-[auto_1fr] sm:max-xl:gap-x-6 flex min-w-0 flex-col overflow-hidden rounded-2xl border border-border p-6 xl:grid xl:grid-cols-[minmax(0,1fr)] xl:grid-rows-subgrid xl:row-span-6 xl:rounded-none xl:border-y xl:border-l xl:border-r-0 xl:border-solid xl:border-border xl:p-6 ${plan.highlighted ? "bg-muted" : "bg-card xl:bg-transparent xl:[[data-theme=dark]_&]:bg-card"} xl:first:!rounded-l-xl xl:last:!rounded-r-xl xl:[&:last-child]:border-r`}
             >
               {/* Aurora wash blooming up from behind the header panel (-z-10
                   inside an isolated context). Every card carries one now, so the
@@ -469,10 +499,12 @@ function PlanGrid({
               <div
                 className={`mt-6 flex flex-1 cursor-default flex-col px-2 pb-2 ${DOTTED_RULE_LEFT_ROW} ${DOTTED_RULE_TOP_UPRIGHT} max-sm:relative max-sm:before:absolute max-sm:before:inset-x-0 max-sm:before:top-0 max-sm:before:h-px max-sm:before:content-[''] sm:max-xl:col-start-2 sm:max-xl:row-span-2 sm:max-xl:row-start-1 sm:max-xl:mt-0 max-xl:px-0 sm:max-xl:relative sm:max-xl:pl-6 sm:max-xl:before:absolute sm:max-xl:before:inset-y-0 sm:max-xl:before:left-0 sm:max-xl:before:w-px sm:max-xl:before:content-[''] sm:max-xl:pt-0 lg:max-xl:grid lg:max-xl:grid-cols-3 lg:max-xl:items-start lg:max-xl:gap-x-8 xl:contents`}
               >
-                {plan.featureGroups.map((group) => (
+                {plan.featureGroups.map((group, gi) => (
                   <div
                     key={group.label}
-                    className={`border-t border-border pt-5 [&:not(:first-child)]:mt-5 max-sm:first:border-t-0 xl:first:relative xl:first:border-t-0 xl:first:pt-6 xl:first:before:absolute xl:first:before:inset-x-0 xl:first:before:top-0 xl:first:before:h-px xl:first:before:content-[''] ${DOTTED_RULE_TOP_TABLE} sm:max-xl:first:border-t-0 sm:max-xl:first:pt-0 lg:max-xl:border-t-0 lg:max-xl:pt-0 lg:max-xl:[&:not(:first-child)]:mt-0`}
+                    // From lg the groups sit three across; all but the last span
+                    // two rows so the yearly list can sit straight under Support.
+                    className={`${gi < plan.featureGroups.length - 1 ? "lg:max-xl:row-span-2" : ""} border-t border-border pt-5 [&:not(:first-child)]:mt-5 max-sm:first:border-t-0 xl:first:relative xl:first:border-t-0 xl:first:pt-6 xl:first:before:absolute xl:first:before:inset-x-0 xl:first:before:top-0 xl:first:before:h-px xl:first:before:content-[''] ${DOTTED_RULE_TOP_TABLE} sm:max-xl:first:border-t-0 sm:max-xl:first:pt-0 lg:max-xl:border-t-0 lg:max-xl:pt-0 lg:max-xl:[&:not(:first-child)]:mt-0`}
                   >
                     <p className="text-sm font-medium">
                       {group.extendsPrevious && prevName
@@ -497,42 +529,23 @@ function PlanGrid({
                     </ul>
                   </div>
                 ))}
+                {/* Under Support on phone and tablet; from lg, where the groups
+                    sit three across, in Support's column. */}
+                {yearlyList && (
+                  <div className="mt-5 border-t border-border pt-5 lg:max-xl:col-start-3 xl:hidden">
+                    {yearlyList}
+                  </div>
+                )}
               </div>
 
-              {/* Yearly footer: the table's last row, ruled off like the price
-                  row, listing what paying yearly gets: the saving, then any
-                  yearly-only extras. Monthly drops the row entirely. Free and
-                  Enterprise have no saving, so their cell stays empty; it is
-                  kept so the row's top rule still runs across every column. */}
+              {/* Yearly footer (desktop): the table's last row, ruled off like
+                  the price row. Monthly drops the row entirely. Free and
+                  Enterprise keep an empty cell so the row's top rule still
+                  runs across every column. Below xl the same list sits under
+                  Support instead, inside the features. */}
               {billing === "yearly" && (
-                <div className="-mx-6 mt-6 border-t border-border px-6 pt-5 text-sm sm:max-xl:col-span-2 sm:max-xl:row-start-3">
-                  {plan.priceMonthly === 0 || plan.startingPrice ? null : (
-                      <ul className="flex flex-col gap-2.5">
-                        <li className="flex items-start gap-2 text-sm text-foreground">
-                          <span className="mt-0.5">
-                            <CheckIcon />
-                          </span>
-                          <span>Save {money(yearlySaving(plan))} a year</span>
-                        </li>
-                        {plan.yearlyPerks?.length ? (
-                          <>
-                            {plan.yearlyPerks.map((perk) => (
-                              <li
-                                key={perk}
-                                className="flex items-start gap-2 text-sm text-foreground"
-                              >
-                                <span className="mt-0.5">
-                                  <CheckIcon />
-                                </span>
-                                {/* One line: the perks are short, and a wrapped
-                                    perk read as two items. */}
-                                <span className="whitespace-nowrap">{perk}</span>
-                              </li>
-                            ))}
-                          </>
-                        ) : null}
-                      </ul>
-                  )}
+                <div className="-mx-6 mt-6 hidden border-t border-border px-6 pt-5 text-sm xl:block">
+                  {yearlyList}
                 </div>
               )}
             </div>
