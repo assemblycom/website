@@ -1,66 +1,47 @@
-"use client";
+import type { ReactNode } from "react";
+import {
+  IconBrandMark,
+  IconChat,
+  IconFolder,
+  IconHouse,
+} from "@/components/home/mock-icons";
 
-import { useEffect, useState } from "react";
-import type { CtaVisual } from "@/lib/blog-cta-copy";
-
-// Typing pace, in milliseconds per character.
-const TYPE_MS = 45;
+const BRAND = "BrandMages";
 
 /**
- * What Assembly does, at the top of the guide card: the name of the app the
- * post is about types into the app builder's box once and stays there.
- * Drawn like the blog's own prompt-box figures (a dark stage, a white field,
- * the resting caret) so it reads as the product rather than an illustration.
- * Decorative: the card's title and copy say the same thing in words.
+ * A client portal's sidebar at the top of the guide card: the BrandMages logo
+ * and name, Home open, then Messages and Files.
+ * Uses the homepage mocks' brand mark and product glyphs so it reads as the
+ * real portal. Decorative: the card's copy says the same thing in words.
  */
-export function PostCtaVisual({ visual }: { visual: CtaVisual }) {
-  // Starts empty so the name never shows whole before it types in.
-  const [typed, setTyped] = useState(0);
-
-  useEffect(() => {
-    let timer: ReturnType<typeof setTimeout>;
-    // Without motion the name appears whole, which says it alone.
-    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
-      timer = setTimeout(() => setTyped(visual.prompt.length));
-      return () => clearTimeout(timer);
-    }
-    const run = (count: number) => {
-      setTyped(count);
-      if (count < visual.prompt.length)
-        timer = setTimeout(() => run(count + 1), TYPE_MS);
-    };
-    run(0);
-    return () => clearTimeout(timer);
-  }, [visual.prompt]);
-
+export function PostCtaVisual() {
+  const apps: { icon: ReactNode; label: string; active?: boolean }[] = [
+    { icon: <IconHouse className="size-full" />, label: "Home", active: true },
+    { icon: <IconChat className="size-full" />, label: "Messages" },
+    { icon: <IconFolder className="size-full" />, label: "Files" },
+  ];
   return (
     <div
       aria-hidden
-      className="flex aspect-[16/10] w-full items-center justify-center rounded-lg bg-[#111111] p-3 [[data-theme=dark]_&]:border [[data-theme=dark]_&]:border-white/[0.08] [[data-theme=dark]_&]:bg-[var(--surface-2)]"
+      className="flex w-full cursor-default select-none flex-col gap-0.5 overflow-hidden rounded-lg bg-[#f5f5f5] px-2.5 py-3 text-[#101114] [[data-theme=dark]_&]:bg-[#262626] [[data-theme=dark]_&]:text-white"
     >
-      {/* The prompt box, as the app builder draws it, with send on its line. */}
-      <div className="flex w-full items-center gap-2 rounded-lg border border-[#e5e5e5] bg-white py-2 pl-2.5 pr-2 text-xs leading-[1.4] text-[#101114]">
-        <p className="m-0 min-w-0 flex-1 overflow-hidden whitespace-nowrap">
-          {visual.prompt.slice(0, typed)}
-          <span
-            className="ml-px inline-block h-[1.1em] w-px translate-y-[0.2em] bg-[#101114]"
-            style={{ animation: "composerCaret 1.1s steps(1) infinite" }}
-          />
-        </p>
-        <span className="flex size-[1.125rem] shrink-0 items-center justify-center rounded-[0.25rem] bg-[#101114] text-white">
-          <svg
-            viewBox="0 0 16 16"
-            className="size-2.5"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M3 8h10M9 4l4 4-4 4" />
-          </svg>
+      <div className="mb-2 flex items-center gap-2 px-1.5">
+        <span className="flex size-[18px] shrink-0 items-center justify-center rounded bg-[#101114] text-white [[data-theme=dark]_&]:bg-[#dcdcdc] [[data-theme=dark]_&]:text-[#101114]">
+          <IconBrandMark className="size-[11px]" />
         </span>
+        <span className="truncate text-xs">{BRAND}</span>
       </div>
+      {apps.map((app) => (
+        <div
+          key={app.label}
+          className={`flex items-center gap-2 rounded-md px-1.5 py-1 ${app.active ? "bg-black/[0.06] [[data-theme=dark]_&]:bg-white/10" : "text-[#101114]/60 [[data-theme=dark]_&]:text-white/70"}`}
+        >
+          <span className="flex size-[18px] shrink-0 items-center justify-center">
+            <span className="size-3">{app.icon}</span>
+          </span>
+          <span className="truncate text-[11px] leading-4">{app.label}</span>
+        </div>
+      ))}
     </div>
   );
 }

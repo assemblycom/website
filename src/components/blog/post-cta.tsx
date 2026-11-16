@@ -75,7 +75,7 @@ export function PostCta({
           {cta.media ? (
             <CtaMedia media={cta.media} label={cta.title} />
           ) : (
-            visual && <PostCtaVisual visual={visual} />
+            visual && <PostCtaVisual />
           )}
         </div>
       )}
