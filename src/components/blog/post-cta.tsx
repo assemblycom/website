@@ -1,7 +1,9 @@
 import { G2Logo } from "@/components/customers/review-marks";
 import { G2_URL, SIGNUP_URL } from "@/lib/constants";
 import { cn } from "@/lib/utils";
-import type { PostCta as PostCtaContent } from "@/lib/ghost";
+import { PostCtaVisual } from "@/components/blog/post-cta-visual";
+import type { CtaVisual } from "@/lib/blog-cta-copy";
+import type { PostCta as PostCtaContent, PostCtaMedia } from "@/lib/ghost";
 
 /**
  * The G2 score quoted under the guide card, the same figure as the /customers
@@ -20,10 +22,13 @@ const G2_SCORE = "4.7";
 export function PostCta({
   cta,
   guide = false,
+  visual,
   className,
 }: {
   cta: PostCtaContent;
   guide?: boolean;
+  /** The animation shown at the top when the post sets no image or video. */
+  visual?: CtaVisual;
   className?: string;
 }) {
   const button = (
@@ -38,9 +43,7 @@ export function PostCta({
 
   if (!guide) {
     return (
-      <aside
-        className={cn("flex flex-col rounded-xl bg-muted p-5", className)}
-      >
+      <aside className={cn("flex flex-col rounded-xl bg-muted p-5", className)}>
         {cta.title && (
           <p className="text-[1.0625rem] leading-[1.35] tracking-[-0.006em] text-foreground">
             {cta.title}
@@ -67,6 +70,15 @@ export function PostCta({
         className,
       )}
     >
+      {(cta.media || visual) && (
+        <div className="px-4 pt-4">
+          {cta.media ? (
+            <CtaMedia media={cta.media} label={cta.title} />
+          ) : (
+            visual && <PostCtaVisual visual={visual} />
+          )}
+        </div>
+      )}
       {(cta.title || cta.description) && (
         <div className="px-4 pb-4 pt-4">
           {cta.title && (
@@ -97,5 +109,31 @@ export function PostCta({
         </a>
       </div>
     </aside>
+  );
+}
+
+// Framed like the post's own figures: a hairline and the card's corner, so a
+// screenshot with a white edge still reads as a picture on the white card.
+const MEDIA_CLASS =
+  "block aspect-[16/10] w-full rounded-lg border border-border bg-muted object-cover";
+
+function CtaMedia({ media, label }: { media: PostCtaMedia; label: string }) {
+  if (media.kind === "video")
+    return (
+      // Muted and looping like a GIF; it shows what Assembly does, so it has no
+      // sound and no controls to manage.
+      <video
+        src={media.src}
+        className={MEDIA_CLASS}
+        autoPlay
+        muted
+        loop
+        playsInline
+        aria-label={label}
+      />
+    );
+  return (
+    // eslint-disable-next-line @next/next/no-img-element -- Ghost-hosted, any size
+    <img src={media.src} alt={label} className={MEDIA_CLASS} loading="lazy" />
   );
 }

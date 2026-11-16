@@ -18,7 +18,6 @@ import {
   withHeadingRanks,
   mergeLeadParagraphs,
   mergeShortParagraphs,
-  foldToolDetails,
   footnotesAsTableNotes,
   markParagraphLabels,
   quotesAboveFigures,
@@ -38,6 +37,8 @@ import { PostMobileCta } from "@/components/blog/post-mobile-cta";
 import { PostLightbox } from "@/components/blog/post-lightbox";
 import { TocMobile } from "@/components/ui/toc-mobile";
 import { PostToc } from "@/components/blog/post-toc";
+import { withTocLabels } from "@/lib/blog-toc-labels";
+import { ctaVisual, withShortCta } from "@/lib/blog-cta-copy";
 import { unbreakable } from "@/components/ui/unbreakable";
 
 // Ghost holds one cover per post. An announcement whose artwork comes in a
@@ -87,17 +88,15 @@ export default async function BlogPostPage({
   // Only the guides (posts with a contents rail) carry a ranked picks list.
   const html = post.showToc
     ? tldrAsCard(
-        foldToolDetails(
-          reviewsAsCards(
-            markParagraphLabels(
-              footnotesAsTableNotes(
-                markProsAndCons(
-                  logosInToolTables(
-                    withHeadingRanks(
-                      picksAsTable(
-                        mergeShortParagraphs(mergeLeadParagraphs(withIds)),
-                        headings,
-                      ),
+        reviewsAsCards(
+          markParagraphLabels(
+            footnotesAsTableNotes(
+              markProsAndCons(
+                logosInToolTables(
+                  withHeadingRanks(
+                    picksAsTable(
+                      mergeShortParagraphs(mergeLeadParagraphs(withIds)),
+                      headings,
                     ),
                   ),
                 ),
@@ -118,7 +117,10 @@ export default async function BlogPostPage({
   );
   // The desktop rail nests a listicle's picks under the heading that opens
   // them.
-  const railContents = groupRankedSections(contents, headings, post.title);
+  const railContents = withTocLabels(
+    groupRankedSections(contents, headings, post.title),
+    post.slug,
+  );
   // The phone's bar takes the rail's names (the TL;DR as "Summary", the picks'
   // opener under its own title) with the picks pulled back out to one level,
   // so the two never call the same section by different names.
@@ -134,7 +136,8 @@ export default async function BlogPostPage({
   // With neither a contents list nor a card, the rail holds only the way back,
   // which doesn't earn a column of its own — so the announcements read as a
   // centred page instead of an article pushed off to one side.
-  const showRail = showToc || Boolean(post.cta);
+  const cta = withShortCta(post.cta, post.slug);
+  const showRail = showToc || Boolean(cta);
   // What the page actually gives an image, so the browser picks the right file
   // off Ghost's srcset: the reading measure beside a rail, or the announcements'
   // 40.5rem column (only their cover runs wider).
@@ -401,9 +404,14 @@ export default async function BlogPostPage({
             on its own so the contents list no longer has to share height with
             it. Last in the markup and placed by the grid, so the reading order
             is contents, then post, then the offer. */}
-        {post.cta && (
+        {cta && (
           <div className="hidden lg:col-start-3 lg:row-start-1 lg:block">
-            <PostCta cta={post.cta} guide className="sticky top-28" />
+            <PostCta
+              cta={cta}
+              guide
+              visual={ctaVisual(post.slug)}
+              className="sticky top-28"
+            />
           </div>
         )}
       </div>

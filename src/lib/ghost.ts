@@ -146,6 +146,13 @@ const HTML_CARD_WRAPPER = /<\/?(?:html|head|body)>/g;
 export interface PostCta {
   title: string;
   description: string;
+  /** An optional picture or clip of the product above the copy. */
+  media?: PostCtaMedia;
+}
+
+export interface PostCtaMedia {
+  kind: "image" | "video";
+  src: string;
 }
 
 // The blog's call to action is authored as an HTML card holding a custom <cta>
@@ -171,7 +178,16 @@ function parseCta(inner: string): PostCta | undefined {
       .split(/\n|<br\s*\/?>/i)
       .find((line) => line.trim()) ?? "",
   );
-  return title || description ? { title, description } : undefined;
+  // A writer adds <image>url</image> or <video>url</video> to show the product
+  // above the pitch; without one the card stays text only.
+  const video = collapse(raw("video"));
+  const image = collapse(raw("image"));
+  const media: PostCtaMedia | undefined = video
+    ? { kind: "video", src: video }
+    : image
+      ? { kind: "image", src: image }
+      : undefined;
+  return title || description ? { title, description, media } : undefined;
 }
 
 /**
@@ -1478,6 +1494,12 @@ export function withHeadingRanks(html: string): string {
 // body copy in a different voice. Directly after a table note, a starred
 // paragraph that is all emphasis folds into that note as one footnote line.
 // The star goes: no cell in these tables carries one for it to point at.
+// The note and the footnote read as one run of sentences rather than a list.
+function asSentence(text: string): string {
+  const trimmed = text.trim();
+  return /[.!?]$/.test(trimmed) ? trimmed : `${trimmed}.`;
+}
+
 export function footnotesAsTableNotes(html: string): string {
   return html.replace(
     /<p class="table-note">([\s\S]*?)<\/p>(\s*(?:<!--[\s\S]*?-->\s*)*)<p>\s*(\*?)\s*<em>\s*(\*?)([\s\S]*?)<\/em>\s*<\/p>/g,
@@ -1490,63 +1512,9 @@ export function footnotesAsTableNotes(html: string): string {
       text: string,
     ) =>
       before || inside
-        ? `<p class="table-note">${note.trim()} · ${text.trim()}</p>${between}`
+        ? `<p class="table-note">${asSentence(note)} ${text.trim()}</p>${between}`
         : match,
   );
-}
-
-// The detail sections inside a listicle's tool that a reader opens on demand.
-// What the tool does, its price and the verdict stay open; these are the
-// supporting evidence.
-const FOLDED_DETAIL =
-  /^\s*(key features|features|pros (and|&amp;|&) cons|what users say)\s*$/i;
-
-/**
- * Inside each ranked tool section of a guide, folds the supporting detail
- * (key features, pros and cons, what users say) into rows a reader opens, the
- * way OpenAI's posts tuck secondary material behind a disclosure. A tool's
- * section otherwise ran near 3,000px, with the summary and the verdict buried
- * between a table and two reviews. The heading moves into the row's summary
- * with its id, so a link to the section still lands on it.
- */
-export function foldToolDetails(html: string): string {
-  const h2 = /<h2\b[^>]*>[\s\S]*?<\/h2>/g;
-  const starts: number[] = [];
-  let found: RegExpExecArray | null;
-  while ((found = h2.exec(html))) starts.push(found.index);
-  if (!starts.length) return html;
-
-  let out = html.slice(0, starts[0]);
-  starts.forEach((start, index) => {
-    const section = html.slice(start, starts[index + 1] ?? html.length);
-    const ranked = /^<h2\b[^>]*>\s*<span class="heading-rank">/.test(section);
-    out += ranked ? foldSection(section) : section;
-  });
-  return out;
-}
-
-function foldSection(section: string): string {
-  const h3 = /<h3\b[^>]*>([\s\S]*?)<\/h3>/g;
-  const heads: { index: number; end: number; text: string }[] = [];
-  let found: RegExpExecArray | null;
-  while ((found = h3.exec(section)))
-    heads.push({
-      index: found.index,
-      end: found.index + found[0].length,
-      text: found[1].replace(/<[^>]+>/g, ""),
-    });
-  if (!heads.length) return section;
-
-  let out = section.slice(0, heads[0].index);
-  heads.forEach((head, index) => {
-    const next = heads[index + 1]?.index ?? section.length;
-    const heading = section.slice(head.index, head.end);
-    const body = section.slice(head.end, next);
-    out += FOLDED_DETAIL.test(head.text)
-      ? `<details class="tool-detail"><summary>${heading}</summary><div class="tool-detail-body">${body}</div></details>`
-      : heading + body;
-  });
-  return out;
 }
 
 // Marks the bold label a paragraph opens with ("Pro:", "Best for:") so the guide
