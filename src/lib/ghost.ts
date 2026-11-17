@@ -1423,7 +1423,14 @@ const TOOL_NAME_CELL =
   /<td>(\s*)<a href="(https?:\/\/[^"]+)">([\s\S]*?)<\/a>(\s*)<\/td>/;
 
 function toolLogo(href: string): string {
-  const domain = new URL(href).hostname.replace(/^www\./, "");
+  // A writer's typo in the link must cost the row its logo, not the page.
+  let domain: string;
+  try {
+    domain = new URL(href).hostname.replace(/^www\./, "");
+  } catch {
+    return "";
+  }
+  if (!domain) return "";
   return `<img class="tool-logo" src="https://www.google.com/s2/favicons?domain=${domain}&amp;sz=${TOOL_LOGO_SIZE}" alt="" width="20" height="20" loading="lazy">`;
 }
 
@@ -1466,10 +1473,11 @@ function point(content: string, side: "pro" | "con"): string {
 
 // A guide's TL;DR (its heading, the line under it and the ranked list) is set
 // as one tinted card, so the at-a-glance answer reads as a unit apart from the
-// prose around it. Only the first <ol> after the heading joins, and only when
-// no other section starts first.
+// prose around it. Only the first <ol> after the heading joins (or the picks
+// table it became, since picksAsTable runs first), and only when no other
+// section starts first.
 const TLDR_SECTION =
-  /(<h2[^>]*>(?:(?!<\/h2>)[\s\S])*?TL;?DR(?:(?!<\/h2>)[\s\S])*<\/h2>)([\s\S]*?<\/ol>)/i;
+  /(<h2[^>]*>(?:(?!<\/h2>)[\s\S])*?TL;?DR(?:(?!<\/h2>)[\s\S])*<\/h2>)([\s\S]*?(?:<\/ol>|<table class="picks-table">[\s\S]*?<\/table>))/i;
 
 export function tldrAsCard(html: string): string {
   return html.replace(TLDR_SECTION, (match, heading: string, body: string) =>

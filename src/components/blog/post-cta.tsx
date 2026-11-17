@@ -1,6 +1,7 @@
 import { G2Logo } from "@/components/customers/review-marks";
 import { G2_URL, SIGNUP_URL } from "@/lib/constants";
 import { cn } from "@/lib/utils";
+import { PostCtaVideo } from "@/components/blog/post-cta-video";
 import { PostCtaVisual } from "@/components/blog/post-cta-visual";
 import type { CtaVisual } from "@/lib/blog-cta-copy";
 import type { PostCta as PostCtaContent, PostCtaMedia } from "@/lib/ghost";
@@ -120,17 +121,7 @@ const MEDIA_CLASS =
 function CtaMedia({ media, label }: { media: PostCtaMedia; label: string }) {
   if (media.kind === "video")
     return (
-      // Muted and looping like a GIF; it shows what Assembly does, so it has no
-      // sound and no controls to manage.
-      <video
-        src={media.src}
-        className={MEDIA_CLASS}
-        autoPlay
-        muted
-        loop
-        playsInline
-        aria-label={label}
-      />
+      <PostCtaVideo src={media.src} label={label} className={MEDIA_CLASS} />
     );
   return (
     // eslint-disable-next-line @next/next/no-img-element -- Ghost-hosted, any size
