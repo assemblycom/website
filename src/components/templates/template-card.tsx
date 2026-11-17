@@ -48,8 +48,9 @@ export function TemplateCard({
       >
         {/* Real preview image when set; otherwise the template's widget
           cover mock (shared with the home hero). */}
-        {/* Square at every width: the widgets are drawn square, and the
-          old 5/4 mobile frame cropped the bottom off the taller ones. */}
+        {/* 16:10 at every width, the wide card shape template galleries use.
+          The design box in globals.css has the same aspect, so the covers
+          are drawn to the frame rather than cropped from a square. */}
         {/* The outline is drawn OVER the cover, not as a border on the
           frame. A border takes a pixel of layout, so the widget could
           only ever fill the content box and stopped 1px short of the
@@ -59,9 +60,9 @@ export function TemplateCard({
           square and the hairline sits on its outermost pixel.
           It can't live inside MockFit: `.template-mock-fit > *` sizes
           and scales every direct child to the design size. */}
-        <div className="relative rounded-[14px] transition-shadow group-focus-visible/card:ring-2 group-focus-visible/card:ring-foreground/40 group-focus-visible/card:ring-offset-4 group-focus-visible/card:ring-offset-background sm:rounded-[20px]">
+        <div className="relative rounded-[10px] transition-shadow group-focus-visible/card:ring-2 group-focus-visible/card:ring-foreground/40 group-focus-visible/card:ring-offset-4 group-focus-visible/card:ring-offset-background sm:rounded-[12px]">
           <MockFit
-            className={`relative aspect-[16/10] overflow-hidden rounded-[14px] bg-background sm:aspect-square sm:rounded-[20px] [[data-theme=dark]_&]:bg-[#151515] ${MOCK_DESIGN_SIZE[template.slug] ?? ""}`}
+            className={`relative aspect-[16/10] overflow-hidden rounded-[10px] bg-background sm:rounded-[12px] [[data-theme=dark]_&]:bg-[#151515] ${MOCK_DESIGN_SIZE[template.slug] ?? ""}`}
           >
             {/* template-mock-gallery marks this rail specifically — a few
               covers are skinned for the gallery alone, and .template-mock
@@ -75,6 +76,10 @@ export function TemplateCard({
               <V69CardMock slug={template.slug} />
             </div>
           </MockFit>
+          {/* Covers that fill their frame with a photo, gradient or app window
+              (v69-bleed) take a faint dark edge instead: the pale one drew a
+              second ring inside a dark cover, while a dark one sinks into it
+              and still edges a white window against the white page. */}
           {!BLEED_COVERS.has(template.slug) && (
             <div
               aria-hidden
@@ -86,7 +91,7 @@ export function TemplateCard({
               // widget's own ground and read as a vignette rather than as
               // depth. Light only: the dark surface has no hairline to catch
               // a highlight.
-              className="pointer-events-none absolute inset-0 rounded-[14px] border border-border/45 sm:rounded-[20px] [[data-theme=dark]_&]:border-transparent"
+              className="pointer-events-none absolute inset-0 rounded-[10px] border border-border/45 sm:rounded-[12px] [[data-theme=dark]_&]:border-transparent [div:has(.v69-bleed)>&]:border-[rgba(0,0,0,0.08)]"
             />
           )}
         </div>
@@ -100,7 +105,12 @@ export function TemplateCard({
         <h3 className="type-body mt-4 text-foreground">
           {template.title}
         </h3>
-        <p className="type-caption mt-1 text-muted-foreground">
+        {/* Two lines are reserved whether or not the line under the name needs
+            them. Grid cells stretch to the tallest in their row, so a one-line
+            description left its own cell short and the whole gap to the next
+            row read bigger under that card than under its neighbours. 42px is
+            two lines of .type-caption (14px at 1.5). */}
+        <p className="type-caption mt-1 min-h-[42px] text-muted-foreground">
           {template.description}
         </p>
         {chip && (
