@@ -18,6 +18,8 @@ const FRAME_MS = 1000 / 30;
 // brand green, as a loop so the flowing color never hits an edge.
 const LOOP = ["#C5B3FF", "#FFDAFC", "#FF9092", "#FFDAFC", "#7DA4FF", "#BCE7F4", "#D6F990"];
 const LUT_SIZE = 600;
+// Share of the color loop visible across the panel at any moment.
+const COLOR_SPAN = 0.8;
 // The panel's own fill under the glow: the other plans' panel gray (--muted),
 // so the top of the card reads as a panel rather than blending into the page.
 const BASE = [0xf6, 0xf7, 0xf9];
@@ -105,15 +107,18 @@ export function PlanGlow({ className }: { className?: string }) {
             d[i + 3] = 255;
             continue;
           }
-          // Domain-warped waves, layered into each other, so the color drifts.
+          // Broad, slow waves with a light warp, so the color shifts in wide
+          // soft fields; the sign-up screen's tighter, faster warp read as
+          // rippling water at card size. COLOR_SPAN keeps only part of the
+          // palette on screen at once, so it isn't a stripe of every color.
           const xx = x / w;
-          const wx = xx * 2.2 + Math.sin(yy * 3.1 + t * 0.21) * 0.6;
-          const wy = yy * 2.6 + Math.sin(xx * 2.7 - t * 0.17) * 0.5;
+          const wx = xx * 1.7 + Math.sin(yy * 2.2 + t * 0.16) * 0.32;
+          const wy = yy * 2 + Math.sin(xx * 2 - t * 0.13) * 0.26;
           const f =
             0.5 +
-            0.25 * Math.sin(wx * 2.3 + t * 0.13 + Math.sin(wy * 1.9 - t * 0.11) * 1.4) +
-            0.25 * Math.sin(wy * 2.1 - t * 0.09 + Math.sin(wx * 1.6 + t * 0.15) * 1.2);
-          const li = ((Math.floor((f + t * 0.02) * LUT_SIZE) % LUT_SIZE) + LUT_SIZE) % LUT_SIZE * 3;
+            0.25 * Math.sin(wx * 2 + t * 0.1 + Math.sin(wy * 1.5 - t * 0.08) * 0.7) +
+            0.25 * Math.sin(wy * 1.8 - t * 0.07 + Math.sin(wx * 1.3 + t * 0.1) * 0.6);
+          const li = ((Math.floor((f * COLOR_SPAN + t * 0.018) * LUT_SIZE) % LUT_SIZE) + LUT_SIZE) % LUT_SIZE * 3;
           const k = Math.min(1, a * 1.15);
           d[i] = BASE[0] + (lut[li] - BASE[0]) * k;
           d[i + 1] = BASE[1] + (lut[li + 1] - BASE[1]) * k;

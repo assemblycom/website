@@ -15,6 +15,7 @@ import {
   PLAN_WASH_NEUTRAL_LG,
 } from "@/components/pricing/plan-wash";
 import { PlanGlow } from "@/components/pricing/plan-glow";
+import { GRAIN } from "@/components/comparison/brand-panel";
 
 // Some lines follow the billing toggle: Advanced's credits become unlimited
 // building on yearly. A line with an extra fee reads "X included" and carries
@@ -485,7 +486,7 @@ function PlanGrid({
                   (perk) => (
                     <li
                       key={perk}
-                      className="flex items-start gap-2 text-sm text-foreground"
+                      className="flex items-start gap-2 text-sm text-muted-foreground"
                     >
                       <span className="mt-0.5">
                         <CheckIcon />
@@ -569,6 +570,15 @@ function PlanGrid({
                   // instead of starting on the bars' flat top edge.
                   <PlanGlow className="pointer-events-none absolute inset-0 -z-10 h-full w-full object-cover object-bottom [mask-image:linear-gradient(to_bottom,transparent_30%,#000_85%)]" />
                 )}
+                {plan.highlighted && (
+                  // A light grain over the glow only (the site's brand-panel
+                  // grain at half strength), under the same fade.
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute inset-0 -z-10 opacity-50 [mask-image:linear-gradient(to_bottom,transparent_30%,#000_85%)]"
+                    style={{ backgroundImage: GRAIN }}
+                  />
+                )}
                 <h3 className="text-lg font-medium">{plan.name}</h3>
                 <p className="mt-2 text-sm text-muted-foreground">{plan.description}</p>
                 {/* Price, then one line saying how it's billed. On monthly
@@ -646,10 +656,10 @@ function PlanGrid({
                   </div>
                 ))}
                 {/* Under Support on phone and tablet; from lg, where the groups
-                    sit three across, in Support's column. On a phone it's a
-                    tinted footer, ruled full width, like the desktop row. */}
+                    sit three across, in Support's column. Ruled off like the
+                    other groups, with no fill. */}
                 {yearlyList && (
-                  <div className="mt-5 max-sm:-mx-3 rounded-xl bg-muted p-5 text-sm [[data-theme=dark]_&]:bg-[var(--surface-2)] lg:max-xl:col-start-3 xl:hidden">
+                  <div className="mt-5 border-t border-border pt-5 text-sm lg:max-xl:col-start-3 xl:hidden">
                     {yearlyList}
                   </div>
                 )}
