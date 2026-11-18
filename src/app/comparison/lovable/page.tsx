@@ -225,7 +225,7 @@ const PAGE: VsPage = {
   },
   pricing: {
     heading: "Predictable pricing by design",
-    body: "Lovable's credits also fund hosting and live AI. Assembly's are spent only on building, and a live app is $5 a month.",
+    body: "Lovable's credits also fund hosting and live AI. Assembly's are spent only on building, and a live app is $8 a month.",
   },
   faqs: [
     {
