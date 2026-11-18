@@ -600,9 +600,9 @@
   --mock-accent-bg-3: rgba(125, 164, 255, 0.46);
   --mock-accent-bg-4: rgba(125, 164, 255, 0.28);
 
-  /* See --pricing-brand in :root. Dark: the light ink, matching --foreground,
-     with the page black laid on it. */
-  --pricing-brand: #d9d9d9;
+  /* See --pricing-brand in :root. Dark: pure white, so the one solid button
+     reads as white rather than a gray next to the light text. */
+  --pricing-brand: #ffffff;
   --pricing-brand-on: #0a0a0a;
 
   /* See --mock-gantt-1 in :root. Lifted about eight percent, because a mid-tone

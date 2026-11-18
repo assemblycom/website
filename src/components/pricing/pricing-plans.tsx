@@ -14,6 +14,7 @@ import {
   PLAN_WASH_NEUTRAL,
   PLAN_WASH_NEUTRAL_LG,
 } from "@/components/pricing/plan-wash";
+import { PlanGlow } from "@/components/pricing/plan-glow";
 
 // Some lines follow the billing toggle: Advanced's credits become unlimited
 // building on yearly. A line with an extra fee reads "X included" and carries
@@ -526,7 +527,7 @@ function PlanGrid({
               // so there the fill stays on at every width.
               // sm–xl, the row: a two-column grid, the header panel and buttons
               // down the left, the features filling the right.
-              className={`relative isolate sm:max-xl:grid sm:max-xl:grid-cols-[minmax(0,17rem)_minmax(0,1fr)] sm:max-xl:grid-rows-[auto_1fr] sm:max-xl:gap-x-6 flex min-w-0 flex-col overflow-hidden rounded-2xl border border-border p-6 xl:grid xl:grid-cols-[minmax(0,1fr)] xl:grid-rows-subgrid xl:row-span-6 xl:rounded-none xl:border-y xl:border-l xl:border-r-0 xl:border-solid xl:border-border xl:p-6 ${plan.highlighted ? "bg-muted" : "bg-card xl:bg-transparent xl:[[data-theme=dark]_&]:bg-card"} xl:first:!rounded-l-xl xl:last:!rounded-r-xl xl:[&:last-child]:border-r`}
+              className={`relative isolate sm:max-xl:grid sm:max-xl:grid-cols-[minmax(0,17rem)_minmax(0,1fr)] sm:max-xl:grid-rows-[auto_1fr] sm:max-xl:gap-x-6 flex min-w-0 flex-col overflow-hidden rounded-2xl border border-border p-6 xl:grid xl:grid-cols-[minmax(0,1fr)] xl:grid-rows-subgrid xl:row-span-6 xl:rounded-none xl:border-y xl:border-l xl:border-r-0 xl:border-solid xl:border-border xl:p-6 bg-card xl:bg-transparent xl:[[data-theme=dark]_&]:bg-card xl:first:!rounded-l-xl xl:last:!rounded-r-xl xl:[&:last-child]:border-r`}
             >
               {/* Aurora wash blooming up from behind the header panel (-z-10
                   inside an isolated context). Every card carries one now, so the
@@ -549,44 +550,43 @@ function PlanGrid({
                 }`}
               />
 
-              {/* Below xl each plan is its own card, so the recommended one
-                  is a single color; the darker header only reads in the table. */}
-              {/* Name and description: the table's first row. On the
-                  recommended plan it sits on a slightly darker fill than the
-                  column's gray, full bleed to the column edges. -mb-6 lets the fill
-                  run down through the price row's mt-6 to the rule without
-                  changing the row height, so the columns stay level. */}
+              {/* The plan's header: a rounded panel inset in the column, name
+                  at the top and price at the bottom. Professional's panel is
+                  the sign-up screen's animated rim glow, and stays light in dark mode, so its ink is pinned to the brand
+                  black; the brand's text rules allow only black on its colors,
+                  so the secondary lines go black here too. It and
+                  the buttons reach 12px into the card's padding, so the
+                  panel sits close to the column edges. */}
               <div
-                className={`sm:max-xl:col-start-1 sm:max-xl:row-start-1 ${
+                className={`-mx-3 -mt-3 flex flex-col rounded-xl p-5 sm:max-xl:col-start-1 sm:max-xl:row-start-1 ${
                   plan.highlighted
-                    ? "-mx-6 -mb-6 -mt-6 bg-foreground/[0.04] px-6 pb-6 pt-6 sm:max-xl:-mr-6 max-xl:bg-transparent [[data-theme=dark]_&]:bg-transparent"
-                    : ""
+                    ? "relative isolate overflow-hidden bg-[#f6f7f9] [--foreground:#101010] [--muted-foreground:#101010] text-foreground"
+                    : "bg-muted [[data-theme=dark]_&]:bg-[var(--surface-2)]"
                 }`}
               >
-                <div className="flex items-center justify-between gap-3">
-                  <h3 className="text-lg font-medium">{plan.name}</h3>
-                </div>
+                {plan.highlighted && (
+                  // The sign-up screen's own mask: the glow fades in from the panel gray
+                  // instead of starting on the bars' flat top edge.
+                  <PlanGlow className="pointer-events-none absolute inset-0 -z-10 h-full w-full object-cover object-bottom [mask-image:linear-gradient(to_bottom,transparent_30%,#000_85%)]" />
+                )}
+                <h3 className="text-lg font-medium">{plan.name}</h3>
                 <p className="mt-2 text-sm text-muted-foreground">{plan.description}</p>
+                {/* Price, then one line saying how it's billed. On monthly
+                    the paid plans' line is a button that flips the toggle. */}
+                <div className="mt-auto pt-10">
+                  <p className="flex items-baseline gap-1">
+                    <AnimatedPrice value={price} />
+                    <span className="cursor-default text-sm text-muted-foreground">/month</span>
+                  </p>
+                  <div className="mt-1 flex h-6 items-center text-sm">
+                    {billingNote}
+                  </div>
+                </div>
               </div>
 
-              {/* Price and buttons: the second row, ruled off from the name the
-                  full width of the column (-mx-6 undoes the card padding), so
-                  the rules join across columns into one table line. */}
-              <div className={`-mx-6 mt-6 flex flex-col border-t border-border px-6 pt-6 xl:pb-6 sm:max-xl:col-start-1 sm:max-xl:row-start-2 sm:max-xl:-mr-6 sm:max-xl:self-start sm:max-xl:pr-6`}>
-                {/* Price, then one pill saying how it's billed.
-                    Yearly: what the year costs. Monthly: what the same plan
-                    costs on yearly, as a callout pill that flips the toggle, so a
-                    monthly buyer sees the cheaper price in plain words. Free
-                    and Enterprise keep the line empty on desktop so every
-                    card's buttons start on one line. */}
-                <p className="flex items-baseline gap-1">
-                  <AnimatedPrice value={price} />
-                  <span className="cursor-default text-sm text-muted-foreground">/month</span>
-                </p>
-                <div className="mt-2 flex h-6 items-center text-sm">
-                  {billingNote}
-                </div>
-                <div className="mt-6 flex flex-col gap-2">
+              {/* Buttons: the second row, right under the panel. */}
+              <div className="-mx-3 flex flex-col sm:max-xl:col-start-1 sm:max-xl:row-start-2 sm:max-xl:self-start xl:pb-6">
+                <div className="mt-4 flex flex-col gap-2">
                   <a
                     href={plan.ctaHref}
                     className={`rounded-lg border px-5 py-2 text-center text-sm transition ${
@@ -649,7 +649,7 @@ function PlanGrid({
                     sit three across, in Support's column. On a phone it's a
                     tinted footer, ruled full width, like the desktop row. */}
                 {yearlyList && (
-                  <div className="mt-5 border-t border-border pt-5 max-sm:-mx-6 max-sm:-mb-8 max-sm:bg-foreground/[0.04] max-sm:px-6 max-sm:pb-6 lg:max-xl:col-start-3 xl:hidden max-sm:[[data-theme=dark]_&]:bg-[var(--surface-2)]">
+                  <div className="mt-5 max-sm:-mx-3 rounded-xl bg-muted p-5 text-sm [[data-theme=dark]_&]:bg-[var(--surface-2)] lg:max-xl:col-start-3 xl:hidden">
                     {yearlyList}
                   </div>
                 )}
@@ -664,8 +664,15 @@ function PlanGrid({
                   offer reads as its own row rather than another feature group.
                   In dark it's one solid surface a step above every column,
                   so it reads the same on the recommended column and beside it. */}
-              <div className={`-mx-6 -mb-6 mt-6 hidden border-t border-border px-6 pb-6 pt-5 text-sm xl:flex xl:flex-col ${hasYearlyOffer ? `bg-foreground/[0.04] [[data-theme=dark]_&]:bg-[var(--surface-2)]` : ""}`}>
-                {yearlyList}
+              {/* Ruled off edge to edge so the line joins across columns;
+                  the panel below takes the header panel's inset, fill and
+                  corners. */}
+              <div className="-mx-6 -mb-3 mt-6 hidden border-t border-border px-3 pt-3 xl:flex xl:flex-col">
+                {yearlyList && (
+                  <div className="flex flex-1 flex-col rounded-xl bg-muted p-5 text-sm [[data-theme=dark]_&]:bg-[var(--surface-2)]">
+                    {yearlyList}
+                  </div>
+                )}
               </div>
             </div>
           );
@@ -712,7 +719,7 @@ export function PricingPlans() {
               counter-slides to stay aligned with the base labels below. */}
           <span
             aria-hidden
-            className={`pointer-events-none absolute inset-y-1 left-1 z-10 w-[calc(50%-0.25rem)] overflow-hidden rounded-md bg-foreground transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+            className={`pointer-events-none absolute inset-y-1 left-1 z-10 w-[calc(50%-0.25rem)] overflow-hidden rounded-md bg-foreground [[data-theme=dark]_&]:bg-white transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
               billing === "yearly" ? "translate-x-full" : ""
             }`}
           >
