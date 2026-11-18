@@ -51,7 +51,7 @@ interface Plan {
   startingPrice?: boolean;
   highlighted: boolean;
   // What only yearly billing adds. Listed as the card's last group, under
-  // Support, headed "Included with yearly billing"; hidden on monthly.
+  // Support, headed "Included with yearly" ("With yearly" on monthly).
   yearlyPerks?: string[];
 }
 
@@ -477,8 +477,8 @@ function PlanGrid({
             <div className="flex flex-1 flex-col">
               <p className="text-sm font-medium">
                 {billing === "yearly"
-                  ? "Included with yearly billing"
-                  : "With yearly billing"}
+                  ? "Included with yearly"
+                  : "With yearly"}
               </p>
               <ul className="mt-3 flex flex-col gap-2.5">
                 {[`Save ${money(yearlySaving(plan))} a year`, ...(plan.yearlyPerks ?? [])].map(
