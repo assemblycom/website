@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { CTA } from "@/components/home/cta";
+import { CTA, SECONDARY_CTA } from "@/components/home/cta";
 import { FAQ, type FAQEntry } from "@/components/home/faq";
 import { GridDivider, GridRails } from "@/components/ui/grid-lines";
 import { PortalSocialProof } from "@/components/client-portal/portal-social-proof";
@@ -20,7 +20,9 @@ import {
 } from "@/components/client-portal/portal-build-cards";
 import { PortalTailor } from "@/components/client-portal/portal-tailor";
 import { AccountingLoginsVisual } from "@/components/solutions/accounting-logins-visual";
-import { AccountingHeroVisual } from "@/components/solutions/accounting-hero-visual";
+import { HeroPhoto, type HeroFigure } from "@/components/home/v3/hero-photo";
+import { getCaseStudyStat } from "@/lib/case-studies";
+import { PRIMARY_CTA } from "@/components/home/hero-big";
 import { AccountingViewsVisual } from "@/components/solutions/accounting-views-visual";
 import { PortalStack } from "@/components/client-portal/portal-stack";
 import { PortalTrust } from "@/components/client-portal/portal-trust";
@@ -52,12 +54,28 @@ export const metadata: Metadata = pageMetadata(PAGE_SEO.accountingClientPortal);
 
 /** Section 3. Four resolve from the committed templates; contracts-app is served
  *  from Contentful, which is why it is absent from src/lib/templates.ts. */
+
 /**
- * The hero lead's classes, shared by the phone sentence and the desktop one so
- * swapping breakpoints cannot leave the two set differently.
+ * The hero's figures, from the accounting firms' own stories rather than the
+ * site-wide counts the homepage carries. Read from the case-study records so
+ * the number on this page is always the one its story states.
  */
-const HERO_LEAD =
-  "type-lead max-w-[34rem] text-pretty text-muted-foreground lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:pt-2";
+const ACCOUNTING_FIGURES: HeroFigure[] = [
+  {
+    value: getCaseStudyStat("valuenode-accounting", "client time saved").value,
+    label: "Client time saved",
+    short: "Time saved",
+  },
+  {
+    value: getCaseStudyStat("orca-accounting", "faster onboarding").value,
+    label: "Faster onboarding",
+    short: "Onboarding",
+  },
+  {
+    value: getCaseStudyStat("orca-accounting", "less email").value,
+    label: "Less email",
+  },
+];
 
 const ACCOUNTING_APPS = [
   {
@@ -316,75 +334,44 @@ export default function AccountingClientPortalPage() {
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(FAQ_SCHEMA) }}
       />
 
-      {/* 1. Hero. Same split header as /client-portal and /ai-app-builder, with
-          the eyebrow this page's handoff asks for above the headline.
-
-          DECISION: the handoff marks a line break in every heading with a
-          slash. These balance instead. A hard <br /> set for a desktop measure
-          breaks badly at 390px, and text-balance lands the same break at the
-          widths the slash was written for. */}
-      <section className="pb-16 pt-24 md:pb-24 md:pt-32">
-        <div className="mx-auto max-w-[1400px] px-6 md:px-10">
-          <div className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-start lg:gap-x-16">
-            <h1 className="type-display max-w-[30ch] text-balance lg:col-start-1">
-              Your AI-native accounting firm starts here
-            </h1>
-            {/* Two leads, one measure. The desktop sentence runs to three
-                lines on a 390px screen, which puts the buttons below the fold
-                on the page's most important screen; the phone gets the same
-                argument — ready-made apps, and AI for the next one — without
-                the enumeration, which the sections below make anyway.
-
-                Rendered as two paragraphs rather than one clamped, because a
-                clamp cuts mid-sentence and cannot be read for sense. The
-                classes are shared so the two cannot drift apart. */}
-            <p
-              className={`${HERO_LEAD} md:hidden`}
-              // Phone only: see the pair above.
-            >
+      {/* 1. Hero. The photography hero the homepage tests as its V3 arm, with
+          this page's own headline, lead and buttons. It replaced the split
+          header over the Build with AI prompt, which led on the builder rather
+          than on the firm. Its figures are the accounting stories' own, and the
+          marks follow under the photograph. */}
+      <HeroPhoto
+        figures={ACCOUNTING_FIGURES}
+        lines={["Your AI-native accounting firm starts here"]}
+        body={
+          <>
+            {/* Two leads, one measure. The desktop sentence runs long enough
+                on a phone to push the buttons below the fold, so the phone
+                gets the same argument without the enumeration, which the
+                sections below make anyway. */}
+            <span className="md:hidden">
               A branded client portal with ready-made apps — and AI to build
               whatever your practice needs next.
-            </p>
-            <p className={`hidden ${HERO_LEAD} md:block`}>
+            </span>
+            <span className="hidden md:inline">
               Assembly gives your firm a branded client portal with ready-made
               apps for files, e-signatures, invoices, and messages. Describe the
               next app your practice needs, and AI builds it.
-            </p>
-            <div>
-              <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-                <a
-                  href={DEMO_URL}
-                  className="w-full rounded-lg bg-foreground px-5 py-3 text-center text-sm text-background transition-opacity hover:opacity-90 sm:w-auto sm:py-2.5"
-                >
-                  Book a demo
-                </a>
-                <a
-                  href={SIGNUP_URL}
-                  className="w-full rounded-lg border border-foreground/20 bg-transparent px-5 py-3 text-center text-sm text-foreground transition-colors hover:bg-foreground/5 sm:w-auto sm:py-2.5"
-                >
-                  Start free
-                </a>
-              </div>
-            </div>
-          </div>
-
-          {/* V1's slot. It held the portal carousel until the chat-input shot
-              was swapped for a photo (below); the V1 art direction is kept
-              further down so it is not lost with the placeholder. */}
-          {/* The hero visual: the Build with AI prompt the lead ends on. */}
-          <AccountingHeroVisual />
-          {/* V1 — left 40%: the Assembly build panel headed "Build with AI",
-              with the message "Build an estimated tax payment tracker. Clients
-              see scheduled and paid amounts; send a reminder 7 days before each
-              due date.", a plan card titled "Plan: Estimated payment tracker"
-              (fields: quarter, jurisdiction, amount, due date, status; who sees
-              it: each client sees only their own; team view: all clients;
-              reminder: 7 days before due) and an "Approve plan" button. Right
-              60%: a browser at portal.ledgerline.com, sidebar Home / Messages /
-              Files / Contracts / Payments / Tasks / Estimated payments (new,
-              faint brass highlight), main panel for Delgado Household showing
-              "Q3 federal · $4,200 · Scheduled Sep 15" and "Q2 federal · $4,200
-              · Paid Jun 14". Static. */}
+            </span>
+          </>
+        }
+        actions={
+          <>
+            <a href={DEMO_URL} className={PRIMARY_CTA}>
+              Book a demo
+            </a>
+            <a href={SIGNUP_URL} className={SECONDARY_CTA}>
+              Start free
+            </a>
+          </>
+        }
+      />
+      <section className="pb-16 md:pb-24">
+        <div className="mx-auto max-w-[1400px] px-6 md:px-10">
           <PortalSocialProof />
         </div>
       </section>

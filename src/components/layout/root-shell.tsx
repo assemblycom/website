@@ -11,6 +11,10 @@ import { useTheme } from "@/components/theme/theme-provider";
 // to fill one (see the branch below).
 const SHORT_PAGES = new Set(["/demo", "/demo-video"]);
 
+// Pages that open on the photography hero, which draws its own nav so the bar
+// can sit light over the photograph; the shell's bar would be a second one.
+const OWN_NAV_PAGES = new Set(["/", "/solutions/accounting-client-portal"]);
+
 // The page sheet. Its top corners used to be rounded, so that the announcement
 // band's ground showed through the cuts and the page read as rising out of it.
 // With the band down (see lib/announcement.ts) there is nothing above to rise
@@ -30,7 +34,7 @@ export function RootShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { theme, preference, setPreference } = useTheme();
   const dark = theme === "dark";
-  const isHome = pathname === "/";
+  const heroOwnsNav = OWN_NAV_PAGES.has(pathname);
   // Every page this shell renders gets the reveal footer. It used to be an
   // allowlist of known routes, which meant anything not on it — in practice
   // only the 404 — fell through to a plain footer that ended flat, with no
@@ -56,9 +60,9 @@ export function RootShell({ children }: { children: React.ReactNode }) {
   // regardless — see the auth-only branch in studio-nav.
   // The theme toggle now lives in the footer instead of
   // the nav. Contents ride light over the dark theme and dark over the light.
-  // The home hero renders its own sticky nav, so the global header is omitted
-  // there to avoid a duplicate bar.
-  const nav = isHome ? null : (
+  // The home hero (and the photo hero wherever it runs) renders its own sticky
+  // nav, so the global header is omitted there to avoid a duplicate bar.
+  const nav = heroOwnsNav ? null : (
     <StudioNav
       darkTop={dark}
       // Match the home hero's nav rail exactly so the logo/links don't shift
