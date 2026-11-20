@@ -2794,7 +2794,7 @@ function CardPayments() {
             className={`absolute inset-x-[calc(1rem+10px)] flex h-[30%] justify-end rounded-[10px] px-3 pt-2 ${slot}`}
           >
             <span
-              className="text-[12px] leading-none text-[var(--v69-ink)]"
+              className="text-[12px] leading-none text-[var(--v69-ink)] [.template-mock-gallery_&]:hidden"
               style={MOCK_MONO}
             >
               {PAYMENT.invoices[i]}
@@ -2831,7 +2831,7 @@ function CardPayments() {
 // chip greys the time tracker's readout uses.
 const INVOICE_SLOTS = [
   "top-[calc(1rem+10px)] bg-[#e6e6e6] dark-x:bg-[#2B2B2B]",
-  "top-[calc(1rem+10px+11%)] bg-[#f2f2f2] shadow-[0_-1px_3px_rgba(16,24,40,0.08)] dark-x:bg-[#333333]",
+  "v69-wallet-middle top-[calc(1rem+10px+11%)] bg-[#f2f2f2] shadow-[0_-1px_3px_rgba(16,24,40,0.08)] dark-x:bg-[#333333]",
 ];
 
 // Xero — the one screen the integration is: picking which Xero account an
@@ -2874,7 +2874,7 @@ function CardXero() {
 function CardQuickBooks() {
   return (
     <div className="flex h-full items-center justify-center bg-[var(--v69-card)] p-4 light-mock:bg-[#f2f2f2]">
-      <span className="flex size-[104px] items-center justify-center rounded-[26px] bg-[var(--v69-well)] light-ui:bg-[var(--v69-inner)] light-mock:bg-[#e6e6e6] dark-x:bg-[rgba(255,255,255,0.09)]">
+      <span className="flex size-[104px] items-center justify-center rounded-[26px] bg-[var(--v69-well)] [.template-mock-gallery_&]:size-[156px] [.template-mock-gallery_&]:rounded-[38px] light-ui:bg-[var(--v69-inner)] light-mock:bg-[#e6e6e6] dark-x:bg-[rgba(255,255,255,0.09)]">
         {/* The approved mark, path for path, filled from one currentColor so it
             tracks the theme instead of carrying the file's own grey. Held back on
             the templates page, where the mark should name the integration rather
@@ -2884,7 +2884,7 @@ function CardQuickBooks() {
             empty square, which does the same job from the other direction. */}
         <svg
           viewBox="0 0 34 34"
-          className="size-[50px] text-muted-foreground light-mock:text-muted-foreground/45 dark-mock:text-muted-foreground/55"
+          className="size-[50px] text-muted-foreground [.template-mock-gallery_&]:size-[76px] light-mock:text-muted-foreground/45 dark-mock:text-muted-foreground/55 [.template-mock-gallery_&]:!text-[var(--v69-ink)]/85"
           fill="currentColor"
           aria-hidden
         >
@@ -3342,16 +3342,16 @@ function CardDealsPipeline() {
         {/* No MOCK_UPSCALED_META here: that rung is for the covers drawn in the
             smaller design box, and this one is drawn at the shared size. */}
         <span
-          className="block text-[10px] uppercase leading-none tracking-wide text-muted-foreground"
+          className="v69-pipeline-label block text-[10px] uppercase leading-none tracking-wide text-muted-foreground"
           style={MOCK_MONO}
         >
           Pipeline
         </span>
         <div className="mt-2.5 flex items-baseline text-[var(--v69-ink)] max-sm:[.template-mock-gallery_&]:mt-2">
-          <span className="text-[34px] font-normal leading-none tracking-tight tabular-nums max-sm:[.template-mock-gallery_&]:text-[28px]">
+          <span className="v69-pipeline-amount text-[34px] font-normal leading-none tracking-tight tabular-nums max-sm:[.template-mock-gallery_&]:text-[28px]">
             $248,500
           </span>
-          <span className="text-[17px] font-normal leading-none tracking-tight tabular-nums max-sm:[.template-mock-gallery_&]:text-[14px]">
+          <span className="v69-pipeline-cents text-[17px] font-normal leading-none tracking-tight tabular-nums max-sm:[.template-mock-gallery_&]:text-[14px]">
             .00
           </span>
         </div>
@@ -3370,6 +3370,9 @@ function CardDealsPipeline() {
         {/* Everything under the baseline takes a faint tint, so the plot has a
             floor rather than floating in the card. Drawn first, under the rules
             and the series both. */}
+        {/* The templates gallery drops the floor tint and the rules: on its
+            glass panel they read as divider lines cutting through the card. */}
+        <g className="[.template-mock-gallery_&]:hidden">
         <rect
           x="0"
           y={PIPELINE_LAST_Y}
@@ -3390,6 +3393,7 @@ function CardDealsPipeline() {
             vectorEffect="non-scaling-stroke"
           />
         ))}
+        </g>
         <path
           d={PIPELINE_LINE_D}
           fill="none"
@@ -4056,10 +4060,237 @@ export function CardEngagementRing() {
         <span className="text-[22cqw] font-normal leading-none tracking-tight tabular-nums text-[var(--v69-ink)]">
           {ENGAGEMENT_SCORE}
         </span>
-        <span className="mt-[3cqw] text-[5.5cqw] leading-none text-muted-foreground">
+        {/* Ink at 70% rather than the muted grey, which washed out over the
+            bright band showing through the glass. */}
+        <span className="mt-[3cqw] text-[6cqw] leading-none text-[var(--v69-ink)]/70">
           Engagement score
         </span>
       </div>
+    </div>
+  );
+}
+
+// Tasks for the templates gallery: today's list on the glass, done items
+// ticked and dimmed, open ones at full ink, and the add button at the foot,
+// after a phone to-do widget. The home rail keeps its own cover (CardTasks).
+const TASK_LIST = [
+  { label: "Sign the engagement letter", done: true },
+  { label: "Upload brand assets", done: true },
+  { label: "Approve homepage draft", done: false },
+  { label: "Book the kickoff call", done: false },
+];
+
+export function CardTaskList() {
+  return (
+    <div className="flex h-full w-full flex-col p-[9%] [container-type:inline-size]">
+      <span className="text-[8.5cqw] leading-none tracking-tight text-[var(--v69-ink)]">
+        Today
+      </span>
+      <ul className="mt-[6cqw] flex flex-col gap-[5cqw]">
+        {TASK_LIST.map(({ label, done }) => (
+          <li key={label} className="flex items-center gap-[4cqw]">
+            <span
+              className={`flex size-[7.4cqw] shrink-0 items-center justify-center rounded-[2cqw] ${
+                done
+                  ? "bg-[var(--v69-ink)] text-white dark-x:text-[#1B1B1B]"
+                  : "shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--v69-ink)_35%,transparent)]"
+              }`}
+            >
+              {done && (
+                <svg viewBox="0 0 12 12" className="size-[5.4cqw]" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                  <path d="M2.5 6.2 5 8.5l4.5-5" />
+                </svg>
+              )}
+            </span>
+            <span
+              className={`truncate pb-[1cqw] -mb-[1cqw] text-[6.6cqw] leading-none ${
+                done ? "text-[var(--v69-ink)]/45" : "text-[var(--v69-ink)]"
+              }`}
+            >
+              {label}
+            </span>
+          </li>
+        ))}
+      </ul>
+      <span className="mt-auto self-end rounded-full bg-[var(--v69-ink)]/12 px-[5cqw] py-[3.4cqw] text-[6cqw] leading-none text-[var(--v69-ink)]">
+        Add task
+      </span>
+    </div>
+  );
+}
+
+// New client intake for the templates gallery, set as one sentence after a
+// typographic weather widget: the figures at full ink, the words that join
+// them dimmed, and the next client's avatar standing in for the icon. The
+// home rail keeps its single-row cover (CardIntake).
+function IntakeLit({ children }: { children: React.ReactNode }) {
+  return <span className="text-[var(--v69-ink)]">{children}</span>;
+}
+
+export function CardIntakeSentence() {
+  return (
+    <div className="flex h-full w-full items-center px-[10%] [container-type:inline-size]">
+      <p className="whitespace-nowrap text-[14cqw] leading-[1.16] tracking-tight text-[var(--v69-ink)]/45">
+        <IntakeLit>12 new</IntakeLit> clients
+        <br />
+        <IntakeLit>this month</IntakeLit>,
+        <br />
+        <IntakeLit>3</IntakeLit> to review,
+        <br />
+        <span className="relative -top-[0.8cqw] mr-[2.5cqw] inline-block size-[12cqw] rounded-full bg-[#A8C64A] align-middle dark-x:bg-[#7DA4FF]"
+          aria-hidden
+        />
+        <IntakeLit>Alex</IntakeLit> is next
+      </p>
+    </div>
+  );
+}
+
+// The client AI assistant for the templates gallery: a soft gradient blurb in
+// place of a logo, the greeting, and the ask field, after a phone assistant
+// widget. The home rail keeps its chat cover (CardChat).
+// The brand's periwinkle, pink and lime, blurred into one glow.
+const ASSISTANT_BLURB =
+  "radial-gradient(circle at 30% 30%, #7DA4FF 0%, transparent 60%), radial-gradient(circle at 72% 40%, #F2A7E4 0%, transparent 58%), radial-gradient(circle at 48% 78%, #D9ED92 0%, transparent 60%)";
+
+export function CardAssistantAsk() {
+  return (
+    <div className="flex h-full w-full flex-col items-center justify-between p-[9%] text-center [container-type:inline-size]">
+      <span
+        aria-hidden
+        className="size-[24cqw] shrink-0 rounded-full blur-[1.6cqw]"
+        style={{ backgroundImage: ASSISTANT_BLURB }}
+      />
+      <span className="text-[8.5cqw] leading-[1.15] tracking-tight text-[var(--v69-ink)]">
+        What can I help
+        <br />
+        you with today?
+      </span>
+      <span className="w-full rounded-[5cqw] bg-[var(--v69-inner)] px-[5cqw] py-[4.5cqw] text-left text-[6cqw] leading-none text-[var(--v69-ink)]/55">
+        Ask something
+      </span>
+    </div>
+  );
+}
+
+// The client resource library for the templates gallery: a guide open on the
+// glass, its text fading off top and bottom, with a reading-progress pill, after
+// a phone's reading widget. The home rail keeps its file row (CardResourceLibrary).
+const RESOURCE_GUIDE = {
+  title: "Your onboarding guide",
+  body: "Welcome aboard. This guide walks you through your first two weeks with us, from the kickoff call to your first deliverable. Start by uploading the documents we asked for, then pick a time for the kickoff. Your project lead shares a timeline within two days, and every milestone shows up here in the portal as it moves.",
+  read: 75,
+};
+// Ring geometry in the pill's own 20-unit box.
+const RESOURCE_RING_R = 7;
+const RESOURCE_RING_C = 2 * Math.PI * RESOURCE_RING_R;
+// The text dissolves at both ends so it reads as a page mid-scroll rather than
+// a block of copy that stops.
+const RESOURCE_FADE =
+  "linear-gradient(to bottom, transparent 0%, #000 20%, #000 50%, transparent 85%)";
+
+export function CardResourceArticle() {
+  return (
+    <div className="relative flex h-full w-full flex-col items-center px-[11%] pt-[10%] text-center [container-type:inline-size]">
+      <span className="text-[8.5cqw] leading-[1.15] tracking-tight text-[var(--v69-ink)]">
+        {RESOURCE_GUIDE.title}
+      </span>
+      <p
+        className="mt-[3cqw] min-h-0 flex-1 overflow-hidden text-left text-[6cqw] leading-[1.45] text-[var(--v69-ink)]/70"
+        style={{ maskImage: RESOURCE_FADE, WebkitMaskImage: RESOURCE_FADE }}
+      >
+        {RESOURCE_GUIDE.body}
+      </p>
+      <span className="v69-reading-pill absolute bottom-[7%] left-1/2 flex -translate-x-1/2 items-center gap-[2cqw] rounded-full py-[1.6cqw] pl-[1.8cqw] pr-[3.2cqw] text-[6.5cqw] leading-none tabular-nums text-[var(--v69-ink)]">
+        <svg viewBox="0 0 20 20" className="size-[7.5cqw] -rotate-90" aria-hidden>
+          <circle cx="10" cy="10" r={RESOURCE_RING_R} fill="none" stroke="var(--ring-empty, rgba(255,255,255,0.12))" strokeWidth="2.5" />
+          <circle
+            cx="10"
+            cy="10"
+            r={RESOURCE_RING_R}
+            fill="none"
+            stroke="var(--ring-fill, #ffdcf8)"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeDasharray={`${(RESOURCE_GUIDE.read / 100) * RESOURCE_RING_C} ${RESOURCE_RING_C}`}
+          />
+        </svg>
+        {RESOURCE_GUIDE.read}%
+      </span>
+    </div>
+  );
+}
+
+// The document collector for the templates gallery: the empty upload slot
+// itself, a plus and a line of copy on the glass, after a phone's "add" tile.
+// The home rail keeps its own cover (CardDocuments).
+export function CardDocumentAdd() {
+  return (
+    <div className="flex h-full w-full flex-col items-center justify-center p-[10%] text-center [container-type:inline-size]">
+      <span className="flex size-[16cqw] items-center justify-center rounded-full bg-[var(--v69-ink)]/15">
+        <svg
+          viewBox="0 0 16 16"
+          className="size-[8cqw] text-[var(--v69-ink)]"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          aria-hidden
+        >
+          <path d="M8 2.5v11M2.5 8h11" />
+        </svg>
+      </span>
+      <span className="mt-[6cqw] text-[8.5cqw] leading-none tracking-tight text-[var(--v69-ink)]">
+        Add documents
+      </span>
+      <span className="mt-[3cqw] text-[6cqw] leading-none text-[var(--v69-ink)]/70">
+        Upload requested files
+      </span>
+    </div>
+  );
+}
+
+// The client calendar for the templates gallery: today's agenda as a phone
+// calendar widget draws it, each event a coloured spine with its time, title
+// and place set in that colour. The home rail keeps the single-date cover
+// (CardCalendar).
+// The current event is set in ink; the next takes lime, a lighter tone on the
+// dark skin and a deeper one on the light so it holds contrast on either glass.
+const CALENDAR_EVENTS = [
+  {
+    time: "11:30 - 12:30",
+    lines: ["Kickoff call", "Alex Everett", "Google Meet"],
+    tone: "text-[var(--v69-ink)]",
+    spine: "bg-[var(--v69-ink)]",
+  },
+  {
+    time: "14:00 - 15:00",
+    lines: ["Design review"],
+    tone: "text-[#5B7A12] dark-x:text-[#D9ED92]",
+    spine: "bg-[#5B7A12] dark-x:bg-[#D9ED92]",
+  },
+];
+
+export function CardCalendarAgenda() {
+  return (
+    <div className="flex h-full w-full flex-col justify-center gap-[5cqw] pl-[15%] pr-[10%] [container-type:inline-size]">
+      {CALENDAR_EVENTS.map((event) => (
+        <div key={event.time} className="flex gap-[5cqw]">
+          <span className={`w-[1.6cqw] shrink-0 rounded-full ${event.spine}`} />
+          <span className={`flex min-w-0 flex-col gap-[2cqw] ${event.tone}`}>
+            <span className="text-[8cqw] leading-none tabular-nums">{event.time}</span>
+            {event.lines.map((line, i) => (
+              <span
+                key={line}
+                className={`truncate pb-[0.8cqw] -mb-[0.8cqw] text-[7.2cqw] leading-none ${i > 0 ? "opacity-70" : ""}`}
+              >
+                {line}
+              </span>
+            ))}
+          </span>
+        </div>
+      ))}
+      <span className="text-[6.6cqw] leading-none text-[var(--v69-ink)]/55">2 more</span>
     </div>
   );
 }
@@ -4076,8 +4307,18 @@ export function CardTrackerBar() {
     <div className="flex h-full w-full flex-col justify-between p-[10%] [container-type:inline-size]">
       <div>
         <div className="flex items-center gap-[2cqw] text-[6.5cqw] leading-none text-[var(--v69-ink)]/45">
-          <svg viewBox="0 0 16 16" className="size-[6.5cqw]" fill="currentColor" aria-hidden>
-            <path d="M8 1.5a6.5 6.5 0 1 0 6.5 6.5H8V1.5Z" />
+          <svg viewBox="0 0 16 16" className="size-[6.5cqw]" aria-hidden>
+            {/* A zero-length dash with round caps draws each dash as a dot; 12 dots fit r=6 evenly. */}
+            <circle
+              cx="8"
+              cy="8"
+              r="6"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.75"
+              strokeLinecap="round"
+              strokeDasharray={`0 ${(2 * Math.PI * 6) / 12}`}
+            />
           </svg>
           In progress
         </div>

@@ -6185,6 +6185,16 @@ html:not([data-authed]) .auth-only {
   backdrop-filter: var(--glass-blur);
 }
 
+/* White glass on the light skin's near-white ground had no edge left: the
+   white rim vanished into it. The panel takes a faint dark hairline and a soft
+   drop so it stands off the ground the way the dark skin's light rim does. */
+.light-island.mock-panel {
+  border-color: transparent !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(16, 24, 40, 0.09),
+    0 10px 28px -14px rgba(16, 24, 40, 0.22) !important;
+}
+
 /* The engagement ring's colours per skin: the brand pink on the dark skin, a
    step deeper on the light one so it holds against white glass. */
 .dark-island {
@@ -6232,6 +6242,23 @@ html:not([data-authed]) .auth-only {
   opacity: 0.55;
 }
 
+/* The middle invoice keeps its solid fill so it covers the back one, but takes
+   the glass panels' light outline so it doesn't read as a hole in the stack. */
+.dark-island .v69-wallet-middle {
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.45);
+}
+
+/* The reading pill sits over the guide's text, so it takes a near-solid fill
+   of each skin's glass rather than the see-through pane. */
+.dark-island .v69-reading-pill {
+  background-color: rgba(58, 59, 62, 0.92);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+}
+.light-island .v69-reading-pill {
+  background-color: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.08);
+}
+
 /* The wallet's type on the same steps as the project tracker beside it: the
    label at the tracker's status line, the amount at its headline. */
 .mock-island .v69-wallet-label {
@@ -6239,4 +6266,15 @@ html:not([data-authed]) .auth-only {
 }
 .mock-island .v69-wallet-amount {
   font-size: 19.6px;
+}
+/* The pipeline is drawn in the wallet's box, so the same numbers land at the
+   same rendered size; the cents stay half the figure. */
+.mock-island .v69-pipeline-label {
+  font-size: 15px;
+}
+.mock-island .v69-pipeline-amount {
+  font-size: 19.6px;
+}
+.mock-island .v69-pipeline-cents {
+  font-size: 9.8px;
 }

@@ -5,7 +5,13 @@ import type React from "react";
 import Link from "next/link";
 import type { Template } from "@/lib/templates";
 import {
+  CardAssistantAsk,
+  CardCalendarAgenda,
+  CardResourceArticle,
+  CardTaskList,
+  CardDocumentAdd,
   CardEngagementRing,
+  CardIntakeSentence,
   CardTrackerBar,
   V69CardMock,
 } from "@/components/home/hero-v71";
@@ -20,8 +26,6 @@ type TileShape = "square" | "circle" | "wide";
 const TILE_SHAPE: Record<string, TileShape> = {
   "time-tracker": "circle",
   "client-engagement-dashboard": "circle",
-  "new-client-intake": "wide",
-  "client-resource-library": "wide",
   "data-room": "wide",
   "client-onboarding-wizard": "wide",
   "service-request-intake": "wide",
@@ -181,7 +185,7 @@ function AmbientBackdrop({
 }
 
 // Cards that show only their ambient ground for now, with no widget on it.
-const GROUND_ONLY = new Set(["document-collection"]);
+const GROUND_ONLY = new Set<string>([]);
 
 // Widgets whose rows sit straight on their ground with no panel of their own:
 // the whole tile becomes their glass panel so the text has something to sit on.
@@ -190,6 +194,12 @@ const PANEL_TILES = new Set([
   "design-approvals",
   "client-engagement-dashboard",
   "deals-pipeline",
+  "client-calendar",
+  "document-collection",
+  "client-resource-library",
+  "client-ai-assistant",
+  "new-client-intake",
+  "tasks",
   "files-app",
   "messaging-app",
 ]);
@@ -203,6 +213,14 @@ const TILE_SIZE: Record<string, string> = {
   // inset to land the wallet on the tracker panel's 66%.
   "billing-app": "!w-[74.25%]",
   "time-tracker": "!w-[66%]",
+  // Same panel as the wallet beside it: 66% of the cover, the wallet's corner.
+  "deals-pipeline": "!w-[66%] !rounded-[7%]",
+  "document-collection": "!w-[66%] !rounded-[11%]",
+  "client-resource-library": "!w-[66%] !rounded-[11%]",
+  "client-ai-assistant": "!w-[66%] !rounded-[11%]",
+  "new-client-intake": "!w-[66%] !rounded-[11%]",
+  tasks: "!w-[66%] !rounded-[11%]",
+  "client-calendar": "!w-[66%] !rounded-[11%]",
 };
 
 const TILE_CLASS: Record<TileShape, string> = {
@@ -289,6 +307,18 @@ export function TemplateCard({
                       <CardTrackerBar />
                     ) : template.slug === "client-engagement-dashboard" ? (
                       <CardEngagementRing />
+                    ) : template.slug === "tasks" ? (
+                      <CardTaskList />
+                    ) : template.slug === "new-client-intake" ? (
+                      <CardIntakeSentence />
+                    ) : template.slug === "client-ai-assistant" ? (
+                      <CardAssistantAsk />
+                    ) : template.slug === "client-resource-library" ? (
+                      <CardResourceArticle />
+                    ) : template.slug === "document-collection" ? (
+                      <CardDocumentAdd />
+                    ) : template.slug === "client-calendar" ? (
+                      <CardCalendarAgenda />
                     ) : (
                       <V69CardMock slug={template.slug} />
                     )}
