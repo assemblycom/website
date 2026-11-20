@@ -20,13 +20,12 @@ export default async function TemplatesPage() {
   const templates = await getVisibleTemplates();
   return (
     <>
-      {/* Left-aligned header (à la Linear's customers index) — the title,
-          lede, and filters all share one left edge. */}
+      {/* Centered header over a left-aligned filter row and grid. */}
       {/* Site content rail (max-w-[1600px], px-6 md:px-10) so the title and card
           grid line up with the nav logo/actions, not the narrower Section rail. */}
       <section className="px-6 pb-16 pt-24 md:px-10 md:pb-24 md:pt-32">
         <div className="mx-auto max-w-[1600px]">
-          <div className="max-w-2xl text-center sm:text-left">
+          <div className="mx-auto max-w-2xl text-center">
             <h1 className="type-display text-balance">
               Start from an app template
             </h1>

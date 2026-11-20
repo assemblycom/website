@@ -174,7 +174,7 @@ function Screen({
           family is drawn with, a few points off the window rather than two
           dozen, and the hover comes down with it: white/12, not /20. */}
       <div
-        className={`h-[300px] overflow-hidden rounded-t-xl border-l border-r border-t border-[var(--mock-line)] bg-[var(--mock-window)] transition-colors duration-200 group-hover:border-white/12 motion-reduce:transition-none md:h-[400px] [[data-theme=light]_&]:border-border [[data-theme=light]_&]:group-hover:border-foreground/15 ${
+        className={`h-[300px] overflow-hidden rounded-t-xl border-l border-r border-t border-[var(--mock-line)] bg-[var(--mock-window)] transition-colors duration-200 group-hover:border-white/12 motion-reduce:transition-none md:h-[400px] light-ui:border-border light-ui:group-hover:border-foreground/15 ${
           selected ? (overlaps ? LIFT_LEFT : LIFT_RIGHT) : ""
         }`}
       >
