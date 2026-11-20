@@ -20,7 +20,8 @@ import {
 } from "@/components/client-portal/portal-build-cards";
 import { PortalTailor } from "@/components/client-portal/portal-tailor";
 import { AccountingLoginsVisual } from "@/components/solutions/accounting-logins-visual";
-import { HeroPhoto } from "@/components/home/v3/hero-photo";
+import { HeroPhoto, type HeroFigure } from "@/components/home/v3/hero-photo";
+import { getCaseStudyStat } from "@/lib/case-studies";
 import { PRIMARY_CTA } from "@/components/home/hero-big";
 import { AccountingViewsVisual } from "@/components/solutions/accounting-views-visual";
 import { PortalStack } from "@/components/client-portal/portal-stack";
@@ -53,6 +54,28 @@ export const metadata: Metadata = pageMetadata(PAGE_SEO.accountingClientPortal);
 
 /** Section 3. Four resolve from the committed templates; contracts-app is served
  *  from Contentful, which is why it is absent from src/lib/templates.ts. */
+
+/**
+ * The hero's figures, from the accounting firms' own stories rather than the
+ * site-wide counts the homepage carries. Read from the case-study records so
+ * the number on this page is always the one its story states.
+ */
+const ACCOUNTING_FIGURES: HeroFigure[] = [
+  {
+    value: getCaseStudyStat("valuenode-accounting", "client time saved").value,
+    label: "Client time saved",
+    short: "Time saved",
+  },
+  {
+    value: getCaseStudyStat("orca-accounting", "faster onboarding").value,
+    label: "Faster onboarding",
+    short: "Onboarding",
+  },
+  {
+    value: getCaseStudyStat("orca-accounting", "less email").value,
+    label: "Less email",
+  },
+];
 
 const ACCOUNTING_APPS = [
   {
@@ -314,9 +337,10 @@ export default function AccountingClientPortalPage() {
       {/* 1. Hero. The photography hero the homepage tests as its V3 arm, with
           this page's own headline, lead and buttons. It replaced the split
           header over the Build with AI prompt, which led on the builder rather
-          than on the firm. The site-wide figures stay at its foot, as on the
-          homepage, and the marks follow under the photograph. */}
+          than on the firm. Its figures are the accounting stories' own, and the
+          marks follow under the photograph. */}
       <HeroPhoto
+        figures={ACCOUNTING_FIGURES}
         lines={["Your AI-native accounting firm starts here"]}
         body={
           <>

@@ -86,26 +86,34 @@ const PHOTO = {
   alt: "Someone working at a laptop in warm afternoon light",
 };
 
+/** One figure across the hero's foot: the value over its label. */
+export interface HeroFigure {
+  value: string;
+  label: string;
+  /**
+   * The phone's label. Each column is only about 90px wide there and the
+   * label cannot wrap (a wrapped label staggers the row's baseline), so a
+   * two-word label needs a one-word form. Defaults to `label`.
+   */
+  short?: string;
+}
+
 // Three figures, as the reference has: clients managed is the one dropped,
 // since businesses, apps and payments each speak to a different part of the
-// product and clients overlaps with businesses.
-const HERO_STATS = STATS.filter((s) => s.label !== "Clients managed");
-
-/**
- * The phone's labels for those figures.
- *
- * The row is sized to its own content on a phone, so each column is only as
- * wide as the figure above it — about 90px — and every label that is two
- * words broke across two lines, leaving the row on a ragged baseline. The
- * noun on its own is the part that does the work, and `whitespace-nowrap`
- * is what guarantees it: a label that cannot wrap cannot stagger the row.
- * The full labels return from sm, where there is room for them.
- */
+// product and clients overlaps with businesses. The short labels keep the
+// noun, which is the part that does the work.
 const SHORT_LABELS: Record<string, string> = {
   "Businesses powered": "Businesses",
   "Apps created": "Apps",
   "Payments processed": "Payments",
 };
+const SITE_FIGURES: HeroFigure[] = STATS.filter(
+  (s) => s.label !== "Clients managed",
+).map((s) => ({
+  value: s.format(s.to),
+  label: s.label,
+  short: SHORT_LABELS[s.label],
+}));
 
 /**
  * Scroll, as a fraction of the viewport height, over which the photo shrinks.
@@ -151,15 +159,15 @@ export function HeroPhoto({
   lines: linesProp,
   body = PROTO_HERO_BODY,
   actions,
-  stats = true,
+  figures = SITE_FIGURES,
 }: {
   /** The headline, one entry per line of the lockup. */
   lines?: string[];
   body?: ReactNode;
   /** The button pair. Defaults to the homepage's tracked pair. */
   actions?: ReactNode;
-  /** The site-wide figures across the foot, right of the buttons. */
-  stats?: boolean;
+  /** The figures across the foot, right of the buttons; null for none. */
+  figures?: HeroFigure[] | null;
 } = {}) {
   const { theme } = useTheme();
   const message = COPY_VARIANTS[FALLBACK_COPY];
@@ -346,22 +354,20 @@ export function HeroPhoto({
                   hero is one block. It takes the copy's left line back at sm,
                   where the buttons shrink to their labels and that line
                   exists again. */}
-              {stats ? (
+              {figures?.length ? (
                 <dl className="grid w-full shrink-0 grid-cols-3 sm:w-auto sm:self-start lg:self-auto">
-                  {HERO_STATS.map((stat) => (
+                  {figures.map((stat) => (
                     <div
                       key={stat.label}
                       className="flex flex-col-reverse gap-1 border-l border-white/15 px-3 text-center first:border-l-0 first:pl-0 last:pr-0 sm:px-5"
                     >
                       <dt className="whitespace-nowrap text-sm text-white/60">
                         <span className="sm:hidden">
-                          {SHORT_LABELS[stat.label] ?? stat.label}
+                          {stat.short ?? stat.label}
                         </span>
                         <span className="hidden sm:inline">{stat.label}</span>
                       </dt>
-                      <dd className="type-h4 text-white">
-                        {stat.format(stat.to)}
-                      </dd>
+                      <dd className="type-h4 text-white">{stat.value}</dd>
                     </div>
                   ))}
                 </dl>
