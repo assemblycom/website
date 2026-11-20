@@ -1,9 +1,16 @@
 import {
   BrandedPortalVisual,
+  type PortalApp,
 } from "@/components/ai-app-builder/branded-portal-visual";
 import { BUILDER_RAIL_HALO_WIDE } from "@/components/ai-app-builder/builder-grid-rails";
 import { ClientAssistantPane } from "@/components/home/v2/client-ai-assistant-visual";
-import { IconChat, IconList } from "@/components/home/mock-icons";
+import { ClientHomePane } from "@/components/client-portal/client-home-pane";
+import {
+  IconChat,
+  IconForm,
+  IconList,
+  IconPenFilled,
+} from "@/components/home/mock-icons";
 import { MOCK_BODY } from "@/components/ui/mock-type";
 import { PhoneShell } from "@/components/home/phone-shell";
 
@@ -14,7 +21,7 @@ import { PhoneShell } from "@/components/home/phone-shell";
 
 /**
  * The product shot: a client's own portal, with the firm's nav down the side
- * and the AI Assistant open in it.
+ * and one app open in it (see SCREENS).
  *
  * STILL, and drawn once. It is the same window /client-portal's hero now carries.
  *
@@ -29,26 +36,63 @@ import { PhoneShell } from "@/components/home/phone-shell";
  * The height is the product pages' hero-tray height from md; the phone's is
  * set against the window's own width there — see the class.
  */
-function ClientExperiencePanel() {
+type Screen = "assistant" | "home";
+
+/**
+ * Which app the client has open. The homepage opens on the AI Assistant;
+ * /client-portal opens on Home, because a page about the portal leads with
+ * the portal's own front door rather than one app in it.
+ */
+const SCREENS: Record<
+  Screen,
+  {
+    apps: PortalApp[];
+    activeLabel?: string;
+    title: string;
+    children: React.ReactNode;
+  }
+> = {
+  assistant: {
+    apps: [
+      { icon: <IconList />, label: "Project tracker" },
+      { icon: <IconChat />, label: "AI Assistant" },
+    ],
+    title: "Assistant",
+    children: <ClientAssistantPane />,
+  },
+  home: {
+    // The apps the Home rows point at, so every item on the page has a row
+    // in the nav to go to.
+    apps: [
+      { icon: <IconPenFilled />, label: "Contracts" },
+      { icon: <IconForm />, label: "Forms" },
+      { icon: <IconList />, label: "Project tracker" },
+    ],
+    activeLabel: "Home",
+    title: "Home",
+    children: <ClientHomePane />,
+  },
+};
+
+function ClientExperiencePanel({ view }: { view: Screen }) {
+  const { apps, activeLabel, title, children } = SCREENS[view];
   const screen = (
     <BrandedPortalVisual
-      apps={[
-        { icon: <IconList />, label: "Project tracker" },
-        { icon: <IconChat />, label: "AI Assistant" },
-      ]}
+      apps={apps}
+      activeLabel={activeLabel}
       // A step under the shared title size, and off pure white in dark:
       // at full ink the title was the brightest thing in the window.
       title={
         <span className={`${MOCK_BODY} [[data-theme=dark]_&]:text-white/75`}>
-          Assistant
+          {title}
         </span>
       }
-      // On a phone the client nav steps aside for the assistant, as the
+      // On a phone the client nav steps aside for the open app, as the
       // product does, rather than squeezing a desktop window into 280px.
       navOnPhone={false}
       appsBreak={false}
     >
-      <ClientAssistantPane />
+      {children}
     </BrandedPortalVisual>
   );
   return (
@@ -111,8 +155,8 @@ function ClientExperiencePanel() {
         {/* FILLS THE TILE rather than running past it, so the question field
           lands on the tile's foot instead of below the crop. */}
         <div className="absolute inset-0">
-          {/* A client's portal open on the AI Assistant, in the firm's colour:
-            the client's side of the product, before they have asked anything. */}
+          {/* A client's portal in the firm's colour: the client's side of the
+            product, open on the app the caller picked. */}
           {screen}
         </div>
       </div>
@@ -132,12 +176,16 @@ function ClientExperiencePanel() {
  * homepage hero deliberately puts at a negative z. Harmless where there are no
  * rails behind it: it is the page's own colour.
  */
-export function ClientExperienceTile() {
+export function ClientExperienceTile({
+  screen = "assistant",
+}: {
+  screen?: Screen;
+}) {
   return (
     <div
       className={`relative overflow-hidden rounded-3xl bg-[var(--surface)] p-6 pb-0 md:p-12 md:pb-0 ${BUILDER_RAIL_HALO_WIDE}`}
     >
-      <ClientExperiencePanel />
+      <ClientExperiencePanel view={screen} />
     </div>
   );
 }

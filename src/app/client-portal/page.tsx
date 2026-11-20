@@ -133,9 +133,10 @@ export default function ClientPortalPage() {
               here split the hero into two cards — describe it, then see it
               live — and the describing half belongs to /ai-app-builder. This
               page sells the portal, so its first picture is one: the homepage's
-              product UI tile, shared rather than redrawn. */}
+              product UI tile, shared rather than redrawn, open on the client's
+              Home instead of the assistant. */}
           <div className="mt-12 md:mt-16">
-            <ClientExperienceTile />
+            <ClientExperienceTile screen="home" />
           </div>
           {/* Credibility right under the product shot, before the argument
               starts. Section 2 of the handoff, reduced to its claim and its
