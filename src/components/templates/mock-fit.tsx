@@ -41,6 +41,9 @@ export const MOCK_DESIGN_SIZE: Record<string, string> = {
   // the largest step. The request queue's segmented control is the same case.
   "client-onboarding-wizard": "[--template-mock-w:224px] [--template-mock-h:224px]",
   "service-request-intake": "[--template-mock-w:224px] [--template-mock-h:224px]",
+  // The wallet's box (its 256px face), so the pipeline's type scales by the same
+  // amount as the wallet's and the two can share font sizes.
+  "deals-pipeline": "[--template-mock-w:256px] [--template-mock-h:256px]",
 };
 
 /**

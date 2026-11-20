@@ -1,17 +1,238 @@
 "use client";
 
+import { useId } from "react";
+import type React from "react";
 import Link from "next/link";
 import type { Template } from "@/lib/templates";
-import { V69CardMock } from "@/components/home/hero-v71";
-import { useTheme } from "@/components/theme/theme-provider";
+import {
+  CardAssistantAsk,
+  CardCalendarAgenda,
+  CardResourceArticle,
+  CardTaskList,
+  CardDocumentAdd,
+  CardEngagementRing,
+  CardIntakeSentence,
+  CardTrackerBar,
+  V69CardMock,
+} from "@/components/home/hero-v71";
 import { MockFit, MOCK_DESIGN_SIZE } from "@/components/templates/mock-fit";
+import { useTheme } from "@/components/theme/theme-provider";
 import { cn } from "@/lib/utils";
 
-// Covers whose own fill runs dark all the way to the card edge. The frame's
-// hairline and inner highlight are both light, so on those cards they drew a pale
-// outline across the dark area instead of disappearing into it; the dark fill
-// already defines the card's edge, so the overlay is dropped entirely.
-const BLEED_COVERS = new Set(["design-approvals"]);
+// Tile shape per widget, so the grid mixes circles, wide strips and squares
+// rather than repeating one box: round readouts go in a circle, single-row
+// widgets in a wide strip, everything else in a square.
+type TileShape = "square" | "circle" | "wide";
+const TILE_SHAPE: Record<string, TileShape> = {
+  "time-tracker": "circle",
+  "client-engagement-dashboard": "circle",
+  "data-room": "wide",
+  "client-onboarding-wizard": "wide",
+  "service-request-intake": "wide",
+  "internal-resource-library": "wide",
+  "contracts-app": "wide",
+  xero: "wide",
+};
+// Brand ambient backgrounds (the "Gradients / Ambient Backgrounds" page of the
+// identity): the symbol's bars lit from inside by an edge colour and a softer
+// inner glow. Same colour pairs as the ambient-background tool; first colour
+// is the edge.
+// Light page: dark ground. Dark page: the light ground, so the cards still
+// stand off the page. Each skin has its own colour pairs, as in the tool.
+const AMBIENT = {
+  dark: {
+    bg: "#101010",
+    pairs: [
+      ["#C6B6FF", "#7DA4FF"], // lavender, blue
+      ["#BCE7F4", "#7DA4FF"], // ice, blue
+      ["#7DA4FF", "#5CE5C3"], // blue, mint
+      ["#FFDCF8", "#C6B6FF"], // pink, lavender
+    ],
+    edgeBlur: 26,
+    innerBlur: 90,
+  },
+  light: {
+    bg: "#F7F7F4",
+    pairs: [
+      ["#C6B6FF", "#7DA4FF"], // lavender, blue
+      ["#5CE5C3", "#BCE7F4"], // mint, ice
+      ["#7DA4FF", "#5CE5C3"], // blue, mint
+      ["#FF8C8C", "#FFDCF8"], // coral, pink
+    ],
+    // On the light ground the colour runs wide from the edge and fades to
+    // the ground in the middle, so the edge glow is the broad one.
+    edgeBlur: 60,
+    innerBlur: 110,
+  },
+} as const;
+type AmbientSkin = keyof typeof AMBIENT;
+// Quarter turns and a mirror, so neighbouring cards don't repeat a layout.
+const AMBIENT_TURNS = [
+  "",
+  "scale(-1 1) translate(-400 0)",
+  "rotate(90 200 200)",
+  "rotate(180 200 200)",
+];
+
+// Stable per-template pick, so a card keeps its colours across renders.
+function ambientIndex(slug: string, length: number) {
+  let hash = 0;
+  for (const ch of slug) hash = (hash * 31 + ch.charCodeAt(0)) >>> 0;
+  return hash % length;
+}
+
+function AmbientBars() {
+  return (
+    <>
+      <path d="M-120 520 L170 230 Q220 180 290 180 H560 V560 Z" fill="#000" />
+      <path d="M40 600 L290 350 Q340 300 410 300 H600 V600 Z" fill="#000" />
+    </>
+  );
+}
+
+/** Two stepped bars from the symbol, each with a 45 degree edge and one
+ *  rounded corner, cropped by the frame and glowing from their edges in. */
+// Cards whose ground takes the identity's progressive blur and grain. The rest
+// keep crisp bars.
+const SOFT_GROUNDS = new Set(["time-tracker"]);
+
+function AmbientBackdrop({
+  slug,
+  skin,
+  className,
+}: {
+  slug: string;
+  skin: AmbientSkin;
+  className: string;
+}) {
+  const soft = SOFT_GROUNDS.has(slug);
+  const id = useId().replace(/:/g, "");
+  const { bg, pairs, edgeBlur, innerBlur } = AMBIENT[skin];
+  const [edge, inner] = pairs[ambientIndex(slug, pairs.length)];
+  const turn =
+    AMBIENT_TURNS[ambientIndex(`${slug}-turn`, AMBIENT_TURNS.length)];
+  const inset = (blur: number, color: string, key: string) => `
+    <feGaussianBlur in="SourceAlpha" stdDeviation="${blur}" result="g${key}"/>
+    <feComposite in="SourceAlpha" in2="g${key}" operator="out" result="m${key}"/>
+    <feFlood flood-color="${color}"/>
+    <feComposite in2="m${key}" operator="in" result="s${key}"/>`;
+  return (
+    <svg
+      aria-hidden
+      viewBox="0 0 400 400"
+      preserveAspectRatio="xMidYMid slice"
+      className={`absolute inset-0 size-full ${className}`}
+    >
+      <defs
+        dangerouslySetInnerHTML={{
+          __html: `<filter id="${id}" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
+            <feFlood flood-color="${bg}"/><feComposite in2="SourceAlpha" operator="in" result="fill"/>
+            ${inset(innerBlur, inner, "i")}
+            ${inset(edgeBlur, edge, "e")}
+            <feMerge><feMergeNode in="fill"/><feMergeNode in="si"/><feMergeNode in="se"/></feMerge>
+          </filter>
+          <filter id="${id}-soft" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="14"/>
+          </filter>
+          <linearGradient id="${id}-ramp" gradientUnits="userSpaceOnUse" x1="380" y1="170" x2="40" y2="520">
+            <stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#000"/>
+          </linearGradient>
+          <mask id="${id}-sharp" maskUnits="userSpaceOnUse" x="-200" y="-200" width="800" height="800">
+            <rect x="-200" y="-200" width="800" height="800" fill="url(#${id}-ramp)"/>
+          </mask>
+          <filter id="${id}-grain" x="0" y="0" width="100%" height="100%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/>
+            <feColorMatrix type="saturate" values="0"/>
+          </filter>`,
+        }}
+      />
+      <rect width="400" height="400" fill={bg} />
+      {soft ? (
+        <>
+          {/* Progressive blur, as in the identity: the bars are drawn twice, a
+              softened copy underneath and the sharp copy faded out along them,
+              so they start crisp at the rounded corner and dissolve toward the
+              far end. */}
+          <g transform={turn || undefined}>
+            <g filter={`url(#${id}-soft)`}>
+              <g filter={`url(#${id})`}>
+                <AmbientBars />
+              </g>
+            </g>
+            <g mask={`url(#${id}-sharp)`}>
+              <g filter={`url(#${id})`}>
+                <AmbientBars />
+              </g>
+            </g>
+          </g>
+          {/* Mono grain over the whole ground, the identity's finishing
+              texture. */}
+          <rect
+            width="400"
+            height="400"
+            filter={`url(#${id}-grain)`}
+            opacity={skin === "dark" ? 0.07 : 0.05}
+            style={{ mixBlendMode: skin === "dark" ? "screen" : "multiply" }}
+          />
+        </>
+      ) : (
+        <g filter={`url(#${id})`} transform={turn || undefined}>
+          <AmbientBars />
+        </g>
+      )}
+    </svg>
+  );
+}
+
+// Cards that show only their ambient ground for now, with no widget on it.
+const GROUND_ONLY = new Set<string>([]);
+
+// Widgets whose rows sit straight on their ground with no panel of their own:
+// the whole tile becomes their glass panel so the text has something to sit on.
+const PANEL_TILES = new Set([
+  "client-project-tracker",
+  "design-approvals",
+  "client-engagement-dashboard",
+  "deals-pipeline",
+  "client-calendar",
+  "document-collection",
+  "client-resource-library",
+  "client-ai-assistant",
+  "new-client-intake",
+  "tasks",
+  "files-app",
+  "messaging-app",
+]);
+
+// Widgets that are a single object (the clock face) read small at the shared
+// tile size, so they take a larger share of the cover.
+const TILE_SIZE: Record<string, string> = {
+  // A whole widget panel, a little larger than the shared tile.
+  "client-project-tracker": "!w-[66%] !rounded-[11%]",
+  // The wallet sits 16px in from its tile, so its tile is larger by that
+  // inset to land the wallet on the tracker panel's 66%.
+  "billing-app": "!w-[74.25%]",
+  "time-tracker": "!w-[66%]",
+  // Same panel as the wallet beside it: 66% of the cover, the wallet's corner.
+  "deals-pipeline": "!w-[66%] !rounded-[7%]",
+  "document-collection": "!w-[66%] !rounded-[11%]",
+  "client-resource-library": "!w-[66%] !rounded-[11%]",
+  "client-ai-assistant": "!w-[66%] !rounded-[11%]",
+  "new-client-intake": "!w-[66%] !rounded-[11%]",
+  tasks: "!w-[66%] !rounded-[11%]",
+  "client-calendar": "!w-[66%] !rounded-[11%]",
+};
+
+const TILE_CLASS: Record<TileShape, string> = {
+  square: "aspect-square w-[60%] rounded-[18px]",
+  circle: "aspect-square w-[60%] rounded-full",
+  wide: "aspect-[16/10] w-[84%] rounded-[18px]",
+};
+// A wide tile draws its cover in the 16:10 box the phone gallery already uses.
+const WIDE_DESIGN_SIZE = {
+  "--template-mock-w": "336px",
+  "--template-mock-h": "210px",
+} as React.CSSProperties;
 
 /**
  * One template card: the widget cover, the name, and the line under it. The
@@ -30,76 +251,86 @@ export function TemplateCard({
   chip?: string;
   className?: string;
 }) {
-  // Widget covers (shared with the home hero) reskin to the dark surface.
+  const shape = TILE_SHAPE[template.slug] ?? "square";
+  // The widget takes the opposite skin to the page: dark on the light page's
+  // dark card, light on the dark page's light card.
   const { theme } = useTheme();
-  const dark = theme === "dark";
+  const skin = theme === "dark" ? "light" : "dark";
   return (
     <article className={cn("w-full", className)}>
-      {/* Its own focus ring rather than the global outline fallback:
-        that one is full-strength foreground with square corners, so on
-        a rounded cover it landed as a hard black box around the card
-        and its caption. Same weight and tint as the filter chips and
-        the arrows. Drawn on the cover rather than on the whole link:
-        around the link it enclosed the caption too, and a two-line
-        description ran right into it. */}
       <Link
         href={`/templates/${template.slug}`}
         className="group/card block outline-none"
       >
-        {/* Real preview image when set; otherwise the template's widget
-          cover mock (shared with the home hero). */}
-        {/* Square at every width: the widgets are drawn square, and the
-          old 5/4 mobile frame cropped the bottom off the taller ones. */}
-        {/* The outline is drawn OVER the cover, not as a border on the
-          frame. A border takes a pixel of layout, so the widget could
-          only ever fill the content box and stopped 1px short of the
-          edge — with the card's white ground under a 60%-opacity
-          hairline, that pixel read as a pale gap rather than an outline
-          hugging the colour. No border means the cover fills the whole
-          square and the hairline sits on its outermost pixel.
-          It can't live inside MockFit: `.template-mock-fit > *` sizes
-          and scales every direct child to the design size. */}
-        <div className="relative rounded-[14px] transition-shadow group-focus-visible/card:ring-2 group-focus-visible/card:ring-foreground/40 group-focus-visible/card:ring-offset-4 group-focus-visible/card:ring-offset-background sm:rounded-[20px]">
-          <MockFit
-            className={`relative aspect-[16/10] overflow-hidden rounded-[14px] bg-background sm:aspect-square sm:rounded-[20px] [[data-theme=dark]_&]:bg-[#151515] ${MOCK_DESIGN_SIZE[template.slug] ?? ""}`}
-          >
-            {/* template-mock-gallery marks this rail specifically — a few
-              covers are skinned for the gallery alone, and .template-mock
-              by itself would carry those into the proposal page's mocks
-              too. */}
+        {/* The cover: a brand ambient background with the widget centred on
+            it. The tile is a share of the cover, so it grows and shrinks with
+            the column while the cover keeps its square. */}
+        <div className="relative flex aspect-square items-center justify-center overflow-hidden rounded-[20px] transition-transform group-focus-visible/card:ring-2 group-focus-visible/card:ring-foreground/40 group-focus-visible/card:ring-offset-4 group-focus-visible/card:ring-offset-background">
+          {/* Both skins are drawn and the page theme picks one, so the right
+              one is there on first paint. */}
+          <AmbientBackdrop
+            slug={template.slug}
+            skin="dark"
+            className="[[data-theme=dark]_&]:hidden"
+          />
+          <AmbientBackdrop
+            slug={template.slug}
+            skin="light"
+            className="hidden [[data-theme=dark]_&]:block"
+          />
+          {!GROUND_ONLY.has(template.slug) && (
             <div
-              className={`template-mock template-mock-gallery font-sans ${
-                dark ? "v72-mock-dark" : ""
-              }`}
+              className={`relative ${TILE_CLASS[shape]} ${TILE_SIZE[template.slug] ?? ""}`}
             >
-              <V69CardMock slug={template.slug} />
+              {/* The island resets the page theme for the widget, so its
+                skin follows the card rather than the page. */}
+              <div
+                data-theme={skin}
+                className={`mock-island ${skin}-island absolute inset-0 overflow-hidden rounded-[inherit] ${
+                  PANEL_TILES.has(template.slug) ? "mock-panel" : ""
+                }`}
+              >
+                <MockFit
+                  style={shape === "wide" ? WIDE_DESIGN_SIZE : undefined}
+                  className={`relative h-full w-full overflow-hidden ${
+                    shape === "wide"
+                      ? ""
+                      : `template-mock-tile ${MOCK_DESIGN_SIZE[template.slug] ?? ""}`
+                  }`}
+                >
+                  <div
+                    className={`template-mock template-mock-gallery font-sans ${
+                      skin === "dark" ? "v72-mock-dark" : ""
+                    }`}
+                  >
+                    {template.slug === "client-project-tracker" ? (
+                      <CardTrackerBar />
+                    ) : template.slug === "client-engagement-dashboard" ? (
+                      <CardEngagementRing />
+                    ) : template.slug === "tasks" ? (
+                      <CardTaskList />
+                    ) : template.slug === "new-client-intake" ? (
+                      <CardIntakeSentence />
+                    ) : template.slug === "client-ai-assistant" ? (
+                      <CardAssistantAsk />
+                    ) : template.slug === "client-resource-library" ? (
+                      <CardResourceArticle />
+                    ) : template.slug === "document-collection" ? (
+                      <CardDocumentAdd />
+                    ) : template.slug === "client-calendar" ? (
+                      <CardCalendarAgenda />
+                    ) : (
+                      <V69CardMock slug={template.slug} />
+                    )}
+                  </div>
+                </MockFit>
+              </div>
             </div>
-          </MockFit>
-          {!BLEED_COVERS.has(template.slug) && (
-            <div
-              aria-hidden
-              // One hairline and nothing else. It used to also carry a 1px
-              // white inner ring: invisible on the pale mocks, but a bright
-              // second line on the dark ones, so the rail looked like it had
-              // two different border weights in it. The two soft dark insets
-              // went the same way — on the warm light covers they shaded the
-              // widget's own ground and read as a vignette rather than as
-              // depth. Light only: the dark surface has no hairline to catch
-              // a highlight.
-              className="pointer-events-none absolute inset-0 rounded-[14px] border border-border/45 sm:rounded-[20px] [[data-theme=dark]_&]:border-transparent"
-            />
           )}
         </div>
-        {/* Card text on the site's own steps: body for the name, caption
-          for the line under it. Both sit at 400 — the name reads as the
-          heading through colour and the space above it, not weight.
-          The category tag that used to close the card is gone: it was
-          the only uppercase on the page, and the row it sat on was most
-          of what made the grid feel packed. The filter tabs above
-          already say which category you're looking at. */}
-        <h3 className="type-body mt-4 text-foreground">
-          {template.title}
-        </h3>
+        {/* Name and line under the cover, on the site's body and caption
+            steps, both at 400. */}
+        <h3 className="type-body mt-4 text-foreground">{template.title}</h3>
         <p className="type-caption mt-1 text-muted-foreground">
           {template.description}
         </p>
