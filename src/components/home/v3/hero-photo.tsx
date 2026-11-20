@@ -8,6 +8,7 @@ import {
   useRef,
   useState,
   type CSSProperties,
+  type ReactNode,
 } from "react";
 import { StudioNav } from "@/components/home/studio-nav";
 import { useTheme } from "@/components/theme/theme-provider";
@@ -141,10 +142,28 @@ const FRAME =
  */
 const CARD_FROM = "(min-width: 90rem)"; // `wide`, the site's own breakpoint
 
-export function HeroPhoto() {
+/**
+ * The words and buttons the photograph carries. Every prop defaults to the
+ * homepage's, so the experiment arm renders it bare; another page (the
+ * accounting solution page) reuses the format by passing its own copy.
+ */
+export function HeroPhoto({
+  lines: linesProp,
+  body = PROTO_HERO_BODY,
+  actions,
+  stats = true,
+}: {
+  /** The headline, one entry per line of the lockup. */
+  lines?: string[];
+  body?: ReactNode;
+  /** The button pair. Defaults to the homepage's tracked pair. */
+  actions?: ReactNode;
+  /** The site-wide figures across the foot, right of the buttons. */
+  stats?: boolean;
+} = {}) {
   const { theme } = useTheme();
   const message = COPY_VARIANTS[FALLBACK_COPY];
-  const lines = message.big?.lines ?? [message.h1];
+  const lines = linesProp ?? message.big?.lines ?? [message.h1];
   const wrapRef = useRef<HTMLDivElement>(null);
   // The nav is light-on-photo while the hero is full-bleed, and the card
   // leaves it sitting on the page's own background instead, where white type
@@ -270,7 +289,7 @@ export function HeroPhoto() {
               ))}
             </h1>
             <p className="type-lead mt-5 max-w-[34rem] text-pretty text-white/70">
-              {PROTO_HERO_BODY}
+              {body}
             </p>
 
             <div className="mt-8 flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between">
@@ -284,23 +303,27 @@ export function HeroPhoto() {
                   gone: the row stacks and goes inline at `sm`, which is the
                   breakpoint the controls are written for. */}
               <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center">
-                <a
-                  href={SIGNUP_URL}
-                  className={`unauth-only ${PRIMARY_CTA}`}
-                  onClick={() => trackHeroCta("photo-primary")}
-                >
-                  Get started
-                </a>
-                <a href={APP_URL} className={`auth-only ${PRIMARY_CTA}`}>
-                  Open Assembly
-                </a>
-                <Link
-                  href={DEMO_URL}
-                  className={SECONDARY_CTA}
-                  onClick={() => trackHeroCta("photo-demo")}
-                >
-                  Book a demo
-                </Link>
+                {actions ?? (
+                  <>
+                    <a
+                      href={SIGNUP_URL}
+                      className={`unauth-only ${PRIMARY_CTA}`}
+                      onClick={() => trackHeroCta("photo-primary")}
+                    >
+                      Get started
+                    </a>
+                    <a href={APP_URL} className={`auth-only ${PRIMARY_CTA}`}>
+                      Open Assembly
+                    </a>
+                    <Link
+                      href={DEMO_URL}
+                      className={SECONDARY_CTA}
+                      onClick={() => trackHeroCta("photo-demo")}
+                    >
+                      Book a demo
+                    </Link>
+                  </>
+                )}
               </div>
 
               {/* The figures, value over label, divided by hairlines as in the
@@ -323,24 +346,26 @@ export function HeroPhoto() {
                   hero is one block. It takes the copy's left line back at sm,
                   where the buttons shrink to their labels and that line
                   exists again. */}
-              <dl className="grid w-full shrink-0 grid-cols-3 sm:w-auto sm:self-start lg:self-auto">
-                {HERO_STATS.map((stat) => (
-                  <div
-                    key={stat.label}
-                    className="flex flex-col-reverse gap-1 border-l border-white/15 px-3 text-center first:border-l-0 first:pl-0 last:pr-0 sm:px-5"
-                  >
-                    <dt className="whitespace-nowrap text-sm text-white/60">
-                      <span className="sm:hidden">
-                        {SHORT_LABELS[stat.label] ?? stat.label}
-                      </span>
-                      <span className="hidden sm:inline">{stat.label}</span>
-                    </dt>
-                    <dd className="type-h4 text-white">
-                      {stat.format(stat.to)}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
+              {stats ? (
+                <dl className="grid w-full shrink-0 grid-cols-3 sm:w-auto sm:self-start lg:self-auto">
+                  {HERO_STATS.map((stat) => (
+                    <div
+                      key={stat.label}
+                      className="flex flex-col-reverse gap-1 border-l border-white/15 px-3 text-center first:border-l-0 first:pl-0 last:pr-0 sm:px-5"
+                    >
+                      <dt className="whitespace-nowrap text-sm text-white/60">
+                        <span className="sm:hidden">
+                          {SHORT_LABELS[stat.label] ?? stat.label}
+                        </span>
+                        <span className="hidden sm:inline">{stat.label}</span>
+                      </dt>
+                      <dd className="type-h4 text-white">
+                        {stat.format(stat.to)}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+              ) : null}
             </div>
           </div>
         </section>
