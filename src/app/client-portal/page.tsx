@@ -12,7 +12,7 @@ import { PortalStack } from "@/components/client-portal/portal-stack";
 import { PortalTrust } from "@/components/client-portal/portal-trust";
 import { PortalPricing } from "@/components/client-portal/portal-pricing";
 import { BuilderCustomerQuotes } from "@/components/ai-app-builder/builder-customer-quotes";
-import { BuilderHeroVisual } from "@/components/ai-app-builder/builder-hero-visual";
+import { ClientExperienceTile } from "@/components/home/v2/client-experience-tile";
 import { DEMO_URL, SIGNUP_URL } from "@/lib/constants";
 import { PAGE_SEO, pageMetadata } from "@/lib/seo";
 
@@ -129,12 +129,14 @@ export default function ClientPortalPage() {
             </div>
           </div>
 
-          {/* The build demo, swapped in from /ai-app-builder. Its two cards
-              are this page's two claims side by side — describe the work only
-              your firm does, and watch it land live for the team and the
-              client — which is the half of the headline the carousel of
-              finished screens was not showing. */}
-          <BuilderHeroVisual />
+          {/* The client's portal, and nothing else. The builder demo that sat
+              here split the hero into two cards — describe it, then see it
+              live — and the describing half belongs to /ai-app-builder. This
+              page sells the portal, so its first picture is one: the homepage's
+              product UI tile, shared rather than redrawn. */}
+          <div className="mt-12 md:mt-16">
+            <ClientExperienceTile />
+          </div>
           {/* Credibility right under the product shot, before the argument
               starts. Section 2 of the handoff, reduced to its claim and its
               proof: a line naming the number of firms, and the firms.
@@ -337,11 +339,8 @@ export default function ClientPortalPage() {
         // card required.", the same line the hero opens on.
         planChips={false}
         subheading="Free forever plan. No credit card required."
-        // TWO BUTTONS, not a second prompt box. This page opens on a composer
-        // in its hero, and a page that both opens and closes on the same
-        // control asks the visitor the same question twice — the second time
-        // after they have read the whole argument, which is the moment to give
-        // them a door rather than a blank field. The two vertical pages and
+        // TWO BUTTONS, not a prompt box: after the whole argument the visitor
+        // needs a door rather than a blank field. The two vertical pages and
         // the builder page already close this way, so the set agrees.
         //
         // promptPicker goes with it: there is no composer left for an Ideas

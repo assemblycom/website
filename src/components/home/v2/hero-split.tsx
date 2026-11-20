@@ -1,10 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import {
-  BuilderGridRails,
-  BUILDER_RAIL_HALO_WIDE,
-} from "@/components/ai-app-builder/builder-grid-rails";
+import { BuilderGridRails } from "@/components/ai-app-builder/builder-grid-rails";
 import { StudioNav } from "@/components/home/studio-nav";
 import { useTheme } from "@/components/theme/theme-provider";
 import { APP_URL, DEMO_URL, SIGNUP_URL } from "@/lib/constants";
@@ -13,12 +10,8 @@ import { PRIMARY_CTA } from "@/components/home/hero-big";
 import { SECONDARY_CTA } from "@/components/home/cta";
 import { trackHeroCta } from "@/components/home/hero-experiment";
 import { HeroCredibility } from "@/components/home/v2/hero-credibility";
+import { ClientExperienceTile } from "@/components/home/v2/client-experience-tile";
 import { PROTO_HERO_BODY } from "@/components/proto/hero-copy";
-import { BrandedPortalVisual } from "@/components/ai-app-builder/branded-portal-visual";
-import { ClientAssistantPane } from "@/components/home/v2/client-ai-assistant-visual";
-import { IconChat, IconList } from "@/components/home/mock-icons";
-import { MOCK_BODY } from "@/components/ui/mock-type";
-import { PhoneShell } from "@/components/home/phone-shell";
 
 // ─────────────────────────────────────────────────────────────────────────
 // HERO (V2, SPLIT) — the layout from the elevenlabs.io reference: headline
@@ -73,117 +66,6 @@ const RAIL = "mx-auto max-w-[1400px] px-6 md:px-10";
 // reference's pill shape. That was inventing a button: the site's hero pair is
 // `rounded-lg`, every other page closes on it, and a hero with a different
 // button shape from the rest of the site reads as a different site.
-
-/**
- * The product shot: a client's own portal, with the firm's nav down the side
- * and the AI Assistant open in it.
- *
- * STILL, and drawn once. It is the same window /client-portal's hero carries,
- * minus the carousel around it — the screens there are picked by the reader,
- * which is the right control on a page about the portal and the wrong one on
- * a homepage, where this is the first picture anyone sees.
- *
- * It fills the tile rather than being scaled into it. The mock is fluid —
- * `h-full` and `flex-1` throughout — so a wider window means the rows lay out
- * with more room at the same type size, which is a screen someone could
- * actually be looking at. Scaling a fixed drawing up instead would magnify
- * the type along with it and read as a screenshot zoomed in.
- *
- * The mock brings its own portal nav, so there is no sidebar to add here.
- *
- * The height is the product pages' hero-tray height from md; the phone's is
- * set against the window's own width there — see the class.
- */
-function ClientExperiencePanel() {
-  const screen = (
-    <BrandedPortalVisual
-      apps={[
-        { icon: <IconList />, label: "Project tracker" },
-        { icon: <IconChat />, label: "AI Assistant" },
-      ]}
-      // A step under the shared title size, and off pure white in dark:
-      // at full ink the title was the brightest thing in the window.
-      title={
-        <span className={`${MOCK_BODY} [[data-theme=dark]_&]:text-white/75`}>
-          Assistant
-        </span>
-      }
-      // On a phone the client nav steps aside for the assistant, as the
-      // product does, rather than squeezing a desktop window into 280px.
-      navOnPhone={false}
-      appsBreak={false}
-    >
-      <ClientAssistantPane />
-    </BrandedPortalVisual>
-  );
-  return (
-    <>
-      {/* ON A PHONE, A PHONE: the same frame the CRM tab draws its screen
-          in, cropped by the tile at its foot. The box is shorter than the
-          phone, so the crop always lands on the screen, never under it. */}
-      <div className="relative mx-auto h-[290px] overflow-hidden md:hidden">
-        <div className="mx-auto w-full max-w-[260px]">
-          <PhoneShell
-            melt={false}
-            sideButtons={false}
-            squareFoot
-            screenBg="bg-[var(--mock-window)]"
-          >
-            {/* The phone is the frame, so the window's own border and
-                rounded top go: two frames nested read as a window in a
-                window. */}
-            <div className="relative min-h-0 flex-1 [&_.mock-edge]:rounded-none [&_.mock-edge]:border-0">
-              {screen}
-            </div>
-          </PhoneShell>
-        </div>
-      </div>
-      <div
-        // Its own ground and hairline, so the window reads as a window sitting
-        // in the tile rather than as rows printed straight onto it.
-        //
-        // CAPPED AND CENTRED AT 880, which is the width the product pages draw
-        // their hero screen at. The mock is fluid and its type is fixed, so the
-        // window's width is what decides how that type reads: at 1080 the same
-        // rows were laid out across half a metre at 9px and the screen looked
-        // stretched, with type a size smaller than the site shows a product at
-        // anywhere else. The tile keeps its own width and the slack falls
-        // either side as mat.
-        //
-        // OPEN AT THE FOOT. No bottom border and no bottom radius: the screen
-        // runs off the tile's bottom edge the way the product pages' does off
-        // their card's, so the last row is cropped by the frame rather than
-        // stopping short of it with a band of tile underneath — which read as
-        // the table having run out rather than as a window onto more.
-        // TALLER ON A PHONE than the 280 it was. The window is about 300px wide
-        // there, so at 280 tall it was square — and a square window reads as a
-        // crop of an app rather than as a screen, because no screen anyone uses
-        // is square. At 340 it is portrait, like the phone holding it, and two
-        // more rows of the tracker clear the fold.
-        // 470 FROM md, NOT 391. The product pages' hero draws its screen at
-        // about 880x378 — a 2.3 ratio — and this tile is 1080 wide, so at 391
-        // it was a 2.8: the same screen in a letterbox, flatter than anything
-        // else the site shows a product in. 470 puts this tile on the product
-        // pages' own proportion, and the extra height is spent on rows of the
-        // tracker rather than on mat.
-        //
-        // SIZED TO THE SOLUTIONS PAGES' HERO, not to its own numbers: the same
-        // 1040 window, 280/391 tall, holding a screen taller than itself so the
-        // frame crops it. A homepage hero shot a different size from the
-        // product pages' read as a different template.
-        className="relative mx-auto hidden h-[280px] w-full max-w-[1040px] overflow-hidden rounded-t-xl md:block md:h-[391px]"
-      >
-        {/* FILLS THE TILE rather than running past it, so the question field
-          lands on the tile's foot instead of below the crop. */}
-        <div className="absolute inset-0">
-          {/* A client's portal open on the AI Assistant, in the firm's colour:
-            the client's side of the product, before they have asked anything. */}
-          {screen}
-        </div>
-      </div>
-    </>
-  );
-}
 
 export function HeroSplit() {
   const { theme } = useTheme();
@@ -338,27 +220,11 @@ export function HeroSplit() {
               settle the screen inside it, and that moved the wrong box: the
               tile is the hero's own closing element and measures 1400 with
               everything above it. The cap is on the WINDOW now, inside a tile
-              that is still full width — see ClientExperiencePanel. */}
+              that is still full width — see ClientExperienceTile. */}
           <div className="mt-12 md:mt-16">
-            {/* The panel. rounded-3xl, the radius the site's large panels use.
-                Clipped, and open at the foot, so the screen inside ends on the
-                tile's own edge — see ClientExperiencePanel. */}
-            {/* The solutions pages' tray inset, 24 then 48, so this hero and
-                theirs are one template. The foot stays open — see below. */}
-            {/* THE RAILS LEAVE BEFORE THEY REACH IT. The tile is the full
-                measure and its ground is opaque, so its top edge cut all
-                seven rails on one scanline — a 1200px seam with the lines
-                stopping dead on it, which is the hard cut the FAQ's own halo
-                exists to avoid. The wide halo is the page ground drawn just
-                outside the tile, so each rail fades out over about 48px of
-                hero instead of ending on an edge. `relative`, because the
-                shadow has to paint over a layer the hero deliberately puts
-                at a negative z. */}
-            <div
-              className={`relative overflow-hidden rounded-3xl bg-[var(--surface)] p-6 pb-0 md:p-12 md:pb-0 ${BUILDER_RAIL_HALO_WIDE}`}
-            >
-              <ClientExperiencePanel />
-            </div>
+            {/* The panel and the client's portal inside it — shared with
+                /client-portal's hero, see ClientExperienceTile. */}
+            <ClientExperienceTile />
           </div>
         </div>
       </section>
