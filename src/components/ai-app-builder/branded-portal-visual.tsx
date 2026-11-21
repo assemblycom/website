@@ -4,7 +4,7 @@ import {
   IconChat,
   IconDocuments,
   IconFile,
-  IconHouse,
+  IconHome,
   IconMenu,
 } from "@/components/home/mock-icons";
 import {
@@ -33,7 +33,7 @@ const LINE = "border-[var(--mock-line)]";
 
 /** The rows every client portal has, before the firm adds anything. */
 const STOCK = [
-  { icon: <IconHouse />, label: "Home" },
+  { icon: <IconHome />, label: "Home" },
   { icon: <IconChat />, label: "Messages" },
   { icon: <IconFile />, label: "Files" },
   { icon: <IconCard />, label: "Billing" },
@@ -120,6 +120,7 @@ export function BrandedPortalVisual({
   navOnPhone = true,
   appsBreak = true,
   headerAction,
+  activeLabel,
 }: {
   brand?: string;
   /** The firm's mark, on the white tile beside its name. */
@@ -175,6 +176,11 @@ export function BrandedPortalVisual({
   appsBreak?: boolean;
   /** The open app's own control, at the right of its title bar. */
   headerAction?: React.ReactNode;
+  /**
+   * The row to light, stock or added. Unset, the last added app is the open
+   * one, which is what every caller showing a new app wants.
+   */
+  activeLabel?: string;
 } = {}) {
   return (
     <div
@@ -217,7 +223,12 @@ export function BrandedPortalVisual({
         </span>
 
         {stock.map(({ icon, label }) => (
-          <NavRow key={label} icon={icon} label={label} />
+          <NavRow
+            key={label}
+            icon={icon}
+            label={label}
+            active={label === activeLabel}
+          />
         ))}
 
         {/* The firm's own apps. They carried an "APPS" group heading, which is
@@ -237,7 +248,9 @@ export function BrandedPortalVisual({
               key={label}
               icon={icon}
               label={label}
-              active={i === apps.length - 1}
+              active={
+                activeLabel ? label === activeLabel : i === apps.length - 1
+              }
             />
           ))}
 

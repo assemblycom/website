@@ -380,6 +380,27 @@ export function IconForm({ className }: IconProps) {
   );
 }
 
+// Home — the product's own house with a door (design system `Home`). Filled,
+// and padded to the 28-unit box the other product glyphs sit in, so it holds
+// the same weight as Messages, Files and Billing beneath it in the nav.
+export function IconHome({ className }: IconProps) {
+  return (
+    <svg viewBox="-3.5 -3.5 28 28" className={className} fill="currentColor">
+      <path d="M9.847.252a.98.98 0 0 1 1.312 0l9.513 8.529c.406.36.439.984.074 1.39a.98.98 0 0 1-1.39.074l-.328-.295v8.418a2.627 2.627 0 0 1-2.624 2.624H4.594a2.627 2.627 0 0 1-2.624-2.624V9.95l-.328.295a.99.99 0 0 1-1.39-.074.985.985 0 0 1 .074-1.39zm.656 2.054L3.943 8.19v10.182c0 .36.295.656.656.656h1.968v-4.265a2.950 2.950 0 0 1 2.952-2.952h1.968a2.950 2.950 0 0 1 2.952 2.952v4.265h1.969c.36 0 .656-.295.656-.656V8.19l-6.561-5.880zM8.535 19.028h3.936v-4.265a.98.98 0 0 0-.984-.984H9.520a.98.98 0 0 0-.984.984z" />
+    </svg>
+  );
+}
+
+// Forms — the product's own clipboard (design system `Form`). Filled and in the
+// set's padded 28-unit box, so it sits at the same size as IconCard beside it.
+export function IconClipboard({ className }: IconProps) {
+  return (
+    <svg viewBox="-4 -4 28 28" className={className} fill="currentColor">
+      <path d="M11.563 3.75H8.437a.935.935 0 0 1-.937-.937c0-.52.418-.938.938-.938h3.124c.52 0 .938.418.938.938 0 .519-.418.937-.937.937m0 1.875c1.449 0 2.64-1.094 2.796-2.5H15c.344 0 .625.281.625.625V17.5a.627.627 0 0 1-.625.625H5a.627.627 0 0 1-.625-.625V3.75c0-.344.281-.625.625-.625h.64a2.814 2.814 0 0 0 2.798 2.5zm2.34-4.375A2.81 2.81 0 0 0 11.562 0H8.437c-.976 0-1.835.496-2.34 1.25H5a2.5 2.5 0 0 0-2.5 2.5V17.5C2.5 18.879 3.621 20 5 20h10c1.379 0 2.5-1.121 2.5-2.5V3.75c0-1.379-1.121-2.5-2.5-2.5z" />
+    </svg>
+  );
+}
+
 // Credit card — approved product glyph, exported from Figma. Filled and in the
 // set's padded 28-unit box, for the same reasons as IconFile above.
 export function IconCard({ className }: IconProps) {
