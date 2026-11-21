@@ -192,7 +192,8 @@ export const CASE_STUDIES: CaseStudy[] = [
       {
         type: "quote",
         text: "What excites me is how our partner data collected in Assembly flows directly into our internal quality control processes. Instead of duplicating work across systems, everything is connected, saving our team time and ensuring we always have the most accurate, up-to-date information.",
-        attribution: "Phillip LaRue, Sr. Director of Luxury Travel at Capital One",
+        attribution:
+          "Phillip LaRue, Sr. Director of Luxury Travel at Capital One",
       },
       {
         type: "paragraph",
@@ -206,8 +207,7 @@ export const CASE_STUDIES: CaseStudy[] = [
     seoDescription:
       "How Sargent CPAs built custom client apps with Assembly, consolidated third-party tools, and kept a portal that feels like the firm.",
     industry: "Accounting & Advisory",
-    headline:
-      "How Sargent CPAs Built a Custom Client Experience with Assembly",
+    headline: "How Sargent CPAs Built a Custom Client Experience with Assembly",
     summary:
       "Sargent CPAs is an accounting firm built on close client relationships. Operations Manager Anthony Drozd explains how Assembly lets their team offer a warm, custom-branded client experience and replace third-party software.",
     stats: [
@@ -952,7 +952,13 @@ export const CASE_STUDIES: CaseStudy[] = [
       founded: "2024",
       runningSince: "2025",
       companyUrl: "https://vacationrentallicense.com",
-      apps: ["Files App", "Messages App", "Google Drive", "Payments App", "Monday"],
+      apps: [
+        "Files App",
+        "Messages App",
+        "Google Drive",
+        "Payments App",
+        "Monday",
+      ],
     },
     body: [
       {
@@ -1035,7 +1041,13 @@ export const CASE_STUDIES: CaseStudy[] = [
       founded: "2012",
       runningSince: "2025",
       companyUrl: "https://mycollectivecpa.com",
-      apps: ["Tasks", "Messages App", "Contracts App", "Jotform", "Google Drive"],
+      apps: [
+        "Tasks",
+        "Messages App",
+        "Contracts App",
+        "Jotform",
+        "Google Drive",
+      ],
     },
     body: [
       {
@@ -1461,6 +1473,17 @@ export function getCaseStudyBySlug(slug: string): CaseStudy | undefined {
   return CASE_STUDIES.find((cs) => cs.slug === slug);
 }
 
+/**
+ * One story's figure, by its label, for a page that quotes it elsewhere. It
+ * throws rather than returning undefined so a figure edited out of its story
+ * fails the build instead of leaving a page claiming a number nobody backs.
+ */
+export function getCaseStudyStat(slug: string, label: string): Stat {
+  const stat = getCaseStudyBySlug(slug)?.stats.find((s) => s.label === label);
+  if (!stat) throw new Error(`No stat "${label}" in case study "${slug}"`);
+  return stat;
+}
+
 // The three flagship stories featured as cards in the customers-page hero.
 // Everything else flows into the story table below. Single source of truth so
 // the hero and the table never double-list a study.
@@ -1471,8 +1494,8 @@ export const HERO_STUDY_SLUGS = [
   "jungle-luxe",
 ] as const;
 
-export const HERO_STUDIES: CaseStudy[] = HERO_STUDY_SLUGS.map(
-  (slug) => CASE_STUDIES.find((s) => s.slug === slug),
+export const HERO_STUDIES: CaseStudy[] = HERO_STUDY_SLUGS.map((slug) =>
+  CASE_STUDIES.find((s) => s.slug === slug),
 ).filter((s): s is CaseStudy => Boolean(s));
 
 // First testimonial quote from a study's body, split into speaker name + role

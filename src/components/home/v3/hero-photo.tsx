@@ -8,6 +8,7 @@ import {
   useRef,
   useState,
   type CSSProperties,
+  type ReactNode,
 } from "react";
 import { StudioNav } from "@/components/home/studio-nav";
 import { useTheme } from "@/components/theme/theme-provider";
@@ -79,32 +80,48 @@ import { PROTO_HERO_BODY } from "@/components/proto/hero-copy";
 // The product pages' hero rail, as in V2.
 const RAIL = "mx-auto max-w-[1400px] px-6 md:px-10";
 
-/** PLACEHOLDER — the site's own photography, standing in for a real shot. */
+/** The homepage photograph, which other pages can swap through the `photo` prop. */
 const PHOTO = {
-  src: "/images/mocks/describe-laptop.webp",
-  alt: "Someone working at a laptop in warm afternoon light",
+  src: "/images/mocks/hero-photo-laptop-chair.webp",
+  alt: "Someone working on a laptop in a chair, in warm afternoon light",
 };
+
+/**
+ * Where the default photograph sits. On desktop it already spans the full
+ * width, so object-position can't move it sideways; growing it from its left
+ * edge pushes her right, clear of the headline.
+ */
+const DEFAULT_PHOTO_POSITION =
+  "object-[70%_40%] md:origin-[0%_40%] md:scale-[1.12]";
+
+/** One figure across the hero's foot: the value over its label. */
+export interface HeroFigure {
+  value: string;
+  label: string;
+  /**
+   * The phone's label. Each column is only about 90px wide there and the
+   * label cannot wrap (a wrapped label staggers the row's baseline), so a
+   * two-word label needs a one-word form. Defaults to `label`.
+   */
+  short?: string;
+}
 
 // Three figures, as the reference has: clients managed is the one dropped,
 // since businesses, apps and payments each speak to a different part of the
-// product and clients overlaps with businesses.
-const HERO_STATS = STATS.filter((s) => s.label !== "Clients managed");
-
-/**
- * The phone's labels for those figures.
- *
- * The row is sized to its own content on a phone, so each column is only as
- * wide as the figure above it — about 90px — and every label that is two
- * words broke across two lines, leaving the row on a ragged baseline. The
- * noun on its own is the part that does the work, and `whitespace-nowrap`
- * is what guarantees it: a label that cannot wrap cannot stagger the row.
- * The full labels return from sm, where there is room for them.
- */
+// product and clients overlaps with businesses. The short labels keep the
+// noun, which is the part that does the work.
 const SHORT_LABELS: Record<string, string> = {
   "Businesses powered": "Businesses",
   "Apps created": "Apps",
   "Payments processed": "Payments",
 };
+const SITE_FIGURES: HeroFigure[] = STATS.filter(
+  (s) => s.label !== "Clients managed",
+).map((s) => ({
+  value: s.format(s.to),
+  label: s.label,
+  short: SHORT_LABELS[s.label],
+}));
 
 /**
  * Scroll, as a fraction of the viewport height, over which the photo shrinks.
@@ -141,10 +158,31 @@ const FRAME =
  */
 const CARD_FROM = "(min-width: 90rem)"; // `wide`, the site's own breakpoint
 
-export function HeroPhoto() {
+/**
+ * The words and buttons the photograph carries. Every prop defaults to the
+ * homepage's, so the experiment arm renders it bare; another page (the
+ * accounting solution page) reuses the format by passing its own copy.
+ */
+export function HeroPhoto({
+  lines: linesProp,
+  body = PROTO_HERO_BODY,
+  actions,
+  figures = SITE_FIGURES,
+  photo = PHOTO,
+}: {
+  /** The headline, one entry per line of the lockup. */
+  lines?: string[];
+  body?: ReactNode;
+  /** The button pair. Defaults to the homepage's tracked pair. */
+  actions?: ReactNode;
+  /** The figures across the foot, right of the buttons; null for none. */
+  figures?: HeroFigure[] | null;
+  /** The photograph. Defaults to the homepage's. */
+  photo?: { src: string; alt: string; position?: string };
+} = {}) {
   const { theme } = useTheme();
   const message = COPY_VARIANTS[FALLBACK_COPY];
-  const lines = message.big?.lines ?? [message.h1];
+  const lines = linesProp ?? message.big?.lines ?? [message.h1];
   const wrapRef = useRef<HTMLDivElement>(null);
   // The nav is light-on-photo while the hero is full-bleed, and the card
   // leaves it sitting on the page's own background instead, where white type
@@ -226,20 +264,30 @@ export function HeroPhoto() {
           className={`absolute flex flex-col justify-end overflow-hidden bg-neutral-950 ${FRAME}`}
         >
           <Image
-            src={PHOTO.src}
-            alt={PHOTO.alt}
+            src={photo.src}
+            alt={photo.alt}
             fill
             priority
             sizes="100vw"
+            // Served as the original file: any re-encode visibly grains a
+            // full-bleed photograph, and these are already web-sized.
+            unoptimized
             // The subject sits right of centre, which leaves the lower left
             // clear for the claim.
-            className="object-cover object-[70%_40%]"
+            className={`object-cover ${photo.position ?? DEFAULT_PHOTO_POSITION}`}
           />
           {/* Darkened top for the nav and heavily at the foot for the type; the
             photo stays readable in the middle band where nothing sits on it. */}
           <div
             aria-hidden
-            className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,0.55)_0%,rgba(0,0,0,0.2)_22%,rgba(0,0,0,0.25)_50%,rgba(0,0,0,0.85)_100%)]"
+            className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,0.35)_0%,rgba(0,0,0,0.08)_22%,rgba(0,0,0,0.12)_50%,rgba(0,0,0,0.7)_100%)]"
+          />
+          {/* The type sits over the foot of the photo, where the subject's hands
+            and laptop compete with it, so that band blurs in. A phone stacks
+            the type higher, so its band is taller. */}
+          <div
+            aria-hidden
+            className="absolute inset-x-0 bottom-0 h-[55%] backdrop-blur-xl [mask-image:linear-gradient(to_bottom,transparent,black_45%)] md:h-[45%]"
           />
 
           <div className={`relative w-full ${RAIL} pb-12 md:pb-16`}>
@@ -270,7 +318,7 @@ export function HeroPhoto() {
               ))}
             </h1>
             <p className="type-lead mt-5 max-w-[34rem] text-pretty text-white/70">
-              {PROTO_HERO_BODY}
+              {body}
             </p>
 
             <div className="mt-8 flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between">
@@ -284,23 +332,27 @@ export function HeroPhoto() {
                   gone: the row stacks and goes inline at `sm`, which is the
                   breakpoint the controls are written for. */}
               <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center">
-                <a
-                  href={SIGNUP_URL}
-                  className={`unauth-only ${PRIMARY_CTA}`}
-                  onClick={() => trackHeroCta("photo-primary")}
-                >
-                  Get started
-                </a>
-                <a href={APP_URL} className={`auth-only ${PRIMARY_CTA}`}>
-                  Open Assembly
-                </a>
-                <Link
-                  href={DEMO_URL}
-                  className={SECONDARY_CTA}
-                  onClick={() => trackHeroCta("photo-demo")}
-                >
-                  Book a demo
-                </Link>
+                {actions ?? (
+                  <>
+                    <a
+                      href={SIGNUP_URL}
+                      className={`unauth-only ${PRIMARY_CTA}`}
+                      onClick={() => trackHeroCta("photo-primary")}
+                    >
+                      Get started
+                    </a>
+                    <a href={APP_URL} className={`auth-only ${PRIMARY_CTA}`}>
+                      Open Assembly
+                    </a>
+                    <Link
+                      href={DEMO_URL}
+                      className={SECONDARY_CTA}
+                      onClick={() => trackHeroCta("photo-demo")}
+                    >
+                      Book a demo
+                    </Link>
+                  </>
+                )}
               </div>
 
               {/* The figures, value over label, divided by hairlines as in the
@@ -323,24 +375,24 @@ export function HeroPhoto() {
                   hero is one block. It takes the copy's left line back at sm,
                   where the buttons shrink to their labels and that line
                   exists again. */}
-              <dl className="grid w-full shrink-0 grid-cols-3 sm:w-auto sm:self-start lg:self-auto">
-                {HERO_STATS.map((stat) => (
-                  <div
-                    key={stat.label}
-                    className="flex flex-col-reverse gap-1 border-l border-white/15 px-3 text-center first:border-l-0 first:pl-0 last:pr-0 sm:px-5"
-                  >
-                    <dt className="whitespace-nowrap text-sm text-white/60">
-                      <span className="sm:hidden">
-                        {SHORT_LABELS[stat.label] ?? stat.label}
-                      </span>
-                      <span className="hidden sm:inline">{stat.label}</span>
-                    </dt>
-                    <dd className="type-h4 text-white">
-                      {stat.format(stat.to)}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
+              {figures?.length ? (
+                <dl className="grid w-full shrink-0 grid-cols-3 sm:w-auto sm:self-start lg:self-auto">
+                  {figures.map((stat) => (
+                    <div
+                      key={stat.label}
+                      className="flex flex-col-reverse gap-1 border-l border-white/15 px-3 text-center first:border-l-0 first:pl-0 last:pr-0 sm:px-5"
+                    >
+                      <dt className="whitespace-nowrap text-sm text-white/60">
+                        <span className="sm:hidden">
+                          {stat.short ?? stat.label}
+                        </span>
+                        <span className="hidden sm:inline">{stat.label}</span>
+                      </dt>
+                      <dd className="type-h4 text-white">{stat.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              ) : null}
             </div>
           </div>
         </section>
