@@ -80,11 +80,19 @@ import { PROTO_HERO_BODY } from "@/components/proto/hero-copy";
 // The product pages' hero rail, as in V2.
 const RAIL = "mx-auto max-w-[1400px] px-6 md:px-10";
 
-/** PLACEHOLDER — the site's own photography, standing in for a real shot. */
+/** The homepage photograph, which other pages can swap through the `photo` prop. */
 const PHOTO = {
-  src: "/images/mocks/describe-laptop.webp",
-  alt: "Someone working at a laptop in warm afternoon light",
+  src: "/images/mocks/hero-photo-laptop-chair.webp",
+  alt: "Someone working on a laptop in a chair, in warm afternoon light",
 };
+
+/**
+ * Where the default photograph sits. On desktop it already spans the full
+ * width, so object-position can't move it sideways; growing it from its left
+ * edge pushes her right, clear of the headline.
+ */
+const DEFAULT_PHOTO_POSITION =
+  "object-[70%_40%] md:origin-[0%_40%] md:scale-[1.12]";
 
 /** One figure across the hero's foot: the value over its label. */
 export interface HeroFigure {
@@ -160,6 +168,7 @@ export function HeroPhoto({
   body = PROTO_HERO_BODY,
   actions,
   figures = SITE_FIGURES,
+  photo = PHOTO,
 }: {
   /** The headline, one entry per line of the lockup. */
   lines?: string[];
@@ -168,6 +177,8 @@ export function HeroPhoto({
   actions?: ReactNode;
   /** The figures across the foot, right of the buttons; null for none. */
   figures?: HeroFigure[] | null;
+  /** The photograph. Defaults to the homepage's. */
+  photo?: { src: string; alt: string; position?: string };
 } = {}) {
   const { theme } = useTheme();
   const message = COPY_VARIANTS[FALLBACK_COPY];
@@ -253,20 +264,30 @@ export function HeroPhoto({
           className={`absolute flex flex-col justify-end overflow-hidden bg-neutral-950 ${FRAME}`}
         >
           <Image
-            src={PHOTO.src}
-            alt={PHOTO.alt}
+            src={photo.src}
+            alt={photo.alt}
             fill
             priority
             sizes="100vw"
+            // Served as the original file: any re-encode visibly grains a
+            // full-bleed photograph, and these are already web-sized.
+            unoptimized
             // The subject sits right of centre, which leaves the lower left
             // clear for the claim.
-            className="object-cover object-[70%_40%]"
+            className={`object-cover ${photo.position ?? DEFAULT_PHOTO_POSITION}`}
           />
           {/* Darkened top for the nav and heavily at the foot for the type; the
             photo stays readable in the middle band where nothing sits on it. */}
           <div
             aria-hidden
-            className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,0.55)_0%,rgba(0,0,0,0.2)_22%,rgba(0,0,0,0.25)_50%,rgba(0,0,0,0.85)_100%)]"
+            className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,0.35)_0%,rgba(0,0,0,0.08)_22%,rgba(0,0,0,0.12)_50%,rgba(0,0,0,0.7)_100%)]"
+          />
+          {/* The type sits over the foot of the photo, where the subject's hands
+            and laptop compete with it, so that band blurs in. A phone stacks
+            the type higher, so its band is taller. */}
+          <div
+            aria-hidden
+            className="absolute inset-x-0 bottom-0 h-[55%] backdrop-blur-xl [mask-image:linear-gradient(to_bottom,transparent,black_45%)] md:h-[45%]"
           />
 
           <div className={`relative w-full ${RAIL} pb-12 md:pb-16`}>

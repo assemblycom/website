@@ -341,7 +341,14 @@ export default function AccountingClientPortalPage() {
           marks follow under the photograph. */}
       <HeroPhoto
         figures={ACCOUNTING_FIGURES}
-        lines={["Your AI-native accounting firm starts here"]}
+        photo={{
+          src: "/images/solutions/accounting-hero-office.webp",
+          alt: "An accountant in a suit smiling by a window in his office",
+          // He stands mid-frame: a phone's crop centres on him, and desktop grows
+          // the photo from its left edge to move him clear of the headline.
+          position: "object-[52%_30%] md:origin-[0%_30%] md:scale-[1.2]",
+        }}
+        lines={["Build your AI-native", "accounting firm"]}
         body={
           <>
             {/* Two leads, one measure. The desktop sentence runs long enough
