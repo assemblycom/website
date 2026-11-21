@@ -2008,12 +2008,9 @@ export function IntakeAppMock({
                 <span className="block text-[10.5px] leading-none text-[color:var(--mock-ink)]">
                   {q.label}
                 </span>
-                {/* On a rule rather than in a box — the underline is what says
-                    "this is where you write", and a bordered field inside a
-                    bordered card was two frames around one value. */}
-                <span
-                  className={`mt-2 block truncate border-b pb-1.5 text-[10.5px] leading-none text-[color:var(--mock-ink-soft)] ${LINE}`}
-                >
+                {/* No rule under the value: the card already frames each
+                    field, and the step header says it is a form. */}
+                <span className="mt-2 block truncate text-[10.5px] leading-none text-[color:var(--mock-ink-soft)]">
                   {q.value}
                 </span>
               </div>
@@ -2207,12 +2204,11 @@ function MobileAppBar({
       {/* The app name sits flat, no fill: a filled chip on a still picture
           read as a hovered control rather than as the screen's title. */}
       <span className="flex min-w-0 items-center gap-1 px-1 py-[5px]">
-        {/* MOCK_TITLE (13.5px), the scale's title step — the bar names
-            the screen, so it belongs on that step and not a smaller one. */}
-        <span className="truncate text-[13.5px] leading-none text-[color:var(--mock-ink)]">
+        {/* MOCK_BODY (12.5px), a step under the title size: at 13.5 the
+            bar's name outweighed everything in the small screen below it. */}
+        <span className="truncate text-[12.5px] leading-none text-[color:var(--mock-ink)]">
           {app}
         </span>
-        <IconChevronDown className="size-[11px] shrink-0 text-[color:var(--mock-ink-soft)]" />
       </span>
     </div>
   );

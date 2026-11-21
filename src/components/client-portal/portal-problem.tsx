@@ -223,7 +223,8 @@ function Screen({
 // The stops live in globals.css, as --portal-screen-fade, because the mask has
 // to be able to say "nothing" in dark and an inline style has no theme to
 // branch on. See the token for why dark wants none.
-const SCREEN_FADE = "var(--portal-screen-fade)";
+const SCREEN_FADE =
+  "md:[-webkit-mask-image:var(--portal-screen-fade)] md:[mask-image:var(--portal-screen-fade)]";
 
 function ScreenPair({
   selected,
@@ -581,11 +582,12 @@ export function PortalProblem({
               <div className="relative">
                 <div
                   // No edge fade over a photograph: it would dissolve the
-                  // picture laid on it into the scene behind.
-                  style={
-                    trayImage || trayBackground
-                      ? undefined
-                      : { WebkitMaskImage: SCREEN_FADE, maskImage: SCREEN_FADE }
+                  // picture laid on it into the scene behind. Not on a phone
+                  // either: there the pair adds up to exactly the tray, so the
+                  // front screen ends inside the fade and its right edge washed
+                  // out instead of running off.
+                  className={
+                    trayImage || trayBackground ? undefined : SCREEN_FADE
                   }
                 >
                   {screens ?? (
