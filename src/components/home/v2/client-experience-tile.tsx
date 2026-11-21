@@ -7,7 +7,7 @@ import { ClientAssistantPane } from "@/components/home/v2/client-ai-assistant-vi
 import { ClientHomePane } from "@/components/client-portal/client-home-pane";
 import {
   IconChat,
-  IconForm,
+  IconClipboard,
   IconList,
   IconPenFilled,
 } from "@/components/home/mock-icons";
@@ -65,7 +65,7 @@ const SCREENS: Record<
     // in the nav to go to.
     apps: [
       { icon: <IconPenFilled />, label: "Contracts" },
-      { icon: <IconForm />, label: "Forms" },
+      { icon: <IconClipboard />, label: "Forms" },
       { icon: <IconList />, label: "Project tracker" },
     ],
     activeLabel: "Home",

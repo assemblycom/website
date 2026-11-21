@@ -4,7 +4,7 @@ import {
   IconChat,
   IconDocuments,
   IconFile,
-  IconHouse,
+  IconHome,
   IconMenu,
 } from "@/components/home/mock-icons";
 import {
@@ -33,7 +33,7 @@ const LINE = "border-[var(--mock-line)]";
 
 /** The rows every client portal has, before the firm adds anything. */
 const STOCK = [
-  { icon: <IconHouse />, label: "Home" },
+  { icon: <IconHome />, label: "Home" },
   { icon: <IconChat />, label: "Messages" },
   { icon: <IconFile />, label: "Files" },
   { icon: <IconCard />, label: "Billing" },

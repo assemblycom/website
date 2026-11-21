@@ -1,7 +1,7 @@
 import {
   IconCard,
   IconFile,
-  IconForm,
+  IconClipboard,
   IconPenFilled,
 } from "@/components/home/mock-icons";
 import {
@@ -27,7 +27,7 @@ const ACTION_ITEMS = [
     app: "Contracts",
   },
   { icon: <IconCard />, label: "Pay invoice #1042", app: "Billing" },
-  { icon: <IconForm />, label: "Complete the onboarding form", app: "Forms" },
+  { icon: <IconClipboard />, label: "Complete the onboarding form", app: "Forms" },
   {
     icon: <IconFile />,
     label: "Upload last year's bank statements",
@@ -61,7 +61,7 @@ export function ClientHomePane() {
         >
           <span className={`flex-1 ${MOCK_PRIMARY} ${INK}`}>Action items</span>
           <span
-            className={`rounded px-1.5 py-[4px] tabular-nums ${MOCK_SECONDARY} bg-[var(--mock-well-2)] ${INK_SOFT}`}
+            className={`rounded px-1.5 py-[4px] tabular-nums ${MOCK_SECONDARY} bg-[var(--mock-well-3)] ${INK_SOFT}`}
           >
             {ACTION_ITEMS.length}
           </span>
@@ -74,7 +74,7 @@ export function ClientHomePane() {
             }`}
           >
             <span
-              className={`flex size-[22px] shrink-0 items-center justify-center rounded-[5px] bg-[var(--mock-well-2)] ${INK_SOFT} [&>svg]:size-[12px]`}
+              className={`flex size-[22px] shrink-0 items-center justify-center rounded-[5px] bg-[var(--mock-well-3)] ${INK_SOFT} [&>svg]:size-[12px]`}
             >
               {item.icon}
             </span>
@@ -84,7 +84,7 @@ export function ClientHomePane() {
               {item.label}
             </span>
             <span
-              className={`shrink-0 rounded px-1.5 py-[4px] ${MOCK_SECONDARY} bg-[var(--mock-well-2)] ${INK_SOFT} max-md:hidden`}
+              className={`shrink-0 rounded px-1.5 py-[4px] ${MOCK_SECONDARY} bg-[var(--mock-well-3)] ${INK_SOFT} max-md:hidden`}
             >
               {item.app}
             </span>
