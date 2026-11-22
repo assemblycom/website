@@ -2336,14 +2336,14 @@ function CardVoiceAI() {
                 instead of snapping, so both bars keep the same weight. */}
             <svg
               width="12"
-              height="14"
+              height="18"
               viewBox="0 0 12 14"
               fill="currentColor"
               aria-hidden
               className="text-[var(--v69-ink)] light-ui:text-[#4E4F46] dark-x:text-[#1B1B1B]"
             >
-              <rect x="0" y="0" width="3" height="14" rx="1.5" />
-              <rect x="9" y="0" width="3" height="14" rx="1.5" />
+              <rect x="0" y="0" width="3" height="18" rx="1.5" />
+              <rect x="9" y="0" width="3" height="18" rx="1.5" />
             </svg>
           </div>
         </div>
@@ -2962,12 +2962,14 @@ function CardContract() {
             header row above it so the hand sits low in its own field instead of
             crowding the divider. */}
         <span className="block border-t border-black/[0.07] px-3 pb-2.5 pt-3.5 dark-x:border-[rgba(255,255,255,0.16)]">
+          {/* The templates gallery drops the rule under the hand: on the glass
+              it read as a stray divider. */}
           {/* Not `truncate`: the script face's loops overshoot its em box, and
               the overflow clip that comes with the ellipsis sheared the tops and
               tails off the hand. The name is fixed copy that fits, and the card
               clips its own edge, so nowrap alone is enough. */}
           <span
-            className="block whitespace-nowrap border-b border-black/[0.16] text-[26px] leading-[1.15] text-[var(--v69-ink)] dark-x:border-[rgba(255,255,255,0.25)] max-sm:[.template-mock-gallery_&]:text-[22px]"
+            className="block whitespace-nowrap border-b border-black/[0.16] text-[26px] leading-[1.15] text-[var(--v69-ink)] dark-x:border-[rgba(255,255,255,0.25)] max-sm:[.template-mock-gallery_&]:text-[22px] [.template-mock-gallery_&]:border-b-0"
             style={MOCK_SIGNATURE}
           >
             Adrian Chen
@@ -3330,6 +3332,22 @@ const PIPELINE_LINE_D = PIPELINE_SERIES.map((y, i) => {
 const PIPELINE_HUE =
   "[--pipe-line:#7DA4FF] dark-x:[--pipe-line:#D9ED92]";
 
+// The templates gallery draws the pipeline as a week-by-week line, after a
+// phone sleep chart: light points on a thin line, unlabelled, so the figure
+// above stays the headline.
+const PIPELINE_WEEKS = [182, 196, 191, 214, 232, 248];
+const PIPE_VB = { w: 200, h: 110, x0: 4, x1: 186, top: 26, bottom: 100 };
+const PIPE_MIN = 170;
+const PIPE_MAX = 255;
+const pipeY = (v: number) =>
+  PIPE_VB.bottom - ((v - PIPE_MIN) / (PIPE_MAX - PIPE_MIN)) * (PIPE_VB.bottom - PIPE_VB.top);
+const PIPE_POINTS = PIPELINE_WEEKS.map((v, i) => ({
+  v,
+  x: PIPE_VB.x0 + (i * (PIPE_VB.x1 - PIPE_VB.x0)) / (PIPELINE_WEEKS.length - 1),
+  y: pipeY(v),
+}));
+const PIPE_LINE_D = PIPE_POINTS.map((p, i) => `${i ? "L" : "M"} ${p.x} ${p.y}`).join(" ");
+
 function CardDealsPipeline() {
   return (
     <div
@@ -3364,7 +3382,7 @@ function CardDealsPipeline() {
       <svg
         viewBox={`0 0 ${PIPELINE_PLOT_W} ${PIPELINE_PLOT_H}`}
         preserveAspectRatio="none"
-        className="mt-auto h-[58%] w-full"
+        className="mt-auto h-[58%] w-full [.template-mock-gallery_&]:hidden"
         aria-hidden
       >
         {/* Everything under the baseline takes a faint tint, so the plot has a
@@ -3404,6 +3422,31 @@ function CardDealsPipeline() {
           vectorEffect="non-scaling-stroke"
         />
       </svg>
+      {/* Gallery only: an unstretched SVG so the points stay round. Its
+          inset matches the header's so the plot lines up under the figure. */}
+      <div aria-hidden className="mt-auto hidden px-5 pb-5 [.template-mock-gallery_&]:block">
+        <svg viewBox={`0 0 ${PIPE_VB.w} ${PIPE_VB.h}`} className="block w-full overflow-visible">
+          <path
+            d={PIPE_LINE_D}
+            fill="none"
+            stroke="var(--pipe-line)"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          {PIPE_POINTS.map((pt) => (
+            <circle
+              key={pt.x}
+              cx={pt.x}
+              cy={pt.y}
+              r="2.6"
+              fill="var(--pipe-line)"
+              stroke="var(--pipe-line)"
+              strokeWidth="1.5"
+            />
+          ))}
+        </svg>
+      </div>
     </div>
   );
 }
@@ -4119,29 +4162,45 @@ export function CardTaskList() {
   );
 }
 
-// New client intake for the templates gallery, set as one sentence after a
-// typographic weather widget: the figures at full ink, the words that join
-// them dimmed, and the next client's avatar standing in for the icon. The
-// home rail keeps its single-row cover (CardIntake).
-function IntakeLit({ children }: { children: React.ReactNode }) {
-  return <span className="text-[var(--v69-ink)]">{children}</span>;
+// New client intake for the templates gallery, after a phone widget that sets
+// its pitch as one sentence with small icons in the line and a button under it.
+// The home rail keeps its single-row cover (CardIntake).
+function IntakeChip({
+  tone,
+  children,
+}: {
+  tone: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <span
+      aria-hidden
+      className={`relative -top-[0.6cqw] inline-flex size-[9cqw] items-center justify-center rounded-[2.4cqw] align-middle ${tone}`}
+    >
+      <svg viewBox="0 0 20 20" className="size-[5.6cqw]" fill="currentColor">
+        {children}
+      </svg>
+    </span>
+  );
 }
 
 export function CardIntakeSentence() {
   return (
-    <div className="flex h-full w-full items-center px-[10%] [container-type:inline-size]">
-      <p className="whitespace-nowrap text-[14cqw] leading-[1.16] tracking-tight text-[var(--v69-ink)]/45">
-        <IntakeLit>12 new</IntakeLit> clients
-        <br />
-        <IntakeLit>this month</IntakeLit>,
-        <br />
-        <IntakeLit>3</IntakeLit> to review,
-        <br />
-        <span className="relative -top-[0.8cqw] mr-[2.5cqw] inline-block size-[12cqw] rounded-full bg-[#A8C64A] align-middle dark-x:bg-[#7DA4FF]"
-          aria-hidden
-        />
-        <IntakeLit>Alex</IntakeLit> is next
+    <div className="flex h-full w-full flex-col justify-between p-[10%] [container-type:inline-size]">
+      <p className="text-[8.6cqw] leading-[1.28] tracking-tight text-[var(--v69-ink)]">
+        Collect scope, budget{" "}
+        <IntakeChip tone="bg-[#D9ED92] text-[#3F5410]">
+          <path d="M5.9375 13.2656C6.90625 13.5078 7.96094 13.668 9.0625 13.7266V15.6016C7.92578 15.543 6.87109 15.3828 5.9375 15.1445V13.2695V13.2656ZM1.875 11.4062C2.48438 11.8828 3.22266 12.3047 4.0625 12.6523V14.5C3.96094 14.4531 3.86328 14.4062 3.76562 14.3594C2.15625 13.5547 1.875 12.7891 1.875 12.5V11.4062ZM10 2.5C4.47656 2.5 0 5.01953 0 8.125V12.5C0 15.2617 4.47656 17.5 10 17.5C15.5234 17.5 20 15.2617 20 12.5V8.125C20 5.01953 15.5234 2.5 10 2.5ZM15.625 12.7773C16.5938 12.4062 17.4414 11.9414 18.125 11.4062V12.5C18.125 12.7891 17.8438 13.5547 16.2344 14.3594C16.043 14.4531 15.8398 14.5469 15.625 14.6328V12.7773ZM10.9375 13.7266C11.9219 13.6758 12.8672 13.543 13.75 13.3438V15.2227C12.8945 15.418 11.9492 15.5547 10.9375 15.6055V13.7305V13.7266ZM2.5 8.125C2.5 6.05469 5.85938 4.375 10 4.375C14.1406 4.375 17.5 6.05469 17.5 8.125C17.5 10.1953 14.1406 11.875 10 11.875C5.85938 11.875 2.5 10.1953 2.5 8.125ZM10 10.625C13.1055 10.625 15.625 9.50391 15.625 8.125C15.625 6.74609 13.1055 5.625 10 5.625C6.89453 5.625 4.375 6.74609 4.375 8.125C4.375 9.50391 6.89453 10.625 10 10.625ZM6.875 8.125C6.875 7.92969 7.32031 7.75781 8.01562 7.64062C8.55469 7.55078 9.24609 7.5 10 7.5C10.7539 7.5 11.4453 7.55469 11.9844 7.64062C12.6797 7.75781 13.125 7.92969 13.125 8.125C13.125 8.32031 12.6797 8.49219 11.9844 8.60938C11.4453 8.69531 10.7539 8.75 10 8.75C9.24609 8.75 8.55469 8.69531 8.01562 8.60938C7.32031 8.49219 6.875 8.32031 6.875 8.125Z" />
+        </IntakeChip>{" "}
+        and goals from every new client{" "}
+        <IntakeChip tone="bg-[#7DA4FF] text-[#13244D]">
+          <path d="M8.75 0C3.91797 0 0 3.91797 0 8.75C0 11.0078 0.859375 13.0703 2.26562 14.6211C2.42969 14.8047 2.5 15 2.5 15.1602V19.0625C2.5 19.582 2.91797 20 3.4375 20C3.95703 20 4.375 19.582 4.375 19.0625V15.1602C4.375 14.4531 4.07031 13.8242 3.65234 13.3633C2.54688 12.1445 1.875 10.5273 1.875 8.75C1.875 4.95312 4.95312 1.875 8.75 1.875C12.1328 1.875 14.9492 4.32031 15.5195 7.54297C15.5547 7.73047 15.6445 7.90625 15.7812 8.04297L17.8203 10.082C18.0156 10.2773 18.1289 10.5469 18.1289 10.8242C18.1289 11.4062 17.6602 11.875 17.0781 11.875H16.5625C16.043 11.875 15.625 12.293 15.625 12.8125V14.6875C15.625 15.5508 14.9258 16.25 14.0625 16.25H12.1875C11.668 16.25 11.25 16.668 11.25 17.1875V19.0625C11.25 19.582 11.668 20 12.1875 20C12.707 20 13.125 19.582 13.125 19.0625V18.125H14.0625C15.9609 18.125 17.5 16.5859 17.5 14.6875V13.7188C18.9141 13.5117 20 12.293 20 10.8242C20 10.0469 19.6914 9.30469 19.1445 8.75391L17.3086 6.91797C16.4648 2.96484 12.957 0 8.75 0ZM12.5 9.375C12.8315 9.375 13.1495 9.2433 13.3839 9.00888C13.6183 8.77446 13.75 8.45652 13.75 8.125C13.75 7.79348 13.6183 7.47554 13.3839 7.24112C13.1495 7.0067 12.8315 6.875 12.5 6.875C12.1685 6.875 11.8505 7.0067 11.6161 7.24112C11.3817 7.47554 11.25 7.79348 11.25 8.125C11.25 8.45652 11.3817 8.77446 11.6161 9.00888C11.8505 9.2433 12.1685 9.375 12.5 9.375Z" />
+        </IntakeChip>{" "}
+        before kickoff.
       </p>
+      <span className="flex items-center justify-center rounded-full bg-[var(--v69-ink)] py-[4cqw] text-[6.4cqw] leading-none text-[var(--v69-card,#1a1a1a)] light-ui:text-white dark-x:text-[#1a1a1a]">
+        Send intake form
+      </span>
     </div>
   );
 }
@@ -4250,47 +4309,63 @@ export function CardDocumentAdd() {
   );
 }
 
-// The client calendar for the templates gallery: today's agenda as a phone
-// calendar widget draws it, each event a coloured spine with its time, title
-// and place set in that colour. The home rail keeps the single-date cover
-// (CardCalendar).
-// The current event is set in ink; the next takes lime, a lighter tone on the
-// dark skin and a deeper one on the light so it holds contrast on either glass.
+// The client calendar for the templates gallery. The home rail keeps the
+// single-date cover (CardCalendar).
 const CALENDAR_EVENTS = [
   {
+    title: "Kickoff call",
     time: "11:30 - 12:30",
-    lines: ["Kickoff call", "Alex Everett", "Google Meet"],
     tone: "text-[var(--v69-ink)]",
+    fill: "bg-[var(--v69-ink)]/[0.08]",
     spine: "bg-[var(--v69-ink)]",
   },
   {
+    title: "Design review",
     time: "14:00 - 15:00",
-    lines: ["Design review"],
-    tone: "text-[#5B7A12] dark-x:text-[#D9ED92]",
-    spine: "bg-[#5B7A12] dark-x:bg-[#D9ED92]",
+    tone: "text-[var(--v69-ink)]",
+    fill: "bg-[var(--v69-ink)]/[0.08]",
+    spine: "bg-[var(--v69-ink)]",
   },
 ];
 
+// After a phone calendar widget: the day and date on top, on the proposal
+// card's headline and figure steps, then each event as a tinted row with its
+// spine.
 export function CardCalendarAgenda() {
   return (
-    <div className="flex h-full w-full flex-col justify-center gap-[5cqw] pl-[15%] pr-[10%] [container-type:inline-size]">
-      {CALENDAR_EVENTS.map((event) => (
-        <div key={event.time} className="flex gap-[5cqw]">
-          <span className={`w-[1.6cqw] shrink-0 rounded-full ${event.spine}`} />
-          <span className={`flex min-w-0 flex-col gap-[2cqw] ${event.tone}`}>
-            <span className="text-[8cqw] leading-none tabular-nums">{event.time}</span>
-            {event.lines.map((line, i) => (
-              <span
-                key={line}
-                className={`truncate pb-[0.8cqw] -mb-[0.8cqw] text-[7.2cqw] leading-none ${i > 0 ? "opacity-70" : ""}`}
-              >
-                {line}
-              </span>
-            ))}
-          </span>
+    <div className="flex h-full w-full flex-col justify-between p-[10%] [container-type:inline-size]">
+      {/* Date at the top, agenda at the floor, as the tracker splits its
+          status line from its bar. */}
+      <div>
+        <div className="text-[8.5cqw] leading-none tracking-tight text-[var(--v69-ink)]">
+          Tuesday
         </div>
-      ))}
-      <span className="text-[6.6cqw] leading-none text-[var(--v69-ink)]/55">2 more</span>
+        <div className="mt-[3cqw] text-[13cqw] leading-none tracking-tight text-[var(--v69-ink)] tabular-nums">
+          18
+        </div>
+      </div>
+      <div>
+        <div className="flex flex-col gap-[2.5cqw]">
+          {CALENDAR_EVENTS.map((event) => (
+            <div
+              key={event.time}
+              className={`flex gap-[2.5cqw] rounded-[2cqw] py-[2cqw] pl-[1.5cqw] pr-[3cqw] ${event.fill} ${event.tone}`}
+            >
+              <span
+                className={`w-[1.1cqw] shrink-0 rounded-full ${event.spine}`}
+              />
+              <span className="flex min-w-0 flex-col gap-[2cqw] py-[0.5cqw]">
+                <span className="truncate text-[6.5cqw] leading-none">
+                  {event.title}
+                </span>
+                <span className="text-[6.5cqw] leading-none tabular-nums opacity-60">
+                  {event.time}
+                </span>
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
@@ -4344,6 +4419,777 @@ export function CardTrackerBar() {
           <span
             aria-hidden
             className="absolute left-1/2 top-1/2 h-[45%] w-px -translate-y-1/2 bg-[color-mix(in_srgb,var(--v69-ink)_25%,transparent)] mix-blend-difference"
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// The onboarding wizard for the templates gallery's glass tile: one client's
+// run through the steps as a row of dots, after a phone fitness widget. Status
+// is carried by brightness only so it sits in the set's neutral palette. The
+// home rail keeps the bar cover (CardOnboarding).
+const ONBOARDING_STEPS = {
+  client: "Nora Chen",
+  step: "Signing contract",
+  current: 8,
+  total: 10,
+};
+
+export function CardOnboardingSteps() {
+  const { client, step, current, total } = ONBOARDING_STEPS;
+  // Where the current step's label sits on the scale, so it lines up under its dot.
+  const currentAt = `${((current - 0.5) / total) * 100}%`;
+  return (
+    <div className="flex h-full w-full flex-col justify-between p-[10%] [container-type:inline-size]">
+      <div>
+        <div className="text-[10cqw] leading-none tracking-tight text-[var(--v69-ink)]">
+          {client}
+        </div>
+        <div className="mt-[4cqw] flex items-center gap-[2.5cqw] text-[7cqw] leading-none text-[var(--v69-ink)]/60">
+          <svg
+            viewBox="0 0 16 16"
+            className="size-[7cqw]"
+            fill="none"
+            aria-hidden
+          >
+            <circle
+              cx="8"
+              cy="8"
+              r="6.25"
+              stroke="currentColor"
+              strokeWidth="1.5"
+            />
+            <path
+              d="M5.5 8.2l1.7 1.7 3.3-3.6"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+          {step}
+        </div>
+      </div>
+      <div>
+        <div className="flex justify-between">
+          {Array.from({ length: total }, (_, i) => {
+            const n = i + 1;
+            const tone =
+              n < current
+                ? "bg-[var(--v69-ink)]/80"
+                : n === current
+                  ? "bg-[var(--v69-ink)] shadow-[0_0_0_1.2cqw_color-mix(in_srgb,var(--v69-ink)_22%,transparent)]"
+                  : "bg-[var(--v69-ink)]/[0.12]";
+            return (
+              <span key={n} className={`size-[5.2cqw] rounded-full ${tone}`} />
+            );
+          })}
+        </div>
+        <div
+          className="relative mt-[4.5cqw] h-[5.5cqw] text-[5.5cqw] leading-none text-[var(--v69-ink)]/45 tabular-nums"
+          style={MOCK_MONO}
+        >
+          <span className="absolute left-0">1</span>
+          <span
+            className="absolute -translate-x-1/2 text-[var(--v69-ink)]"
+            style={{ left: currentAt }}
+          >
+            {current}
+          </span>
+          <span className="absolute right-0">{total}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Design approvals for the templates gallery's glass tile: one client project
+// as a phone list widget, each deliverable marked by its review state. The home rail keeps its own cover (CardDesignApprovals).
+type ApprovalState = "approved" | "review" | "changes";
+const APPROVAL_LIST: { name: string; state: ApprovalState }[] =
+  [
+    { name: "Logo", state: "approved" },
+    { name: "Brand palette", state: "review" },
+    { name: "Type system", state: "changes" },
+    { name: "Social kit", state: "approved" },
+  ];
+
+function ApprovalGlyph({ state }: { state: ApprovalState }) {
+  if (state === "approved") {
+    return (
+      <svg
+        viewBox="0 0 16 16"
+        className="size-[6.5cqw] shrink-0 text-[#5B7A12] dark-x:text-[#D9ED92]"
+        fill="none"
+        aria-hidden
+      >
+        <circle
+          cx="8"
+          cy="8"
+          r="6.25"
+          stroke="currentColor"
+          strokeWidth="1.5"
+        />
+        <path
+          d="M5.5 8.2l1.7 1.7 3.3-3.6"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    );
+  }
+  if (state === "review") {
+    // Half filled: waiting on a decision.
+    return (
+      <svg
+        viewBox="0 0 16 16"
+        className="size-[6.5cqw] shrink-0 text-[var(--v69-ink)]"
+        fill="none"
+        aria-hidden
+      >
+        <circle
+          cx="8"
+          cy="8"
+          r="6.25"
+          stroke="currentColor"
+          strokeWidth="1.5"
+        />
+        <path d="M8 3.75a4.25 4.25 0 0 1 0 8.5z" fill="currentColor" />
+      </svg>
+    );
+  }
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      className="size-[6.5cqw] shrink-0 text-[var(--v69-ink)]/55"
+      fill="none"
+      aria-hidden
+    >
+      <circle cx="8" cy="8" r="6.25" stroke="currentColor" strokeWidth="1.5" />
+      <path
+        d="M5.75 8h4.5"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+export function CardApprovalList() {
+  return (
+    <div className="flex h-full w-full flex-col justify-start gap-[1cqw] p-[7%] [container-type:inline-size]">
+      <div className="flex items-center gap-[3cqw] rounded-[4cqw] bg-[var(--v69-ink)]/[0.1] px-[4cqw] py-[3.5cqw] text-[6.4cqw] leading-none text-[var(--v69-ink)]">
+        <svg
+          viewBox="0 0 16 16"
+          className="size-[6.5cqw] shrink-0"
+          fill="none"
+          aria-hidden
+        >
+          <path
+            d="M2 4.5c0-.6.4-1 1-1h3.2l1.5 1.6H13c.6 0 1 .4 1 1v6.4c0 .6-.4 1-1 1H3c-.6 0-1-.4-1-1z"
+            stroke="currentColor"
+            strokeWidth="1.4"
+            strokeLinejoin="round"
+          />
+        </svg>
+        Acme rebrand
+      </div>
+      {APPROVAL_LIST.map((row) => (
+        <div
+          key={row.name}
+          className="flex items-center gap-[3cqw] px-[4cqw] py-[2.6cqw] text-[6.4cqw] leading-none text-[var(--v69-ink)]"
+        >
+          <ApprovalGlyph state={row.state} />
+          <span className="truncate">{row.name}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// Content approval for the templates gallery's glass tile: the sign-off
+// prompt a client meets on a post, after a phone confirm sheet. The home rail
+// keeps its own cover (CardContentApproval).
+export function CardApproveSheet() {
+  return (
+    <div className="flex h-full w-full flex-col justify-between p-[9%] [container-type:inline-size]">
+      <div>
+        <span className="flex size-[13cqw] items-center justify-center rounded-full bg-[#D9ED92]/90 text-[#3F5410]">
+          <svg
+            viewBox="0 0 16 16"
+            className="size-[7cqw]"
+            fill="none"
+            aria-hidden
+          >
+            <path
+              d="M3 8.5l3 3 7-7"
+              stroke="currentColor"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </span>
+        <div className="mt-[5cqw] text-[8.6cqw] leading-none tracking-tight text-[var(--v69-ink)]">
+          Ready for your approval?
+        </div>
+        <p className="mt-[3.5cqw] text-[5.6cqw] leading-[1.35] text-[var(--v69-ink)]/65">
+          The spring launch post is waiting on your sign-off. Approve it or ask
+          for changes.
+        </p>
+      </div>
+      <span className="flex items-center justify-center rounded-full bg-[#D9ED92]/90 py-[4cqw] text-[6cqw] leading-none text-[#3F5410]">
+        Approve
+      </span>
+    </div>
+  );
+}
+
+// Client help desk for the templates gallery's glass tile: one figure, after
+// a phone stat widget. Title and icon on top, the count at the floor. The home
+// rail keeps its own cover (CardSupport).
+export function CardHelpdeskStat() {
+  return (
+    <div className="flex h-full w-full flex-col justify-between p-[10%] [container-type:inline-size]">
+      <div className="flex items-start justify-between">
+        <span className="pt-[2cqw] text-[8.5cqw] leading-none tracking-tight text-[var(--v69-ink)]">
+          Open requests
+        </span>
+        <span className="flex size-[13cqw] shrink-0 items-center justify-center rounded-full bg-[var(--v69-ink)]/[0.12] text-[var(--v69-ink)]">
+          <svg viewBox="0 0 16 16" className="size-[6.5cqw]" fill="none" aria-hidden>
+            <path
+              d="M3 4.5c0-.8.7-1.5 1.5-1.5h7c.8 0 1.5.7 1.5 1.5v5c0 .8-.7 1.5-1.5 1.5H7l-3 2.5V11h0c-.6 0-1-.4-1-1z"
+              stroke="currentColor"
+              strokeWidth="1.4"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </span>
+      </div>
+      <div>
+        <div className="text-[30cqw] leading-[0.9] tracking-tight text-[var(--v69-ink)] tabular-nums">
+          12
+        </div>
+        <div className="mt-[3cqw] text-[6.5cqw] leading-none text-[var(--v69-ink)]/45">
+          3 waiting on you
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Internal communications for the templates gallery's glass tile: a channel
+// thread with its reply box, after a phone comment sheet. The home rail keeps
+// its own cover (CardCommsApp).
+const COMMS_THREAD = [
+  { name: "Maya", when: "7 min ago", text: "Offsite moved to Friday", tone: "bg-[#C6B6FF]" },
+  { name: "Jonah", when: "2 min ago", text: "Thanks, see everyone there", tone: "bg-[#5CE5C3]" },
+];
+
+export function CardCommentThread() {
+  return (
+    <div className="flex h-full w-full flex-col p-[8%] [container-type:inline-size]">
+      <div className="flex items-center justify-between text-[6.5cqw] leading-none text-[var(--v69-ink)]">
+        Announcements
+        <svg viewBox="0 0 16 16" className="size-[5.5cqw] text-[var(--v69-ink)]/45" fill="none" aria-hidden>
+          <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        </svg>
+      </div>
+      <div className="mt-[7cqw] flex flex-col gap-[5cqw]">
+        {COMMS_THREAD.map((c) => (
+          <div key={c.name} className="flex gap-[3cqw]">
+            <span className={`size-[8cqw] shrink-0 rounded-full ${c.tone}`} />
+            <div className="flex min-w-0 flex-col gap-[2cqw] pt-[0.8cqw]">
+              <div className="flex items-baseline gap-[2cqw] text-[6cqw] leading-none">
+                <span className="text-[var(--v69-ink)]">{c.name}</span>
+                <span className="text-[5cqw] text-[var(--v69-ink)]/45">{c.when}</span>
+              </div>
+              <span className="truncate text-[6cqw] leading-none text-[var(--v69-ink)]/70">
+                {c.text}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="mt-auto flex items-center gap-[3cqw] rounded-full bg-[var(--v69-ink)]/[0.08] py-[1.6cqw] pl-[1.6cqw] pr-[1.6cqw]">
+        <span className="size-[8cqw] shrink-0 rounded-full bg-[#D9ED92]" />
+        <span className="flex-1 truncate text-[6cqw] leading-none text-[var(--v69-ink)]/40">
+          Reply in thread
+        </span>
+        <span className="flex size-[8cqw] shrink-0 items-center justify-center rounded-full bg-[#7DA4FF] text-[#13244D]">
+          <svg viewBox="0 0 16 16" className="size-[4.8cqw]" fill="none" aria-hidden>
+            <path d="M8 13V3.5M4 7.5l4-4 4 4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </span>
+      </div>
+    </div>
+  );
+}
+
+// Markup and comments for the templates gallery's glass tile: a comment
+// opened from its marker in a document, after a source-preview popover. The
+// home rail keeps its own cover (CardMarkup).
+export function CardMarkupPopover() {
+  return (
+    <div className="flex h-full w-full flex-col justify-start overflow-hidden p-[8%] pt-[7%] [container-type:inline-size]">
+      <div className="relative rounded-[4cqw] bg-[rgba(20,20,20,0.85)] text-[rgba(255,255,255,0.95)]">
+        <div className="flex items-center gap-[2.5cqw] border-b border-[rgba(255,255,255,0.1)] px-[4.5cqw] py-[3.5cqw] text-[6cqw] leading-none">
+          <span className="flex size-[6.5cqw] shrink-0 items-center justify-center rounded-full bg-[#C6B6FF] text-[3.8cqw] leading-none text-[#2A1F5C]">
+            <span data-initial className="translate-y-[0.43cqw]">M</span>
+          </span>
+          Maya on Homepage copy
+          <svg viewBox="0 0 16 16" className="ml-auto size-[5cqw] text-[rgba(255,255,255,0.45)]" fill="none" aria-hidden>
+            <path d="M5 11l6-6M6 5h5v5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </div>
+        <p className="px-[4.5cqw] py-[4cqw] text-[6cqw] leading-[1.35] text-[rgba(255,255,255,0.85)]">
+          Can we lead with the outcome here? Clients skim this line first.
+        </p>
+        {/* The pointer down to the comment marker it was opened from; the
+            left is measured to the marker's centre in the line below. */}
+        <span
+          aria-hidden
+          className="absolute -bottom-[2cqw] left-[calc(62.6%-2cqw)] size-[4cqw] rotate-45 rounded-[0.8cqw] bg-[rgba(20,20,20,0.85)]"
+        />
+      </div>
+      <p className="mt-[6cqw] text-[6.5cqw] leading-[1.45] text-[var(--v69-ink)]">
+        Your portal for files{" "}
+        <span data-comment-marker className="relative -top-[0.5cqw] inline-flex size-[7.5cqw] items-center justify-center rounded-[2cqw] bg-[var(--v69-ink)]/[0.14] align-middle">
+          <svg viewBox="0 0 20 20" className="size-[4.4cqw] text-[var(--v69-ink)]" fill="currentColor" aria-hidden>
+            <path d="M2.02734 15.0352C0.753906 13.4609 0 11.5 0 9.375C0 4.19922 4.47656 0 10 0C15.5234 0 20 4.19922 20 9.375C20 14.5508 15.5234 18.75 10 18.75C8.57422 18.75 7.21875 18.4688 5.99219 17.9688L1.44531 19.918C1.30078 19.9805 1.15234 20 0.996094 20C0.445312 20 0 19.5547 0 19.0039C0 18.8359 0.0429687 18.6719 0.121094 18.5273L2.02734 15.0352ZM3.48438 13.8555C3.96094 14.4453 4.03516 15.2656 3.67188 15.9336L2.96875 17.2266L5.25391 16.2461C5.71484 16.0469 6.23828 16.043 6.70312 16.2344C7.70703 16.6445 8.82031 16.875 9.99609 16.875C14.5977 16.875 18.1211 13.4062 18.1211 9.375C18.1211 5.34375 14.6016 1.875 10 1.875C5.39844 1.875 1.875 5.34375 1.875 9.375C1.875 11.0469 2.46484 12.5938 3.48438 13.8555Z" />
+          </svg>
+        </span>{" "}
+        <span className="text-[var(--v69-ink)]/45">
+          and invoices, all in one place. Share updates, collect sign-offs
+          and keep every client on the same page.
+        </span>
+      </p>
+    </div>
+  );
+}
+
+// Internal resource library for the templates gallery's glass tile: one
+// guide opened to its steps, after a numbered plan card. A dark sheet sits on
+// the glass with its tab above it. The home rail keeps its own cover
+// (CardTeamGuides). The sheet's whites are literal: the dark mock skin remaps
+// the white token.
+const RESOURCE_STEPS: { before: string; chip?: string; after?: string }[] = [
+  { before: "Read the", chip: "Handbook.pdf" },
+  { before: "Set up your", chip: "Benefits", after: "account" },
+  { before: "Book intro calls with your team" },
+];
+
+export function CardResourceGuide() {
+  return (
+    <div className="flex h-full w-full flex-col gap-[2.5cqw] p-[4%] [container-type:inline-size]">
+      <div className="flex w-fit overflow-hidden rounded-full bg-[var(--v69-ink)]/[0.1] text-[4.6cqw] leading-none text-[var(--v69-ink)]">
+        <span className="bg-[var(--v69-ink)]/[0.1] px-[3cqw] py-[1.8cqw] tabular-nums">2</span>
+        <span className="px-[3cqw] py-[1.8cqw]">Onboarding</span>
+      </div>
+      <div className="flex flex-1 flex-col justify-center rounded-[4cqw] bg-[rgba(18,18,18,0.88)] px-[6cqw] text-[rgba(255,255,255,0.92)]">
+        <div className="flex items-center gap-[2.5cqw] text-[6.4cqw] leading-none">
+          <svg viewBox="0 0 17.5 20" className="h-[6cqw] w-[5.25cqw] shrink-0 text-[#7DA4FF]" fill="currentColor" aria-hidden>
+            <path d="M3.4375 0C1.53906 0 0 1.53906 0 3.4375V16.875C0 18.6016 1.39844 20 3.125 20H16.5625C17.082 20 17.5 19.582 17.5 19.0625C17.5 18.543 17.082 18.125 16.5625 18.125H16.25V15.1523C17.0039 14.6484 17.5 13.7891 17.5 12.8125V2.8125C17.5 1.25781 16.2422 0 14.6875 0H3.4375ZM14.375 15.625V18.125H3.125C2.43359 18.125 1.875 17.5664 1.875 16.875C1.875 16.1836 2.43359 15.625 3.125 15.625H14.375ZM3.125 13.75C2.67969 13.75 2.25781 13.8438 1.875 14.0117V3.4375C1.875 2.57422 2.57422 1.875 3.4375 1.875H14.6875C15.207 1.875 15.625 2.29297 15.625 2.8125V12.8125C15.625 13.332 15.207 13.75 14.6875 13.75H3.125ZM5 5.9375C5 6.45703 5.41797 6.875 5.9375 6.875H12.8125C13.332 6.875 13.75 6.45703 13.75 5.9375C13.75 5.41797 13.332 5 12.8125 5H5.9375C5.41797 5 5 5.41797 5 5.9375ZM5.9375 8.75C5.41797 8.75 5 9.16797 5 9.6875C5 10.207 5.41797 10.625 5.9375 10.625H12.8125C13.332 10.625 13.75 10.207 13.75 9.6875C13.75 9.16797 13.332 8.75 12.8125 8.75H5.9375Z" />
+          </svg>
+          New hire guide
+        </div>
+        <ul className="mt-[3.5cqw] flex flex-col gap-[2.2cqw] pl-[1cqw] text-[4.4cqw] leading-none text-[rgba(255,255,255,0.85)]">
+          {RESOURCE_STEPS.map((step) => (
+            <li key={step.before} className="flex items-center gap-[1.6cqw]">
+              <span className="mr-[0.8cqw] size-[1cqw] shrink-0 rounded-full bg-[rgba(255,255,255,0.7)]" />
+              {step.before}
+              {step.chip && (
+                <span className="rounded-[1.2cqw] bg-[rgba(125,164,255,0.14)] px-[1.6cqw] py-[1.2cqw] text-[#9DB9FF]" style={MOCK_MONO}>
+                  {step.chip}
+                </span>
+              )}
+              {step.after}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+// The client calendar for the templates gallery's glass tile: the month at a
+// glance, after a phone month widget. Weekends dim and today takes a filled
+// disc. December 2026 starts on a Tuesday and fits five rows.
+const MONTH_NAME = "December";
+const MONTH_LEAD = 1; // Monday-first grid: one blank before the 1st.
+const MONTH_DAYS = 31;
+const MONTH_TODAY = 18;
+const WEEKDAYS = ["M", "T", "W", "T", "F", "S", "S"];
+
+export function CardMonthGrid() {
+  const cells = [
+    ...Array.from({ length: MONTH_LEAD }, () => 0),
+    ...Array.from({ length: MONTH_DAYS }, (_, i) => i + 1),
+  ];
+  return (
+    <div className="flex h-full w-full flex-col justify-center p-[7%] [container-type:inline-size]">
+      <div className="pl-[1.5cqw] text-[6.5cqw] leading-none text-[var(--v69-ink)]">
+        {MONTH_NAME}
+      </div>
+      <div className="mt-[4cqw] grid grid-cols-7 gap-y-[1cqw] text-center text-[6.5cqw] leading-none tabular-nums">
+        {WEEKDAYS.map((d, i) => (
+          <span key={i} className="pb-[1.4cqw] text-[var(--v69-ink)]/45">
+            {d}
+          </span>
+        ))}
+        {cells.map((day, i) => {
+          const weekend = i % 7 >= 5;
+          return (
+            <span key={i} className="flex items-center justify-center">
+              {day === MONTH_TODAY ? (
+                <span className="flex size-[10cqw] items-center justify-center rounded-full bg-[var(--v69-ink)] text-[var(--v69-card,#1a1a1a)] dark-x:text-[#1a1a1a]">
+                  {day}
+                </span>
+              ) : (
+                <span
+                  className={`flex size-[10cqw] items-center justify-center ${
+                    weekend ? "text-[var(--v69-ink)]/40" : "text-[var(--v69-ink)]"
+                  }`}
+                >
+                  {day || ""}
+                </span>
+              )}
+            </span>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// Files for the templates gallery's glass tile: one shared file as an
+// attachment chip, after a chat attachment card. The home rail keeps its own
+// cover. The PDF glyph's lettering runs past its 20-unit box, so the viewBox
+// is taller than the source's clip.
+export function CardFileChip() {
+  return (
+    <div className="relative flex h-full w-full flex-col justify-between p-[10%] [container-type:inline-size]">
+      <svg viewBox="0 0 16 16" className="absolute right-[7%] top-[7%] size-[5.5cqw] text-[var(--v69-ink)]/45" fill="none" aria-hidden>
+        <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      </svg>
+      <div className="pr-[8cqw]">
+        <div className="line-clamp-2 text-[8.5cqw] leading-[1.15] tracking-tight text-[var(--v69-ink)]">
+          Engagement letter signed copy
+        </div>
+        <div className="mt-[3cqw] text-[5.6cqw] leading-none text-[var(--v69-ink)]/45" style={MOCK_MONO}>
+          12 pages
+        </div>
+      </div>
+      <div className="flex items-center gap-[2.5cqw] text-[6.5cqw] leading-none text-[var(--v69-ink)]">
+        <span className="flex size-[11cqw] shrink-0 items-center justify-center rounded-[3cqw] bg-[#FF8C8C]/[0.16] text-[#FF8C8C]">
+          <svg viewBox="0 0 22.5 21.5" className="h-[6cqw] w-[6.3cqw]" fill="currentColor" aria-hidden>
+          <path d="M8.125 1.875H3.75C3.40625 1.875 3.125 2.15625 3.125 2.5V17.5C3.125 17.8438 3.40625 18.125 3.75 18.125H6.875V20H3.75C2.37109 20 1.25 18.8789 1.25 17.5V2.5C1.25 1.12109 2.37109 0 3.75 0H8.96484C9.62891 0 10.2656 0.261719 10.7344 0.730469L15.5195 5.51953C15.9883 5.98828 16.25 6.625 16.25 7.28906V13.1289H14.375V8.12891H10.9375C9.38281 8.12891 8.125 6.87109 8.125 5.31641V1.87891V1.875ZM13.5977 6.25L10 2.65234V5.3125C10 5.83203 10.418 6.25 10.9375 6.25H13.5977ZM9.375 14.8438H10.625C11.918 14.8438 12.9688 15.8945 12.9688 17.1875C12.9688 18.4805 11.918 19.5312 10.625 19.5312H10.1562V20.625C10.1562 21.0547 9.80469 21.4062 9.375 21.4062C8.94531 21.4062 8.59375 21.0547 8.59375 20.625V15.625C8.59375 15.1953 8.94531 14.8438 9.375 14.8438ZM10.625 17.9688C11.0547 17.9688 11.4062 17.6172 11.4062 17.1875C11.4062 16.7578 11.0547 16.4062 10.625 16.4062H10.1562V17.9688H10.625ZM14.375 14.8438H15.625C16.7461 14.8438 17.6562 15.7539 17.6562 16.875V19.375C17.6562 20.4961 16.7461 21.4062 15.625 21.4062H14.375C13.9453 21.4062 13.5938 21.0547 13.5938 20.625V15.625C13.5938 15.1953 13.9453 14.8438 14.375 14.8438ZM15.625 19.8438C15.8828 19.8438 16.0938 19.6328 16.0938 19.375V16.875C16.0938 16.6172 15.8828 16.4062 15.625 16.4062H15.1562V19.8438H15.625ZM18.5938 15.625C18.5938 15.1953 18.9453 14.8438 19.375 14.8438H21.25C21.6797 14.8438 22.0312 15.1953 22.0312 15.625C22.0312 16.0547 21.6797 16.4062 21.25 16.4062H20.1562V17.3438H21.25C21.6797 17.3438 22.0312 17.6953 22.0312 18.125C22.0312 18.5547 21.6797 18.9062 21.25 18.9062H20.1562V20.625C20.1562 21.0547 19.8047 21.4062 19.375 21.4062C18.9453 21.4062 18.5938 21.0547 18.5938 20.625V15.625Z" />
+        </svg>
+        </span>
+        PDF
+      </div>
+    </div>
+  );
+}
+
+// Proposal builder for the templates gallery's glass tile, on the same panel
+// size and type steps as the help desk beside it. The home rail keeps its own
+// cover (CardProposal).
+const PROPOSAL_SECTIONS = ["Pricing", "Terms & e-sign"];
+
+export function CardProposalPanel() {
+  return (
+    <div className="flex h-full w-full flex-col justify-between p-[10%] [container-type:inline-size]">
+      <div>
+        <div className="text-[6.5cqw] leading-none text-[var(--v69-ink)]/45">Proposal</div>
+        <div className="mt-[3cqw] text-[13cqw] leading-none tracking-tight text-[var(--v69-ink)] tabular-nums">
+          $18,500
+        </div>
+      </div>
+      <div className="flex flex-col gap-[2.5cqw]">
+        {PROPOSAL_SECTIONS.map((title) => (
+          <div
+            key={title}
+            className="flex items-center justify-between rounded-[3cqw] bg-[var(--v69-ink)]/[0.08] px-[4.5cqw] py-[4cqw] text-[6.5cqw] leading-none text-[var(--v69-ink)]"
+          >
+            {title}
+            <svg viewBox="0 0 16 16" className="size-[5cqw] text-[var(--v69-ink)]/45" fill="none" aria-hidden>
+              <path d="M6 3.5L10.5 8 6 12.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Messages for the templates gallery's glass tile: a client's message and the
+// firm's reply, at the set's label and body steps so it reads at the size of
+// its neighbours. The reply takes the periwinkle so the two sides read apart.
+// The home rail keeps its own cover.
+export function CardMessageBubble() {
+  return (
+    <div className="flex h-full w-full flex-col gap-[4cqw] p-[8%] pt-[9%] [container-type:inline-size]">
+      <div className="flex w-full items-end gap-[3cqw]">
+        <span className="flex size-[11cqw] shrink-0 items-center justify-center rounded-full bg-[var(--v69-ink)]/[0.14] text-[4.6cqw] leading-none text-[var(--v69-ink)]">
+          GK
+        </span>
+        <div className="min-w-0 flex-1">
+          <div className="pl-[4cqw] text-[5.6cqw] leading-none text-[var(--v69-ink)]/45">
+            Gus Kelly
+          </div>
+          <div className="mt-[2.5cqw] rounded-[5cqw] rounded-bl-[1.5cqw] bg-[var(--v69-ink)]/[0.1] px-[4.5cqw] py-[3.8cqw] text-[6.5cqw] leading-[1.35] text-[var(--v69-ink)]">
+            {"I've reviewed the proposal. Everything looks good!"}
+          </div>
+        </div>
+      </div>
+      <div className="ml-auto max-w-[78%] rounded-[5cqw] rounded-br-[1.5cqw] bg-[#7DA4FF] px-[4.5cqw] py-[3.8cqw] text-[6.5cqw] leading-[1.35] text-[#13244D]">
+        Great, sending the contract now.
+      </div>
+    </div>
+  );
+}
+
+// Conditional forms for the templates gallery's glass tile: two form steps
+// joined on a connector, after a node-based flow builder. The home
+// rail keeps its own cover (CardConditionalForms).
+function FlowNode({
+  step,
+  label,
+  title,
+  icon,
+}: {
+  step: string;
+  label: string;
+  title: string;
+  icon: React.ReactNode;
+}) {
+  // A builder node: a numbered strip over the step's kind, title and icon,
+  // outlined so it reads as a block on a canvas rather than a list row.
+  return (
+    <div className="shrink-0 overflow-hidden rounded-[3.5cqw] border border-[var(--v69-ink)]/[0.16] bg-[var(--v69-ink)]/[0.06]">
+      <div className="bg-[var(--v69-ink)]/[0.06] px-[5cqw] py-[2.6cqw] text-[5cqw] leading-none text-[var(--v69-ink)]/45">
+        <span style={MOCK_MONO}>{step}</span>
+        <span className="flex gap-[0.8cqw]" aria-hidden>
+          <span className="size-[1cqw] rounded-full bg-current" />
+          <span className="size-[1cqw] rounded-full bg-current" />
+          <span className="size-[1cqw] rounded-full bg-current" />
+        </span>
+      </div>
+      <div className="flex items-center gap-[3cqw] px-[5cqw] py-[4.6cqw]">
+        <div className="min-w-0 flex-1">
+          <div className="text-[5.6cqw] leading-none text-[var(--v69-ink)]/45">{label}</div>
+          <div className="mt-[2.8cqw] truncate text-[7.5cqw] leading-none text-[var(--v69-ink)]">
+            {title}
+          </div>
+        </div>
+        <span className="flex size-[11cqw] shrink-0 items-center justify-center rounded-[3cqw] border border-[var(--v69-ink)]/[0.16] text-[var(--v69-ink)]">
+          <svg viewBox="0 0 16 16" className="size-[6cqw]" fill="none" aria-hidden>
+            {icon}
+          </svg>
+        </span>
+      </div>
+    </div>
+  );
+}
+
+export function CardConditionFlow() {
+  return (
+    <div className="flex h-full w-full flex-col justify-center p-[7%] [container-type:inline-size]">
+      <FlowNode
+        step="01"
+        label="Question"
+        title="Client type"
+        icon={
+          <>
+            <circle cx="8" cy="8" r="6.25" stroke="currentColor" strokeWidth="1.4" />
+            <path d="M6.3 6.4a1.8 1.8 0 1 1 2.5 1.6c-.5.2-.8.6-.8 1.1v.4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+            <circle cx="8" cy="11.4" r=".8" fill="currentColor" />
+          </>
+        }
+      />
+      {/* A plain connector between the two nodes' ports. */}
+      <div className="relative mx-auto h-[12cqw] w-px shrink-0 bg-[var(--v69-ink)]/40">
+        <span className="absolute -top-[1cqw] left-1/2 size-[2.4cqw] -translate-x-1/2 rounded-[0.6cqw] bg-[var(--v69-ink)]/60" />
+        <span className="absolute -bottom-[1cqw] left-1/2 size-[2.4cqw] -translate-x-1/2 rounded-[0.6cqw] bg-[var(--v69-ink)]/60" />
+      </div>
+      <FlowNode
+        step="02"
+        label="Show"
+        title="Company details"
+        icon={
+          <>
+            <rect x="3" y="2.5" width="10" height="11" rx="1.6" stroke="currentColor" strokeWidth="1.4" />
+            <path d="M5.75 6h4.5M5.75 8.75h4.5M5.75 11.5h2.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+          </>
+        }
+      />
+    </div>
+  );
+}
+
+// Case status page for the templates gallery's glass tile: one client case
+// with its stages as a wrap of tags, after a tag cloud. Stages already passed
+// sit at full ink, the current one takes the periwinkle, and the ones ahead
+// dim. The home rail keeps its own cover (CardCaseStatus).
+type CaseStage = { name: string; state: "done" | "current" | "next" };
+const CASE_STAGES: CaseStage[] = [
+  { name: "Intake", state: "done" },
+  { name: "Documents received", state: "done" },
+  { name: "In review", state: "current" },
+  { name: "Filed", state: "next" },
+  { name: "Awaiting response", state: "next" },
+  { name: "Closed", state: "next" },
+];
+const CASE_TAG_TONE: Record<CaseStage["state"], string> = {
+  done: "bg-[var(--v69-ink)]/[0.1] text-[var(--v69-ink)]",
+  current: "bg-[#7DA4FF] text-[#13244D]",
+  next: "bg-[var(--v69-ink)]/[0.05] text-[var(--v69-ink)]/45",
+};
+
+export function CardCaseTags() {
+  return (
+    <div className="flex h-full w-full flex-col p-[9%] [container-type:inline-size]">
+      <div className="text-[5.6cqw] leading-none text-[var(--v69-ink)]/45">Case 2048</div>
+      <div className="mt-[3cqw] text-[8.5cqw] leading-none tracking-tight text-[var(--v69-ink)]">
+        Henderson estate
+      </div>
+      <div className="mt-[6cqw] flex flex-wrap gap-[2.2cqw]">
+        {CASE_STAGES.map((stage) => (
+          <span
+            key={stage.name}
+            className={`rounded-full px-[3.4cqw] py-[2.2cqw] text-[5.6cqw] leading-none ${CASE_TAG_TONE[stage.state]}`}
+          >
+            {stage.name}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Forms for the templates gallery's glass tile: a short client form with its
+// fields filled in, at the set's label and body steps. The home rail keeps its
+// own cover.
+const FORM_FILLED = [
+  { label: "Phone number", value: "+1 415 555 0132" },
+  { label: "Start date", value: "Mar 14, 2026" },
+];
+
+export function CardFormFields() {
+  return (
+    <div className="flex h-full w-full flex-col p-[9%] [container-type:inline-size]">
+      <div className="text-[8.5cqw] leading-none tracking-tight text-[var(--v69-ink)]">
+        Client details
+      </div>
+      <div className="mt-[6cqw] flex flex-col gap-[4.5cqw]">
+        {FORM_FILLED.map((field) => (
+          <div key={field.label}>
+            <div className="text-[5.6cqw] leading-none text-[var(--v69-ink)]/45">{field.label}</div>
+            <div className="mt-[2.4cqw] rounded-[3cqw] border border-[var(--v69-ink)]/[0.16] bg-[var(--v69-ink)]/[0.06] px-[4cqw] py-[3.4cqw] text-[6.5cqw] leading-none text-[var(--v69-ink)] tabular-nums">
+              {field.value}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Autoresponder for the templates gallery's glass tile: the switch that turns
+// it on, its hours, and the reply clients get. The home rail keeps its own
+// cover.
+export function CardAutoReply() {
+  return (
+    <div className="flex h-full w-full flex-col justify-between p-[9%] [container-type:inline-size]">
+      <div>
+        <div className="flex items-center justify-between">
+          <span className="text-[8.5cqw] leading-none tracking-tight text-[var(--v69-ink)]">
+            Auto replies
+          </span>
+          {/* The switch, on. */}
+          <span className="relative h-[8cqw] w-[13.5cqw] shrink-0 rounded-full bg-[#7DA4FF]">
+            <span className="absolute right-[1cqw] top-[1cqw] size-[6cqw] rounded-full bg-[rgba(255,255,255,0.95)]" />
+          </span>
+        </div>
+        <div className="mt-[3cqw] text-[5.6cqw] leading-none text-[var(--v69-ink)]/45">
+          Outside working hours, 6pm to 9am
+        </div>
+      </div>
+      <div className="rounded-[5cqw] rounded-bl-[1.5cqw] bg-[var(--v69-ink)]/[0.1] px-[4.5cqw] py-[3.8cqw] text-[6.5cqw] leading-[1.35] text-[var(--v69-ink)]">
+        {"Thanks for reaching out. We'll reply first thing tomorrow."}
+      </div>
+    </div>
+  );
+}
+
+// Profile manager for the templates gallery's glass tile: client profiles as
+// a contact list, initials, name and company. The home rail keeps its own
+// cover.
+const PROFILE_LIST = [
+  { initials: "CW", name: "Chuck Wilford", company: "GoDo" },
+  { initials: "BS", name: "Brooklyn Simmons", company: "Service Symphony" },
+  { initials: "KT", name: "Kenny Tse", company: "Northwind" },
+];
+
+export function CardProfileList() {
+  return (
+    <div className="flex h-full w-full flex-col p-[9%] [container-type:inline-size]">
+      <div className="text-[8.5cqw] leading-none tracking-tight text-[var(--v69-ink)]">Clients</div>
+      <div className="mt-[4cqw] flex flex-col">
+        {PROFILE_LIST.map((row, i) => (
+          <div
+            key={row.name}
+            className={`flex items-center gap-[3cqw] py-[3cqw] ${
+              i ? "border-t border-[var(--v69-ink)]/[0.1]" : ""
+            }`}
+          >
+            <span className="flex size-[10cqw] shrink-0 items-center justify-center rounded-full bg-[var(--v69-ink)]/[0.14] text-[4.4cqw] leading-none text-[var(--v69-ink)]">
+              {row.initials}
+            </span>
+            <span className="min-w-0">
+              <span className="block truncate text-[6.5cqw] leading-none text-[var(--v69-ink)]">
+                {row.name}
+              </span>
+              <span className="mt-[1.8cqw] block truncate text-[5.2cqw] leading-none text-[var(--v69-ink)]/45">
+                {row.company}
+              </span>
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Exporter for the templates gallery's glass tile: one export running, its
+// progress as the headline figure and the file below. The home rail keeps its
+// own cover.
+const EXPORT_PCT = 68;
+
+export function CardExportProgress() {
+  return (
+    <div className="flex h-full w-full flex-col justify-between p-[10%] [container-type:inline-size]">
+      <div>
+        <div className="text-[6.5cqw] leading-none text-[var(--v69-ink)]/45">Exporting</div>
+        <div className="mt-[3cqw] text-[13cqw] leading-none tracking-tight text-[var(--v69-ink)] tabular-nums">
+          {EXPORT_PCT}%
+        </div>
+      </div>
+      <div>
+        <div className="flex items-center justify-between text-[6.5cqw] leading-none text-[var(--v69-ink)]">
+          Clients.csv
+          <span className="text-[5.6cqw] text-[var(--v69-ink)]/45">2.4 MB</span>
+        </div>
+        <div className="relative mt-[3.5cqw] h-[2.6cqw] overflow-hidden rounded-full bg-[var(--v69-ink)]/[0.1]">
+          <div
+            className="absolute inset-y-0 left-0 rounded-full bg-[var(--v69-ink)]/90"
+            style={{ width: `${EXPORT_PCT}%` }}
           />
         </div>
       </div>

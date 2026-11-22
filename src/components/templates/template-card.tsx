@@ -5,12 +5,29 @@ import type React from "react";
 import Link from "next/link";
 import type { Template } from "@/lib/templates";
 import {
+  CardApprovalList,
+  CardApproveSheet,
+  CardCaseTags,
   CardAssistantAsk,
+  CardAutoReply,
+  CardCommentThread,
+  CardConditionFlow,
   CardCalendarAgenda,
   CardResourceArticle,
   CardTaskList,
   CardDocumentAdd,
   CardEngagementRing,
+  CardExportProgress,
+  CardFormFields,
+  CardFileChip,
+  CardMarkupPopover,
+  CardMessageBubble,
+  CardMonthGrid,
+  CardProfileList,
+  CardProposalPanel,
+  CardResourceGuide,
+  CardHelpdeskStat,
+  CardOnboardingSteps,
   CardIntakeSentence,
   CardTrackerBar,
   V69CardMock,
@@ -27,7 +44,6 @@ const TILE_SHAPE: Record<string, TileShape> = {
   "time-tracker": "circle",
   "client-engagement-dashboard": "circle",
   "data-room": "wide",
-  "client-onboarding-wizard": "wide",
   "service-request-intake": "wide",
   "internal-resource-library": "wide",
   "contracts-app": "wide",
@@ -202,6 +218,20 @@ const PANEL_TILES = new Set([
   "tasks",
   "files-app",
   "messaging-app",
+  "client-onboarding-wizard",
+  "content-approval-flow",
+  "client-support-requests",
+  "markup-comments",
+  "internal-communications-app",
+  "internal-resource-library",
+  "events-rsvps",
+  "proposal-builder",
+  "conditional-forms",
+  "case-status-page",
+  "forms-app",
+  "message-autoresponder",
+  "profile-manager",
+  "exporter",
 ]);
 
 // Widgets that are a single object (the clock face) read small at the shared
@@ -221,6 +251,22 @@ const TILE_SIZE: Record<string, string> = {
   "new-client-intake": "!w-[66%] !rounded-[11%]",
   tasks: "!w-[66%] !rounded-[11%]",
   "client-calendar": "!w-[66%] !rounded-[11%]",
+  "events-rsvps": "!w-[66%] !rounded-[11%]",
+  "files-app": "!w-[66%] !rounded-[11%]",
+  "proposal-builder": "!w-[66%] !rounded-[11%]",
+  "messaging-app": "!w-[66%] !rounded-[11%]",
+  "conditional-forms": "!w-[66%] !rounded-[11%]",
+  "case-status-page": "!w-[66%] !rounded-[11%]",
+  "forms-app": "!w-[66%] !rounded-[11%]",
+  "message-autoresponder": "!w-[66%] !rounded-[11%]",
+  "profile-manager": "!w-[66%] !rounded-[11%]",
+  "exporter": "!w-[66%] !rounded-[11%]",
+  "client-onboarding-wizard": "!w-[66%] !rounded-[11%]",
+  "design-approvals": "!w-[66%] !rounded-[11%]",
+  "content-approval-flow": "!w-[66%] !rounded-[11%]",
+  "client-support-requests": "!w-[66%] !rounded-[11%]",
+  "markup-comments": "!w-[66%] !rounded-[11%]",
+  "internal-communications-app": "!w-[66%] !rounded-[11%]",
 };
 
 const TILE_CLASS: Record<TileShape, string> = {
@@ -317,8 +363,42 @@ export function TemplateCard({
                       <CardResourceArticle />
                     ) : template.slug === "document-collection" ? (
                       <CardDocumentAdd />
+                    ) : template.slug === "forms-app" ? (
+                      <CardFormFields />
+                    ) : template.slug === "message-autoresponder" ? (
+                      <CardAutoReply />
+                    ) : template.slug === "profile-manager" ? (
+                      <CardProfileList />
+                    ) : template.slug === "exporter" ? (
+                      <CardExportProgress />
+                    ) : template.slug === "case-status-page" ? (
+                      <CardCaseTags />
+                    ) : template.slug === "conditional-forms" ? (
+                      <CardConditionFlow />
+                    ) : template.slug === "messaging-app" ? (
+                      <CardMessageBubble />
+                    ) : template.slug === "proposal-builder" ? (
+                      <CardProposalPanel />
+                    ) : template.slug === "files-app" ? (
+                      <CardFileChip />
                     ) : template.slug === "client-calendar" ? (
+                      <CardMonthGrid />
+                    ) : template.slug === "events-rsvps" ? (
                       <CardCalendarAgenda />
+                    ) : template.slug === "internal-resource-library" ? (
+                      <CardResourceGuide />
+                    ) : template.slug === "markup-comments" ? (
+                      <CardMarkupPopover />
+                    ) : template.slug === "internal-communications-app" ? (
+                      <CardCommentThread />
+                    ) : template.slug === "client-support-requests" ? (
+                      <CardHelpdeskStat />
+                    ) : template.slug === "content-approval-flow" ? (
+                      <CardApproveSheet />
+                    ) : template.slug === "design-approvals" ? (
+                      <CardApprovalList />
+                    ) : template.slug === "client-onboarding-wizard" ? (
+                      <CardOnboardingSteps />
                     ) : (
                       <V69CardMock slug={template.slug} />
                     )}
