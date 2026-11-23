@@ -43,16 +43,15 @@ export function RootShell({ children }: { children: React.ReactNode }) {
   // genuinely want no footer (the proposal pair) return before this.
 
   // In light mode every reveal page (including the landing) gets a light-toned
-  // footer — but it still ends in the brand aurora (dark-based), so the bottom
-  // overscroll zone stays dark for all reveal pages.
+  // footer.
   const revealFooterLight = !dark;
 
-  // Tell CSS which footer tone the page's BOTTOM edge (the aurora) ends in, so
-  // the overscroll / iOS toolbar zone matches — see globals.css. Always dark
-  // now: every page here closes on the aurora, and the proposal page renders
-  // its own footer but ends in the same one.
+  // Tell CSS the page's bottom edge is the footer glow, so the bottom
+  // overscroll / iOS toolbar zone takes the footer's own ground (see
+  // globals.css). The proposal page renders its own footer but ends in the
+  // same glow.
   useEffect(() => {
-    document.documentElement.setAttribute("data-footer", "dark");
+    document.documentElement.setAttribute("data-footer", "glow");
   }, []);
 
   // The shared nav's SIGNED-OUT side never shows "Book a demo" (it's a

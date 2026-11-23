@@ -87,7 +87,7 @@ export default async function JobPage({
       href={posting.applyUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className="block rounded-lg bg-foreground px-5 py-2.5 text-center text-sm text-background transition-opacity hover:opacity-90"
+      className="block rounded-full border border-transparent bg-foreground px-5 py-2.5 text-center text-sm text-background transition-opacity hover:opacity-90"
     >
       Apply for this role
     </a>

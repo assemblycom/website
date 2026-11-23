@@ -1155,14 +1155,14 @@ body {
   color: var(--foreground);
 }
 
-/* Pages ending in the dark reveal footer (tagged by RootShell): split the
-   overscroll canvas so each rubber-band zone matches what it touches — the
-   top bounce keeps the light canvas, while the bottom bounce (and the strip
-   iOS paints behind its collapsing toolbar) shows the footer's dark ground
-   instead of flashing a light strip under the black footer. */
-html[data-footer="dark"],
-html[data-footer="dark"] body {
-  background: linear-gradient(to bottom, var(--muted) 50%, #101010 50%);
+/* Pages ending in the footer glow (tagged by RootShell): split the overscroll
+   canvas so each rubber-band zone matches what it touches. The top bounce keeps
+   the muted canvas; the bottom bounce (and the strip iOS paints behind its
+   collapsing toolbar) shows the footer's own ground, so the glow runs into the
+   same white it is drawn on instead of a gray or black strip. */
+html[data-footer="glow"],
+html[data-footer="glow"] body {
+  background: linear-gradient(to bottom, var(--muted) 50%, var(--background) 50%);
 }
 
 /* In dark mode the page ground is near-black; the muted overscroll canvas above
@@ -2678,52 +2678,6 @@ html[data-theme="dark"] .v63-ring-solid::before {
   }
   35% {
     opacity: 1;
-  }
-}
-
-/* Under-footer aurora (v71, from hero-iterations) — collapses and expands
-   vertically only (scaleY from the floor), pulsing like an aurora rather than
-   swimming side to side. */
-@keyframes footerAuroraBreathe {
-  0%,
-  100% {
-    transform: scaleY(0.62);
-    opacity: 0.85;
-  }
-  50% {
-    transform: scaleY(1);
-    opacity: 1;
-  }
-}
-/* Mobile used to breathe on opacity alone, which read as static once the mount
-   rise finished. It now breathes vertically like sm+, on a shallower swing: a
-   smaller scale delta means less of the blurred SVG field is re-rasterised per
-   frame, which is what made the full-depth version judder on phone GPUs. */
-@keyframes footerAuroraBreatheShallow {
-  0%,
-  100% {
-    transform: scaleY(0.84);
-    opacity: 0.8;
-  }
-  50% {
-    transform: scaleY(1);
-    opacity: 1;
-  }
-}
-.footer-aurora {
-  transform-origin: bottom;
-  animation: footerAuroraBreatheShallow 5.5s ease-in-out infinite;
-  will-change: transform, opacity;
-}
-/* sm+ has the headroom for the full-depth vertical breathe. */
-@media (min-width: 640px) {
-  .footer-aurora {
-    animation: footerAuroraBreathe 5.5s ease-in-out infinite;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .footer-aurora {
-    animation: none;
   }
 }
 

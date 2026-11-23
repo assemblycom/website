@@ -167,7 +167,7 @@ function BigHeadline({
 /** The hero's primary action. Exported so a second hero layout runs the
  * same control rather than restating its classes. */
 export const PRIMARY_CTA =
-  "inline-flex w-full shrink-0 items-center justify-center whitespace-nowrap rounded-lg bg-foreground px-4 py-3 text-center text-sm text-background transition-opacity hover:opacity-90 sm:w-auto sm:py-2 md:px-5 md:py-2.5 [[data-theme=dark]_&]:bg-white [[data-theme=dark]_&]:text-neutral-900";
+  "inline-flex w-full shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-transparent bg-foreground px-4 py-3 text-center text-sm text-background transition-opacity hover:opacity-90 sm:w-auto sm:py-2 md:px-5 md:py-2.5 [[data-theme=dark]_&]:bg-white [[data-theme=dark]_&]:text-neutral-900";
 
 export function HeroBig({
   headline,
@@ -353,7 +353,7 @@ export function HeroBig({
           <a
             href={DEMO_URL}
             onClick={() => trackHeroCta("bigtype-demo")}
-            className="inline-flex w-full shrink-0 items-center justify-center whitespace-nowrap rounded-lg border border-foreground/20 bg-transparent px-4 py-3 text-center text-sm text-foreground transition-colors hover:bg-foreground/5 sm:w-auto sm:py-2 md:px-5 md:py-2.5"
+            className="inline-flex w-full shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-foreground/20 bg-transparent px-4 py-3 text-center text-sm text-foreground transition-colors hover:bg-foreground/5 sm:w-auto sm:py-2 md:px-5 md:py-2.5"
           >
             Book a demo
           </a>

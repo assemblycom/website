@@ -279,7 +279,7 @@ export default async function CaseStudyPage({ params }: Props) {
             {study.stats.slice(0, 2).map((stat) => (
               <span
                 key={stat.label}
-                className="inline-flex items-center gap-1.5 rounded-md bg-muted px-3 py-1.5 font-mono text-xs uppercase tracking-wide"
+                className="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1.5 font-mono text-xs uppercase tracking-wide"
               >
                 <span className="text-foreground">{stat.value}</span>
                 <span className="text-muted-foreground">{stat.label}</span>
@@ -322,7 +322,7 @@ export default async function CaseStudyPage({ params }: Props) {
 
               <a
                 href={APP_URL}
-                className="mt-14 block w-full rounded-lg bg-foreground px-5 py-2.5 text-center text-sm text-background sm:inline-block sm:w-auto transition-opacity hover:opacity-90"
+                className="mt-14 block w-full rounded-full border border-transparent bg-foreground px-5 py-2.5 text-center text-sm text-background sm:inline-block sm:w-auto transition-opacity hover:opacity-90"
               >
                 Get started
               </a>
@@ -377,7 +377,7 @@ export default async function CaseStudyPage({ params }: Props) {
 
               <a
                 href={APP_URL}
-                className="mt-12 block w-full rounded-lg bg-foreground px-5 py-2.5 text-center text-sm text-background sm:inline-block sm:w-auto transition-opacity hover:opacity-90"
+                className="mt-12 block w-full rounded-full border border-transparent bg-foreground px-5 py-2.5 text-center text-sm text-background sm:inline-block sm:w-auto transition-opacity hover:opacity-90"
               >
                 Get started
               </a>

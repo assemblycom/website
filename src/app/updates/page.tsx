@@ -60,7 +60,7 @@ export default async function UpdatesPage({
           href={X_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-8 inline-block rounded-lg bg-foreground px-5 py-2.5 text-sm text-background transition-opacity hover:opacity-90"
+          className="mt-8 inline-block rounded-full border border-transparent bg-foreground px-5 py-2.5 text-sm text-background transition-opacity hover:opacity-90"
         >
           Subscribe to updates
         </a>

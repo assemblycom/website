@@ -36,7 +36,7 @@ export function PostCta({
     <a
       href={SIGNUP_URL}
       // The site's primary button, as the pricing and customers pages draw it.
-      className="block rounded-lg bg-foreground px-5 py-2 text-center text-sm text-background transition-opacity hover:opacity-90"
+      className="block rounded-full border border-transparent bg-foreground px-5 py-2 text-center text-sm text-background transition-opacity hover:opacity-90"
     >
       Try for free
     </a>

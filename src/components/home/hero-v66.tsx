@@ -821,7 +821,7 @@ export function V66Composer({ placeholder = "Describe the workflow you want to t
                             readHeroArmCookie(),
                           );
                         }}
-                        // Site primary button: rounded-lg on the foreground/
+                        // Site primary button: rounded-full on the foreground/
                         // background token pair, which inverts itself per theme.
                         // Was a hard-coded white/near-black pill, off-system in
                         // both radius and colour.
@@ -831,7 +831,7 @@ export function V66Composer({ placeholder = "Describe the workflow you want to t
                         // carry the same label a few pixels apart, and a white
                         // one next to the accent one read as two different
                         // actions. Light keeps the token pair.
-                        className={`flex h-8 items-center rounded-lg px-3.5 text-sm transition-opacity hover:opacity-90 ${
+                        className={`flex h-8 items-center rounded-full px-3.5 text-sm transition-opacity hover:opacity-90 ${
                           dark ? "text-neutral-900" : "bg-foreground text-background"
                         }`}
                         style={
@@ -943,12 +943,9 @@ export function V66Composer({ placeholder = "Describe the workflow you want to t
               // an aria-label would override it with whichever word is wrong for
               // this visitor.
               aria-label={showsLabel ? undefined : (submitLabel ?? "Build it")}
-              // rounded-lg, the site's button radius — the same 8px the nav's
-              // "Book a demo" and "Get started" carry. A concentric 12 was
-              // tried against the frame's 22 and is the wrong fix: the frame
-              // is what moves to meet the buttons, not the other way round,
-              // so every button on the page is one radius.
-              className={`flex ${submitH} items-center justify-center gap-1.5 rounded-lg ${pillText} font-normal transition-all duration-150 ease-out active:scale-[0.98] ${
+              // rounded-full, the site's pill button shape, so the submit matches
+              // the nav's "Book a demo" and "Get started".
+              className={`flex ${submitH} items-center justify-center gap-1.5 rounded-full ${pillText} font-normal transition-all duration-150 ease-out active:scale-[0.98] ${
                 submitActive
                   ? themeAuto
                     ? // Both skins as variants, for the same reason the field

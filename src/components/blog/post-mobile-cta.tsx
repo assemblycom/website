@@ -48,7 +48,7 @@ export function PostMobileCta({
       tabIndex={shown ? undefined : -1}
       className={cn(
         // The site's primary button, floated.
-        "fixed bottom-[calc(1rem+env(safe-area-inset-bottom,0px))] left-1/2 z-40 whitespace-nowrap rounded-lg bg-foreground px-[1.125rem] py-2 text-sm text-background shadow-[0_8px_20px_-8px_rgba(16,17,20,0.4)] transition-[opacity,transform] duration-250 ease-out motion-reduce:transition-none lg:hidden",
+        "fixed bottom-[calc(1rem+env(safe-area-inset-bottom,0px))] left-1/2 z-40 whitespace-nowrap rounded-full border border-transparent bg-foreground px-[1.125rem] py-2 text-sm text-background shadow-[0_8px_20px_-8px_rgba(16,17,20,0.4)] transition-[opacity,transform] duration-250 ease-out motion-reduce:transition-none lg:hidden",
         shown
           ? "-translate-x-1/2 translate-y-0 opacity-100"
           : "pointer-events-none -translate-x-1/2 translate-y-4 opacity-0",

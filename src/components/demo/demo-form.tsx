@@ -300,7 +300,7 @@ export function DemoForm() {
             setStatus("idle");
             if (lead.current) openScheduler(lead.current);
           }}
-          className="mt-6 inline-flex items-center rounded-lg bg-foreground px-4 py-2.5 text-sm font-medium text-background transition-opacity hover:opacity-90"
+          className="mt-6 inline-flex items-center rounded-full border border-transparent bg-foreground px-4 py-2.5 text-sm font-medium text-background transition-opacity hover:opacity-90"
         >
           Try again
         </button>
@@ -342,7 +342,7 @@ export function DemoForm() {
             rather than a link buried in the sentence. */}
         <a
           href={SIGNUP_URL}
-          className="mt-6 inline-flex items-center rounded-lg bg-foreground px-5 py-2.5 text-sm text-background transition-opacity hover:opacity-90"
+          className="mt-6 inline-flex items-center rounded-full border border-transparent bg-foreground px-5 py-2.5 text-sm text-background transition-opacity hover:opacity-90"
         >
           Get started
         </a>
@@ -543,7 +543,7 @@ export function DemoForm() {
         // up the column is wide enough that a stretched button reads as a banner
         // rather than a control, so it sizes to its label and sits on the form's
         // left edge.
-        className="mt-6 flex w-full items-center justify-center rounded-lg bg-foreground px-5 py-2.5 text-sm text-background transition-opacity hover:opacity-90 sm:inline-flex sm:w-auto sm:px-8"
+        className="mt-6 flex w-full items-center justify-center rounded-full border border-transparent bg-foreground px-5 py-2.5 text-sm text-background transition-opacity hover:opacity-90 sm:inline-flex sm:w-auto sm:px-8"
       >
         Book a demo
       </button>

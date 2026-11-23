@@ -65,7 +65,7 @@ export function TemplateCta({ template }: { template: CtaTemplate }) {
   return (
     <TemplateAuthCta
       template={template}
-      className="block w-full rounded-lg bg-foreground px-5 py-2.5 text-center text-sm text-background transition-opacity hover:opacity-90 sm:inline-block sm:w-auto"
+      className="block w-full rounded-full border border-transparent bg-foreground px-5 py-2.5 text-center text-sm text-background transition-opacity hover:opacity-90 sm:inline-block sm:w-auto"
     />
   );
 }

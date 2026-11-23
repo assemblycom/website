@@ -47,7 +47,7 @@ export function TemplateProof() {
               aria-label={`Assembly on ${label}: ${score} out of 5`}
               // The whole chip answers the pointer, with the filter chips'
               // active fill, not just the mark inside it.
-              className="inline-flex items-center gap-1.5 rounded-md bg-muted px-3 py-1.5 font-mono text-xs uppercase tracking-wide text-muted-foreground transition-colors hover:bg-foreground/10 hover:text-foreground"
+              className="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1.5 font-mono text-xs uppercase tracking-wide text-muted-foreground transition-colors hover:bg-foreground/10 hover:text-foreground"
             >
               {/* The stat-chip pattern: the value in full ink. */}
               <Mark className="h-4 w-4" /> <span className="text-foreground">{score}</span>

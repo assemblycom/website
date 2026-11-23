@@ -342,7 +342,7 @@ export default function AboutPage() {
         <div className="mt-8 flex justify-center">
           <Link
             href="/jobs"
-            className="rounded-lg bg-foreground px-5 py-2.5 text-center text-sm text-background transition-opacity hover:opacity-90"
+            className="rounded-full border border-transparent bg-foreground px-5 py-2.5 text-center text-sm text-background transition-opacity hover:opacity-90"
           >
             See open roles
           </Link>

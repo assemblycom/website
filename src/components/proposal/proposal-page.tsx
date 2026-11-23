@@ -609,7 +609,7 @@ function ProposalNav({ startHref }: { startHref?: string }) {
           {startHref && (
             <Link
               href={startHref}
-              className="cursor-pointer rounded-lg bg-foreground px-3.5 py-2 text-[0.8125rem] text-background transition-opacity hover:opacity-90"
+              className="cursor-pointer rounded-full border border-transparent bg-foreground px-3.5 py-2 text-[0.8125rem] text-background transition-opacity hover:opacity-90"
             >
               Sign up and build
             </Link>
@@ -880,7 +880,7 @@ function ProposalContent({ catalogue }: { catalogue: Template[] }) {
         </p>
         <Link
           href={startHref}
-          className="mx-auto mt-8 block w-full max-w-xs rounded-lg bg-foreground px-5 py-2.5 text-center text-sm text-background transition-opacity hover:opacity-90 sm:inline-block sm:w-auto"
+          className="mx-auto mt-8 block w-full max-w-xs rounded-full border border-transparent bg-foreground px-5 py-2.5 text-center text-sm text-background transition-opacity hover:opacity-90 sm:inline-block sm:w-auto"
         >
           Sign up and build it
         </Link>

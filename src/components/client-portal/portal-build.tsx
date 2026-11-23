@@ -137,14 +137,14 @@ export function PortalBuild({
             <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <a
                 href={cta.href}
-                className="w-full rounded-lg bg-foreground px-5 py-3 text-center text-sm text-background transition-opacity hover:opacity-90 sm:w-auto sm:py-2.5"
+                className="w-full rounded-full border border-transparent bg-foreground px-5 py-3 text-center text-sm text-background transition-opacity hover:opacity-90 sm:w-auto sm:py-2.5"
               >
                 {cta.label}
               </a>
               {link ? (
                 <Link
                   href={link.href}
-                  className="w-full rounded-lg border border-foreground/20 bg-transparent px-5 py-3 text-center text-sm text-foreground transition-colors hover:bg-foreground/5 sm:w-auto sm:py-2.5 [[data-theme=dark]_&]:border-white/25"
+                  className="w-full rounded-full border border-foreground/20 bg-transparent px-5 py-3 text-center text-sm text-foreground transition-colors hover:bg-foreground/5 sm:w-auto sm:py-2.5 [[data-theme=dark]_&]:border-white/25"
                 >
                   {link.label}
                 </Link>
@@ -186,7 +186,7 @@ export function PortalBuild({
             {chips.map((label) => (
               <li
                 key={label}
-                className="rounded-md bg-muted px-3 py-1.5 font-mono text-[11px] uppercase leading-none tracking-wide text-muted-foreground [[data-theme=dark]_&]:bg-white/[0.06]"
+                className="rounded-full bg-muted px-3 py-1.5 font-mono text-[11px] uppercase leading-none tracking-wide text-muted-foreground [[data-theme=dark]_&]:bg-white/[0.06]"
               >
                 {label}
               </li>

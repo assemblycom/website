@@ -33,7 +33,7 @@ export function PostCopyLink() {
     <button
       type="button"
       onClick={copy}
-      className="fixed bottom-4 right-4 z-40 hidden h-8 items-center gap-2 rounded-lg bg-foreground px-3.5 text-[13px] text-background shadow-[0_12px_34px_rgba(0,0,0,0.12),0_2px_8px_rgba(0,0,0,0.05)] transition-opacity hover:opacity-90 lg:flex"
+      className="fixed bottom-4 right-4 z-40 hidden h-8 items-center gap-2 rounded-full border border-transparent bg-foreground px-3.5 text-[13px] text-background shadow-[0_12px_34px_rgba(0,0,0,0.12),0_2px_8px_rgba(0,0,0,0.05)] transition-opacity hover:opacity-90 lg:flex"
     >
       <svg
         aria-hidden

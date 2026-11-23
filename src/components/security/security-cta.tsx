@@ -16,7 +16,7 @@ export function SecurityCta() {
       <div className="mx-auto mt-8 flex w-full max-w-xs flex-col items-stretch gap-3 sm:w-auto sm:max-w-none sm:flex-row sm:items-center sm:justify-center">
         <a
           href={SIGNUP_URL}
-          className="rounded-lg bg-foreground px-5 py-2.5 text-center text-sm text-background transition-opacity hover:opacity-90"
+          className="rounded-full border border-transparent bg-foreground px-5 py-2.5 text-center text-sm text-background transition-opacity hover:opacity-90"
         >
           Get started
         </a>
@@ -24,7 +24,7 @@ export function SecurityCta() {
           href={TRUST_CENTER_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="rounded-lg border border-foreground/20 bg-transparent px-5 py-2.5 text-center text-sm text-foreground transition-colors hover:bg-foreground/5"
+          className="rounded-full border border-foreground/20 bg-transparent px-5 py-2.5 text-center text-sm text-foreground transition-colors hover:bg-foreground/5"
         >
           Trust center
         </a>

@@ -21,9 +21,9 @@ const HERO = {
 const ANNOUNCEMENT_POST = "/blog/copilot-rebrand-assembly";
 
 const PRIMARY_BUTTON =
-  "rounded-lg bg-foreground px-5 py-2.5 text-center text-sm text-background transition-opacity hover:opacity-90";
+  "rounded-full border border-transparent bg-foreground px-5 py-2.5 text-center text-sm text-background transition-opacity hover:opacity-90";
 const SECONDARY_BUTTON =
-  "rounded-lg border border-foreground/20 bg-transparent px-5 py-2.5 text-center text-sm text-foreground transition-colors hover:bg-foreground/5";
+  "rounded-full border border-foreground/20 bg-transparent px-5 py-2.5 text-center text-sm text-foreground transition-colors hover:bg-foreground/5";
 
 /** The wordmark, in the file cut for the ground it lands on. */
 function AssemblyWordmark() {
