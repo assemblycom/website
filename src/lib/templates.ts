@@ -57,23 +57,27 @@ export interface Template {
 // Category order is intentional — it drives the order of the filter tabs. A
 // category the CMS uses but this list omits still gets a tab, appended after
 // these; listing one here is how it gets a deliberate position instead.
-// "Classic", "Support" and "Internal" come from the product's core apps, which
+// "Classic" and "Internal" come from the product's core apps, which
 // the gallery lists alongside the templates.
 export const TEMPLATE_CATEGORIES = [
   "Onboarding",
   "Classic",
-  "Dashboards",
-  "Trackers",
+  "Tracking",
   "Approvals",
   "Requests",
-  "Support",
-  "Proposals",
-  "AI assistants",
+  "Help & resources",
   "Community",
   "Internal",
-  "Knowledge base",
   "Education",
 ] as const;
+
+// Core apps the CMS files under a template category. They are product apps
+// like the rest of Classic, and listing them under Onboarding misread them.
+export const CORE_APP_CATEGORY: Record<string, string> = {
+  tasks: "Classic",
+  "client-home": "Classic",
+  "profile-manager": "Classic",
+};
 
 /**
  * Card copy for the product's core apps, which come from the CMS rather than
@@ -200,7 +204,7 @@ const BASE_TEMPLATES: Template[] = [
     title: "Project tracker",
     description: "Milestones and progress per engagement",
     icon: "✅",
-    category: "Trackers",
+    category: "Tracking",
     longDescription:
       "Keep clients in the loop with milestones and live progress for every engagement, updating as work moves through stages.",
     features: ["Milestones", "Progress per engagement", "Status stages", "Notifications"],
@@ -212,7 +216,7 @@ const BASE_TEMPLATES: Template[] = [
     title: "Time tracker",
     description: "Log billable hours, roll-ups, exportable",
     icon: "⏱️",
-    category: "Trackers",
+    category: "Tracking",
     longDescription:
       "Log billable hours against clients and projects, roll them up, and export clean timesheets ready for invoicing.",
     features: ["Billable hours", "Roll-ups", "Exportable", "Per-project"],
@@ -239,7 +243,7 @@ const BASE_TEMPLATES: Template[] = [
     title: "Client help desk",
     description: "Categorized requests in a triage queue",
     icon: "📥",
-    category: "Support",
+    category: "Help & resources",
     longDescription:
       "Centralize incoming client requests into a categorized, shared triage queue so nothing gets lost.",
     features: ["Categorized requests", "Shared triage queue", "Priority", "Real-time updates"],
@@ -252,7 +256,7 @@ const BASE_TEMPLATES: Template[] = [
     title: "Proposal builder",
     description: "Branded proposals clients can e-sign",
     icon: "🧾",
-    category: "Proposals",
+    category: "Approvals",
     longDescription:
       "Build polished, templated proposals, send them for e-signature, see when clients open them, and collect payment on acceptance.",
     features: ["Templated proposals", "E-signature", "View tracking", "Accept & pay"],
@@ -266,7 +270,7 @@ const BASE_TEMPLATES: Template[] = [
     title: "Client AI assistant",
     description: "Answers client questions from your docs",
     icon: "🤖",
-    category: "AI assistants",
+    category: "Help & resources",
     longDescription:
       "An AI assistant trained on your documents that resolves common client questions instantly and escalates to your team when needed.",
     features: ["Trained on your docs", "Instant answers", "Smart escalation", "Multi-channel"],
@@ -278,7 +282,7 @@ const BASE_TEMPLATES: Template[] = [
     title: "Voice AI integration",
     description: "AI voice calls with status and transcripts",
     icon: "📞",
-    category: "AI assistants",
+    category: "Help & resources",
     image: "/images/templates/voice-ai-integration.png",
     images: ["/images/templates/voice-ai-integration.png"],
     longDescription:
@@ -317,7 +321,7 @@ const BASE_TEMPLATES: Template[] = [
     title: "Client resource library",
     description: "Branded guides and resources for clients",
     icon: "📚",
-    category: "Knowledge base",
+    category: "Help & resources",
     longDescription:
       "Curate a branded library of guides and resources clients can search on their own, with controls over who sees what.",
     features: ["Branded guides", "Search", "Access controls", "Usage insights"],
@@ -328,7 +332,7 @@ const BASE_TEMPLATES: Template[] = [
     title: "Data room",
     description: "Securely share sensitive documents",
     icon: "🔒",
-    category: "Knowledge base",
+    category: "Help & resources",
     longDescription:
       "Share sensitive documents securely with permissioned access, audit trails, watermarking, and activity tracking.",
     features: ["Permissioned access", "Audit trail", "Watermarking", "Activity tracking"],
@@ -341,7 +345,7 @@ const BASE_TEMPLATES: Template[] = [
     title: "Progress tracker",
     description: "Track records through stages",
     icon: "📊",
-    category: "Trackers",
+    category: "Tracking",
     image: "/images/templates/progress-tracker.png",
     images: ["/images/templates/progress-tracker.png"],
     longDescription:
@@ -354,7 +358,7 @@ const BASE_TEMPLATES: Template[] = [
     title: "Client to-do list",
     description: "A clear checklist of next steps per client",
     icon: "☑️",
-    category: "Trackers",
+    category: "Tracking",
     longDescription:
       "Give each client a clear checklist of what to do next, with due dates and reminders, so nothing stalls on their side.",
     features: ["Per-client checklist", "Due dates", "Reminders", "Completion tracking"],
@@ -364,7 +368,7 @@ const BASE_TEMPLATES: Template[] = [
     title: "Deals pipeline",
     description: "Open deals by stage, with value and owner",
     icon: "📈",
-    category: "Trackers",
+    category: "Tracking",
     longDescription:
       "See every open deal by stage, with its value, owner, and next step, so the pipeline is one shared view instead of a spreadsheet someone remembers to update on Fridays.",
     features: ["Stages you define", "Value per deal", "Owner and next step", "Weighted total"],
@@ -375,7 +379,7 @@ const BASE_TEMPLATES: Template[] = [
     title: "Case status page",
     description: "A live status page for each client case",
     icon: "📋",
-    category: "Trackers",
+    category: "Tracking",
     longDescription:
       "A branded, always-current status page for each case or matter, so clients can see where things stand without emailing you.",
     features: ["Live case status", "Timeline", "Next steps", "Client-visible"],
@@ -386,7 +390,7 @@ const BASE_TEMPLATES: Template[] = [
     title: "Retainer usage overview",
     description: "Hours used against each client's retainer",
     icon: "⏳",
-    category: "Dashboards",
+    category: "Tracking",
     longDescription:
       "Show clients exactly how much of their retainer they've used and what's left, with a clear breakdown by work and period.",
     features: ["Used vs. remaining", "Breakdown by work", "Per-period", "Client-visible"],
@@ -401,7 +405,7 @@ const BASE_TEMPLATES: Template[] = [
     title: "Engagement dashboard",
     description: "Spot quiet clients before they churn",
     icon: "\ud83d\udcc9",
-    category: "Dashboards",
+    category: "Tracking",
     longDescription:
       "Score how engaged every client is from what they actually do across their portal, follow the 12-week trend, and hear about it when an account goes quiet or drops sharply \u2014 while there is still time to do something.",
     features: [
@@ -428,7 +432,7 @@ const BASE_TEMPLATES: Template[] = [
     title: "Client calendar",
     description: "A shared calendar of key dates",
     icon: "🗓️",
-    category: "Trackers",
+    category: "Tracking",
     longDescription:
       "Give clients a shared calendar of meetings, milestones, and deadlines so everyone sees what's coming up — kept in sync with the work in their portal.",
     features: ["Shared calendar", "Event details", "Milestones & deadlines", "Reminders"],
@@ -473,7 +477,7 @@ const BASE_TEMPLATES: Template[] = [
     title: "Goal tracking app",
     description: "Client goals with progress to target",
     icon: "🎯",
-    category: "Trackers",
+    category: "Tracking",
     longDescription:
       "Set goals with each client, track progress against the target, and show how far along they are without anyone booking a status call.",
     features: ["Goals per client", "Progress to target", "Milestones", "Trend over time"],
@@ -484,7 +488,7 @@ const BASE_TEMPLATES: Template[] = [
     title: "Internal resource library",
     description: "Playbooks and guides for your team",
     icon: "🗂️",
-    category: "Knowledge base",
+    category: "Help & resources",
     longDescription:
       "The same library your clients get, pointed inward: playbooks, policies, and guides your team can search instead of digging through shared drives.",
     features: ["Search", "Categories", "Access by team", "Version history"],
@@ -550,7 +554,7 @@ const BASE_TEMPLATES: Template[] = [
     title: "Internal AI assistant",
     description: "An assistant trained on your playbooks",
     icon: "🧠",
-    category: "AI assistants",
+    category: "Help & resources",
     longDescription:
       "The same assistant your clients get, pointed inward: it answers from your own policies, playbooks, and past work so the team stops asking the same questions twice.",
     features: ["Answers from your docs", "Cited sources", "Team-only access", "Chat history"],

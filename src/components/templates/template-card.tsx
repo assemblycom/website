@@ -20,6 +20,7 @@ import {
   CardExportProgress,
   CardFormFields,
   CardFileChip,
+  CardHomeWaiting,
   CardMarkupPopover,
   CardMessageBubble,
   CardMonthGrid,
@@ -111,6 +112,11 @@ function AmbientBars() {
 // Cards whose ground takes the identity's progressive blur and grain. The rest
 // keep crisp bars.
 const SOFT_GROUNDS = new Set(["time-tracker"]);
+// Cards whose bars take wider inner shadows, so the colour glows deep into
+// each bar instead of hugging its edge.
+const WIDE_GLOW: Record<string, number> = { "document-collection": 2.2 };
+// Cards that keep crisp bars but take the identity's grain over them.
+const GRAIN_GROUNDS = new Set(["client-project-tracker"]);
 
 function AmbientBackdrop({
   slug,
@@ -122,8 +128,12 @@ function AmbientBackdrop({
   className: string;
 }) {
   const soft = SOFT_GROUNDS.has(slug);
+  const grain = GRAIN_GROUNDS.has(slug);
   const id = useId().replace(/:/g, "");
-  const { bg, pairs, edgeBlur, innerBlur } = AMBIENT[skin];
+  const glow = WIDE_GLOW[slug] ?? 1;
+  const { bg, pairs } = AMBIENT[skin];
+  const edgeBlur = AMBIENT[skin].edgeBlur * glow;
+  const innerBlur = AMBIENT[skin].innerBlur * glow;
   const [edge, inner] = pairs[ambientIndex(slug, pairs.length)];
   const turn =
     AMBIENT_TURNS[ambientIndex(`${slug}-turn`, AMBIENT_TURNS.length)];
@@ -192,9 +202,20 @@ function AmbientBackdrop({
           />
         </>
       ) : (
-        <g filter={`url(#${id})`} transform={turn || undefined}>
-          <AmbientBars />
-        </g>
+        <>
+          <g filter={`url(#${id})`} transform={turn || undefined}>
+            <AmbientBars />
+          </g>
+          {grain && (
+            <rect
+              width="400"
+              height="400"
+              filter={`url(#${id}-grain)`}
+              opacity={skin === "dark" ? 0.07 : 0.05}
+              style={{ mixBlendMode: skin === "dark" ? "screen" : "multiply" }}
+            />
+          )}
+        </>
       )}
     </svg>
   );
@@ -232,6 +253,7 @@ const PANEL_TILES = new Set([
   "message-autoresponder",
   "profile-manager",
   "exporter",
+  "client-home",
 ]);
 
 // Widgets that are a single object (the clock face) read small at the shared
@@ -261,6 +283,7 @@ const TILE_SIZE: Record<string, string> = {
   "message-autoresponder": "!w-[66%] !rounded-[11%]",
   "profile-manager": "!w-[66%] !rounded-[11%]",
   "exporter": "!w-[66%] !rounded-[11%]",
+  "client-home": "!w-[66%] !rounded-[11%]",
   "client-onboarding-wizard": "!w-[66%] !rounded-[11%]",
   "design-approvals": "!w-[66%] !rounded-[11%]",
   "content-approval-flow": "!w-[66%] !rounded-[11%]",
@@ -268,6 +291,35 @@ const TILE_SIZE: Record<string, string> = {
   "markup-comments": "!w-[66%] !rounded-[11%]",
   "internal-communications-app": "!w-[66%] !rounded-[11%]",
 };
+
+// The time tracker's round tile reads as a watch face: a minute track round
+// the rim, with the hours drawn longer and stronger.
+const DIAL_TICKS = 60;
+const DIAL_HOUR_EVERY = 5;
+
+function ClockDial({ skin }: { skin: AmbientSkin }) {
+  const ink = skin === "dark" ? "255,255,255" : "16,24,40";
+  return (
+    <svg viewBox="0 0 100 100" className="pointer-events-none absolute inset-0 h-full w-full" aria-hidden>
+      {Array.from({ length: DIAL_TICKS }, (_, i) => {
+        const hour = i % DIAL_HOUR_EVERY === 0;
+        return (
+          <line
+            key={i}
+            x1="50"
+            y1={hour ? 4.5 : 5}
+            x2="50"
+            y2={hour ? 10 : 7.5}
+            stroke={`rgba(${ink},${hour ? 0.55 : 0.22})`}
+            strokeWidth={hour ? 0.9 : 0.5}
+            strokeLinecap="round"
+            transform={`rotate(${(i * 360) / DIAL_TICKS} 50 50)`}
+          />
+        );
+      })}
+    </svg>
+  );
+}
 
 const TILE_CLASS: Record<TileShape, string> = {
   square: "aspect-square w-[60%] rounded-[18px]",
@@ -379,6 +431,8 @@ export function TemplateCard({
                       <CardMessageBubble />
                     ) : template.slug === "proposal-builder" ? (
                       <CardProposalPanel />
+                    ) : template.slug === "client-home" ? (
+                      <CardHomeWaiting />
                     ) : template.slug === "files-app" ? (
                       <CardFileChip />
                     ) : template.slug === "client-calendar" ? (
@@ -404,6 +458,7 @@ export function TemplateCard({
                     )}
                   </div>
                 </MockFit>
+                {template.slug === "time-tracker" && <ClockDial skin={skin} />}
               </div>
             </div>
           )}

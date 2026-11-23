@@ -3066,12 +3066,14 @@ function CardDataRoom() {
               {row.name}
             </span>
             {/* The set's mono status chip, the one the contract and invoice
-                covers wear, in the covers' neutral rather than their lime: this
-                cover carries two of them at once, and a live colour on both
-                would be the loudest thing in a gallery of monotone covers. Both
-                states take the same chip, so the word is what separates them. */}
+                covers wear: active takes the covers' lime, expired a soft red
+                from the file chip, so the state reads before the word. */}
             <span
-              className="shrink-0 rounded-md bg-[var(--v69-well)] px-2 py-1 text-[10px] uppercase leading-none tracking-wide text-[var(--v69-ink)] light-mock:bg-[#e6e6e6] dark-x:bg-[rgba(255,255,255,0.14)] dark-x:text-[#EDEDED] max-sm:[.template-mock-gallery_&]:text-[9px]"
+              className={`shrink-0 rounded-md px-2 py-1 text-[10px] uppercase leading-none tracking-wide max-sm:[.template-mock-gallery_&]:text-[9px] ${
+                row.state === "active"
+                  ? "bg-[#D9ED92] text-[#1B1B1B]"
+                  : "bg-[#FF8C8C]/[0.22] text-[var(--v69-ink)]"
+              }`}
               style={MOCK_MONO}
             >
               {row.state === "active" ? "Active" : "Expired"}
@@ -3332,21 +3334,11 @@ const PIPELINE_LINE_D = PIPELINE_SERIES.map((y, i) => {
 const PIPELINE_HUE =
   "[--pipe-line:#7DA4FF] dark-x:[--pipe-line:#D9ED92]";
 
-// The templates gallery draws the pipeline as a week-by-week line, after a
-// phone sleep chart: light points on a thin line, unlabelled, so the figure
-// above stays the headline.
-const PIPELINE_WEEKS = [182, 196, 191, 214, 232, 248];
-const PIPE_VB = { w: 200, h: 110, x0: 4, x1: 186, top: 26, bottom: 100 };
-const PIPE_MIN = 170;
-const PIPE_MAX = 255;
-const pipeY = (v: number) =>
-  PIPE_VB.bottom - ((v - PIPE_MIN) / (PIPE_MAX - PIPE_MIN)) * (PIPE_VB.bottom - PIPE_VB.top);
-const PIPE_POINTS = PIPELINE_WEEKS.map((v, i) => ({
-  v,
-  x: PIPE_VB.x0 + (i * (PIPE_VB.x1 - PIPE_VB.x0)) / (PIPELINE_WEEKS.length - 1),
-  y: pipeY(v),
-}));
-const PIPE_LINE_D = PIPE_POINTS.map((p, i) => `${i ? "L" : "M"} ${p.x} ${p.y}`).join(" ");
+// The templates gallery draws the pipeline as weekly columns, after a phone
+// activity chart: each week a pill track filled from the foot, so the climb
+// reads before the figure.
+const PIPELINE_WEEKS = [0, 0, 0, 14, 16, 15, 30, 44, 78, 92, 86, 100];
+const PIPE_FILL_MIN = 14;
 
 function CardDealsPipeline() {
   return (
@@ -3422,30 +3414,19 @@ function CardDealsPipeline() {
           vectorEffect="non-scaling-stroke"
         />
       </svg>
-      {/* Gallery only: an unstretched SVG so the points stay round. Its
-          inset matches the header's so the plot lines up under the figure. */}
-      <div aria-hidden className="mt-auto hidden px-5 pb-5 [.template-mock-gallery_&]:block">
-        <svg viewBox={`0 0 ${PIPE_VB.w} ${PIPE_VB.h}`} className="block w-full overflow-visible">
-          <path
-            d={PIPE_LINE_D}
-            fill="none"
-            stroke="var(--pipe-line)"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          {PIPE_POINTS.map((pt) => (
-            <circle
-              key={pt.x}
-              cx={pt.x}
-              cy={pt.y}
-              r="2.6"
-              fill="var(--pipe-line)"
-              stroke="var(--pipe-line)"
-              strokeWidth="1.5"
-            />
-          ))}
-        </svg>
+      {/* Gallery only. Its inset matches the header's so the columns line up
+          under the figure; an empty week shows only its track. */}
+      <div aria-hidden className="mt-auto hidden h-[52%] gap-[5px] px-5 pb-5 [.template-mock-gallery_&]:flex">
+        {PIPELINE_WEEKS.map((v, i) => (
+          <span key={i} className="relative flex-1 overflow-hidden rounded-full bg-[var(--v69-ink)]/[0.06]">
+            {v > 0 && (
+              <span
+                className="absolute inset-x-0 bottom-0 rounded-full bg-[var(--pipe-line)]"
+                style={{ height: `${Math.max(v, PIPE_FILL_MIN)}%` }}
+              />
+            )}
+          </span>
+        ))}
       </div>
     </div>
   );
@@ -4100,7 +4081,7 @@ export function CardEngagementRing() {
         </g>
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-[22cqw] font-normal leading-none tracking-tight tabular-nums text-[var(--v69-ink)]">
+        <span className="text-[11.6cqw] font-normal leading-none tracking-tight tabular-nums text-[var(--v69-ink)]">
           {ENGAGEMENT_SCORE}
         </span>
         {/* Ink at 70% rather than the muted grey, which washed out over the
@@ -4225,7 +4206,7 @@ export function CardAssistantAsk() {
         <br />
         you with today?
       </span>
-      <span className="w-full rounded-[5cqw] bg-[var(--v69-inner)] px-[5cqw] py-[4.5cqw] text-left text-[6cqw] leading-none text-[var(--v69-ink)]/55">
+      <span className="v69-ask-field w-full rounded-[5cqw] bg-[var(--v69-inner)] px-[5cqw] py-[4.5cqw] text-left text-[6cqw] leading-none text-[var(--v69-ink)]/55">
         Ask something
       </span>
     </div>
@@ -4349,7 +4330,7 @@ export function CardCalendarAgenda() {
           {CALENDAR_EVENTS.map((event) => (
             <div
               key={event.time}
-              className={`flex gap-[2.5cqw] rounded-[2cqw] py-[2cqw] pl-[1.5cqw] pr-[3cqw] ${event.fill} ${event.tone}`}
+              className={`flex gap-[2.5cqw] rounded-[2cqw] py-[3.5cqw] pl-[2cqw] pr-[3cqw] ${event.fill} ${event.tone}`}
             >
               <span
                 className={`w-[1.1cqw] shrink-0 rounded-full ${event.spine}`}
@@ -4412,7 +4393,7 @@ export function CardTrackerBar() {
         </div>
         <div className="relative mt-[3.5cqw] h-[22cqw] rounded-[5cqw] bg-[var(--v69-ink)]/[0.08]">
           <div
-            className="absolute inset-y-0 left-0 rounded-[5cqw] bg-[var(--v69-ink)]/90"
+            className="absolute inset-y-0 left-0 rounded-[5cqw] bg-[var(--v69-ink)]/90 light-gallery:bg-[var(--v69-ink)]"
             style={{ width: `${TRACKER_DONE_PCT}%` }}
           />
           {/* The halfway mark, a hairline across the bar. */}
@@ -4444,31 +4425,10 @@ export function CardOnboardingSteps() {
   return (
     <div className="flex h-full w-full flex-col justify-between p-[10%] [container-type:inline-size]">
       <div>
-        <div className="text-[10cqw] leading-none tracking-tight text-[var(--v69-ink)]">
+        <div className="text-[8.5cqw] leading-none tracking-tight text-[var(--v69-ink)]">
           {client}
         </div>
-        <div className="mt-[4cqw] flex items-center gap-[2.5cqw] text-[7cqw] leading-none text-[var(--v69-ink)]/60">
-          <svg
-            viewBox="0 0 16 16"
-            className="size-[7cqw]"
-            fill="none"
-            aria-hidden
-          >
-            <circle
-              cx="8"
-              cy="8"
-              r="6.25"
-              stroke="currentColor"
-              strokeWidth="1.5"
-            />
-            <path
-              d="M5.5 8.2l1.7 1.7 3.3-3.6"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+        <div className="mt-[4cqw] text-[6.5cqw] leading-none text-[var(--v69-ink)]/60">
           {step}
         </div>
       </div>
@@ -4661,18 +4621,17 @@ export function CardHelpdeskStat() {
           Open requests
         </span>
         <span className="flex size-[13cqw] shrink-0 items-center justify-center rounded-full bg-[var(--v69-ink)]/[0.12] text-[var(--v69-ink)]">
-          <svg viewBox="0 0 16 16" className="size-[6.5cqw]" fill="none" aria-hidden>
+          {/* The design system's Message glyph, the product's Messages icon. */}
+          <svg viewBox="0 0 20 20" className="size-[5.6cqw]" fill="none" aria-hidden>
             <path
-              d="M3 4.5c0-.8.7-1.5 1.5-1.5h7c.8 0 1.5.7 1.5 1.5v5c0 .8-.7 1.5-1.5 1.5H7l-3 2.5V11h0c-.6 0-1-.4-1-1z"
-              stroke="currentColor"
-              strokeWidth="1.4"
-              strokeLinejoin="round"
+              fill="currentColor"
+              d="M7.957 18.785 6.48 19.828A.938.938 0 0 1 5 19.063V16.25H3.75C1.68 16.25 0 14.57 0 12.5V3.75C0 1.68 1.68 0 3.75 0h12.5C18.32 0 20 1.68 20 3.75v8.75c0 2.07-1.68 3.75-3.75 3.75h-4.703zm2.512-4.066a1.9 1.9 0 0 1 1.082-.344h4.699c1.035 0 1.875-.84 1.875-1.875V3.75c0-1.035-.84-1.875-1.875-1.875H3.75c-1.035 0-1.875.84-1.875 1.875v8.75c0 1.035.84 1.875 1.875 1.875h2.188a.936.936 0 0 1 .937.938v1.94l3.59-2.534z"
             />
           </svg>
         </span>
       </div>
       <div>
-        <div className="text-[30cqw] leading-[0.9] tracking-tight text-[var(--v69-ink)] tabular-nums">
+        <div className="text-[13cqw] leading-[0.9] tracking-tight text-[var(--v69-ink)] tabular-nums">
           12
         </div>
         <div className="mt-[3cqw] text-[6.5cqw] leading-none text-[var(--v69-ink)]/45">
@@ -4683,47 +4642,61 @@ export function CardHelpdeskStat() {
   );
 }
 
-// Internal communications for the templates gallery's glass tile: a channel
-// thread with its reply box, after a phone comment sheet. The home rail keeps
-// its own cover (CardCommsApp).
+// Internal communications for the templates gallery's glass tile: a two-line
+// channel exchange as bubbles, sender's avatar on the outer side, with the
+// composer under it. The home rail keeps its own cover (CardCommsApp).
 const COMMS_THREAD = [
-  { name: "Maya", when: "7 min ago", text: "Offsite moved to Friday", tone: "bg-[#C6B6FF]" },
-  { name: "Jonah", when: "2 min ago", text: "Thanks, see everyone there", tone: "bg-[#5CE5C3]" },
+  {
+    name: "Maya",
+    when: "1:34 PM",
+    text: "Offsite moved to Friday. Agenda is in the channel.",
+    tone: "bg-[#C6B6FF]",
+    mine: false,
+  },
+  {
+    name: "Jonah",
+    when: "1:46 PM",
+    text: "Thanks, see everyone there.",
+    tone: "bg-[#5CE5C3]",
+    mine: true,
+  },
 ];
 
 export function CardCommentThread() {
   return (
-    <div className="flex h-full w-full flex-col p-[8%] [container-type:inline-size]">
-      <div className="flex items-center justify-between text-[6.5cqw] leading-none text-[var(--v69-ink)]">
-        Announcements
-        <svg viewBox="0 0 16 16" className="size-[5.5cqw] text-[var(--v69-ink)]/45" fill="none" aria-hidden>
-          <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-        </svg>
-      </div>
-      <div className="mt-[7cqw] flex flex-col gap-[5cqw]">
+    <div className="flex h-full w-full flex-col p-[7%] [container-type:inline-size]">
+      <div className="flex flex-col gap-[3cqw]">
         {COMMS_THREAD.map((c) => (
-          <div key={c.name} className="flex gap-[3cqw]">
+          <div
+            key={c.name}
+            className={`flex gap-[2.5cqw] ${c.mine ? "items-end" : "flex-row-reverse items-start"}`}
+          >
             <span className={`size-[8cqw] shrink-0 rounded-full ${c.tone}`} />
-            <div className="flex min-w-0 flex-col gap-[2cqw] pt-[0.8cqw]">
-              <div className="flex items-baseline gap-[2cqw] text-[6cqw] leading-none">
-                <span className="text-[var(--v69-ink)]">{c.name}</span>
-                <span className="text-[5cqw] text-[var(--v69-ink)]/45">{c.when}</span>
+            {/* The corner nearest the avatar stays square, so the bubble reads
+                as said by that person. */}
+            <div
+              className={`min-w-0 flex-1 rounded-[5cqw] px-[4.5cqw] py-[3.8cqw] ${
+                c.mine
+                  ? "rounded-bl-[1.2cqw] bg-[#f2f2f2] text-[#1B1B1B] light-gallery:bg-[#fff] light-gallery:shadow-[inset_0_0_0_1px_rgba(16,24,40,0.08)]"
+                  : "rounded-tr-[1.2cqw] bg-[#7DA4FF] text-[#13244D]"
+              }`}
+            >
+              <div className="flex items-baseline gap-[2cqw] text-[5.2cqw] leading-none">
+                <span className="opacity-70">{c.name}</span>
+                <span className="opacity-45">{c.when}</span>
               </div>
-              <span className="truncate text-[6cqw] leading-none text-[var(--v69-ink)]/70">
-                {c.text}
-              </span>
+              <div className="mt-[2.4cqw] text-[6cqw] leading-[1.3]">{c.text}</div>
             </div>
           </div>
         ))}
       </div>
-      <div className="mt-auto flex items-center gap-[3cqw] rounded-full bg-[var(--v69-ink)]/[0.08] py-[1.6cqw] pl-[1.6cqw] pr-[1.6cqw]">
-        <span className="size-[8cqw] shrink-0 rounded-full bg-[#D9ED92]" />
-        <span className="flex-1 truncate text-[6cqw] leading-none text-[var(--v69-ink)]/40">
-          Reply in thread
+      <div className="mt-auto flex items-center gap-[3cqw] rounded-full bg-[var(--v69-ink)]/[0.08] py-[1.6cqw] pl-[4.5cqw] pr-[1.6cqw]">
+        <span className="flex-1 truncate text-[6cqw] leading-none text-[var(--v69-ink)]/45">
+          Write your message...
         </span>
         <span className="flex size-[8cqw] shrink-0 items-center justify-center rounded-full bg-[#7DA4FF] text-[#13244D]">
           <svg viewBox="0 0 16 16" className="size-[4.8cqw]" fill="none" aria-hidden>
-            <path d="M8 13V3.5M4 7.5l4-4 4 4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M3 8h9.5M8.5 4l4 4-4 4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </span>
       </div>
@@ -4873,11 +4846,8 @@ export function CardMonthGrid() {
 // is taller than the source's clip.
 export function CardFileChip() {
   return (
-    <div className="relative flex h-full w-full flex-col justify-between p-[10%] [container-type:inline-size]">
-      <svg viewBox="0 0 16 16" className="absolute right-[7%] top-[7%] size-[5.5cqw] text-[var(--v69-ink)]/45" fill="none" aria-hidden>
-        <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      </svg>
-      <div className="pr-[8cqw]">
+    <div className="flex h-full w-full flex-col justify-between p-[10%] [container-type:inline-size]">
+      <div>
         <div className="line-clamp-2 text-[8.5cqw] leading-[1.15] tracking-tight text-[var(--v69-ink)]">
           Engagement letter signed copy
         </div>
@@ -4962,37 +4932,23 @@ function FlowNode({
   step,
   label,
   title,
-  icon,
 }: {
   step: string;
   label: string;
   title: string;
-  icon: React.ReactNode;
 }) {
-  // A builder node: a numbered strip over the step's kind, title and icon,
+  // A builder node: a numbered strip over the step's kind and title,
   // outlined so it reads as a block on a canvas rather than a list row.
   return (
     <div className="shrink-0 overflow-hidden rounded-[3.5cqw] border border-[var(--v69-ink)]/[0.16] bg-[var(--v69-ink)]/[0.06]">
       <div className="bg-[var(--v69-ink)]/[0.06] px-[5cqw] py-[2.6cqw] text-[5cqw] leading-none text-[var(--v69-ink)]/45">
         <span style={MOCK_MONO}>{step}</span>
-        <span className="flex gap-[0.8cqw]" aria-hidden>
-          <span className="size-[1cqw] rounded-full bg-current" />
-          <span className="size-[1cqw] rounded-full bg-current" />
-          <span className="size-[1cqw] rounded-full bg-current" />
-        </span>
       </div>
-      <div className="flex items-center gap-[3cqw] px-[5cqw] py-[4.6cqw]">
-        <div className="min-w-0 flex-1">
-          <div className="text-[5.6cqw] leading-none text-[var(--v69-ink)]/45">{label}</div>
-          <div className="mt-[2.8cqw] truncate text-[7.5cqw] leading-none text-[var(--v69-ink)]">
-            {title}
-          </div>
+      <div className="px-[5cqw] py-[4.6cqw]">
+        <div className="text-[5.6cqw] leading-none text-[var(--v69-ink)]/45">{label}</div>
+        <div className="mt-[2.8cqw] truncate text-[7.5cqw] leading-none text-[var(--v69-ink)]">
+          {title}
         </div>
-        <span className="flex size-[11cqw] shrink-0 items-center justify-center rounded-[3cqw] border border-[var(--v69-ink)]/[0.16] text-[var(--v69-ink)]">
-          <svg viewBox="0 0 16 16" className="size-[6cqw]" fill="none" aria-hidden>
-            {icon}
-          </svg>
-        </span>
       </div>
     </div>
   );
@@ -5000,56 +4956,34 @@ function FlowNode({
 
 export function CardConditionFlow() {
   return (
-    <div className="flex h-full w-full flex-col justify-center p-[7%] [container-type:inline-size]">
+    <div className="flex h-full w-full flex-col gap-[3cqw] p-[7%] [container-type:inline-size]">
       <FlowNode
         step="01"
         label="Question"
         title="Client type"
-        icon={
-          <>
-            <circle cx="8" cy="8" r="6.25" stroke="currentColor" strokeWidth="1.4" />
-            <path d="M6.3 6.4a1.8 1.8 0 1 1 2.5 1.6c-.5.2-.8.6-.8 1.1v.4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-            <circle cx="8" cy="11.4" r=".8" fill="currentColor" />
-          </>
-        }
       />
-      {/* A plain connector between the two nodes' ports. */}
-      <div className="relative mx-auto h-[12cqw] w-px shrink-0 bg-[var(--v69-ink)]/40">
-        <span className="absolute -top-[1cqw] left-1/2 size-[2.4cqw] -translate-x-1/2 rounded-[0.6cqw] bg-[var(--v69-ink)]/60" />
-        <span className="absolute -bottom-[1cqw] left-1/2 size-[2.4cqw] -translate-x-1/2 rounded-[0.6cqw] bg-[var(--v69-ink)]/60" />
-      </div>
       <FlowNode
         step="02"
         label="Show"
         title="Company details"
-        icon={
-          <>
-            <rect x="3" y="2.5" width="10" height="11" rx="1.6" stroke="currentColor" strokeWidth="1.4" />
-            <path d="M5.75 6h4.5M5.75 8.75h4.5M5.75 11.5h2.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-          </>
-        }
       />
     </div>
   );
 }
 
 // Case status page for the templates gallery's glass tile: one client case
-// with its stages as a wrap of tags, after a tag cloud. Stages already passed
-// sit at full ink, the current one takes the periwinkle, and the ones ahead
-// dim. The home rail keeps its own cover (CardCaseStatus).
-type CaseStage = { name: string; state: "done" | "current" | "next" };
+// with its stages so far as a wrap of tags, after a tag cloud. Stages already
+// passed sit at full ink and the current one takes the periwinkle. The home
+// rail keeps its own cover (CardCaseStatus).
+type CaseStage = { name: string; state: "done" | "current" };
 const CASE_STAGES: CaseStage[] = [
   { name: "Intake", state: "done" },
   { name: "Documents received", state: "done" },
   { name: "In review", state: "current" },
-  { name: "Filed", state: "next" },
-  { name: "Awaiting response", state: "next" },
-  { name: "Closed", state: "next" },
 ];
 const CASE_TAG_TONE: Record<CaseStage["state"], string> = {
   done: "bg-[var(--v69-ink)]/[0.1] text-[var(--v69-ink)]",
   current: "bg-[#7DA4FF] text-[#13244D]",
-  next: "bg-[var(--v69-ink)]/[0.05] text-[var(--v69-ink)]/45",
 };
 
 export function CardCaseTags() {
@@ -5145,7 +5079,7 @@ export function CardProfileList() {
         {PROFILE_LIST.map((row, i) => (
           <div
             key={row.name}
-            className={`flex items-center gap-[3cqw] py-[3cqw] ${
+            className={`-mx-[11cqw] flex items-center gap-[3cqw] px-[11cqw] py-[4.2cqw] ${
               i ? "border-t border-[var(--v69-ink)]/[0.1]" : ""
             }`}
           >
@@ -5159,6 +5093,43 @@ export function CardProfileList() {
               <span className="mt-[1.8cqw] block truncate text-[5.2cqw] leading-none text-[var(--v69-ink)]/45">
                 {row.company}
               </span>
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Home for the templates gallery's glass tile: the client's landing page as a
+// short list of what is waiting for them, so the count reads as things to do.
+// The home rail keeps its own cover.
+const HOME_WAITING = [
+  { title: "Sign engagement letter", app: "Contracts" },
+  { title: "Pay April invoice", app: "Billing" },
+  { title: "Upload tax documents", app: "Files" },
+];
+
+export function CardHomeWaiting() {
+  return (
+    <div className="flex h-full w-full flex-col p-[9%] [container-type:inline-size]">
+      <div className="flex items-center justify-between">
+        <span className="text-[8.5cqw] leading-none tracking-tight text-[var(--v69-ink)]">Home</span>
+        <span className="rounded-[2cqw] bg-[#f2f2f2] px-[2.4cqw] py-[1.6cqw] text-[5.2cqw] leading-none tabular-nums text-[#1B1B1B] light-gallery:bg-[#262626] light-gallery:text-white">
+          {HOME_WAITING.length}
+        </span>
+      </div>
+      <div className="mt-[4cqw] flex flex-col">
+        {HOME_WAITING.map((row, i) => (
+          <div
+            key={row.title}
+            className={`-mx-[11cqw] px-[11cqw] py-[4.2cqw] ${i ? "border-t border-[var(--v69-ink)]/[0.1]" : ""}`}
+          >
+            <span className="block truncate text-[6.5cqw] leading-none text-[var(--v69-ink)]">
+              {row.title}
+            </span>
+            <span className="mt-[1.8cqw] block truncate text-[5.2cqw] leading-none text-[var(--v69-ink)]/45">
+              {row.app}
             </span>
           </div>
         ))}

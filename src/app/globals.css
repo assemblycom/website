@@ -6096,6 +6096,14 @@ html:not([data-authed]) .auth-only {
 .mock-island {
   --glass-blur: blur(14px) saturate(140%);
 }
+/* The light skin's muted labels wash out on its pale glass, so they step a
+   little darker there. The dark skin keeps its own steps. */
+.light-island.mock-island :is([class*="text-[var(--v69-ink)]/40"], [class*="text-[var(--v69-ink)]/45"]) {
+  color: color-mix(in srgb, var(--v69-ink) 62%, transparent);
+}
+.light-island.mock-island :is([class*="text-[var(--v69-ink)]/30"], [class*="text-[var(--v69-ink)]/35"]) {
+  color: color-mix(in srgb, var(--v69-ink) 50%, transparent);
+}
 .dark-island.mock-island .template-mock {
   --v69-box: rgba(128, 130, 134, 0.32);
   --v69-inner: rgba(128, 130, 134, 0.32);
@@ -6195,6 +6203,25 @@ html:not([data-authed]) .auth-only {
     0 10px 28px -14px rgba(16, 24, 40, 0.22) !important;
 }
 
+/* A record card drawn straight on the ground (no panel tile behind it) had the
+   same problem, so it takes the same hairline and drop. Cards inside a panel
+   tile are left alone: the panel already gives them their edge. */
+.light-island:not(.mock-panel) :is([class*="bg-[#FFFFFF]"], [class*="bg-[#ffffff]"]):not(:is([class*="bg-[#FFFFFF]"], [class*="bg-[#ffffff]"]) *) {
+  border-color: transparent !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(16, 24, 40, 0.09),
+    0 10px 28px -14px rgba(16, 24, 40, 0.22) !important;
+}
+
+/* The assistant's input and the clock's readout sit inside a white panel,
+   where white glass left them a blank white block; on the light skin they take
+   a faint grey well instead. */
+.light-island :is(.v69-ask-field, .v69-clock-readout) {
+  border-color: transparent !important;
+  background-color: rgba(16, 24, 40, 0.05) !important;
+  box-shadow: inset 0 0 0 1px rgba(16, 24, 40, 0.1) !important;
+}
+
 /* The engagement ring's colours per skin: the brand pink on the dark skin, a
    step deeper on the light one so it holds against white glass. */
 .dark-island {
@@ -6219,10 +6246,10 @@ html:not([data-authed]) .auth-only {
   display: none;
 }
 
-/* In the gallery's round tile the clock is the whole widget, so the readout
-   grows to fill the face instead of sitting small in the middle of it. */
+/* In the gallery's round tile the readout's digits sit at the type scale's
+   figure size, the same as the other covers' big numbers. */
 .mock-island .v69-clock-readout {
-  transform: scale(1.5);
+  transform: scale(0.75);
 }
 
 /* The clock face fills its round tile: the cover's padding and its size cap
@@ -6251,30 +6278,38 @@ html:not([data-authed]) .auth-only {
 /* The reading pill sits over the guide's text, so it takes a near-solid fill
    of each skin's glass rather than the see-through pane. */
 .dark-island .v69-reading-pill {
-  background-color: rgba(58, 59, 62, 0.92);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+  --ring-fill: #f2a7e4;
+  --ring-empty: rgba(16, 17, 20, 0.12);
+  background-color: #f2f2f2;
+  color: #1b1b1b;
+  box-shadow: none;
 }
+/* Each skin draws the pill in the opposite tone, so it stands off its page as
+   the one control on it; the ring takes the other skin's colours to match. */
 .light-island .v69-reading-pill {
-  background-color: rgba(255, 255, 255, 0.92);
-  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.08);
+  --ring-fill: #ffdcf8;
+  --ring-empty: rgba(255, 255, 255, 0.16);
+  background-color: #262626;
+  color: #ffffff;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.12);
 }
 
 /* The wallet's type on the same steps as the project tracker beside it: the
    label at the tracker's status line, the amount at its headline. */
 .mock-island .v69-wallet-label {
-  font-size: 15px;
+  font-size: 13px;
 }
 .mock-island .v69-wallet-amount {
-  font-size: 19.6px;
+  font-size: 17.6px;
 }
 /* The pipeline is drawn in the wallet's box, so the same numbers land at the
    same rendered size; the cents stay half the figure. */
 .mock-island .v69-pipeline-label {
-  font-size: 15px;
+  font-size: 13px;
 }
 .mock-island .v69-pipeline-amount {
-  font-size: 19.6px;
+  font-size: 17.6px;
 }
 .mock-island .v69-pipeline-cents {
-  font-size: 9.8px;
+  font-size: 8.8px;
 }
