@@ -9,6 +9,7 @@ import {
   VISIBLE_TEMPLATES,
   type Template,
 } from "@/lib/templates";
+import { GRAIN } from "@/components/comparison/brand-panel";
 import { IconArrow } from "./icons";
 import { V66Composer } from "./hero-v66";
 import { TemplateMock } from "./template-preview";
@@ -149,14 +150,14 @@ function CardIntake() {
   return (
     // v69-cover-column is the phone treatment: the row is held to the width it
     // was drawn at and centred, instead of stretching across the wider frame.
-    <div className="v69-cover-column v69-plot-grid v69-plot-grid--dots v69-plot-grid--fade v69-plot-shimmer flex h-full items-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
+    <div className="v69-cover-column v69-plot-grid v69-plot-grid--dots v69-plot-grid--fade v69-plot-shimmer flex h-full items-center bg-[var(--v69-card)] p-4 light-mock:bg-[#f2f2f2]">
       {/* Opaque, like every other record card in the set: the translucent pane
           let the dot field run straight through it, so the row read as printed
           into the paper rather than lying on it. */}
-      <div className="flex w-full items-center gap-3 rounded-xl border border-black/[0.08] bg-[#FFFFFF] p-3 [[data-theme=dark]_&]:border-[rgba(255,255,255,0.09)] [[data-theme=dark]_&]:bg-[#303030]">
+      <div className="flex w-full items-center gap-3 rounded-xl border border-black/[0.08] bg-[#FFFFFF] p-3 dark-x:border-[rgba(255,255,255,0.09)] dark-x:bg-[#2E2E2E]">
         {/* Initials, not a photograph: the gallery is drawn art throughout, and a
             face is the one thing on it that would read as a real person. */}
-        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[var(--v69-well)] text-[13px] leading-none text-[var(--v69-ink)] [[data-theme=light]_&]:bg-[var(--v69-inner)] [[data-theme=light]_.template-mock_&]:bg-[#e6e6e6] [[data-theme=light]_&]:text-[#595959] [[data-theme=dark]_&]:bg-[rgba(255,255,255,0.12)]">
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[var(--v69-well)] text-[13px] leading-none text-[var(--v69-ink)] light-ui:bg-[var(--v69-inner)] light-mock:bg-[#e6e6e6] light-ui:text-[#595959] dark-x:bg-[rgba(255,255,255,0.12)]">
           {initials}
         </span>
         <span className="min-w-0 flex-1">
@@ -196,11 +197,6 @@ const INK_SOLID = ink(70); // solid surfaces: checks, bubbles, CTAs, selected ra
 const MOCK_MONO = {
   fontFamily: "var(--font-diatype-mono), ui-monospace, monospace",
 } as const;
-// La Belle Aurore, loaded in the root layout. Only the contract cover uses it:
-// a signature is the one thing on these covers that must not look typeset.
-const MOCK_SIGNATURE = {
-  fontFamily: "var(--font-signature), cursive",
-} as const;
 // The unit tag beside a metric — the chip idiom the gallery's category tags use.
 // Layout (where it sits in its header) stays with the caller. The shared cool
 // grey all but disappeared on light mode's warm off-white face, so light takes a
@@ -218,12 +214,12 @@ const MOCK_SIGNATURE = {
 // pill was the heaviest mark on a near-white face, so the tag pulled ahead of the
 // figure it belongs to.
 const MOCK_UNIT_TAG =
-  "shrink-0 whitespace-nowrap rounded-md bg-[var(--v69-inner)] px-2 py-1 text-[11px] uppercase leading-none tracking-wide text-muted-foreground [[data-theme=light]_&]:bg-[var(--v69-inner)] [[data-theme=light]_&]:text-[#4A4A4A] [[data-theme=light]_.template-mock_&]:bg-[#e2e2e2] [[data-theme=light]_.template-mock_&]:text-[#4d4d4d] [[data-theme=dark]_&]:bg-[rgba(255,255,255,0.11)] [[data-theme=dark]_&]:text-[#C9C9C9]";
+  "shrink-0 whitespace-nowrap rounded-md bg-[var(--v69-inner)] px-2 py-1 text-[11px] uppercase leading-none tracking-wide text-muted-foreground light-ui:bg-[var(--v69-inner)] light-ui:text-[#4A4A4A] light-mock:bg-[#e2e2e2] light-mock:text-[#4d4d4d] dark-x:bg-[rgba(255,255,255,0.11)] dark-x:text-[#C9C9C9]";
 
 // The panel face the forms cover's field rows and their remove controls share,
 // so a row and the button beside it are cut from one material.
 const FORM_PANEL =
-  "rounded-xl border border-black/[0.08] bg-[#FFFFFF] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.09)] [[data-theme=dark]_&]:bg-[#303030]";
+  "rounded-xl border border-black/[0.08] bg-[#FFFFFF] dark-x:border-[rgba(255,255,255,0.09)] dark-x:bg-[#2E2E2E]";
 
 // ─── Cover type ramp ────────────────────────────────────────────────────
 // Four steps for every piece of UI text on a cover, in the mocks' own design px.
@@ -277,7 +273,7 @@ function CardOnboarding() {
   return (
     // Dark keeps the project tracker's gradient face; light takes a flat warm
     // off-white instead.
-    <div className="flex h-full flex-col justify-center bg-[linear-gradient(160deg,#ffffff_0%,#f4f6f9_58%,#eceff3_100%)] p-3.5 [[data-theme=light]_&]:bg-none [[data-theme=light]_&]:bg-[var(--v69-card)] [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2] [[data-theme=dark]_&]:bg-none [[data-theme=dark]_&]:bg-[var(--v69-card)]">
+    <div className="flex h-full flex-col justify-center bg-[linear-gradient(160deg,#ffffff_0%,#f4f6f9_58%,#eceff3_100%)] p-3.5 light-ui:bg-none light-ui:bg-[var(--v69-card)] light-mock:bg-[#f2f2f2] dark-x:bg-none dark-x:bg-[var(--v69-card)]">
       {/* Avatar + bar + percentage on their own tile — the same glass surface the
           help-desk rows use, so the row reads as a pane sitting on the card
           rather than a filled block. */}
@@ -288,19 +284,19 @@ function CardOnboarding() {
       {/* The intake tile's radius exactly: side by side in the gallery the
           tighter corner read as a different component, and matching it costs
           nothing at this row height. */}
-      <div className="v69-glass-tile v69-glass-tile--soft flex items-center gap-2.5 rounded-xl border border-[rgba(255,255,255,0.6)] p-3 [[data-theme=light]_&]:border-black/[0.08] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.09)]">
+      <div className="v69-glass-tile v69-glass-tile--soft flex items-center gap-2.5 rounded-xl border border-[rgba(255,255,255,0.6)] p-3 light-ui:border-black/[0.08] dark-x:border-[rgba(255,255,255,0.09)]">
         {/* No ring — the fill alone carries the avatar; a hairline on a shape
             this small only thickened its edge. */}
         {/* Dark takes a brighter fill than the shared well token: at #2b2b2b on a
             #262626 tile the disc was a step off nothing, so the initials floated
             with no shape around them. Light's warm chip already reads. */}
-        <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-[var(--v69-well)] text-[11px] leading-none text-[var(--v69-ink)] [[data-theme=light]_&]:bg-[var(--v69-inner)] [[data-theme=light]_.template-mock_&]:bg-[#e6e6e6] [[data-theme=light]_&]:text-[#595959] [[data-theme=dark]_&]:bg-[color-mix(in_srgb,var(--v69-ink)_20%,transparent)]">
+        <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-[var(--v69-well)] text-[11px] leading-none text-[var(--v69-ink)] light-ui:bg-[var(--v69-inner)] light-mock:bg-[#e6e6e6] light-ui:text-[#595959] dark-x:bg-[color-mix(in_srgb,var(--v69-ink)_20%,transparent)]">
           {initials}
         </span>
         {/* On the translucent tile the shared well tone lands within a step of
             the surface, so the empty track needs its own darker value in dark
             mode to stay readable. */}
-        <span className="relative h-[9px] flex-1 overflow-hidden rounded-full bg-[var(--v69-well)] [[data-theme=dark]_&]:bg-[rgba(255,255,255,0.16)]">
+        <span className="relative h-[9px] flex-1 overflow-hidden rounded-full bg-[var(--v69-well)] dark-x:bg-[rgba(255,255,255,0.16)]">
           <span
             className="absolute inset-y-0 left-0 rounded-full bg-[#7DA4FF] bg-[repeating-linear-gradient(115deg,rgba(255,255,255,0.18)_0_3.5px,rgba(255,255,255,0)_3.5px_8px)] [transform-origin:left] group-hover:[animation:v69GrowX_1.4s_cubic-bezier(0.22,1,0.36,1)_both] group-[.is-inview]:[animation:v69GrowX_1.4s_cubic-bezier(0.22,1,0.36,1)_both]"
             style={{ width: `${pct}%` }}
@@ -320,7 +316,7 @@ function CardOnboarding() {
 const HATCH =
   "bg-[repeating-linear-gradient(45deg,rgba(16,24,40,0.035)_0,rgba(16,24,40,0.035)_1.5px,transparent_1.5px,transparent_9px)]";
 const HATCH_DARK =
-  "[[data-theme=dark]_&]:bg-[repeating-linear-gradient(45deg,rgba(255,255,255,0.055)_0,rgba(255,255,255,0.055)_1.5px,transparent_1.5px,transparent_9px)]";
+  "dark-x:bg-[repeating-linear-gradient(45deg,rgba(255,255,255,0.055)_0,rgba(255,255,255,0.055)_1.5px,transparent_1.5px,transparent_9px)]";
 
 // A single engagement column — an elevated light-grey tile that rests at its
 // final height/score, then re-grows (height + count-up together) when the card
@@ -406,7 +402,7 @@ function EngagementBar({
       // The data-slot is the handle a host card uses to opt its bars out of the
       // outline (see CardDataRoom), rather than every caller re-declaring it.
       data-slot="engagement-bar"
-      className={`relative flex-1 overflow-hidden border bg-[var(--v69-inner)] [.template-mock_&]:border-black/15 [.template-mock_&]:bg-[var(--v69-card)] [[data-theme=dark]_.template-mock_&]:border-[rgba(255,255,255,0.20)] ${
+      className={`relative flex-1 overflow-hidden border bg-[var(--v69-inner)] [.template-mock_&]:border-black/15 [.template-mock_&]:bg-[var(--v69-card)] dark-mock:border-[rgba(255,255,255,0.20)] ${
         compact
           ? "rounded-[6px] border-[0.5px] border-[var(--mk-border)]"
           : "rounded-2xl border-black/[0.05]"
@@ -503,7 +499,7 @@ export function CardDashboard({
       onMouseLeave={() => {
         if (!still) setPlay(0);
       }}
-      className={`flex h-full flex-col bg-[var(--v69-card)] [[data-theme=dark]_.template-mock_&]:bg-[var(--v69-well)] ${
+      className={`flex h-full flex-col bg-[var(--v69-card)] dark-mock:bg-[var(--v69-well)] ${
         compact ? "p-2" : "p-3.5"
       }`}
     >
@@ -849,7 +845,7 @@ function CardTimeTracker() {
       onMouseLeave={() => setPlay(0)}
       className="v69-accent-drift flex h-full items-center justify-center p-4"
     >
-      <div className="relative flex aspect-square h-full max-h-[230px] flex-col items-center justify-center gap-1.5 overflow-hidden rounded-full bg-[var(--v69-card)] px-3 [[data-theme=light]_&]:bg-[#FFFFFF] [[data-theme=light]_.template-mock_&]:bg-[#FFFFFF] [[data-theme=dark]_&]:bg-[#1B1B1B] [[data-theme=dark]_.template-mock_&]:bg-[var(--v69-well)]">
+      <div className="relative flex aspect-square h-full max-h-[230px] flex-col items-center justify-center gap-1.5 overflow-hidden rounded-full bg-[var(--v69-card)] px-3 light-ui:bg-[#FFFFFF] light-mock:bg-[#FFFFFF] dark-x:bg-[#1B1B1B] dark-mock:bg-[var(--v69-well)]">
         {/* Dark-only: the watch face is so close in value to the card ground
             that it read as a flat cutout, so an inset ring carves it in — a
             hairline highlight along the top edge, a darker lower edge, and a
@@ -857,7 +853,7 @@ function CardTimeTracker() {
             can be theme-scoped; light already separates by its own value step. */}
         <span
           aria-hidden
-          className="pointer-events-none absolute inset-0 rounded-full [[data-theme=light]_&]:hidden"
+          className="pointer-events-none absolute inset-0 rounded-full light-ui:hidden"
           style={{
             boxShadow:
               "inset 0 1px 0 rgba(255,255,255,0.07), inset 0 -1px 0 rgba(0,0,0,0.5), inset 0 10px 18px -10px rgba(0,0,0,0.45), inset 0 -12px 20px -12px rgba(0,0,0,0.55)",
@@ -869,7 +865,7 @@ function CardTimeTracker() {
             the top and a slightly deeper edge at the bottom. */}
         <span
           aria-hidden
-          className="pointer-events-none absolute inset-0 rounded-full [[data-theme=dark]_&]:hidden"
+          className="pointer-events-none absolute inset-0 rounded-full dark-x:hidden"
           style={{
             boxShadow:
               "inset 0 1px 0 rgba(255,255,255,0.35), inset 0 -1px 0 rgba(16,24,40,0.03), inset 0 8px 14px -8px rgba(16,24,40,0.045), inset 0 -10px 16px -10px rgba(16,24,40,0.055)",
@@ -887,7 +883,7 @@ function CardTimeTracker() {
           // true circle into an oval.
           // Light drops the hairline: its fill is already a clear step off the
           // face, so the outline only added a hard edge inside a soft recess.
-          className={`my-0.5 rounded-lg bg-[var(--v69-card)] px-2 py-1.5 [[data-theme=light]_&]:bg-[var(--v69-inner)] [[data-theme=light]_.template-mock_&]:bg-[#e6e6e6] [[data-theme=dark]_&]:bg-[#2B2B2B] [[data-theme=dark]_.template-mock_&]:bg-[var(--v69-card)] ${MOCK_OUTLINE} [[data-theme=light]_&]:border-transparent [[data-theme=light]_.template-mock_&]:border-transparent`}
+          className={`v69-clock-readout my-0.5 rounded-lg bg-[var(--v69-card)] px-2 py-1.5 light-ui:bg-[var(--v69-inner)] light-mock:bg-[#e6e6e6] dark-x:bg-[#2B2B2B] dark-mock:bg-[var(--v69-card)] ${MOCK_OUTLINE} light-ui:border-transparent light-mock:border-transparent`}
         >
           <span className="flex items-center gap-[4px] py-0.5">
             {[..."09"].map((d, i) => (
@@ -989,7 +985,7 @@ function CardProposal() {
           gallery's near-1:1 fit this panel's 16px came out slightly rounder than
           the card holding it, and two corners a pixel and a half apart read as
           a mismatch rather than as a pair. */}
-      <div className="flex flex-1 flex-col rounded-2xl bg-[var(--v69-inner)] p-4 max-sm:rounded-[14px] [[data-theme=dark]_&]:bg-[#2E2E2E]">
+      <div className="flex flex-1 flex-col rounded-2xl bg-[var(--v69-inner)] p-4 max-sm:rounded-[14px] dark-x:bg-[#2E2E2E]">
         <div className="text-[10px] text-muted-foreground">Proposal</div>
         {/* A hair of vertical padding so descender room isn't shaved off the
             digit columns, which clip themselves as they roll. */}
@@ -1011,7 +1007,7 @@ function CardProposal() {
               // punched through the glass.
               // No ring in either skin: the fill already steps off the panel, so
               // a hairline only drew a box around each row.
-              className="flex items-center justify-between rounded-lg bg-white px-3 py-3.5 ring-0 [[data-theme=dark]_&]:bg-[#3A3A3A]"
+              className="flex items-center justify-between rounded-lg bg-white px-3 py-3.5 ring-0 dark-x:bg-[#3A3A3A]"
             >
               <div className="text-[11px] font-normal leading-tight text-[var(--v69-ink)]">
                 {title}
@@ -1048,12 +1044,12 @@ const CHAT_PLACEHOLDER = "Ask any question";
 
 function CardChat() {
   return (
-    <div className="v69-chat-cover flex h-full flex-col bg-[var(--v69-card)] p-2 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
+    <div className="v69-chat-cover flex h-full flex-col bg-[var(--v69-card)] p-2 light-mock:bg-[#f2f2f2]">
       {/* One panel, filling the card: a field lifted a step off the face behind
           the shared hairline, its own contents pinned to the corners. Its radius
           is the card's 16px less the 8px it is inset by, so the two sets of
           corners run parallel instead of the inner one reading rounder. */}
-      <div className="v69-chat-field flex h-full flex-col rounded-lg bg-[var(--v69-inner)] p-2.5 [[data-theme=dark]_&]:bg-[#2E2E2E]">
+      <div className="v69-chat-field flex h-full flex-col rounded-lg bg-[var(--v69-inner)] p-2.5 dark-x:bg-[#2E2E2E]">
         <div className="flex items-center">
           {/* No MOCK_UPSCALED_META: that 9px rung was drawn for a gallery box
               that scales its cover up, and this one renders near 1:1, so the
@@ -1126,7 +1122,7 @@ const PAPER_PEEK =
 
 function CardDocuments() {
   return (
-    <div className="h-full bg-[var(--v69-card)] [--fld-back:#E6E6E6] [--fld-edge:rgba(0,0,0,0.07)] [--fld-front:#F2F2F2] [--fld-paper:#FAFAFA] [.template-mock_&]:[--fld-back:#e6e6e6] [.template-mock_&]:[--fld-front:#f2f2f2] [.template-mock_&]:[--fld-paper:#ffffff] [--fld-ink:#262626] [[data-theme=dark]_&]:[--fld-back:#2c2c2c] [[data-theme=dark]_&]:[--fld-edge:rgba(255,255,255,0.09)] [[data-theme=dark]_&]:[--fld-front:#3a3a3a] [[data-theme=dark]_&]:[--fld-ink:#f2f2f2] [[data-theme=dark]_&]:[--fld-paper:#565656]">
+    <div className="h-full bg-[var(--v69-card)] [--fld-back:#E6E6E6] [--fld-edge:rgba(0,0,0,0.07)] [--fld-front:#F2F2F2] [--fld-paper:#FAFAFA] light-mock:[--fld-back:#e6e6e6] light-mock:[--fld-front:#f2f2f2] light-mock:[--fld-paper:#ffffff] [--fld-ink:#262626] dark-x:[--fld-back:#2c2c2c] dark-x:[--fld-edge:rgba(255,255,255,0.09)] dark-x:[--fld-front:#3a3a3a] dark-x:[--fld-ink:#f2f2f2] dark-x:[--fld-paper:#565656]">
       {/* v69-cover-square is the phone treatment: a folder stretched to 16:10
           stops reading as a folder, so it holds its square and centres. */}
       <div className="v69-cover-square relative h-full p-3">
@@ -1134,9 +1130,22 @@ function CardDocuments() {
             plate (-mb-px, above it in stacking order) so no border line runs
             between them — that seam is what made the old version read as two
             separate rectangles instead of one folded shape. */}
-        <div className="flex h-full flex-col">
-          <div className="relative z-10 -mb-px h-3.5 w-[46%] rounded-t-[10px] border-x border-t border-[var(--fld-edge)] bg-[var(--fld-back)]" />
-          <div className="flex-1 rounded-[13px] rounded-tl-none border border-[var(--fld-edge)] bg-[var(--fld-back)]" />
+        <div className="v69-folder-back flex h-full flex-col">
+          <div className="relative z-10 -mb-px h-3.5 w-[46%] rounded-tl-[10px] rounded-tr-[7px] bg-[var(--fld-back)]">
+            {/* Concave fillet where the tab steps down to the plate. Without it
+                the step is a hard inside corner, which the dark ground shows.
+                The tab's own corner and this fillet split its 14px height 7/7
+                so the two curves meet in one S, and the fillet tucks 1px under
+                the tab so no ground shows through the join. */}
+            <svg
+              aria-hidden
+              viewBox="-1 0 8 7"
+              className="absolute bottom-0 left-[calc(100%-1px)] h-[7px] w-[8px] fill-[var(--fld-back)]"
+            >
+              <path d="M-1 0V7H7A7 7 0 0 1 0 0Z" />
+            </svg>
+          </div>
+          <div className="flex-1 rounded-[13px] rounded-tl-none bg-[var(--fld-back)]" />
         </div>
         {/* The paper in the folder — peeks above the front panel's top edge,
             inset from the folder's sides the way a sheet sits inside it. */}
@@ -1151,7 +1160,7 @@ function CardDocuments() {
             alone — its front is already a clear step off the ground. The
             gallery scales the whole cover up, which scales the cast shadow with
             it, so there it runs shorter and lighter. */}
-        <div className="absolute inset-x-3 bottom-3 top-[36%] flex flex-col justify-between rounded-[13px] border border-[var(--fld-edge)] bg-[var(--fld-front)] p-3 shadow-[0_-2px_4px_rgba(16,24,40,0.05)] [[data-theme=light]_&]:shadow-[0_-2px_4px_rgba(16,24,40,0.05),0_1px_2px_rgba(16,24,40,0.06),0_8px_16px_-6px_rgba(16,24,40,0.16)] [[data-theme=light]_.template-mock_&]:shadow-[0_-1px_3px_rgba(16,24,40,0.04),0_1px_2px_rgba(16,24,40,0.04),0_6px_14px_-10px_rgba(16,24,40,0.10)]">
+        <div className="absolute inset-x-3 bottom-3 top-[36%] flex flex-col justify-between rounded-[13px] border border-[var(--fld-edge)] bg-[var(--fld-front)] p-3 shadow-[0_-2px_4px_rgba(16,24,40,0.05)] light-ui:shadow-[0_-2px_4px_rgba(16,24,40,0.05),0_1px_2px_rgba(16,24,40,0.06),0_8px_16px_-6px_rgba(16,24,40,0.16)] light-mock:shadow-[0_-1px_3px_rgba(16,24,40,0.04),0_1px_2px_rgba(16,24,40,0.04),0_6px_14px_-10px_rgba(16,24,40,0.10)]">
           <div className="min-w-0">
             <div className="truncate text-[13px] font-medium leading-tight text-[var(--fld-ink)]">
               {FOLDER_LABEL}
@@ -1179,7 +1188,7 @@ const PDF_GLYPH_PATH =
 // The step in fill carries it now, with the shared hairline so the edge still
 // registers in dark where the two neutrals sit close together.
 const PDF_TILE =
-  "relative flex size-[108px] shrink-0 items-center justify-center rounded-[28px] bg-[var(--v69-inner)] ring-1 ring-[rgba(16,24,40,0.06)] [.template-mock_&]:ring-[rgba(16,24,40,0.10)] [[data-theme=dark]_&]:bg-[#323232] [[data-theme=dark]_&]:ring-[rgba(255,255,255,0.12)] [[data-theme=dark]_.template-mock_&]:ring-[rgba(255,255,255,0.20)]";
+  "relative flex size-[108px] shrink-0 items-center justify-center rounded-[28px] bg-[var(--v69-inner)] ring-1 ring-[rgba(16,24,40,0.06)] [.template-mock_&]:ring-[rgba(16,24,40,0.10)] dark-x:bg-[#323232] dark-x:ring-[rgba(255,255,255,0.12)] dark-mock:ring-[rgba(255,255,255,0.20)]";
 
 // The mark's one value per skin — a clear step off the tile it sits on, and
 // nothing else. Both skins take a warm grey rather than a cool one, and dark's sits
@@ -1188,7 +1197,7 @@ const PDF_TILE =
 // Light runs lighter than it did (#8A8B80): on a near-white card the mark was
 // carrying more weight than anything else in the rail's quietest cover.
 const PDF_GLYPH_TOKENS =
-  "[--pdf-ink:#A3A497] [[data-theme=dark]_&]:[--pdf-ink:#B2AEA6]";
+  "[--pdf-ink:#A3A497] dark-x:[--pdf-ink:#B2AEA6]";
 
 // PDF to digital intake — the source document as a single mark on a plain tile.
 // Both the mark and the tile are flat: the cover's whole job is that the shape
@@ -1474,106 +1483,86 @@ function CardInfo() {
   );
 }
 
-// Client project tracker — a GitHub-style contribution heatmap: a headline
-// count over a weekday × week grid of neutral cells whose intensity encodes
-// daily task activity, tapering to empty in the "future" weeks on the right.
-const TRACKER_INK = "#7DA4FF";
-const TRACKER_COLS = 15;
-const TRACKER_ROWS = 7;
-// Deterministic 0–3 intensity per cell (no Math.random, so it can't flicker
-// between renders): a hash gives organic variation, the last few columns are
-// forced empty to read as upcoming weeks, and the first column ramps in.
-// Thresholds lean heavily on empty/light cells — a dense all-gray grid read
-// as one gray slab rather than an activity pattern.
-// A few seeded hits in the otherwise-empty top two rows so the grid doesn't
-// read top-heavy with blank space.
-const TRACKER_TOP_HITS = new Set(["0-0", "0-1", "0-2", "0-10", "1-6"]);
-function trackerLevel(r: number, c: number): number {
-  if (c >= TRACKER_COLS - 2) return 0;
-  if (TRACKER_TOP_HITS.has(`${r}-${c}`)) return 3;
-  const h = (r * 5 + c * 11 + r * c * 7 + c * c * 3) % 13;
-  let lvl = h < 6 ? 0 : h < 9 ? 1 : h < 11 ? 2 : 3;
-  if (c === 0 && r < 2) lvl = 0; // ragged start, like a mid-week first day
-  return lvl;
-}
+// Client project tracker as a round readout: a dark disc of small dots,
+// filled column by column and coloured by state, so it reads as live progress
+// rather than a pattern. Only the dots whose centres fall inside the circle are
+// drawn, which is what gives the disc its stepped edge.
+const TRACKER_GRID = 17;
+// Done takes the covers' periwinkle, review a soft pink, in progress a pale
+// blue; the rest is open work. Shares of the drawn dots.
+const TRACKER_STATES = [
+  { share: 0.46, fill: "#7DA4FF" },
+  { share: 0.17, fill: "var(--tracker-review, #FFD9FA)" },
+  { share: 0.09, fill: "#C3D4FF" },
+];
+// A var so a light skin (the templates gallery in dark mode) can re-point the
+// open dots, which are drawn for a dark disc.
+const TRACKER_OPEN_FILL = "var(--tracker-open, rgba(255,255,255,0.1))";
+// Dots inside this radius (in cells, from the grid centre) are drawn; a little
+// under half the grid keeps a dark rim around them.
+const TRACKER_RADIUS = TRACKER_GRID / 2 - 0.9;
+
+// Column-major order of the drawn dots, so states fill left to right.
+const TRACKER_DOTS = (() => {
+  const centre = (TRACKER_GRID - 1) / 2;
+  const inside: { r: number; c: number }[] = [];
+  for (let c = 0; c < TRACKER_GRID; c++) {
+    for (let r = 0; r < TRACKER_GRID; r++) {
+      if (Math.hypot(r - centre, c - centre) <= TRACKER_RADIUS) {
+        inside.push({ r, c });
+      }
+    }
+  }
+  const fills = new Map<string, string>();
+  let edge = 0;
+  let state = 0;
+  inside.forEach(({ r, c }, i) => {
+    while (
+      state < TRACKER_STATES.length &&
+      i >= edge + Math.round(TRACKER_STATES[state].share * inside.length)
+    ) {
+      edge += Math.round(TRACKER_STATES[state].share * inside.length);
+      state++;
+    }
+    fills.set(
+      `${r}-${c}`,
+      state < TRACKER_STATES.length ? TRACKER_STATES[state].fill : TRACKER_OPEN_FILL,
+    );
+  });
+  return fills;
+})();
+
 function CardTracker() {
-  // GitHub-style scale: solid tiles stepping from a light-gray empty tile up to
-  // a solid neutral-dark, all mixed off the well + ink so both themes track.
-  const cellFill = (lvl: number) =>
-    lvl === 0 || lvl === 1
-      ? "var(--v69-tracker-empty, #A6C0F8)"
-      : `var(--v69-tracker-hit, ${TRACKER_INK})`;
   return (
-    // Card face is a soft gradient rather than a flat fill, so the whole tile
-    // has a light falloff behind the grid. Neutral in both skins — the accent
-    // cells stay the only colour.
-    // The dark GALLERY is the exception: there the gradient bottoms out well
-    // below the card tone its neighbours use, so in a row of covers this one read
-    // as a hole. It takes the flat card face there, and drops the ring with it —
-    // nothing else in that row carries an outline. The hero strip keeps the
-    // gradient, where the tile stands alone against the page.
-    <div className="flex h-full flex-col rounded-[14px] bg-[linear-gradient(160deg,#ffffff_0%,#f4f6f9_58%,#eceff3_100%)] p-3.5 [--v69-tracker-empty:#00000008] [[data-theme=light]_&]:bg-none [[data-theme=light]_&]:bg-[var(--v69-card)] [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2] [[data-theme=light]_&]:[--v69-tracker-empty:#00000012] [[data-theme=dark]_&]:bg-[linear-gradient(160deg,#232323_0%,#1b1b1b_58%,#151515_100%)] [[data-theme=dark]_&]:ring-1 [[data-theme=dark]_&]:ring-[rgba(255,255,255,0.08)] [[data-theme=dark]_&]:[--v69-tracker-empty:#ffffff1a] [[data-theme=dark]_.template-mock-gallery_&]:bg-none [[data-theme=dark]_.template-mock-gallery_&]:bg-[var(--v69-card)] [[data-theme=dark]_.template-mock-gallery_&]:ring-0">
-      {/* Metric header: the count top-left, the unit pinned top-right. */}
-      <div className="flex items-end gap-1 px-0.5">
-        {/* Primary metric — clean, unstretched Inter (soft off-white, not pure).
-            Held off full ink where the cover is framed in light: at 34px on a
-            near-white card #262626 was the one pure-black mark in the rail. The
-            hero keeps full ink, where the figure carries the whole tile. */}
-        <span
-          className="text-[34px] font-medium leading-none tracking-tight text-[var(--v69-ink)] [[data-theme=light]_.template-mock_&]:text-[#3a3a3a] [[data-theme=dark]_&]:text-[#ededed]"
+    <div className="flex h-full items-center justify-center bg-[var(--v69-card)] p-3 light-mock:bg-[#f2f2f2]">
+      <div className="v69-tracker-disc relative aspect-square h-full max-w-full overflow-hidden rounded-full bg-[#15171c] dark-x:bg-[#0e0e0e] dark-x:ring-1 dark-x:ring-[rgba(255,255,255,0.09)]">
+        <div
+          className="v69-tracker-grid absolute inset-[4%] grid gap-[2px]"
           style={{
-            fontFamily: "var(--font-diatype-mono), ui-monospace, monospace",
+            gridTemplateColumns: `repeat(${TRACKER_GRID}, minmax(0, 1fr))`,
+            gridTemplateRows: `repeat(${TRACKER_GRID}, minmax(0, 1fr))`,
           }}
         >
-          96
-        </span>
-        {/* What the count is counting, as a tag in the corner — same chip idiom
-            as the gallery's category tags. */}
-        <span
-          className={`ml-auto self-start ${MOCK_UNIT_TAG}`}
-          style={MOCK_MONO}
-        >
-          Tasks
-        </span>
-      </div>
-      {/* Grid fills the space right below the header (no big white gap).
-          Aligned to the card's left edge (no weekday gutter). */}
-      <div className="mt-3 flex flex-1">
-        {/* Week columns. */}
-        <div className="flex min-w-0 flex-1 gap-[2px]">
-          {Array.from({ length: TRACKER_COLS }, (_, c) => (
-            <div key={c} className="flex flex-1 flex-col gap-[2px]">
-              {Array.from({ length: TRACKER_ROWS }, (_, r) => {
-                const lvl = trackerLevel(r, c);
-                // A sheen sweeps the whole grid left to right (slight row
-                // offset makes it diagonal) — cells lighten and settle back
-                // in place rather than popping in.
-                const hit = lvl > 1;
-                return (
-                  <div
-                    key={r}
-                    // Active days take the accent, idle ones stay a faint
-                    // neutral, so the pattern is what carries the colour.
-                    className={`flex-1 rounded-[2px] border border-black/[0.03] [[data-theme=dark]_&]:border-transparent group-hover:[animation:v69Shimmer_0.6s_ease-in-out_both] group-[.is-inview]:[animation:v69Shimmer_0.6s_ease-in-out_both] ${
-                      hit
-                        ? // Flat in both themes: one solid fill, no top lip and
-                          // no cast shadow. The top-lit gradient and the shadow
-                          // under it were extrude cues, and together they made
-                          // the grid a tray of plastic buttons on a flat page.
-                          // Spelled out rather than held in a constant —
-                          // Tailwind only generates classes it sees in source.
-                          "bg-[#7DA4FF]"
-                        : ""
-                    }`}
-                    style={{
-                      backgroundColor: hit ? undefined : cellFill(lvl),
-                      animationDelay: `${c * 45 + r * 12}ms`,
-                    }}
-                  />
-                );
-              })}
-            </div>
-          ))}
+          {Array.from({ length: TRACKER_GRID * TRACKER_GRID }, (_, i) => {
+            const r = Math.floor(i / TRACKER_GRID);
+            const c = i % TRACKER_GRID;
+            const fill = TRACKER_DOTS.get(`${r}-${c}`);
+            return (
+              <span
+                key={i}
+                className={`rounded-[2px] ${
+                  fill
+                    ? "group-hover:[animation:v69Shimmer_0.6s_ease-in-out_both] group-[.is-inview]:[animation:v69Shimmer_0.6s_ease-in-out_both]"
+                    : ""
+                }`}
+                style={
+                  fill
+                    ? { backgroundColor: fill, animationDelay: `${c * 40}ms` }
+                    : undefined
+                }
+              />
+            );
+          })}
         </div>
       </div>
     </div>
@@ -1618,7 +1607,7 @@ const SUPPORT_ICON_CLS =
   // white, and at 1.5px — with the spinner's arc dashed on top of that — the
   // loading beat was too faint to read on the row's own #303030 face. Light has
   // always used a solid grey here for the same reason.
-  "size-3.5 shrink-0 text-muted-foreground [[data-theme=light]_&]:text-[#5B5C53] [[data-theme=dark]_&]:text-[rgba(255,255,255,0.82)]";
+  "size-3.5 shrink-0 text-muted-foreground light-ui:text-[#5B5C53] dark-x:text-[rgba(255,255,255,0.82)]";
 
 // The loading state: a ring with a gap, spun by v69-status-load. An arc rather
 // than a ring of dots so it reads at 14px, where dots close up into a solid ring.
@@ -1694,7 +1683,7 @@ function CardSupport() {
     // v69-cover-support is a hook, not a style: the dotted ground it turns on is
     // scoped to the templates gallery in globals.css, so the home hero's rail
     // keeps this cover's plain face.
-    <div className="v69-cover-support flex h-full flex-col justify-center gap-2 bg-[var(--v69-card)] p-4 [[data-theme=light]_&]:bg-[var(--v69-card)] [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
+    <div className="v69-cover-support flex h-full flex-col justify-center gap-2 bg-[var(--v69-card)] p-4 light-ui:bg-[var(--v69-card)] light-mock:bg-[#f2f2f2]">
       {SUPPORT_REQUESTS.map((r, i) => (
         <div
           key={r.title}
@@ -1712,7 +1701,7 @@ function CardSupport() {
           // the fill is already a legible step, and the hairline read as an
           // outline drawn round each row. The gallery keeps it — its rows sit on
           // flat white, where the fill alone is not a step. Dark is untouched.
-          className="flex items-center gap-2.5 rounded-lg border border-black/[0.08] bg-[var(--v69-inner)] px-3 py-2.5 [[data-theme=light]_&]:border-transparent [[data-theme=light]_&]:bg-[var(--v69-inner)] [[data-theme=light]_.template-mock_&]:border-black/[0.08] [[data-theme=light]_.template-mock_&]:bg-[#FFFFFF] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.09)]"
+          className="flex items-center gap-2.5 rounded-lg border border-black/[0.08] bg-[var(--v69-inner)] px-3 py-2.5 light-ui:border-transparent light-ui:bg-[var(--v69-inner)] light-mock:border-black/[0.08] light-mock:bg-[#FFFFFF] dark-x:border-[rgba(255,255,255,0.09)]"
         >
           {/* One request resolves instead: the middle row's status crosses from in
               progress to done, which is the single thing this app does. It loads on
@@ -1734,7 +1723,7 @@ function CardSupport() {
           ) : (
             <SupportStatusIcon state={r.state} />
           )}
-          <p className="min-w-0 truncate text-[13px] leading-tight text-[var(--v69-ink)] [[data-theme=light]_&]:text-[#3a3a3a] [[data-theme=light]_.template-mock-gallery_&]:text-[#1B1B1B]">
+          <p className="min-w-0 truncate text-[13px] leading-tight text-[var(--v69-ink)] light-ui:text-[#3a3a3a] light-gallery:text-[#1B1B1B]">
             {r.title}
           </p>
         </div>
@@ -1747,7 +1736,7 @@ function CardSupport() {
 // principle of framing tiles with a border (no drop shadow) and stays visible
 // in both themes.
 const MOCK_OUTLINE =
-  "border border-black/[0.08] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.12)] [.template-mock_&]:border-black/15 [[data-theme=dark]_.template-mock_&]:border-[rgba(255,255,255,0.20)]";
+  "border border-black/[0.08] dark-x:border-[rgba(255,255,255,0.12)] [.template-mock_&]:border-black/15 dark-mock:border-[rgba(255,255,255,0.20)]";
 // Text that sits on an ink-filled surface: near-white in light mode, dark in
 // dark mode (the ink token inverts, so the label must invert with it).
 const ON_INK = "text-[var(--v69-well)]";
@@ -1779,8 +1768,8 @@ function CardContentApproval() {
     // single-record covers share, so this one's type lands at their size there.
     // Ink and muted are pinned in dark for the same reason the data room pins
     // them: the template detail page renders mocks without the dark skin.
-    <div className="v69-cover-column v69-plot-grid v69-plot-grid--dots flex h-full items-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2] [[data-theme=dark]_&]:[--muted-foreground:#8F8F8F] [[data-theme=dark]_&]:[--v69-ink:#F2F2F2]">
-      <div className="w-full overflow-hidden rounded-xl border border-black/[0.08] bg-[#FFFFFF] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.09)] [[data-theme=dark]_&]:bg-[#303030]">
+    <div className="v69-cover-column v69-plot-grid v69-plot-grid--dots flex h-full items-center bg-[var(--v69-card)] p-4 light-mock:bg-[#f2f2f2] dark-x:[--muted-foreground:#8F8F8F] dark-x:[--v69-ink:#F2F2F2]">
+      <div className="w-full overflow-hidden rounded-xl border border-black/[0.08] bg-[#FFFFFF] dark-x:border-[rgba(255,255,255,0.09)] dark-x:bg-[#2E2E2E]">
         <div className="flex flex-col items-start gap-2 px-3 py-2.5">
           {/* The status on a row of its own: beside the title it took the
               room the title needed, and at the hero rail's 212px both the item
@@ -1791,13 +1780,13 @@ function CardContentApproval() {
                 live colour — lime in light, periwinkle in dark, the same marker
                 the contract cover's Signed chip carries. */}
             <span
-              className={`${APPROVAL_LEAVING} ${APPROVAL_CHIP} bg-[#EFEFEF] text-[#4d4d4d] [[data-theme=light]_.template-mock_&]:bg-[#e6e6e6] [[data-theme=dark]_&]:bg-[rgba(255,255,255,0.14)] [[data-theme=dark]_&]:text-[#EDEDED]`}
+              className={`${APPROVAL_LEAVING} ${APPROVAL_CHIP} bg-[#EFEFEF] text-[#4d4d4d] light-mock:bg-[#e6e6e6] dark-x:bg-[rgba(255,255,255,0.14)] dark-x:text-[#EDEDED]`}
               style={MOCK_MONO}
             >
               Awaiting review
             </span>
             <span
-              className={`${APPROVAL_ARRIVING} ${APPROVAL_CHIP} justify-self-start bg-[#D9ED92] text-[#1B1B1B] [[data-theme=dark]_&]:bg-[#7DA4FF]`}
+              className={`${APPROVAL_ARRIVING} ${APPROVAL_CHIP} justify-self-start bg-[#D9ED92] text-[#1B1B1B] dark-x:bg-[#7DA4FF]`}
               style={MOCK_MONO}
             >
               Approved
@@ -1815,9 +1804,9 @@ function CardContentApproval() {
           </span>
         </div>
         {/* The one answer the flow exists to collect, full width on the foot. */}
-        <div className="border-t border-black/[0.07] px-3 py-2.5 [[data-theme=dark]_&]:border-[rgba(255,255,255,0.16)]">
+        <div className="border-t border-black/[0.07] px-3 py-2.5 dark-x:border-[rgba(255,255,255,0.16)]">
           <span
-            className={`flex h-7 w-full items-center justify-center rounded-lg bg-[var(--v69-ink)] text-[11px] leading-[1.3] ${ON_INK} [[data-theme=dark]_&]:text-[#1B1B1B]`}
+            className={`flex h-7 w-full items-center justify-center rounded-lg bg-[var(--v69-ink)] text-[11px] leading-[1.3] ${ON_INK} dark-x:text-[#1B1B1B]`}
           >
             Approve
           </span>
@@ -1839,15 +1828,15 @@ function CardBooking() {
     // ground, rather than the composer that made it. v69-cover-column is the
     // phone treatment — the row is held to the width it was drawn at and centred
     // instead of stretching across the wider frame.
-    <div className="v69-cover-column v69-plot-grid v69-plot-grid--lines flex h-full items-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
+    <div className="v69-cover-column v69-plot-grid v69-plot-grid--lines flex h-full items-center bg-[var(--v69-card)] p-4 light-mock:bg-[#f2f2f2]">
       {/* Opaque, not the glass pane the record covers use: over a dotted ground a
           translucent fill lets the field show through and the card reads as
           printed on the paper rather than lying on it. */}
-      <div className="flex w-full items-stretch gap-3 overflow-hidden rounded-lg border border-black/[0.08] bg-[#FFFFFF] py-2.5 pl-2.5 pr-3 [[data-theme=dark]_&]:border-[rgba(255,255,255,0.09)] [[data-theme=dark]_&]:bg-[#303030]">
+      <div className="flex w-full items-stretch gap-3 overflow-hidden rounded-lg border border-black/[0.08] bg-[#FFFFFF] py-2.5 pl-2.5 pr-3 dark-x:border-[rgba(255,255,255,0.09)] dark-x:bg-[#2E2E2E]">
         {/* The calendar spine. Deeper than the pale brand lime in light — a
             hairline mark on a white fill has no room to be a wash — and the
             periwinkle in dark, the same pair every accent on these covers runs. */}
-        <span className="w-[3px] shrink-0 rounded-full bg-[#A8C64A] [[data-theme=dark]_&]:bg-[#7DA4FF]" />
+        <span className="w-[3px] shrink-0 rounded-full bg-[#A8C64A] dark-x:bg-[#7DA4FF]" />
         <span className="min-w-0 flex-1">
           <span className="block truncate text-[13px] leading-none text-[var(--v69-ink)]">
             {meeting.when}
@@ -1874,10 +1863,10 @@ function CardCalendar() {
       {/* A hairline on the seam: the two zones are close in value, so without a
           rule between them the strip read as a shadow falling on the surface
           rather than as a band above it. */}
-      <div className="v69-plot-grid v69-plot-grid--dots h-[42%] w-full shrink-0 border-b border-black/[0.07] bg-[var(--v69-inner)] [[data-theme=light]_.template-mock_&]:bg-[#ebebeb] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.16)] [[data-theme=dark]_&]:bg-[rgba(255,255,255,0.04)]" />
+      <div className="v69-plot-grid v69-plot-grid--dots h-[42%] w-full shrink-0 border-b border-black/[0.07] bg-[var(--v69-inner)] light-mock:bg-[#ebebeb] dark-x:border-[rgba(255,255,255,0.16)] dark-x:bg-[rgba(255,255,255,0.04)]" />
       {/* The surface the date is set on: a clear step lighter than the strip, so
           the two zones read as texture over paper rather than as one field. */}
-      <div className="flex flex-1 flex-col justify-start bg-[#FFFFFF] px-4 pt-3.5 [[data-theme=light]_.template-mock_&]:bg-[#fafafa] [[data-theme=dark]_&]:bg-[#1F1F1F]">
+      <div className="flex flex-1 flex-col justify-start bg-[#FFFFFF] px-4 pt-3.5 light-mock:bg-[#fafafa] dark-x:bg-[#1F1F1F]">
         {/* The weekday is set in the mono face the site uses for every date and
             figure, and kept neutral: coloured, it read as a status rather than
             as the label on the date under it. */}
@@ -1913,7 +1902,7 @@ function CardCaseStatus() {
     // stand an opaque white panel on it, which cuts its own hole in the ground;
     // this one stands a small marker on bare paper, and at the shared ink the
     // dots ran right up to it.
-    <div className="v69-cover-column v69-plot-grid v69-plot-grid--dots v69-plot-grid--quiet flex h-full items-center justify-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
+    <div className="v69-cover-column v69-plot-grid v69-plot-grid--dots v69-plot-grid--quiet flex h-full items-center justify-center bg-[var(--v69-card)] p-4 light-mock:bg-[#f2f2f2]">
       <span className="flex justify-center">
         <span className="relative inline-flex flex-col items-center">
           {/* Lime in light and periwinkle in dark, with the label on the dark ink
@@ -1922,14 +1911,14 @@ function CardCaseStatus() {
           {/* Drawn for the square frame, where the marker is the only thing on
               the cover and at caption size it read as a stray tag. The phone
               frame scales the whole cover up, so there it steps back down. */}
-          <span className="rounded-[12px] bg-[#D9ED92] px-4 py-2.5 text-[15px] font-normal leading-none text-[#1B1B1B] [[data-theme=dark]_&]:bg-[#7DA4FF] max-sm:[.template-mock-gallery_&]:rounded-[10px] max-sm:[.template-mock-gallery_&]:px-3 max-sm:[.template-mock-gallery_&]:py-2 max-sm:[.template-mock-gallery_&]:text-[13px]">
+          <span className="rounded-[12px] bg-[#D9ED92] px-4 py-2.5 text-[15px] font-normal leading-none text-[#1B1B1B] dark-x:bg-[#7DA4FF] max-sm:[.template-mock-gallery_&]:rounded-[10px] max-sm:[.template-mock-gallery_&]:px-3 max-sm:[.template-mock-gallery_&]:py-2 max-sm:[.template-mock-gallery_&]:text-[13px]">
             In review
           </span>
           {/* The pointer, drawn as a shape rather than a rotated square: a square
               corner under a 10px radius read as a glitch at cover size. */}
           <svg
             viewBox="0 0 14 8"
-            className="-mt-px h-2.5 w-[18px] text-[#D9ED92] [[data-theme=dark]_&]:text-[#7DA4FF] max-sm:[.template-mock-gallery_&]:h-2 max-sm:[.template-mock-gallery_&]:w-3.5"
+            className="-mt-px h-2.5 w-[18px] text-[#D9ED92] dark-x:text-[#7DA4FF] max-sm:[.template-mock-gallery_&]:h-2 max-sm:[.template-mock-gallery_&]:w-3.5"
             fill="currentColor"
             aria-hidden
           >
@@ -1954,13 +1943,13 @@ function CardDiscussion() {
       <div className="flex w-full flex-col gap-2">
       {/* Incoming: the neutral fill, tail on the left. */}
       <div className="relative w-fit max-w-[86%] self-start">
-        <div className="relative rounded-[16px] bg-[var(--v69-inner)] px-3.5 py-2.5 [[data-theme=light]_.template-mock_&]:bg-[#e6e6e6] [[data-theme=dark]_&]:bg-[#343434]">
+        <div className="relative rounded-[16px] bg-[var(--v69-inner)] px-3.5 py-2.5 light-mock:bg-[#e6e6e6] dark-x:bg-[#343434]">
           <span className={`block text-[13px] font-normal leading-snug text-[var(--v69-ink)] ${MOCK_UPSCALED_BODY}`}>
             Quick question on the timeline
           </span>
           <svg
             viewBox="0 0 14 14"
-            className="absolute -bottom-px left-2 size-3.5 -translate-x-1/2 scale-x-[-1] text-[var(--v69-inner)] [[data-theme=light]_.template-mock_&]:text-[#e6e6e6] [[data-theme=dark]_&]:text-[#343434]"
+            className="absolute -bottom-px left-2 size-3.5 -translate-x-1/2 scale-x-[-1] text-[var(--v69-inner)] light-mock:text-[#e6e6e6] dark-x:text-[#343434]"
             fill="currentColor"
             aria-hidden
           >
@@ -1972,13 +1961,13 @@ function CardDiscussion() {
           periwinkle-in-dark pair every coloured cover in the set runs, with the
           text on the ink since both fills are light. */}
       <div className="relative w-fit max-w-[86%] self-end">
-        <div className="relative rounded-[16px] px-3.5 py-2.5 [[data-theme=light]_&]:bg-[#D9ED92] [[data-theme=dark]_&]:bg-[#7DA4FF]">
+        <div className="relative rounded-[16px] px-3.5 py-2.5 light-ui:bg-[#D9ED92] dark-x:bg-[#7DA4FF]">
           <span className={`block text-[13px] font-normal leading-snug text-[#1B1B1B] ${MOCK_UPSCALED_BODY}`}>
             Sure, ask away
           </span>
           <svg
             viewBox="0 0 14 14"
-            className="absolute -bottom-px right-2 size-3.5 translate-x-1/2 [[data-theme=light]_&]:text-[#D9ED92] [[data-theme=dark]_&]:text-[#7DA4FF]"
+            className="absolute -bottom-px right-2 size-3.5 translate-x-1/2 light-ui:text-[#D9ED92] dark-x:text-[#7DA4FF]"
             fill="currentColor"
             aria-hidden
           >
@@ -2006,22 +1995,22 @@ function CardMarkup() {
     // on top of work, and the composer is the moment that conversation starts.
     // v69-cover-column is the phone treatment — the row is held to the width it
     // was drawn at and centred rather than stretching across the wider frame.
-    <div className="v69-cover-column v69-hatch-ground flex h-full items-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
+    <div className="v69-cover-column v69-hatch-ground flex h-full items-center bg-[var(--v69-card)] p-4 light-mock:bg-[#f2f2f2]">
       <div className="flex w-full items-center gap-2.5">
         {/* The commenter, as the one coloured mark on the cover. Periwinkle in
             light and lime in dark — whichever of the brand pair holds against
             the ground — with the glyph on the dark ink either way. */}
-        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[#7DA4FF] [[data-theme=dark]_&]:bg-[#D9ED92]">
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[#7DA4FF] dark-x:bg-[#D9ED92]">
           {/* On the lime disc the glyph takes a green off the same ramp rather
               than the ink: near-black on lime was the hardest contrast anywhere
               in the set and the bubble read as a hole punched in the disc. */}
-          <svg viewBox="0 0 24 24" className="size-[18px] text-[#FFFFFF] [[data-theme=dark]_&]:text-[#6F8F2E]" fill="currentColor" aria-hidden>
+          <svg viewBox="0 0 24 24" className="size-[18px] text-[#FFFFFF] dark-x:text-[#6F8F2E]" fill="currentColor" aria-hidden>
             <path d="M12 3.5c-4.7 0-8.5 3.1-8.5 7 0 2.2 1.2 4.1 3.1 5.4v3.3l3.2-1.9c.7.1 1.4.2 2.2.2 4.7 0 8.5-3.1 8.5-7s-3.8-7-8.5-7Z" />
           </svg>
         </span>
         {/* The field: opaque, so the hatch stops at its edge and it reads as a
             control laid on the page rather than printed into it. */}
-        <span className="flex h-9 min-w-0 flex-1 items-center gap-px rounded-full border border-black/[0.06] bg-[#FFFFFF] px-3.5 [[data-theme=dark]_&]:border-[rgba(255,255,255,0.09)] [[data-theme=dark]_&]:bg-[#303030]">
+        <span className="flex h-9 min-w-0 flex-1 items-center gap-px rounded-full border border-black/[0.06] bg-[#FFFFFF] px-3.5 dark-x:border-[rgba(255,255,255,0.09)] dark-x:bg-[#2E2E2E]">
           {/* The caret, so the field reads as focused and waiting rather than
               as an empty box. */}
           <span aria-hidden className="h-[13px] w-px shrink-0 bg-[var(--v69-ink)]/55" />
@@ -2047,17 +2036,17 @@ function CardResourceLibrary() {
     // was drawn at and centred, rather than stretching across the wider frame.
     // The hatched ground separates this from the internal library's dotted one —
     // both covers are a single record, so the ground is what tells them apart.
-    <div className="v69-cover-column v69-cover-column--tight v69-hatch-ground flex h-full items-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
+    <div className="v69-cover-column v69-cover-column--tight v69-hatch-ground flex h-full items-center bg-[var(--v69-card)] p-4 light-mock:bg-[#f2f2f2]">
       {/* Opaque, not the glass pane the other record covers use: over a hatched
           ground the translucent fill let the rules run straight through the card,
           so it read as printed on the paper rather than lying on it.
           Its edge is the hairline alone — the drop under it read as the row
           hovering off the page, which is the one thing a filed record isn't. The
           other record rows in the set are drawn the same way. */}
-      <div className="flex w-full items-center gap-3 rounded-xl border bg-[#FFFFFF] p-3 border-black/[0.08] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.09)] [[data-theme=dark]_&]:bg-[#303030]">
+      <div className="flex w-full items-center gap-3 rounded-xl border bg-[#FFFFFF] p-3 border-black/[0.08] dark-x:border-[rgba(255,255,255,0.09)] dark-x:bg-[#2E2E2E]">
         {/* The file's thumbnail slot. A glyph rather than a preview: at cover size
             a real thumbnail is a smudge, and the record is the point. */}
-        <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[var(--v69-well)] text-[var(--v69-ink)]/30 [[data-theme=light]_&]:bg-[var(--v69-inner)] [[data-theme=light]_.template-mock_&]:bg-[#e6e6e6] [[data-theme=dark]_&]:bg-[rgba(255,255,255,0.1)]">
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[var(--v69-well)] text-[var(--v69-ink)]/30 light-ui:bg-[var(--v69-inner)] light-mock:bg-[#e6e6e6] dark-x:bg-[rgba(255,255,255,0.1)]">
           <svg viewBox="0 0 24 24" className="size-[18px]" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden>
             <rect x="3" y="3" width="18" height="18" rx="3" />
             <circle cx="8.5" cy="8.5" r="1.6" />
@@ -2100,11 +2089,11 @@ function CardTodo() {
     <div className="flex h-full flex-col bg-[var(--v69-card)]">
       {/* The band, its glyph and its hairline are the approvals card's, to the
           value — see CardDesignApprovals for why neither theme inverts it. */}
-      <div className="flex items-center gap-2 bg-[var(--v69-ink)] px-5 py-4 [[data-theme=light]_&]:bg-[#ebebeb] [[data-theme=light]_&]:shadow-[inset_0_-1px_0_rgba(16,24,40,0.07)] [[data-theme=dark]_&]:bg-[#343434] [[data-theme=dark]_&]:shadow-[inset_0_-1px_0_rgba(255,255,255,0.08)]">
+      <div className="flex items-center gap-2 bg-[var(--v69-ink)] px-5 py-4 light-ui:bg-[#ebebeb] light-ui:shadow-[inset_0_-1px_0_rgba(16,24,40,0.07)] dark-x:bg-[#343434] dark-x:shadow-[inset_0_-1px_0_rgba(255,255,255,0.08)]">
         {/* No glyph: the word "To do" already says list, and the ticked box next
             to it was a second thing to read in a two-word band. */}
         <span
-          className={`text-[13px] font-normal ${ON_INK} [[data-theme=light]_&]:text-[var(--v69-ink)] [[data-theme=dark]_&]:text-[#EDEDED]`}
+          className={`text-[13px] font-normal ${ON_INK} light-ui:text-[var(--v69-ink)] dark-x:text-[#EDEDED]`}
         >
           To do
         </span>
@@ -2115,7 +2104,7 @@ function CardTodo() {
         {tasks.map((t) => (
           <div
             key={t.title}
-            className="border-b px-5 py-3.5 [[data-theme=light]_&]:border-black/[0.07] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.14)]"
+            className="border-b px-5 py-3.5 light-ui:border-black/[0.07] dark-x:border-[rgba(255,255,255,0.14)]"
           >
             <div className="truncate text-[13px] font-normal text-[var(--v69-ink)]">
               {t.title}
@@ -2144,7 +2133,7 @@ function CardCommunityQA() {
       <span className="mt-2 text-[11px] font-normal text-muted-foreground">
         3 answers · 24 upvotes
       </span>
-      <div className="mt-auto flex h-10 w-full items-center justify-center gap-1.5 rounded-full bg-[#262626] text-[13px] font-normal text-white [.template-mock_&]:bg-[var(--v69-ink)] [[data-theme=light]_&]:bg-[#7DA4FF] [[data-theme=light]_&]:text-[#262626] [[data-theme=light]_.template-mock_&]:bg-[#7DA4FF]">
+      <div className="mt-auto flex h-10 w-full items-center justify-center gap-1.5 rounded-full bg-[#262626] text-[13px] font-normal text-white [.template-mock_&]:bg-[var(--v69-ink)] light-ui:bg-[#7DA4FF] light-ui:text-[#262626] light-mock:bg-[#7DA4FF]">
         <svg
           viewBox="0 0 16 16"
           className="size-3.5"
@@ -2181,7 +2170,7 @@ function CardJargonQuest() {
       {/* In the light gallery the panel sits a step above the shared --v69-inner
           step: the pill below it is near-black and fills a third of the cover,
           so the darker recess made the whole card read heavy for that skin. */}
-      <div className="flex h-full flex-col rounded-[14px] bg-[var(--v69-inner)] p-3.5 [[data-theme=light]_.template-mock_&]:bg-[#efefef] ring-1 ring-[rgba(16,24,40,0.06)] [.template-mock_&]:ring-[rgba(16,24,40,0.10)] [[data-theme=dark]_&]:bg-[#2E2E2E] [[data-theme=dark]_&]:ring-[rgba(255,255,255,0.12)] [[data-theme=dark]_.template-mock_&]:ring-[rgba(255,255,255,0.20)]">
+      <div className="flex h-full flex-col rounded-[14px] bg-[var(--v69-inner)] p-3.5 light-mock:bg-[#efefef] ring-1 ring-[rgba(16,24,40,0.06)] [.template-mock_&]:ring-[rgba(16,24,40,0.10)] dark-x:bg-[#2E2E2E] dark-x:ring-[rgba(255,255,255,0.12)] dark-mock:ring-[rgba(255,255,255,0.20)]">
         {/* The round as the rail's own unit tag — same chip, mono face and caps as
             TICKETS / OPEN / DRAFT — so the one piece of metadata on this card is
             set the way metadata is set everywhere else on the rail. It leads the
@@ -2199,7 +2188,7 @@ function CardJargonQuest() {
             ink, the way the site's primary button does in that skin — the brand
             periwinkle was the only hue on an otherwise neutral card and pulled
             harder than the question above it. */}
-        <div className="mt-auto flex h-10 w-full items-center justify-center rounded-full bg-[#262626] text-[13px] font-normal text-white [.template-mock_&]:bg-[color-mix(in_srgb,var(--v69-ink)_70%,transparent)] [[data-theme=light]_&]:bg-[#262626] [[data-theme=light]_&]:text-[rgba(255,255,255,0.95)] [[data-theme=light]_.template-mock_&]:bg-[#3c3c3c] [[data-theme=dark]_&]:bg-[#D9ED92] [[data-theme=dark]_&]:text-[#1B1B1B] [[data-theme=dark]_.template-mock_&]:bg-[#D9ED92] [[data-theme=dark]_.template-mock_&]:text-[#1B1B1B]">
+        <div className="mt-auto flex h-10 w-full items-center justify-center rounded-full bg-[#262626] text-[13px] font-normal text-white [.template-mock_&]:bg-[color-mix(in_srgb,var(--v69-ink)_70%,transparent)] light-ui:bg-[#262626] light-ui:text-[rgba(255,255,255,0.95)] light-mock:bg-[#3c3c3c] dark-x:bg-[#D9ED92] dark-x:text-[#1B1B1B] dark-mock:bg-[#D9ED92] dark-mock:text-[#1B1B1B]">
           Submit answer
         </div>
       </div>
@@ -2242,7 +2231,7 @@ function CardVoiceAI() {
     // site's lime-to-blue brand ramp, which made this the one card in the gallery
     // wearing a full-bleed gradient — it read as a different set from the covers
     // either side of it.
-    <div className="relative flex h-full bg-[var(--v69-card)] p-3 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
+    <div className="relative flex h-full bg-[var(--v69-card)] p-3 light-mock:bg-[#f2f2f2]">
       <div
         // A plain opaque face, carried by its fill alone. It was a pane of glass
         // on both skins — translucent over the ramp with a lit top lip, an inward
@@ -2254,7 +2243,7 @@ function CardVoiceAI() {
         // Radius matched to the gallery frame's own (14px) rather than the 20 it
         // had: sitting inside the card's inset, a rounder corner than the frame's
         // read as a second, softer card laid on the first.
-        className={`relative flex flex-1 flex-col overflow-hidden rounded-[14px] bg-[var(--v69-well)] px-4 pb-4 pt-3 [[data-theme=light]_&]:bg-[#fafafa] [[data-theme=dark]_&]:bg-[#2E2E2E]`}
+        className={`relative flex flex-1 flex-col overflow-hidden rounded-[14px] bg-[var(--v69-well)] px-4 pb-4 pt-3 light-ui:bg-[#fafafa] dark-x:bg-[#2E2E2E]`}
       >
         {/* Bars fade out at the trailing edge only (mask, not a gradient
             overlay, so it works regardless of what's behind) — reads as a
@@ -2318,7 +2307,7 @@ function CardVoiceAI() {
           {/* Light holds the timecode and the glyph back off full ink. At #262626
               on a near-white panel they were the two darkest marks on the card and
               took the eye before the waveform, which is what the cover is of. */}
-          <span className="text-[19px] leading-none tabular-nums text-[var(--v69-ink)] [[data-theme=light]_&]:text-[#4E4F46]">
+          <span className="text-[19px] leading-none tabular-nums text-[var(--v69-ink)] light-ui:text-[#4E4F46]">
             00:17:56
           </span>
         </div>
@@ -2336,21 +2325,21 @@ function CardVoiceAI() {
           {/* Steps down on the phone frame: the control is fixed px on a panel
               that shrinks with the frame, so at full size it filled the foot of
               the card and sat on its bottom edge. */}
-          <div className="flex h-9 w-28 items-center justify-center rounded-full bg-[var(--v69-card)] max-sm:[.template-mock-gallery_&]:h-7 max-sm:[.template-mock-gallery_&]:w-20 [[data-theme=light]_&]:bg-[#FFFFFF] [[data-theme=light]_&]:ring-1 [[data-theme=light]_&]:ring-[rgba(16,24,40,0.08)] [[data-theme=dark]_&]:bg-[#D9ED92]">
+          <div className="flex h-9 w-28 items-center justify-center rounded-full bg-[var(--v69-card)] max-sm:[.template-mock-gallery_&]:h-7 max-sm:[.template-mock-gallery_&]:w-20 light-ui:bg-[#FFFFFF] light-ui:ring-1 light-ui:ring-[rgba(16,24,40,0.08)] dark-x:bg-[#D9ED92]">
             {/* One SVG rather than two divs: the gallery scales these mocks by a
                 fractional factor, and Chrome pixel-snaps element boxes, so the
                 two bars rounded to different widths. SVG geometry antialiases
                 instead of snapping, so both bars keep the same weight. */}
             <svg
               width="12"
-              height="14"
+              height="18"
               viewBox="0 0 12 14"
               fill="currentColor"
               aria-hidden
-              className="text-[var(--v69-ink)] [[data-theme=light]_&]:text-[#4E4F46] [[data-theme=dark]_&]:text-[#1B1B1B]"
+              className="text-[var(--v69-ink)] light-ui:text-[#4E4F46] dark-x:text-[#1B1B1B]"
             >
-              <rect x="0" y="0" width="3" height="14" rx="1.5" />
-              <rect x="9" y="0" width="3" height="14" rx="1.5" />
+              <rect x="0" y="0" width="3" height="18" rx="1.5" />
+              <rect x="9" y="0" width="3" height="18" rx="1.5" />
             </svg>
           </div>
         </div>
@@ -2396,7 +2385,7 @@ function CardDeliverable({
           neutral bloom that used to sit in the bottom corner is gone with the flat
           fill it was there to lift; over a ramp it read as a smudge. */}
       <div
-        className="relative flex flex-1 flex-col justify-end overflow-hidden rounded-2xl p-3.5 [--muted-foreground:#3F444C] [[data-theme=dark]_&]:[--v69-card:#f5f5f5] [[data-theme=dark]_&]:[--v69-ink:#262626] [[data-theme=dark]_&]:[--v69-well:#f5f5f5]"
+        className="relative flex flex-1 flex-col justify-end overflow-hidden rounded-2xl p-3.5 [--muted-foreground:#3F444C] dark-x:[--v69-card:#f5f5f5] dark-x:[--v69-ink:#262626] dark-x:[--v69-well:#f5f5f5]"
         // Sprayed, like the case-status cover, but on its own artwork: the panel
         // is one long blend rather than stacked bands, so it takes the coarse
         // two-hue spatter (spray-panel.svg) instead of the cover's fine dust.
@@ -2449,14 +2438,14 @@ function CardDeliverable({
 function CardExport() {
   const pct = 68;
   return (
-    <div className="v69-plot-grid v69-plot-grid--lines flex h-full items-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
-      <span className="block w-full rounded-xl border border-black/[0.08] bg-[#FFFFFF] px-3 py-2.5 [[data-theme=dark]_&]:border-[rgba(255,255,255,0.09)] [[data-theme=dark]_&]:bg-[#303030]">
+    <div className="v69-plot-grid v69-plot-grid--lines flex h-full items-center bg-[var(--v69-card)] p-4 light-mock:bg-[#f2f2f2]">
+      <span className="block w-full rounded-xl border border-black/[0.08] bg-[#FFFFFF] px-3 py-2.5 dark-x:border-[rgba(255,255,255,0.09)] dark-x:bg-[#2E2E2E]">
         <span className="block truncate text-[13px] leading-none text-[var(--v69-ink)] max-sm:[.template-mock-gallery_&]:text-[12px]">
           Clients.csv
         </span>
         {/* The meter takes the periwinkle every other meter in the set runs in,
             rather than a green of its own. */}
-        <span className="mt-2.5 block h-[5px] w-full overflow-hidden rounded-full bg-[var(--v69-well)] [[data-theme=light]_.template-mock_&]:bg-[#e6e6e6] [[data-theme=dark]_&]:bg-[rgba(255,255,255,0.16)]">
+        <span className="mt-2.5 block h-[5px] w-full overflow-hidden rounded-full bg-[var(--v69-well)] light-mock:bg-[#e6e6e6] dark-x:bg-[rgba(255,255,255,0.16)]">
           <span
             className="block h-full rounded-full bg-[#7DA4FF]"
             style={{ width: `${pct}%` }}
@@ -2509,7 +2498,7 @@ function CardFiles() {
           the two folder views are the same object. Coloured only in light — the
           lime-in-light, periwinkle-in-dark pair every accent in the set runs —
           with the type on ink, since both fills are light. */}
-      <div className="flex shrink-0 items-center gap-2 px-5 py-4 [[data-theme=light]_&]:bg-[#D9ED92] [[data-theme=dark]_&]:bg-[#7DA4FF]">
+      <div className="flex shrink-0 items-center gap-2 px-5 py-4 light-ui:bg-[#D9ED92] dark-x:bg-[#7DA4FF]">
         <FolderGlyph className="size-4 shrink-0 text-[#1B1B1B]" />
         <span className="truncate text-[13px] leading-none text-[#1B1B1B] max-sm:[.template-mock-gallery_&]:text-[12px]">
           Important
@@ -2521,7 +2510,7 @@ function CardFiles() {
         {FILE_ROWS.map((file) => (
           <div
             key={file.name}
-            className="border-b px-5 py-3 [[data-theme=light]_&]:border-black/[0.07] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.14)]"
+            className="border-b px-5 py-3 light-ui:border-black/[0.07] dark-x:border-[rgba(255,255,255,0.14)]"
           >
             <div className="truncate text-[13px] leading-none text-[var(--v69-ink)] max-sm:[.template-mock-gallery_&]:text-[12px]">
               {file.name}
@@ -2556,7 +2545,7 @@ function CardForms() {
   return (
     // v69-cover-column is the phone treatment: the rows are held to the width
     // they were drawn at rather than stretching across the wider frame.
-    <div className="v69-cover-column v69-plot-grid v69-plot-grid--dots flex h-full items-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
+    <div className="v69-cover-column v69-plot-grid v69-plot-grid--dots flex h-full items-center bg-[var(--v69-card)] p-4 light-mock:bg-[#f2f2f2]">
       {/* Opaque rows, like every other panel in the set: through a translucent
           one the dot field ran straight across the row. */}
       <span className="block w-full space-y-2">
@@ -2569,7 +2558,7 @@ function CardForms() {
                 and periwinkle in dark — the one coloured mark here, since what
                 the row says is which kind of answer it collects. */}
             <span
-              className="flex size-[22px] shrink-0 items-center justify-center rounded-[7px] bg-[#D9ED92] [[data-theme=dark]_&]:bg-[#7DA4FF]"
+              className="flex size-[22px] shrink-0 items-center justify-center rounded-[7px] bg-[#D9ED92] dark-x:bg-[#7DA4FF]"
               aria-hidden
             >
               {/* Ink on the fill, the way every lime mark in the set is set —
@@ -2600,14 +2589,14 @@ function CardForms() {
 // is an editor, and the empty body under a filled title is what it looks like.
 function CardHelpdesk() {
   return (
-    <div className="flex h-full items-stretch bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
-      <span className="flex w-full flex-col overflow-hidden rounded-xl border border-black/[0.08] bg-[#FFFFFF] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.09)] [[data-theme=dark]_&]:bg-[#303030]">
+    <div className="flex h-full items-stretch bg-[var(--v69-card)] p-4 light-mock:bg-[#f2f2f2]">
+      <span className="flex w-full flex-col overflow-hidden rounded-xl border border-black/[0.08] bg-[#FFFFFF] dark-x:border-[rgba(255,255,255,0.09)] dark-x:bg-[#2E2E2E]">
         <span className="flex items-center px-3 py-2.5">
           <span className="min-w-0 flex-1 truncate text-[13px] leading-none text-[var(--v69-ink)] max-sm:[.template-mock-gallery_&]:text-[12px]">
             Welcome to the portal
           </span>
         </span>
-        <span className="flex flex-1 items-start border-t border-black/[0.07] px-3 pt-2.5 [[data-theme=dark]_&]:border-[rgba(255,255,255,0.16)]">
+        <span className="flex flex-1 items-start border-t border-black/[0.07] px-3 pt-2.5 dark-x:border-[rgba(255,255,255,0.16)]">
           <span className="mr-px block h-3.5 w-px shrink-0 bg-[var(--v69-ink)]" aria-hidden />
           <span className="text-[12px] leading-none text-muted-foreground max-sm:[.template-mock-gallery_&]:text-[11px]">
             Add more information
@@ -2623,10 +2612,10 @@ function CardHelpdesk() {
 // something to do.
 function CardHome() {
   return (
-    <div className="flex h-full items-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
+    <div className="flex h-full items-center bg-[var(--v69-card)] p-4 light-mock:bg-[#f2f2f2]">
       {/* The selected state of a nav row — a well rather than a panel, because a
           sidebar row is recessed into its rail, not floated above it. */}
-      <span className="flex w-full items-center gap-2.5 rounded-xl bg-[var(--v69-well)] px-3 py-2.5 [[data-theme=light]_.template-mock_&]:bg-[#e6e6e6] [[data-theme=dark]_&]:bg-[rgba(255,255,255,0.1)]">
+      <span className="flex w-full items-center gap-2.5 rounded-xl bg-[var(--v69-well)] px-3 py-2.5 light-mock:bg-[#e6e6e6] dark-x:bg-[rgba(255,255,255,0.1)]">
         <svg
           viewBox="0 0 24 24"
           className="size-4 shrink-0 text-muted-foreground"
@@ -2661,8 +2650,8 @@ const TASKS_ROWS = [
 
 function CardTasks() {
   return (
-    <div className="v69-cover-column flex h-full items-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
-      <span className="block w-full overflow-hidden rounded-xl border border-black/[0.08] bg-[#FFFFFF] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.09)] [[data-theme=dark]_&]:bg-[#303030]">
+    <div className="v69-cover-column flex h-full items-center bg-[var(--v69-card)] p-4 light-mock:bg-[#f2f2f2]">
+      <span className="block w-full overflow-hidden rounded-xl border border-black/[0.08] bg-[#FFFFFF] dark-x:border-[rgba(255,255,255,0.09)] dark-x:bg-[#2E2E2E]">
         {/* The column head takes the covers' periwinkle in both themes, the way
             the Home row's count does — a column's colour is what identifies it on
             a board, so it is the one thing here that carries hue. */}
@@ -2676,14 +2665,14 @@ function CardTasks() {
             key={row.title}
             className={`flex items-center gap-2.5 px-3 py-2.5 ${
               i > 0
-                ? "border-t border-black/[0.07] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.16)]"
+                ? "border-t border-black/[0.07] dark-x:border-[rgba(255,255,255,0.16)]"
                 : ""
             }`}
           >
             {/* An outline, not a tick: an open circle is the whole reason a task
                 is on this column rather than in a done one. */}
             <span
-              className="size-[14px] shrink-0 rounded-full border border-black/[0.18] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.45)]"
+              className="size-[14px] shrink-0 rounded-full border border-black/[0.18] dark-x:border-[rgba(255,255,255,0.45)]"
               aria-hidden
             />
             <span className="min-w-0 flex-1 truncate text-[13px] leading-none text-[var(--v69-ink)] max-sm:[.template-mock-gallery_&]:text-[12px]">
@@ -2714,18 +2703,18 @@ const PROFILE_ROWS = [
 
 function CardProfileManager() {
   return (
-    <div className="flex h-full items-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
-      <span className="block w-full overflow-hidden rounded-xl border border-black/[0.08] bg-[#FFFFFF] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.09)] [[data-theme=dark]_&]:bg-[#303030]">
+    <div className="flex h-full items-center bg-[var(--v69-card)] p-4 light-mock:bg-[#f2f2f2]">
+      <span className="block w-full overflow-hidden rounded-xl border border-black/[0.08] bg-[#FFFFFF] dark-x:border-[rgba(255,255,255,0.09)] dark-x:bg-[#2E2E2E]">
         {PROFILE_ROWS.map((person, i) => (
           <span
             key={person.name}
             className={`flex items-center gap-2.5 px-3 py-2.5 ${
               i > 0
-                ? "border-t border-black/[0.07] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.16)]"
+                ? "border-t border-black/[0.07] dark-x:border-[rgba(255,255,255,0.16)]"
                 : ""
             }`}
           >
-            <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[var(--v69-well)] text-[11px] leading-none text-[var(--v69-ink)] [[data-theme=light]_&]:bg-[var(--v69-inner)] [[data-theme=light]_&]:text-[#595959] [[data-theme=light]_.template-mock_&]:bg-[#e6e6e6] [[data-theme=dark]_&]:bg-[rgba(255,255,255,0.12)]">
+            <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[var(--v69-well)] text-[11px] leading-none text-[var(--v69-ink)] light-ui:bg-[var(--v69-inner)] light-ui:text-[#595959] light-mock:bg-[#e6e6e6] dark-x:bg-[rgba(255,255,255,0.12)]">
               {person.initials}
             </span>
             <span className="min-w-0 flex-1">
@@ -2751,20 +2740,20 @@ function CardMessages() {
   return (
     <div className="v69-cover-column flex h-full items-center bg-[var(--v69-card)] p-4">
       <span className="flex w-full items-end gap-2">
-        <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[var(--v69-well)] text-[11px] leading-none text-[var(--v69-ink)] [[data-theme=light]_&]:bg-[var(--v69-inner)] [[data-theme=light]_&]:text-[#595959] [[data-theme=light]_.template-mock_&]:bg-[#e6e6e6] [[data-theme=dark]_&]:bg-[rgba(255,255,255,0.12)]">
+        <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[var(--v69-well)] text-[11px] leading-none text-[var(--v69-ink)] light-ui:bg-[var(--v69-inner)] light-ui:text-[#595959] light-mock:bg-[#e6e6e6] dark-x:bg-[rgba(255,255,255,0.12)]">
           GK
         </span>
         <span className="min-w-0 flex-1">
           <span className="mb-1.5 block truncate pl-1 text-[11px] leading-none text-muted-foreground">
             Gus Kelly
           </span>
-          <span className="relative block rounded-[16px] bg-[var(--v69-inner)] px-3.5 py-2.5 [[data-theme=light]_.template-mock_&]:bg-[#e6e6e6] [[data-theme=dark]_&]:bg-[#343434]">
+          <span className="relative block rounded-[16px] bg-[var(--v69-inner)] px-3.5 py-2.5 light-mock:bg-[#e6e6e6] dark-x:bg-[#343434]">
             <span className="block text-[13px] leading-snug text-[var(--v69-ink)] max-sm:[.template-mock-gallery_&]:text-[12px]">
               I&rsquo;ve reviewed the proposal. Everything looks good!
             </span>
             <svg
               viewBox="0 0 14 14"
-              className="absolute -bottom-px left-2 size-3.5 -translate-x-1/2 scale-x-[-1] text-[var(--v69-inner)] [[data-theme=light]_.template-mock_&]:text-[#e6e6e6] [[data-theme=dark]_&]:text-[#343434]"
+              className="absolute -bottom-px left-2 size-3.5 -translate-x-1/2 scale-x-[-1] text-[var(--v69-inner)] light-mock:text-[#e6e6e6] dark-x:text-[#343434]"
               fill="currentColor"
               aria-hidden
             >
@@ -2777,57 +2766,69 @@ function CardMessages() {
   );
 }
 
-// Payments — the moment the app exists for: an invoice that has been paid. The
-// amount is the figure the card is built around, with the status chip saying it
-// landed, which is the one fact either side checks.
+// Payments as a wallet: paid invoices tucked into a pocket that carries the
+// running total, so the cover says "money comes in here" before anyone reads a
+// figure.
 const PAYMENT = {
-  invoice: "Invoice 1042",
-  amount: "$2,400",
-  cents: ".00",
+  label: "Collected",
+  amount: "$24,",
+  tail: "860",
+  invoices: ["Invoice 1043", "Invoice 1042"],
 };
 
-// Plain face, no plotted ground: the amount is the whole cover, and a field
-// behind it was competing with the one thing it has to say.
 function CardPayments() {
+  // Drawn in the time tracker's language: the accent-drift ground, a white
+  // object with the same soft carve, and grey chips inside it. The cards go
+  // grey because lime ones would vanish into the lime end of the ground.
   return (
-    <div className="flex h-full items-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
-      <span className="block w-full overflow-hidden rounded-xl border border-black/[0.08] bg-[#FFFFFF] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.09)] [[data-theme=dark]_&]:bg-[#303030]">
-        <span className="flex items-center gap-2 px-3 py-2.5">
-          <span
-            className="min-w-0 flex-1 truncate text-[13px] leading-none text-[var(--v69-ink)] max-sm:[.template-mock-gallery_&]:text-[12px]"
+    <div className="v69-accent-drift h-full">
+      <div className="v69-cover-square relative h-full p-4">
+        <div className="absolute inset-4 rounded-[18px] bg-[#FFFFFF] shadow-[0_1px_2px_rgba(16,24,40,0.06),0_8px_20px_-10px_rgba(16,24,40,0.18)] dark-x:bg-[#1B1B1B]" />
+        {INVOICE_SLOTS.map((slot, i) => (
+          <div
+            key={PAYMENT.invoices[i]}
+            className={`absolute inset-x-[calc(1rem+10px)] flex h-[30%] justify-end rounded-[10px] px-3 pt-2 ${slot}`}
           >
-            {PAYMENT.invoice}
-          </span>
-          {/* Same status chip the contract cover uses — the covers' one live
-              colour, lime in light and periwinkle in dark. A green of its own
-              would be the only hue in the rail. */}
-          <span
-            className="shrink-0 rounded-md bg-[#D9ED92] px-2 py-1 text-[10px] uppercase leading-none tracking-wide text-[#1B1B1B] [[data-theme=dark]_&]:bg-[#7DA4FF] max-sm:[.template-mock-gallery_&]:text-[9px]"
-            style={MOCK_MONO}
-          >
-            Paid
-          </span>
-        </span>
-        {/* The amount sits below the rule, the way the contract's signature does:
-            the row above names the record, the panel below carries the thing that
-            settled it. */}
-        <span className="block border-t border-black/[0.07] px-3 pb-3 pt-2 [[data-theme=dark]_&]:border-[rgba(255,255,255,0.16)]">
-          <span
-            className="flex items-baseline text-[26px] leading-none tracking-tight text-[var(--v69-ink)] max-sm:[.template-mock-gallery_&]:text-[22px]"
-            style={MOCK_MONO}
-          >
-            {PAYMENT.amount}
-            {/* The cents held a step down and off full ink, so the figure reads
-                as one amount rather than as two numbers. */}
-            <span className="text-[0.62em] text-[var(--v69-ink)]/55">
-              {PAYMENT.cents}
+            <span
+              className="text-[12px] leading-none text-[var(--v69-ink)] [.template-mock-gallery_&]:hidden"
+              style={MOCK_MONO}
+            >
+              {PAYMENT.invoices[i]}
             </span>
+          </div>
+        ))}
+        {/* The pocket: the same white as the wallet, lifted off the cards by an
+            upward shadow and given the time tracker face's soft inset carve. */}
+        <div className="absolute inset-x-4 bottom-4 top-[34%] flex flex-col justify-end rounded-[16px] bg-[#FFFFFF] px-4 pb-4 shadow-[0_-4px_10px_-4px_rgba(16,24,40,0.14)] dark-x:bg-[#1B1B1B] dark-x:shadow-[0_-4px_10px_-4px_rgba(0,0,0,0.6)]">
+          <span
+            aria-hidden
+            className="pointer-events-none absolute inset-0 rounded-[16px]"
+            style={{
+              boxShadow:
+                "inset 0 1px 0 rgba(255,255,255,0.35), inset 0 -1px 0 rgba(16,24,40,0.03), inset 0 8px 14px -8px rgba(16,24,40,0.045), inset 0 -10px 16px -10px rgba(16,24,40,0.055)",
+            }}
+          />
+          <span className="v69-wallet-label text-[11px] leading-none text-[var(--v69-ink)]/55">
+            {PAYMENT.label}
           </span>
-        </span>
-      </span>
+          {/* The tail digits held off full ink so the figure reads as one
+              amount with its lead in front. */}
+          <span className="v69-wallet-amount mt-1.5 text-[26px] leading-none tracking-tight text-[var(--v69-ink)] max-sm:[.template-mock-gallery_&]:text-[22px]">
+            {PAYMENT.amount}
+            <span className="text-[var(--v69-ink)]/40">{PAYMENT.tail}</span>
+          </span>
+        </div>
+      </div>
     </div>
   );
 }
+
+// Back card a step darker than the front so the two read as a stack; the same
+// chip greys the time tracker's readout uses.
+const INVOICE_SLOTS = [
+  "top-[calc(1rem+10px)] bg-[#e6e6e6] dark-x:bg-[#2B2B2B]",
+  "v69-wallet-middle top-[calc(1rem+10px+11%)] bg-[#f2f2f2] shadow-[0_-1px_3px_rgba(16,24,40,0.08)] dark-x:bg-[#333333]",
+];
 
 // Xero — the one screen the integration is: picking which Xero account an
 // Assembly line maps to. A searchable list says "this connects two systems" in
@@ -2836,11 +2837,11 @@ const XERO_OPTIONS = ["Exclude from mapping", "Logo Design", "Marketing Overhaul
 
 function CardXero() {
   return (
-    <div className="v69-cover-column v69-plot-grid v69-plot-grid--dots flex h-full items-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
-      <span className="block w-full overflow-hidden rounded-xl border border-black/[0.08] bg-[#FFFFFF] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.09)] [[data-theme=dark]_&]:bg-[#303030]">
+    <div className="v69-cover-column v69-plot-grid v69-plot-grid--dots flex h-full items-center bg-[var(--v69-card)] p-4 light-mock:bg-[#f2f2f2]">
+      <span className="block w-full overflow-hidden rounded-xl border border-black/[0.08] bg-[#FFFFFF] dark-x:border-[rgba(255,255,255,0.09)] dark-x:bg-[#2E2E2E]">
         {/* The caret in the empty field is the one mark that makes this a list
             being searched rather than a menu sitting open. */}
-        <span className="flex items-center border-b border-black/[0.07] px-3 py-2.5 [[data-theme=dark]_&]:border-[rgba(255,255,255,0.16)]">
+        <span className="flex items-center border-b border-black/[0.07] px-3 py-2.5 dark-x:border-[rgba(255,255,255,0.16)]">
           <span className="mr-px block h-3.5 w-px shrink-0 bg-[var(--v69-ink)]" aria-hidden />
           <span className="min-w-0 flex-1 truncate text-[13px] leading-none text-muted-foreground max-sm:[.template-mock-gallery_&]:text-[12px]">
             Search
@@ -2851,7 +2852,7 @@ function CardXero() {
             key={option}
             className={`block truncate px-3 py-2.5 text-[13px] leading-none text-[var(--v69-ink)] max-sm:[.template-mock-gallery_&]:text-[12px] ${
               i > 0
-                ? "border-t border-black/[0.07] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.16)]"
+                ? "border-t border-black/[0.07] dark-x:border-[rgba(255,255,255,0.16)]"
                 : ""
             }`}
           >
@@ -2868,8 +2869,8 @@ function CardXero() {
 // ink rather than Intuit's green, so it sits in the set with everything else.
 function CardQuickBooks() {
   return (
-    <div className="flex h-full items-center justify-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
-      <span className="flex size-[104px] items-center justify-center rounded-[26px] bg-[var(--v69-well)] [[data-theme=light]_&]:bg-[var(--v69-inner)] [[data-theme=light]_.template-mock_&]:bg-[#e6e6e6] [[data-theme=dark]_&]:bg-[rgba(255,255,255,0.09)]">
+    <div className="flex h-full items-center justify-center bg-[var(--v69-card)] p-4 light-mock:bg-[#f2f2f2]">
+      <span className="v69-app-tile flex size-[104px] items-center justify-center rounded-[26px] bg-[var(--v69-well)] [.template-mock-gallery_&]:size-[156px] [.template-mock-gallery_&]:rounded-[38px] light-ui:bg-[var(--v69-inner)] light-mock:bg-[#e6e6e6] dark-x:bg-[rgba(255,255,255,0.09)]">
         {/* The approved mark, path for path, filled from one currentColor so it
             tracks the theme instead of carrying the file's own grey. Held back on
             the templates page, where the mark should name the integration rather
@@ -2879,7 +2880,7 @@ function CardQuickBooks() {
             empty square, which does the same job from the other direction. */}
         <svg
           viewBox="0 0 34 34"
-          className="size-[50px] text-muted-foreground [[data-theme=light]_.template-mock_&]:text-muted-foreground/45 [[data-theme=dark]_.template-mock_&]:text-muted-foreground/55"
+          className="size-[50px] text-muted-foreground [.template-mock-gallery_&]:size-[76px] light-mock:text-muted-foreground/45 dark-mock:text-muted-foreground/55 [.template-mock-gallery_&]:!text-[var(--v69-ink)]/85"
           fill="currentColor"
           aria-hidden
         >
@@ -2899,7 +2900,7 @@ function CardAutoresponder() {
   return (
     // Hatched rather than ruled or plotted: the object here is a setting, not a
     // record at a position, which is what the plotted ground is for.
-    <div className="v69-hatch-ground flex h-full items-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
+    <div className="v69-hatch-ground flex h-full items-center bg-[var(--v69-card)] p-4 light-mock:bg-[#f2f2f2]">
       {/* Held short of the frame rather than run to it: at full width the select
           was the widest control in the set and the hatch was left as two thin
           margins beside it. */}
@@ -2909,7 +2910,7 @@ function CardAutoresponder() {
         </span>
         {/* Opaque like every other panel in the set — through a translucent one
             the hatch ran straight across the control. */}
-        <span className="mt-2 flex items-center gap-2 rounded-xl border border-black/[0.08] bg-[#FFFFFF] px-3 py-2.5 [[data-theme=dark]_&]:border-[rgba(255,255,255,0.09)] [[data-theme=dark]_&]:bg-[#303030]">
+        <span className="mt-2 flex items-center gap-2 rounded-xl border border-black/[0.08] bg-[#FFFFFF] px-3 py-2.5 dark-x:border-[rgba(255,255,255,0.09)] dark-x:bg-[#2E2E2E]">
           <span className="min-w-0 flex-1 truncate text-[13px] leading-none text-[var(--v69-ink)] max-sm:[.template-mock-gallery_&]:text-[12px]">
             Outside working hours
           </span>
@@ -2933,19 +2934,20 @@ function CardAutoresponder() {
 
 // Contracts — the finished state: a named agreement, signed. The signature is
 // the whole point of the app, so it is the thing the cover draws.
+const SIGNATURE_PROMPT = "Add your signature";
+
 function CardContract() {
   return (
-    <div className="v69-plot-grid v69-plot-grid--lines flex h-full items-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
-      <span className="block w-full overflow-hidden rounded-xl border border-black/[0.08] bg-[#FFFFFF] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.09)] [[data-theme=dark]_&]:bg-[#303030]">
+    <div className="v69-plot-grid v69-plot-grid--lines flex h-full items-center bg-[var(--v69-card)] p-4 light-mock:bg-[#f2f2f2]">
+      <span className="block w-full overflow-hidden rounded-xl border border-black/[0.08] bg-[#FFFFFF] dark-x:border-[rgba(255,255,255,0.09)] dark-x:bg-[#2E2E2E]">
         <span className="flex items-center gap-2 px-3 py-2.5">
-          <span className="min-w-0 flex-1 truncate text-[13px] leading-none text-[var(--v69-ink)] max-sm:[.template-mock-gallery_&]:text-[12px]">
+          <span className="min-w-0 flex-1 truncate text-[13px] leading-none text-[var(--v69-ink)] [.template-mock-gallery_&]:text-[14px]">
             Service Agreement
           </span>
-          {/* The status chip takes the covers' one live colour — lime in light,
-              periwinkle in dark — rather than a green of its own, so it reads as
-              the same marker the case-status cover uses. */}
+          {/* Signed reads as done, so the chip is green in both skins: lime in
+              light, the set's mint in dark. */}
           <span
-            className="shrink-0 rounded-md bg-[#D9ED92] px-2 py-1 text-[10px] uppercase leading-none tracking-wide text-[#1B1B1B] [[data-theme=dark]_&]:bg-[#7DA4FF] max-sm:[.template-mock-gallery_&]:text-[9px]"
+            className="shrink-0 rounded-md bg-[#D9ED92] px-2 py-1 text-[10px] uppercase leading-none tracking-wide text-[#1B1B1B] dark-x:bg-[#5CE5C3] [.template-mock-gallery_&]:text-[12px]"
             style={MOCK_MONO}
           >
             Signed
@@ -2956,16 +2958,20 @@ function CardContract() {
             signature rather than as another field. The well is taller than the
             header row above it so the hand sits low in its own field instead of
             crowding the divider. */}
-        <span className="block border-t border-black/[0.07] px-3 pb-2.5 pt-3.5 [[data-theme=dark]_&]:border-[rgba(255,255,255,0.16)]">
+        <span className="block border-t border-black/[0.07] px-3 pb-2.5 pt-3.5 dark-x:border-[rgba(255,255,255,0.16)]">
+          {/* The templates gallery drops the rule under the hand: on the glass
+              it read as a stray divider. */}
           {/* Not `truncate`: the script face's loops overshoot its em box, and
               the overflow clip that comes with the ellipsis sheared the tops and
               tails off the hand. The name is fixed copy that fits, and the card
               clips its own edge, so nowrap alone is enough. */}
-          <span
-            className="block whitespace-nowrap border-b border-black/[0.16] text-[26px] leading-[1.15] text-[var(--v69-ink)] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.25)] max-sm:[.template-mock-gallery_&]:text-[22px]"
-            style={MOCK_SIGNATURE}
-          >
+          <span className="block whitespace-nowrap border-b border-black/[0.16] text-[26px] leading-[1.15] text-[var(--v69-ink)] [font-family:var(--font-signature),cursive] dark-x:border-[rgba(255,255,255,0.25)] [.template-mock-gallery_&]:hidden">
             Adrian Chen
+          </span>
+          {/* The gallery shows the field waiting for a hand, in the site's
+              face, rather than a typeset name standing in for one. */}
+          <span className="hidden whitespace-nowrap text-[14px] leading-[1.15] text-[var(--v69-ink)]/45 [.template-mock-gallery_&]:block">
+            {SIGNATURE_PROMPT}
           </span>
         </span>
       </span>
@@ -2977,17 +2983,17 @@ function CardTeamGuides() {
   const file = { name: "Team handbook.pdf", meta: "18 guides", size: "12MB" };
   const readPct = 76;
   return (
-    <div className="v69-plot-grid flex h-full items-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
+    <div className="v69-plot-grid flex h-full items-center bg-[var(--v69-card)] p-4 light-mock:bg-[#f2f2f2]">
       {/* Opaque, like every other record card in the set: through a translucent
           pane the ruled ground ran straight across the row. */}
       {/* Tighter gaps than the client library's row: this one carries a size and
           a meter on the right as well, and at the larger type the filename ran
           out of track and truncated. */}
-      <div className="flex w-full items-center gap-2 rounded-xl border border-black/[0.08] bg-[#FFFFFF] p-2.5 [[data-theme=dark]_&]:border-[rgba(255,255,255,0.09)] [[data-theme=dark]_&]:bg-[#303030]">
+      <div className="flex w-full items-center gap-2 rounded-xl border border-black/[0.08] bg-[#FFFFFF] p-2.5 dark-x:border-[rgba(255,255,255,0.09)] dark-x:bg-[#2E2E2E]">
         {/* The file's own thumbnail slot. A glyph rather than a preview: at this
             size a real thumbnail is a smudge, and the point is the record, not
             the artwork. */}
-        <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-[var(--v69-well)] text-muted-foreground [[data-theme=light]_.template-mock_&]:bg-[#e6e6e6] [[data-theme=dark]_&]:bg-[rgba(255,255,255,0.1)]">
+        <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-[var(--v69-well)] text-muted-foreground light-mock:bg-[#e6e6e6] dark-x:bg-[rgba(255,255,255,0.1)]">
           <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden>
             <rect x="4" y="4" width="16" height="16" rx="3" />
             <path d="m5 16 4-4 4 4 2-2 4 4" strokeLinecap="round" strokeLinejoin="round" />
@@ -3011,7 +3017,7 @@ function CardTeamGuides() {
           <span className="text-[11px] leading-none tabular-nums text-muted-foreground">
             {file.size}
           </span>
-          <span className="block h-[5px] w-8 overflow-hidden rounded-full bg-[var(--v69-well)] [[data-theme=dark]_&]:bg-[rgba(255,255,255,0.16)]">
+          <span className="block h-[5px] w-8 overflow-hidden rounded-full bg-[var(--v69-well)] dark-x:bg-[rgba(255,255,255,0.16)]">
             <span
               className="block h-full rounded-full bg-[#7DA4FF]"
               style={{ width: `${readPct}%` }}
@@ -3044,14 +3050,14 @@ function CardDataRoom() {
     // version of this cover pinned them: the templates detail page renders these
     // mocks without the .v72-mock-dark skin, so --v69-ink there is still the
     // light-mode near-black and the names sat dark-on-dark.
-    <div className="v69-cover-column v69-plot-grid v69-plot-grid--dots v69-plot-grid--fade flex h-full items-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2] [[data-theme=dark]_&]:[--muted-foreground:#8F8F8F] [[data-theme=dark]_&]:[--v69-ink:#F2F2F2]">
-      <div className="w-full overflow-hidden rounded-xl border border-black/[0.08] bg-[#FFFFFF] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.09)] [[data-theme=dark]_&]:bg-[#303030]">
+    <div className="v69-cover-column v69-plot-grid v69-plot-grid--dots v69-plot-grid--fade flex h-full items-center bg-[var(--v69-card)] p-4 light-mock:bg-[#f2f2f2] dark-x:[--muted-foreground:#8F8F8F] dark-x:[--v69-ink:#F2F2F2]">
+      <div className="w-full overflow-hidden rounded-xl border border-black/[0.08] bg-[#FFFFFF] dark-x:border-[rgba(255,255,255,0.09)] dark-x:bg-[#2E2E2E]">
         {DATA_ROOM_ACCESS.map((row, i) => (
           <div
             key={row.name}
             className={`flex items-center gap-3 px-3 py-2.5 ${
               i > 0
-                ? "border-t border-black/[0.06] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.16)]"
+                ? "border-t border-black/[0.06] dark-x:border-[rgba(255,255,255,0.16)]"
                 : ""
             }`}
           >
@@ -3059,12 +3065,14 @@ function CardDataRoom() {
               {row.name}
             </span>
             {/* The set's mono status chip, the one the contract and invoice
-                covers wear, in the covers' neutral rather than their lime: this
-                cover carries two of them at once, and a live colour on both
-                would be the loudest thing in a gallery of monotone covers. Both
-                states take the same chip, so the word is what separates them. */}
+                covers wear: active takes the covers' lime, expired a soft red
+                from the file chip, so the state reads before the word. */}
             <span
-              className="shrink-0 rounded-md bg-[var(--v69-well)] px-2 py-1 text-[10px] uppercase leading-none tracking-wide text-[var(--v69-ink)] [[data-theme=light]_.template-mock_&]:bg-[#e6e6e6] [[data-theme=dark]_&]:bg-[rgba(255,255,255,0.14)] [[data-theme=dark]_&]:text-[#EDEDED] max-sm:[.template-mock-gallery_&]:text-[9px]"
+              className={`shrink-0 rounded-md px-2 py-1 text-[10px] uppercase leading-none tracking-wide max-sm:[.template-mock-gallery_&]:text-[9px] ${
+                row.state === "active"
+                  ? "bg-[#D9ED92] text-[#1B1B1B]"
+                  : "bg-[#FF8C8C]/[0.22] text-[var(--v69-ink)]"
+              }`}
               style={MOCK_MONO}
             >
               {row.state === "active" ? "Active" : "Expired"}
@@ -3116,7 +3124,7 @@ function CardRetainerColumns() {
       // dark values: the templates detail page renders these mocks without the
       // .v72-mock-dark skin, so --v69-ink there is still the light-mode near-black
       // and the labels would sit dark-on-dark.
-      className="flex h-full flex-col bg-[#D9ED92] p-3.5 [--v69-card:color-mix(in_srgb,#ffffff_60%,#D9ED92)] [--v69-inner:color-mix(in_srgb,#ffffff_60%,#D9ED92)] [&_[data-slot=engagement-bar]]:border-0 [[data-theme=dark]_&]:bg-[#262626] [[data-theme=dark]_&]:[--muted-foreground:#8F8F8F] [[data-theme=dark]_&]:[--v69-ink:#F2F2F2] [[data-theme=dark]_&_[data-slot=engagement-bar]]:border [[data-theme=dark]_&_[data-slot=engagement-bar]]:border-[rgba(255,255,255,0.12)] [[data-theme=dark]_.template-mock_&_[data-slot=engagement-bar]]:border-[rgba(255,255,255,0.20)] [[data-theme=dark]_&_[data-slot=engagement-bar]]:bg-[#323232]"
+      className="flex h-full flex-col bg-[#D9ED92] p-3.5 [--v69-card:color-mix(in_srgb,#ffffff_60%,#D9ED92)] [--v69-inner:color-mix(in_srgb,#ffffff_60%,#D9ED92)] [&_[data-slot=engagement-bar]]:border-0 dark-x:bg-[#262626] dark-x:[--muted-foreground:#8F8F8F] dark-x:[--v69-ink:#F2F2F2] [[data-theme=dark]_&_[data-slot=engagement-bar]]:border [[data-theme=dark]_&_[data-slot=engagement-bar]]:border-[rgba(255,255,255,0.12)] [[data-theme=dark]_.template-mock_&_[data-slot=engagement-bar]]:border-[rgba(255,255,255,0.20)] [[data-theme=dark]_&_[data-slot=engagement-bar]]:bg-[#323232]"
     >
       <div className="flex flex-1 items-end gap-2.5">
         {bars.map((b, i) => (
@@ -3157,7 +3165,7 @@ function CardProgressTracker() {
   return (
     // v69-cover-column is the phone treatment: the ruler holds the width it was
     // drawn at and centres, and the frame scales up around it.
-    <div className="v69-cover-column flex h-full items-center bg-[var(--v69-card)] p-4 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
+    <div className="v69-cover-column flex h-full items-center bg-[var(--v69-card)] p-4 light-mock:bg-[#f2f2f2]">
       <div className="relative w-full">
         {/* The axis. Every fourth tick runs full height, the rest half — the
             same rhythm a ruler uses to make a span countable at a glance. */}
@@ -3188,12 +3196,12 @@ function CardProgressTracker() {
             covers scale up, so it read as a handle sitting off its stem. */}
         <span
           aria-hidden
-          className="absolute -top-2 bottom-[-14px] w-px -translate-x-1/2 bg-[#7DA4FF] [[data-theme=dark]_&]:bg-[#D9ED92]"
+          className="absolute -top-2 bottom-[-14px] w-px -translate-x-1/2 bg-[#7DA4FF] dark-x:bg-[#D9ED92]"
           style={{ left: `${TRACK_MARK_PCT}%` }}
         />
         <span
           aria-hidden
-          className="absolute -top-3 size-2.5 -translate-x-1/2 rounded-[3px] bg-[#7DA4FF] [[data-theme=dark]_&]:bg-[#D9ED92]"
+          className="absolute -top-3 size-2.5 -translate-x-1/2 rounded-[3px] bg-[#7DA4FF] dark-x:bg-[#D9ED92]"
           style={{ left: `${TRACK_MARK_PCT}%` }}
         />
       </div>
@@ -3214,14 +3222,14 @@ function CardProgressTracker() {
 // Flat fill, not the lit-to-shaded ramp it carried: a gradient running light at
 // the top-left into dark at the bottom-right is a sphere, and the badge is a
 // face on the pill.
-const SEND_BADGE = `bg-[#D9ED92] [[data-theme=dark]_&]:bg-[#7DA4FF]`;
+const SEND_BADGE = `bg-[#D9ED92] dark-x:bg-[#7DA4FF]`;
 
 function CardMassMessenger() {
   return (
     // Both skins run the card's own face now. Light used to invert it — a near-
     // black slab carrying a pale pill — which made this the one dark tile in a
     // gallery of off-white ones, louder than any card around it.
-    <div className="flex h-full items-center justify-center bg-[var(--v69-card)] p-5 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
+    <div className="flex h-full items-center justify-center bg-[var(--v69-card)] p-5 light-mock:bg-[#f2f2f2]">
       {/* A badge-and-label pill rather than a plain block: the lime disc gives
           the action a face, and the send glyph lives in it instead of trailing
           the text. Asymmetric padding — tight on the badge side, open on the
@@ -3232,7 +3240,7 @@ function CardMassMessenger() {
           cover is scaled up there, so a 1px ring lands as a hard two-pixel line
           around a white pill that already separates from the face on fill. */}
       <div
-        className={`flex h-13 w-full items-center gap-3 rounded-full bg-[#FFFFFF] pl-1.5 pr-5 text-[15px] font-normal text-[var(--v69-ink)] ring-1 ring-[rgba(16,24,40,0.06)] [.template-mock_&]:ring-[rgba(16,24,40,0.10)] [[data-theme=light]_.template-mock_&]:ring-[rgba(16,24,40,0.05)] [[data-theme=dark]_&]:bg-[#323232] [[data-theme=dark]_&]:text-[#F2F2F2] [[data-theme=dark]_&]:ring-[rgba(255,255,255,0.12)] [[data-theme=dark]_.template-mock_&]:ring-[rgba(255,255,255,0.20)]`}
+        className={`flex h-13 w-full items-center gap-3 rounded-full bg-[#FFFFFF] pl-1.5 pr-5 text-[15px] font-normal text-[var(--v69-ink)] ring-1 ring-[rgba(16,24,40,0.06)] [.template-mock_&]:ring-[rgba(16,24,40,0.10)] light-mock:ring-[rgba(16,24,40,0.05)] dark-x:bg-[#323232] dark-x:text-[#F2F2F2] dark-x:ring-[rgba(255,255,255,0.12)] dark-mock:ring-[rgba(255,255,255,0.20)]`}
       >
         {/* Flat, with no lit rim — the badge is a face on the pill, not a raised
             button on it. */}
@@ -3323,7 +3331,13 @@ const PIPELINE_LINE_D = PIPELINE_SERIES.map((y, i) => {
 // lime carries on the near-black card, the periwinkle on the off-white one, where
 // lime has almost nothing to hold against the face.
 const PIPELINE_HUE =
-  "[--pipe-line:#7DA4FF] [[data-theme=dark]_&]:[--pipe-line:#D9ED92]";
+  "[--pipe-line:#7DA4FF] dark-x:[--pipe-line:#D9ED92]";
+
+// The templates gallery draws the pipeline as weekly columns, after a phone
+// activity chart: each week a pill track filled from the foot, so the climb
+// reads before the figure.
+const PIPELINE_WEEKS = [0, 0, 0, 14, 16, 15, 30, 44, 78, 92, 86, 100];
+const PIPE_FILL_MIN = 14;
 
 function CardDealsPipeline() {
   return (
@@ -3337,16 +3351,16 @@ function CardDealsPipeline() {
         {/* No MOCK_UPSCALED_META here: that rung is for the covers drawn in the
             smaller design box, and this one is drawn at the shared size. */}
         <span
-          className="block text-[10px] uppercase leading-none tracking-wide text-muted-foreground"
+          className="v69-pipeline-label block text-[10px] uppercase leading-none tracking-wide text-muted-foreground"
           style={MOCK_MONO}
         >
           Pipeline
         </span>
         <div className="mt-2.5 flex items-baseline text-[var(--v69-ink)] max-sm:[.template-mock-gallery_&]:mt-2">
-          <span className="text-[34px] font-normal leading-none tracking-tight tabular-nums max-sm:[.template-mock-gallery_&]:text-[28px]">
+          <span className="v69-pipeline-amount text-[34px] font-normal leading-none tracking-tight tabular-nums max-sm:[.template-mock-gallery_&]:text-[28px]">
             $248,500
           </span>
-          <span className="text-[17px] font-normal leading-none tracking-tight tabular-nums max-sm:[.template-mock-gallery_&]:text-[14px]">
+          <span className="v69-pipeline-cents text-[17px] font-normal leading-none tracking-tight tabular-nums max-sm:[.template-mock-gallery_&]:text-[14px]">
             .00
           </span>
         </div>
@@ -3359,12 +3373,15 @@ function CardDealsPipeline() {
       <svg
         viewBox={`0 0 ${PIPELINE_PLOT_W} ${PIPELINE_PLOT_H}`}
         preserveAspectRatio="none"
-        className="mt-auto h-[58%] w-full"
+        className="mt-auto h-[58%] w-full [.template-mock-gallery_&]:hidden"
         aria-hidden
       >
         {/* Everything under the baseline takes a faint tint, so the plot has a
             floor rather than floating in the card. Drawn first, under the rules
             and the series both. */}
+        {/* The templates gallery drops the floor tint and the rules: on its
+            glass panel they read as divider lines cutting through the card. */}
+        <g className="[.template-mock-gallery_&]:hidden">
         <rect
           x="0"
           y={PIPELINE_LAST_Y}
@@ -3385,6 +3402,7 @@ function CardDealsPipeline() {
             vectorEffect="non-scaling-stroke"
           />
         ))}
+        </g>
         <path
           d={PIPELINE_LINE_D}
           fill="none"
@@ -3395,6 +3413,20 @@ function CardDealsPipeline() {
           vectorEffect="non-scaling-stroke"
         />
       </svg>
+      {/* Gallery only. Its inset matches the header's so the columns line up
+          under the figure; an empty week shows only its track. */}
+      <div aria-hidden className="mt-auto hidden h-[52%] gap-[5px] px-5 pb-5 [.template-mock-gallery_&]:flex">
+        {PIPELINE_WEEKS.map((v, i) => (
+          <span key={i} className="relative flex-1 overflow-hidden rounded-full bg-[var(--v69-ink)]/[0.06]">
+            {v > 0 && (
+              <span
+                className="absolute inset-x-0 bottom-0 rounded-full bg-[var(--pipe-line)]"
+                style={{ height: `${Math.max(v, PIPE_FILL_MIN)}%` }}
+              />
+            )}
+          </span>
+        ))}
+      </div>
     </div>
   );
 }
@@ -3464,15 +3496,15 @@ function CardCommsApp() {
             a --v69-card cover it was the same colour as what it sat on, and only
             its shadow gave it an edge — on the hero rail that read as nothing at
             all. */}
-        <span className="absolute -left-2 -top-4 z-10 flex size-7 items-center justify-center rounded-full bg-[#FFFFFF] ring-1 ring-[rgba(16,24,40,0.04)] shadow-[0_1px_2px_rgba(16,24,40,0.05)] [[data-theme=dark]_&]:bg-[#D9ED92] [[data-theme=dark]_&]:shadow-none [[data-theme=dark]_&]:ring-transparent">
+        <span className="absolute -left-2 -top-4 z-10 flex size-7 items-center justify-center rounded-full bg-[#FFFFFF] ring-1 ring-[rgba(16,24,40,0.04)] shadow-[0_1px_2px_rgba(16,24,40,0.05)] dark-x:bg-[#D9ED92] dark-x:shadow-none dark-x:ring-transparent">
           {/* The heart takes the accent rather than a literal red — it is the one
               coloured mark on the cover besides the bubble, and a second hue
               would be the only one in the whole gallery. */}
-          <svg viewBox="0 0 24 24" className="size-3.5 text-[#6F8F2E] [[data-theme=light]_&]:text-[#A8C64A]" fill="currentColor" aria-hidden>
+          <svg viewBox="0 0 24 24" className="size-3.5 text-[#6F8F2E] light-ui:text-[#A8C64A]" fill="currentColor" aria-hidden>
             <path d="M12 20.4 4.2 12.9a4.6 4.6 0 0 1 0-6.6 4.8 4.8 0 0 1 6.7 0l1.1 1 1.1-1a4.8 4.8 0 0 1 6.7 0 4.6 4.6 0 0 1 0 6.6Z" />
           </svg>
         </span>
-        <span className="absolute -left-[11px] top-[11px] z-10 size-[7px] rounded-full bg-[#FFFFFF] ring-1 ring-[rgba(16,24,40,0.04)] [[data-theme=dark]_&]:bg-[#D9ED92] [[data-theme=dark]_&]:ring-transparent" />
+        <span className="absolute -left-[11px] top-[11px] z-10 size-[7px] rounded-full bg-[#FFFFFF] ring-1 ring-[rgba(16,24,40,0.04)] dark-x:bg-[#D9ED92] dark-x:ring-transparent" />
         {/* Light spends the brand lime. Dark goes neutral — a clear step off the
             card face — rather than a second saturated fill: with the tapback
             already carrying the accent, a coloured bubble made the cover two
@@ -3482,15 +3514,15 @@ function CardCommsApp() {
             size showed the joint: a ring stops where the tail starts, and
             offset drop-shadows kink at the tail's concave hook. It separates by
             value instead, which at #383838 on a #262626 face is a clear step. */}
-        <div className="relative rounded-[18px] px-4 py-3 [[data-theme=light]_&]:bg-[#D9ED92] [[data-theme=dark]_&]:bg-[#383838]">
-          <span className={`block text-[13px] font-normal leading-snug text-[#1B1B1B] [[data-theme=dark]_&]:text-[var(--v69-ink)] ${MOCK_UPSCALED_BODY}`}>
+        <div className="relative rounded-[18px] px-4 py-3 light-ui:bg-[#D9ED92] dark-x:bg-[#383838]">
+          <span className={`block text-[13px] font-normal leading-snug text-[#1B1B1B] dark-x:text-[var(--v69-ink)] ${MOCK_UPSCALED_BODY}`}>
             Assembly is live for the whole team
           </span>
           {/* The tail, drawn as a shape rather than a rotated square: a square
               corner poking out of an 18px radius read as a glitch at cover size. */}
           <svg
             viewBox="0 0 14 14"
-            className="absolute bottom-0 right-2 size-3.5 translate-x-1/2 overflow-visible [[data-theme=light]_&]:text-[#D9ED92] [[data-theme=dark]_&]:text-[#383838]"
+            className="absolute bottom-0 right-2 size-3.5 translate-x-1/2 overflow-visible light-ui:text-[#D9ED92] dark-x:text-[#383838]"
             aria-hidden
           >
             {/* The path starts above the viewBox so the tail overlaps the bubble
@@ -3534,7 +3566,7 @@ function CardAIAssistant() {
           behind the shared hairline. It was machined hardware before — a
           perimeter carve, a key light, a glass sheen, a dished well under the
           waveform, a halo behind it and a cast shadow off the bars. */}
-      <div className="relative flex aspect-square h-full max-h-[220px] items-center justify-center rounded-full bg-[var(--v69-inner)] ring-1 ring-[rgba(16,24,40,0.06)] [.template-mock_&]:ring-[rgba(16,24,40,0.10)] [[data-theme=dark]_&]:bg-[#323232] [[data-theme=dark]_&]:ring-[rgba(255,255,255,0.12)] [[data-theme=dark]_.template-mock_&]:ring-[rgba(255,255,255,0.20)]">
+      <div className="relative flex aspect-square h-full max-h-[220px] items-center justify-center rounded-full bg-[var(--v69-inner)] ring-1 ring-[rgba(16,24,40,0.06)] [.template-mock_&]:ring-[rgba(16,24,40,0.10)] dark-x:bg-[#323232] dark-x:ring-[rgba(255,255,255,0.12)] dark-mock:ring-[rgba(255,255,255,0.20)]">
         {/* The one mark on the cover, at the PDF tile's value in both skins:
             these two are the set's only single-mark covers, and they should
             carry the same weight side by side. */}
@@ -3576,7 +3608,7 @@ const NODE_TARGET_Y = 39; // the field that row reveals
 // reads as paper rather than as pattern. Literal rgba — the mock's dark skin
 // remaps --color-white.
 const NODE_CANVAS =
-  "[background-image:radial-gradient(rgba(16,24,40,0.10)_1px,transparent_1px)] [background-size:12px_12px] [[data-theme=dark]_&]:[background-image:radial-gradient(rgba(255,255,255,0.10)_1px,transparent_1px)]";
+  "[background-image:radial-gradient(rgba(16,24,40,0.10)_1px,transparent_1px)] [background-size:12px_12px] dark-x:[background-image:radial-gradient(rgba(255,255,255,0.10)_1px,transparent_1px)]";
 // One skin for every node: a surface lifted off the canvas behind a hairline.
 // The hairline takes MOCK_OUTLINE's alphas so these nodes are framed as firmly
 // as the other widget mocks — at 7%/10% the node edge disappeared into the
@@ -3586,7 +3618,7 @@ const NODE_CANVAS =
 // nodes rather than chips, and the cast shadow comes off entirely: scaled up it
 // read as a dark halo around each node rather than as lift.
 const NODE_SURFACE =
-  "rounded-xl [.template-mock_&]:rounded-md bg-[#fafafa] shadow-[0_1px_2px_rgba(16,24,40,0.08),0_6px_14px_-8px_rgba(16,24,40,0.18)] [.template-mock_&]:shadow-none ring-1 ring-[rgba(16,24,40,0.08)] [.template-mock_&]:ring-[rgba(16,24,40,0.15)] [[data-theme=dark]_&]:bg-[#323232] [[data-theme=dark]_&]:shadow-[0_1px_3px_rgba(0,0,0,0.5)] [[data-theme=dark]_&]:ring-[rgba(255,255,255,0.12)] [[data-theme=dark]_.template-mock_&]:ring-[rgba(255,255,255,0.20)]";
+  "rounded-xl [.template-mock_&]:rounded-md bg-[#fafafa] shadow-[0_1px_2px_rgba(16,24,40,0.08),0_6px_14px_-8px_rgba(16,24,40,0.18)] [.template-mock_&]:shadow-none ring-1 ring-[rgba(16,24,40,0.08)] [.template-mock_&]:ring-[rgba(16,24,40,0.15)] dark-x:bg-[#323232] dark-x:shadow-[0_1px_3px_rgba(0,0,0,0.5)] dark-x:ring-[rgba(255,255,255,0.12)] dark-mock:ring-[rgba(255,255,255,0.20)]";
 const NODE_ACCENT = "#7DA4FF";
 
 function CardConditionalForms() {
@@ -3627,7 +3659,7 @@ function CardConditionalForms() {
             style={{ height: NODE_ROW_H }}
             className={`flex items-center truncate px-3 text-[13px] font-normal ${
               i === 0 ? "text-[var(--v69-ink)]" : "text-muted-foreground"
-            } ${i === 1 ? "border-t border-[rgba(16,24,40,0.08)] [.template-mock_&]:border-[rgba(16,24,40,0.15)] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.12)] [[data-theme=dark]_.template-mock_&]:border-[rgba(255,255,255,0.20)]" : ""}`}
+            } ${i === 1 ? "border-t border-[rgba(16,24,40,0.08)] [.template-mock_&]:border-[rgba(16,24,40,0.15)] dark-x:border-[rgba(255,255,255,0.12)] dark-mock:border-[rgba(255,255,255,0.20)]" : ""}`}
           >
             {answer}
           </span>
@@ -3738,7 +3770,7 @@ const BLOCK_HUES: Record<string, string> = {
 const BLOCK_HUES_DARK = BLOCK_HUES;
 const BLOCK_HUES_LIGHT = BLOCK_HUES;
 const BLOCK_FILL =
-  "bg-[var(--blk-light)] [[data-theme=dark]_&]:bg-[var(--blk-dark)]";
+  "bg-[var(--blk-light)] dark-x:bg-[var(--blk-dark)]";
 const blockVars = (code: string) =>
   ({
     "--blk-light": BLOCK_HUES_LIGHT[code],
@@ -3767,7 +3799,7 @@ const BLOCK_BOARD = [
 // pieces. Enough is left that the pieces still sit on the board rather than
 // being painted onto it.
 const BLOCK_FACE =
-  "shadow-[inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-1px_0_rgba(0,0,0,0.07)] [[data-theme=light]_&]:shadow-[inset_0_1px_0_rgba(255,255,255,0.14),inset_0_-1px_0_rgba(0,0,0,0.025)]";
+  "shadow-[inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-1px_0_rgba(0,0,0,0.07)] light-ui:shadow-[inset_0_1px_0_rgba(255,255,255,0.14),inset_0_-1px_0_rgba(0,0,0,0.025)]";
 // Empty cell — a hole in the board, carried by its fill alone now that the grid
 // sits straight on the card face. Both skins state the fill outright rather than
 // laying an alpha over whatever is behind:
@@ -3777,7 +3809,7 @@ const BLOCK_FACE =
 //    cool patch in a palette that is warm everywhere else. It takes the same warm
 //    step the unit tags use on this skin instead.
 const BLOCK_HOLE =
-  "bg-[#e6e6e6] [[data-theme=light]_.template-mock_&]:bg-[#e2e2e2] [[data-theme=dark]_&]:bg-[#3A3A3A]";
+  "bg-[#e6e6e6] light-mock:bg-[#e2e2e2] dark-x:bg-[#3A3A3A]";
 
 function BlockCell({ code, radius }: { code: string; radius: string }) {
   return BLOCK_HUES_LIGHT[code] ? (
@@ -3829,9 +3861,9 @@ function CardServiceRequest() {
     // One object centred on an empty ground. It used to be the request written out
     // as a sentence across an ink-filled card — the only inverted face in the set,
     // and a paragraph where every sibling cover is a single object.
-    <div className="v69-intake-cover flex h-full items-center justify-center bg-[var(--v69-card)] p-5 [[data-theme=light]_.template-mock_&]:bg-[#f2f2f2]">
+    <div className="v69-intake-cover flex h-full items-center justify-center bg-[var(--v69-card)] p-5 light-mock:bg-[#f2f2f2]">
       {/* The track: a recess the segments sit in, one step off the card face. */}
-      <div className="flex items-center gap-1 rounded-full bg-[var(--v69-inner)] p-1 [[data-theme=dark]_&]:bg-[#2E2E2E]">
+      <div className="flex items-center gap-1 rounded-full bg-[var(--v69-inner)] p-1 dark-x:bg-[#2E2E2E]">
         {INTAKE_SEGMENTS.map((segment, i) => {
           const selected = i === 0;
           return (
@@ -3842,7 +3874,7 @@ function CardServiceRequest() {
               // as two buttons.
               className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[13px] leading-none ${
                 selected
-                  ? "bg-[#FFFFFF] text-[var(--v69-ink)] [[data-theme=dark]_&]:bg-[#3F3F3F]"
+                  ? "bg-[#FFFFFF] text-[var(--v69-ink)] dark-x:bg-[#3F3F3F]"
                   : "text-muted-foreground"
               }`}
             >
@@ -3850,7 +3882,7 @@ function CardServiceRequest() {
               {segment.count !== null && (
                 // The count takes the brand accent — the one coloured mark on the
                 // cover, the way the send button carries it on the composer.
-                <span className="flex h-[17px] min-w-[17px] items-center justify-center rounded-full bg-[#D9ED92] px-1 text-[10px] leading-none tabular-nums text-[#262626] [[data-theme=dark]_&]:bg-[#7DA4FF]">
+                <span className="flex h-[17px] min-w-[17px] items-center justify-center rounded-full bg-[#D9ED92] px-1 text-[10px] leading-none tabular-nums text-[#262626] dark-x:bg-[#7DA4FF]">
                   {segment.count}
                 </span>
               )}
@@ -3885,7 +3917,7 @@ function CardEvents() {
       {/* rounded-xl, the same corner the record rows take (intake, the two
           libraries): at rounded-2xl the invite was the roundest object in the set,
           and on a frame this size that reads as a different family. */}
-      <div className="w-full overflow-hidden rounded-xl ring-1 ring-black/[0.05] [[data-theme=dark]_&]:ring-[rgba(255,255,255,0.11)]">
+      <div className="w-full overflow-hidden rounded-xl ring-1 ring-black/[0.05] dark-x:ring-[rgba(255,255,255,0.11)]">
         {/* The band. Ink on lime in both themes: it is the event's own colour,
             not a surface that inverts with the skin. */}
         <div
@@ -3900,7 +3932,7 @@ function CardEvents() {
         {/* Dark takes an explicit fill rather than --v69-well: on the gallery's
             dark skin that token lands within a step of the card face, so the
             body of the card disappeared and only the lime band read. */}
-        <div className="flex gap-2.5 bg-[var(--v69-well)] px-3.5 py-3 [[data-theme=light]_&]:bg-[#fafafa] [[data-theme=dark]_&]:bg-[#343434]">
+        <div className="flex gap-2.5 bg-[var(--v69-well)] px-3.5 py-3 light-ui:bg-[#fafafa] dark-x:bg-[#343434]">
           {/* The marker the reference runs down the left of the title — the other
               brand hue, so the card carries both and neither has to shout. */}
           <span
@@ -3947,12 +3979,12 @@ function CardDesignApprovals() {
           of the card rather than a header. Both are now a soft step off the panel
           — a warm grey in light, a lifted grey in dark — with the type in the
           theme's own ink and a hairline closing the band. */}
-      <div className="flex items-center gap-2 bg-[var(--v69-ink)] px-5 py-4 [[data-theme=light]_&]:bg-[#ebebeb] [[data-theme=light]_&]:shadow-[inset_0_-1px_0_rgba(16,24,40,0.07)] [[data-theme=dark]_&]:bg-[#343434] [[data-theme=dark]_&]:shadow-[inset_0_-1px_0_rgba(255,255,255,0.08)]">
+      <div className="flex items-center gap-2 bg-[var(--v69-ink)] px-5 py-4 light-ui:bg-[#ebebeb] light-ui:shadow-[inset_0_-1px_0_rgba(16,24,40,0.07)] dark-x:bg-[#343434] dark-x:shadow-[inset_0_-1px_0_rgba(255,255,255,0.08)]">
         <FolderGlyph
-          className={`size-4 ${ON_INK} [[data-theme=light]_&]:text-[var(--v69-ink)] [[data-theme=dark]_&]:text-[#EDEDED]`}
+          className={`size-4 ${ON_INK} light-ui:text-[var(--v69-ink)] dark-x:text-[#EDEDED]`}
         />
         <span
-          className={`text-[13px] font-normal ${ON_INK} [[data-theme=light]_&]:text-[var(--v69-ink)] [[data-theme=dark]_&]:text-[#EDEDED]`}
+          className={`text-[13px] font-normal ${ON_INK} light-ui:text-[var(--v69-ink)] dark-x:text-[#EDEDED]`}
         >
           Design reviews
         </span>
@@ -3970,7 +4002,7 @@ function CardDesignApprovals() {
         {APPROVAL_ROWS.map((row) => (
           <div
             key={row.title}
-            className="border-b px-5 py-3.5 [[data-theme=light]_&]:border-black/[0.07] [[data-theme=dark]_&]:border-[rgba(255,255,255,0.14)]"
+            className="border-b px-5 py-3.5 light-ui:border-black/[0.07] dark-x:border-[rgba(255,255,255,0.14)]"
           >
             <div className="truncate text-[13px] font-normal text-[var(--v69-ink)]">
               {row.title}
@@ -3980,6 +4012,1135 @@ function CardDesignApprovals() {
             </div>
           </div>
         ))}
+      </div>
+    </div>
+  );
+}
+
+// The engagement score as a full ring, for a cover framed in a circle (the
+// templates gallery): the same five-band scale as the half gauge, wrapped all
+// the way round from the top, so the ring follows the frame instead of sitting
+// in it as a half dial. Colours come from --ring-fill and --ring-empty so the
+// frame's skin can set them.
+const RING_R = 42;
+const RING_WIDTH = 7;
+const RING_BANDS = 5;
+const RING_GAP = 7;
+const RING_CIRCUMFERENCE = 2 * Math.PI * RING_R;
+// Round caps reach half the stroke past each dash, so the dash is shortened by
+// a full stroke width to keep the visible gap at RING_GAP.
+const RING_DASH = RING_CIRCUMFERENCE / RING_BANDS - RING_GAP - RING_WIDTH;
+const RING_DASHARRAY = `${RING_DASH} ${RING_CIRCUMFERENCE / RING_BANDS - RING_DASH}`;
+const RING_MASK_ID = "engagement-ring-progress";
+
+export function CardEngagementRing() {
+  const swept = (ENGAGEMENT_SCORE / 100) * RING_CIRCUMFERENCE;
+  return (
+    <div className="relative h-full w-full [container-type:inline-size]">
+      <svg viewBox="0 0 100 100" className="absolute inset-0 size-full" aria-hidden>
+        <defs>
+          <mask id={RING_MASK_ID}>
+            <circle
+              cx="50"
+              cy="50"
+              r={RING_R}
+              fill="none"
+              stroke="#fff"
+              strokeWidth={RING_WIDTH + 4}
+              strokeDasharray={`${swept} ${RING_CIRCUMFERENCE}`}
+              transform="rotate(-90 50 50)"
+            />
+          </mask>
+        </defs>
+        <g transform={`rotate(${-90 + ((RING_GAP + RING_WIDTH) / 2 / RING_CIRCUMFERENCE) * 360} 50 50)`}>
+          <circle
+            cx="50"
+            cy="50"
+            r={RING_R}
+            fill="none"
+            stroke="var(--ring-empty, rgba(255,255,255,0.12))"
+            strokeWidth={RING_WIDTH}
+            strokeLinecap="round"
+            strokeDasharray={RING_DASHARRAY}
+          />
+        </g>
+        <g mask={`url(#${RING_MASK_ID})`}>
+          <g transform={`rotate(${-90 + ((RING_GAP + RING_WIDTH) / 2 / RING_CIRCUMFERENCE) * 360} 50 50)`}>
+            <circle
+              cx="50"
+              cy="50"
+              r={RING_R}
+              fill="none"
+              stroke="var(--ring-fill, #7DA4FF)"
+              strokeWidth={RING_WIDTH}
+              strokeLinecap="round"
+              strokeDasharray={RING_DASHARRAY}
+            />
+          </g>
+        </g>
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <span className="text-[11.6cqw] font-normal leading-none tracking-tight tabular-nums text-[var(--v69-ink)]">
+          {ENGAGEMENT_SCORE}
+        </span>
+        {/* Ink at 70% rather than the muted grey, which washed out over the
+            bright band showing through the glass. */}
+        <span className="mt-[3cqw] text-[6cqw] leading-none text-[var(--v69-ink)]/70">
+          Score
+        </span>
+      </div>
+    </div>
+  );
+}
+
+// Tasks for the templates gallery: today's list on the glass, done items
+// ticked and dimmed, open ones at full ink, and the add button at the foot,
+// after a phone to-do widget. The home rail keeps its own cover (CardTasks).
+const TASK_LIST = [
+  { label: "Sign the engagement letter", done: true },
+  { label: "Upload brand assets", done: true },
+  { label: "Approve homepage draft", done: false },
+  { label: "Book the kickoff call", done: false },
+];
+
+export function CardTaskList() {
+  return (
+    <div className="flex h-full w-full flex-col p-[9%] [container-type:inline-size]">
+      <span className="text-[8.5cqw] leading-none tracking-tight text-[var(--v69-ink)]">
+        Today
+      </span>
+      <ul className="mt-[6cqw] flex flex-col gap-[5cqw]">
+        {TASK_LIST.map(({ label, done }) => (
+          <li key={label} className="flex items-center gap-[4cqw]">
+            <span
+              className={`flex size-[7.4cqw] shrink-0 items-center justify-center rounded-[2cqw] ${
+                done
+                  ? "bg-[var(--v69-ink)] text-white dark-x:text-[#1B1B1B]"
+                  : "shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--v69-ink)_35%,transparent)]"
+              }`}
+            >
+              {done && (
+                <svg viewBox="0 0 12 12" className="size-[5.4cqw]" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                  <path d="M2.5 6.2 5 8.5l4.5-5" />
+                </svg>
+              )}
+            </span>
+            <span
+              className={`truncate pb-[1cqw] -mb-[1cqw] text-[6.6cqw] leading-none ${
+                done ? "text-[var(--v69-ink)]/45" : "text-[var(--v69-ink)]"
+              }`}
+            >
+              {label}
+            </span>
+          </li>
+        ))}
+      </ul>
+      <span className="mt-auto self-end rounded-full bg-[var(--v69-ink)]/12 px-[5cqw] py-[3.4cqw] text-[6cqw] leading-none text-[var(--v69-ink)]">
+        Add task
+      </span>
+    </div>
+  );
+}
+
+// New client intake for the templates gallery, after a phone widget that sets
+// its pitch as one sentence with small icons in the line and a button under it.
+// The home rail keeps its single-row cover (CardIntake).
+function IntakeChip({
+  tone,
+  children,
+}: {
+  tone: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <span
+      aria-hidden
+      className={`relative -top-[0.6cqw] inline-flex size-[9cqw] items-center justify-center rounded-[2.4cqw] align-middle ${tone}`}
+    >
+      <svg viewBox="0 0 20 20" className="size-[5.6cqw]" fill="currentColor">
+        {children}
+      </svg>
+    </span>
+  );
+}
+
+export function CardIntakeSentence() {
+  return (
+    <div className="flex h-full w-full flex-col justify-between p-[10%] [container-type:inline-size]">
+      <p className="text-[8.6cqw] leading-[1.28] tracking-tight text-[var(--v69-ink)]">
+        Collect scope, budget{" "}
+        <IntakeChip tone="bg-[#D9ED92] text-[#3F5410]">
+          <path d="M5.9375 13.2656C6.90625 13.5078 7.96094 13.668 9.0625 13.7266V15.6016C7.92578 15.543 6.87109 15.3828 5.9375 15.1445V13.2695V13.2656ZM1.875 11.4062C2.48438 11.8828 3.22266 12.3047 4.0625 12.6523V14.5C3.96094 14.4531 3.86328 14.4062 3.76562 14.3594C2.15625 13.5547 1.875 12.7891 1.875 12.5V11.4062ZM10 2.5C4.47656 2.5 0 5.01953 0 8.125V12.5C0 15.2617 4.47656 17.5 10 17.5C15.5234 17.5 20 15.2617 20 12.5V8.125C20 5.01953 15.5234 2.5 10 2.5ZM15.625 12.7773C16.5938 12.4062 17.4414 11.9414 18.125 11.4062V12.5C18.125 12.7891 17.8438 13.5547 16.2344 14.3594C16.043 14.4531 15.8398 14.5469 15.625 14.6328V12.7773ZM10.9375 13.7266C11.9219 13.6758 12.8672 13.543 13.75 13.3438V15.2227C12.8945 15.418 11.9492 15.5547 10.9375 15.6055V13.7305V13.7266ZM2.5 8.125C2.5 6.05469 5.85938 4.375 10 4.375C14.1406 4.375 17.5 6.05469 17.5 8.125C17.5 10.1953 14.1406 11.875 10 11.875C5.85938 11.875 2.5 10.1953 2.5 8.125ZM10 10.625C13.1055 10.625 15.625 9.50391 15.625 8.125C15.625 6.74609 13.1055 5.625 10 5.625C6.89453 5.625 4.375 6.74609 4.375 8.125C4.375 9.50391 6.89453 10.625 10 10.625ZM6.875 8.125C6.875 7.92969 7.32031 7.75781 8.01562 7.64062C8.55469 7.55078 9.24609 7.5 10 7.5C10.7539 7.5 11.4453 7.55469 11.9844 7.64062C12.6797 7.75781 13.125 7.92969 13.125 8.125C13.125 8.32031 12.6797 8.49219 11.9844 8.60938C11.4453 8.69531 10.7539 8.75 10 8.75C9.24609 8.75 8.55469 8.69531 8.01562 8.60938C7.32031 8.49219 6.875 8.32031 6.875 8.125Z" />
+        </IntakeChip>{" "}
+        and goals from every new client{" "}
+        <IntakeChip tone="bg-[#7DA4FF] text-[#13244D]">
+          <path d="M8.75 0C3.91797 0 0 3.91797 0 8.75C0 11.0078 0.859375 13.0703 2.26562 14.6211C2.42969 14.8047 2.5 15 2.5 15.1602V19.0625C2.5 19.582 2.91797 20 3.4375 20C3.95703 20 4.375 19.582 4.375 19.0625V15.1602C4.375 14.4531 4.07031 13.8242 3.65234 13.3633C2.54688 12.1445 1.875 10.5273 1.875 8.75C1.875 4.95312 4.95312 1.875 8.75 1.875C12.1328 1.875 14.9492 4.32031 15.5195 7.54297C15.5547 7.73047 15.6445 7.90625 15.7812 8.04297L17.8203 10.082C18.0156 10.2773 18.1289 10.5469 18.1289 10.8242C18.1289 11.4062 17.6602 11.875 17.0781 11.875H16.5625C16.043 11.875 15.625 12.293 15.625 12.8125V14.6875C15.625 15.5508 14.9258 16.25 14.0625 16.25H12.1875C11.668 16.25 11.25 16.668 11.25 17.1875V19.0625C11.25 19.582 11.668 20 12.1875 20C12.707 20 13.125 19.582 13.125 19.0625V18.125H14.0625C15.9609 18.125 17.5 16.5859 17.5 14.6875V13.7188C18.9141 13.5117 20 12.293 20 10.8242C20 10.0469 19.6914 9.30469 19.1445 8.75391L17.3086 6.91797C16.4648 2.96484 12.957 0 8.75 0ZM12.5 9.375C12.8315 9.375 13.1495 9.2433 13.3839 9.00888C13.6183 8.77446 13.75 8.45652 13.75 8.125C13.75 7.79348 13.6183 7.47554 13.3839 7.24112C13.1495 7.0067 12.8315 6.875 12.5 6.875C12.1685 6.875 11.8505 7.0067 11.6161 7.24112C11.3817 7.47554 11.25 7.79348 11.25 8.125C11.25 8.45652 11.3817 8.77446 11.6161 9.00888C11.8505 9.2433 12.1685 9.375 12.5 9.375Z" />
+        </IntakeChip>{" "}
+        before kickoff.
+      </p>
+      <span className="flex items-center justify-center rounded-full bg-[var(--v69-ink)]/[0.14] py-[4cqw] text-[6.4cqw] leading-none text-[var(--v69-ink)]">
+        Send intake form
+      </span>
+    </div>
+  );
+}
+
+// The client AI assistant for the templates gallery: a soft gradient blurb in
+// place of a logo, the greeting, and the ask field, after a phone assistant
+// widget. The home rail keeps its chat cover (CardChat).
+// The brand's periwinkle, pink and lime, blurred into one glow.
+const ASSISTANT_BLURB =
+  "radial-gradient(circle at 30% 30%, #7DA4FF 0%, transparent 60%), radial-gradient(circle at 72% 40%, #F2A7E4 0%, transparent 58%), radial-gradient(circle at 48% 78%, #D9ED92 0%, transparent 60%)";
+
+export function CardAssistantAsk() {
+  return (
+    <div className="flex h-full w-full flex-col items-center justify-between p-[9%] text-center [container-type:inline-size]">
+      <span
+        aria-hidden
+        className="size-[24cqw] shrink-0 rounded-full blur-[1.6cqw]"
+        style={{ backgroundImage: ASSISTANT_BLURB }}
+      />
+      <span className="text-[8.5cqw] leading-[1.15] tracking-tight text-[var(--v69-ink)]">
+        What can I help
+        <br />
+        you with today?
+      </span>
+      <span className="v69-ask-field w-full rounded-[5cqw] bg-[var(--v69-inner)] px-[5cqw] py-[4.5cqw] text-left text-[6cqw] leading-none text-[var(--v69-ink)]/55">
+        Ask something
+      </span>
+    </div>
+  );
+}
+
+// The client resource library for the templates gallery: a guide open on the
+// glass, its text fading off top and bottom, with a reading-progress pill, after
+// a phone's reading widget. The home rail keeps its file row (CardResourceLibrary).
+const RESOURCE_GUIDE = {
+  title: "Brand guidelines",
+  body: "Our logo works best with room to breathe. Keep clear space equal to the height of the mark on every side, and never stretch, recolor or rotate it. Use the primary palette for headlines and calls to action, and save the accent color for small highlights. Photography should feel natural and well lit, with real people over stock poses.",
+  read: 75,
+};
+// Terms the guide defines, marked the way a doc marks a glossary link.
+const RESOURCE_TERMS = ["clear space", "primary palette", "accent color"];
+const RESOURCE_TERM_SPLIT = new RegExp(`(${RESOURCE_TERMS.join("|")})`);
+// Ring geometry in the pill's own 20-unit box.
+const RESOURCE_RING_R = 7;
+const RESOURCE_RING_C = 2 * Math.PI * RESOURCE_RING_R;
+// The text dissolves at both ends so it reads as a page mid-scroll rather than
+// a block of copy that stops.
+const RESOURCE_FADE =
+  "linear-gradient(to bottom, transparent 0%, #000 20%, #000 50%, transparent 85%)";
+
+export function CardResourceArticle() {
+  return (
+    <div className="relative flex h-full w-full flex-col items-center px-[11%] pt-[10%] text-center [container-type:inline-size]">
+      <span className="text-[8.5cqw] leading-[1.15] tracking-tight text-[var(--v69-ink)]">
+        {RESOURCE_GUIDE.title}
+      </span>
+      <p
+        className="mt-[3cqw] min-h-0 flex-1 overflow-hidden text-left text-[6cqw] leading-[1.45] text-[var(--v69-ink)]/70"
+        style={{ maskImage: RESOURCE_FADE, WebkitMaskImage: RESOURCE_FADE }}
+      >
+        {RESOURCE_GUIDE.body.split(RESOURCE_TERM_SPLIT).map((part, i) =>
+          RESOURCE_TERMS.includes(part) ? (
+            <span
+              key={i}
+              className="text-[var(--v69-ink)] underline decoration-[var(--v69-ink)]/50 decoration-dashed decoration-[0.25cqw] underline-offset-[1.2cqw]"
+            >
+              {part}
+            </span>
+          ) : (
+            part
+          ),
+        )}
+      </p>
+      <span className="v69-reading-pill absolute bottom-[7%] left-1/2 flex -translate-x-1/2 items-center gap-[2cqw] rounded-full py-[1.6cqw] pl-[1.8cqw] pr-[3.2cqw] text-[6.5cqw] leading-none tabular-nums text-[var(--v69-ink)]">
+        <svg viewBox="0 0 20 20" className="size-[7.5cqw] -rotate-90" aria-hidden>
+          <circle cx="10" cy="10" r={RESOURCE_RING_R} fill="none" stroke="var(--ring-empty, rgba(255,255,255,0.12))" strokeWidth="2.5" />
+          <circle
+            cx="10"
+            cy="10"
+            r={RESOURCE_RING_R}
+            fill="none"
+            stroke="var(--ring-fill, #ffdcf8)"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeDasharray={`${(RESOURCE_GUIDE.read / 100) * RESOURCE_RING_C} ${RESOURCE_RING_C}`}
+          />
+        </svg>
+        {/* Digits have no descenders, so the line box leaves them sitting high;
+            lowered to the pill's centre. */}
+        <span className="block translate-y-[0.09em]">{RESOURCE_GUIDE.read}%</span>
+      </span>
+    </div>
+  );
+}
+
+// The data room for the templates gallery's glass tile: the latest activity as
+// a card over the room's open access requests, after a phone notification.
+// The home rail keeps its own cover (CardDataRoom).
+const DATA_ROOM_LATEST = "Larkspur opened Q3 financials";
+const DATA_ROOM_REQUESTS = 2;
+
+export function CardDataRoomAlerts() {
+  return (
+    // A strip tile, so sizes run about 0.7x the square tiles' to read the same.
+    // The tile's own glass is the tray; the card is the latest event.
+    <div className="flex h-full w-full flex-col justify-start p-[3.5%] [container-type:inline-size]">
+      <div className="mt-[1cqw] rounded-[2.2cqw] bg-[var(--v69-ink)]/[0.12] px-[3.4cqw] py-[3cqw] text-[var(--v69-ink)]">
+        <div className="truncate text-[4.6cqw] leading-none">
+          {DATA_ROOM_LATEST}
+        </div>
+      </div>
+      <div className="flex items-center gap-[2.1cqw] px-[2.6cqw] pt-[2.4cqw] text-[4.6cqw] leading-none text-[var(--v69-ink)]">
+        <span className="flex size-[5cqw] shrink-0 items-center justify-center rounded-[1.4cqw] bg-[#FF8C8C] text-[2.7cqw] leading-none text-[#1B1B1B]">
+          <span data-initial className="block translate-y-[0.33cqw]">
+            {DATA_ROOM_REQUESTS}
+          </span>
+        </span>
+        Access requested
+      </div>
+    </div>
+  );
+}
+
+// The document collector for the templates gallery: the empty upload slot
+// itself, a plus and a line of copy on the glass, after a phone's "add" tile.
+// The home rail keeps its own cover (CardDocuments).
+export function CardDocumentAdd() {
+  return (
+    <div className="flex h-full w-full flex-col items-center justify-center p-[10%] text-center [container-type:inline-size]">
+      <span className="flex size-[16cqw] items-center justify-center rounded-full bg-[var(--v69-ink)]/15">
+        <svg
+          viewBox="0 0 16 16"
+          className="size-[8cqw] text-[var(--v69-ink)]"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          aria-hidden
+        >
+          <path d="M8 2.5v11M2.5 8h11" />
+        </svg>
+      </span>
+      <span className="mt-[6cqw] text-[8.5cqw] leading-none tracking-tight text-[var(--v69-ink)]">
+        Add documents
+      </span>
+      <span className="mt-[3cqw] text-[6cqw] leading-none text-[var(--v69-ink)]/70">
+        Upload requested files
+      </span>
+    </div>
+  );
+}
+
+// The client calendar for the templates gallery. The home rail keeps the
+// single-date cover (CardCalendar).
+const CALENDAR_EVENTS = [
+  {
+    title: "Kickoff call",
+    time: "11:30 - 12:30",
+    tone: "text-[var(--v69-ink)]",
+    fill: "bg-[var(--v69-ink)]/[0.08]",
+    spine: "bg-[var(--v69-ink)]",
+  },
+  {
+    title: "Design review",
+    time: "14:00 - 15:00",
+    tone: "text-[var(--v69-ink)]",
+    fill: "bg-[var(--v69-ink)]/[0.08]",
+    spine: "bg-[var(--v69-ink)]",
+  },
+];
+
+// After a phone calendar widget: the day and date on top, on the proposal
+// card's headline and figure steps, then each event as a tinted row with its
+// spine.
+export function CardCalendarAgenda() {
+  return (
+    <div className="flex h-full w-full flex-col justify-between p-[10%] [container-type:inline-size]">
+      {/* Date at the top, agenda at the floor, as the tracker splits its
+          status line from its bar. */}
+      <div>
+        <div className="text-[8.5cqw] leading-none tracking-tight text-[var(--v69-ink)]">
+          Tuesday
+        </div>
+        <div className="mt-[3cqw] text-[13cqw] leading-none tracking-tight text-[var(--v69-ink)] tabular-nums">
+          18
+        </div>
+      </div>
+      <div>
+        <div className="flex flex-col gap-[2.5cqw]">
+          {CALENDAR_EVENTS.map((event) => (
+            <div
+              key={event.time}
+              className={`flex gap-[2.5cqw] rounded-[2cqw] py-[3.5cqw] pl-[2cqw] pr-[3cqw] ${event.fill} ${event.tone}`}
+            >
+              <span
+                className={`w-[1.1cqw] shrink-0 rounded-full ${event.spine}`}
+              />
+              <span className="flex min-w-0 flex-col gap-[2cqw] py-[0.5cqw]">
+                <span className="truncate text-[6.5cqw] leading-none">
+                  {event.title}
+                </span>
+                <span className="text-[6.5cqw] leading-none tabular-nums opacity-60">
+                  {event.time}
+                </span>
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// The project tracker as a single progress bar, for the templates gallery's
+// glass tile: a status line, a 0 to 100 scale, and the done share as a solid
+// bar, after the identity's widget glass.
+// The home rail keeps the dot disc (CardTracker).
+const TRACKER_DONE_PCT = Math.round(TRACKER_STATES[0].share * 100);
+const TRACKER_TASKS_LEFT = 18;
+
+export function CardTrackerBar() {
+  return (
+    <div className="flex h-full w-full flex-col justify-between p-[10%] [container-type:inline-size]">
+      <div>
+        <div className="flex items-center gap-[2cqw] text-[6.5cqw] leading-none text-[var(--v69-ink)]/45">
+          {/* Half filled, the usual task-status mark for "under way". Raised to
+              the capitals' centre: the line box centres it a touch low. */}
+          <svg viewBox="0 0 16 16" className="size-[6.5cqw] -translate-y-[0.7cqw]" fill="none" aria-hidden>
+            <circle cx="8" cy="8" r="6.25" stroke="currentColor" strokeWidth="1.5" />
+            <path d="M8 3.75a4.25 4.25 0 0 1 0 8.5z" fill="currentColor" />
+          </svg>
+          In progress
+        </div>
+        <div className="mt-[3cqw] text-[8.5cqw] leading-none tracking-tight text-[var(--v69-ink)]">
+          {TRACKER_DONE_PCT}% · {TRACKER_TASKS_LEFT} tasks left
+        </div>
+      </div>
+      <div>
+        <div
+          className="flex justify-between text-[4.5cqw] leading-none text-[var(--v69-ink)]/35"
+          style={MOCK_MONO}
+        >
+          <span>0</span>
+          <span>50</span>
+          <span>100</span>
+        </div>
+        <div className="relative mt-[3.5cqw] h-[22cqw] rounded-[5cqw] bg-[var(--v69-ink)]/[0.08]">
+          <div
+            className="absolute inset-y-0 left-0 rounded-[5cqw] bg-[var(--v69-ink)]/90 light-gallery:bg-[var(--v69-ink)]"
+            style={{ width: `${TRACKER_DONE_PCT}%` }}
+          />
+          {/* The halfway mark, a hairline across the bar. */}
+          <span
+            aria-hidden
+            className="absolute left-1/2 top-1/2 h-[45%] w-px -translate-y-1/2 bg-[color-mix(in_srgb,var(--v69-ink)_25%,transparent)] mix-blend-difference"
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// The onboarding wizard for the templates gallery's glass tile: one client's
+// run through the steps as a row of dots, after a phone fitness widget. Status
+// is carried by brightness only so it sits in the set's neutral palette. The
+// home rail keeps the bar cover (CardOnboarding).
+const ONBOARDING_STEPS = {
+  client: "Nora Chen",
+  step: "Signing contract",
+  current: 8,
+  total: 10,
+};
+
+const ONBOARDING_DOT = "5.2cqw";
+
+export function CardOnboardingSteps() {
+  const { client, step, current, total } = ONBOARDING_STEPS;
+  // The dots spread edge to edge, so a step's centre is half a dot in plus its
+  // share of the remaining width; each label centres on that.
+  const dotCentre = (n: number) =>
+    `calc(${ONBOARDING_DOT} / 2 + (100% - ${ONBOARDING_DOT}) * ${(n - 1) / (total - 1)})`;
+  return (
+    <div className="flex h-full w-full flex-col justify-between p-[10%] [container-type:inline-size]">
+      <div>
+        <div className="text-[8.5cqw] leading-none tracking-tight text-[var(--v69-ink)]">
+          {client}
+        </div>
+        <div className="mt-[4cqw] text-[6.5cqw] leading-none text-[var(--v69-ink)]/60">
+          {step}
+        </div>
+      </div>
+      <div>
+        <div className="flex justify-between">
+          {Array.from({ length: total }, (_, i) => {
+            const n = i + 1;
+            const tone =
+              n < current
+                ? "bg-[var(--v69-ink)]/80"
+                : n === current
+                  ? "bg-[var(--v69-ink)] shadow-[0_0_0_1.2cqw_color-mix(in_srgb,var(--v69-ink)_22%,transparent)]"
+                  : "bg-[var(--v69-ink)]/[0.12]";
+            return (
+              <span
+                key={n}
+                className={`shrink-0 rounded-full ${tone}`}
+                style={{ width: ONBOARDING_DOT, height: ONBOARDING_DOT }}
+              />
+            );
+          })}
+        </div>
+        <div
+          className="relative mt-[4.5cqw] h-[5.5cqw] text-[5.5cqw] leading-none text-[var(--v69-ink)]/45 tabular-nums"
+          style={MOCK_MONO}
+        >
+          {[1, current, total].map((n) => (
+            <span
+              key={n}
+              className={`absolute -translate-x-1/2 ${n === current ? "text-[var(--v69-ink)]" : ""}`}
+              style={{ left: dotCentre(n) }}
+            >
+              {n}
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Design approvals for the templates gallery's glass tile: a palette up for
+// sign-off, after a colour-picker widget. The home rail keeps its own cover
+// (CardDesignApprovals).
+const APPROVAL_PALETTE = ["#FFDAFC", "#C6B6FF", "#7DA4FF", "#BCE7F4"];
+const APPROVAL_TITLE = "Color palette";
+// Same grain as the comparison panels, tiled small so it reads at tile size.
+const APPROVAL_GRAIN_SIZE = "60px 60px";
+const APPROVAL_STATUS = `${APPROVAL_PALETTE.length} colors · In review`;
+
+export function CardApprovalList() {
+  return (
+    <div className="flex h-full w-full flex-col p-[7%] [container-type:inline-size]">
+      <div className="relative flex min-h-0 flex-1 overflow-hidden rounded-[6cqw]">
+        {APPROVAL_PALETTE.map((hex) => (
+          <span key={hex} className="flex-1" style={{ backgroundColor: hex }} />
+        ))}
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-0"
+          style={{ backgroundImage: GRAIN, backgroundSize: APPROVAL_GRAIN_SIZE }}
+        />
+      </div>
+      <div className="mt-[5cqw] text-[7.6cqw] leading-none tracking-tight text-[var(--v69-ink)]">
+        {APPROVAL_TITLE}
+      </div>
+      <div className="mt-[3cqw] text-[5.8cqw] leading-none text-[var(--v69-ink)]/45">
+        {APPROVAL_STATUS}
+      </div>
+    </div>
+  );
+}
+
+// Content approval for the templates gallery's glass tile: just the action, a
+// pill naming what's up for sign-off with the go button at its end. The home
+// rail keeps its own cover (CardContentApproval).
+const APPROVE_LABEL = "Approve launch post";
+
+export function CardApproveSheet() {
+  return (
+    <div className="flex h-full w-full items-center justify-between pl-[9cqw] pr-[4cqw] [container-type:inline-size]">
+      <span className="truncate text-[7cqw] leading-none tracking-tight text-[var(--v69-ink)]">
+        {APPROVE_LABEL}
+      </span>
+      <span className="flex size-[17cqw] shrink-0 items-center justify-center rounded-full bg-[#D9ED92] text-[#1B1B1B]">
+        <svg viewBox="0 0 16 16" className="size-[7cqw]" fill="none" aria-hidden>
+          <path
+            d="M3 8h10M9 4l4 4-4 4"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </span>
+    </div>
+  );
+}
+
+// Client help desk for the templates gallery's glass tile: one figure, after
+// a phone stat widget. Title on top, the count at the floor. The home rail
+// keeps its own cover (CardSupport).
+export function CardHelpdeskStat() {
+  return (
+    <div className="flex h-full w-full flex-col justify-between p-[10%] [container-type:inline-size]">
+      <span className="text-[8.5cqw] leading-none tracking-tight text-[var(--v69-ink)]">
+        Open requests
+      </span>
+      <div>
+        <div className="text-[13cqw] leading-[0.9] tracking-tight text-[var(--v69-ink)] tabular-nums">
+          12
+        </div>
+        <div className="mt-[3cqw] text-[6.5cqw] leading-none text-[var(--v69-ink)]/45">
+          3 waiting on you
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Internal communications for the templates gallery's glass tile: a two-line
+// channel exchange as bubbles, sender's avatar on the outer side, with the
+// composer under it. The home rail keeps its own cover (CardCommsApp).
+const COMMS_THREAD = [
+  {
+    name: "Maya",
+    when: "1:34 PM",
+    text: "Offsite moved to Friday. Agenda is in the channel.",
+    tone: "bg-[#C6B6FF] text-[#2A1F5C]",
+    mine: false,
+  },
+  {
+    name: "Jonah",
+    when: "1:46 PM",
+    text: "Thanks, see everyone there.",
+    tone: "bg-[#5CE5C3] text-[#1B1B1B]",
+    mine: true,
+  },
+];
+
+export function CardCommentThread() {
+  return (
+    <div className="flex h-full w-full flex-col p-[7%] [container-type:inline-size]">
+      <div className="flex flex-col gap-[3cqw]">
+        {COMMS_THREAD.map((c) => (
+          <div
+            key={c.name}
+            className={`flex gap-[2.5cqw] ${c.mine ? "items-end" : "flex-row-reverse items-start"}`}
+          >
+            <span
+              className={`flex size-[8cqw] shrink-0 items-center justify-center rounded-full text-[4.7cqw] leading-none ${c.tone}`}
+            >
+              <span data-initial className="block translate-y-[0.46cqw]">
+                {c.name[0]}
+              </span>
+            </span>
+            {/* The corner nearest the avatar stays square, so the bubble reads
+                as said by that person. */}
+            <div
+              className={`min-w-0 flex-1 rounded-[5cqw] bg-[var(--v69-ink)]/[0.1] px-[4.5cqw] py-[3.8cqw] text-[var(--v69-ink)] ${
+                c.mine ? "rounded-bl-[1.2cqw]" : "rounded-tr-[1.2cqw]"
+              }`}
+            >
+              <div className="flex items-baseline gap-[2cqw] text-[5.2cqw] leading-none">
+                <span className="opacity-70">{c.name}</span>
+                <span className="opacity-45">{c.when}</span>
+              </div>
+              <div className="mt-[2.4cqw] text-[6cqw] leading-[1.3]">{c.text}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="mt-auto flex items-center gap-[3cqw] rounded-full bg-[var(--v69-ink)]/[0.08] py-[1.6cqw] pl-[4.5cqw] pr-[1.6cqw]">
+        <span className="flex-1 truncate text-[5.2cqw] leading-none text-[var(--v69-ink)]/45">
+          Write your message...
+        </span>
+        <span className="flex size-[8cqw] shrink-0 items-center justify-center rounded-full bg-[#7DA4FF] text-[#13244D]">
+          <svg viewBox="0 0 16 16" className="size-[4.8cqw]" fill="none" aria-hidden>
+            <path d="M3 8h9.5M8.5 4l4 4-4 4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </span>
+      </div>
+    </div>
+  );
+}
+
+// Markup and comments for the templates gallery's glass tile: a comment
+// opened from its marker in a document, after a source-preview popover. The
+// home rail keeps its own cover (CardMarkup).
+const MARKUP_FADE = "linear-gradient(to bottom, #000 30%, transparent 92%)";
+
+export function CardMarkupPopover() {
+  return (
+    <div className="flex h-full w-full flex-col justify-start overflow-hidden p-[8%] pt-[7%] [container-type:inline-size]">
+      <div className="relative text-[rgba(255,255,255,0.95)]">
+        {/* Bubble and pointer are solid and faded together as one layer, so
+            the pointer joins the bubble without a darker overlap where they
+            meet. The pointer's left is measured to the comment marker's
+            centre in the line below. */}
+        <div aria-hidden className="absolute inset-0 opacity-85 dark-x:opacity-10">
+          <div className="absolute inset-0 rounded-[4cqw] bg-[#141414] dark-x:bg-[#f2f2f2]" />
+          <span className="absolute -bottom-[2cqw] left-[calc(62.6%-2cqw)] size-[4cqw] rotate-45 rounded-[0.8cqw] bg-[#141414] dark-x:bg-[#f2f2f2]" />
+        </div>
+        <div className="relative flex items-center gap-[2.5cqw] border-b border-[rgba(255,255,255,0.1)] px-[4.5cqw] py-[3.5cqw] text-[6cqw] leading-none">
+          <span className="flex size-[6.5cqw] shrink-0 items-center justify-center rounded-full bg-[#C6B6FF] text-[3.8cqw] leading-none text-[#2A1F5C]">
+            <span data-initial className="block translate-y-[0.37cqw]">M</span>
+          </span>
+          Maya on Homepage copy
+        </div>
+        <p className="relative px-[4.5cqw] py-[4cqw] text-[6cqw] leading-[1.35] text-[rgba(255,255,255,0.85)]">
+          Can we lead with the outcome here?
+        </p>
+      </div>
+      {/* The page runs on past the tile and dissolves, as the resource
+          library's guide does, so it reads as a document mid-scroll. */}
+      <p
+        className="mt-[6cqw] min-h-0 flex-1 overflow-hidden text-[6.5cqw] leading-[1.45] text-[var(--v69-ink)]"
+        style={{ maskImage: MARKUP_FADE, WebkitMaskImage: MARKUP_FADE }}
+      >
+        Your portal for files{" "}
+        <span data-comment-marker className="relative -top-[0.5cqw] inline-flex size-[7.5cqw] items-center justify-center rounded-[2cqw] bg-[#7DA4FF] align-middle">
+          <svg viewBox="0 0 20 20" className="size-[4.4cqw] text-[#13244D]" fill="currentColor" aria-hidden>
+            <path d="M2.02734 15.0352C0.753906 13.4609 0 11.5 0 9.375C0 4.19922 4.47656 0 10 0C15.5234 0 20 4.19922 20 9.375C20 14.5508 15.5234 18.75 10 18.75C8.57422 18.75 7.21875 18.4688 5.99219 17.9688L1.44531 19.918C1.30078 19.9805 1.15234 20 0.996094 20C0.445312 20 0 19.5547 0 19.0039C0 18.8359 0.0429687 18.6719 0.121094 18.5273L2.02734 15.0352ZM3.48438 13.8555C3.96094 14.4453 4.03516 15.2656 3.67188 15.9336L2.96875 17.2266L5.25391 16.2461C5.71484 16.0469 6.23828 16.043 6.70312 16.2344C7.70703 16.6445 8.82031 16.875 9.99609 16.875C14.5977 16.875 18.1211 13.4062 18.1211 9.375C18.1211 5.34375 14.6016 1.875 10 1.875C5.39844 1.875 1.875 5.34375 1.875 9.375C1.875 11.0469 2.46484 12.5938 3.48438 13.8555Z" />
+          </svg>
+        </span>{" "}
+        <span className="text-[var(--v69-ink)]/45">
+          and invoices, all in one place. Share updates, collect sign-offs
+          and keep every client on the same page. Every message and payment
+          lands in one place your team already knows.
+        </span>
+      </p>
+    </div>
+  );
+}
+
+// Internal resource library for the templates gallery's glass tile: one
+// guide opened to its steps, after a numbered plan card. A dark sheet sits on
+// the glass with its tab above it. The home rail keeps its own cover
+// (CardTeamGuides). The sheet's whites are literal: the dark mock skin remaps
+// the white token.
+const RESOURCE_STEPS: { before: string; chip?: string; after?: string }[] = [
+  { before: "Read the", chip: "Handbook.pdf" },
+  { before: "Set up your", chip: "Benefits", after: "account" },
+  { before: "Book intro calls with your team" },
+];
+
+export function CardResourceGuide() {
+  return (
+    <div className="flex h-full w-full flex-col gap-[2.5cqw] p-[4%] [container-type:inline-size]">
+      <div className="flex w-fit overflow-hidden rounded-full bg-[var(--v69-ink)]/[0.1] text-[4.6cqw] leading-none text-[var(--v69-ink)]">
+        <span className="bg-[var(--v69-ink)]/[0.1] px-[3cqw] py-[1.8cqw] tabular-nums">2</span>
+        <span className="px-[3cqw] py-[1.8cqw]">Onboarding</span>
+      </div>
+      <div className="flex flex-1 flex-col justify-center rounded-[4cqw] bg-[rgba(18,18,18,0.88)] px-[6cqw] text-[rgba(255,255,255,0.92)] dark-x:bg-[var(--v69-ink)]/[0.1]">
+        <div className="flex items-center gap-[2.5cqw] text-[6.4cqw] leading-none">
+          {/* Raised to the capitals' centre: the line box centres it a touch low. */}
+          <svg viewBox="0 0 17.5 20" className="h-[6cqw] w-[5.25cqw] shrink-0 -translate-y-[0.54cqw] text-[#7DA4FF]" fill="currentColor" aria-hidden>
+            <path d="M3.4375 0C1.53906 0 0 1.53906 0 3.4375V16.875C0 18.6016 1.39844 20 3.125 20H16.5625C17.082 20 17.5 19.582 17.5 19.0625C17.5 18.543 17.082 18.125 16.5625 18.125H16.25V15.1523C17.0039 14.6484 17.5 13.7891 17.5 12.8125V2.8125C17.5 1.25781 16.2422 0 14.6875 0H3.4375ZM14.375 15.625V18.125H3.125C2.43359 18.125 1.875 17.5664 1.875 16.875C1.875 16.1836 2.43359 15.625 3.125 15.625H14.375ZM3.125 13.75C2.67969 13.75 2.25781 13.8438 1.875 14.0117V3.4375C1.875 2.57422 2.57422 1.875 3.4375 1.875H14.6875C15.207 1.875 15.625 2.29297 15.625 2.8125V12.8125C15.625 13.332 15.207 13.75 14.6875 13.75H3.125ZM5 5.9375C5 6.45703 5.41797 6.875 5.9375 6.875H12.8125C13.332 6.875 13.75 6.45703 13.75 5.9375C13.75 5.41797 13.332 5 12.8125 5H5.9375C5.41797 5 5 5.41797 5 5.9375ZM5.9375 8.75C5.41797 8.75 5 9.16797 5 9.6875C5 10.207 5.41797 10.625 5.9375 10.625H12.8125C13.332 10.625 13.75 10.207 13.75 9.6875C13.75 9.16797 13.332 8.75 12.8125 8.75H5.9375Z" />
+          </svg>
+          New hire guide
+        </div>
+        <ul className="mt-[3.5cqw] flex flex-col gap-[2.2cqw] pl-[1cqw] text-[4.4cqw] leading-none text-[rgba(255,255,255,0.85)]">
+          {RESOURCE_STEPS.map((step) => (
+            <li key={step.before} className="flex items-center gap-[1.6cqw]">
+              <span className="mr-[0.8cqw] size-[1cqw] shrink-0 rounded-full bg-[rgba(255,255,255,0.7)]" />
+              {step.before}
+              {/* The glass tint and full ink the other tags use: pale blue on a
+                  faint blue wash didn't hold on the glass. */}
+              {step.chip && (
+                <span className="rounded-[1.2cqw] bg-[var(--v69-ink)]/[0.12] px-[1.6cqw] py-[1.2cqw] text-[var(--v69-ink)]" style={MOCK_MONO}>
+                  {step.chip}
+                </span>
+              )}
+              {step.after}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+// The client calendar for the templates gallery's glass tile: the month at a
+// glance, after a phone month widget. Weekends dim and today takes a disc in
+// the glass tint rather than a white block. December 2026 starts on a Tuesday and fits five rows.
+const MONTH_NAME = "December";
+const MONTH_LEAD = 1; // Monday-first grid: one blank before the 1st.
+const MONTH_DAYS = 31;
+const MONTH_TODAY = 18;
+const WEEKDAYS = ["M", "T", "W", "T", "F", "S", "S"];
+
+export function CardMonthGrid() {
+  const cells = [
+    ...Array.from({ length: MONTH_LEAD }, () => 0),
+    ...Array.from({ length: MONTH_DAYS }, (_, i) => i + 1),
+  ];
+  return (
+    <div className="flex h-full w-full flex-col justify-start px-[7cqw] pb-[7cqw] [container-type:inline-size]">
+      {/* The month on its own band, edge to edge, so the header reads apart
+          from the grid. */}
+      <div className="-mx-[7cqw] bg-[var(--v69-ink)]/[0.06] px-[7cqw] py-[6.5cqw]">
+        {/* Nudged down so the letters, not their line box, sit centred. */}
+        <div className="translate-y-[0.08em] pl-[1.5cqw] text-[6.5cqw] leading-none text-[var(--v69-ink)]">
+          {MONTH_NAME}
+        </div>
+      </div>
+      <div className="mt-[6cqw] grid grid-cols-7 gap-y-[1cqw] text-center text-[6.5cqw] leading-none tabular-nums">
+        {WEEKDAYS.map((d, i) => (
+          <span key={i} className="pb-[1.4cqw] text-[var(--v69-ink)]/45">
+            {d}
+          </span>
+        ))}
+        {cells.map((day, i) => {
+          const weekend = i % 7 >= 5;
+          return (
+            <span key={i} className="flex items-center justify-center">
+              {day === MONTH_TODAY ? (
+                <span className="flex size-[10cqw] items-center justify-center rounded-full bg-[var(--v69-ink)]/[0.18] text-[var(--v69-ink)]">
+                  {/* The digits sit a touch high in their line box; nudged to the disc's centre. */}
+                  <span data-initial className="block translate-y-[0.07em]">{day}</span>
+                </span>
+              ) : (
+                <span
+                  className={`flex size-[10cqw] items-center justify-center ${
+                    weekend ? "text-[var(--v69-ink)]/40" : "text-[var(--v69-ink)]"
+                  }`}
+                >
+                  {day || ""}
+                </span>
+              )}
+            </span>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// Files for the templates gallery's glass tile: one shared file as an
+// attachment chip, after a chat attachment card. The home rail keeps its own
+// cover. The PDF glyph's lettering runs past its 20-unit box, so the viewBox
+// is taller than the source's clip.
+export function CardFileChip() {
+  return (
+    <div className="flex h-full w-full flex-col justify-between p-[10%] [container-type:inline-size]">
+      <div>
+        <div className="line-clamp-2 text-[8.5cqw] leading-[1.15] tracking-tight text-[var(--v69-ink)]">
+          Engagement letter signed copy
+        </div>
+        <div className="mt-[3cqw] text-[5.6cqw] leading-none text-[var(--v69-ink)]/45">
+          12 pages
+        </div>
+      </div>
+      <div className="flex items-center gap-[2.5cqw] text-[6.5cqw] leading-none text-[var(--v69-ink)]">
+        <span className="flex size-[14cqw] shrink-0 items-center justify-center rounded-[3.8cqw] bg-[#FF8C8C]/[0.16] text-[#FF8C8C]">
+          <svg viewBox="0 0 22.5 21.5" className="h-[7.6cqw] w-[8cqw]" fill="currentColor" aria-hidden>
+          <path d="M8.125 1.875H3.75C3.40625 1.875 3.125 2.15625 3.125 2.5V17.5C3.125 17.8438 3.40625 18.125 3.75 18.125H6.875V20H3.75C2.37109 20 1.25 18.8789 1.25 17.5V2.5C1.25 1.12109 2.37109 0 3.75 0H8.96484C9.62891 0 10.2656 0.261719 10.7344 0.730469L15.5195 5.51953C15.9883 5.98828 16.25 6.625 16.25 7.28906V13.1289H14.375V8.12891H10.9375C9.38281 8.12891 8.125 6.87109 8.125 5.31641V1.87891V1.875ZM13.5977 6.25L10 2.65234V5.3125C10 5.83203 10.418 6.25 10.9375 6.25H13.5977ZM9.375 14.8438H10.625C11.918 14.8438 12.9688 15.8945 12.9688 17.1875C12.9688 18.4805 11.918 19.5312 10.625 19.5312H10.1562V20.625C10.1562 21.0547 9.80469 21.4062 9.375 21.4062C8.94531 21.4062 8.59375 21.0547 8.59375 20.625V15.625C8.59375 15.1953 8.94531 14.8438 9.375 14.8438ZM10.625 17.9688C11.0547 17.9688 11.4062 17.6172 11.4062 17.1875C11.4062 16.7578 11.0547 16.4062 10.625 16.4062H10.1562V17.9688H10.625ZM14.375 14.8438H15.625C16.7461 14.8438 17.6562 15.7539 17.6562 16.875V19.375C17.6562 20.4961 16.7461 21.4062 15.625 21.4062H14.375C13.9453 21.4062 13.5938 21.0547 13.5938 20.625V15.625C13.5938 15.1953 13.9453 14.8438 14.375 14.8438ZM15.625 19.8438C15.8828 19.8438 16.0938 19.6328 16.0938 19.375V16.875C16.0938 16.6172 15.8828 16.4062 15.625 16.4062H15.1562V19.8438H15.625ZM18.5938 15.625C18.5938 15.1953 18.9453 14.8438 19.375 14.8438H21.25C21.6797 14.8438 22.0312 15.1953 22.0312 15.625C22.0312 16.0547 21.6797 16.4062 21.25 16.4062H20.1562V17.3438H21.25C21.6797 17.3438 22.0312 17.6953 22.0312 18.125C22.0312 18.5547 21.6797 18.9062 21.25 18.9062H20.1562V20.625C20.1562 21.0547 19.8047 21.4062 19.375 21.4062C18.9453 21.4062 18.5938 21.0547 18.5938 20.625V15.625Z" />
+        </svg>
+        </span>
+        PDF
+      </div>
+    </div>
+  );
+}
+
+// Proposal builder for the templates gallery's glass tile, on the same panel
+// size and type steps as the help desk beside it. The home rail keeps its own
+// cover (CardProposal).
+const PROPOSAL_SECTIONS = ["Pricing", "Terms & e-sign"];
+
+export function CardProposalPanel() {
+  return (
+    <div className="flex h-full w-full flex-col justify-between p-[10%] [container-type:inline-size]">
+      <div>
+        <div className="text-[6.5cqw] leading-none text-[var(--v69-ink)]/45">Proposal</div>
+        <div className="mt-[3cqw] text-[13cqw] leading-none tracking-tight text-[var(--v69-ink)] tabular-nums">
+          $18,500
+        </div>
+      </div>
+      <div className="flex flex-col gap-[2.5cqw]">
+        {PROPOSAL_SECTIONS.map((title) => (
+          <div
+            key={title}
+            className="flex items-center justify-between rounded-[3cqw] bg-[var(--v69-ink)]/[0.08] px-[4.5cqw] py-[4cqw] text-[6.5cqw] leading-none text-[var(--v69-ink)]"
+          >
+            {title}
+            <svg viewBox="0 0 16 16" className="size-[5cqw] text-[var(--v69-ink)]/45" fill="none" aria-hidden>
+              <path d="M6 3.5L10.5 8 6 12.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Messages for the templates gallery's glass tile: a client's message and the
+// firm's reply, at the set's label and body steps so it reads at the size of
+// its neighbours. The reply takes the periwinkle so the two sides read apart.
+// The home rail keeps its own cover.
+export function CardMessageBubble() {
+  return (
+    <div className="flex h-full w-full flex-col gap-[4cqw] p-[8%] pt-[9%] [container-type:inline-size]">
+      <div className="flex w-full items-end gap-[3cqw]">
+        <span className="flex size-[11cqw] shrink-0 items-center justify-center rounded-full bg-[var(--v69-ink)]/[0.14] text-[4.6cqw] leading-none text-[var(--v69-ink)]">
+          GK
+        </span>
+        <div className="min-w-0 flex-1">
+          <div className="pl-[4cqw] text-[5.6cqw] leading-none text-[var(--v69-ink)]/45">
+            Gus Kelly
+          </div>
+          <div className="mt-[2.5cqw] rounded-[5cqw] rounded-bl-[1.5cqw] bg-[var(--v69-ink)]/[0.1] px-[4.5cqw] py-[3.8cqw] text-[6.5cqw] leading-[1.35] text-[var(--v69-ink)]">
+            {"I've reviewed the proposal. Everything looks good!"}
+          </div>
+        </div>
+      </div>
+      <div className="ml-auto max-w-[78%] rounded-[5cqw] rounded-br-[1.5cqw] bg-[#BCE7F4] px-[4.5cqw] py-[3.8cqw] text-[6.5cqw] leading-[1.35] text-[#13244D]">
+        Great, sending the contract now.
+      </div>
+    </div>
+  );
+}
+
+// Conditional forms for the templates gallery's glass tile: two form steps
+// joined on a connector, after a node-based flow builder. The home
+// rail keeps its own cover (CardConditionalForms).
+function FlowNode({
+  step,
+  label,
+  title,
+}: {
+  step: string;
+  label: string;
+  title: string;
+}) {
+  // A builder node: a numbered strip over the step's kind and title,
+  // outlined so it reads as a block on a canvas rather than a list row.
+  return (
+    <div className="shrink-0 overflow-hidden rounded-[3.5cqw] border border-[var(--v69-ink)]/[0.16] bg-[var(--v69-ink)]/[0.06]">
+      <div className="bg-[var(--v69-ink)]/[0.06] px-[5cqw] py-[2.2cqw] text-[5cqw] leading-none text-[var(--v69-ink)]/45">
+        <span style={MOCK_MONO}>{step}</span>
+      </div>
+      <div className="px-[5cqw] py-[3.6cqw]">
+        <div className="text-[5.6cqw] leading-none text-[var(--v69-ink)]/45">{label}</div>
+        <div className="mt-[2.8cqw] truncate text-[7.5cqw] leading-none text-[var(--v69-ink)]">
+          {title}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// The flow runs on past the tile and dissolves, as the resource library's page
+// does, so it reads as a longer canvas rather than a list that ends.
+const FLOW_TITLE = "New client form";
+const FLOW_FADE = "linear-gradient(to bottom, #000 62%, transparent 100%)";
+const FLOW_NODES = [
+  { step: "01", label: "Question", title: "Client type" },
+  { step: "02", label: "Show", title: "Company details" },
+  { step: "03", label: "Then", title: "Request documents" },
+];
+
+export function CardConditionFlow() {
+  return (
+    <div className="flex h-full w-full flex-col p-[7%] [container-type:inline-size]">
+      <div className="px-[2cqw] text-[6.5cqw] leading-none text-[var(--v69-ink)]">
+        {FLOW_TITLE}
+      </div>
+      <div
+        className="mt-[7cqw] -mb-[7cqw] flex min-h-0 flex-1 flex-col gap-[3cqw] overflow-hidden"
+        style={{ maskImage: FLOW_FADE, WebkitMaskImage: FLOW_FADE }}
+      >
+        {FLOW_NODES.map((node) => (
+          <FlowNode key={node.step} {...node} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Case status page for the templates gallery's glass tile: one client case
+// with its stages so far as a wrap of tags, after a tag cloud. Stages already
+// passed sit at full ink and the current one takes the ice blue. The home
+// rail keeps its own cover (CardCaseStatus).
+type CaseStage = { name: string; state: "done" | "current" };
+const CASE_STAGES: CaseStage[] = [
+  { name: "Intake", state: "done" },
+  { name: "Documents received", state: "done" },
+  { name: "In review", state: "current" },
+];
+const CASE_TAG_TONE: Record<CaseStage["state"], string> = {
+  done: "bg-[var(--v69-ink)]/[0.1] text-[var(--v69-ink)]",
+  current: "bg-[#BCE7F4] text-[#13244D]",
+};
+
+export function CardCaseTags() {
+  return (
+    <div className="flex h-full w-full flex-col p-[9%] [container-type:inline-size]">
+      <div className="text-[5.6cqw] leading-none text-[var(--v69-ink)]/45">Case 2048</div>
+      <div className="mt-[3cqw] text-[8.5cqw] leading-none tracking-tight text-[var(--v69-ink)]">
+        Henderson estate
+      </div>
+      <div className="mt-[6cqw] flex flex-wrap gap-[2.2cqw]">
+        {CASE_STAGES.map((stage) => (
+          <span
+            key={stage.name}
+            className={`rounded-full px-[3.4cqw] py-[2.2cqw] text-[5cqw] uppercase leading-none tracking-wide ${CASE_TAG_TONE[stage.state]}`}
+            style={MOCK_MONO}
+          >
+            {stage.name}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Forms for the templates gallery's glass tile: a short client form with its
+// fields filled in, at the set's label and body steps. The home rail keeps its
+// own cover.
+const FORM_FILLED = [
+  { label: "Phone number", value: "+1 415 555 0132" },
+  { label: "Start date", value: "Mar 14, 2026" },
+];
+
+export function CardFormFields() {
+  return (
+    <div className="flex h-full w-full flex-col p-[9%] [container-type:inline-size]">
+      <div className="text-[8.5cqw] leading-none tracking-tight text-[var(--v69-ink)]">
+        Client details
+      </div>
+      <div className="mt-[9cqw] flex flex-col gap-[4.5cqw]">
+        {FORM_FILLED.map((field) => (
+          <div key={field.label}>
+            <div className="text-[5.6cqw] leading-none text-[var(--v69-ink)]/45">{field.label}</div>
+            <div className="mt-[2.4cqw] rounded-[3cqw] border border-[var(--v69-ink)]/[0.16] bg-[var(--v69-ink)]/[0.06] px-[4cqw] py-[3.4cqw] text-[6.5cqw] leading-none text-[var(--v69-ink)] tabular-nums light-gallery:border-transparent">
+              {field.value}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Autoresponder for the templates gallery's glass tile: the switch that turns
+// it on and the reply clients get. The home rail keeps its own
+// cover.
+export function CardAutoReply() {
+  return (
+    <div className="flex h-full w-full flex-col justify-between p-[9%] [container-type:inline-size]">
+      <div>
+        <div className="flex items-center justify-between">
+          <span className="text-[7.5cqw] leading-none tracking-tight text-[var(--v69-ink)]">
+            Auto replies
+          </span>
+          {/* The switch, on. */}
+          <span className="relative h-[8cqw] w-[13.5cqw] shrink-0 rounded-full bg-[#7DA4FF]">
+            <span className="absolute right-[1cqw] top-[1cqw] size-[6cqw] rounded-full bg-[rgba(255,255,255,0.95)]" />
+          </span>
+        </div>
+      </div>
+      <div className="rounded-[5cqw] bg-[var(--v69-ink)]/[0.1] px-[4.5cqw] py-[3.8cqw] text-[6.5cqw] leading-[1.35] text-[var(--v69-ink)]">
+        {"Thanks for reaching out. We'll reply first thing tomorrow."}
+      </div>
+    </div>
+  );
+}
+
+// Profile manager for the templates gallery's glass tile: client profiles as
+// a contact list, initials, name and company. The home rail keeps its own
+// cover.
+const PROFILE_LIST = [
+  { initials: "CW", name: "Chuck Wilford", company: "GoDo" },
+  { initials: "BS", name: "Brooklyn Simmons", company: "Service Symphony" },
+  { initials: "KT", name: "Kenny Tse", company: "Northwind" },
+];
+
+export function CardProfileList() {
+  return (
+    <div className="flex h-full w-full flex-col p-[7%] [container-type:inline-size]">
+      <div className="text-[7.5cqw] leading-none tracking-tight text-[var(--v69-ink)]">Clients</div>
+      <div className="mt-[7cqw] flex flex-col">
+        {PROFILE_LIST.map((row, i) => (
+          <div
+            key={row.name}
+            className={`-mx-[9cqw] flex items-center gap-[3cqw] px-[9cqw] py-[4.2cqw] ${
+              i ? "border-t border-[var(--v69-ink)]/[0.1]" : ""
+            }`}
+          >
+            <span className="flex size-[10cqw] shrink-0 items-center justify-center rounded-full bg-[var(--v69-ink)]/[0.14] text-[4.4cqw] leading-none text-[var(--v69-ink)]">
+              {row.initials}
+            </span>
+            <span className="min-w-0">
+              <span className="block truncate text-[6.5cqw] leading-none text-[var(--v69-ink)]">
+                {row.name}
+              </span>
+              <span className="mt-[1.8cqw] block truncate text-[5.2cqw] leading-none text-[var(--v69-ink)]/45">
+                {row.company}
+              </span>
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Home for the templates gallery's glass tile: the client's landing page as a
+// short list of what is waiting for them, so the count reads as things to do.
+// The home rail keeps its own cover.
+const HOME_WAITING = [
+  { title: "Sign engagement letter", app: "Contracts" },
+  { title: "Pay April invoice", app: "Billing" },
+  { title: "Upload tax documents", app: "Files" },
+];
+
+export function CardHomeWaiting() {
+  return (
+    <div className="flex h-full w-full flex-col p-[9%] [container-type:inline-size]">
+      <div className="flex items-center justify-between">
+        <span className="text-[8.5cqw] leading-none tracking-tight text-[var(--v69-ink)]">Home</span>
+        <span className="flex size-[8cqw] items-center justify-center rounded-[2cqw] bg-[#f2f2f2] text-[5.2cqw] leading-none tabular-nums text-[#1B1B1B] light-gallery:bg-[#262626] light-gallery:text-white">
+          <span data-initial className="block translate-y-[0.38cqw]">
+            {HOME_WAITING.length}
+          </span>
+        </span>
+      </div>
+      <div className="mt-[7cqw] flex flex-col">
+        {HOME_WAITING.map((row, i) => (
+          <div
+            key={row.title}
+            className={`-mx-[11cqw] px-[11cqw] py-[4.2cqw] ${i ? "border-t border-[var(--v69-ink)]/[0.1]" : ""}`}
+          >
+            <span className="block truncate text-[6.5cqw] leading-none text-[var(--v69-ink)]">
+              {row.title}
+            </span>
+            <span className="mt-[1.8cqw] block truncate text-[5.2cqw] leading-none text-[var(--v69-ink)]/45">
+              {row.app}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Exporter for the templates gallery's glass tile: one export running, its
+// progress as the headline figure and the file below. The home rail keeps its
+// own cover.
+const EXPORT_PCT = 68;
+
+export function CardExportProgress() {
+  return (
+    <div className="flex h-full w-full flex-col justify-between p-[10%] [container-type:inline-size]">
+      <div>
+        <div className="text-[6.5cqw] leading-none text-[var(--v69-ink)]/45">Exporting</div>
+        <div className="mt-[3cqw] text-[13cqw] leading-none tracking-tight text-[var(--v69-ink)] tabular-nums">
+          {EXPORT_PCT}%
+        </div>
+      </div>
+      <div>
+        <div className="flex items-center justify-between text-[6.5cqw] leading-none text-[var(--v69-ink)]">
+          Clients.csv
+          <span className="text-[5.6cqw] text-[var(--v69-ink)]/45">2.4 MB</span>
+        </div>
+        <div className="relative mt-[3.5cqw] h-[2.6cqw] overflow-hidden rounded-full bg-[var(--v69-ink)]/[0.1]">
+          <div
+            className="absolute inset-y-0 left-0 rounded-full bg-[var(--v69-ink)]/90"
+            style={{ width: `${EXPORT_PCT}%` }}
+          />
+        </div>
       </div>
     </div>
   );

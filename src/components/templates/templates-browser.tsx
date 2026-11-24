@@ -1,91 +1,22 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import type { Template } from "@/lib/templates";
-import { TEMPLATE_CATEGORIES } from "@/lib/templates";
+import { TEMPLATE_CATEGORIES, toTemplateCategory } from "@/lib/templates";
 import { TemplateCard } from "@/components/templates/template-card";
+import { FIELD_CLS } from "@/components/ui/select-menu";
 
 interface Props {
   templates: Template[];
 }
 
 const ALL = "All";
-
-/** Edge affordance for the chip strip: just the button. The fade itself lives on
- *  the scroller (see EDGE_FADE) rather than in an overlay here. */
-function ScrollArrow({
-  direction,
-  onClick,
-}: {
-  direction: "left" | "right";
-  onClick: () => void;
-}) {
-  const isLeft = direction === "left";
-  return (
-    <div
-      className={`pointer-events-none absolute inset-y-0 hidden items-center [@media(hover:hover)]:flex ${
-        isLeft ? "left-0" : "right-0"
-      }`}
-    >
-      <button
-        type="button"
-        onClick={onClick}
-        aria-label={
-          isLeft ? "Scroll categories left" : "Scroll categories right"
-        }
-        className="pointer-events-auto flex size-8 items-center justify-center rounded-lg border border-border bg-background text-foreground outline-none transition-colors hover:bg-muted active:bg-foreground/10 focus-visible:ring-2 focus-visible:ring-foreground/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-      >
-        <svg
-          viewBox="0 0 24 24"
-          className="size-4"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.8"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d={isLeft ? "m14 6-6 6 6 6" : "m10 6 6 6-6 6"} />
-        </svg>
-      </button>
-    </div>
-  );
-}
-
-// The edge fade, applied to the SCROLLER itself rather than drawn over it. An
-// overlay — a gradient to the page colour, or a blur veil — still sits on top of
-// the hard edge where overflow clips the strip, so the last chip's fill and its
-// label both stop dead on a straight vertical line and the row reads as cut off.
-// Masking the scroller fades the chip itself, pill and text together, to nothing
-// before it ever reaches that line: there is no edge left to see. Only the side
-// that actually has more content is masked, so a row that fits is never touched.
-// The ramp is set in CSS vars on the scroller so it can differ where the arrows
-// exist: --chip-fade-start holds the mask fully transparent for that distance
-// before it begins ramping to opaque at --chip-fade-end. On a hover device the
-// hold clears the arrow's own 32px footprint, so a chip never shows through from
-// behind the button — a single ramp from 0 left it ~57% opaque at the arrow's
-// edge, and the label read through it.
-function edgeFade(left: boolean, right: boolean) {
-  if (!left && !right) return undefined;
-  const start = "var(--chip-fade-start)";
-  const end = "var(--chip-fade-end)";
-  const stops: string[] = [];
-  if (left) {
-    stops.push("transparent 0px", `transparent ${start}`, `#000 ${end}`);
-  } else {
-    stops.push("#000 0px");
-  }
-  if (right) {
-    stops.push(
-      `#000 calc(100% - ${end})`,
-      `transparent calc(100% - ${start})`,
-      "transparent 100%",
-    );
-  } else {
-    stops.push("#000 100%");
-  }
-  const image = `linear-gradient(to right,${stops.join(",")})`;
-  return { maskImage: image, WebkitMaskImage: image };
-}
 
 // Widgets are drawn at one design size and scaled into the card they're framed
 // in; the per-template exceptions live with the frame (see MOCK_DESIGN_SIZE).
@@ -106,35 +37,29 @@ export function TemplatesBrowser({ templates }: Props) {
   // through useSyncExternalStore rather than useSearchParams, which would put
   // the whole statically rendered page behind a Suspense boundary, and rather
   // than copied into state from an effect, which renders the page twice.
-  // Matched case-insensitively against the categories present, so a stale or
-  // mistyped param just leaves the gallery on All.
+  // Matched case-insensitively through the category aliases, so a link from
+  // before the merge (?category=trackers) still opens its tab, and a mistyped
+  // one just leaves the gallery on All.
   const [picked, setPicked] = useState<string | null | undefined>(undefined);
   const urlCategory = useSyncExternalStore(
     subscribeToNothing,
     () => new URLSearchParams(window.location.search).get("category"),
     () => null,
   );
-  const fromUrl = urlCategory
-    ? (templates.find((t) => t.category.toLowerCase() === urlCategory.toLowerCase())?.category ?? null)
-    : null;
+  const urlTab = toTemplateCategory(urlCategory);
+  const fromUrl =
+    urlTab && templates.some((t) => t.category === urlTab) ? urlTab : null;
   const selected = picked === undefined ? fromUrl : picked;
   const selectCategory = (cat: string) => {
-    setPicked(cat === ALL || selected === cat ? null : cat);
+    setPicked(cat === ALL ? null : cat);
   };
   // Free-text search across title, description, category, and industries.
   const [query, setQuery] = useState("");
 
   const categories = useMemo(() => {
     const present = new Set(templates.map((t) => t.category));
-    // Keep the intended category order; fall back to any extras at the end.
-    const ordered = TEMPLATE_CATEGORIES.filter((c) => present.has(c));
-    const extras = [...present].filter(
-      (c) =>
-        !TEMPLATE_CATEGORIES.includes(
-          c as (typeof TEMPLATE_CATEGORIES)[number],
-        ),
-    );
-    return [ALL, ...ordered, ...extras];
+    // Only the listed tabs, in their order; anything else shows under All.
+    return [ALL, ...TEMPLATE_CATEGORIES.filter((c) => present.has(c))];
   }, [templates]);
 
   const filtered = useMemo(() => {
@@ -170,88 +95,27 @@ export function TemplatesBrowser({ templates }: Props) {
     });
   }, [templates, selected, query]);
 
-  // The chip row is one non-wrapping strip that scrolls; arrows appear only when
-  // it actually overflows, and each end's arrow hides once you reach that end.
-  const scrollerRef = useRef<HTMLDivElement>(null);
   const barRef = useRef<HTMLDivElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
-  const [canScroll, setCanScroll] = useState({ left: false, right: false });
 
-  const measure = useCallback(() => {
-    const el = scrollerRef.current;
-    if (!el) return;
-    // A pixel of slack: fractional widths otherwise leave an arrow lit at an end.
-    const max = el.scrollWidth - el.clientWidth;
-    setCanScroll({ left: el.scrollLeft > 1, right: el.scrollLeft < max - 1 });
-  }, []);
-
+  // Phone category menu: closes on a pick, an outside click, or Escape.
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    const el = scrollerRef.current;
-    if (!el) return;
-    measure();
-    // Watch the strip and its contents: fonts landing or a category list change
-    // both move the overflow point without a window resize.
-    const ro = new ResizeObserver(measure);
-    ro.observe(el);
-    for (const child of Array.from(el.children)) ro.observe(child);
-    window.addEventListener("resize", measure);
+    if (!menuOpen) return;
+    const onDown = (e: PointerEvent) => {
+      if (!menuRef.current?.contains(e.target as Node)) setMenuOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMenuOpen(false);
+    };
+    document.addEventListener("pointerdown", onDown);
+    document.addEventListener("keydown", onKey);
     return () => {
-      ro.disconnect();
-      window.removeEventListener("resize", measure);
+      document.removeEventListener("pointerdown", onDown);
+      document.removeEventListener("keydown", onKey);
     };
-  }, [measure, categories]);
-
-  // Vertical wheel over the strip scrolls it sideways, but only while it has
-  // room left in that direction — otherwise the page keeps the gesture.
-  useEffect(() => {
-    const el = scrollerRef.current;
-    if (!el) return;
-    const onWheel = (e: WheelEvent) => {
-      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
-      const max = el.scrollWidth - el.clientWidth;
-      if (max <= 0) return;
-      const next = el.scrollLeft + e.deltaY;
-      if (next < 0 || next > max) return;
-      e.preventDefault();
-      el.scrollLeft = next;
-    };
-    el.addEventListener("wheel", onWheel, { passive: false });
-    return () => el.removeEventListener("wheel", onWheel);
-  }, []);
-
-  const scrollByPage = (direction: 1 | -1) => {
-    const el = scrollerRef.current;
-    if (!el) return;
-    // Just under a full width, so the chip at the edge stays partly in view as a
-    // hint that the row continues.
-    el.scrollBy({ left: direction * el.clientWidth * 0.8, behavior: "smooth" });
-  };
-
-  // Whatever category you just picked should be fully visible, even if it was
-  // clipped at an edge when you clicked it.
-  useEffect(() => {
-    const el = scrollerRef.current;
-    if (!el) return;
-    const target = selected ?? ALL;
-    const chip = el.querySelector<HTMLElement>(
-      `[data-category="${CSS.escape(target)}"]`,
-    );
-    if (!chip) return;
-    const EDGE_GUTTER = 48;
-    const start = chip.offsetLeft;
-    const end = start + chip.offsetWidth;
-    if (start < el.scrollLeft + EDGE_GUTTER) {
-      el.scrollTo({
-        left: Math.max(0, start - EDGE_GUTTER),
-        behavior: "smooth",
-      });
-    } else if (end > el.scrollLeft + el.clientWidth - EDGE_GUTTER) {
-      el.scrollTo({
-        left: end - el.clientWidth + EDGE_GUTTER,
-        behavior: "smooth",
-      });
-    }
-  }, [selected]);
+  }, [menuOpen]);
 
   // Filtering shortens the page, and a document that gets shorter than where you
   // were scrolled leaves the browser to clamp you to the new bottom — on a phone,
@@ -297,95 +161,83 @@ export function TemplatesBrowser({ templates }: Props) {
         ref={barRef}
         className="sticky top-0 z-30 -mx-6 bg-background px-6 pb-3 pt-16 lg:static lg:mx-0 lg:bg-transparent lg:px-0 lg:pb-0 lg:pt-0"
       >
-        {/* Search + filters share one row on desktop (filters left, search
-          right), à la Linear; they stack on mobile with search on top. */}
-        {/* The desktop gap is wide on purpose: the chip strip clips at whichever
-          edge it overflows, and at a 24px gap that edge ran straight into the
-          search field as one dense block. */}
-        <div className="flex flex-col gap-3 lg:flex-row-reverse lg:items-center lg:gap-10">
-          {/* Search — filters the grid live across title/description/category/
-          industry. Full-width on top, and small screens only: at lg the whole
-          catalogue is a short scroll behind a visible chip row, so the field was
-          a second way to do what the chips already do, in the widest layout. */}
-          <div className="relative shrink-0 lg:hidden">
-            <svg
-              aria-hidden
-              viewBox="0 0 24 24"
-              className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.7"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+        {/* Categories as plain text tabs with a small search on the right.
+            The current category is full ink, the rest muted; no pills. */}
+        {/* After cursor.com/blog: from 660px the tabs stay a row that scrolls
+            sideways and fades under its right edge rather than collapsing early;
+            below that they become one pill that opens the list. */}
+        <div className="flex items-center justify-between gap-3">
+          <div ref={menuRef} className="relative shrink-0 min-[660px]:hidden">
+            <button
+              type="button"
+              onClick={() => setMenuOpen((o) => !o)}
+              aria-haspopup="listbox"
+              aria-expanded={menuOpen}
+              className={`${FIELD_CLS} !flex !h-9 !w-auto items-center gap-1.5 !py-0 !pl-3.5 !pr-2.5 !text-sm focus-visible:ring-2 focus-visible:ring-foreground/40`}
             >
-              <circle cx="11" cy="11" r="7" />
-              <path d="m20 20-3.5-3.5" />
-            </svg>
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search templates…"
-              aria-label="Search templates"
-              // max-sm:text-base is the iOS zoom guard, not a type choice: Safari
-              // zooms the whole page on focus for any input under 16px, and at the
-              // caption step this field was pulling the gallery in every time it was
-              // tapped. Only the VALUE takes the guard — the placeholder stays at the
-              // caption step so the field looks unchanged at rest.
-              className="type-caption h-10 w-full rounded-lg border border-border bg-transparent pl-9 pr-9 text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-foreground/30 max-sm:text-base max-sm:placeholder:text-[0.8125rem] lg:h-8"
-            />
-            {query && (
-              <button
-                type="button"
-                onClick={() => setQuery("")}
-                aria-label="Clear search"
-                className="absolute right-2 top-1/2 flex size-6 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-foreground"
+              {selected ?? ALL}
+              <svg
+                aria-hidden
+                viewBox="0 0 16 16"
+                className={`size-4 text-muted-foreground transition-transform ${menuOpen ? "rotate-180" : ""}`}
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               >
-                <svg
-                  viewBox="0 0 24 24"
-                  className="size-4"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.7"
-                  strokeLinecap="round"
-                >
-                  <path d="M6 6l12 12M6 18 18 6" />
-                </svg>
-              </button>
+                <path d="M4 6l4 4 4-4" />
+              </svg>
+            </button>
+            {menuOpen && (
+              <ul
+                role="listbox"
+                aria-label="Filter templates by category"
+                className="absolute left-0 top-full z-40 mt-2 max-h-[60vh] w-56 animate-fade-in overflow-y-auto rounded-lg border border-border bg-background p-1 shadow-[0_16px_44px_-26px_rgba(20,20,40,0.35)] [[data-theme=dark]_&]:bg-[#1c1c1c]"
+              >
+                {categories.map((cat) => {
+                  const active =
+                    cat === ALL ? selected === null : selected === cat;
+                  return (
+                    <li key={cat}>
+                      <button
+                        type="button"
+                        role="option"
+                        aria-selected={active}
+                        onClick={() => {
+                          selectCategory(cat);
+                          setMenuOpen(false);
+                        }}
+                        className="flex w-full items-center justify-between rounded-md px-3 py-2.5 text-left text-sm text-foreground outline-none hover:bg-muted focus-visible:bg-muted"
+                      >
+                        {cat}
+                        {active && (
+                          <svg
+                            aria-hidden
+                            viewBox="0 0 20 20"
+                            className="size-4"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M5 10l3.5 3.5L15 7" />
+                          </svg>
+                        )}
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
             )}
           </div>
-
-          {/* Category chips — one non-wrapping strip that scrolls, YouTube-style:
-          swipe or trackpad at any width, plus edge arrows once the row is wider
-          than the space beside the search field. The arrows overlay the strip
-          rather than reserving room for it, so nothing shifts when they appear;
-          the right one is gone by the time you reach the last chip, so it never
-          sits on top of it. The overflowing edge dissolves via a mask on the
-          scroller itself (see edgeFade). */}
-          <div className="relative min-w-0 lg:flex-1">
+          <div className="relative hidden min-w-0 flex-1 min-[660px]:block">
             <div
-              ref={scrollerRef}
-              onScroll={measure}
               role="group"
               aria-label="Filter templates by category"
-              style={edgeFade(canScroll.left, canScroll.right)}
-              className="flex flex-nowrap items-center gap-2 overflow-x-auto scroll-pl-12 scroll-pr-12 py-0.5 [--chip-fade-end:56px] [--chip-fade-start:0px] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden [@media(hover:hover)]:[--chip-fade-end:104px] [@media(hover:hover)]:[--chip-fade-start:44px]"
+              className="flex min-w-0 items-center gap-6 overflow-x-auto pr-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             >
-              {/* Selection reads as selection, not as a call to action: the filled
-              chips are gone from the resting state, so the strip is a row of
-              quiet labels with the current one held on a grey.
-              Both greys are the page's own tokens — --muted on hover, --border a
-              step up for the selection — rather than an alpha of the foreground.
-              A foreground wash mixes a cool near-black into whatever is behind it
-              and lands on a grey that belongs to no scale: it read as a one-off
-              even though three surfaces used the same value. The two named greys
-              are the only ones the page has, which is what makes them the ladder.
-              (The nav's and footer's appearance switches keep their washes: those
-              thumbs sit on a frosted bed and over the footer aurora, where an
-              opaque token would cut a hole in the gradient.)
-              The active chip before that took the solid foreground fill, the same
-              black pill the primary buttons wear, which made the filter you had
-              already applied look like the thing to click next. */}
               {categories.map((cat) => {
                 const active =
                   cat === ALL ? selected === null : selected === cat;
@@ -393,18 +245,12 @@ export function TemplatesBrowser({ templates }: Props) {
                   <button
                     key={cat}
                     type="button"
-                    data-category={cat}
                     aria-pressed={active}
                     onClick={() => selectCategory(cat)}
-                    // Inset ring, the focus idiom the rest of the site uses: an
-                    // offset ring is drawn outside the chip, and this strip is an
-                    // overflow scroller, so it was clipped top and bottom on every
-                    // chip and clipped again at the ends of the row. Drawn inside,
-                    // there is nothing for the scroller to crop.
-                    className={`type-body inline-flex h-9 shrink-0 items-center whitespace-nowrap rounded-full px-3.5 leading-none outline-none transition-colors focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-foreground/40 ${
+                    className={`type-body shrink-0 whitespace-nowrap rounded-sm py-1 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-foreground/40 ${
                       active
-                        ? "bg-border text-foreground dark-ui:bg-[var(--surface-2)]"
-                        : "bg-transparent text-muted-foreground active:bg-border [@media(hover:hover)]:hover:bg-muted [@media(hover:hover)]:hover:text-foreground"
+                        ? "text-foreground"
+                        : "text-muted-foreground [@media(hover:hover)]:hover:text-foreground"
                     }`}
                   >
                     {cat}
@@ -412,13 +258,57 @@ export function TemplatesBrowser({ templates }: Props) {
                 );
               })}
             </div>
-
-            {canScroll.left && (
-              <ScrollArrow direction="left" onClick={() => scrollByPage(-1)} />
-            )}
-            {canScroll.right && (
-              <ScrollArrow direction="right" onClick={() => scrollByPage(1)} />
-            )}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-y-0 right-0 w-4 bg-[linear-gradient(90deg,transparent_0%,var(--background)_88%)]"
+            />
+          </div>
+          {/* The field rests narrow and opens out when focused. */}
+          <div className="flex min-w-0 flex-1 justify-end min-[660px]:w-60 min-[660px]:flex-none">
+            <div className="relative w-full max-w-48 transition-[max-width] duration-300 ease-[cubic-bezier(.25,1,.5,1)] focus-within:max-w-60">
+              <svg
+                aria-hidden
+                viewBox="0 0 24 24"
+                className="pointer-events-none absolute left-3.5 top-1/2 size-[15px] -translate-y-1/2 text-muted-foreground"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="11" cy="11" r="7" />
+                <path d="m20 20-3.5-3.5" />
+              </svg>
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search"
+                aria-label="Search templates"
+                // The site's field at the blog filter bar's height, so the two
+                // pages' search boxes are the same control.
+                className={`${FIELD_CLS} !h-9 !py-0 !pl-10 !pr-9`}
+              />
+              {query && (
+                <button
+                  type="button"
+                  onClick={() => setQuery("")}
+                  aria-label="Clear search"
+                  className="absolute right-2.5 top-1/2 flex size-6 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-foreground/[0.06] hover:text-foreground [[data-theme=dark]_&]:hover:bg-white/[0.06]"
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    className="size-4"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.7"
+                    strokeLinecap="round"
+                  >
+                    <path d="M6 6l12 12M6 18 18 6" />
+                  </svg>
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -439,7 +329,7 @@ export function TemplatesBrowser({ templates }: Props) {
           two very wide cards and then jumped straight to five. */}
       <div ref={resultsRef}>
         {filtered.length > 0 ? (
-          <div className="mt-10 grid gap-x-6 gap-y-12 min-[560px]:grid-cols-2 min-[760px]:grid-cols-3 min-[1100px]:grid-cols-4 lg:gap-x-8 lg:gap-y-[72px] min-[1440px]:grid-cols-5">
+          <div className="mt-10 grid gap-x-4 gap-y-10 min-[560px]:grid-cols-2 min-[760px]:grid-cols-3 min-[1100px]:grid-cols-4">
             {filtered.map((template) => (
               <TemplateCard key={template.slug} template={template} />
             ))}

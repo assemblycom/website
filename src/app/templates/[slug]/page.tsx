@@ -103,7 +103,6 @@ async function resolveTemplate(slug: string) {
         // authoritative source for it; the committed value is the fallback for
         // templates the CMS doesn't hold yet.
         templateId: entry.templateId ?? local.templateId,
-        category: entry.category ?? local.category,
       }
     : local;
   const copy = templateCopy({
