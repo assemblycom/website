@@ -6127,7 +6127,7 @@ html:not([data-authed]) .auth-only {
   /* One even light outline all round, drawn inside so it takes no layout. A
      panel's own border goes clear so the two don't stack into a thick edge. */
   border-color: transparent !important;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.45) !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22) !important;
   -webkit-backdrop-filter: var(--glass-blur);
   backdrop-filter: var(--glass-blur);
 }
@@ -6213,6 +6213,15 @@ html:not([data-authed]) .auth-only {
     0 10px 28px -14px rgba(16, 24, 40, 0.22) !important;
 }
 
+/* An integration's app tile is white glass straight on the near-white ground,
+   so it takes the panel's hairline and drop to stay visible. */
+.light-island .v69-app-tile {
+  border-color: transparent !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(16, 24, 40, 0.09),
+    0 10px 28px -14px rgba(16, 24, 40, 0.22) !important;
+}
+
 /* The assistant's input and the clock's readout sit inside a white panel,
    where white glass left them a blank white block; on the light skin they take
    a faint grey well instead. */
@@ -6220,6 +6229,12 @@ html:not([data-authed]) .auth-only {
   border-color: transparent !important;
   background-color: rgba(16, 24, 40, 0.05) !important;
   box-shadow: inset 0 0 0 1px rgba(16, 24, 40, 0.1) !important;
+}
+
+/* The ask field reads as an input from its fill alone; the hairline made it
+   heavier than the rest of the panel. */
+.light-island .v69-ask-field {
+  box-shadow: none !important;
 }
 
 /* The engagement ring's colours per skin: the brand pink on the dark skin, a
@@ -6272,7 +6287,7 @@ html:not([data-authed]) .auth-only {
 /* The middle invoice keeps its solid fill so it covers the back one, but takes
    the glass panels' light outline so it doesn't read as a hole in the stack. */
 .dark-island .v69-wallet-middle {
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.45);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22);
 }
 
 /* The reading pill sits over the guide's text, so it takes a near-solid fill

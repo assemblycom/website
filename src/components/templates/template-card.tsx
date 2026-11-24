@@ -40,13 +40,16 @@ import { cn } from "@/lib/utils";
 
 // Tile shape per widget, so the grid mixes circles, wide strips and squares
 // rather than repeating one box: round readouts go in a circle, single-row
-// widgets in a wide strip, a card and a row in a shorter strip, everything else
-// in a square.
-type TileShape = "square" | "circle" | "wide" | "strip";
+// widgets in a wide strip, a card and a row in a shorter strip, a header over
+// a footer in a short tile (see SHORT_TILES), everything else in a square.
+type TileShape = "square" | "circle" | "wide" | "strip" | "short";
 const TILE_SHAPE: Record<string, TileShape> = {
   "time-tracker": "circle",
   "client-engagement-dashboard": "circle",
   "data-room": "strip",
+  "client-onboarding-wizard": "short",
+  "message-autoresponder": "short",
+  "client-support-requests": "short",
   "service-request-intake": "wide",
   "internal-resource-library": "wide",
   "contracts-app": "wide",
@@ -259,6 +262,10 @@ const PANEL_TILES = new Set([
   "client-home",
 ]);
 
+// Covers with no panel whose cards sit near the tile's edge: their drop
+// shadow runs past it, so the tile must not clip.
+const UNCLIPPED_TILES = new Set(["billing-app"]);
+
 // Widgets that are a single object (the clock face) read small at the shared
 // tile size, so they take a larger share of the cover.
 const TILE_SIZE: Record<string, string> = {
@@ -283,14 +290,15 @@ const TILE_SIZE: Record<string, string> = {
   "conditional-forms": "!w-[66%] !rounded-[11%]",
   "case-status-page": "!w-[66%] !rounded-[11%]",
   "forms-app": "!w-[66%] !rounded-[11%]",
-  "message-autoresponder": "!w-[66%] !rounded-[11%]",
+  "message-autoresponder": "!w-[66%]",
   "profile-manager": "!w-[66%] !rounded-[11%]",
   "exporter": "!w-[66%] !rounded-[11%]",
   "client-home": "!w-[66%] !rounded-[11%]",
-  "client-onboarding-wizard": "!w-[66%] !rounded-[11%]",
+  // Short tiles take their corner from SHORT_TILES instead.
+  "client-onboarding-wizard": "!w-[66%]",
   "design-approvals": "!w-[66%] !rounded-[11%]",
   "content-approval-flow": "!w-[66%] !rounded-[11%]",
-  "client-support-requests": "!w-[66%] !rounded-[11%]",
+  "client-support-requests": "!w-[66%]",
   "markup-comments": "!w-[66%] !rounded-[11%]",
   "internal-communications-app": "!w-[66%] !rounded-[11%]",
 };
@@ -328,7 +336,8 @@ const TILE_CLASS: Record<TileShape, string> = {
   square: "aspect-square w-[60%] rounded-[18px]",
   circle: "aspect-square w-[60%] rounded-full",
   wide: "aspect-[16/10] w-[84%] rounded-[18px]",
-  strip: "aspect-[336/103] w-[84%] rounded-[18px]",
+  strip: "aspect-[336/86] w-[84%] rounded-[14px]",
+  short: "w-[60%]",
 };
 // A wide tile draws its cover in the 16:10 box the phone gallery already uses.
 const WIDE_DESIGN_SIZE = {
@@ -337,12 +346,37 @@ const WIDE_DESIGN_SIZE = {
 } as React.CSSProperties;
 const STRIP_DESIGN_SIZE = {
   "--template-mock-w": "336px",
-  "--template-mock-h": "103px",
+  "--template-mock-h": "86px",
 } as React.CSSProperties;
 const SHAPE_DESIGN_SIZE: Partial<Record<TileShape, React.CSSProperties>> = {
   wide: WIDE_DESIGN_SIZE,
   strip: STRIP_DESIGN_SIZE,
 };
+// Short tiles keep their square tile's design width and cut the height down to
+// their content, so a header and its footer sit closer. Each has its own box.
+const SHORT_TILES: Record<string, { w: number; h: number }> = {
+  "client-onboarding-wizard": { w: 224, h: 132 },
+  "message-autoresponder": { w: 288, h: 166 },
+  "client-support-requests": { w: 288, h: 171 },
+};
+// The square tiles' corner, as a share of the tile's width.
+const TILE_CORNER_PCT = 11;
+function shortTileStyle(slug: string) {
+  const box = SHORT_TILES[slug];
+  return {
+    aspectRatio: `${box.w} / ${box.h}`,
+    // Percent radii resolve against height vertically, so scale that half by
+    // the aspect to keep the corners round and equal to the square tiles'.
+    borderRadius: `${TILE_CORNER_PCT}% / ${((TILE_CORNER_PCT * box.w) / box.h).toFixed(2)}%`,
+  } as React.CSSProperties;
+}
+function shortDesignSize(slug: string) {
+  const box = SHORT_TILES[slug];
+  return {
+    "--template-mock-w": `${box.w}px`,
+    "--template-mock-h": `${box.h}px`,
+  } as React.CSSProperties;
+}
 
 /**
  * One template card: the widget cover, the name, and the line under it. The
@@ -362,6 +396,10 @@ export function TemplateCard({
   className?: string;
 }) {
   const shape = TILE_SHAPE[template.slug] ?? "square";
+  const designSize =
+    shape === "short"
+      ? shortDesignSize(template.slug)
+      : SHAPE_DESIGN_SIZE[shape];
   // The widget takes the opposite skin to the page: dark on the light page's
   // dark card, light on the dark page's light card.
   const { theme } = useTheme();
@@ -391,19 +429,22 @@ export function TemplateCard({
           {!GROUND_ONLY.has(template.slug) && (
             <div
               className={`relative ${TILE_CLASS[shape]} ${TILE_SIZE[template.slug] ?? ""}`}
+              style={shape === "short" ? shortTileStyle(template.slug) : undefined}
             >
               {/* The island resets the page theme for the widget, so its
                 skin follows the card rather than the page. */}
               <div
                 data-theme={skin}
-                className={`mock-island ${skin}-island absolute inset-0 overflow-hidden rounded-[inherit] ${
-                  PANEL_TILES.has(template.slug) ? "mock-panel" : ""
-                }`}
+                className={`mock-island ${skin}-island absolute inset-0 rounded-[inherit] ${
+                  UNCLIPPED_TILES.has(template.slug) ? "" : "overflow-hidden"
+                } ${PANEL_TILES.has(template.slug) ? "mock-panel" : ""}`}
               >
                 <MockFit
-                  style={SHAPE_DESIGN_SIZE[shape]}
-                  className={`relative h-full w-full overflow-hidden ${
-                    SHAPE_DESIGN_SIZE[shape]
+                  style={designSize}
+                  className={`relative h-full w-full ${
+                    UNCLIPPED_TILES.has(template.slug) ? "" : "overflow-hidden"
+                  } ${
+                    designSize
                       ? ""
                       : `template-mock-tile ${MOCK_DESIGN_SIZE[template.slug] ?? ""}`
                   }`}

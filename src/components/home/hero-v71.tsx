@@ -153,7 +153,7 @@ function CardIntake() {
       {/* Opaque, like every other record card in the set: the translucent pane
           let the dot field run straight through it, so the row read as printed
           into the paper rather than lying on it. */}
-      <div className="flex w-full items-center gap-3 rounded-xl border border-black/[0.08] bg-[#FFFFFF] p-3 dark-x:border-[rgba(255,255,255,0.09)] dark-x:bg-[#303030]">
+      <div className="flex w-full items-center gap-3 rounded-xl border border-black/[0.08] bg-[#FFFFFF] p-3 dark-x:border-[rgba(255,255,255,0.09)] dark-x:bg-[#2E2E2E]">
         {/* Initials, not a photograph: the gallery is drawn art throughout, and a
             face is the one thing on it that would read as a real person. */}
         <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[var(--v69-well)] text-[13px] leading-none text-[var(--v69-ink)] light-ui:bg-[var(--v69-inner)] light-mock:bg-[#e6e6e6] light-ui:text-[#595959] dark-x:bg-[rgba(255,255,255,0.12)]">
@@ -223,7 +223,7 @@ const MOCK_UNIT_TAG =
 // The panel face the forms cover's field rows and their remove controls share,
 // so a row and the button beside it are cut from one material.
 const FORM_PANEL =
-  "rounded-xl border border-black/[0.08] bg-[#FFFFFF] dark-x:border-[rgba(255,255,255,0.09)] dark-x:bg-[#303030]";
+  "rounded-xl border border-black/[0.08] bg-[#FFFFFF] dark-x:border-[rgba(255,255,255,0.09)] dark-x:bg-[#2E2E2E]";
 
 // ─── Cover type ramp ────────────────────────────────────────────────────
 // Four steps for every piece of UI text on a cover, in the mocks' own design px.
@@ -1773,7 +1773,7 @@ function CardContentApproval() {
     // Ink and muted are pinned in dark for the same reason the data room pins
     // them: the template detail page renders mocks without the dark skin.
     <div className="v69-cover-column v69-plot-grid v69-plot-grid--dots flex h-full items-center bg-[var(--v69-card)] p-4 light-mock:bg-[#f2f2f2] dark-x:[--muted-foreground:#8F8F8F] dark-x:[--v69-ink:#F2F2F2]">
-      <div className="w-full overflow-hidden rounded-xl border border-black/[0.08] bg-[#FFFFFF] dark-x:border-[rgba(255,255,255,0.09)] dark-x:bg-[#303030]">
+      <div className="w-full overflow-hidden rounded-xl border border-black/[0.08] bg-[#FFFFFF] dark-x:border-[rgba(255,255,255,0.09)] dark-x:bg-[#2E2E2E]">
         <div className="flex flex-col items-start gap-2 px-3 py-2.5">
           {/* The status on a row of its own: beside the title it took the
               room the title needed, and at the hero rail's 212px both the item
@@ -1836,7 +1836,7 @@ function CardBooking() {
       {/* Opaque, not the glass pane the record covers use: over a dotted ground a
           translucent fill lets the field show through and the card reads as
           printed on the paper rather than lying on it. */}
-      <div className="flex w-full items-stretch gap-3 overflow-hidden rounded-lg border border-black/[0.08] bg-[#FFFFFF] py-2.5 pl-2.5 pr-3 dark-x:border-[rgba(255,255,255,0.09)] dark-x:bg-[#303030]">
+      <div className="flex w-full items-stretch gap-3 overflow-hidden rounded-lg border border-black/[0.08] bg-[#FFFFFF] py-2.5 pl-2.5 pr-3 dark-x:border-[rgba(255,255,255,0.09)] dark-x:bg-[#2E2E2E]">
         {/* The calendar spine. Deeper than the pale brand lime in light — a
             hairline mark on a white fill has no room to be a wash — and the
             periwinkle in dark, the same pair every accent on these covers runs. */}
@@ -2014,7 +2014,7 @@ function CardMarkup() {
         </span>
         {/* The field: opaque, so the hatch stops at its edge and it reads as a
             control laid on the page rather than printed into it. */}
-        <span className="flex h-9 min-w-0 flex-1 items-center gap-px rounded-full border border-black/[0.06] bg-[#FFFFFF] px-3.5 dark-x:border-[rgba(255,255,255,0.09)] dark-x:bg-[#303030]">
+        <span className="flex h-9 min-w-0 flex-1 items-center gap-px rounded-full border border-black/[0.06] bg-[#FFFFFF] px-3.5 dark-x:border-[rgba(255,255,255,0.09)] dark-x:bg-[#2E2E2E]">
           {/* The caret, so the field reads as focused and waiting rather than
               as an empty box. */}
           <span aria-hidden className="h-[13px] w-px shrink-0 bg-[var(--v69-ink)]/55" />
@@ -2047,7 +2047,7 @@ function CardResourceLibrary() {
           Its edge is the hairline alone — the drop under it read as the row
           hovering off the page, which is the one thing a filed record isn't. The
           other record rows in the set are drawn the same way. */}
-      <div className="flex w-full items-center gap-3 rounded-xl border bg-[#FFFFFF] p-3 border-black/[0.08] dark-x:border-[rgba(255,255,255,0.09)] dark-x:bg-[#303030]">
+      <div className="flex w-full items-center gap-3 rounded-xl border bg-[#FFFFFF] p-3 border-black/[0.08] dark-x:border-[rgba(255,255,255,0.09)] dark-x:bg-[#2E2E2E]">
         {/* The file's thumbnail slot. A glyph rather than a preview: at cover size
             a real thumbnail is a smudge, and the record is the point. */}
         <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[var(--v69-well)] text-[var(--v69-ink)]/30 light-ui:bg-[var(--v69-inner)] light-mock:bg-[#e6e6e6] dark-x:bg-[rgba(255,255,255,0.1)]">
@@ -2443,7 +2443,7 @@ function CardExport() {
   const pct = 68;
   return (
     <div className="v69-plot-grid v69-plot-grid--lines flex h-full items-center bg-[var(--v69-card)] p-4 light-mock:bg-[#f2f2f2]">
-      <span className="block w-full rounded-xl border border-black/[0.08] bg-[#FFFFFF] px-3 py-2.5 dark-x:border-[rgba(255,255,255,0.09)] dark-x:bg-[#303030]">
+      <span className="block w-full rounded-xl border border-black/[0.08] bg-[#FFFFFF] px-3 py-2.5 dark-x:border-[rgba(255,255,255,0.09)] dark-x:bg-[#2E2E2E]">
         <span className="block truncate text-[13px] leading-none text-[var(--v69-ink)] max-sm:[.template-mock-gallery_&]:text-[12px]">
           Clients.csv
         </span>
@@ -2594,7 +2594,7 @@ function CardForms() {
 function CardHelpdesk() {
   return (
     <div className="flex h-full items-stretch bg-[var(--v69-card)] p-4 light-mock:bg-[#f2f2f2]">
-      <span className="flex w-full flex-col overflow-hidden rounded-xl border border-black/[0.08] bg-[#FFFFFF] dark-x:border-[rgba(255,255,255,0.09)] dark-x:bg-[#303030]">
+      <span className="flex w-full flex-col overflow-hidden rounded-xl border border-black/[0.08] bg-[#FFFFFF] dark-x:border-[rgba(255,255,255,0.09)] dark-x:bg-[#2E2E2E]">
         <span className="flex items-center px-3 py-2.5">
           <span className="min-w-0 flex-1 truncate text-[13px] leading-none text-[var(--v69-ink)] max-sm:[.template-mock-gallery_&]:text-[12px]">
             Welcome to the portal
@@ -2655,7 +2655,7 @@ const TASKS_ROWS = [
 function CardTasks() {
   return (
     <div className="v69-cover-column flex h-full items-center bg-[var(--v69-card)] p-4 light-mock:bg-[#f2f2f2]">
-      <span className="block w-full overflow-hidden rounded-xl border border-black/[0.08] bg-[#FFFFFF] dark-x:border-[rgba(255,255,255,0.09)] dark-x:bg-[#303030]">
+      <span className="block w-full overflow-hidden rounded-xl border border-black/[0.08] bg-[#FFFFFF] dark-x:border-[rgba(255,255,255,0.09)] dark-x:bg-[#2E2E2E]">
         {/* The column head takes the covers' periwinkle in both themes, the way
             the Home row's count does — a column's colour is what identifies it on
             a board, so it is the one thing here that carries hue. */}
@@ -2708,7 +2708,7 @@ const PROFILE_ROWS = [
 function CardProfileManager() {
   return (
     <div className="flex h-full items-center bg-[var(--v69-card)] p-4 light-mock:bg-[#f2f2f2]">
-      <span className="block w-full overflow-hidden rounded-xl border border-black/[0.08] bg-[#FFFFFF] dark-x:border-[rgba(255,255,255,0.09)] dark-x:bg-[#303030]">
+      <span className="block w-full overflow-hidden rounded-xl border border-black/[0.08] bg-[#FFFFFF] dark-x:border-[rgba(255,255,255,0.09)] dark-x:bg-[#2E2E2E]">
         {PROFILE_ROWS.map((person, i) => (
           <span
             key={person.name}
@@ -2842,7 +2842,7 @@ const XERO_OPTIONS = ["Exclude from mapping", "Logo Design", "Marketing Overhaul
 function CardXero() {
   return (
     <div className="v69-cover-column v69-plot-grid v69-plot-grid--dots flex h-full items-center bg-[var(--v69-card)] p-4 light-mock:bg-[#f2f2f2]">
-      <span className="block w-full overflow-hidden rounded-xl border border-black/[0.08] bg-[#FFFFFF] dark-x:border-[rgba(255,255,255,0.09)] dark-x:bg-[#303030]">
+      <span className="block w-full overflow-hidden rounded-xl border border-black/[0.08] bg-[#FFFFFF] dark-x:border-[rgba(255,255,255,0.09)] dark-x:bg-[#2E2E2E]">
         {/* The caret in the empty field is the one mark that makes this a list
             being searched rather than a menu sitting open. */}
         <span className="flex items-center border-b border-black/[0.07] px-3 py-2.5 dark-x:border-[rgba(255,255,255,0.16)]">
@@ -2874,7 +2874,7 @@ function CardXero() {
 function CardQuickBooks() {
   return (
     <div className="flex h-full items-center justify-center bg-[var(--v69-card)] p-4 light-mock:bg-[#f2f2f2]">
-      <span className="flex size-[104px] items-center justify-center rounded-[26px] bg-[var(--v69-well)] [.template-mock-gallery_&]:size-[156px] [.template-mock-gallery_&]:rounded-[38px] light-ui:bg-[var(--v69-inner)] light-mock:bg-[#e6e6e6] dark-x:bg-[rgba(255,255,255,0.09)]">
+      <span className="v69-app-tile flex size-[104px] items-center justify-center rounded-[26px] bg-[var(--v69-well)] [.template-mock-gallery_&]:size-[156px] [.template-mock-gallery_&]:rounded-[38px] light-ui:bg-[var(--v69-inner)] light-mock:bg-[#e6e6e6] dark-x:bg-[rgba(255,255,255,0.09)]">
         {/* The approved mark, path for path, filled from one currentColor so it
             tracks the theme instead of carrying the file's own grey. Held back on
             the templates page, where the mark should name the integration rather
@@ -2914,7 +2914,7 @@ function CardAutoresponder() {
         </span>
         {/* Opaque like every other panel in the set — through a translucent one
             the hatch ran straight across the control. */}
-        <span className="mt-2 flex items-center gap-2 rounded-xl border border-black/[0.08] bg-[#FFFFFF] px-3 py-2.5 dark-x:border-[rgba(255,255,255,0.09)] dark-x:bg-[#303030]">
+        <span className="mt-2 flex items-center gap-2 rounded-xl border border-black/[0.08] bg-[#FFFFFF] px-3 py-2.5 dark-x:border-[rgba(255,255,255,0.09)] dark-x:bg-[#2E2E2E]">
           <span className="min-w-0 flex-1 truncate text-[13px] leading-none text-[var(--v69-ink)] max-sm:[.template-mock-gallery_&]:text-[12px]">
             Outside working hours
           </span>
@@ -2941,7 +2941,7 @@ function CardAutoresponder() {
 function CardContract() {
   return (
     <div className="v69-plot-grid v69-plot-grid--lines flex h-full items-center bg-[var(--v69-card)] p-4 light-mock:bg-[#f2f2f2]">
-      <span className="block w-full overflow-hidden rounded-xl border border-black/[0.08] bg-[#FFFFFF] dark-x:border-[rgba(255,255,255,0.09)] dark-x:bg-[#303030]">
+      <span className="block w-full overflow-hidden rounded-xl border border-black/[0.08] bg-[#FFFFFF] dark-x:border-[rgba(255,255,255,0.09)] dark-x:bg-[#2E2E2E]">
         <span className="flex items-center gap-2 px-3 py-2.5">
           <span className="min-w-0 flex-1 truncate text-[13px] leading-none text-[var(--v69-ink)] max-sm:[.template-mock-gallery_&]:text-[12px]">
             Service Agreement
@@ -2990,7 +2990,7 @@ function CardTeamGuides() {
       {/* Tighter gaps than the client library's row: this one carries a size and
           a meter on the right as well, and at the larger type the filename ran
           out of track and truncated. */}
-      <div className="flex w-full items-center gap-2 rounded-xl border border-black/[0.08] bg-[#FFFFFF] p-2.5 dark-x:border-[rgba(255,255,255,0.09)] dark-x:bg-[#303030]">
+      <div className="flex w-full items-center gap-2 rounded-xl border border-black/[0.08] bg-[#FFFFFF] p-2.5 dark-x:border-[rgba(255,255,255,0.09)] dark-x:bg-[#2E2E2E]">
         {/* The file's own thumbnail slot. A glyph rather than a preview: at this
             size a real thumbnail is a smudge, and the point is the record, not
             the artwork. */}
@@ -3052,7 +3052,7 @@ function CardDataRoom() {
     // mocks without the .v72-mock-dark skin, so --v69-ink there is still the
     // light-mode near-black and the names sat dark-on-dark.
     <div className="v69-cover-column v69-plot-grid v69-plot-grid--dots v69-plot-grid--fade flex h-full items-center bg-[var(--v69-card)] p-4 light-mock:bg-[#f2f2f2] dark-x:[--muted-foreground:#8F8F8F] dark-x:[--v69-ink:#F2F2F2]">
-      <div className="w-full overflow-hidden rounded-xl border border-black/[0.08] bg-[#FFFFFF] dark-x:border-[rgba(255,255,255,0.09)] dark-x:bg-[#303030]">
+      <div className="w-full overflow-hidden rounded-xl border border-black/[0.08] bg-[#FFFFFF] dark-x:border-[rgba(255,255,255,0.09)] dark-x:bg-[#2E2E2E]">
         {DATA_ROOM_ACCESS.map((row, i) => (
           <div
             key={row.name}
@@ -4087,7 +4087,7 @@ export function CardEngagementRing() {
         {/* Ink at 70% rather than the muted grey, which washed out over the
             bright band showing through the glass. */}
         <span className="mt-[3cqw] text-[6cqw] leading-none text-[var(--v69-ink)]/70">
-          Engagement score
+          Score
         </span>
       </div>
     </div>
@@ -4221,6 +4221,9 @@ const RESOURCE_GUIDE = {
   body: "Our logo works best with room to breathe. Keep clear space equal to the height of the mark on every side, and never stretch, recolor or rotate it. Use the primary palette for headlines and calls to action, and save the accent color for small highlights. Photography should feel natural and well lit, with real people over stock poses.",
   read: 75,
 };
+// Terms the guide defines, marked the way a doc marks a glossary link.
+const RESOURCE_TERMS = ["clear space", "primary palette", "accent color"];
+const RESOURCE_TERM_SPLIT = new RegExp(`(${RESOURCE_TERMS.join("|")})`);
 // Ring geometry in the pill's own 20-unit box.
 const RESOURCE_RING_R = 7;
 const RESOURCE_RING_C = 2 * Math.PI * RESOURCE_RING_R;
@@ -4239,7 +4242,18 @@ export function CardResourceArticle() {
         className="mt-[3cqw] min-h-0 flex-1 overflow-hidden text-left text-[6cqw] leading-[1.45] text-[var(--v69-ink)]/70"
         style={{ maskImage: RESOURCE_FADE, WebkitMaskImage: RESOURCE_FADE }}
       >
-        {RESOURCE_GUIDE.body}
+        {RESOURCE_GUIDE.body.split(RESOURCE_TERM_SPLIT).map((part, i) =>
+          RESOURCE_TERMS.includes(part) ? (
+            <span
+              key={i}
+              className="text-[var(--v69-ink)] underline decoration-[var(--v69-ink)]/50 decoration-dashed decoration-[0.25cqw] underline-offset-[1.2cqw]"
+            >
+              {part}
+            </span>
+          ) : (
+            part
+          ),
+        )}
       </p>
       <span className="v69-reading-pill absolute bottom-[7%] left-1/2 flex -translate-x-1/2 items-center gap-[2cqw] rounded-full py-[1.6cqw] pl-[1.8cqw] pr-[3.2cqw] text-[6.5cqw] leading-none tabular-nums text-[var(--v69-ink)]">
         <svg viewBox="0 0 20 20" className="size-[7.5cqw] -rotate-90" aria-hidden>
@@ -4255,7 +4269,9 @@ export function CardResourceArticle() {
             strokeDasharray={`${(RESOURCE_GUIDE.read / 100) * RESOURCE_RING_C} ${RESOURCE_RING_C}`}
           />
         </svg>
-        {RESOURCE_GUIDE.read}%
+        {/* Digits have no descenders, so the line box leaves them sitting high;
+            lowered to the pill's centre. */}
+        <span className="block translate-y-[0.09em]">{RESOURCE_GUIDE.read}%</span>
       </span>
     </div>
   );
@@ -4264,11 +4280,7 @@ export function CardResourceArticle() {
 // The data room for the templates gallery's glass tile: the latest activity as
 // a card over the room's open access requests, after a phone notification.
 // The home rail keeps its own cover (CardDataRoom).
-const DATA_ROOM_LATEST = {
-  title: "Q3 financials viewed",
-  detail: "2m · Larkspur Design",
-  views: 4,
-};
+const DATA_ROOM_LATEST = "Larkspur opened Q3 financials";
 const DATA_ROOM_REQUESTS = 2;
 
 export function CardDataRoomAlerts() {
@@ -4276,28 +4288,18 @@ export function CardDataRoomAlerts() {
     // A strip tile, so sizes run about 0.7x the square tiles' to read the same.
     // The tile's own glass is the tray; the card is the latest event.
     <div className="flex h-full w-full flex-col justify-start p-[3.5%] [container-type:inline-size]">
-      <div className="mt-[1cqw] rounded-[3.2cqw] bg-[#f2f2f2] px-[3.4cqw] py-[3cqw] text-[#1B1B1B] light-gallery:bg-[var(--v69-ink)]/[0.1]">
-        <div className="flex items-center gap-[1.8cqw] text-[4.6cqw] leading-none">
-          <span className="min-w-0 flex-1 truncate">{DATA_ROOM_LATEST.title}</span>
-          <span className="flex shrink-0 items-center gap-[0.9cqw] text-[3.7cqw] opacity-55">
-            <svg viewBox="0 0 16 16" className="size-[3.4cqw]" fill="none" aria-hidden>
-              <path d="M1.5 8s2.4-4.5 6.5-4.5S14.5 8 14.5 8s-2.4 4.5-6.5 4.5S1.5 8 1.5 8z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
-              <circle cx="8" cy="8" r="1.9" stroke="currentColor" strokeWidth="1.4" />
-            </svg>
-            {DATA_ROOM_LATEST.views}
-          </span>
-        </div>
-        <div className="mt-[1.7cqw] truncate text-[3.7cqw] leading-none opacity-50">
-          {DATA_ROOM_LATEST.detail}
+      <div className="mt-[1cqw] rounded-[2.2cqw] bg-[#f2f2f2] px-[3.4cqw] py-[3cqw] text-[#1B1B1B] light-gallery:bg-[var(--v69-ink)]/[0.1]">
+        <div className="truncate text-[4.6cqw] leading-none">
+          {DATA_ROOM_LATEST}
         </div>
       </div>
       <div className="flex items-center gap-[2.1cqw] px-[2.6cqw] pt-[2.4cqw] text-[4.6cqw] leading-none text-[var(--v69-ink)]">
-        <span className="flex size-[5cqw] shrink-0 items-center justify-center rounded-full bg-[#FF8C8C] text-[3.1cqw] leading-none text-[#1B1B1B]">
-          <span data-initial className="block translate-y-[0.3cqw]">
+        <span className="flex size-[5cqw] shrink-0 items-center justify-center rounded-[1.4cqw] bg-[#FF8C8C] text-[2.7cqw] leading-none text-[#1B1B1B]">
+          <span data-initial className="block translate-y-[0.33cqw]">
             {DATA_ROOM_REQUESTS}
           </span>
         </span>
-        Access requests
+        Access requested
       </div>
     </div>
   );
@@ -4453,10 +4455,14 @@ const ONBOARDING_STEPS = {
   total: 10,
 };
 
+const ONBOARDING_DOT = "5.2cqw";
+
 export function CardOnboardingSteps() {
   const { client, step, current, total } = ONBOARDING_STEPS;
-  // Where the current step's label sits on the scale, so it lines up under its dot.
-  const currentAt = `${((current - 0.5) / total) * 100}%`;
+  // The dots spread edge to edge, so a step's centre is half a dot in plus its
+  // share of the remaining width; each label centres on that.
+  const dotCentre = (n: number) =>
+    `calc(${ONBOARDING_DOT} / 2 + (100% - ${ONBOARDING_DOT}) * ${(n - 1) / (total - 1)})`;
   return (
     <div className="flex h-full w-full flex-col justify-between p-[10%] [container-type:inline-size]">
       <div>
@@ -4478,7 +4484,11 @@ export function CardOnboardingSteps() {
                   ? "bg-[var(--v69-ink)] shadow-[0_0_0_1.2cqw_color-mix(in_srgb,var(--v69-ink)_22%,transparent)]"
                   : "bg-[var(--v69-ink)]/[0.12]";
             return (
-              <span key={n} className={`size-[5.2cqw] rounded-full ${tone}`} />
+              <span
+                key={n}
+                className={`shrink-0 rounded-full ${tone}`}
+                style={{ width: ONBOARDING_DOT, height: ONBOARDING_DOT }}
+              />
             );
           })}
         </div>
@@ -4486,68 +4496,45 @@ export function CardOnboardingSteps() {
           className="relative mt-[4.5cqw] h-[5.5cqw] text-[5.5cqw] leading-none text-[var(--v69-ink)]/45 tabular-nums"
           style={MOCK_MONO}
         >
-          <span className="absolute left-0">1</span>
-          <span
-            className="absolute -translate-x-1/2 text-[var(--v69-ink)]"
-            style={{ left: currentAt }}
-          >
-            {current}
-          </span>
-          <span className="absolute right-0">{total}</span>
+          {[1, current, total].map((n) => (
+            <span
+              key={n}
+              className={`absolute -translate-x-1/2 ${n === current ? "text-[var(--v69-ink)]" : ""}`}
+              style={{ left: dotCentre(n) }}
+            >
+              {n}
+            </span>
+          ))}
         </div>
       </div>
     </div>
   );
 }
 
-// Design approvals for the templates gallery's glass tile: one client project
-// as a tree of deliverables, the one waiting on the client lit and marked. The
-// home rail keeps its own cover (CardDesignApprovals).
-const APPROVAL_PROJECT = "Acme rebrand";
-const APPROVAL_LIST: { name: string; waiting?: boolean }[] = [
-  { name: "Logo" },
-  { name: "Brand palette", waiting: true },
-  { name: "Type system" },
-  { name: "Social kit" },
-  { name: "Signage" },
-  { name: "Brand book" },
-];
+// Design approvals for the templates gallery's glass tile: one colour up for
+// sign-off, as a swatch with its channels, its hex and where it stands, after a colour-picker widget. The home rail keeps its own cover
+// (CardDesignApprovals).
+const APPROVAL_SWATCH = { hex: "#FFDAFC", r: 255, g: 218, b: 252 };
+const APPROVAL_STATUS = "Brand palette · In review";
 
 export function CardApprovalList() {
+  const { hex, r, g, b } = APPROVAL_SWATCH;
   return (
-    <div className="flex h-full w-full flex-col justify-start p-[9%] [container-type:inline-size]">
-      <div className="text-[7.6cqw] leading-none tracking-tight text-[var(--v69-ink)]">
-        {APPROVAL_PROJECT}
+    <div className="flex h-full w-full flex-col p-[7%] [container-type:inline-size]">
+      <div
+        className="flex min-h-0 flex-1 items-end justify-between rounded-[6cqw] px-[5.5cqw] pb-[6cqw] text-[4.6cqw] leading-none tabular-nums text-[#1B1B1B]/55"
+        style={{ ...MOCK_MONO, backgroundColor: hex }}
+      >
+        <span>R{r}</span>
+        <span>G{g}</span>
+        <span>B{b}</span>
       </div>
-      <ul className="mt-[2.5cqw] ml-[1.5cqw]">
-        {APPROVAL_LIST.map((row, i) => {
-          const last = i === APPROVAL_LIST.length - 1;
-          return (
-            <li
-              key={row.name}
-              className={`relative flex items-center gap-[2.5cqw] py-[2.2cqw] pl-[7cqw] text-[6.4cqw] leading-none ${
-                row.waiting
-                  ? "text-[var(--v69-ink)]"
-                  : "text-[var(--v69-ink)]/45"
-              }`}
-            >
-              {/* The trunk stops at the last branch, so the tree closes as an elbow. */}
-              <span
-                aria-hidden
-                className={`absolute left-0 top-0 w-px bg-[var(--v69-ink)]/20 ${last ? "h-1/2" : "h-full"}`}
-              />
-              <span
-                aria-hidden
-                className="absolute left-0 top-1/2 h-px w-[4cqw] bg-[var(--v69-ink)]/20"
-              />
-              <span className="truncate">{row.name}</span>
-              {row.waiting && (
-                <span className="size-[2.4cqw] shrink-0 rounded-full bg-[#FF8C8C]" />
-              )}
-            </li>
-          );
-        })}
-      </ul>
+      <div className="mt-[5cqw] text-[7.6cqw] leading-none tracking-tight text-[var(--v69-ink)]">
+        {hex}
+      </div>
+      <div className="mt-[3cqw] text-[5.8cqw] leading-none text-[var(--v69-ink)]/45">
+        {APPROVAL_STATUS}
+      </div>
     </div>
   );
 }
@@ -4600,8 +4587,9 @@ export function CardHelpdeskStat() {
         <span className="pt-[2cqw] text-[8.5cqw] leading-none tracking-tight text-[var(--v69-ink)]">
           Open requests
         </span>
-        <span className="flex size-[13cqw] shrink-0 items-center justify-center rounded-full bg-[var(--v69-ink)]/[0.12] text-[var(--v69-ink)]">
-          {/* The design system's Message glyph, the product's Messages icon. */}
+        <span className="flex size-[13cqw] shrink-0 items-center justify-center rounded-full bg-[#7DA4FF] text-[#13244D]">
+          {/* The design system's Message glyph, the product's Messages icon, on
+              the brand blue the send button and switch use. */}
           <svg viewBox="0 0 20 20" className="size-[5.6cqw]" fill="none" aria-hidden>
             <path
               fill="currentColor"
@@ -4661,7 +4649,7 @@ export function CardCommentThread() {
             {/* The corner nearest the avatar stays square, so the bubble reads
                 as said by that person. */}
             <div
-              className={`min-w-0 flex-1 rounded-[5cqw] bg-[#f2f2f2] px-[4.5cqw] py-[3.8cqw] text-[#1B1B1B] light-gallery:bg-[var(--v69-ink)]/[0.1] ${
+              className={`min-w-0 flex-1 rounded-[5cqw] bg-[var(--v69-ink)]/[0.1] px-[4.5cqw] py-[3.8cqw] text-[var(--v69-ink)] ${
                 c.mine ? "rounded-bl-[1.2cqw]" : "rounded-tr-[1.2cqw]"
               }`}
             >
@@ -4675,7 +4663,7 @@ export function CardCommentThread() {
         ))}
       </div>
       <div className="mt-auto flex items-center gap-[3cqw] rounded-full bg-[var(--v69-ink)]/[0.08] py-[1.6cqw] pl-[4.5cqw] pr-[1.6cqw]">
-        <span className="flex-1 truncate text-[6cqw] leading-none text-[var(--v69-ink)]/45">
+        <span className="flex-1 truncate text-[5.2cqw] leading-none text-[var(--v69-ink)]/45">
           Write your message...
         </span>
         <span className="flex size-[8cqw] shrink-0 items-center justify-center rounded-full bg-[#7DA4FF] text-[#13244D]">
@@ -4691,6 +4679,8 @@ export function CardCommentThread() {
 // Markup and comments for the templates gallery's glass tile: a comment
 // opened from its marker in a document, after a source-preview popover. The
 // home rail keeps its own cover (CardMarkup).
+const MARKUP_FADE = "linear-gradient(to bottom, #000 30%, transparent 92%)";
+
 export function CardMarkupPopover() {
   return (
     <div className="flex h-full w-full flex-col justify-start overflow-hidden p-[8%] pt-[7%] [container-type:inline-size]">
@@ -4699,33 +4689,36 @@ export function CardMarkupPopover() {
             the pointer joins the bubble without a darker overlap where they
             meet. The pointer's left is measured to the comment marker's
             centre in the line below. */}
-        <div aria-hidden className="absolute inset-0 opacity-85">
-          <div className="absolute inset-0 rounded-[4cqw] bg-[#141414]" />
-          <span className="absolute -bottom-[2cqw] left-[calc(62.6%-2cqw)] size-[4cqw] rotate-45 rounded-[0.8cqw] bg-[#141414]" />
+        <div aria-hidden className="absolute inset-0 opacity-85 dark-x:opacity-10">
+          <div className="absolute inset-0 rounded-[4cqw] bg-[#141414] dark-x:bg-[#f2f2f2]" />
+          <span className="absolute -bottom-[2cqw] left-[calc(62.6%-2cqw)] size-[4cqw] rotate-45 rounded-[0.8cqw] bg-[#141414] dark-x:bg-[#f2f2f2]" />
         </div>
         <div className="relative flex items-center gap-[2.5cqw] border-b border-[rgba(255,255,255,0.1)] px-[4.5cqw] py-[3.5cqw] text-[6cqw] leading-none">
           <span className="flex size-[6.5cqw] shrink-0 items-center justify-center rounded-full bg-[#C6B6FF] text-[3.8cqw] leading-none text-[#2A1F5C]">
             <span data-initial className="block translate-y-[0.37cqw]">M</span>
           </span>
           Maya on Homepage copy
-          <svg viewBox="0 0 16 16" className="ml-auto size-[5cqw] text-[rgba(255,255,255,0.45)]" fill="none" aria-hidden>
-            <path d="M5 11l6-6M6 5h5v5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
         </div>
         <p className="relative px-[4.5cqw] py-[4cqw] text-[6cqw] leading-[1.35] text-[rgba(255,255,255,0.85)]">
           Can we lead with the outcome here? Clients skim this line first.
         </p>
       </div>
-      <p className="mt-[6cqw] text-[6.5cqw] leading-[1.45] text-[var(--v69-ink)]">
+      {/* The page runs on past the tile and dissolves, as the resource
+          library's guide does, so it reads as a document mid-scroll. */}
+      <p
+        className="mt-[6cqw] min-h-0 flex-1 overflow-hidden text-[6.5cqw] leading-[1.45] text-[var(--v69-ink)]"
+        style={{ maskImage: MARKUP_FADE, WebkitMaskImage: MARKUP_FADE }}
+      >
         Your portal for files{" "}
-        <span data-comment-marker className="relative -top-[0.5cqw] inline-flex size-[7.5cqw] items-center justify-center rounded-[2cqw] bg-[var(--v69-ink)]/[0.14] align-middle">
-          <svg viewBox="0 0 20 20" className="size-[4.4cqw] text-[var(--v69-ink)]" fill="currentColor" aria-hidden>
+        <span data-comment-marker className="relative -top-[0.5cqw] inline-flex size-[7.5cqw] items-center justify-center rounded-[2cqw] bg-[#7DA4FF] align-middle">
+          <svg viewBox="0 0 20 20" className="size-[4.4cqw] text-[#13244D]" fill="currentColor" aria-hidden>
             <path d="M2.02734 15.0352C0.753906 13.4609 0 11.5 0 9.375C0 4.19922 4.47656 0 10 0C15.5234 0 20 4.19922 20 9.375C20 14.5508 15.5234 18.75 10 18.75C8.57422 18.75 7.21875 18.4688 5.99219 17.9688L1.44531 19.918C1.30078 19.9805 1.15234 20 0.996094 20C0.445312 20 0 19.5547 0 19.0039C0 18.8359 0.0429687 18.6719 0.121094 18.5273L2.02734 15.0352ZM3.48438 13.8555C3.96094 14.4453 4.03516 15.2656 3.67188 15.9336L2.96875 17.2266L5.25391 16.2461C5.71484 16.0469 6.23828 16.043 6.70312 16.2344C7.70703 16.6445 8.82031 16.875 9.99609 16.875C14.5977 16.875 18.1211 13.4062 18.1211 9.375C18.1211 5.34375 14.6016 1.875 10 1.875C5.39844 1.875 1.875 5.34375 1.875 9.375C1.875 11.0469 2.46484 12.5938 3.48438 13.8555Z" />
           </svg>
         </span>{" "}
         <span className="text-[var(--v69-ink)]/45">
           and invoices, all in one place. Share updates, collect sign-offs
-          and keep every client on the same page.
+          and keep every client on the same page. Every message and payment
+          lands in one place your team already knows.
         </span>
       </p>
     </div>
@@ -4750,9 +4743,10 @@ export function CardResourceGuide() {
         <span className="bg-[var(--v69-ink)]/[0.1] px-[3cqw] py-[1.8cqw] tabular-nums">2</span>
         <span className="px-[3cqw] py-[1.8cqw]">Onboarding</span>
       </div>
-      <div className="flex flex-1 flex-col justify-center rounded-[4cqw] bg-[rgba(18,18,18,0.88)] px-[6cqw] text-[rgba(255,255,255,0.92)]">
+      <div className="flex flex-1 flex-col justify-center rounded-[4cqw] bg-[rgba(18,18,18,0.88)] px-[6cqw] dark-x:bg-[var(--v69-ink)]/[0.1] text-[rgba(255,255,255,0.92)]">
         <div className="flex items-center gap-[2.5cqw] text-[6.4cqw] leading-none">
-          <svg viewBox="0 0 17.5 20" className="h-[6cqw] w-[5.25cqw] shrink-0 text-[#7DA4FF]" fill="currentColor" aria-hidden>
+          {/* Raised to the capitals' centre: the line box centres it a touch low. */}
+          <svg viewBox="0 0 17.5 20" className="h-[6cqw] w-[5.25cqw] shrink-0 -translate-y-[0.54cqw] text-[#7DA4FF]" fill="currentColor" aria-hidden>
             <path d="M3.4375 0C1.53906 0 0 1.53906 0 3.4375V16.875C0 18.6016 1.39844 20 3.125 20H16.5625C17.082 20 17.5 19.582 17.5 19.0625C17.5 18.543 17.082 18.125 16.5625 18.125H16.25V15.1523C17.0039 14.6484 17.5 13.7891 17.5 12.8125V2.8125C17.5 1.25781 16.2422 0 14.6875 0H3.4375ZM14.375 15.625V18.125H3.125C2.43359 18.125 1.875 17.5664 1.875 16.875C1.875 16.1836 2.43359 15.625 3.125 15.625H14.375ZM3.125 13.75C2.67969 13.75 2.25781 13.8438 1.875 14.0117V3.4375C1.875 2.57422 2.57422 1.875 3.4375 1.875H14.6875C15.207 1.875 15.625 2.29297 15.625 2.8125V12.8125C15.625 13.332 15.207 13.75 14.6875 13.75H3.125ZM5 5.9375C5 6.45703 5.41797 6.875 5.9375 6.875H12.8125C13.332 6.875 13.75 6.45703 13.75 5.9375C13.75 5.41797 13.332 5 12.8125 5H5.9375C5.41797 5 5 5.41797 5 5.9375ZM5.9375 8.75C5.41797 8.75 5 9.16797 5 9.6875C5 10.207 5.41797 10.625 5.9375 10.625H12.8125C13.332 10.625 13.75 10.207 13.75 9.6875C13.75 9.16797 13.332 8.75 12.8125 8.75H5.9375Z" />
           </svg>
           New hire guide
@@ -4791,11 +4785,15 @@ export function CardMonthGrid() {
     ...Array.from({ length: MONTH_DAYS }, (_, i) => i + 1),
   ];
   return (
-    <div className="flex h-full w-full flex-col justify-start p-[7%] [container-type:inline-size]">
-      <div className="pl-[1.5cqw] text-[6.5cqw] leading-none text-[var(--v69-ink)]">
-        {MONTH_NAME}
+    <div className="flex h-full w-full flex-col justify-start px-[7cqw] pb-[7cqw] [container-type:inline-size]">
+      {/* The month on its own band, edge to edge, so the header reads apart
+          from the grid. */}
+      <div className="-mx-[7cqw] bg-[var(--v69-ink)]/[0.06] px-[7cqw] py-[5cqw]">
+        <div className="pl-[1.5cqw] text-[6.5cqw] leading-none text-[var(--v69-ink)]">
+          {MONTH_NAME}
+        </div>
       </div>
-      <div className="mt-[7cqw] grid grid-cols-7 gap-y-[1cqw] text-center text-[6.5cqw] leading-none tabular-nums">
+      <div className="mt-[6cqw] grid grid-cols-7 gap-y-[1cqw] text-center text-[6.5cqw] leading-none tabular-nums">
         {WEEKDAYS.map((d, i) => (
           <span key={i} className="pb-[1.4cqw] text-[var(--v69-ink)]/45">
             {d}
@@ -4842,8 +4840,8 @@ export function CardFileChip() {
         </div>
       </div>
       <div className="flex items-center gap-[2.5cqw] text-[6.5cqw] leading-none text-[var(--v69-ink)]">
-        <span className="flex size-[11cqw] shrink-0 items-center justify-center rounded-[3cqw] bg-[#FF8C8C]/[0.16] text-[#FF8C8C]">
-          <svg viewBox="0 0 22.5 21.5" className="h-[6cqw] w-[6.3cqw]" fill="currentColor" aria-hidden>
+        <span className="flex size-[14cqw] shrink-0 items-center justify-center rounded-[3.8cqw] bg-[#FF8C8C]/[0.16] text-[#FF8C8C]">
+          <svg viewBox="0 0 22.5 21.5" className="h-[7.6cqw] w-[8cqw]" fill="currentColor" aria-hidden>
           <path d="M8.125 1.875H3.75C3.40625 1.875 3.125 2.15625 3.125 2.5V17.5C3.125 17.8438 3.40625 18.125 3.75 18.125H6.875V20H3.75C2.37109 20 1.25 18.8789 1.25 17.5V2.5C1.25 1.12109 2.37109 0 3.75 0H8.96484C9.62891 0 10.2656 0.261719 10.7344 0.730469L15.5195 5.51953C15.9883 5.98828 16.25 6.625 16.25 7.28906V13.1289H14.375V8.12891H10.9375C9.38281 8.12891 8.125 6.87109 8.125 5.31641V1.87891V1.875ZM13.5977 6.25L10 2.65234V5.3125C10 5.83203 10.418 6.25 10.9375 6.25H13.5977ZM9.375 14.8438H10.625C11.918 14.8438 12.9688 15.8945 12.9688 17.1875C12.9688 18.4805 11.918 19.5312 10.625 19.5312H10.1562V20.625C10.1562 21.0547 9.80469 21.4062 9.375 21.4062C8.94531 21.4062 8.59375 21.0547 8.59375 20.625V15.625C8.59375 15.1953 8.94531 14.8438 9.375 14.8438ZM10.625 17.9688C11.0547 17.9688 11.4062 17.6172 11.4062 17.1875C11.4062 16.7578 11.0547 16.4062 10.625 16.4062H10.1562V17.9688H10.625ZM14.375 14.8438H15.625C16.7461 14.8438 17.6562 15.7539 17.6562 16.875V19.375C17.6562 20.4961 16.7461 21.4062 15.625 21.4062H14.375C13.9453 21.4062 13.5938 21.0547 13.5938 20.625V15.625C13.5938 15.1953 13.9453 14.8438 14.375 14.8438ZM15.625 19.8438C15.8828 19.8438 16.0938 19.6328 16.0938 19.375V16.875C16.0938 16.6172 15.8828 16.4062 15.625 16.4062H15.1562V19.8438H15.625ZM18.5938 15.625C18.5938 15.1953 18.9453 14.8438 19.375 14.8438H21.25C21.6797 14.8438 22.0312 15.1953 22.0312 15.625C22.0312 16.0547 21.6797 16.4062 21.25 16.4062H20.1562V17.3438H21.25C21.6797 17.3438 22.0312 17.6953 22.0312 18.125C22.0312 18.5547 21.6797 18.9062 21.25 18.9062H20.1562V20.625C20.1562 21.0547 19.8047 21.4062 19.375 21.4062C18.9453 21.4062 18.5938 21.0547 18.5938 20.625V15.625Z" />
         </svg>
         </span>
@@ -4904,7 +4902,7 @@ export function CardMessageBubble() {
           </div>
         </div>
       </div>
-      <div className="ml-auto max-w-[78%] rounded-[5cqw] rounded-br-[1.5cqw] bg-[#7DA4FF] px-[4.5cqw] py-[3.8cqw] text-[6.5cqw] leading-[1.35] text-[#13244D]">
+      <div className="ml-auto max-w-[78%] rounded-[5cqw] rounded-br-[1.5cqw] bg-[#BCE7F4] px-[4.5cqw] py-[3.8cqw] text-[6.5cqw] leading-[1.35] text-[#13244D]">
         Great, sending the contract now.
       </div>
     </div>
@@ -5011,7 +5009,7 @@ export function CardFormFields() {
         {FORM_FILLED.map((field) => (
           <div key={field.label}>
             <div className="text-[5.6cqw] leading-none text-[var(--v69-ink)]/45">{field.label}</div>
-            <div className="mt-[2.4cqw] rounded-[3cqw] border border-[var(--v69-ink)]/[0.16] bg-[var(--v69-ink)]/[0.06] px-[4cqw] py-[3.4cqw] text-[6.5cqw] leading-none text-[var(--v69-ink)] tabular-nums">
+            <div className="mt-[2.4cqw] rounded-[3cqw] border border-[var(--v69-ink)]/[0.16] bg-[var(--v69-ink)]/[0.06] px-[4cqw] py-[3.4cqw] text-[6.5cqw] leading-none text-[var(--v69-ink)] tabular-nums light-gallery:border-transparent">
               {field.value}
             </div>
           </div>
@@ -5038,7 +5036,7 @@ export function CardAutoReply() {
           </span>
         </div>
       </div>
-      <div className="rounded-[5cqw] rounded-bl-[1.5cqw] bg-[var(--v69-ink)]/[0.1] px-[4.5cqw] py-[3.8cqw] text-[6.5cqw] leading-[1.35] text-[var(--v69-ink)]">
+      <div className="rounded-[5cqw] bg-[var(--v69-ink)]/[0.1] px-[4.5cqw] py-[3.8cqw] text-[6.5cqw] leading-[1.35] text-[var(--v69-ink)]">
         {"Thanks for reaching out. We'll reply first thing tomorrow."}
       </div>
     </div>
@@ -5056,13 +5054,13 @@ const PROFILE_LIST = [
 
 export function CardProfileList() {
   return (
-    <div className="flex h-full w-full flex-col p-[9%] [container-type:inline-size]">
+    <div className="flex h-full w-full flex-col p-[7%] [container-type:inline-size]">
       <div className="text-[8.5cqw] leading-none tracking-tight text-[var(--v69-ink)]">Clients</div>
-      <div className="mt-[4cqw] flex flex-col">
+      <div className="mt-[7cqw] flex flex-col">
         {PROFILE_LIST.map((row, i) => (
           <div
             key={row.name}
-            className={`-mx-[11cqw] flex items-center gap-[3cqw] px-[11cqw] py-[4.2cqw] ${
+            className={`-mx-[9cqw] flex items-center gap-[3cqw] px-[9cqw] py-[4.2cqw] ${
               i ? "border-t border-[var(--v69-ink)]/[0.1]" : ""
             }`}
           >
@@ -5098,11 +5096,13 @@ export function CardHomeWaiting() {
     <div className="flex h-full w-full flex-col p-[9%] [container-type:inline-size]">
       <div className="flex items-center justify-between">
         <span className="text-[8.5cqw] leading-none tracking-tight text-[var(--v69-ink)]">Home</span>
-        <span className="rounded-[2cqw] bg-[#f2f2f2] px-[2.4cqw] py-[1.6cqw] text-[5.2cqw] leading-none tabular-nums text-[#1B1B1B] light-gallery:bg-[#262626] light-gallery:text-white">
-          {HOME_WAITING.length}
+        <span className="flex size-[8cqw] items-center justify-center rounded-[2cqw] bg-[#f2f2f2] text-[5.2cqw] leading-none tabular-nums text-[#1B1B1B] light-gallery:bg-[#262626] light-gallery:text-white">
+          <span data-initial className="block translate-y-[0.38cqw]">
+            {HOME_WAITING.length}
+          </span>
         </span>
       </div>
-      <div className="mt-[4cqw] flex flex-col">
+      <div className="mt-[7cqw] flex flex-col">
         {HOME_WAITING.map((row, i) => (
           <div
             key={row.title}
