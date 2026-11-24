@@ -4217,8 +4217,8 @@ export function CardAssistantAsk() {
 // glass, its text fading off top and bottom, with a reading-progress pill, after
 // a phone's reading widget. The home rail keeps its file row (CardResourceLibrary).
 const RESOURCE_GUIDE = {
-  title: "Your onboarding guide",
-  body: "Welcome aboard. This guide walks you through your first two weeks with us, from the kickoff call to your first deliverable. Start by uploading the documents we asked for, then pick a time for the kickoff. Your project lead shares a timeline within two days, and every milestone shows up here in the portal as it moves.",
+  title: "Brand guidelines",
+  body: "Our logo works best with room to breathe. Keep clear space equal to the height of the mark on every side, and never stretch, recolor or rotate it. Use the primary palette for headlines and calls to action, and save the accent color for small highlights. Photography should feel natural and well lit, with real people over stock poses.",
   read: 75,
 };
 // Ring geometry in the pill's own 20-unit box.
@@ -4257,6 +4257,48 @@ export function CardResourceArticle() {
         </svg>
         {RESOURCE_GUIDE.read}%
       </span>
+    </div>
+  );
+}
+
+// The data room for the templates gallery's glass tile: the latest activity as
+// a card over the room's open access requests, after a phone notification.
+// The home rail keeps its own cover (CardDataRoom).
+const DATA_ROOM_LATEST = {
+  title: "Q3 financials viewed",
+  detail: "2m · Larkspur Design",
+  views: 4,
+};
+const DATA_ROOM_REQUESTS = 2;
+
+export function CardDataRoomAlerts() {
+  return (
+    // A strip tile, so sizes run about 0.7x the square tiles' to read the same.
+    // The tile's own glass is the tray; the card is the latest event.
+    <div className="flex h-full w-full flex-col justify-start p-[3.5%] [container-type:inline-size]">
+      <div className="mt-[1cqw] rounded-[3.2cqw] bg-[#f2f2f2] px-[3.4cqw] py-[3cqw] text-[#1B1B1B] light-gallery:bg-[var(--v69-ink)]/[0.1]">
+        <div className="flex items-center gap-[1.8cqw] text-[4.6cqw] leading-none">
+          <span className="min-w-0 flex-1 truncate">{DATA_ROOM_LATEST.title}</span>
+          <span className="flex shrink-0 items-center gap-[0.9cqw] text-[3.7cqw] opacity-55">
+            <svg viewBox="0 0 16 16" className="size-[3.4cqw]" fill="none" aria-hidden>
+              <path d="M1.5 8s2.4-4.5 6.5-4.5S14.5 8 14.5 8s-2.4 4.5-6.5 4.5S1.5 8 1.5 8z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+              <circle cx="8" cy="8" r="1.9" stroke="currentColor" strokeWidth="1.4" />
+            </svg>
+            {DATA_ROOM_LATEST.views}
+          </span>
+        </div>
+        <div className="mt-[1.7cqw] truncate text-[3.7cqw] leading-none opacity-50">
+          {DATA_ROOM_LATEST.detail}
+        </div>
+      </div>
+      <div className="flex items-center gap-[2.1cqw] px-[2.6cqw] pt-[2.4cqw] text-[4.6cqw] leading-none text-[var(--v69-ink)]">
+        <span className="flex size-[5cqw] shrink-0 items-center justify-center rounded-full bg-[#FF8C8C] text-[3.1cqw] leading-none text-[#1B1B1B]">
+          <span data-initial className="block translate-y-[0.3cqw]">
+            {DATA_ROOM_REQUESTS}
+          </span>
+        </span>
+        Access requests
+      </div>
     </div>
   );
 }
@@ -4363,18 +4405,11 @@ export function CardTrackerBar() {
     <div className="flex h-full w-full flex-col justify-between p-[10%] [container-type:inline-size]">
       <div>
         <div className="flex items-center gap-[2cqw] text-[6.5cqw] leading-none text-[var(--v69-ink)]/45">
-          <svg viewBox="0 0 16 16" className="size-[6.5cqw]" aria-hidden>
-            {/* A zero-length dash with round caps draws each dash as a dot; 12 dots fit r=6 evenly. */}
-            <circle
-              cx="8"
-              cy="8"
-              r="6"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.75"
-              strokeLinecap="round"
-              strokeDasharray={`0 ${(2 * Math.PI * 6) / 12}`}
-            />
+          {/* Half filled, the usual task-status mark for "under way". Raised to
+              the capitals' centre: the line box centres it a touch low. */}
+          <svg viewBox="0 0 16 16" className="size-[6.5cqw] -translate-y-[0.7cqw]" fill="none" aria-hidden>
+            <circle cx="8" cy="8" r="6.25" stroke="currentColor" strokeWidth="1.5" />
+            <path d="M8 3.75a4.25 4.25 0 0 1 0 8.5z" fill="currentColor" />
           </svg>
           In progress
         </div>
@@ -4466,108 +4501,53 @@ export function CardOnboardingSteps() {
 }
 
 // Design approvals for the templates gallery's glass tile: one client project
-// as a phone list widget, each deliverable marked by its review state. The home rail keeps its own cover (CardDesignApprovals).
-type ApprovalState = "approved" | "review" | "changes";
-const APPROVAL_LIST: { name: string; state: ApprovalState }[] =
-  [
-    { name: "Logo", state: "approved" },
-    { name: "Brand palette", state: "review" },
-    { name: "Type system", state: "changes" },
-    { name: "Social kit", state: "approved" },
-  ];
-
-function ApprovalGlyph({ state }: { state: ApprovalState }) {
-  if (state === "approved") {
-    return (
-      <svg
-        viewBox="0 0 16 16"
-        className="size-[6.5cqw] shrink-0 text-[#5B7A12] dark-x:text-[#D9ED92]"
-        fill="none"
-        aria-hidden
-      >
-        <circle
-          cx="8"
-          cy="8"
-          r="6.25"
-          stroke="currentColor"
-          strokeWidth="1.5"
-        />
-        <path
-          d="M5.5 8.2l1.7 1.7 3.3-3.6"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    );
-  }
-  if (state === "review") {
-    // Half filled: waiting on a decision.
-    return (
-      <svg
-        viewBox="0 0 16 16"
-        className="size-[6.5cqw] shrink-0 text-[var(--v69-ink)]"
-        fill="none"
-        aria-hidden
-      >
-        <circle
-          cx="8"
-          cy="8"
-          r="6.25"
-          stroke="currentColor"
-          strokeWidth="1.5"
-        />
-        <path d="M8 3.75a4.25 4.25 0 0 1 0 8.5z" fill="currentColor" />
-      </svg>
-    );
-  }
-  return (
-    <svg
-      viewBox="0 0 16 16"
-      className="size-[6.5cqw] shrink-0 text-[var(--v69-ink)]/55"
-      fill="none"
-      aria-hidden
-    >
-      <circle cx="8" cy="8" r="6.25" stroke="currentColor" strokeWidth="1.5" />
-      <path
-        d="M5.75 8h4.5"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
+// as a tree of deliverables, the one waiting on the client lit and marked. The
+// home rail keeps its own cover (CardDesignApprovals).
+const APPROVAL_PROJECT = "Acme rebrand";
+const APPROVAL_LIST: { name: string; waiting?: boolean }[] = [
+  { name: "Logo" },
+  { name: "Brand palette", waiting: true },
+  { name: "Type system" },
+  { name: "Social kit" },
+  { name: "Signage" },
+  { name: "Brand book" },
+];
 
 export function CardApprovalList() {
   return (
-    <div className="flex h-full w-full flex-col justify-start gap-[1cqw] p-[7%] [container-type:inline-size]">
-      <div className="flex items-center gap-[3cqw] rounded-[4cqw] bg-[var(--v69-ink)]/[0.1] px-[4cqw] py-[3.5cqw] text-[6.4cqw] leading-none text-[var(--v69-ink)]">
-        <svg
-          viewBox="0 0 16 16"
-          className="size-[6.5cqw] shrink-0"
-          fill="none"
-          aria-hidden
-        >
-          <path
-            d="M2 4.5c0-.6.4-1 1-1h3.2l1.5 1.6H13c.6 0 1 .4 1 1v6.4c0 .6-.4 1-1 1H3c-.6 0-1-.4-1-1z"
-            stroke="currentColor"
-            strokeWidth="1.4"
-            strokeLinejoin="round"
-          />
-        </svg>
-        Acme rebrand
+    <div className="flex h-full w-full flex-col justify-start p-[9%] [container-type:inline-size]">
+      <div className="text-[7.6cqw] leading-none tracking-tight text-[var(--v69-ink)]">
+        {APPROVAL_PROJECT}
       </div>
-      {APPROVAL_LIST.map((row) => (
-        <div
-          key={row.name}
-          className="flex items-center gap-[3cqw] px-[4cqw] py-[2.6cqw] text-[6.4cqw] leading-none text-[var(--v69-ink)]"
-        >
-          <ApprovalGlyph state={row.state} />
-          <span className="truncate">{row.name}</span>
-        </div>
-      ))}
+      <ul className="mt-[2.5cqw] ml-[1.5cqw]">
+        {APPROVAL_LIST.map((row, i) => {
+          const last = i === APPROVAL_LIST.length - 1;
+          return (
+            <li
+              key={row.name}
+              className={`relative flex items-center gap-[2.5cqw] py-[2.2cqw] pl-[7cqw] text-[6.4cqw] leading-none ${
+                row.waiting
+                  ? "text-[var(--v69-ink)]"
+                  : "text-[var(--v69-ink)]/45"
+              }`}
+            >
+              {/* The trunk stops at the last branch, so the tree closes as an elbow. */}
+              <span
+                aria-hidden
+                className={`absolute left-0 top-0 w-px bg-[var(--v69-ink)]/20 ${last ? "h-1/2" : "h-full"}`}
+              />
+              <span
+                aria-hidden
+                className="absolute left-0 top-1/2 h-px w-[4cqw] bg-[var(--v69-ink)]/20"
+              />
+              <span className="truncate">{row.name}</span>
+              {row.waiting && (
+                <span className="size-[2.4cqw] shrink-0 rounded-full bg-[#FF8C8C]" />
+              )}
+            </li>
+          );
+        })}
+      </ul>
     </div>
   );
 }
@@ -4650,14 +4630,14 @@ const COMMS_THREAD = [
     name: "Maya",
     when: "1:34 PM",
     text: "Offsite moved to Friday. Agenda is in the channel.",
-    tone: "bg-[#C6B6FF]",
+    tone: "bg-[#C6B6FF] text-[#2A1F5C]",
     mine: false,
   },
   {
     name: "Jonah",
     when: "1:46 PM",
     text: "Thanks, see everyone there.",
-    tone: "bg-[#5CE5C3]",
+    tone: "bg-[#5CE5C3] text-[#1B1B1B]",
     mine: true,
   },
 ];
@@ -4671,14 +4651,18 @@ export function CardCommentThread() {
             key={c.name}
             className={`flex gap-[2.5cqw] ${c.mine ? "items-end" : "flex-row-reverse items-start"}`}
           >
-            <span className={`size-[8cqw] shrink-0 rounded-full ${c.tone}`} />
+            <span
+              className={`flex size-[8cqw] shrink-0 items-center justify-center rounded-full text-[4.7cqw] leading-none ${c.tone}`}
+            >
+              <span data-initial className="block translate-y-[0.46cqw]">
+                {c.name[0]}
+              </span>
+            </span>
             {/* The corner nearest the avatar stays square, so the bubble reads
                 as said by that person. */}
             <div
-              className={`min-w-0 flex-1 rounded-[5cqw] px-[4.5cqw] py-[3.8cqw] ${
-                c.mine
-                  ? "rounded-bl-[1.2cqw] bg-[#f2f2f2] text-[#1B1B1B] light-gallery:bg-[#fff] light-gallery:shadow-[inset_0_0_0_1px_rgba(16,24,40,0.08)]"
-                  : "rounded-tr-[1.2cqw] bg-[#7DA4FF] text-[#13244D]"
+              className={`min-w-0 flex-1 rounded-[5cqw] bg-[#f2f2f2] px-[4.5cqw] py-[3.8cqw] text-[#1B1B1B] light-gallery:bg-[var(--v69-ink)]/[0.1] ${
+                c.mine ? "rounded-bl-[1.2cqw]" : "rounded-tr-[1.2cqw]"
               }`}
             >
               <div className="flex items-baseline gap-[2cqw] text-[5.2cqw] leading-none">
@@ -4710,25 +4694,27 @@ export function CardCommentThread() {
 export function CardMarkupPopover() {
   return (
     <div className="flex h-full w-full flex-col justify-start overflow-hidden p-[8%] pt-[7%] [container-type:inline-size]">
-      <div className="relative rounded-[4cqw] bg-[rgba(20,20,20,0.85)] text-[rgba(255,255,255,0.95)]">
-        <div className="flex items-center gap-[2.5cqw] border-b border-[rgba(255,255,255,0.1)] px-[4.5cqw] py-[3.5cqw] text-[6cqw] leading-none">
+      <div className="relative text-[rgba(255,255,255,0.95)]">
+        {/* Bubble and pointer are solid and faded together as one layer, so
+            the pointer joins the bubble without a darker overlap where they
+            meet. The pointer's left is measured to the comment marker's
+            centre in the line below. */}
+        <div aria-hidden className="absolute inset-0 opacity-85">
+          <div className="absolute inset-0 rounded-[4cqw] bg-[#141414]" />
+          <span className="absolute -bottom-[2cqw] left-[calc(62.6%-2cqw)] size-[4cqw] rotate-45 rounded-[0.8cqw] bg-[#141414]" />
+        </div>
+        <div className="relative flex items-center gap-[2.5cqw] border-b border-[rgba(255,255,255,0.1)] px-[4.5cqw] py-[3.5cqw] text-[6cqw] leading-none">
           <span className="flex size-[6.5cqw] shrink-0 items-center justify-center rounded-full bg-[#C6B6FF] text-[3.8cqw] leading-none text-[#2A1F5C]">
-            <span data-initial className="translate-y-[0.43cqw]">M</span>
+            <span data-initial className="block translate-y-[0.37cqw]">M</span>
           </span>
           Maya on Homepage copy
           <svg viewBox="0 0 16 16" className="ml-auto size-[5cqw] text-[rgba(255,255,255,0.45)]" fill="none" aria-hidden>
             <path d="M5 11l6-6M6 5h5v5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </div>
-        <p className="px-[4.5cqw] py-[4cqw] text-[6cqw] leading-[1.35] text-[rgba(255,255,255,0.85)]">
+        <p className="relative px-[4.5cqw] py-[4cqw] text-[6cqw] leading-[1.35] text-[rgba(255,255,255,0.85)]">
           Can we lead with the outcome here? Clients skim this line first.
         </p>
-        {/* The pointer down to the comment marker it was opened from; the
-            left is measured to the marker's centre in the line below. */}
-        <span
-          aria-hidden
-          className="absolute -bottom-[2cqw] left-[calc(62.6%-2cqw)] size-[4cqw] rotate-45 rounded-[0.8cqw] bg-[rgba(20,20,20,0.85)]"
-        />
       </div>
       <p className="mt-[6cqw] text-[6.5cqw] leading-[1.45] text-[var(--v69-ink)]">
         Your portal for files{" "}
@@ -4792,7 +4778,7 @@ export function CardResourceGuide() {
 
 // The client calendar for the templates gallery's glass tile: the month at a
 // glance, after a phone month widget. Weekends dim and today takes a filled
-// disc. December 2026 starts on a Tuesday and fits five rows.
+// disc in the gallery's off-white rather than pure white. December 2026 starts on a Tuesday and fits five rows.
 const MONTH_NAME = "December";
 const MONTH_LEAD = 1; // Monday-first grid: one blank before the 1st.
 const MONTH_DAYS = 31;
@@ -4805,11 +4791,11 @@ export function CardMonthGrid() {
     ...Array.from({ length: MONTH_DAYS }, (_, i) => i + 1),
   ];
   return (
-    <div className="flex h-full w-full flex-col justify-center p-[7%] [container-type:inline-size]">
+    <div className="flex h-full w-full flex-col justify-start p-[7%] [container-type:inline-size]">
       <div className="pl-[1.5cqw] text-[6.5cqw] leading-none text-[var(--v69-ink)]">
         {MONTH_NAME}
       </div>
-      <div className="mt-[4cqw] grid grid-cols-7 gap-y-[1cqw] text-center text-[6.5cqw] leading-none tabular-nums">
+      <div className="mt-[7cqw] grid grid-cols-7 gap-y-[1cqw] text-center text-[6.5cqw] leading-none tabular-nums">
         {WEEKDAYS.map((d, i) => (
           <span key={i} className="pb-[1.4cqw] text-[var(--v69-ink)]/45">
             {d}
@@ -4820,7 +4806,7 @@ export function CardMonthGrid() {
           return (
             <span key={i} className="flex items-center justify-center">
               {day === MONTH_TODAY ? (
-                <span className="flex size-[10cqw] items-center justify-center rounded-full bg-[var(--v69-ink)] text-[var(--v69-card,#1a1a1a)] dark-x:text-[#1a1a1a]">
+                <span className="flex size-[10cqw] items-center justify-center rounded-full bg-[#f2f2f2] text-[#1B1B1B] light-gallery:bg-[var(--v69-ink)] light-gallery:text-[#f2f2f2]">
                   {day}
                 </span>
               ) : (
@@ -4851,7 +4837,7 @@ export function CardFileChip() {
         <div className="line-clamp-2 text-[8.5cqw] leading-[1.15] tracking-tight text-[var(--v69-ink)]">
           Engagement letter signed copy
         </div>
-        <div className="mt-[3cqw] text-[5.6cqw] leading-none text-[var(--v69-ink)]/45" style={MOCK_MONO}>
+        <div className="mt-[3cqw] text-[5.6cqw] leading-none text-[var(--v69-ink)]/45">
           12 pages
         </div>
       </div>
@@ -5036,7 +5022,7 @@ export function CardFormFields() {
 }
 
 // Autoresponder for the templates gallery's glass tile: the switch that turns
-// it on, its hours, and the reply clients get. The home rail keeps its own
+// it on and the reply clients get. The home rail keeps its own
 // cover.
 export function CardAutoReply() {
   return (
@@ -5050,9 +5036,6 @@ export function CardAutoReply() {
           <span className="relative h-[8cqw] w-[13.5cqw] shrink-0 rounded-full bg-[#7DA4FF]">
             <span className="absolute right-[1cqw] top-[1cqw] size-[6cqw] rounded-full bg-[rgba(255,255,255,0.95)]" />
           </span>
-        </div>
-        <div className="mt-[3cqw] text-[5.6cqw] leading-none text-[var(--v69-ink)]/45">
-          Outside working hours, 6pm to 9am
         </div>
       </div>
       <div className="rounded-[5cqw] rounded-bl-[1.5cqw] bg-[var(--v69-ink)]/[0.1] px-[4.5cqw] py-[3.8cqw] text-[6.5cqw] leading-[1.35] text-[var(--v69-ink)]">

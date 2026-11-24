@@ -11,6 +11,7 @@ import {
   CardAssistantAsk,
   CardAutoReply,
   CardCommentThread,
+  CardDataRoomAlerts,
   CardConditionFlow,
   CardCalendarAgenda,
   CardResourceArticle,
@@ -39,12 +40,13 @@ import { cn } from "@/lib/utils";
 
 // Tile shape per widget, so the grid mixes circles, wide strips and squares
 // rather than repeating one box: round readouts go in a circle, single-row
-// widgets in a wide strip, everything else in a square.
-type TileShape = "square" | "circle" | "wide";
+// widgets in a wide strip, a card and a row in a shorter strip, everything else
+// in a square.
+type TileShape = "square" | "circle" | "wide" | "strip";
 const TILE_SHAPE: Record<string, TileShape> = {
   "time-tracker": "circle",
   "client-engagement-dashboard": "circle",
-  "data-room": "wide",
+  "data-room": "strip",
   "service-request-intake": "wide",
   "internal-resource-library": "wide",
   "contracts-app": "wide",
@@ -229,6 +231,7 @@ const GROUND_ONLY = new Set<string>([]);
 const PANEL_TILES = new Set([
   "client-project-tracker",
   "design-approvals",
+  "data-room",
   "client-engagement-dashboard",
   "deals-pipeline",
   "client-calendar",
@@ -325,12 +328,21 @@ const TILE_CLASS: Record<TileShape, string> = {
   square: "aspect-square w-[60%] rounded-[18px]",
   circle: "aspect-square w-[60%] rounded-full",
   wide: "aspect-[16/10] w-[84%] rounded-[18px]",
+  strip: "aspect-[336/103] w-[84%] rounded-[18px]",
 };
 // A wide tile draws its cover in the 16:10 box the phone gallery already uses.
 const WIDE_DESIGN_SIZE = {
   "--template-mock-w": "336px",
   "--template-mock-h": "210px",
 } as React.CSSProperties;
+const STRIP_DESIGN_SIZE = {
+  "--template-mock-w": "336px",
+  "--template-mock-h": "103px",
+} as React.CSSProperties;
+const SHAPE_DESIGN_SIZE: Partial<Record<TileShape, React.CSSProperties>> = {
+  wide: WIDE_DESIGN_SIZE,
+  strip: STRIP_DESIGN_SIZE,
+};
 
 /**
  * One template card: the widget cover, the name, and the line under it. The
@@ -389,9 +401,9 @@ export function TemplateCard({
                 }`}
               >
                 <MockFit
-                  style={shape === "wide" ? WIDE_DESIGN_SIZE : undefined}
+                  style={SHAPE_DESIGN_SIZE[shape]}
                   className={`relative h-full w-full overflow-hidden ${
-                    shape === "wide"
+                    SHAPE_DESIGN_SIZE[shape]
                       ? ""
                       : `template-mock-tile ${MOCK_DESIGN_SIZE[template.slug] ?? ""}`
                   }`}
@@ -449,6 +461,8 @@ export function TemplateCard({
                       <CardHelpdeskStat />
                     ) : template.slug === "content-approval-flow" ? (
                       <CardApproveSheet />
+                    ) : template.slug === "data-room" ? (
+                      <CardDataRoomAlerts />
                     ) : template.slug === "design-approvals" ? (
                       <CardApprovalList />
                     ) : template.slug === "client-onboarding-wizard" ? (
