@@ -8,7 +8,7 @@ import {
   useSyncExternalStore,
 } from "react";
 import type { Template } from "@/lib/templates";
-import { TEMPLATE_CATEGORIES } from "@/lib/templates";
+import { TEMPLATE_CATEGORIES, toTemplateCategory } from "@/lib/templates";
 import { TemplateCard } from "@/components/templates/template-card";
 
 interface Props {
@@ -36,19 +36,18 @@ export function TemplatesBrowser({ templates }: Props) {
   // through useSyncExternalStore rather than useSearchParams, which would put
   // the whole statically rendered page behind a Suspense boundary, and rather
   // than copied into state from an effect, which renders the page twice.
-  // Matched case-insensitively against the categories present, so a stale or
-  // mistyped param just leaves the gallery on All.
+  // Matched case-insensitively through the category aliases, so a link from
+  // before the merge (?category=trackers) still opens its tab, and a mistyped
+  // one just leaves the gallery on All.
   const [picked, setPicked] = useState<string | null | undefined>(undefined);
   const urlCategory = useSyncExternalStore(
     subscribeToNothing,
     () => new URLSearchParams(window.location.search).get("category"),
     () => null,
   );
-  const fromUrl = urlCategory
-    ? (templates.find(
-        (t) => t.category.toLowerCase() === urlCategory.toLowerCase(),
-      )?.category ?? null)
-    : null;
+  const urlTab = toTemplateCategory(urlCategory);
+  const fromUrl =
+    urlTab && templates.some((t) => t.category === urlTab) ? urlTab : null;
   const selected = picked === undefined ? fromUrl : picked;
   const selectCategory = (cat: string) => {
     setPicked(cat === ALL ? null : cat);
@@ -58,15 +57,8 @@ export function TemplatesBrowser({ templates }: Props) {
 
   const categories = useMemo(() => {
     const present = new Set(templates.map((t) => t.category));
-    // Keep the intended category order; fall back to any extras at the end.
-    const ordered = TEMPLATE_CATEGORIES.filter((c) => present.has(c));
-    const extras = [...present].filter(
-      (c) =>
-        !TEMPLATE_CATEGORIES.includes(
-          c as (typeof TEMPLATE_CATEGORIES)[number],
-        ),
-    );
-    return [ALL, ...ordered, ...extras];
+    // Only the listed tabs, in their order; anything else shows under All.
+    return [ALL, ...TEMPLATE_CATEGORIES.filter((c) => present.has(c))];
   }, [templates]);
 
   const filtered = useMemo(() => {
@@ -170,10 +162,11 @@ export function TemplatesBrowser({ templates }: Props) {
       >
         {/* Categories as plain text tabs with a small search on the right.
             The current category is full ink, the rest muted; no pills. */}
+        {/* After cursor.com/blog: from 660px the tabs stay a row that scrolls
+            sideways and fades under its right edge rather than collapsing early;
+            below that they become one pill that opens the list. */}
         <div className="flex items-center justify-between gap-3">
-          {/* Until the full row of tabs fits beside the search (about 1400px),
-              they collapse into one pill that opens the list. */}
-          <div ref={menuRef} className="relative min-[1400px]:hidden">
+          <div ref={menuRef} className="relative shrink-0 min-[660px]:hidden">
             <button
               type="button"
               onClick={() => setMenuOpen((o) => !o)}
@@ -238,72 +231,82 @@ export function TemplatesBrowser({ templates }: Props) {
               </ul>
             )}
           </div>
-          <div
-            role="group"
-            aria-label="Filter templates by category"
-            className="hidden min-w-0 items-center gap-6 min-[1400px]:flex"
-          >
-            {categories.map((cat) => {
-              const active = cat === ALL ? selected === null : selected === cat;
-              return (
-                <button
-                  key={cat}
-                  type="button"
-                  aria-pressed={active}
-                  onClick={() => selectCategory(cat)}
-                  className={`type-body shrink-0 whitespace-nowrap rounded-sm py-1 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-foreground/40 ${
-                    active
-                      ? "text-foreground"
-                      : "text-muted-foreground [@media(hover:hover)]:hover:text-foreground"
-                  }`}
-                >
-                  {cat}
-                </button>
-              );
-            })}
-          </div>
-          <div className="relative w-44 shrink-0 sm:w-60">
-            <svg
-              aria-hidden
-              viewBox="0 0 24 24"
-              className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.7"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+          <div className="relative hidden min-w-0 flex-1 min-[660px]:block">
+            <div
+              role="group"
+              aria-label="Filter templates by category"
+              className="flex min-w-0 items-center gap-6 overflow-x-auto pr-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             >
-              <circle cx="11" cy="11" r="7" />
-              <path d="m20 20-3.5-3.5" />
-            </svg>
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search"
-              aria-label="Search templates"
-              // text-base below sm is the iOS zoom guard on the value only.
-              className="h-10 w-full rounded-full border border-border bg-muted pl-10 pr-9 text-base text-foreground outline-none transition-colors placeholder:text-sm placeholder:text-muted-foreground focus:border-foreground/30 sm:text-sm [[data-theme=dark]_&]:bg-white/[0.06]"
+              {categories.map((cat) => {
+                const active =
+                  cat === ALL ? selected === null : selected === cat;
+                return (
+                  <button
+                    key={cat}
+                    type="button"
+                    aria-pressed={active}
+                    onClick={() => selectCategory(cat)}
+                    className={`type-body shrink-0 whitespace-nowrap rounded-sm py-1 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-foreground/40 ${
+                      active
+                        ? "text-foreground"
+                        : "text-muted-foreground [@media(hover:hover)]:hover:text-foreground"
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                );
+              })}
+            </div>
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-y-0 right-0 w-4 bg-[linear-gradient(90deg,transparent_0%,var(--background)_88%)]"
             />
-            {query && (
-              <button
-                type="button"
-                onClick={() => setQuery("")}
-                aria-label="Clear search"
-                className="absolute right-2.5 top-1/2 flex size-6 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-foreground"
+          </div>
+          {/* The field rests narrow and opens out when focused. */}
+          <div className="flex min-w-0 flex-1 justify-end min-[660px]:w-60 min-[660px]:flex-none">
+            <div className="relative w-full max-w-48 transition-[max-width] duration-300 ease-[cubic-bezier(.25,1,.5,1)] focus-within:max-w-60">
+              <svg
+                aria-hidden
+                viewBox="0 0 24 24"
+                className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.7"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               >
-                <svg
-                  viewBox="0 0 24 24"
-                  className="size-4"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.7"
-                  strokeLinecap="round"
+                <circle cx="11" cy="11" r="7" />
+                <path d="m20 20-3.5-3.5" />
+              </svg>
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search"
+                aria-label="Search templates"
+                // text-base below sm is the iOS zoom guard on the value only.
+                className="h-10 w-full rounded-full border border-border bg-muted pl-10 pr-9 text-base text-foreground outline-none transition-colors placeholder:text-sm placeholder:text-muted-foreground focus:border-foreground/30 sm:text-sm [[data-theme=dark]_&]:bg-white/[0.06]"
+              />
+              {query && (
+                <button
+                  type="button"
+                  onClick={() => setQuery("")}
+                  aria-label="Clear search"
+                  className="absolute right-2.5 top-1/2 flex size-6 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-foreground"
                 >
-                  <path d="M6 6l12 12M6 18 18 6" />
-                </svg>
-              </button>
-            )}
+                  <svg
+                    viewBox="0 0 24 24"
+                    className="size-4"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.7"
+                    strokeLinecap="round"
+                  >
+                    <path d="M6 6l12 12M6 18 18 6" />
+                  </svg>
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>

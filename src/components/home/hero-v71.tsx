@@ -9,6 +9,7 @@ import {
   VISIBLE_TEMPLATES,
   type Template,
 } from "@/lib/templates";
+import { GRAIN } from "@/components/comparison/brand-panel";
 import { IconArrow } from "./icons";
 import { V66Composer } from "./hero-v66";
 import { TemplateMock } from "./template-preview";
@@ -4511,26 +4512,30 @@ export function CardOnboardingSteps() {
   );
 }
 
-// Design approvals for the templates gallery's glass tile: one colour up for
-// sign-off, as a swatch with its channels, its hex and where it stands, after a colour-picker widget. The home rail keeps its own cover
+// Design approvals for the templates gallery's glass tile: a palette up for
+// sign-off, after a colour-picker widget. The home rail keeps its own cover
 // (CardDesignApprovals).
-const APPROVAL_SWATCH = { hex: "#FFDAFC", r: 255, g: 218, b: 252 };
-const APPROVAL_STATUS = "Brand palette · In review";
+const APPROVAL_PALETTE = ["#FFDAFC", "#C6B6FF", "#7DA4FF", "#BCE7F4"];
+const APPROVAL_TITLE = "Color palette";
+// Same grain as the comparison panels, tiled small so it reads at tile size.
+const APPROVAL_GRAIN_SIZE = "60px 60px";
+const APPROVAL_STATUS = `${APPROVAL_PALETTE.length} colors · In review`;
 
 export function CardApprovalList() {
-  const { hex, r, g, b } = APPROVAL_SWATCH;
   return (
     <div className="flex h-full w-full flex-col p-[7%] [container-type:inline-size]">
-      <div
-        className="flex min-h-0 flex-1 items-end justify-between rounded-[6cqw] px-[5.5cqw] pb-[6cqw] text-[4.6cqw] leading-none tabular-nums text-[#1B1B1B]/55"
-        style={{ ...MOCK_MONO, backgroundColor: hex }}
-      >
-        <span>R{r}</span>
-        <span>G{g}</span>
-        <span>B{b}</span>
+      <div className="relative flex min-h-0 flex-1 overflow-hidden rounded-[6cqw]">
+        {APPROVAL_PALETTE.map((hex) => (
+          <span key={hex} className="flex-1" style={{ backgroundColor: hex }} />
+        ))}
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-0"
+          style={{ backgroundImage: GRAIN, backgroundSize: APPROVAL_GRAIN_SIZE }}
+        />
       </div>
       <div className="mt-[5cqw] text-[7.6cqw] leading-none tracking-tight text-[var(--v69-ink)]">
-        {hex}
+        {APPROVAL_TITLE}
       </div>
       <div className="mt-[3cqw] text-[5.8cqw] leading-none text-[var(--v69-ink)]/45">
         {APPROVAL_STATUS}

@@ -5,6 +5,7 @@ import {
   CORE_APP_CATEGORY,
   CORE_APP_SUBTITLE,
   TEMPLATES,
+  toTemplateCategory,
   VISIBLE_TEMPLATES,
   type Template,
 } from "./templates";
@@ -43,7 +44,7 @@ function fromEntry(entry: AppTemplateEntry): Template {
     title: entry.name,
     description: CORE_APP_SUBTITLE[entry.slug] ?? entry.subtitle ?? "",
     icon: "",
-    category: CORE_APP_CATEGORY[entry.slug] ?? entry.category ?? "",
+    category: toTemplateCategory(CORE_APP_CATEGORY[entry.slug] ?? entry.category),
     longDescription: "",
     features: [],
     templateId: entry.templateId,

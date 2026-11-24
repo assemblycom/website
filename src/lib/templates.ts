@@ -54,22 +54,47 @@ export interface Template {
   hasVideo?: boolean;
 }
 
-// Category order is intentional — it drives the order of the filter tabs. A
-// category the CMS uses but this list omits still gets a tab, appended after
-// these; listing one here is how it gets a deliberate position instead.
-// "Classic" and "Internal" come from the product's core apps, which
-// the gallery lists alongside the templates.
+// The gallery's filter tabs, in order, and the only categories the site shows.
+// Contentful's `categories` field also drives the product's Browse apps picker,
+// so the old names stay there and the site folds them in through the aliases
+// below rather than anyone editing the CMS. A category neither list knows
+// shows under All with no tab of its own.
+// "Classic" comes from the product's core apps, which the gallery lists
+// alongside the templates.
 export const TEMPLATE_CATEGORIES = [
   "Onboarding",
   "Classic",
   "Tracking",
   "Approvals",
-  "Requests",
   "Help & resources",
   "Community",
-  "Internal",
-  "Education",
 ] as const;
+
+export type TemplateCategory = (typeof TEMPLATE_CATEGORIES)[number];
+
+// Contentful's names, and the old tab names, mapped onto the tabs above. Keyed
+// lowercase so a ?category= link from before the merge still lands on a tab.
+const CATEGORY_ALIASES: Record<string, TemplateCategory> = {
+  trackers: "Tracking",
+  dashboards: "Tracking",
+  proposals: "Approvals",
+  support: "Help & resources",
+  "knowledge base": "Help & resources",
+  "ai assistants": "Help & resources",
+  requests: "Help & resources",
+  internal: "Help & resources",
+  education: "Community",
+};
+
+const CATEGORY_BY_KEY = new Map<string, TemplateCategory>([
+  ...TEMPLATE_CATEGORIES.map((c) => [c.toLowerCase(), c] as const),
+  ...Object.entries(CATEGORY_ALIASES),
+]);
+
+/** The tab a raw category belongs to, or "" when it has none. */
+export function toTemplateCategory(raw: string | null | undefined): TemplateCategory | "" {
+  return (raw && CATEGORY_BY_KEY.get(raw.trim().toLowerCase())) || "";
+}
 
 // Core apps the CMS files under a template category. They are product apps
 // like the rest of Classic, and listing them under Onboarding misread them.
@@ -660,6 +685,7 @@ const AI_SLUGS = new Set([
 // Each entry's own value wins where it has one, so the maps only fill gaps.
 export const LOCAL_TEMPLATES: Template[] = BASE_TEMPLATES.map((t) => ({
   ...t,
+  category: toTemplateCategory(t.category),
   listed: t.listed ?? LISTED_SLUGS.has(t.slug),
   featured: t.featured ?? !LOWER_PRIORITY.has(t.slug),
   usesAI: t.usesAI ?? AI_SLUGS.has(t.slug),
