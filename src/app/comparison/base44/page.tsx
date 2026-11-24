@@ -156,11 +156,11 @@ const PAGE: VsPage = {
       heading: "One credit meter, not two",
       tabLabel: "Credits",
       card: <CreditsCardVisual />,
-      body: "One credit balance that rolls over a month. A live app is $5.",
+      body: "One credit balance that rolls over a month. A live app is $8.",
       // EDITORIAL, not rendered: "Confirm the exact figures against the live
       // pricing page before publish: paid plans include 200 build credits a
       // month and Free includes 50, unused credits roll over one additional
-      // month, extra credits are $0.60 each, extra apps are $5 a month. The
+      // month, extra credits are $0.60 each, extra apps are $8 a month. The
       // rollover policy changed recently."
       visual: {
         art: <CreditsVisual />,

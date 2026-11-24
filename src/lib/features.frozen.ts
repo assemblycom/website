@@ -1174,7 +1174,7 @@ export const FROZEN_FEATURES: CmsPage[] = [
           },
           {
             "question": "Can Assembly's client portal be white-labeled?",
-            "answer": "Yes, Assembly offers complete white-labeling options on Advanced and Professional plans. You can customize your client portal with your own logo, brand colors, and domain (e.g., portal.yourcompany.com), creating a fully branded experience that feels like an extension of your business. White-labeling enhances professionalism and builds trust with your clients."
+            "answer": "Yes. You can customize your client portal with your own logo and brand colors, use your own domain (e.g., portal.yourcompany.com) from the Professional plan, and remove Assembly's branding entirely on Advanced, creating a fully branded experience that feels like an extension of your business. White-labeling enhances professionalism and builds trust with your clients."
           },
           {
             "question": "Is Assembly a no-code client portal or do I have to program?",

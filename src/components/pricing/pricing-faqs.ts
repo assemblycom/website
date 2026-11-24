@@ -6,7 +6,12 @@ export const PRICING_FAQS: FAQEntry[] = [
   {
     question: "Is there really a free plan?",
     answer:
-      "Yes, there is a free plan. You get 5 active contacts, 1 internal user, 75 build credits a month, and 3 apps. The apps you publish are real, live apps your clients can use. Upgrade only when your firm outgrows the limits.",
+      "Yes, there is a free plan. You get 5 active contacts, 1 internal user, 50 build credits a month, and 3 apps. The apps you publish are real, live apps your clients can use. Upgrade only when your firm outgrows the limits.",
+  },
+  {
+    question: "What happens after the 14-day trial?",
+    answer:
+      "Every new workspace gets 14 days of Professional, with no card required. On day 14 you choose a plan, and we recommend one based on how you used the trial. If you don't pick a paid plan, you move to Free and keep your work. Apps beyond Free's 3 are hidden from clients, not deleted, and come back when you upgrade.",
   },
   {
     question: "What are build credits?",
@@ -26,7 +31,7 @@ export const PRICING_FAQS: FAQEntry[] = [
   {
     question: "How much do extra build credits cost?",
     answer:
-      "Extra credits cost $0.60 per credit above the 200 included. This is the same flat rate on every paid plan. Adjust your monthly credit amount anytime from your plan settings: increases apply immediately, decreases at your next renewal.",
+      "Extra credits cost $0.60 per credit, the same flat rate on every paid plan. Adjust your monthly credit amount anytime from your plan settings: increases apply immediately, decreases at your next renewal. On Advanced billed yearly, building is unlimited, subject to fair use.",
   },
   {
     question: "Do unused build credits roll over?",
@@ -36,12 +41,12 @@ export const PRICING_FAQS: FAQEntry[] = [
   {
     question: "How many apps can I have?",
     answer:
-      "Apps count the same whether you build them with the app builder or install them from the app library. The Free plan includes 3 apps, and all paid plans include 5. Extra apps are $5/month each on any paid plan.",
+      "Apps count the same whether you build them with the app builder or install them from the app library. Free includes 3 apps, Starter 5, Professional 10, and Advanced unlimited. Extra apps are $8/month each on Starter and Professional.",
   },
   {
     question: "What does it cost to run my apps?",
     answer:
-      "Nothing beyond your plan. Other builders meter what happens after you publish — hosting tiers, AI usage, message caps. On Assembly, your 5 included apps and any $5/month extra apps come with hosting, storage, and AI usage built in, with limits generous enough that a typical firm never thinks about them. If an app ever approaches our internal limits, we'll reach out to you first. Planning something with unusual demands such as heavy AI, large data, high traffic? Talk to us before you build and we'll make sure it's set up right.",
+      "Nothing beyond your plan. Other builders meter what happens after you publish — hosting tiers, AI usage, message caps. On Assembly, your included apps and any $8/month extra apps come with hosting, storage, and AI usage built in, with limits generous enough that a typical firm never thinks about them. If an app ever approaches our internal limits, we'll reach out to you first. Planning something with unusual demands such as heavy AI, large data, high traffic? Talk to us before you build and we'll make sure it's set up right.",
   },
   {
     question: "What counts as an active contact?",
@@ -56,7 +61,7 @@ export const PRICING_FAQS: FAQEntry[] = [
   {
     question: "How does annual billing work?",
     answer:
-      "Annual billing discounts the base subscription. For example, Starter is $29/month billed annually vs. $49 billed monthly. Build credits are granted monthly on both billing frequencies, and add-on credits and extra apps are billed at the same rates either way.",
+      "Yearly billing discounts the subscription. For example, Starter is $39/month billed annually vs. $69 billed monthly, a saving of $360 a year. Extra users also cost less on yearly. Two extras are yearly-only: unlimited building on Advanced, and onboarding on Professional and Advanced. Build credits are granted monthly on both billing frequencies, and extra apps and add-on credits are billed at the same rates either way.",
   },
   {
     question: "Are there any other fees I should know about?",

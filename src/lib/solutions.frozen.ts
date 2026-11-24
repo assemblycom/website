@@ -430,7 +430,7 @@ export const FROZEN_SOLUTIONS: CmsPage[] = [
           },
           {
             "question": "Can I white-label the portal so it looks like my own platform?",
-            "answer": "Yes, fully. You can add your logo, brand colors, custom domain (e.g., portal.yourfirm.com), and even send email notifications from your own domain (e.g., noreply@yourfirm.com). Your clients will never see Assembly’s branding — the experience is entirely yours. White-label features are available on Professional plans and above."
+            "answer": "Yes, fully. You can add your logo, brand colors, custom domain (e.g., portal.yourfirm.com), and even send email notifications from your own domain (e.g., noreply@yourfirm.com). Your clients will never see Assembly’s branding — the experience is entirely yours. Custom domains start on Professional plans, and full white-labeling, which removes Assembly's branding, is on Advanced."
           },
           {
             "question": "How is Assembly different from products like Moxo, Accelo, or CoordinateHQ?",
@@ -454,7 +454,7 @@ export const FROZEN_SOLUTIONS: CmsPage[] = [
           },
           {
             "question": "We’re a growing consultancy with 5–15 people. Can Assembly scale with us?",
-            "answer": "Absolutely. Assembly is designed to scale from solo consultants to 100+ person firms. The Professional plan ($99/month) includes 3 team members and supports up to 500 clients. The Advanced plan ($499/month) includes 5 team members with unlimited clients and automation tasks. As you grow, you can add users and leverage the API and Custom Apps to build workflows tailored to your firm."
+            "answer": "Absolutely. Assembly is designed to scale from solo consultants to 100+ person firms. The Professional plan ($149/month) includes 3 team members and supports up to 500 clients. The Advanced plan ($399/month) includes 5 team members with unlimited clients and automation tasks. As you grow, you can add users and leverage the API and Custom Apps to build workflows tailored to your firm."
           },
           {
             "question": "Can I manage multiple client companies with different stakeholders?",
@@ -715,7 +715,7 @@ export const FROZEN_SOLUTIONS: CmsPage[] = [
           },
           {
             "question": "We're technical. Does Assembly have an API and developer platform?",
-            "answer": "Absolutely — and this is where Assembly really shines for startups. On Professional plans and above, you get full access to a REST API, webhooks, Zapier and Make integrations, and a Custom Apps framework (SDK, App Bridge, design system). You can embed custom applications into the client portal, build integrations with your internal systems, and extend Assembly's functionality to match your exact workflow. Think of Assembly as the foundation — you handle the core client experience out of the box, and supplement with custom development where needed."
+            "answer": "Absolutely — and this is where Assembly really shines for startups. On Starter plans and above, you get full access to a REST API, webhooks, Zapier and Make integrations, and a Custom Apps framework (SDK, App Bridge, design system). You can embed custom applications into the client portal, build integrations with your internal systems, and extend Assembly's functionality to match your exact workflow. Think of Assembly as the foundation — you handle the core client experience out of the box, and supplement with custom development where needed."
           },
           {
             "question": "How is Assembly different from building our own portal or using Softr?",
@@ -985,7 +985,7 @@ export const FROZEN_SOLUTIONS: CmsPage[] = [
           },
           {
             "question": "Does Assembly integrate with our existing legal tools?",
-            "answer": "Assembly is an open platform with one of the most comprehensive integration ecosystems in the client portal space. You can embed tools like Google Drive, SharePoint, or Airtable directly into client portals. Zapier and Make integrations (on Professional plans) connect Assembly to hundreds of apps. The REST API and Custom Apps framework support deeper integrations for firms with specific workflow needs — including connections to practice management tools like Clio or MyCase."
+            "answer": "Assembly is an open platform with one of the most comprehensive integration ecosystems in the client portal space. You can embed tools like Google Drive, SharePoint, or Airtable directly into client portals. Zapier and Make integrations (on Starter plans and above) connect Assembly to hundreds of apps. The REST API and Custom Apps framework support deeper integrations for firms with specific workflow needs — including connections to practice management tools like Clio or MyCase."
           },
           {
             "question": "Our clients range from tech-savvy corporate counsel to individuals who prefer paper. Will they be able to use the portal?",
@@ -1232,8 +1232,8 @@ export const FROZEN_SOLUTIONS: CmsPage[] = [
             "answer": "Assembly handles both. You can create one-time invoices for project milestones and recurring subscriptions for retainer clients. Clients pay via credit card or ACH directly through the portal. You can also set up a storefront with productized service packages — like a “Brand Identity Package” or “Monthly Design Retainer” — that clients can purchase with a payment link you share on your website."
           },
           {
-            "question": "I’m a solo designer. Is $29/month worth it when I’m watching every dollar?",
-            "answer": "Assembly now offers a free plan to test out the product as you are deciding what is the perfect solution for your business.\n\nConsider what you’re currently spending: a separate invoicing tool, an eSignature tool, file sharing, and messaging add up quickly — often to $60–$100+/month combined. Assembly includes all of these in one platform starting at $29/month, plus you get the professional polish of a branded client portal. It’s also a revenue tool: designers who use client portals report faster payments, better client communication, and a more professional image that helps justify premium pricing for their services."
+            "question": "I’m a solo designer. Is $39/month worth it when I’m watching every dollar?",
+            "answer": "Assembly now offers a free plan to test out the product as you are deciding what is the perfect solution for your business.\n\nConsider what you’re currently spending: a separate invoicing tool, an eSignature tool, file sharing, and messaging add up quickly — often to $60–$100+/month combined. Assembly includes all of these in one platform starting at $39/month, plus you get the professional polish of a branded client portal. It’s also a revenue tool: designers who use client portals report faster payments, better client communication, and a more professional image that helps justify premium pricing for their services."
           }
         ]
       }

@@ -313,7 +313,7 @@ export const FROZEN_COMPARISONS: ComparisonPage[] = [
       {
         "title": "Pricing & Scalability",
         "heading": "Assembly offers transparent, all-inclusive pricing that scales predictably",
-        "description": "Assembly starts at $29 per month with all features included - client portal, messaging, contracts, eSignatures, billing, file sharing, and automations, with no hidden add-ons or module fees. As your firm grows, costs remain predictable without surprise charges for additional features. Canopy uses modular pricing starting at $45 per user/month for basic plans, but firms typically spend $150+ per user/month once they add necessary modules like workflow, billing, and document management, making it significantly more expensive at scale.",
+        "description": "Assembly starts at $39 per month with all features included - client portal, messaging, contracts, eSignatures, billing, file sharing, and automations, with no hidden add-ons or module fees. As your firm grows, costs remain predictable without surprise charges for additional features. Canopy uses modular pricing starting at $45 per user/month for basic plans, but firms typically spend $150+ per user/month once they add necessary modules like workflow, billing, and document management, making it significantly more expensive at scale.",
         "rows": [
           {
             "label": "Client portal included",
@@ -367,7 +367,7 @@ export const FROZEN_COMPARISONS: ComparisonPage[] = [
           },
           {
             "label": "Starting price point",
-            "assembly": "$29/month all-inclusive",
+            "assembly": "$39/month all-inclusive",
             "competitor": "$45/user/month (Starter, limited features)"
           }
         ]
@@ -2355,7 +2355,7 @@ export const FROZEN_COMPARISONS: ComparisonPage[] = [
       {
         "title": "Pricing & Value",
         "heading": "Assembly offers transparent, month-to-month pricing — no annual lock-in required",
-        "description": "Get started with Assembly for free with all core features included — client portal, messaging, contracts, eSignatures, billing, file sharing, and automations — with no hidden add-ons or module fees. Monthly billing is available on all plans with a free version and 30-day satisfaction guarantee. TaxDome requires upfront annual payment starting at $800/user/year, incentivizes 3-year lock-in commitments for the best rates, and charges separately for add-ons like SMS, KBA signatures, and white-labeled mobile apps. A 3-person firm pays $99/month for Assembly vs. $249/month for TaxDome Pro — and Assembly includes more integrations and API access at that tier.",
+        "description": "Get started with Assembly for free with all core features included — client portal, messaging, contracts, eSignatures, billing, file sharing, and automations — with no hidden add-ons or module fees. Monthly billing is available on all plans with a free version and 30-day satisfaction guarantee. TaxDome requires upfront annual payment starting at $800/user/year, incentivizes 3-year lock-in commitments for the best rates, and charges separately for add-ons like SMS, KBA signatures, and white-labeled mobile apps. A 3-person firm pays $149/month for Assembly vs. $249/month for TaxDome Pro — and Assembly includes more integrations and API access at that tier.",
         "rows": [
           {
             "label": "Feature",
@@ -2424,7 +2424,7 @@ export const FROZEN_COMPARISONS: ComparisonPage[] = [
           },
           {
             "label": "3-person firm cost",
-            "assembly": "$99/month (Professional plan)",
+            "assembly": "$149/month (Professional plan)",
             "competitor": "$249/month ($83/user × 3, annual commitment)"
           },
           {
@@ -2546,7 +2546,7 @@ export const FROZEN_COMPARISONS: ComparisonPage[] = [
       },
       {
         "question": "Is Assembly cheaper than TaxDome?",
-        "answer": "For most firm sizes, yes. Assembly starts at $0/month with all features included and monthly billing available. TaxDome starts at $800/user/year (billed annually upfront), and a 3-person firm pays $249/month vs. Assembly's $99/month. Assembly also has no hidden add-on fees, while TaxDome charges extra for SMS, KBA signatures, and white-labeled mobile apps."
+        "answer": "For most firm sizes, yes. Assembly starts at $0/month with all features included and monthly billing available. TaxDome starts at $800/user/year (billed annually upfront), and a 3-person firm pays $249/month vs. Assembly's $149/month. Assembly also has no hidden add-on fees, while TaxDome charges extra for SMS, KBA signatures, and white-labeled mobile apps."
       },
       {
         "question": "What is the best alternative to TaxDome?",
@@ -2558,7 +2558,7 @@ export const FROZEN_COMPARISONS: ComparisonPage[] = [
       },
       {
         "question": "Can I migrate from TaxDome to Assembly easily?",
-        "answer": "Yes — Assembly's quick onboarding and import tools make migration straightforward. Most firms set up their new Assembly workspace within hours and can run both platforms in parallel during transition. Assembly's team provides personalized onboarding support on Professional plans and above."
+        "answer": "Yes — Assembly's quick onboarding and import tools make migration straightforward. Most firms set up their new Assembly workspace within hours and can run both platforms in parallel during transition. Assembly's team provides personalized onboarding support on yearly Professional plans and above."
       },
       {
         "question": "Does Assembly work for accounting and tax firms?",
