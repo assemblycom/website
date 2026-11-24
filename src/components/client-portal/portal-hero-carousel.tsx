@@ -749,7 +749,7 @@ function ForkToggle({
                   // and the fill lifted to 8% to mark it instead. This
                   // carries tablist semantics ViewToggle doesn't, so it keeps
                   // its own markup, but it must not draw the thumb its own way.
-                  "border-transparent bg-background text-foreground [[data-theme=light]_&]:border-border [[data-theme=dark]_&]:bg-white/[0.08]"
+                  "border-transparent bg-background text-foreground light-ui:border-border [[data-theme=dark]_&]:bg-white/[0.08]"
                 : "border-transparent text-muted-foreground hover:text-foreground"
             }`}
           >

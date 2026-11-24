@@ -81,7 +81,7 @@ export function CaseStudyScreenshot({
         <div
           role="img"
           aria-label={`${alt} (image unavailable)`}
-          className="flex aspect-[16/10] w-full items-center justify-center rounded-2xl [[data-theme=light]_&]:bg-[#F5F5F0] [[data-theme=dark]_&]:bg-[#1C1C1C]"
+          className="flex aspect-[16/10] w-full items-center justify-center rounded-2xl light-ui:bg-[#F5F5F0] [[data-theme=dark]_&]:bg-[#1C1C1C]"
         >
           <span className="px-6 text-center text-sm text-muted-foreground">
             This screenshot couldn’t be loaded.
@@ -92,7 +92,7 @@ export function CaseStudyScreenshot({
           type="button"
           onClick={() => setOpen(true)}
           aria-label={`${alt} — open full size`}
-          className="group block w-full cursor-zoom-in overflow-hidden rounded-2xl p-3 outline-none transition-colors duration-200 md:p-5 [[data-theme=light]_&]:bg-[#F5F5F0] [[data-theme=light]_&]:hover:bg-[#EFEFE9] [[data-theme=dark]_&]:bg-[#1C1C1C] [[data-theme=dark]_&]:hover:bg-[#222222]"
+          className="group block w-full cursor-zoom-in overflow-hidden rounded-2xl p-3 outline-none transition-colors duration-200 md:p-5 light-ui:bg-[#F5F5F0] light-ui:hover:bg-[#EFEFE9] [[data-theme=dark]_&]:bg-[#1C1C1C] [[data-theme=dark]_&]:hover:bg-[#222222]"
         >
           {/* The shot keeps a hairline and its own radius so it reads as a window
               sitting on the pad rather than as the pad's own content. */}

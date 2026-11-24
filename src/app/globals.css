@@ -2,6 +2,15 @@
 
 /* Dark theme, except inside a .light-island (see that rule below). */
 @custom-variant dark-ui (&:where([data-theme="dark"] *):not(:where(.light-island, .light-island *)));
+/* Light theme, except inside a .dark-island (a widget drawn in its dark skin on
+   a light page). :is() keeps the specificity the old literal selectors had. */
+@custom-variant light-ui (&:is([data-theme="light"] *):not(:where(.dark-island, .dark-island *)));
+@custom-variant light-mock (&:is([data-theme="light"] .template-mock *):not(:where(.dark-island, .dark-island *)));
+@custom-variant light-gallery (&:is([data-theme="light"] .template-mock-gallery *):not(:where(.dark-island, .dark-island *)));
+/* Dark theme, except inside a .light-island (a widget drawn in its light skin
+   on a dark page). :is() keeps the old literal selectors' specificity. */
+@custom-variant dark-x (&:is([data-theme="dark"] *):not(:where(.light-island, .light-island *)));
+@custom-variant dark-mock (&:is([data-theme="dark"] .template-mock *):not(:where(.light-island, .light-island *)));
 
 @font-face {
   font-family: "PP Mori";
@@ -1892,7 +1901,7 @@ html[data-theme="dark"] .v63-ring-solid::before {
    what was left merged into its own background. This restores the light-mode
    logic in dark values — surfaces lift off the ground, wells recess below them.
    Scoped to .template-mock so the hero rail keeps its own tuned ladder. */
-[data-theme="dark"] .template-mock {
+[data-theme="dark"] .template-mock:not(.light-island *) {
   --v69-card: #262626;
   --v69-box: #262626;
   --v69-inner: #2e2e2e;
@@ -2142,7 +2151,7 @@ html[data-theme="dark"] .v63-ring-solid::before {
    the frame on the lime's pale end and read washed out. Holding full-strength
    lime longer puts real green at the top of that frozen window. Dark keeps the
    stops above, and the animated hero card is untouched. */
-[data-theme="light"] .template-mock .v69-accent-drift {
+[data-theme="light"] .template-mock:not(.dark-island *) .v69-accent-drift {
   background-image: linear-gradient(
     180deg,
     #d9ed92 0%,
@@ -2207,7 +2216,7 @@ html[data-theme="dark"] .v63-ring-solid::before {
    flat face they read as a lozenge floating over it rather than a field in it.
    The fill comes from the element (a --v69-inner class), not from here, so the
    gallery's inverted skin can still override it. Light has its own flat rule below. */
-[data-theme="dark"] .v69-composer-gradient {
+[data-theme="dark"] .v69-composer-gradient:not(.light-island *) {
   background-image: none;
   box-shadow: none;
 }
@@ -2304,7 +2313,7 @@ html[data-theme="dark"] .v63-ring-solid::before {
   background-clip: border-box;
   color: #6e6e6e;
 }
-[data-theme="light"] .template-mock .v69-chat-shimmer {
+[data-theme="light"] .template-mock:not(.dark-island *) .v69-chat-shimmer {
   color: #595959;
 }
 @keyframes v69ChatSend {
@@ -2340,7 +2349,7 @@ html[data-theme="dark"] .v63-ring-solid::before {
     inset 0 -1px 0 rgba(255, 255, 255, 0.35),
     0 1px 2px rgba(16, 24, 40, 0.05);
 }
-[data-theme="dark"] .v69-glass-tile {
+[data-theme="dark"] .v69-glass-tile:not(.light-island *) {
   background-color: rgba(255, 255, 255, 0.06);
   background-image: linear-gradient(
     165deg,
@@ -2369,10 +2378,10 @@ html[data-theme="dark"] .v63-ring-solid::before {
     4px 40px,
     40px 4px;
 }
-[data-theme="dark"] .v69-plot-grid {
+[data-theme="dark"] .v69-plot-grid:not(.light-island *) {
   --plot-dot: rgba(255, 255, 255, 0.14);
 }
-[data-theme="dark"] .v69-plot-grid--lines {
+[data-theme="dark"] .v69-plot-grid--lines:not(.light-island *) {
   --plot-dot: rgba(255, 255, 255, 0.06);
 }
 /* Hatched ground — fine diagonal rules, the third of the plain grounds a cover
@@ -2388,7 +2397,7 @@ html[data-theme="dark"] .v63-ring-solid::before {
     transparent 1px 8px
   );
 }
-[data-theme="dark"] .v69-hatch-ground {
+[data-theme="dark"] .v69-hatch-ground:not(.light-island *) {
   --hatch-line: rgba(255, 255, 255, 0.035);
 }
 
@@ -2431,7 +2440,7 @@ html[data-theme="dark"] .v63-ring-solid::before {
 .v69-plot-grid--quiet {
   --plot-dot: rgba(16, 24, 40, 0.09);
 }
-[data-theme="dark"] .v69-plot-grid--quiet {
+[data-theme="dark"] .v69-plot-grid--quiet:not(.light-island *) {
   --plot-dot: rgba(255, 255, 255, 0.08);
 }
 
@@ -2449,7 +2458,7 @@ html[data-theme="dark"] .v63-ring-solid::before {
   );
   background-size: 14px 14px;
 }
-[data-theme="dark"] .template-mock-gallery .v69-cover-support {
+[data-theme="dark"] .template-mock-gallery .v69-cover-support:not(.light-island *) {
   --plot-dot: rgba(255, 255, 255, 0.14);
 }
 
@@ -2519,7 +2528,7 @@ html[data-theme="dark"] .v63-ring-solid::before {
      0.5 was three times the ink and read as the field being replaced. */
   --plot-shimmer: rgba(16, 24, 40, 0.32);
 }
-[data-theme="dark"] .v69-plot-shimmer {
+[data-theme="dark"] .v69-plot-shimmer:not(.light-island *) {
   --plot-shimmer: rgba(255, 255, 255, 0.3);
 }
 .v69-plot-shimmer:hover::before {
@@ -2562,7 +2571,7 @@ html[data-theme="dark"] .v63-ring-solid::before {
     inset 7px 0 14px -14px rgba(16, 24, 40, 0.14),
     inset -7px 0 14px -14px rgba(16, 24, 40, 0.14);
 }
-[data-theme="dark"] .v69-inset-well {
+[data-theme="dark"] .v69-inset-well:not(.light-island *) {
   background-image: radial-gradient(
     130% 100% at 50% 38%,
     rgba(255, 255, 255, 0.028) 0%,
@@ -2578,7 +2587,7 @@ html[data-theme="dark"] .v63-ring-solid::before {
 /* The PDF tile keeps the well in light but is built as the AI assistant's disc in
    dark (see PDF_TILE), so the well's own dark treatment comes off it — stacked
    under the disc's carve the two read as two different recesses on one surface. */
-[data-theme="dark"] .v69-inset-well.v69-inset-well--disc-dark {
+[data-theme="dark"] .v69-inset-well.v69-inset-well--disc-dark:not(.light-island *) {
   background-image: none;
   box-shadow: none;
 }
@@ -2588,7 +2597,7 @@ html[data-theme="dark"] .v63-ring-solid::before {
    material left in the gallery, and beside the intake card's flat block they read
    as two different materials for the same kind of object. Light keeps the glass —
    there the face is flat and the material is what lifts the tile off it. */
-[data-theme="dark"] .v69-glass-tile.v69-glass-tile--soft {
+[data-theme="dark"] .v69-glass-tile.v69-glass-tile--soft:not(.light-island *) {
   background-color: #303030;
   background-image: none;
   box-shadow: none;
@@ -2597,7 +2606,7 @@ html[data-theme="dark"] .v63-ring-solid::before {
    flat white block — the translucent glass let the warm face through and read as
    a different material for the same kind of object, so on the templates page
    light takes the same flat white. The hero keeps its glass. */
-[data-theme="light"] .template-mock .v69-glass-tile.v69-glass-tile--soft {
+[data-theme="light"] .template-mock:not(.dark-island *) .v69-glass-tile.v69-glass-tile--soft {
   background-color: #ffffff;
   background-image: none;
   box-shadow: none;
@@ -2808,7 +2817,7 @@ html[data-theme="dark"] .v63-ring-solid::before {
 /* One dark across all template widgets: the neutral ink #262626 (matches the
    onboarding avatar), not the hero's cooler navy ink. Light mode only so dark
    mode's inverted (white) ink is left untouched. */
-[data-theme="light"] .template-mock {
+[data-theme="light"] .template-mock:not(.dark-island *) {
   --v69-ink: #262626;
 
   /* Same three-step ladder the hero rail runs on (see rowTokens in
@@ -6043,4 +6052,280 @@ html:not([data-authed]) .auth-only {
   .post-body-guide .picks-table tbody tr:last-child {
     border-bottom: 0;
   }
+}
+
+/* Template cards hold the widget in a square tile at every width, so the
+   phone gallery's 16:10 design boxes above don't apply inside one. Doubled
+   class to outrank the per-cover :has() boxes. */
+@media (width < 40rem) {
+  .template-mock-fit.template-mock-tile.template-mock-tile {
+    --template-mock-w: 288px;
+    --template-mock-h: 288px;
+  }
+}
+
+/* Inside a template card the widget is the object: its panel sits straight on
+   the card, so the cover's own ground and its dot or hatch pattern are dropped.
+   The card's island class says which skin the widget is in: dark on the light
+   page's dark card, light on the dark page's light card. Doubled class to
+   outrank the theme ladders that set the ground. */
+.mock-island.mock-island .template-mock {
+  --v69-card: transparent;
+}
+.mock-island .v69-plot-grid,
+.mock-island .v69-hatch-ground,
+.mock-island .v69-cover-support {
+  background-image: none;
+}
+.mock-island .v69-accent-drift {
+  background: none !important;
+}
+.mock-island [class*="bg-[var(--v69-card)]"] {
+  background-color: transparent !important;
+}
+.mock-island [class*="bg-[repeating-linear-gradient"],
+.mock-island [class*="[background-image:radial-gradient"] {
+  background-image: none !important;
+}
+
+/* Frosted glass for the widget's panels, after the brand's glass UI: a
+   translucent fill, a background blur, and a hairline that catches the light.
+   The surface tokens go translucent, and the few panels that hardcode their
+   fill are matched by that fill. !important because those fills come from
+   theme variants that outrank a plain descendant selector. */
+.mock-island {
+  --glass-blur: blur(14px) saturate(140%);
+}
+/* The light skin's muted labels wash out on its pale glass, so they step a
+   little darker there. The dark skin keeps its own steps. */
+.light-island.mock-island :is([class*="text-[var(--v69-ink)]/40"], [class*="text-[var(--v69-ink)]/45"]) {
+  color: color-mix(in srgb, var(--v69-ink) 62%, transparent);
+}
+.light-island.mock-island :is([class*="text-[var(--v69-ink)]/30"], [class*="text-[var(--v69-ink)]/35"]) {
+  color: color-mix(in srgb, var(--v69-ink) 50%, transparent);
+}
+.dark-island.mock-island .template-mock {
+  --v69-box: rgba(128, 130, 134, 0.32);
+  --v69-inner: rgba(128, 130, 134, 0.32);
+}
+.dark-island [class*="bg-[#303030]"],
+.dark-island [class*="bg-[#2B2B2B]"],
+.dark-island [class*="bg-[#1B1B1B]"],
+.dark-island [class*="bg-[#1b1b1b]"],
+.dark-island [class*="bg-[var(--v69-box)]"],
+.dark-island [class*="bg-[var(--v69-inner)]"],
+.dark-island [class*="bg-[#FFFFFF]"],
+.dark-island [class*="bg-white "],
+.dark-island .v69-tracker-disc,
+.dark-island .v69-glass-tile,
+.dark-island [class*="bg-[var(--fld-front)]"],
+.dark-island.mock-panel {
+  /* Frosted mid grey, after the brand's Analytics glass: light enough to read
+     as glass on the dark ground, tinted enough that the bright bars behind
+     blur to a soft tone rather than a smear under the white text. */
+  background-color: rgba(128, 130, 134, 0.32) !important;
+  /* One even light outline all round, drawn inside so it takes no layout. A
+     panel's own border goes clear so the two don't stack into a thick edge. */
+  border-color: transparent !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22) !important;
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+}
+/* A pane inside a pane (rows in a list, stat boxes in a card) takes a fainter
+   outline and a lighter wash, so the outer pane stays the one edge. */
+.dark-island
+  :is(
+    [class*="bg-[#303030]"],
+    [class*="bg-[#2B2B2B]"],
+    [class*="bg-[#1B1B1B]"],
+    [class*="bg-[#1b1b1b]"],
+    [class*="bg-[var(--v69-box)]"],
+    [class*="bg-[var(--v69-inner)]"],
+    [class*="bg-[#FFFFFF]"],
+    [class*="bg-white "],
+    .v69-glass-tile
+  )
+  :is(
+    [class*="bg-[#303030]"],
+    [class*="bg-[#2B2B2B]"],
+    [class*="bg-[#1B1B1B]"],
+    [class*="bg-[#1b1b1b]"],
+    [class*="bg-[var(--v69-box)]"],
+    [class*="bg-[var(--v69-inner)]"],
+    [class*="bg-[#FFFFFF]"],
+    [class*="bg-white "],
+    .v69-glass-tile
+  ),
+.dark-island.mock-panel
+  :is(
+    [class*="bg-[#303030]"],
+    [class*="bg-[#2B2B2B]"],
+    [class*="bg-[#1B1B1B]"],
+    [class*="bg-[#1b1b1b]"],
+    [class*="bg-[var(--v69-box)]"],
+    [class*="bg-[var(--v69-inner)]"],
+    [class*="bg-[#FFFFFF]"],
+    [class*="bg-white "],
+    .v69-glass-tile
+  ) {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.14) !important;
+  box-shadow: none !important;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+.light-island.mock-island .template-mock {
+  --v69-box: rgba(255, 255, 255, 0.55);
+  --v69-inner: rgba(255, 255, 255, 0.55);
+}
+.light-island [class*="bg-[#FFFFFF]"],
+.light-island [class*="bg-[#ffffff]"],
+.light-island [class*="bg-white "],
+.light-island [class*="bg-[var(--v69-box)]"],
+.light-island [class*="bg-[var(--v69-inner)]"],
+.light-island .v69-tracker-disc,
+.light-island .v69-glass-tile,
+.light-island [class*="bg-[var(--fld-front)]"],
+.light-island.mock-panel {
+  background-color: rgba(255, 255, 255, 0.55) !important;
+  border-color: rgba(255, 255, 255, 0.85) !important;
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+}
+
+/* White glass on the light skin's near-white ground had no edge left: the
+   white rim vanished into it. The panel takes a faint dark hairline and a soft
+   drop so it stands off the ground the way the dark skin's light rim does. */
+.light-island.mock-panel {
+  border-color: transparent !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(16, 24, 40, 0.09),
+    0 10px 28px -14px rgba(16, 24, 40, 0.22) !important;
+}
+
+/* A record card drawn straight on the ground (no panel tile behind it) had the
+   same problem, so it takes the same hairline and drop. Cards inside a panel
+   tile are left alone: the panel already gives them their edge. */
+.light-island:not(.mock-panel) :is([class*="bg-[#FFFFFF]"], [class*="bg-[#ffffff]"]):not(:is([class*="bg-[#FFFFFF]"], [class*="bg-[#ffffff]"]) *) {
+  border-color: transparent !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(16, 24, 40, 0.09),
+    0 10px 28px -14px rgba(16, 24, 40, 0.22) !important;
+}
+
+/* An integration's app tile is white glass straight on the near-white ground,
+   so it takes the panel's hairline and drop to stay visible. */
+.light-island .v69-app-tile {
+  border-color: transparent !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(16, 24, 40, 0.09),
+    0 10px 28px -14px rgba(16, 24, 40, 0.22) !important;
+}
+
+/* The assistant's input and the clock's readout sit inside a white panel,
+   where white glass left them a blank white block; on the light skin they take
+   a faint grey well instead. */
+.light-island :is(.v69-ask-field, .v69-clock-readout) {
+  border-color: transparent !important;
+  background-color: rgba(16, 24, 40, 0.05) !important;
+  box-shadow: inset 0 0 0 1px rgba(16, 24, 40, 0.1) !important;
+}
+
+/* The ask field reads as an input from its fill alone; the hairline made it
+   heavier than the rest of the panel. */
+.light-island .v69-ask-field {
+  box-shadow: none !important;
+}
+
+/* The engagement ring's colours per skin: the brand pink on the dark skin, a
+   step deeper on the light one so it holds against white glass. */
+.dark-island {
+  --ring-fill: #ffdcf8;
+  --ring-empty: rgba(255, 255, 255, 0.12);
+}
+.light-island {
+  --ring-fill: #f2a7e4;
+  --ring-empty: rgba(16, 17, 20, 0.08);
+}
+
+/* The tracker's open dots and pale pink band, drawn for a dark disc,
+   re-pointed so they hold on the light skin's white glass. */
+.light-island .v69-tracker-disc {
+  --tracker-open: rgba(16, 17, 20, 0.08);
+  --tracker-review: #f2a7e4;
+}
+
+/* The time tracker's face draws its own dark inner carve on top of itself,
+   which buried the glass rim; the glass already gives it its edge. */
+.dark-island .v69-accent-drift [style*="box-shadow"] {
+  display: none;
+}
+
+/* In the gallery's round tile the readout's digits sit at the type scale's
+   figure size, the same as the other covers' big numbers. */
+.mock-island .v69-clock-readout {
+  transform: scale(0.75);
+}
+
+/* The clock face fills its round tile: the cover's padding and its size cap
+   are for the home rail's rectangle, not a circle that is already the face. */
+.mock-island .v69-accent-drift {
+  padding: 0;
+}
+.mock-island .v69-accent-drift > div {
+  max-height: none;
+}
+
+/* The folder's back (tab and plate) goes see-through as one piece, so the
+   gradient shows behind the glass front. Opacity on the group rather than a
+   translucent fill on each part, which would double up where the tab overlaps
+   the plate and draw a seam. */
+.mock-island .v69-folder-back {
+  opacity: 0.55;
+}
+
+/* The middle invoice keeps its solid fill so it covers the back one, but takes
+   the glass panels' light outline so it doesn't read as a hole in the stack. */
+.dark-island .v69-wallet-middle {
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22);
+}
+
+/* The reading pill sits over the guide's text, so it takes a near-solid fill
+   rather than the see-through pane: a dark grey with a light rim, not a white
+   block on the glass. */
+.dark-island .v69-reading-pill {
+  --ring-fill: #ffdcf8;
+  --ring-empty: rgba(255, 255, 255, 0.16);
+  background-color: #2e2e2e;
+  color: #f2f2f2;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14);
+}
+/* Each skin draws the pill in the opposite tone, so it stands off its page as
+   the one control on it; the ring takes the other skin's colours to match. */
+.light-island .v69-reading-pill {
+  --ring-fill: #ffdcf8;
+  --ring-empty: rgba(255, 255, 255, 0.16);
+  background-color: #262626;
+  color: #ffffff;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.12);
+}
+
+/* The wallet's type on the same steps as the project tracker beside it: the
+   label at the tracker's status line, the amount at its headline. */
+.mock-island .v69-wallet-label {
+  font-size: 13px;
+}
+.mock-island .v69-wallet-amount {
+  font-size: 17.6px;
+}
+/* The pipeline is drawn in the wallet's box, so the same numbers land at the
+   same rendered size; the cents stay half the figure. */
+.mock-island .v69-pipeline-label {
+  font-size: 13px;
+}
+.mock-island .v69-pipeline-amount {
+  font-size: 17.6px;
+}
+.mock-island .v69-pipeline-cents {
+  font-size: 8.8px;
 }
