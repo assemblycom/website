@@ -71,9 +71,11 @@ export function BlogBrowser({
           {/* The templates gallery's filter bar: plain text tabs, the current
               one in full ink and the rest muted, with no fill behind either.
               One row at every width that scrolls sideways on a phone, bled to
-              the screen edge so it can be swiped there. */}
+              the screen edge so it can be swiped there. The scroller clips what
+              overflows it, so it keeps a few pixels of room on every side for a
+              tab's focus ring and pulls back by the same amount. */}
           <div className="relative min-w-0 sm:flex-1">
-            <div className="-ml-6 -mr-6 flex items-center gap-6 overflow-x-auto pl-6 pr-12 [-ms-overflow-style:none] [scrollbar-width:none] sm:ml-0 sm:mr-0 sm:pl-0 sm:pr-12 [&::-webkit-scrollbar]:hidden">
+            <div className="-my-1 -ml-6 -mr-6 flex items-center gap-6 overflow-x-auto py-1 pl-6 pr-12 [-ms-overflow-style:none] [scrollbar-width:none] sm:-ml-1 sm:mr-0 sm:pl-1 sm:pr-12 [&::-webkit-scrollbar]:hidden">
               {[{ name: "All", slug: "" }, ...categories].map((filter) => {
                 const active = (filter.slug || undefined) === activeSlug;
                 return (

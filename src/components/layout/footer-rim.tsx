@@ -56,6 +56,9 @@ const GRAIN_URL = `url("data:image/svg+xml,${encodeURIComponent(
 )}")`;
 const DARK_STRENGTH_BOOST = 1.8;
 const RESIZE_SETTLE_MS = 150;
+// How far ahead of the screen the glow starts building, so it is ready when
+// the footer scrolls in.
+const NEAR_SCREEN = "400px";
 
 function buildLut() {
   const hex = (c: string) =>
@@ -153,7 +156,8 @@ export function FooterRim({ className = "" }: { className?: string }) {
     const out = el?.getContext("2d");
     if (!el || !out) return;
     const lut = buildLut();
-    const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let still = motion.matches;
     const t0 = performance.now();
     let W = MIN_W,
       Hl = H,
@@ -166,6 +170,9 @@ export function FooterRim({ className = "" }: { className?: string }) {
     let img: ImageData | null = null;
     let visible = false;
     let timer = 0;
+    // The shape is only built once the footer nears the screen, and a resize
+    // while it is away marks it to be rebuilt on the way back.
+    let stale = true;
 
     // The canvas follows its box's aspect at every width, so nothing is
     // cropped or stretched, and a resize redraws the same composition.
@@ -259,7 +266,6 @@ export function FooterRim({ className = "" }: { className?: string }) {
       if (!timer) tick();
     };
 
-    layout();
     // Rebuilding the shape is slow enough that doing it on every step of a
     // window drag dropped frames, and the browser filled the newly exposed
     // edge with a bare strip until it caught up. The canvas is stretched to its
@@ -268,15 +274,40 @@ export function FooterRim({ className = "" }: { className?: string }) {
     let pending = 0;
     const ro = new ResizeObserver(() => {
       window.clearTimeout(pending);
+      if (!visible) {
+        stale = true;
+        return;
+      }
       pending = window.setTimeout(layout, RESIZE_SETTLE_MS);
     });
     ro.observe(el);
-    const io = new IntersectionObserver(([entry]) => {
-      visible = entry.isIntersecting;
-      if (visible) resume();
-    });
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        visible = entry.isIntersecting;
+        if (!visible) return;
+        if (stale) {
+          stale = false;
+          layout();
+        }
+        resume();
+      },
+      { rootMargin: NEAR_SCREEN },
+    );
     io.observe(el);
     document.addEventListener("visibilitychange", resume);
+    // Follows the motion setting live: turning it on stops on a still frame,
+    // turning it off picks the drift back up.
+    const onMotion = () => {
+      still = motion.matches;
+      if (still) {
+        window.clearTimeout(timer);
+        timer = 0;
+        draw();
+      } else {
+        resume();
+      }
+    };
+    motion.addEventListener("change", onMotion);
     // Redraw on a theme switch, which matters when reduced motion holds a still frame.
     const mo = new MutationObserver(() => draw());
     mo.observe(document.documentElement, {
@@ -290,6 +321,7 @@ export function FooterRim({ className = "" }: { className?: string }) {
       window.clearTimeout(pending);
       io.disconnect();
       document.removeEventListener("visibilitychange", resume);
+      motion.removeEventListener("change", onMotion);
       if (timer) window.clearTimeout(timer);
     };
   }, []);

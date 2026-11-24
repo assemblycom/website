@@ -242,10 +242,12 @@ export function TemplatesBrowser({ templates }: Props) {
             )}
           </div>
           <div className="relative hidden min-w-0 flex-1 min-[660px]:block">
+            {/* Room on every side for a tab's focus ring, which the scroller
+                would otherwise clip, pulled back by the same amount. */}
             <div
               role="group"
               aria-label="Filter templates by category"
-              className="flex min-w-0 items-center gap-6 overflow-x-auto pr-12 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              className="-my-1 -ml-1 flex min-w-0 items-center gap-6 overflow-x-auto py-1 pl-1 pr-12 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             >
               {categories.map((cat) => {
                 const active =
