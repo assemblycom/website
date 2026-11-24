@@ -10,6 +10,7 @@ import {
 import type { Template } from "@/lib/templates";
 import { TEMPLATE_CATEGORIES, toTemplateCategory } from "@/lib/templates";
 import { TemplateCard } from "@/components/templates/template-card";
+import { FIELD_CLS } from "@/components/ui/select-menu";
 
 interface Props {
   templates: Template[];
@@ -172,13 +173,13 @@ export function TemplatesBrowser({ templates }: Props) {
               onClick={() => setMenuOpen((o) => !o)}
               aria-haspopup="listbox"
               aria-expanded={menuOpen}
-              className="type-body flex h-10 items-center gap-1.5 rounded-full border border-border bg-muted pl-4 pr-3 text-foreground outline-none focus-visible:ring-2 focus-visible:ring-foreground/40 [[data-theme=dark]_&]:bg-white/[0.06]"
+              className={`${FIELD_CLS} !flex !h-9 !w-auto items-center gap-1.5 !py-0 !pl-3.5 !pr-2.5 !text-sm focus-visible:ring-2 focus-visible:ring-foreground/40`}
             >
               {selected ?? ALL}
               <svg
                 aria-hidden
                 viewBox="0 0 16 16"
-                className={`size-4 transition-transform ${menuOpen ? "rotate-180" : ""}`}
+                className={`size-4 text-muted-foreground transition-transform ${menuOpen ? "rotate-180" : ""}`}
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="1.5"
@@ -268,10 +269,10 @@ export function TemplatesBrowser({ templates }: Props) {
               <svg
                 aria-hidden
                 viewBox="0 0 24 24"
-                className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+                className="pointer-events-none absolute left-3.5 top-1/2 size-[15px] -translate-y-1/2 text-muted-foreground"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="1.7"
+                strokeWidth="1.8"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               >
@@ -284,15 +285,16 @@ export function TemplatesBrowser({ templates }: Props) {
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search"
                 aria-label="Search templates"
-                // text-base below sm is the iOS zoom guard on the value only.
-                className="h-10 w-full rounded-full border border-border bg-muted pl-10 pr-9 text-base text-foreground outline-none transition-colors placeholder:text-sm placeholder:text-muted-foreground focus:border-foreground/30 sm:text-sm [[data-theme=dark]_&]:bg-white/[0.06]"
+                // The site's field at the blog filter bar's height, so the two
+                // pages' search boxes are the same control.
+                className={`${FIELD_CLS} !h-9 !py-0 !pl-10 !pr-9`}
               />
               {query && (
                 <button
                   type="button"
                   onClick={() => setQuery("")}
                   aria-label="Clear search"
-                  className="absolute right-2.5 top-1/2 flex size-6 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-foreground"
+                  className="absolute right-2.5 top-1/2 flex size-6 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-foreground/[0.06] hover:text-foreground [[data-theme=dark]_&]:hover:bg-white/[0.06]"
                 >
                   <svg
                     viewBox="0 0 24 24"

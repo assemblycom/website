@@ -35,7 +35,6 @@ import {
   V69CardMock,
 } from "@/components/home/hero-v71";
 import { MockFit, MOCK_DESIGN_SIZE } from "@/components/templates/mock-fit";
-import { useTheme } from "@/components/theme/theme-provider";
 import { cn } from "@/lib/utils";
 
 // Tile shape per widget, so the grid mixes circles, wide strips and squares
@@ -50,6 +49,9 @@ const TILE_SHAPE: Record<string, TileShape> = {
   "client-onboarding-wizard": "short",
   "message-autoresponder": "short",
   "client-support-requests": "short",
+  exporter: "short",
+  "case-status-page": "short",
+  "content-approval-flow": "short",
   "service-request-intake": "wide",
   "internal-resource-library": "wide",
   "contracts-app": "wide",
@@ -88,6 +90,9 @@ const AMBIENT = {
   },
 } as const;
 type AmbientSkin = keyof typeof AMBIENT;
+// The dark page's covers: the same dark skin as the light page's, on a mid
+// grey rather than near-black, so they stand off the page.
+const DARK_PAGE_GROUND = "#2C2C2C";
 // Quarter turns and a mirror, so neighbouring cards don't repeat a layout.
 const AMBIENT_TURNS = [
   "",
@@ -126,17 +131,21 @@ const GRAIN_GROUNDS = new Set(["client-project-tracker"]);
 function AmbientBackdrop({
   slug,
   skin,
+  ground,
   className,
 }: {
   slug: string;
   skin: AmbientSkin;
+  /** Overrides the skin's ground colour. */
+  ground?: string;
   className: string;
 }) {
   const soft = SOFT_GROUNDS.has(slug);
   const grain = GRAIN_GROUNDS.has(slug);
   const id = useId().replace(/:/g, "");
   const glow = WIDE_GLOW[slug] ?? 1;
-  const { bg, pairs } = AMBIENT[skin];
+  const { pairs } = AMBIENT[skin];
+  const bg = ground ?? AMBIENT[skin].bg;
   const edgeBlur = AMBIENT[skin].edgeBlur * glow;
   const innerBlur = AMBIENT[skin].innerBlur * glow;
   const [edge, inner] = pairs[ambientIndex(slug, pairs.length)];
@@ -288,16 +297,17 @@ const TILE_SIZE: Record<string, string> = {
   "proposal-builder": "!w-[66%] !rounded-[11%]",
   "messaging-app": "!w-[66%] !rounded-[11%]",
   "conditional-forms": "!w-[66%] !rounded-[11%]",
-  "case-status-page": "!w-[66%] !rounded-[11%]",
+  "case-status-page": "!w-[66%]",
   "forms-app": "!w-[66%] !rounded-[11%]",
   "message-autoresponder": "!w-[66%]",
   "profile-manager": "!w-[66%] !rounded-[11%]",
-  "exporter": "!w-[66%] !rounded-[11%]",
+  exporter: "!w-[66%]",
   "client-home": "!w-[66%] !rounded-[11%]",
   // Short tiles take their corner from SHORT_TILES instead.
   "client-onboarding-wizard": "!w-[66%]",
   "design-approvals": "!w-[66%] !rounded-[11%]",
-  "content-approval-flow": "!w-[66%] !rounded-[11%]",
+  // A pill: fully round ends rather than the tiles' corner.
+  "content-approval-flow": "!w-[66%] !rounded-full",
   "client-support-requests": "!w-[66%]",
   "markup-comments": "!w-[66%] !rounded-[11%]",
   "internal-communications-app": "!w-[66%] !rounded-[11%]",
@@ -358,6 +368,9 @@ const SHORT_TILES: Record<string, { w: number; h: number }> = {
   "client-onboarding-wizard": { w: 224, h: 132 },
   "message-autoresponder": { w: 288, h: 166 },
   "client-support-requests": { w: 288, h: 171 },
+  exporter: { w: 288, h: 171 },
+  "case-status-page": { w: 288, h: 159 },
+  "content-approval-flow": { w: 288, h: 72 },
 };
 // The square tiles' corner, as a share of the tile's width.
 const TILE_CORNER_PCT = 11;
@@ -400,10 +413,9 @@ export function TemplateCard({
     shape === "short"
       ? shortDesignSize(template.slug)
       : SHAPE_DESIGN_SIZE[shape];
-  // The widget takes the opposite skin to the page: dark on the light page's
-  // dark card, light on the dark page's light card.
-  const { theme } = useTheme();
-  const skin = theme === "dark" ? "light" : "dark";
+  // The widget keeps the dark skin on both pages; the dark page only lifts
+  // the ground to a grey.
+  const skin: AmbientSkin = "dark";
   return (
     <article className={cn("w-full", className)}>
       <Link
@@ -414,7 +426,7 @@ export function TemplateCard({
             it. The tile is a share of the cover, so it grows and shrinks with
             the column while the cover keeps its square. */}
         <div className="relative flex aspect-square items-center justify-center overflow-hidden rounded-[20px] transition-transform group-focus-visible/card:ring-2 group-focus-visible/card:ring-foreground/40 group-focus-visible/card:ring-offset-4 group-focus-visible/card:ring-offset-background">
-          {/* Both skins are drawn and the page theme picks one, so the right
+          {/* Both grounds are drawn and the page theme picks one, so the right
               one is there on first paint. */}
           <AmbientBackdrop
             slug={template.slug}
@@ -423,7 +435,8 @@ export function TemplateCard({
           />
           <AmbientBackdrop
             slug={template.slug}
-            skin="light"
+            skin="dark"
+            ground={DARK_PAGE_GROUND}
             className="hidden [[data-theme=dark]_&]:block"
           />
           {!GROUND_ONLY.has(template.slug) && (

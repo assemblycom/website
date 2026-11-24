@@ -6291,13 +6291,14 @@ html:not([data-authed]) .auth-only {
 }
 
 /* The reading pill sits over the guide's text, so it takes a near-solid fill
-   of each skin's glass rather than the see-through pane. */
+   rather than the see-through pane: a dark grey with a light rim, not a white
+   block on the glass. */
 .dark-island .v69-reading-pill {
-  --ring-fill: #f2a7e4;
-  --ring-empty: rgba(16, 17, 20, 0.12);
-  background-color: #f2f2f2;
-  color: #1b1b1b;
-  box-shadow: none;
+  --ring-fill: #ffdcf8;
+  --ring-empty: rgba(255, 255, 255, 0.16);
+  background-color: #2e2e2e;
+  color: #f2f2f2;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14);
 }
 /* Each skin draws the pill in the opposite tone, so it stands off its page as
    the one control on it; the ring takes the other skin's colours to match. */
