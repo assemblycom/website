@@ -101,13 +101,21 @@ export function TemplatesBrowser({ templates }: Props) {
   // Phone category menu: closes on a pick, an outside click, or Escape.
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const menuTriggerRef = useRef<HTMLButtonElement>(null);
+  // Closing by key or by a pick unmounts the focused option, so focus goes back
+  // to the trigger instead of dropping to the page. An outside click keeps
+  // focus wherever the click put it.
+  const closeMenuToTrigger = () => {
+    setMenuOpen(false);
+    menuTriggerRef.current?.focus();
+  };
   useEffect(() => {
     if (!menuOpen) return;
     const onDown = (e: PointerEvent) => {
       if (!menuRef.current?.contains(e.target as Node)) setMenuOpen(false);
     };
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setMenuOpen(false);
+      if (e.key === "Escape") closeMenuToTrigger();
     };
     document.addEventListener("pointerdown", onDown);
     document.addEventListener("keydown", onKey);
@@ -169,11 +177,12 @@ export function TemplatesBrowser({ templates }: Props) {
         <div className="flex items-center justify-between gap-3">
           <div ref={menuRef} className="relative shrink-0 min-[660px]:hidden">
             <button
+              ref={menuTriggerRef}
               type="button"
               onClick={() => setMenuOpen((o) => !o)}
               aria-haspopup="listbox"
               aria-expanded={menuOpen}
-              className={`${FIELD_CLS} !flex !h-9 !w-auto items-center gap-1.5 !py-0 !pl-3.5 !pr-2.5 !text-sm focus-visible:ring-2 focus-visible:ring-foreground/40`}
+              className={`${FIELD_CLS} !flex !h-9 !w-auto !rounded-full !border-border items-center gap-1.5 !py-0 !pl-3.5 !pr-2.5 !text-sm focus-visible:ring-2 focus-visible:ring-foreground/40`}
             >
               {selected ?? ALL}
               <svg
@@ -206,7 +215,7 @@ export function TemplatesBrowser({ templates }: Props) {
                         aria-selected={active}
                         onClick={() => {
                           selectCategory(cat);
-                          setMenuOpen(false);
+                          closeMenuToTrigger();
                         }}
                         className="flex w-full items-center justify-between rounded-md px-3 py-2.5 text-left text-sm text-foreground outline-none hover:bg-muted focus-visible:bg-muted"
                       >
@@ -236,7 +245,7 @@ export function TemplatesBrowser({ templates }: Props) {
             <div
               role="group"
               aria-label="Filter templates by category"
-              className="flex min-w-0 items-center gap-6 overflow-x-auto pr-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              className="flex min-w-0 items-center gap-6 overflow-x-auto pr-12 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             >
               {categories.map((cat) => {
                 const active =
@@ -260,7 +269,7 @@ export function TemplatesBrowser({ templates }: Props) {
             </div>
             <div
               aria-hidden
-              className="pointer-events-none absolute inset-y-0 right-0 w-4 bg-[linear-gradient(90deg,transparent_0%,var(--background)_88%)]"
+              className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-[linear-gradient(90deg,transparent_0%,var(--background)_88%)]"
             />
           </div>
           {/* The field rests narrow and opens out when focused. */}
@@ -287,7 +296,7 @@ export function TemplatesBrowser({ templates }: Props) {
                 aria-label="Search templates"
                 // The site's field at the blog filter bar's height, so the two
                 // pages' search boxes are the same control.
-                className={`${FIELD_CLS} !h-9 !py-0 !pl-10 !pr-9`}
+                className={`${FIELD_CLS} !h-9 !rounded-full !border-border !py-0 !pl-10 !pr-9 focus:!border-foreground/40`}
               />
               {query && (
                 <button

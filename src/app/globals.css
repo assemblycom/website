@@ -1174,6 +1174,13 @@ html[data-footer="glow"] body {
   background: linear-gradient(to bottom, var(--muted) 50%, var(--background) 50%);
 }
 
+/* The glow runs to the page's bottom edge, so a rubber-band bounce past it can
+   only show a flat strip under it that reads as the glow being cut off. No
+   bounce on these pages; sideways stays on `auto` for swipe-back. */
+html[data-footer="glow"] {
+  overscroll-behavior-y: none;
+}
+
 /* In dark mode the page ground is near-black; the muted overscroll canvas above
    read as a gray flash when rubber-banding at the top. Match it to the page
    background so the overscroll blends. (Light keeps --muted for the iOS note.) */
