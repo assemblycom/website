@@ -41,4 +41,4 @@
 // carried by having no fill, which is already enough. Hover fills faintly
 // instead of changing the ink, which is again what the nav pair does.
 export const QUIET_BUTTON =
-  "block w-full rounded-lg border border-foreground/20 px-4 py-3 text-center text-sm text-foreground transition-colors hover:bg-foreground/[0.06] sm:inline-block sm:w-auto sm:py-1.5 sm:text-left [[data-theme=dark]_&]:border-white/25 [[data-theme=dark]_&]:hover:bg-white/[0.06]";
+  "block w-full rounded-full border border-foreground/20 px-4 py-3 text-center text-sm text-foreground transition-colors hover:bg-foreground/[0.06] sm:inline-block sm:w-auto sm:py-1.5 sm:text-left [[data-theme=dark]_&]:border-white/25 [[data-theme=dark]_&]:hover:bg-white/[0.06]";

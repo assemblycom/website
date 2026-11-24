@@ -221,9 +221,9 @@ export function PortalPricing({
                   against a white card, where an outline would have gone soft. */}
               <a
                 href={tier.href}
-                className={`mt-auto rounded-lg px-5 py-2 text-center text-sm ${
+                className={`mt-auto rounded-full px-5 py-2 text-center text-sm ${
                   tier.recommended
-                    ? "bg-foreground text-background transition-opacity hover:opacity-90"
+                    ? "border border-transparent bg-foreground text-background transition-opacity hover:opacity-90"
                     : "border border-foreground/20 bg-transparent text-foreground transition-colors hover:bg-foreground/5 [[data-theme=dark]_&]:border-white/25"
                 }`}
               >
@@ -245,7 +245,7 @@ export function PortalPricing({
             </div>
             <a
               href={aside.cta.href}
-              className="w-full shrink-0 rounded-lg border border-foreground/20 bg-transparent px-5 py-2 text-center text-sm text-foreground transition-colors hover:bg-foreground/5 sm:w-auto [[data-theme=dark]_&]:border-white/25"
+              className="w-full shrink-0 rounded-full border border-foreground/20 bg-transparent px-5 py-2 text-center text-sm text-foreground transition-colors hover:bg-foreground/5 sm:w-auto [[data-theme=dark]_&]:border-white/25"
             >
               {aside.cta.label}
             </a>

@@ -284,9 +284,9 @@ export function ProposalCreator({ templates }: { templates: Template[] }) {
 
   // Same class strings as the rest of the site's buttons.
   const primary =
-    "inline-flex items-center justify-center rounded-lg bg-foreground px-5 py-2.5 text-sm text-background transition-opacity hover:opacity-90";
+    "inline-flex items-center justify-center rounded-full border border-transparent bg-foreground px-5 py-2.5 text-sm text-background transition-opacity hover:opacity-90";
   const outline =
-    "inline-flex items-center justify-center rounded-lg border border-foreground/20 bg-transparent px-5 py-2.5 text-sm text-foreground transition-colors hover:bg-foreground/5";
+    "inline-flex items-center justify-center rounded-full border border-foreground/20 bg-transparent px-5 py-2.5 text-sm text-foreground transition-colors hover:bg-foreground/5";
 
   return (
     <div className="flex min-h-screen flex-col">

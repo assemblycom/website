@@ -343,13 +343,10 @@ export function StudioNav({
   const darkDisabled = softGlass
     ? "text-foreground/90"
     : "text-muted-foreground";
-  // rounded-lg, not rounded-full: these links draw no background, so the radius
-  // is only ever seen as the focus ring — and the global focus outline takes
-  // each element's own radius. At rounded-full, tabbing to Log in drew a pill
-  // beside the rounded-lg rings on Book a demo and Get started sitting right
-  // next to it. Same radius as those two now, so the row is one shape.
+  // These links only show their radius as the focus ring, so they match the
+  // pill CTAs beside them and the row keeps one shape when tabbing through.
   const linkBase =
-    "whitespace-nowrap rounded-lg px-2 py-1.5 text-sm transition-colors lg:px-3";
+    "whitespace-nowrap rounded-full px-2 py-1.5 text-sm transition-colors lg:px-3";
   const linkRest = lightContent ? "text-white/70 hover:text-white" : darkLink;
   const linkCls = `${linkBase} ${linkRest}`;
   // The page you're on reads at full strength while the rest sit back — the
@@ -431,8 +428,8 @@ export function StudioNav({
   };
 
   // Matches linkBase above, for the same reason.
-  const disabledCls = `cursor-default whitespace-nowrap rounded-lg px-2 py-1.5 text-sm lg:px-3 ${lightContent ? "text-white/50" : darkDisabled}`;
-  const ctaCls = `whitespace-nowrap rounded-lg px-4 py-1.5 text-sm transition-[background-color,color,opacity] hover:opacity-90 ${
+  const disabledCls = `cursor-default whitespace-nowrap rounded-full px-2 py-1.5 text-sm lg:px-3 ${lightContent ? "text-white/50" : darkDisabled}`;
+  const ctaCls = `whitespace-nowrap rounded-full border border-transparent px-4 py-1.5 text-sm transition-[background-color,color,opacity] hover:opacity-90 ${
     theme === "light" && !overImage
       ? "bg-neutral-900 text-white"
       : lightContent
@@ -441,7 +438,7 @@ export function StudioNav({
   }`;
   // The demo CTA sits beside Get started, so it takes the primary's geometry
   // with the outline treatment the mobile sheet already uses for it.
-  const secondaryCtaCls = `whitespace-nowrap rounded-lg border px-4 py-1.5 text-sm transition-colors ${
+  const secondaryCtaCls = `whitespace-nowrap rounded-full border px-4 py-1.5 text-sm transition-colors ${
     lightContent
       ? "border-white/20 text-white hover:bg-white/10"
       : "border-foreground/20 text-foreground hover:bg-foreground/[0.06]"
@@ -1018,7 +1015,7 @@ export function StudioNav({
               <span className="contents auth-only">
                 <a
                   href={APP_URL}
-                  className={`flex w-full items-center justify-center rounded-lg px-4 py-3 text-sm ${menuCta}`}
+                  className={`flex w-full items-center justify-center rounded-full border border-transparent px-4 py-3 text-sm ${menuCta}`}
                 >
                   Open Assembly
                 </a>
@@ -1027,7 +1024,7 @@ export function StudioNav({
                 {pathname !== DEMO_URL && (
                   <Link
                     href={DEMO_URL}
-                    className={`flex w-full items-center justify-center rounded-lg border px-4 py-3 text-sm ${menuDemo}`}
+                    className={`flex w-full items-center justify-center rounded-full border px-4 py-3 text-sm ${menuDemo}`}
                   >
                     {DEMO_CTA_LABEL}
                   </Link>
@@ -1036,13 +1033,13 @@ export function StudioNav({
               <span className="contents unauth-only">
                 <a
                   href={SIGNUP_URL}
-                  className={`flex w-full items-center justify-center rounded-lg px-4 py-3 text-sm ${menuCta}`}
+                  className={`flex w-full items-center justify-center rounded-full border border-transparent px-4 py-3 text-sm ${menuCta}`}
                 >
                   Get started
                 </a>
                 <a
                   href={LOGIN_URL}
-                  className={`flex w-full items-center justify-center rounded-lg border px-4 py-3 text-sm ${menuDemo}`}
+                  className={`flex w-full items-center justify-center rounded-full border px-4 py-3 text-sm ${menuDemo}`}
                 >
                   Log in
                 </a>

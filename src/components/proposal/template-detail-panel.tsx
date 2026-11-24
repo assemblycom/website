@@ -179,7 +179,7 @@ export function TemplateDetailPanel({
           <button
             type="button"
             onClick={onStart}
-            className="flex h-11 w-full items-center justify-center rounded-lg bg-foreground px-5 text-sm text-background transition-[opacity,background-color] hover:opacity-90 [[data-theme=dark]_&]:hover:bg-white [[data-theme=dark]_&]:hover:opacity-100"
+            className="flex h-11 w-full items-center justify-center rounded-full border border-transparent bg-foreground px-5 text-sm text-background transition-[opacity,background-color] hover:opacity-90 [[data-theme=dark]_&]:hover:bg-white [[data-theme=dark]_&]:hover:opacity-100"
           >
             {/* The same words as every other action on the proposal: the page's
                 closing CTA, the bar that floats until you reach it, and Build on

@@ -37,7 +37,7 @@ export default async function TemplatesPage() {
               authedLabel="Open Assembly"
               href={SIGNUP_URL}
               label="Get started"
-              className="mx-auto mt-8 block w-full max-w-xs rounded-lg bg-foreground px-5 py-2.5 text-center text-sm text-background transition-opacity hover:opacity-90 sm:mx-0 sm:inline-block sm:w-auto"
+              className="mx-auto mt-8 block w-full max-w-xs rounded-full border border-transparent bg-foreground px-5 py-2.5 text-center text-sm text-background transition-opacity hover:opacity-90 sm:mx-0 sm:inline-block sm:w-auto"
             />
           </div>
           {/* A full section step under the header, not a paragraph's worth: the

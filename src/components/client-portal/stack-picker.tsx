@@ -279,7 +279,7 @@ export function StackPicker({
                 gives way with an ellipsis instead of holding the row open. */}
             <span className={`ml-auto pl-3 ${on ? "shrink-0" : "min-w-0"}`}>
               {on ? (
-                <span className="inline-block whitespace-nowrap rounded-lg bg-foreground px-3 py-1.5 text-sm text-background">
+                <span className="inline-block whitespace-nowrap rounded-full bg-foreground px-3 py-1.5 text-sm text-background">
                   {how}
                 </span>
               ) : (

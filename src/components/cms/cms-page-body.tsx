@@ -13,9 +13,9 @@ import type {
 } from "@/lib/cms-page";
 
 const PRIMARY_BUTTON =
-  "rounded-lg bg-foreground px-5 py-2.5 text-center text-sm text-background transition-opacity hover:opacity-90";
+  "rounded-full border border-transparent bg-foreground px-5 py-2.5 text-center text-sm text-background transition-opacity hover:opacity-90";
 const SECONDARY_BUTTON =
-  "rounded-lg border border-foreground/20 bg-transparent px-5 py-2.5 text-center text-sm text-foreground transition-colors hover:bg-foreground/5";
+  "rounded-full border border-foreground/20 bg-transparent px-5 py-2.5 text-center text-sm text-foreground transition-colors hover:bg-foreground/5";
 
 // Every section sits in the 1200px column the grid rails frame, with the same
 // gutters /security and the FAQ use. Section (max-w-7xl) is wider than the
@@ -294,7 +294,7 @@ function StorySection({ section }: { section: PageStorySection }) {
             // in foreground and label muted. Same as /customers.
             <span
               key={stat.label}
-              className="inline-flex items-center gap-1.5 rounded-md bg-muted px-3 py-1.5 font-mono text-xs uppercase tracking-wide"
+              className="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1.5 font-mono text-xs uppercase tracking-wide"
             >
               <span className="text-foreground">{stat.value}</span>
               <span className="text-muted-foreground">{stat.label}</span>

@@ -152,13 +152,13 @@ export function VsComparisonPage({
             <div className="mx-auto mt-8 flex w-full max-w-xs flex-col items-stretch gap-3 sm:w-auto sm:max-w-none sm:flex-row sm:items-center sm:justify-center">
               <a
                 href={SIGNUP_URL}
-                className="w-full rounded-lg border border-transparent bg-foreground px-5 py-3 text-center text-sm text-background transition-opacity hover:opacity-90 sm:w-auto sm:py-2.5"
+                className="w-full rounded-full border border-transparent bg-foreground px-5 py-3 text-center text-sm text-background transition-opacity hover:opacity-90 sm:w-auto sm:py-2.5"
               >
                 Start building for free
               </a>
               <a
                 href={DEMO_URL}
-                className="w-full rounded-lg border border-foreground/20 bg-transparent px-5 py-3 text-center text-sm text-foreground transition-colors hover:bg-foreground/5 sm:w-auto sm:py-2.5 [[data-theme=dark]_&]:border-white/25"
+                className="w-full rounded-full border border-foreground/20 bg-transparent px-5 py-3 text-center text-sm text-foreground transition-colors hover:bg-foreground/5 sm:w-auto sm:py-2.5 [[data-theme=dark]_&]:border-white/25"
               >
                 Book a demo
               </a>
@@ -476,13 +476,13 @@ function SplitHero({
         <div className="mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-center">
           <a
             href={SIGNUP_URL}
-            className="w-full rounded-lg border border-transparent bg-foreground px-5 py-3 text-center text-sm text-background transition-opacity hover:opacity-90 sm:w-auto sm:py-2.5"
+            className="w-full rounded-full border border-transparent bg-foreground px-5 py-3 text-center text-sm text-background transition-opacity hover:opacity-90 sm:w-auto sm:py-2.5"
           >
             Start building for free
           </a>
           <a
             href={DEMO_URL}
-            className="w-full rounded-lg border border-foreground/20 bg-transparent px-5 py-3 text-center text-sm text-foreground transition-colors hover:bg-foreground/5 sm:w-auto sm:py-2.5 [[data-theme=dark]_&]:border-white/25"
+            className="w-full rounded-full border border-foreground/20 bg-transparent px-5 py-3 text-center text-sm text-foreground transition-colors hover:bg-foreground/5 sm:w-auto sm:py-2.5 [[data-theme=dark]_&]:border-white/25"
           >
             Book a demo
           </a>

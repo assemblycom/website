@@ -161,7 +161,7 @@ export function PortalProof({
                   {story.stats.map((stat) => (
                     <li
                       key={stat}
-                      className="rounded-md bg-muted px-3 py-1.5 font-mono text-[11px] uppercase leading-none tracking-wide text-muted-foreground [[data-theme=dark]_&]:bg-white/[0.06]"
+                      className="rounded-full bg-muted px-3 py-1.5 font-mono text-[11px] uppercase leading-none tracking-wide text-muted-foreground [[data-theme=dark]_&]:bg-white/[0.06]"
                     >
                       {stat}
                     </li>

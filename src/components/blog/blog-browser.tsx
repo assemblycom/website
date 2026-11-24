@@ -68,46 +68,38 @@ export function BlogBrowser({
     <>
       {showFilters && (
         <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          {/* The templates gallery's own filter strip, chip for chip. Selection
-              reads as selection there rather than as a call to action: the
-              current shelf is held on a wash of the foreground — the same
-              idiom the nav and footer segmented controls use — instead of the
-              solid black pill, which made the filter you had already applied
-              look like the thing to click next. */}
-          {/* One line at every width. Wrapped, the shelves broke to a second row
-              on a phone and the selected key sat alone above the rest, which
-              read as two groups; scrolling keeps them one row of options. The
-              gutters are negative-margined back out and then paid back in
-              full, so the first chip's BOX lands on the rail the cards below
-              start from — the way the templates gallery's strip does it.
-              Aligning the label instead left the selected chip's fill jutting
-              into the gutter, which on a phone is the only thing on the page
-              that does. The bleed stays so the row can still be swiped to the
-              screen edge; the scrollbar is hidden because it is short. */}
-          <div className="-ml-6 -mr-6 flex items-center gap-2 overflow-x-auto pl-6 pr-6 [-ms-overflow-style:none] [scrollbar-width:none] sm:ml-0 sm:mr-0 sm:pl-0 sm:pr-0 [&::-webkit-scrollbar]:hidden">
-            {[{ name: "All", slug: "" }, ...categories].map((filter) => {
-              const active = (filter.slug || undefined) === activeSlug;
-              return (
-                <Link
-                  key={filter.slug || "all"}
-                  href={filter.slug ? tagPath(filter.slug) : "/blog"}
-                  aria-current={active ? "page" : undefined}
-                  // Inset ring, like the gallery's: this is an overflow scroller,
-                  // and an offset ring is drawn outside the chip where the
-                  // scroller crops it.
-                  className={`type-body inline-flex h-9 shrink-0 items-center whitespace-nowrap rounded-lg px-3.5 leading-none outline-none transition-colors focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-foreground/40 ${
-                    active
-                      ? "bg-border text-foreground dark-ui:bg-[var(--surface-2)]"
-                      : "bg-transparent text-muted-foreground active:bg-border [@media(hover:hover)]:hover:bg-muted [@media(hover:hover)]:hover:text-foreground"
-                  }`}
-                >
-                  {filter.name}
-                </Link>
-              );
-            })}
+          {/* The templates gallery's filter bar: plain text tabs, the current
+              one in full ink and the rest muted, with no fill behind either.
+              One row at every width that scrolls sideways on a phone, bled to
+              the screen edge so it can be swiped there. */}
+          <div className="relative min-w-0 sm:flex-1">
+            <div className="-ml-6 -mr-6 flex items-center gap-6 overflow-x-auto pl-6 pr-12 [-ms-overflow-style:none] [scrollbar-width:none] sm:ml-0 sm:mr-0 sm:pl-0 sm:pr-12 [&::-webkit-scrollbar]:hidden">
+              {[{ name: "All", slug: "" }, ...categories].map((filter) => {
+                const active = (filter.slug || undefined) === activeSlug;
+                return (
+                  <Link
+                    key={filter.slug || "all"}
+                    href={filter.slug ? tagPath(filter.slug) : "/blog"}
+                    aria-current={active ? "page" : undefined}
+                    className={`type-body shrink-0 whitespace-nowrap rounded-sm py-1 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-foreground/40 ${
+                      active
+                        ? "text-foreground"
+                        : "text-muted-foreground [@media(hover:hover)]:hover:text-foreground"
+                    }`}
+                  >
+                    {filter.name}
+                  </Link>
+                );
+              })}
+            </div>
+            {/* Tabs that run under the search fade out rather than stop dead. */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-y-0 -right-6 w-12 bg-[linear-gradient(90deg,transparent_0%,var(--background)_88%)] sm:right-0 sm:w-12"
+            />
           </div>
 
-          <label className="relative sm:w-64">
+          <label className="relative w-full shrink-0 transition-[max-width] duration-300 ease-[cubic-bezier(.25,1,.5,1)] sm:max-w-48 sm:focus-within:max-w-60">
             <span className="sr-only">Search posts</span>
             <svg
               width="15"
@@ -133,7 +125,7 @@ export function BlogBrowser({
               // The browser's own clear glyph is suppressed — it renders in the
               // engine's blue at its own size, which is the one control on the
               // page the site doesn't draw. Ours sits below.
-              className={`${FIELD_CLS} !h-9 !py-0 !pl-10 !pr-9 [&::-webkit-search-cancel-button]:appearance-none`}
+              className={`${FIELD_CLS} !h-9 !rounded-full !border-border !py-0 !pl-10 !pr-9 focus:!border-foreground/40 [&::-webkit-search-cancel-button]:appearance-none`}
             />
             {query && (
               <button

@@ -60,7 +60,7 @@ export function BrandColorCard({ color }: { color: BrandColor }) {
           type="button"
           onClick={copy}
           aria-label={`Copy ${color.hex}`}
-          className="shrink-0 rounded-lg border border-foreground/20 px-3 py-1.5 text-sm text-foreground transition-colors hover:bg-foreground/5"
+          className="shrink-0 rounded-full border border-foreground/20 px-3 py-1.5 text-sm text-foreground transition-colors hover:bg-foreground/5"
         >
           {copied ? "Copied" : "Copy"}
         </button>

@@ -7,7 +7,7 @@ import {
 } from "./built-on-events";
 
 const PRIMARY_BUTTON =
-  "rounded-lg bg-foreground px-5 py-2.5 text-center text-sm text-background transition-opacity hover:opacity-90";
+  "rounded-full border border-transparent bg-foreground px-5 py-2.5 text-center text-sm text-background transition-opacity hover:opacity-90";
 
 /**
  * The signup link. Every instance on the page is this one component, so the

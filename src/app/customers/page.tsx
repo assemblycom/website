@@ -32,7 +32,7 @@ export default function CustomersPage() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Assembly on G2: 4.7 out of 5"
-              className="inline-flex items-center gap-1.5 rounded-md bg-muted px-3 py-1.5 font-mono text-xs uppercase tracking-wide text-muted-foreground transition-colors hover:text-foreground"
+              className="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1.5 font-mono text-xs uppercase tracking-wide text-muted-foreground transition-colors hover:text-foreground"
             >
               <G2Logo className="h-4 w-4" /> 4.7 rating
             </a>
@@ -41,7 +41,7 @@ export default function CustomersPage() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Assembly on Capterra: 4.8 out of 5"
-              className="inline-flex items-center gap-1.5 rounded-md bg-muted px-3 py-1.5 font-mono text-xs uppercase tracking-wide text-muted-foreground transition-colors hover:text-foreground"
+              className="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1.5 font-mono text-xs uppercase tracking-wide text-muted-foreground transition-colors hover:text-foreground"
             >
               <CapterraLogo className="h-4 w-4" /> 4.8 rating
             </a>

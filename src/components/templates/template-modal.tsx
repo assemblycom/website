@@ -247,7 +247,7 @@ export function TemplateModalBrowser({
                 {/* One link for both auth states — see TemplateAuthCta. */}
                 <TemplateAuthCta
                   template={template}
-                  className="block w-full max-w-xs rounded-lg bg-foreground px-5 py-2.5 text-center text-sm text-background sm:inline-block sm:w-auto transition-opacity hover:opacity-90"
+                  className="block w-full max-w-xs rounded-full border border-transparent bg-foreground px-5 py-2.5 text-center text-sm text-background sm:inline-block sm:w-auto transition-opacity hover:opacity-90"
                 />
               </div>
             </div>
@@ -260,7 +260,7 @@ export function TemplateModalBrowser({
           <div className="pointer-events-auto flex justify-center px-4">
             <TemplateAuthCta
               template={template}
-              className="w-full max-w-sm rounded-lg bg-foreground px-5 py-2.5 text-center text-sm text-background"
+              className="w-full max-w-sm rounded-full border border-transparent bg-foreground px-5 py-2.5 text-center text-sm text-background"
             />
           </div>
         </div>

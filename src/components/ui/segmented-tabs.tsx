@@ -56,8 +56,9 @@ export function SegmentedTabs({
   /**
    * The track's corner radius.
    *
-   * "default" — rounded-lg, the control's own shape, and what every call site
-   * that stands on its own ground uses (the pricing billing toggle included).
+   * "default" — rounded-full, matching the site's pill buttons. Every call
+   * site that stands on its own ground uses it (the pricing billing toggle
+   * included).
    *
    * "panel" — rounded-3xl, to match a large rounded panel the control sits
    * directly above, so the two read as one object rather than as a small
@@ -160,21 +161,21 @@ export function SegmentedTabs({
           ? "rounded-3xl"
           : round === "pill"
             ? "rounded-full"
-            : "rounded-lg"
+            : "rounded-full"
       } ${className}`}
       style={{ gridTemplateColumns: `repeat(${count}, minmax(0, 1fr))` }}
     >
       <span
         aria-hidden
         // The thumb's radius follows the track's, one step smaller by the
-        // 4px padding between them, so the two curves stay concentric: 8 → 6
-        // by default, 24 → 20 on `panel`.
+        // 4px padding between them, so the two curves stay concentric: 24 → 20
+        // on `panel`.
         className={`pointer-events-none absolute inset-y-1 left-1 z-10 overflow-hidden bg-foreground transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
           round === "panel"
             ? "rounded-[20px]"
             : round === "pill"
               ? "rounded-full"
-              : "rounded-md"
+              : "rounded-full"
         }`}
         style={{
           width: `calc((100% - 0.5rem) / ${count})`,
@@ -212,7 +213,7 @@ export function SegmentedTabs({
           aria-selected={o.value === value}
           tabIndex={o.value === value ? 0 : -1}
           onClick={() => onChange(o.value)}
-          className="relative whitespace-nowrap rounded-md px-3 py-1.5 text-center text-muted-foreground transition-colors hover:text-foreground sm:px-4"
+          className="relative whitespace-nowrap rounded-full px-3 py-1.5 text-center text-muted-foreground transition-colors hover:text-foreground sm:px-4"
         >
           {o.label}
         </button>

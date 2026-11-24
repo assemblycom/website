@@ -71,7 +71,7 @@ export default async function BlogPage({
           // rather than reading as an outline on it, and the outline drops to a
           // faint white so the fill, not the line, draws the edge. Hover steps
           // up to --muted.
-          className="group mt-10 block overflow-hidden rounded-2xl border border-border transition-colors hover:bg-muted/50 md:mt-14 dark-ui:border-white/[0.07] dark-ui:bg-card dark-ui:hover:bg-muted"
+          className="group mt-10 block overflow-hidden rounded-2xl border border-border transition-colors hover:bg-muted/50 md:mt-14 dark-ui:border-transparent dark-ui:bg-card dark-ui:hover:bg-muted"
         >
           {/* Stacked on a phone and a tablet, side by side from lg. The cover's
               height is nine sixteenths of its column and the copy's is however
@@ -88,26 +88,31 @@ export default async function BlogPage({
               took 8% off each side, straight through the wordmark these covers
               carry. */}
           <div className="grid lg:grid-cols-[1.5fr_1fr]">
-            <PostCover
-              title={featured.title}
-              image={featured.image}
-              large
-              sizes="(min-width: 1024px) 60vw, 100vw"
-              // Fitted, not filled. The frame is 16:9 because that is what Ghost
-              // authors covers at, but not every cover obeys it, and these carry
-              // the product's wordmark — filling cropped straight through it on
-              // the ones that do not. Where the cover is 16:9 this is identical
-              // to filling, so nothing changes for most posts.
-              fit="contain"
-              // 16:9 sets the frame's own height, and beside the copy it fills
-              // whatever the taller of the two comes to. At the wide end the
-              // cover is the taller and nothing is added; at the narrow end of
-              // the two-column range the copy runs taller, and the frame takes
-              // that height with the artwork matted on the card's own muted
-              // ground rather than floating in white with the card's corners
-              // turned around it.
-              className="aspect-[16/9] w-full rounded-none bg-muted lg:h-full"
-            />
+            {/* In dark the cover is inset on the card's fill: full bleed, the
+                black in most covers ran straight into the page's black and only
+                an outline could hold the card's edge. */}
+            <div className="dark-ui:p-2 dark-ui:pb-0 dark-ui:md:p-3 dark-ui:md:pb-0 dark-ui:lg:pb-3 dark-ui:lg:pr-0">
+              <PostCover
+                title={featured.title}
+                image={featured.image}
+                large
+                sizes="(min-width: 1024px) 60vw, 100vw"
+                // Fitted, not filled. The frame is 16:9 because that is what Ghost
+                // authors covers at, but not every cover obeys it, and these carry
+                // the product's wordmark — filling cropped straight through it on
+                // the ones that do not. Where the cover is 16:9 this is identical
+                // to filling, so nothing changes for most posts.
+                fit="contain"
+                // 16:9 sets the frame's own height, and beside the copy it fills
+                // whatever the taller of the two comes to. At the wide end the
+                // cover is the taller and nothing is added; at the narrow end of
+                // the two-column range the copy runs taller, and the frame takes
+                // that height with the artwork matted on the card's own muted
+                // ground rather than floating in white with the card's corners
+                // turned around it.
+                className="aspect-[16/9] w-full rounded-none bg-muted lg:h-full dark-ui:rounded-xl"
+              />
+            </div>
 
             {/* Centred against the cover, on a measure of its own: run the full
                 half of a 1600 card, the standfirst was a 700px line with the

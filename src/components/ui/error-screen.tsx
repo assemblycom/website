@@ -32,4 +32,4 @@ export function ErrorScreen({ title, description, children }: ErrorScreenProps) 
 
 /** Primary button/link — solid foreground fill. */
 export const primaryAction =
-  "rounded-lg bg-foreground px-5 py-2.5 text-sm text-background transition-opacity hover:opacity-90";
+  "rounded-full border border-transparent bg-foreground px-5 py-2.5 text-sm text-background transition-opacity hover:opacity-90";

@@ -13,9 +13,9 @@ import type {
 
 // The site's canonical button pair, same strings the CMS pages use.
 const PRIMARY_BUTTON =
-  "rounded-lg bg-foreground px-5 py-2.5 text-center text-sm text-background transition-opacity hover:opacity-90";
+  "rounded-full border border-transparent bg-foreground px-5 py-2.5 text-center text-sm text-background transition-opacity hover:opacity-90";
 const SECONDARY_BUTTON =
-  "rounded-lg border border-foreground/20 bg-transparent px-5 py-2.5 text-center text-sm text-foreground transition-colors hover:bg-foreground/5";
+  "rounded-full border border-foreground/20 bg-transparent px-5 py-2.5 text-center text-sm text-foreground transition-colors hover:bg-foreground/5";
 
 /**
  * One centred reading column, the way a post is set — not the 1200px rail the

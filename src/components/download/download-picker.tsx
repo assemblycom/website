@@ -46,7 +46,7 @@ export function DownloadPicker() {
       <div className="mt-10 flex justify-center">
         <a
           href={primary.href}
-          className="inline-flex items-center rounded-lg bg-foreground px-5 py-2.5 text-sm text-background transition-opacity hover:opacity-90"
+          className="inline-flex items-center rounded-full border border-transparent bg-foreground px-5 py-2.5 text-sm text-background transition-opacity hover:opacity-90"
         >
           {primary.label}
         </a>

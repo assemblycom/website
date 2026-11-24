@@ -10,12 +10,12 @@ import {
   type NavLink,
 } from "@/lib/constants";
 import { GRID_LINE } from "@/components/ui/grid-lines";
-import { DiaGradient } from "@/components/ui/dia-gradient";
+import { FooterRim } from "@/components/layout/footer-rim";
 import type { ThemePreference } from "@/components/theme/theme-provider";
 
-// V71's brand aurora (from hero-iterations) — green + blue on a near-black
-// base, rising into blue → mint → lime and fading to transparent. Lives at the
-// bottom of the reveal footer itself (one sheet, not a separate layer).
+// V71's brand aurora (from hero-iterations): green + blue on a near-black
+// base, rising into blue, mint and lime and fading to transparent. The hero
+// aurora still draws with it.
 export const BRAND_AURORA = [
   { offset: 0, color: "#0a0e1c" },
   { offset: 0.16, color: "#243c9e" },
@@ -27,48 +27,22 @@ export const BRAND_AURORA = [
   { offset: 1, color: "#d9ed9200" },
 ];
 
-// The bars peak at 80% of their box, not near its top: the blur spreads about
-// 15% above a bar, and a box with less headroom than that clipped the crest
-// flat. The boxes are taller and pulled up by the same amount, so the crest
-// lands where it did and the footer keeps its height.
-//
-// Always-visible brand aurora at the bottom of the footer — a mobile band (fills
-// more of its container) and a desktop band, each rising on mount. Exported so
-// the proposal page can end in the same aurora without inheriting the footer's
-// link columns (that page carries no navigation).
+// The onboarding sign-up's rim glow, always visible at the bottom of the
+// footer. Exported so the proposal pages can end in the same glow without
+// inheriting the footer's link columns (those pages carry no navigation).
+// It is pulled up under the link columns, which sit above it on z-10.
 export function FooterAurora() {
   return (
-    <>
-      <div
-        aria-hidden
-        className="pointer-events-none relative -mt-[calc(11rem+8.5vh)] h-[50.5vh] md:hidden"
-        style={{
-          maskImage: "linear-gradient(to bottom, transparent 0%, #000 18%)",
-          WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, #000 18%)",
-        }}
-      >
-        <div className="footer-aurora absolute inset-x-0 bottom-0 h-full">
-          {/* Half the bars of the desktop band, because the viewBox is squashed to
-              a quarter of its width here: at 14 the striations landed ~27px apart
-              on screen (vs ~100px on a desktop) and read as grain rather than as
-              aurora texture. Fewer, wider bars keep the pitch closer to desktop's,
-              and the extra horizontal blur softens what's left. */}
-          <DiaGradient stops={BRAND_AURORA} bars={9} blur={30} blurX={40} peak={0.8} valley={0.7} riseMs={1300} />
-        </div>
-      </div>
-      <div
-        aria-hidden
-        className="pointer-events-none relative -mt-[calc(10rem+8.5vh)] hidden h-[46.5vh] md:block"
-        style={{
-          maskImage: "linear-gradient(to bottom, transparent 0%, #000 8%)",
-          WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, #000 8%)",
-        }}
-      >
-        <div className="footer-aurora absolute inset-x-0 bottom-0 h-full">
-          <DiaGradient stops={BRAND_AURORA} bars={14} blur={30} peak={0.8} valley={0.45} riseMs={1300} />
-        </div>
-      </div>
-    </>
+    <div
+      aria-hidden
+      className="pointer-events-none relative -mt-[calc(11rem+8.5vh)] h-[50.5vh] md:-mt-[calc(10rem+8.5vh)] md:h-[46.5vh]"
+      style={{
+        maskImage: "linear-gradient(to bottom, transparent 0%, #000 20%)",
+        WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, #000 20%)",
+      }}
+    >
+      <FooterRim />
+    </div>
   );
 }
 

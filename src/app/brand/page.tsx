@@ -99,7 +99,7 @@ export default function BrandPage() {
             <a
               href={ASSETS_ZIP}
               download
-              className="inline-block rounded-lg bg-foreground px-5 py-2.5 text-sm text-background transition-opacity hover:opacity-90"
+              className="inline-block rounded-full border border-transparent bg-foreground px-5 py-2.5 text-sm text-background transition-opacity hover:opacity-90"
             >
               Download brand assets
             </a>

@@ -130,7 +130,7 @@ export function TemplateFocusModal({
             <div className="mt-7">
               <TemplateAuthCta
                 template={template}
-                className="inline-block rounded-[6px] bg-foreground px-4 py-2 text-sm text-background transition-opacity hover:opacity-90"
+                className="inline-block rounded-full border border-transparent bg-foreground px-4 py-2 text-sm text-background transition-opacity hover:opacity-90"
               />
             </div>
           </div>

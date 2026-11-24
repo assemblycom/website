@@ -403,7 +403,7 @@ function PlanGrid({
               <div className="mt-6 flex flex-col gap-2 sm:max-xl:col-start-1 sm:max-xl:row-start-2 sm:max-xl:self-start xl:pb-6">
                 <a
                   href={plan.ctaHref}
-                  className="rounded-lg border border-transparent bg-foreground px-5 py-2 text-center text-sm text-background transition-opacity hover:opacity-90"
+                  className="rounded-full border border-transparent bg-foreground px-5 py-2 text-center text-sm text-background transition-opacity hover:opacity-90"
                 >
                   {plan.cta}
                 </a>
@@ -413,7 +413,7 @@ function PlanGrid({
                 {plan.secondaryDemo && (
                   <a
                     href={DEMO_URL}
-                    className="rounded-lg border border-foreground/20 bg-transparent px-5 py-2 text-center text-sm text-foreground transition-colors hover:bg-foreground/5"
+                    className="rounded-full border border-foreground/20 bg-transparent px-5 py-2 text-center text-sm text-foreground transition-colors hover:bg-foreground/5"
                   >
                     {DEMO_CTA_LABEL}
                   </a>
@@ -475,7 +475,7 @@ export function PricingPlans() {
         <div
           role="radiogroup"
           aria-label="Billing period"
-          className="relative grid w-full grid-cols-2 rounded-lg border border-border p-1 text-base md:inline-grid md:w-auto md:text-sm"
+          className="relative grid w-full grid-cols-2 rounded-full border border-border p-1 text-base md:inline-grid md:w-auto md:text-sm"
         >
           {/* Sliding thumb — carries the active-coloured labels inside a clipped
               window, so the highlight is REVEALED as the thumb glides rather
@@ -484,7 +484,7 @@ export function PricingPlans() {
               counter-slides to stay aligned with the base labels below. */}
           <span
             aria-hidden
-            className={`pointer-events-none absolute inset-y-1 left-1 z-10 w-[calc(50%-0.25rem)] overflow-hidden rounded-md bg-foreground transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+            className={`pointer-events-none absolute inset-y-1 left-1 z-10 w-[calc(50%-0.25rem)] overflow-hidden rounded-full bg-foreground transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
               billing === "yearly" ? "translate-x-full" : ""
             }`}
           >
@@ -505,7 +505,7 @@ export function PricingPlans() {
             role="radio"
             aria-checked={billing === "monthly"}
             onClick={() => setBilling("monthly")}
-            className="relative rounded-md px-5 py-2 text-center text-muted-foreground transition-colors hover:text-foreground md:px-4 md:py-1.5"
+            className="relative rounded-full px-5 py-2 text-center text-muted-foreground transition-colors hover:text-foreground md:px-4 md:py-1.5"
           >
             <span className="hidden md:inline">Pay&nbsp;</span>Monthly
           </button>
@@ -513,7 +513,7 @@ export function PricingPlans() {
             role="radio"
             aria-checked={billing === "yearly"}
             onClick={() => setBilling("yearly")}
-            className="relative rounded-md px-5 py-2 text-center text-muted-foreground transition-colors hover:text-foreground md:px-4 md:py-1.5"
+            className="relative rounded-full px-5 py-2 text-center text-muted-foreground transition-colors hover:text-foreground md:px-4 md:py-1.5"
           >
             <span className="hidden md:inline">Pay&nbsp;</span>Yearly
           </button>

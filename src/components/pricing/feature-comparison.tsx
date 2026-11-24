@@ -385,7 +385,7 @@ export function FeatureComparison() {
           type="button"
           onClick={toggle}
           aria-expanded={expanded}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-border px-5 py-2.5 text-sm text-foreground transition-colors hover:bg-muted sm:w-auto [[data-theme=dark]_&]:border-[#383838]"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-border px-5 py-2.5 text-sm text-foreground transition-colors hover:bg-muted sm:w-auto [[data-theme=dark]_&]:border-[#383838]"
         >
           {expanded ? "Hide comparison" : "Compare all features"}
           {/* The site's chevron rule (see the FAQ rows): 90° of travel, not a
