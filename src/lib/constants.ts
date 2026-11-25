@@ -205,6 +205,35 @@ export const NAV_ENTRIES: NavEntry[] = [
   },
   { label: "Pricing", href: "/pricing" },
 ];
+
+// The phone menu shows every link at once under a few small section labels,
+// so nothing has to be tapped open. Built from NAV_ENTRIES by href so a link's
+// label and target live in one place; the desktop bar's loose links (Templates,
+// Pricing, Customers, Security) are filed under the section they belong to.
+const NAV_LINKS: NavItem[] = NAV_ENTRIES.flatMap((entry) =>
+  isNavGroup(entry) ? entry.items : [entry],
+);
+const navLinks = (...hrefs: string[]): NavItem[] =>
+  hrefs.flatMap((href) => NAV_LINKS.filter((link) => link.href === href));
+
+export const MOBILE_NAV_SECTIONS: { label: string; items: NavItem[] }[] = [
+  {
+    label: "Product",
+    items: navLinks("/ai-app-builder", "/client-portal", "/templates", "/pricing"),
+  },
+  {
+    label: "Use cases",
+    items: navLinks(
+      "/solutions/accounting-client-portal",
+      "/solutions/marketing-agency-client-portal",
+    ),
+  },
+  { label: "Company", items: navLinks("/customers", "/security") },
+  {
+    label: "Resources",
+    items: navLinks("/blog", "/updates", COMMUNITY_URL, GUIDE_URL, API_REFERENCE_URL),
+  },
+];
 // The app lives at dashboard.assembly.com (app.assembly.com does not resolve).
 export const APP_URL = "https://dashboard.assembly.com";
 const SIGNUP_PATH = "https://dashboard.assembly.com/signup";

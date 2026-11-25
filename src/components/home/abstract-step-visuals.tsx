@@ -237,14 +237,9 @@ function DescribeComposer() {
         // anchored to this element's bottom, so it has to land ON the screen
         // edge, not past it — over-bleed and their brightest part falls
         // outside the frame.
-        // Hues come through custom properties so dark can swap them without
-        // touching light. Dark drops the lime: a pale yellow-green screened
-        // over near-black turns olive, and that khaki smear against the blue
-        // was what made the glow look cheap rather than lit. The dark wash
-        // stays in the cool family — the periwinkle flanking the panel blue —
-        // and runs quieter, because light coming off a dark surface reads at a
-        // fraction of the strength the same wash needs on white.
-        className="pointer-events-none absolute -inset-x-4 -bottom-2.5 -z-10 h-64 opacity-100 blur-2xl saturate-[1.35] [--aurora-1:#d9ed92] [--aurora-2:#9fb0e8] [--aurora-3:#7da4ff] [mask-image:linear-gradient(to_bottom,transparent_0%,#000_34%)] [-webkit-mask-image:linear-gradient(to_bottom,transparent_0%,#000_34%)] [[data-theme=dark]_&]:opacity-45 [[data-theme=dark]_&]:blur-3xl [[data-theme=dark]_&]:saturate-100 [[data-theme=dark]_&]:mix-blend-screen [[data-theme=dark]_&]:[--aurora-1:#9fb0e8] [[data-theme=dark]_&]:[--aurora-2:#7da4ff] [[data-theme=dark]_&]:[--aurora-3:#9fb0e8]"
+        // Light mode only: on the dark screen the wash read as a smudge at the
+        // bottom of the phone rather than as light.
+        className="pointer-events-none absolute -inset-x-4 -bottom-2.5 -z-10 h-64 opacity-100 blur-2xl saturate-[1.35] [--aurora-1:#d9ed92] [--aurora-2:#9fb0e8] [--aurora-3:#7da4ff] [mask-image:linear-gradient(to_bottom,transparent_0%,#000_34%)] [-webkit-mask-image:linear-gradient(to_bottom,transparent_0%,#000_34%)] [[data-theme=dark]_&]:hidden"
         style={{
           background: [
             // Held further out (82% rather than 70%) and blurred less, so each
