@@ -8,7 +8,7 @@ import { APP_URL, DEMO_URL, SIGNUP_URL } from "@/lib/constants";
 
 // The hero's own button pair (see hero-big.tsx), minus its experiment
 // tracking — so the page's close is the same control its top opens with.
-const PRIMARY_CTA =
+export const PRIMARY_CTA =
   "inline-flex w-full shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-transparent bg-foreground px-4 py-3 text-center text-sm text-background transition-opacity hover:opacity-90 sm:w-auto sm:py-2 md:px-5 md:py-2.5 [[data-theme=dark]_&]:bg-white [[data-theme=dark]_&]:text-neutral-900";
 
 /** The outline action that partners PRIMARY_CTA. Exported for the same
