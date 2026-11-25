@@ -7,6 +7,7 @@ import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
 import {
   NAV_ENTRIES,
+  MOBILE_NAV_SECTIONS,
   isNavGroup,
   APP_URL,
   SIGNUP_URL,
@@ -107,10 +108,6 @@ export function StudioNav({
   themeToggle?: { theme: "light" | "dark"; onToggle: () => void };
 }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  // Which nav groups are expanded in the mobile sheet. A set rather than a
-  // single open group: independent toggles are what a reader expects of a row
-  // that opens, and nothing here has to close to make room.
-  const [openGroups, setOpenGroups] = useState<string[]>([]);
   const [scrolled, setScrolled] = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
   const [pastGlass, setPastGlass] = useState(false);
@@ -138,7 +135,6 @@ export function StudioNav({
   const pathname = usePathname();
   useEffect(() => {
     setMobileMenuOpen(false);
-    setOpenGroups([]);
   }, [pathname]);
 
   // On the page the logo already points at, clicking it would be a no-op route
@@ -174,7 +170,6 @@ export function StudioNav({
   const closeMenu = (restoreFocus = false) => {
     restoreFocusRef.current = restoreFocus;
     setMobileMenuOpen(false);
-    setOpenGroups([]);
   };
   useEffect(() => {
     if (!mobileMenuOpen) return;
@@ -381,17 +376,11 @@ export function StudioNav({
   // without it the new page loads silently behind a menu that looks like
   // nothing happened.
   //
-  // The current page is marked the way the desktop nav marks it — full-strength
-  // ink against muted siblings, not a heavier weight, since `font-medium` maps
-  // to PP Mori SemiBold here and the bolded row was the heaviest type on the
-  // sheet. An off-site link stays muted: it is never the page you are on, so at
-  // full ink it read as a second current page.
-  // `nested` is a link inside an opened group. A step down in size and in the
-  // air around it, so the group's own label reads as the rank above them rather
-  // than as a sixth thing in the same list — the indent alone was carrying that
-  // and it was not enough.
-  const renderMenuLink = (link: NavItem, nested = false) => {
-    const rowCls = nested ? "block py-2 text-base" : "block py-2.5 text-lg";
+  // Every link is full ink and only the section labels are muted, as on
+  // linear.app: with the whole menu open at once, greying all but the current
+  // page made the sheet read as disabled.
+  const renderMenuLink = (link: NavItem) => {
+    const rowCls = "type-h2 block py-1.5";
     if (link.disabled) {
       return (
         <span aria-disabled="true" className={`${rowCls} ${menuMuted}`}>
@@ -406,7 +395,7 @@ export function StudioNav({
           target={link.newTab ? "_blank" : undefined}
           rel={link.newTab ? "noopener noreferrer" : undefined}
           onClick={() => closeMenu()}
-          className={`${rowCls} ${menuMuted}`}
+          className={`${rowCls} ${menuInk}`}
         >
           {link.label}
         </a>
@@ -417,10 +406,7 @@ export function StudioNav({
         href={link.href}
         aria-current={isCurrent(link.href) ? "page" : undefined}
         onClick={() => closeMenu()}
-        // The colour token is swapped, not appended — same as navLinkCls above,
-        // where two text-* utilities on one element tie on specificity and
-        // stylesheet order picks the winner.
-        className={`${rowCls} ${isCurrent(link.href) ? menuInk : menuMuted}`}
+        className={`${rowCls} ${menuInk}`}
       >
         {link.label}
       </Link>
@@ -861,82 +847,23 @@ export function StudioNav({
               ref={menuScrollRef}
               className="flex flex-1 flex-col overflow-y-auto overscroll-contain px-6 pt-6"
             >
-              {/* A group opens in place rather than being flattened into the
-                list around it. Flattening was right while Resources held two
-                links and the whole sheet came to six: the section label cost
-                more height than the grouping bought. At five it stopped being
-                right — the sheet ran to nine rows with Pricing stranded under a
-                run of docs links, and nothing said where Resources ended.
-                In place rather than a panel that slides in from the side: there
-                is one group here, and a second screen to push and pop is a lot
-                of machinery for one row that opens. */}
-              <ul className="flex flex-col gap-1">
-                {NAV_ENTRIES.map((entry) =>
-                  isNavGroup(entry) ? (
-                    <li key={entry.label}>
-                      <button
-                        type="button"
-                        aria-expanded={openGroups.includes(entry.label)}
-                        onClick={() =>
-                          setOpenGroups((open) =>
-                            open.includes(entry.label)
-                              ? open.filter((label) => label !== entry.label)
-                              : [...open, entry.label],
-                          )
-                        }
-                        // The chevron sits with the word, not out at the gutter:
-                        // pushed to the far edge it read as a row control on a
-                        // settings list rather than as a mark on the label, and
-                        // on a 375px sheet it was 250px from the text it belongs
-                        // to. The button still spans the row, so the tap target
-                        // is the whole line either way.
-                        // Inked while it is open, the same way this sheet already
-                        // marks the page you are on. An open group IS the
-                        // selected row — muted, it sat back at the same weight
-                        // as the four rows that are not open, and the only thing
-                        // saying which one you had tapped was the chevron.
-                        className={`flex w-full items-center gap-1.5 py-2.5 text-left text-lg ${
-                          openGroups.includes(entry.label) ? menuInk : menuMuted
-                        }`}
-                      >
-                        {entry.label}
-                        <svg
-                          width="16"
-                          height="16"
-                          viewBox="0 0 16 16"
-                          fill="none"
-                          aria-hidden
-                          className={`shrink-0 transition-transform duration-300 ${
-                            openGroups.includes(entry.label) ? "rotate-180" : ""
-                          }`}
-                        >
-                          <path
-                            d="M4 6l4 4 4-4"
-                            stroke="currentColor"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      </button>
-                      {openGroups.includes(entry.label) && (
-                        // Indented to the label above rather than ruled off:
-                        // the sheet is one surface, and a rule here would be the
-                        // only one in it.
-                        <ul className="flex flex-col gap-1 pb-1 pl-4">
-                          {entry.items.map((link) => (
-                            <li key={link.href}>
-                              {renderMenuLink(link, true)}
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </li>
-                  ) : (
-                    <li key={entry.href}>{renderMenuLink(entry)}</li>
-                  ),
-                )}
-              </ul>
+              {/* Every link shows at once under a small section label, the
+                way linear.app's phone menu works: nothing to tap open, and
+                the sheet reads as a table of contents. */}
+              <div className="flex flex-col gap-8">
+                {MOBILE_NAV_SECTIONS.map((section) => (
+                  <section key={section.label}>
+                    <h2 className={`type-caption pb-2 ${menuMuted}`}>
+                      {section.label}
+                    </h2>
+                    <ul className="flex flex-col">
+                      {section.items.map((link) => (
+                        <li key={link.href}>{renderMenuLink(link)}</li>
+                      ))}
+                    </ul>
+                  </section>
+                ))}
+              </div>
 
               {/* Appearance toggle — kept with the nav list (under Pricing)
                 rather than pinned to the bottom of the sheet. */}
@@ -946,7 +873,7 @@ export function StudioNav({
                   const segCls = (active: boolean) =>
                     `flex size-6 items-center justify-center rounded-full transition-colors ${active ? menuSegActive : menuMuted}`;
                   return (
-                    <div className="mt-3">
+                    <div className="mt-8">
                       <div
                         className={`inline-flex items-center gap-0.5 rounded-full border p-0.5 ${menuBorder}`}
                         role="group"
