@@ -845,7 +845,11 @@ export function StudioNav({
 
             <div
               ref={menuScrollRef}
-              className="flex flex-1 flex-col overflow-y-auto overscroll-contain px-6 pt-6"
+              // The list fades out into the buttons instead of being cut off by
+              // them. A mask rather than a colour gradient, so it works on both
+              // the light and the dark sheet; the bottom padding lets the last
+              // link scroll clear of the fade.
+              className="flex flex-1 flex-col overflow-y-auto overscroll-contain px-6 pt-6 pb-12 [mask-image:linear-gradient(to_bottom,black_calc(100%-3rem),transparent)]"
             >
               {/* Every link shows at once under a small section label, the
                 way linear.app's phone menu works: nothing to tap open, and
